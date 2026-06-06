@@ -1,0 +1,25 @@
+<?php
+
+return [
+	'ebdd91b9' => 'Grupo Steam',
+	'5d383fd6' => 'Configure o ID do grupo Steam no painel de administração do widget.',
+	'526acf25' => 'Não foi possível carregar informações do grupo Steam.',
+	'8a8bad0b' => 'Sobre %s',
+	'1f88c31b' => 'Opções',
+	'c2061657' => 'URL personalizado do grupo (vanity URL) OU seu SteamID64 numérico. Visível no URL https://steamcommunity.com/groups/<b>SEU-GRUPO</b>.',
+	'8088964a' => 'Exibição',
+	'b9a3b158' => 'Compacto (avatar + estatísticas)',
+	'0a9c0bf4' => 'Estendido (título + detalhes)',
+	'ddd27a61' => 'Mostrar avatar',
+	'e2a147a0' => 'Sim',
+	'cd2a42ef' => 'Não',
+	'9a821260' => 'Mostrar descrição',
+	'96f7da00' => 'Membros',
+	'594ae39c' => 'membros',
+	'49a80df0' => 'Online',
+	'b0de6fa6' => 'online',
+	'15c208c9' => 'Em jogo',
+	'126e0dff' => 'em jogo',
+	'2383808d' => 'Ver grupo',
+	'a0b50860' => 'Mostra o número de membros, a presença online e a atividade de um grupo Steam.',
+];

@@ -1,0 +1,43 @@
+<?php
+/**
+ * https://translate.neofr.ag
+ * @author: NeoFrag — deutsche Übersetzungen (auto-generiert 2026-05-03)
+ */
+
+return [
+	'1e24aea8' => 'Benutzerdefinierter Link',
+	'1f88c31b' => 'Optionen',
+	'209cc33f' => 'Ziel',
+	'39d56ddf' => 'Selbes Fenster',
+	'595e8a12' => 'Verschieben',
+	'616195b8' => 'Links',
+	'943a51e2' => 'Vertikal',
+	'969b9a0b' => 'Neues Fenster',
+	'b01c4a81' => 'Ausrichtung',
+	'b4898605' => 'Link löschen',
+	'c38e261e' => 'Pfad',
+	'dce75260' => 'Einen Link hierher ziehen, um zu löschen',
+	'f8719a1e' => 'Horizontal',
+	'0667c6ef' => 'Navigation',
+	'8d9ef7a4' => 'Löschen',
+	'3eb668b0' => 'Titel',
+	'648572c3' => 'Hinzufügen',
+	'd041ebad' => 'Abbrechen',
+	'eaf7576f' => 'Titel',
+	'cd247522' => 'Startseite',
+	'08c66025' => 'Neuigkeiten',
+	'44ea91c9' => 'Forum',
+	'be90eefa' => 'Teams',
+	'51c02c0c' => 'Galerie',
+	'96f7da00' => 'Mitglieder',
+	'83dfdfa4' => 'Kontakt',
+	'a377acce' => 'Rekrutierung',
+	'0fdae5ef' => 'Fotos',
+	'b1a096a2' => 'Events',
+	'82bd5a40' => 'Umfragen',
+	'82ff7338' => 'Wiki',
+	'44cbfac4' => 'Spenden',
+	'76828c83' => 'Titelbild',
+	'11db7719' => 'Avatar',
+	'3dcd8730' => 'Keine aktive Sitzung',
+];

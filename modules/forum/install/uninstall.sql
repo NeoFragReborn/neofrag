@@ -1,0 +1,18 @@
+-- NeoFrag Reborn — désinstall du module « forum » — supprime ses tables (données perdues).
+-- Généré par tools/extract-module-sql.php depuis la base vive. NE PAS éditer à la main.
+-- Régénérer : docker compose exec -T web php tools/extract-module-sql.php
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS `nf_forum_url`;
+DROP TABLE IF EXISTS `nf_forum_track`;
+DROP TABLE IF EXISTS `nf_forum_topics_read`;
+DROP TABLE IF EXISTS `nf_forum_read`;
+DROP TABLE IF EXISTS `nf_forum_mentions`;
+DROP TABLE IF EXISTS `nf_forum_attachments`;
+DROP TABLE IF EXISTS `nf_forum_messages`;
+DROP TABLE IF EXISTS `nf_forum_topics`;
+DROP TABLE IF EXISTS `nf_forum_categories`;
+DROP TABLE IF EXISTS `nf_forum`;
+
+SET FOREIGN_KEY_CHECKS = 1;

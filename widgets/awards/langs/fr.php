@@ -1,0 +1,20 @@
+<?php
+/**
+ * https://translate.neofr.ag
+ */
+
+return [
+	'073102ce' => 'Équipe la plus récompensée',
+	'2939c77c' => 'Palmarès',
+	'2c3a6d4a' => 'Affiche les dernières récompenses attribuées — module gaming.',
+	'3a847859' => 'Derniers palmarès',
+	'801296f0' => 'Jeu le plus récompensé',
+	'89c8752d' => '%dème / %d équipes',
+	'a73d0aaf' => 'Équipe %s',
+	'c0df6662' => 'Nos derniers palmarès',
+	'c96b5737' => 'Aucun palmarès pour le moment...',
+	'cbea6d24' => '%der / %d équipes',
+	'd40929a6' => '%dème',
+	'ddaee116' => 'Avec %d trophée|Avec %d trophées',
+	'f90fb52e' => 'Tous nos palmarès'
+];

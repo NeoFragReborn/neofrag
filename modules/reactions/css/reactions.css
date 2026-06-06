@@ -1,0 +1,25 @@
+.nf-reaction-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	border: 1px solid var(--dungeon-border, var(--nf-border, #ccc));
+	background: transparent;
+	color: var(--dungeon-muted, var(--nf-muted, #777));
+	border-radius: 999px;
+	padding: 2px 12px;
+	font-size: 13px;
+	line-height: 1.6;
+	cursor: pointer;
+	transition: color .15s, border-color .15s, background .15s;
+}
+.nf-reaction-btn:hover:not([disabled]) {
+	color: var(--dungeon-danger, var(--nf-danger, #e0245e));
+	border-color: var(--dungeon-danger, var(--nf-danger, #e0245e));
+}
+.nf-reaction-btn.reacted {
+	color: var(--dungeon-danger, var(--nf-danger, #e0245e));
+	border-color: var(--dungeon-danger, var(--nf-danger, #e0245e));
+	background: color-mix(in srgb, var(--dungeon-danger, #e0245e) 10%, transparent);
+}
+.nf-reaction-btn[disabled] { cursor: default; opacity: .65; }
+.nf-reaction-btn.nf-reaction-loading { opacity: .5; pointer-events: none; }

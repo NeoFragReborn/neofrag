@@ -1,0 +1,125 @@
+/* Public donation pages */
+.donation-progress {
+	height: 14px;
+	background: rgba(0, 0, 0, .06);
+	border-radius: 999px;
+	overflow: hidden;
+}
+.donation-progress-bar {
+	height: 100%;
+	background: linear-gradient(90deg, #16a34a 0%, #22c55e 50%, #4ade80 100%);
+	border-radius: 999px;
+	transition: width 400ms ease;
+	min-width: 4px;
+}
+
+.donation-card { margin-bottom: 16px; }
+
+.donation-stats { font-size: 13.5px; }
+
+.donation-title {
+	font-size: 28px;
+	font-weight: 700;
+	margin-bottom: 6px;
+	letter-spacing: -0.02em;
+}
+.donation-description {
+	color: var(--nf-text-soft, #4a5568);
+	line-height: 1.65;
+}
+
+.donation-progress-card {
+	padding: 18px;
+	background: linear-gradient(135deg, rgba(22,163,74,.08) 0%, rgba(34,197,94,.04) 100%);
+	border-radius: 12px;
+	border: 1px solid rgba(22,163,74,.18);
+}
+.donation-progress-meta {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 14px;
+}
+.donation-amount {
+	font-size: 28px;
+	font-weight: 800;
+	color: var(--nf-success, #16a34a);
+	line-height: 1;
+	font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+.donation-currency { font-size: 18px; opacity: 0.7; }
+.donation-goal {
+	color: var(--nf-text-muted, #6c757d);
+	font-size: 12.5px;
+	margin-top: 4px;
+}
+.donation-pct {
+	font-size: 26px;
+	font-weight: 800;
+	color: var(--nf-success, #16a34a);
+	font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+.donation-progress-stats {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 10px;
+	font-size: 12.5px;
+	color: var(--nf-text-muted, #6c757d);
+}
+.donation-progress-stats i { margin-right: 4px; opacity: 0.7; }
+
+/* PayPal button */
+.btn-paypal {
+	background: linear-gradient(180deg, #ffc439 0%, #f5b22f 100%);
+	color: #003087 !important;
+	border: 0;
+	font-weight: 700;
+	font-size: 16px;
+	padding: 12px 18px;
+	transition: all 150ms ease;
+	box-shadow: 0 2px 6px rgba(255, 196, 57, .35);
+}
+.btn-paypal:hover {
+	background: linear-gradient(180deg, #f5b22f 0%, #e69f1c 100%);
+	color: #003087 !important;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(255, 196, 57, .5);
+}
+.btn-paypal i { margin-right: 6px; }
+
+/* Donor list */
+.donations-public-list .donation-item { padding: 12px 14px; }
+.donation-avatar {
+	width: 38px; height: 38px;
+	border-radius: 50%;
+	display: grid;
+	place-items: center;
+	background: linear-gradient(135deg, var(--nf-accent, #5e5ce6) 0%, #7c75ff 100%);
+	color: #fff;
+	font-weight: 700;
+	font-size: 14px;
+	flex-shrink: 0;
+}
+.donation-donor-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+}
+.donation-donor-amount {
+	font-weight: 700;
+	color: var(--nf-success, #16a34a);
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 13px;
+}
+.donation-message {
+	margin-top: 6px;
+	font-style: italic;
+	font-size: 12.5px;
+	color: var(--nf-text-soft, #4a5568);
+	background: rgba(0, 0, 0, .03);
+	padding: 6px 10px;
+	border-radius: 4px;
+	border-left: 2px solid var(--nf-accent, #5e5ce6);
+}

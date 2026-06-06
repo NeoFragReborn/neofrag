@@ -1,0 +1,17 @@
+#827b2da2e44b0bef3261eb9749e04b7d .extensions {
+	padding: 0;
+}
+
+#827b2da2e44b0bef3261eb9749e04b7d .extensions li {
+	float: left;
+	list-style: none;
+	width: 20%;
+}
+
+#827b2da2e44b0bef3261eb9749e04b7d .table {
+	table-layout: fixed;
+}
+
+#827b2da2e44b0bef3261eb9749e04b7d .v {
+	word-wrap: break-word;
+}

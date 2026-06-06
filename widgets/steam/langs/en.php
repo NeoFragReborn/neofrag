@@ -1,0 +1,25 @@
+<?php
+
+return [
+	'ebdd91b9' => 'Steam group',
+	'5d383fd6' => 'Please configure the Steam group ID in the widget admin panel.',
+	'526acf25' => 'Could not load Steam group information.',
+	'8a8bad0b' => 'About %s',
+	'1f88c31b' => 'Options',
+	'c2061657' => 'Custom URL of the group (vanity URL) OR its numeric SteamID64. Visible in the URL https://steamcommunity.com/groups/<b>YOUR-GROUP</b>.',
+	'8088964a' => 'Display',
+	'b9a3b158' => 'Compact (avatar + statistics)',
+	'0a9c0bf4' => 'Extended (title + details)',
+	'ddd27a61' => 'Show avatar',
+	'e2a147a0' => 'Yes',
+	'cd2a42ef' => 'No',
+	'9a821260' => 'Show description',
+	'96f7da00' => 'Members',
+	'594ae39c' => 'members',
+	'49a80df0' => 'Online',
+	'b0de6fa6' => 'online',
+	'15c208c9' => 'In game',
+	'126e0dff' => 'in game',
+	'2383808d' => 'View group',
+	'a0b50860' => 'Shows the number of members, online presence and activity of a Steam group.',
+];

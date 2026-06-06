@@ -1,0 +1,55 @@
+.comments {
+	.media {
+		padding-bottom: 10px;
+
+		+ .media {
+			border-top: 1px solid #ebebeb;
+			padding-top: 20px;
+		}
+
+		&.comments-child {
+			margin-left: 115px;
+		}
+
+		&:first-child {
+			padding-top: 0;
+		}
+
+		&:last-child {
+			padding-bottom: 0;
+		}
+
+		.media-body {
+			padding-left: 15px;
+
+			h6 {
+				margin-bottom: 10px;
+			}
+
+			.list-inline {
+				display: none;
+			}
+		}
+
+		&:hover {
+			.media-body {
+				.list-inline {
+					display: block;
+				}
+			}
+		}
+
+		.avatar {
+			height: 50px;
+			width: 50px;
+
+			.inner-ring {
+				background: #fff;
+			}
+
+			&:after {
+				border-color: #fff;
+			}
+		}
+	}
+}

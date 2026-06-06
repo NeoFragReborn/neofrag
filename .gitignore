@@ -1,0 +1,59 @@
+# === Secrets & config locale (jamais versionnés) ===
+/config
+config/db.php
+config/crypt.php
+config/password.php
+
+# === Runtime / généré ===
+/backups
+/cache
+/logs/*
+!/logs/.gitkeep
+/upload/*
+!/upload/.htaccess
+*.map
+*.scssc
+*.log
+mydatabase.db
+
+# === Dépendances (reproductibles via composer install) ===
+/vendor
+/node_modules
+
+# === Installeur : verrou runtime (généré au 1er boot, jamais versionné) ===
+install/db.txt
+
+# === Reliquats wizard upstream (non utilisés sur le fork) ===
+install/ajax.php
+install/background.jpg
+install/DATABASE.sql
+install/htaccess.txt
+install/htaccess_check.txt
+install/install.css
+install/install.js
+install/langs/en.php
+install/logo.png
+
+# === Outils dev ===
+/.phpunit.cache
+
+# === Scratch agents / IDE ===
+/.wf-out
+/.claude
+/.idea
+/.vscode
+/.playwright-mcp
+/.tmpshots
+
+# Maquette de design (scratch, non versionnée)
+_landing-preview.html
+
+# === Marketplace : .zip régénérés via tools/package-addons.php (pas de bloat binaire) ===
+/marketplace/**/*.zip
+
+# === Paquets de release (régénérés via tools/build-release.php) ===
+/dist
+
+# Fichiers de sauvegarde (backups d éditions, ne jamais versionner)
+*.bak
+*.bak/

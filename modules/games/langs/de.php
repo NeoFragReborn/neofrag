@@ -1,0 +1,43 @@
+<?php
+/**
+ * https://translate.neofr.ag
+ * @author: NeoFrag — i18n sync 2026-05-03
+ */
+
+return [
+	'11347b23' => 'Es gibt keine weiteren Spiele',
+	'270e3340' => 'Symbol',
+	'4cc80736' => 'Spieleliste',
+	'514e6bc4' => 'Bitte wählen Sie eine Bilddatei',
+	'51706bcf' => 'Spiele / Karten',
+	'618dbde6' => 'Spiel %s bearbeiten',
+	'648572c3' => 'Hinzufügen',
+	'66b08f39' => 'Spieltitel',
+	'70ef90ce' => 'Das Symbol muss mindestens %dpx groß sein',
+	'76121bf2' => 'Spiel erfolgreich hinzugefügt',
+	'7cfa28e9' => 'Möchten Sie den Modus <b>%s</b> wirklich löschen?',
+	'84f63e4f' => 'Spiel hinzufügen',
+	'86c33902' => 'Bearbeiten',
+	'9caeb208' => 'Das Symbol muss quadratisch sein',
+	'a87c4a2a' => 'Sind Sie sicher, dass Sie das Spiel <b>%s</b> löschen möchten? <br /> Alle Karten und Teams dieses Spiels werden ebenfalls gelöscht.',
+	'aec4768e' => ' Bild (quadratisch min. %dpx und max. %d MB)',
+	'c00cf454' => ' Bild (max. %d MB)',
+	'c165d350' => 'Kartenliste',
+	'c5db4c8a' => 'Löschbestätigung',
+	'c6004dca' => 'Spiel erfolgreich bearbeitet',
+	'c7ff7b4f' => 'Spiel bearbeiten',
+	'dba75c70' => 'Übergeordnetes Spiel',
+	'e35cc596' => 'Spiel wird gelöscht',
+	'e43b1037' => 'Banner',
+	'e9dde9ee' => 'Neues Spiel',
+	'f8f21a53' => 'Möchten Sie die Karte <b>%s</b> wirklich löschen?',
+	'b83726b5' => 'Keine Karte',
+	'58a98c98' => 'Karte hinzufügen',
+	'cd59c74e' => 'Katalog gespielter Spiele — Gaming-Modul.',
+	'97671a33' => 'Spiele',
+	'8d9ef7a4' => 'Löschen',
+	'df149063' => 'Karten',
+	'3b7c3ac5' => 'Karte bearbeiten',
+	'f0b91828' => 'Karte löschen',
+	'52c9bbab' => 'Bearbeiten',
+];

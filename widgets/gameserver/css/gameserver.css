@@ -1,0 +1,213 @@
+.widget-gs {
+	padding: 14px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+.widget-gs.is-offline {
+	padding: 18px 14px;
+}
+
+/* Offline state */
+.widget-gs-offline {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px;
+	background: rgba(220, 38, 38, 0.08);
+	border-left: 4px solid var(--nf-danger, #dc2626);
+	border-radius: 6px;
+}
+.widget-gs-offline > i {
+	font-size: 24px;
+	color: var(--nf-danger, #dc2626);
+}
+.widget-gs-offline-text { display: flex; flex-direction: column; gap: 2px; }
+.widget-gs-offline-text strong { color: var(--nf-text, #0f1419); font-size: 14px; }
+.widget-gs-offline-text small {
+	color: var(--nf-text-muted, #6c757d);
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 11.5px;
+}
+
+/* Server icon (Minecraft) */
+.widget-gs-icon {
+	display: flex;
+	justify-content: center;
+}
+.widget-gs-icon img {
+	width: 64px; height: 64px;
+	border-radius: 8px;
+	border: 1px solid var(--nf-border, #e4e7ec);
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
+	background: var(--nf-surface-2, #f4f5f8);
+}
+
+/* MOTD (Minecraft) */
+.widget-gs-motd {
+	background: #2c2c2c;
+	color: #e0e0e0;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 12px;
+	padding: 10px 12px;
+	border-radius: 6px;
+	text-align: center;
+	line-height: 1.5;
+	overflow-x: auto;
+}
+.widget-gs-motd span { display: inline; }
+
+/* Player count + bar */
+.widget-gs-stats {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+.widget-gs-stat-row {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+}
+.widget-gs-stat-row > i { color: var(--nf-success, #16a34a); font-size: 14px; }
+.widget-gs-stat-num {
+	font-family: 'JetBrains Mono', monospace;
+	font-weight: 700;
+	color: var(--nf-text, #0f1419);
+}
+.widget-gs-stat-lbl {
+	color: var(--nf-text-muted, #6c757d);
+	font-size: 11.5px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+.widget-gs-bar {
+	height: 6px;
+	background: var(--nf-surface-2, #f4f5f8);
+	border-radius: 3px;
+	overflow: hidden;
+}
+.widget-gs-bar-fill {
+	height: 100%;
+	background: linear-gradient(90deg, var(--nf-success, #16a34a) 0%, #4ade80 100%);
+	transition: width 200ms ease;
+}
+
+/* Meta pills (game/map/version) */
+.widget-gs-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+}
+.widget-gs-pill {
+	background: var(--nf-surface-2, #f4f5f8);
+	color: var(--nf-text-soft, #4a5568);
+	border: 1px solid var(--nf-border, #e4e7ec);
+	border-radius: 999px;
+	padding: 3px 9px;
+	font-size: 11px;
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	white-space: nowrap;
+}
+.widget-gs-pill i { font-size: 9px; opacity: 0.7; }
+.widget-gs-pill-vac {
+	background: rgba(102, 192, 244, 0.15);
+	color: #1da1f2;
+	border-color: rgba(102, 192, 244, 0.3);
+}
+
+/* Player list (collapsible) */
+.widget-gs-players {
+	font-size: 12px;
+}
+.widget-gs-players summary {
+	cursor: pointer;
+	color: var(--nf-text-muted, #6c757d);
+	padding: 5px 0;
+	font-size: 11.5px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	font-weight: 600;
+}
+.widget-gs-players summary::-webkit-details-marker { display: none; }
+.widget-gs-players summary::before {
+	content: '▸ ';
+	color: var(--nf-text-muted);
+	transition: transform 100ms;
+}
+.widget-gs-players[open] summary::before { content: '▾ '; }
+.widget-gs-players-list {
+	list-style: none;
+	padding: 6px 0 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	max-height: 180px;
+	overflow-y: auto;
+}
+.widget-gs-players-list li {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 8px;
+	background: var(--nf-surface-2, #f4f5f8);
+	border-radius: 4px;
+	font-size: 12px;
+}
+.widget-gs-players-list li > i {
+	color: var(--nf-text-muted);
+	font-size: 10px;
+}
+.widget-gs-players-list li > span:first-of-type {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.widget-gs-player-score {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 11px;
+	color: var(--nf-accent, #5e5ce6);
+	font-weight: 600;
+}
+
+/* CTA button */
+.widget-gs-cta {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 9px 14px;
+	background: linear-gradient(135deg, var(--nf-accent, #5e5ce6) 0%, #7c75ff 100%);
+	color: #fff !important;
+	border: none;
+	border-radius: 6px;
+	font-weight: 600;
+	font-size: 13px;
+	text-decoration: none !important;
+	cursor: pointer;
+	transition: all 150ms ease;
+	box-shadow: 0 2px 6px rgba(94, 92, 230, 0.25);
+}
+.widget-gs-cta:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 10px rgba(94, 92, 230, 0.4);
+}
+
+/* Engine-specific accents */
+.widget-gs-mc-java .widget-gs-bar-fill,
+.widget-gs-mc-bedrock .widget-gs-bar-fill {
+	background: linear-gradient(90deg, #5e9c3e 0%, #82c455 100%);
+}
+.widget-gs-source .widget-gs-cta,
+.widget-gs-goldsource .widget-gs-cta {
+	background: linear-gradient(135deg, #1b2838 0%, #2a475e 100%);
+}
+.widget-gs-source .widget-gs-cta:hover,
+.widget-gs-goldsource .widget-gs-cta:hover {
+	background: linear-gradient(135deg, #2a475e 0%, #66c0f4 100%);
+}

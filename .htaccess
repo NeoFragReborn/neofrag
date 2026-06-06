@@ -1,0 +1,42 @@
+AddDefaultCharset UTF-8
+DirectorySlash Off
+
+# Security headers (A9.3 + A9.4)
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+    # HSTS : envoyé uniquement sur HTTPS (env=HTTPS) — sans effet en dev HTTP.
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+    # Content-Security-Policy : permissif pour le dev (Bootstrap CDN, inline scripts NeoFrag).
+    # À durcir en prod après inventaire des assets externes.
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+</IfModule>
+
+# Accès direct interdit aux fichiers sensibles (SQL d'install/migrations, lockfiles,
+# sources compilées). Lus uniquement côté serveur (installeur, app) — jamais en HTTP.
+<FilesMatch "\.(sql|lock|scssc|map|dist|ini|sh)$">
+    Require all denied
+</FilesMatch>
+
+RewriteEngine On
+RewriteBase "/"
+
+RewriteRule index\.php - [L]
+
+##Allow direct access to specific directories
+#RewriteCond %{REQUEST_URI} ^/(dir1|dir2)/
+#RewriteRule .* - [L,QSA]
+
+RewriteCond %{REQUEST_URI} !^/(backups|cache|logs)/
+
+##Allow direct access to specific files
+#RewriteCond %{REQUEST_FILENAME} /file1\.php [OR]
+#RewriteCond %{REQUEST_FILENAME} /file2\.php [OR]
+
+RewriteCond %{REQUEST_FILENAME} !\.(css|js|php)$
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule .* - [L,QSA]
+
+RewriteRule .* index.php [E=REMOTE_USER:%{HTTP:Authorization},E=CONTEXT:%{CONTEXT_PREFIX},L,QSA]

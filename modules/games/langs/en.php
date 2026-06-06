@@ -1,0 +1,43 @@
+<?php
+/**
+ * https://translate.neofr.ag
+ * @author: NeoFrag — i18n sync 2026-05-03
+ */
+
+return [
+	'11347b23' => 'There are no more games',
+	'270e3340' => 'Icon',
+	'4cc80736' => 'Games list',
+	'514e6bc4' => 'Please choose an image file',
+	'51706bcf' => 'Games / maps',
+	'618dbde6' => 'Edit game %s',
+	'648572c3' => 'Add',
+	'66b08f39' => 'Game title',
+	'70ef90ce' => 'The icon must be at least %dpx',
+	'76121bf2' => 'Game successfully added',
+	'7cfa28e9' => 'Are you sure you want to delete the mode <b>%s</b>?',
+	'84f63e4f' => 'Add a game',
+	'86c33902' => 'Edit',
+	'9caeb208' => 'The icon must be square',
+	'a87c4a2a' => 'Are you sure you want to delete the game <b>%s</b>? < br / > All cards and the teams associated in this game will be also deleted.',
+	'aec4768e' => ' image (square format min. %dpx and max. %d MB)',
+	'c00cf454' => ' image (max. %d MB)',
+	'c165d350' => 'Maps list',
+	'c5db4c8a' => 'Delete confirmation',
+	'c6004dca' => 'Game successfully edited',
+	'c7ff7b4f' => 'Edit a game',
+	'dba75c70' => 'Parent game',
+	'e35cc596' => 'Deleting game',
+	'e43b1037' => 'Banner',
+	'e9dde9ee' => 'New game',
+	'f8f21a53' => 'Are you sure you want to delete the map <b>%s</b>?',
+	'b83726b5' => 'No map',
+	'58a98c98' => 'Add a map',
+	'cd59c74e' => 'Catalog of games played — gaming module.',
+	'97671a33' => 'Games',
+	'8d9ef7a4' => 'Delete',
+	'df149063' => 'Maps',
+	'3b7c3ac5' => 'Edit a map',
+	'f0b91828' => 'Delete a map',
+	'52c9bbab' => 'Edit',
+];

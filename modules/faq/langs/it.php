@@ -1,0 +1,48 @@
+<?php
+/**
+ * https://translate.neofr.ag
+ * @author: NeoFrag — module faq (it)
+ */
+
+return [
+	'0070e5d9' => 'Pubblicata',
+	'082dd676' => 'Domande',
+	'1ece0d4c' => 'Domanda modificata.',
+	'311a1943' => 'Impossibile: %d domanda/e in questa categoria.',
+	'32795d48' => 'Bozza',
+	'36451229' => 'Modifica domanda',
+	'3a6ef0d0' => 'Eliminare questa categoria?',
+	'3eb668b0' => 'Titolo',
+	'47f08d3d' => 'Nuova domanda',
+	'4f812b18' => 'Domanda',
+	'52324908' => 'Categoria eliminata.',
+	'397e5819' => 'Modifica categoria',
+	'54d67ba1' => 'Gestisci domande',
+	'6345f33a' => 'Nessuna domanda per ora.',
+	'7760702c' => 'Nuova categoria',
+	'7e583746' => 'FAQ',
+	'86c33902' => 'Modifica',
+	'8d9ef7a4' => 'Elimina',
+	'8fd9c7ef' => 'Salva',
+	'938e71fa' => 'Eliminare questa domanda?',
+	'96d3b970' => 'Pubblica',
+	'9bb7097d' => 'Domanda pubblicata',
+	'a026ae67' => 'Categoria',
+	'a90db1d4' => 'Categoria modificata.',
+	'ac5191c2' => 'Domanda eliminata.',
+	'adb50774' => 'pubblicata|pubblicate',
+	'ae66cd28' => 'Gestisci categorie',
+	'afccc23b' => 'Crea',
+	'b0133eae' => 'Nuova',
+	'bb3bdfae' => 'Ordine',
+	'be461316' => 'Domanda creata.',
+	'c8781d5e' => 'Categorie',
+	'caf5c873' => 'Azioni',
+	'cc193acc' => 'Risposta (HTML)',
+	'd8a3c6f2' => 'Nessuna domanda.',
+	'e2c8f589' => 'Stato',
+	'e5c58157' => 'Domande frequenti',
+	'ef99d01b' => 'Categoria creata.',
+	'f126e15d' => 'bozza|bozze',
+	'fb9e1051' => 'Nessuna categoria.'
+];

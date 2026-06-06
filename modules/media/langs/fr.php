@@ -1,0 +1,50 @@
+<?php
+/**
+ * https://translate.neofr.ag
+ * @author: NeoFrag — module media (fr)
+ */
+
+return [
+	'1011e329' => 'Upload',
+	'1453b0a1' => 'Médias',
+	'409c894d' => 'Gérer médias',
+	'4a8cb751' => 'Erreurs :',
+	'4b35d176' => '%s : trop volumineux (%s > %s)',
+	'51831b9f' => 'Aucune image dans la bibliothèque pour le moment.',
+	'56ec6b91' => 'Sélectionne un ou plusieurs fichiers',
+	'64123f92' => 'Taille max : %s par fichier. Types autorisés : images (JPG, PNG, GIF, WebP, SVG), PDF, vidéos (MP4, WebM), audio (MP3, OGG), ZIP, TXT, MD, JSON.',
+	'67069212' => '%s : erreur upload (code %d)',
+	'6714727e' => 'Bibliothèque média',
+	'678634f5' => 'Aucun fichier. Clique sur <strong>Uploader des fichiers</strong> pour commencer.',
+	'6a5b55b4' => '%d fichier uploadé.|%d fichiers uploadés.',
+	'6febd6fd' => 'Fichiers',
+	'7bc85047' => 'Stockage utilisé',
+	'8b8988ac' => 'Supprimer ?',
+	'8d9ef7a4' => 'Supprimer',
+	'90038027' => 'Uploader des fichiers',
+	'902c4254' => 'Fichiers',
+	'91ff5514' => 'Galerie médias',
+	'95873c3e' => 'fichier|fichiers',
+	'9911be28' => '%s : type non autorisé (%s)',
+	'9a1da135' => 'Uploader',
+	'b1a56852' => '%s : impossible d\'écrire dans upload/media/. Vérifie les permissions.',
+	'bd7fbaf9' => 'Bibliothèque',
+	'd041ebad' => 'Annuler',
+	'ef31a416' => 'Fichier supprimé.',
+	'3eb668b0' => 'Titre',
+	'eb78cff1' => 'Description',
+	'86c33902' => 'Éditer',
+	'881485c2' => 'Éditer : %s',
+	'cd7c87cf' => 'Métadonnées enregistrées.',
+	'b0697d95' => 'Texte alternatif et légende affichés dans la galerie publique.',
+	'35899e2e' => 'Tous les types',
+	'e7b3bb5c' => 'Images',
+	'0718fc05' => 'Vidéos',
+	'd9bc1991' => 'Audio',
+	'98579906' => 'PDF',
+	'395762b5' => 'Rechercher par nom ou titre…',
+	'dc275fe4' => 'Filtrer',
+	'599dba10' => 'Réinitialiser',
+	'a0dbcbc7' => 'Aucun fichier ne correspond à ces critères.',
+	'8a7e7178' => '%d résultat|%d résultats'
+];

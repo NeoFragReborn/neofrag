@@ -1,0 +1,212 @@
+/* Card user forum — Phase A refonte UI : épuré, top-aligned, dimensions stables */
+.forum-profile {
+	text-align: center;
+	padding: 4px 0 8px 0;
+	max-width: 100%;
+	overflow-wrap: break-word;
+	word-break: break-word;
+}
+
+.forum-profile-role .badge,
+.forum-profile-role .label,
+.forum-profile-role a {
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.forum-profile-avatar {
+	margin: 0 auto 8px auto;
+}
+
+.forum-profile-avatar img,
+.forum-profile-avatar .img-fluid {
+	object-fit: cover;
+	object-position: center center;
+}
+
+.forum-profile-username {
+	font-weight: 600;
+	font-size: 0.95rem;
+	margin-bottom: 6px;
+	word-break: break-word;
+}
+
+.forum-profile-role {
+	display: block;
+	font-size: 0.78rem;
+	max-width: 100%;
+	overflow: hidden;
+}
+
+.forum-profile-role .label,
+.forum-profile-role .badge,
+.forum-profile-role > a {
+	display: inline-block;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	vertical-align: middle;
+	box-sizing: border-box;
+}
+
+.forum-profile-has-popover {
+	cursor: help;
+}
+
+/* Popover hover 2s : montre stats + autres groupes/équipes */
+.forum-profile-popover {
+	font-size: 0.85rem;
+}
+.forum-profile-popover-groups .label,
+.forum-profile-popover-groups .badge {
+	display: inline-block;
+	margin: 2px;
+}
+
+/* Forum thread : refactor flexbox (refonte 2026-05-04).
+ * Plus de <table> — comportement 100% prédictible avec flex-basis. */
+.forum-thread {
+	width: 100%;
+}
+
+.forum-thread-header {
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--dungeon-border, #dee2e6);
+}
+
+.forum-thread-body {
+	display: flex;
+	flex-direction: column;
+}
+
+.forum-message-row {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	border-top: 1px solid var(--dungeon-border, #dee2e6);
+}
+.forum-message-row:first-child {
+	border-top: none;
+}
+
+.forum-user-cell {
+	flex: 0 0 140px;
+	width: 140px;
+	max-width: 140px;
+	padding: 14px 10px;
+	border-right: 1px solid var(--dungeon-border, #dee2e6);
+	text-align: center;
+}
+
+.forum-message-cell {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 14px 18px;
+}
+
+/* Striped : alterne fond gris/blanc une ligne sur deux */
+[data-forum-view="messages"] .forum-message-row:nth-child(even) {
+	background: rgba(0, 0, 0, 0.02);
+}
+
+/* Form Répondre : pleine largeur (la card user est masquée par le controller) */
+.forum-reply-fullwidth td.col-12 {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+
+/* Bandeau "En réponse à" — Phase B */
+.forum-reply-to {
+	display: block;
+	margin-bottom: 10px;
+	padding: 6px 10px;
+	background: rgba(0, 0, 0, 0.04);
+	border-left: 3px solid color-mix(in srgb, var(--nf-accent) 50%, transparent);
+	border-radius: 4px;
+	font-size: 0.85rem;
+	color: var(--nf-text, #555);
+	text-decoration: none;
+	transition: background 0.15s ease;
+}
+.forum-reply-to:hover {
+	background: color-mix(in srgb, var(--nf-accent) 8%, transparent);
+	text-decoration: none;
+	color: var(--nf-accent-strong);
+}
+.forum-reply-to-author {
+	font-weight: 600;
+	color: var(--nf-accent);
+}
+.forum-reply-to-excerpt {
+	font-style: italic;
+	color: var(--nf-muted, #777);
+}
+
+.forum-mention {
+	display: inline-block;
+	padding: 1px 6px;
+	background: color-mix(in srgb, var(--nf-accent) 10%, transparent);
+	border-radius: 4px;
+	color: var(--nf-accent);
+	text-decoration: none;
+	font-weight: 500;
+	transition: background 0.15s ease;
+}
+
+.forum-mention:hover {
+	background: color-mix(in srgb, var(--nf-accent) 20%, transparent);
+	text-decoration: none;
+	color: var(--nf-accent-strong);
+}
+
+.forum-attachments {
+	border-top: 1px dashed rgba(0, 0, 0, 0.1);
+	padding-top: 8px;
+}
+
+.forum-attachments-label {
+	font-weight: 500;
+}
+
+.forum-attachment {
+	display: inline-block;
+	margin: 4px 4px 4px 0;
+	padding: 4px 8px;
+	background: rgba(0, 0, 0, 0.04);
+	border-radius: 4px;
+	text-decoration: none;
+	color: inherit;
+	transition: background 0.15s ease;
+}
+
+.forum-attachment:hover {
+	background: rgba(0, 0, 0, 0.08);
+	text-decoration: none;
+}
+
+.forum-attachment-image img {
+	max-width: 240px;
+	max-height: 180px;
+	border-radius: 4px;
+}
+
+.forum-attachment-file {
+	font-size: 0.92rem;
+}
+
+/* Threading nested (Phase 6) — indentation visuelle des réponses imbriquées */
+.forum-message-nested td:first-child,
+.forum-message-nested td:last-child {
+	border-left: 3px solid color-mix(in srgb, var(--nf-accent) 40%, transparent);
+}
+
+.forum-message-depth-1 > td:first-child { padding-left: 24px; }
+.forum-message-depth-2 > td:first-child { padding-left: 48px; }
+.forum-message-depth-3 > td:first-child { padding-left: 72px; }
+.forum-message-depth-4 > td:first-child { padding-left: 96px; }
+.forum-message-depth-5 > td:first-child { padding-left: 120px; }

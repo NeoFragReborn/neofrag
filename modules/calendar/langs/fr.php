@@ -1,0 +1,50 @@
+<?php
+/**
+ * https://translate.neofr.ag
+ * @author: NeoFrag — module calendar (fr)
+ */
+
+return [
+	'02f6b476' => 'Auteur',
+	'0aac9844' => 'Date',
+	'0b2e1655' => 'Gérer événements',
+	'1236ac3f' => 'Couleur (#hex, optionnel)',
+	'14fff1cb' => 'Aucun événement passé.',
+	'159d9675' => '(toute la journée)',
+	'2ca644f3' => 'À venir',
+	'2ce29ee0' => 'Fin (YYYY-MM-DD HH:MM:SS, optionnel)',
+	'32795d48' => 'Brouillon',
+	'3eb668b0' => 'Titre',
+	'48bbedca' => 'Calendrier — %s',
+	'4cea85ec' => 'Retour au calendrier',
+	'585d2d4e' => 'Événement sur toute la journée',
+	'596654cf' => 'publié|publiés',
+	'5e30c550' => 'Aucun événement programmé.',
+	'6ffb9d0c' => 'Événement visible',
+	'7f8fa943' => 'Publié',
+	'82915664' => 'Toute la journée',
+	'868f2210' => 'Aucun événement à venir.',
+	'86c33902' => 'Éditer',
+	'8b8988ac' => 'Supprimer ?',
+	'8d9ef7a4' => 'Supprimer',
+	'8f65d267' => 'Lieu',
+	'8fd9c7ef' => 'Enregistrer',
+	'95e9d7d5' => 'Événement modifié.',
+	'96d3b970' => 'Publier',
+	'9b8d9e6c' => 'Début (YYYY-MM-DD HH:MM:SS)',
+	'9fc97064' => 'Passés',
+	'a305c9b6' => 'Organisé par %s',
+	'afccc23b' => 'Créer',
+	'b1a096a2' => 'Événements',
+	'caf5c873' => 'Actions',
+	'dabfb66b' => 'Événement créé.',
+	'daf07ea4' => 'Éditer événement',
+	'e2c8f589' => 'Statut',
+	'eb78cff1' => 'Description',
+	'f126e15d' => 'brouillon|brouillons',
+	'f48cb465' => 'Nouvel événement',
+	'f6b7dc77' => 'Événement supprimé.',
+	'f6fbedbb' => 'Export iCal',
+	'fd283f69' => 'Calendrier',
+	'fd943a7a' => 'Calendrier — %s'
+];

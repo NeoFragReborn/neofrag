@@ -1,0 +1,116 @@
+/* Module Modération — fallback CSS pour les classes nf-* qui sont définies
+ * dans le theme admin mais pas dans les autres themes. Permet le rendu correct
+ * du panel user-side (theme dungeon ou autre) sans dépendre du theme admin.
+ *
+ * Sélecteurs sans wrapper `.module-moderation` : les classes `nf-*` sont
+ * suffisamment spécifiques pour ne pas conflicter ailleurs. */
+
+.nf-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+	gap: 12px;
+	margin-bottom: 16px;
+}
+
+@media (min-width: 992px) {
+	.nf-stats-grid {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
+.nf-stat-card {
+	background: #fff;
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	border-radius: 6px;
+	padding: 14px 16px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.nf-stat-card.nf-stat-attention {
+	border-left: 3px solid #f0ad4e;
+}
+
+.nf-stat-label {
+	font-size: 12px;
+	color: #6c757d;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	font-weight: 600;
+	margin-bottom: 6px;
+}
+.nf-stat-label i {
+	margin-right: 4px;
+}
+
+.nf-stat-value {
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1.1;
+	color: inherit;
+}
+
+.nf-stat-trend {
+	font-size: 12px;
+	color: #6c757d;
+	margin-top: 6px;
+}
+.nf-stat-trend a {
+	color: inherit;
+	text-decoration: none;
+	border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+}
+
+.nf-card-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 16px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+	font-weight: 600;
+}
+.nf-card-header i {
+	margin-right: 6px;
+	color: #6c757d;
+}
+
+.badge-orange {
+	background-color: #ff9800;
+	color: #fff;
+}
+
+.timeline-item {
+	border-left: 2px solid #dee2e6;
+	padding-left: 14px;
+	margin-left: 8px;
+	position: relative;
+}
+.timeline-item::before {
+	content: '';
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: #6c757d;
+	position: absolute;
+	left: -6px;
+	top: 6px;
+}
+
+/* Bouton signaler — visible discrètement, plus marqué au hover */
+.nf-report-btn {
+	opacity: 0.45;
+	transition: opacity 0.15s ease, color 0.15s ease;
+	padding: 2px 6px !important;
+	font-size: 0.85em;
+}
+.nf-report-btn:hover,
+.nf-report-btn:focus {
+	opacity: 1;
+	color: #dc3545 !important;
+	text-decoration: none;
+}
+/* Apparition douce sur hover du message parent (talks/forum) */
+.talks-message:hover .nf-report-btn,
+.forum-message:hover .nf-report-btn,
+li:hover > .nf-report-btn {
+	opacity: 0.85;
+}

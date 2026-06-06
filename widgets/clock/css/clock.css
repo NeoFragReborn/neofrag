@@ -1,0 +1,21 @@
+.widget-clock-time {
+	font-family: 'JetBrains Mono', ui-monospace, monospace;
+	font-size: 2.6em;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	color: var(--nf-text, #0f1419);
+	display: inline-block;
+}
+
+.widget-clock-date {
+	text-transform: capitalize;
+}
+
+.widget-clock-birthday-header {
+	background: color-mix(in srgb, var(--nf-accent) 6%, transparent);
+	font-size: 14px;
+}
+
+.widget-clock-birthday-item {
+	font-size: 13.5px;
+}

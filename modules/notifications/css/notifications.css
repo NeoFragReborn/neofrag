@@ -1,0 +1,36 @@
+.nf-notif .nf-notif-badge {
+	position: relative;
+	top: -8px;
+	left: -4px;
+	font-size: 10px;
+	padding: 2px 5px;
+}
+
+.nf-notif-menu {
+	min-width: 300px;
+	max-width: 360px;
+	max-height: 420px;
+	overflow-y: auto;
+}
+
+.nf-notif-item {
+	white-space: normal;
+}
+
+.nf-notif-item.unread {
+	background: var(--nf-hover, rgba(0, 0, 0, .06));
+	font-weight: 600;
+}
+
+.nf-notif-title {
+	display: block;
+}
+
+.nf-notif-unread {
+	font-weight: 600;
+}
+
+.nf-follow-btn.nf-follow-loading {
+	opacity: .6;
+	pointer-events: none;
+}

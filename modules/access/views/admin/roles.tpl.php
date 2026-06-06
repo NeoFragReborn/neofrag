@@ -1,0 +1,86 @@
+<?php
+// R1.4 — Liste des rôles avec actions (edit, clone, delete) et compteurs.
+?>
+<?php if (empty($roles)): ?>
+	<div class="alert alert-info text-center">
+		<?php echo icon('fas fa-info-circle').' '.$this->lang('Aucun rôle. Crée le premier via le bouton ci-dessus.') ?>
+	</div>
+<?php else: ?>
+	<table class="table table-hover table-sm">
+		<thead>
+			<tr>
+				<th><?php echo $this->lang('Rôle') ?></th>
+				<th><?php echo $this->lang('Hérite de') ?></th>
+				<th class="text-center"><?php echo $this->lang('Permissions') ?></th>
+				<th class="text-center"><?php echo $this->lang('Utilisateurs') ?></th>
+				<th class="text-center"><?php echo $this->lang('Groupes') ?></th>
+				<th><?php echo $this->lang('Type') ?></th>
+				<th width="200" class="text-right"><?php echo $this->lang('Actions') ?></th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach ($roles as $r): ?>
+				<tr>
+					<td>
+						<span class="badge badge-<?php echo htmlspecialchars($r['color']) ?>">
+							<i class="<?php echo htmlspecialchars($r['icon']) ?>"></i>
+							<?php echo htmlspecialchars($r['title']) ?>
+						</span>
+						<small class="text-muted ml-2"><code><?php echo htmlspecialchars($r['name']) ?></code></small>
+						<?php if (!empty($r['description'])): ?>
+							<div class="small text-muted mt-1"><?php echo htmlspecialchars($r['description']) ?></div>
+						<?php endif ?>
+					</td>
+					<td>
+						<?php if ($r['parent_title']): ?>
+							<small><?php echo icon('fas fa-arrow-down').' '.htmlspecialchars($r['parent_title']) ?></small>
+						<?php else: ?>
+							<small class="text-muted">—</small>
+						<?php endif ?>
+					</td>
+					<td class="text-center">
+						<a href="<?php echo url('admin/access/matrix') ?>" class="badge badge-light" data-toggle="tooltip" title="<?php echo $this->lang('Configurer dans la matrice') ?>">
+							<?php echo (int)$r['perm_count'] ?>
+						</a>
+					</td>
+					<td class="text-center">
+						<span class="badge badge-light"><?php echo (int)$r['user_count'] ?></span>
+					</td>
+					<td class="text-center">
+						<span class="badge badge-light"><?php echo (int)$r['group_count'] ?></span>
+					</td>
+					<td>
+						<?php if ($r['built_in']): ?>
+							<span class="badge badge-secondary" data-toggle="tooltip" title="<?php echo $this->lang('Rôle système non supprimable') ?>">
+								<i class="fas fa-lock"></i> <?php echo $this->lang('Built-in') ?>
+							</span>
+						<?php else: ?>
+							<span class="badge badge-info"><?php echo $this->lang('Personnalisé') ?></span>
+						<?php endif ?>
+					</td>
+					<td class="text-right">
+						<?php if ($r['name'] !== 'super_admin'): ?>
+							<a class="btn btn-sm btn-warning" href="<?php echo url('admin/access/preview/role/'.(int)$r['role_id']) ?>"
+								data-confirm="<?php echo htmlspecialchars($this->lang('Activer le mode preview "voir comme %s" ? Tu verras le site avec les permissions de ce rôle (et non plus avec ton accès super-admin) jusqu\'à ce que tu cliques "Quitter".', $r['title']), ENT_QUOTES) ?>"
+								data-confirm-title="<?php echo htmlspecialchars($this->lang('Voir comme ce rôle'), ENT_QUOTES) ?>"
+								data-confirm-style="warning"
+								data-confirm-icon="fas fa-eye"
+								data-confirm-ok="<?php echo htmlspecialchars($this->lang('Activer'), ENT_QUOTES) ?>"
+								data-toggle="tooltip" title="<?php echo $this->lang('Voir le site comme ce rôle') ?>"><i class="fas fa-eye"></i></a>
+						<?php endif ?>
+						<a class="btn btn-sm btn-secondary" href="<?php echo url('admin/access/roles/edit/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>" data-toggle="tooltip" title="<?php echo $this->lang('Éditer') ?>"><i class="fas fa-pen"></i></a>
+						<a class="btn btn-sm btn-info" href="<?php echo url('admin/access/roles/clone/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>" data-toggle="tooltip" title="<?php echo $this->lang('Cloner') ?>"><i class="fas fa-copy"></i></a>
+						<?php if (!$r['built_in']): ?>
+							<a class="btn btn-sm btn-danger" href="<?php echo url('admin/access/roles/delete/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>"
+								data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer le rôle "%s" ? Tous ses %d utilisateurs perdront ces permissions.', $r['title'], (int)$r['user_count']), ENT_QUOTES) ?>"
+								data-confirm-title="<?php echo htmlspecialchars($this->lang('Supprimer le rôle'), ENT_QUOTES) ?>"
+								data-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>"><i class="far fa-trash-alt"></i></a>
+						<?php else: ?>
+							<button class="btn btn-sm btn-danger" disabled data-toggle="tooltip" title="<?php echo $this->lang('Built-in non supprimable') ?>"><i class="far fa-trash-alt"></i></button>
+						<?php endif ?>
+					</td>
+				</tr>
+			<?php endforeach ?>
+		</tbody>
+	</table>
+<?php endif ?>

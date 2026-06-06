@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint PHP (php -l)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, mysqli
+          coverage: none
+      - name: php -l sur tout le code (hors vendor)
+        run: |
+          find . -path ./vendor -prune -o -name '*.php' -print0 \
+            | xargs -0 -n1 -P4 php -l > /dev/null
+
+  test:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl
+          coverage: none
+          tools: phpunit:11
+      - name: phpunit
+        run: phpunit
+
+  db-smoke:
+    name: Schema + migration runner (smoke)
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: neofrag
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      NF_DB_HOST: 127.0.0.1
+      NF_DB_PORT: '3306'
+      NF_DB_USER: root
+      NF_DB_PASS: root
+      NF_DB_NAME: neofrag
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mysqli
+          coverage: none
+      - name: Import schema.sql cœur lean (valide le DDL + collations)
+        run: mysql -h127.0.0.1 -P3306 -uroot -proot neofrag < install/schema.sql
+      - name: Baseline des migrations déjà présentes dans le schéma (05-04)
+        run: php tools/migrate.php baseline --until=2026_05_04_user_messages_extension
+      - name: Applique les migrations en attente (05-06) — test réel du runner
+        run: php tools/migrate.php up
+      - name: Status final (tout doit être appliqué)
+        run: php tools/migrate.php status

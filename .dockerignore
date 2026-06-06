@@ -1,0 +1,17 @@
+# Le Dockerfile ne COPY aucun fichier applicatif (le code est bind-monté via
+# docker-compose). On exclut donc tout le superflu du contexte de build.
+.git
+.gitignore
+.github
+.claude
+_bmad
+_bmad-output
+node_modules
+vendor
+backups
+cache
+upload
+logs
+.wf-out
+.phpunit.cache
+*.log

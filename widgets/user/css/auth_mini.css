@@ -1,0 +1,38 @@
+.widget .btn-auth {
+	display: inline-block;
+}
+
+.widget .btn-auth > a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	font-size: 15px;
+	line-height: 1;
+	border-radius: 6px;
+}
+
+.widget .btn-auth > a > i {
+	margin-right: 0 !important;
+	color: #fff !important;
+}
+
+.widget .btn-auth + .btn-auth {
+	margin-left: 5px;
+}
+
+/* En-tête du widget login : boutons de connexion sociale épinglés à droite et
+   centrés verticalement — évite le chevauchement avec le titre quand l'en-tête
+   n'est pas un conteneur flex (le float-right s'empilait sur le texte). */
+.widget-user .card-header { position: relative; }
+.widget-user .card-header .nf-login-auth {
+	position: absolute;
+	top: 50%;
+	right: 14px;
+	transform: translateY(-50%);
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+}

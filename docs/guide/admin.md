@@ -1,0 +1,41 @@
+# Le panel d'administration
+
+L'administration se trouve sous **/admin**. Elle adopte la charte NeoFrag Reborn
+(dark navy + teal, clair/sombre au choix) et s'organise autour d'une **barre latérale**.
+
+## Repères
+
+- **Barre latérale** : les modules sont regroupés par catégories claires — *Contenu*,
+  *Communauté*, *Connaissance*, *Média*, *Gaming*, *Monétisation* — plus *Système* et
+  *Monitoring*. Les sections se déplient en accordéon ; une catégorie vide est masquée.
+- **Épingles** : survole un module dans la sidebar et clique l'épingle pour l'ajouter à
+  *Épinglé* (raccourcis en haut, mémorisés dans ton navigateur).
+- **Recherche rapide** : `Ctrl/Cmd + K` ouvre la palette de commandes pour sauter à
+  n'importe quel module ou action.
+- **En-tête** : fil d'ariane + actions contextuelles (Permissions, Configuration, Aide),
+  « Voir le site » et bascule clair/sombre.
+
+## Tâches courantes
+
+| Je veux… | J'y vais |
+|---|---|
+| Publier une actu / un article / une page | *Contenu* → le module concerné |
+| Gérer le forum, les commentaires, la modération | *Communauté* |
+| Gérer membres, groupes, sessions | *Système → Utilisateurs* |
+| Régler qui peut faire quoi | *Système → Permissions (matrice)* — grille rôle × action (vert = autorisé, gris = défaut, rouge = jamais) |
+| Changer le thème / installer un addon | *Système → Thèmes & Addons* |
+| Réglages du site (nom, accueil, inscriptions, sécurité, copyright) | *Système → Paramètres* |
+| Composer les pages à la souris | *Système → Live Editor* |
+| Sauvegardes, mises à jour, état du site, journal d'audit | *Monitoring* |
+
+## Permissions
+
+NeoFrag Reborn fonctionne par **rôles**. La **matrice de permissions** (par module)
+règle, pour chaque rôle, l'accès et les actions. Tu assignes les rôles aux membres et
+aux groupes depuis *Système*.
+
+## Réglages essentiels
+
+Dans **Paramètres** : titre et description du site, favicon, email de contact, page
+d'accueil, gestion des inscriptions, sécurité anti-bots (captcha), maintenance,
+copyright, réseaux sociaux. Ces réglages alimentent les thèmes et les widgets.

@@ -1,0 +1,14 @@
+.table-search {
+	margin-right: 15px;
+	width: 200px;
+}
+
+.table-content .pagination {
+	margin: 0;
+}
+
+.table-content .action {
+	text-align: center;
+	width: 29px;
+	white-space: nowrap;
+}
