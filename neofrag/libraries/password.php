@@ -323,6 +323,8 @@ class Password extends Library
 			$hash = crypt($password, $stored_hash);
 		}
 
-		return $hash == $stored_hash;
+		// Comparaison en temps constant : `==` fuit la position du 1er octet divergent
+		// (timing) et coerce deux hash « 0e… » en float égaux (type juggling).
+		return hash_equals((string)$stored_hash, (string)$hash);
 	}
 }

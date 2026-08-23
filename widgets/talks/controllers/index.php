@@ -58,7 +58,7 @@ class Index extends Controller_Widget
 			$body .= '<a href="'.url('talks').'" class="btn btn-primary btn-block">'
 				   . icon('fas fa-bell').' '
 				   . $this->lang('%d message non lu|%d messages non lus', $total_unread, $total_unread)
-				   . ' <span class="badge badge-light ml-2">'.$total_unread.'</span>'
+				   . ' <span class="badge text-bg-light ms-2">'.$total_unread.'</span>'
 				   . '</a>';
 		}
 		else if ($nb_conversations > 0)

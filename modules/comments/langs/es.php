@@ -17,4 +17,16 @@ return [
 	'c18f1b3c' => 'Comentarios',
 	'c5db4c8a' => 'Confirmación de eliminación',
 	'38012b05' => 'Responder',
+	// i18n 2026-06-11
+	93714304 => 'Seleccionar todo',
+	'bc8f177d' => 'Eliminar la selección',
+	'6c57e7dd' => '¿Eliminar los comentarios seleccionados?',
+	'ad59e4ea' => '%d comentario eliminado.|%d comentarios eliminados.',
+	'6f01ddb4' => '%s ha comentado tu publicación',
+	'd6ee3cdc' => 'Nuevo comentario en un contenido que sigues',
+	// i18n 2026-06-11 (code strings)
+	'06272c15' => 'Demasiados comentarios recientes. Inténtalo de nuevo en %d minuto(s).',
+	'6714db33' => '¿Eliminar este comentario?',
+	'6bec17f1' => 'Ningún comentario',
+	'245e9606' => 'comentario|comentarios',
 ];

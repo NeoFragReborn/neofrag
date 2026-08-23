@@ -44,5 +44,17 @@ return [
 	'e5c58157' => 'Preguntas frecuentes',
 	'ef99d01b' => 'Categoría creada.',
 	'f126e15d' => 'borrador|borradores',
-	'fb9e1051' => 'Sin categoría.'
+	'fb9e1051' => 'Sin categoría.',
+	// i18n 2026-06-11
+	'fd522668' => 'Ninguna pregunta coincide con estos criterios.',
+	'96924e66' => 'Buscar una pregunta o respuesta…',
+	'db1a293b' => 'Todas las categorías',
+	'17a7d347' => 'Todos los estados',
+	'e401d59e' => 'Publicadas',
+	'633b7ff4' => 'Borradores',
+	'dc275fe4' => 'Filtrar',
+	'599dba10' => 'Restablecer',
+	'8a7e7178' => '%d resultado|%d resultados',
+	// i18n 2026-06-11 (code strings)
+	'50d3b0b0' => 'Respuesta',
 ];

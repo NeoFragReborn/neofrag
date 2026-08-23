@@ -28,7 +28,7 @@
 <?php if (!empty($orphans)): ?>
 	<div class="alert alert-warning">
 		<?php echo icon('fas fa-exclamation-triangle').' '.$this->lang('%d fichier(s) orphelin(s) détecté(s) dans /upload/forum/ (présents en nf_file mais sans entry attachment associée).', count($orphans)) ?>
-		<a href="#orphan-list" class="alert-link" data-toggle="collapse"><?php echo $this->lang('Voir la liste') ?></a>
+		<a href="#orphan-list" class="alert-link" data-bs-toggle="collapse"><?php echo $this->lang('Voir la liste') ?></a>
 		<div id="orphan-list" class="collapse mt-2">
 			<ul class="small">
 				<?php foreach ($orphans as $o): ?>
@@ -64,7 +64,7 @@
 				<tr>
 					<td>
 						<?php if (strpos((string)$a['mime_type'], 'image/') === 0): ?>
-							<i class="fas fa-image" data-toggle="tooltip" title="<?php echo htmlspecialchars($a['name']) ?>"></i>
+							<i class="fas fa-image" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($a['name']) ?>"></i>
 						<?php else: ?>
 							<i class="fas fa-file"></i>
 						<?php endif ?>
@@ -77,7 +77,7 @@
 					<td><?php echo htmlspecialchars($a['uploader_username']) ?></td>
 					<td><small><?php echo time_span(strtotime($a['uploaded_at'])) ?></small></td>
 					<td class="text-center">
-						<button type="submit" name="delete_attachment[]" value="<?php echo (int)$a['attachment_id'] ?>" class="btn btn-danger btn-sm" data-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>"
+						<button type="submit" name="delete_attachment[]" value="<?php echo (int)$a['attachment_id'] ?>" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>"
 							data-confirm="<?php echo htmlspecialchars($this->lang('Confirmer la suppression de cette pièce jointe ?'), ENT_QUOTES) ?>"
 							data-confirm-title="<?php echo htmlspecialchars($this->lang('Supprimer la pièce jointe'), ENT_QUOTES) ?>"
 							data-confirm-icon="fas fa-paperclip"><?php echo icon('fas fa-times') ?></button>

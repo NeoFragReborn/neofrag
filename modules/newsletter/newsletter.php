@@ -28,11 +28,18 @@ class Newsletter extends Module
 				''                              => 'index',
 				'confirm/{url_title}'           => '_confirm',
 				'unsubscribe/{url_title}'       => '_unsubscribe',
+				'track/{url_title}'             => '_track',
 				'admin{pages}'                  => 'index',
-				'admin/campaigns'               => '_campaigns',
-				'admin/compose'                 => '_compose',
-				'admin/subscribers'             => '_subscribers',
-				'admin/subscribers/delete/{id}' => '_subscriber_delete'
+				'admin/campaigns'                 => '_campaigns',
+				'admin/campaigns/send/{id}'       => '_campaign_send',
+				'admin/campaigns/cancel/{id}'     => '_campaign_cancel',
+				'admin/compose'                   => '_compose',
+				'admin/templates'                 => '_templates',
+				'admin/templates/add'             => '_template_add',
+				'admin/templates/edit/{id}'       => '_template_edit',
+				'admin/templates/delete/{id}'     => '_template_delete',
+				'admin/subscribers'               => '_subscribers',
+				'admin/subscribers/delete/{id}'   => '_subscriber_delete'
 			]
 		];
 	}

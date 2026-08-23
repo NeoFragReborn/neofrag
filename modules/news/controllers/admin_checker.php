@@ -49,6 +49,18 @@ class Admin_Checker extends Module_Checker
 		$filters['matched']    = count($news);
 		$filters['active']     = $filters['q'] !== '' || $filters['category'] || $filters['status'] !== '';
 
+		// Tri (sur la collection complète, AVANT pagination) — colonnes en allowlist.
+		$filters['sort_cols'] = [
+			'date'  => $this->lang('Date'),
+			'title' => $this->lang('Titre'),
+			'views' => $this->lang('Vues'),
+		];
+		list($news, $filters['sort']) = $this->sort_items($news, [
+			'date'  => 'date',
+			'title' => 'title',
+			'views' => 'views',
+		], 'date', 'desc');
+
 		return [$this->module->pagination->fix_items_per_page(12)->get_data($news, $page), $filters];
 	}
 

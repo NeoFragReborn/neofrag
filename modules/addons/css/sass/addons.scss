@@ -26,14 +26,14 @@
 		}
 
 		.addon {
-			background: #ced4da;
+			background: var(--nf-surface-2, #ced4da);
 			line-height: 100px;
 			text-align: center;
 			vertical-align: middle;
 
 			.icon {
 				display: inline-block;
-				background: #fff;
+				background: var(--nf-surface, #fff);
 				border-radius: 50%;
 				box-shadow: 0 0 15px rgba(0, 0, 0, .15);
 				font-size: 30px;

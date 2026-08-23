@@ -32,4 +32,23 @@ return [
 	'd041ebad' => 'Abbrechen',
 	'ef31a416' => 'Datei gelöscht.',
 	'd0fb83aa' => 'Medienbibliothek: Upload von Bildern, Videos, PDFs, Audio mit MIME-Validierung.',
+	// i18n 2026-06-11
+	'3eb668b0' => 'Titel',
+	'eb78cff1' => 'Beschreibung',
+	'86c33902' => 'Bearbeiten',
+	'881485c2' => 'Bearbeiten: %s',
+	'cd7c87cf' => 'Metadaten gespeichert.',
+	'b0697d95' => 'Alternativtext und Bildunterschrift, die in der öffentlichen Galerie angezeigt werden.',
+	'35899e2e' => 'Alle Typen',
+	'e7b3bb5c' => 'Bilder',
+	'0718fc05' => 'Videos',
+	'd9bc1991' => 'Audio',
+	98579906 => 'PDF',
+	'395762b5' => 'Nach Name oder Titel suchen…',
+	'dc275fe4' => 'Filtern',
+	'599dba10' => 'Zurücksetzen',
+	'a0dbcbc7' => 'Keine Datei entspricht diesen Kriterien.',
+	'8a7e7178' => '%d Ergebnis|%d Ergebnisse',
+	// i18n 2026-06-11 (code strings)
+	'f494deec' => '%s: Erweiterung nicht erlaubt (.%s)',
 ];

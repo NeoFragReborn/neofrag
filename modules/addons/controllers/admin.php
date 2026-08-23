@@ -47,6 +47,7 @@ class Admin extends Controller_Module
 		});
 
 		$this->add_action($this->button('Scanner le disque', 'fas fa-sync', 'secondary')->modal_ajax('admin/ajax/addons/scan'));
+		$this->add_action($this->button('Mises à jour', 'fas fa-arrow-up', 'secondary')->modal_ajax('admin/ajax/addons/updates'));
 		$this->add_action($this->button('Marketplace', 'fas fa-store', 'secondary')->modal_ajax('admin/ajax/addons/marketplace'));
 		$this->add_action($this->button('Ajouter', 'fas fa-plus', 'primary')->modal_ajax('admin/ajax/addons/install'));
 
@@ -55,7 +56,8 @@ class Admin extends Controller_Module
 								->js('addons')
 								->css('addons')
 								->view('admin', [
-									'addons' => $addons
+									'addons' => $addons,
+									'csrf'   => $this->csrf_token()
 								])
 			);
 		});
@@ -71,6 +73,13 @@ class Admin extends Controller_Module
 
 	public function _action($addon, $controller, $action)
 	{
+		// Les actions qui mutent (activer/désactiver, ordre, reset/suppression de thème)
+		// exigent le jeton porté par les liens du panneau Addons.
+		if (in_array($action, ['enable', 'disable', 'order', 'reset', 'delete'], TRUE))
+		{
+			$this->check_csrf('admin/addons');
+		}
+
 		return $controller->$action($addon, $this);
 	}
 }

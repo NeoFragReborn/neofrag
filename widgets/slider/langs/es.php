@@ -23,4 +23,6 @@ return [
 	'77c705a8' => 'Activar esta diapositiva (si no, oculta)',
 	'd396a751' => 'Anterior',
 	'ebcb0841' => 'Siguiente',
+	// i18n 2026-06-11 (code strings)
+	'77703fae' => 'Configura el slider en la administración para añadir tus propias diapositivas.',
 ];

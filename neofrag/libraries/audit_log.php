@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Audit log — trace les actions sensibles (login, changement mdp, 2FA, suppression compte, modifs admin).
@@ -16,7 +17,7 @@ class Audit_Log extends Library
 	 * @param string $action Identifiant de l'action (ex: "login.success", "user.password_changed", "totp.enabled")
 	 * @param array $opts Options : user_id, username, target_type, target_id, details (string|array), success (bool, défaut TRUE)
 	 */
-	public function log($action, array $opts = [])
+	public function log($action, array $opts = []): void
 	{
 		$user = NeoFrag()->user();
 
@@ -44,7 +45,7 @@ class Audit_Log extends Library
 	/**
 	 * Cleanup logs anciens (à appeler depuis un cron).
 	 */
-	public function gc($keep_days = 365)
+	public function gc($keep_days = 365): void
 	{
 		NeoFrag()->db->execute('DELETE FROM nf_audit_log WHERE created_at < DATE_SUB(NOW(), INTERVAL '.(int)$keep_days.' DAY)');
 	}

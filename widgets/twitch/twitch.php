@@ -12,16 +12,16 @@ class Twitch extends Widget
 	protected function __info()
 	{
 		return [
-			'title'       => $this->lang('Streamer Twitch'),
-			'description' => $this->lang('Affiche le statut live d\'un streamer Twitch (jeu, viewers, titre, miniature) avec lecteur intégré dans une popup.'),
+			'title'       => $this->lang('Statut live'),
+			'description' => $this->lang('Statut en direct de plusieurs chaînes Twitch / YouTube (jeu, viewers, titre, miniature) avec lecteur intégré.'),
 			'author'      => 'NeoFrag',
 			'license'     => 'LGPLv3',
-			'version'     => '2.0',
+			'version'     => '3.0',
 			'depends'     => [
 				'neofrag' => '0.2.0'
 			],
 			'types'       => [
-				'index' => $this->lang('Streamer Twitch')
+				'index' => $this->lang('Statut live')
 			]
 		];
 	}

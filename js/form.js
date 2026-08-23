@@ -1,45 +1,40 @@
 var form = new function(){
 	var _forms = [];
-	var _load = {};
+	var _load  = {};
 
-	this.load = function($form, force){
-		if (typeof force != 'undefined' && force){
-			load = true;
-		} else if ($.inArray($form, _forms) == -1){
-			_forms.push($form);
-			load = true;
+	this.load = function(formEl, force){
+		var doLoad = false;
+
+		if (typeof force !== 'undefined' && force){
+			doLoad = true;
+		} else if (_forms.indexOf(formEl) === -1){
+			_forms.push(formEl);
+			doLoad = true;
 		}
 
-		if (load){
-			$.each(_load, function(find, callback){
-				$form.find(find).each(function(){
-					callback.apply(this, [$form]);
+		if (doLoad){
+			Object.keys(_load).forEach(function(find){
+				formEl.querySelectorAll(find).forEach(function(el){
+					_load[find].apply(el, [formEl]);
 				});
 			});
 		}
 	};
 
-	this.submit = function($form){
-		var d = $.Deferred();
+	this.submit = function(formEl){
+		return NF.ajax({
+			url: formEl.action,
+			method: formEl.method,
+			body: new FormData(formEl)
+		}).then(modal.exec(function(data){
+			if (typeof data.form !== 'undefined'){
+				var body = formEl.querySelector('.modal-body');
+				if (body){ NF.setHtml(body, data.form); }
+				form.load(formEl, true);
+			}
 
-		$.ajax({
-			url: $form[0].action,
-			type: $form[0].method,
-			data: new FormData($form[0]),
-			processData: false,
-			contentType: false,
-			success: modal.exec(function(data){
-				if (typeof data.form != 'undefined'){
-					$form.find('.modal-body').html(data.form);
-					form.load($form, true);
-				}
-
-				d.resolve(data);
-			})
-		});
-
-
-		return d.promise();
+			return data;
+		}));
 	};
 
 	this.find = function(find, callback){
@@ -49,8 +44,8 @@ var form = new function(){
 	return this;
 };
 
-$(function(){
-	$('form').each(function(){
-		form.load($(this));
+NF.ready(function(){
+	document.querySelectorAll('form').forEach(function(formEl){
+		form.load(formEl);
 	});
 });

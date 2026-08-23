@@ -3,6 +3,7 @@
 -- Régénérer : docker compose exec -T web php tools/extract-module-sql.php
 
 SET FOREIGN_KEY_CHECKS = 0;
+SET NAMES utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `nf_forum` (
   `forum_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -17,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum` (
   PRIMARY KEY (`forum_id`),
   KEY `last_message_id` (`last_message_id`),
   CONSTRAINT `nf_forum_ibfk_1` FOREIGN KEY (`last_message_id`) REFERENCES `nf_forum_messages` (`message_id`) ON DELETE SET NULL ON UPDATE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_forum_categories` (
   `category_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -26,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum_categories` (
   `image_id` int(11) unsigned DEFAULT NULL,
   `vip_only` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`category_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_forum_topics` (
   `topic_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -47,14 +48,14 @@ CREATE TABLE IF NOT EXISTS `nf_forum_topics` (
   CONSTRAINT `nf_forum_topics_ibfk_1` FOREIGN KEY (`forum_id`) REFERENCES `nf_forum` (`forum_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_forum_topics_ibfk_2` FOREIGN KEY (`message_id`) REFERENCES `nf_forum_messages` (`message_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_forum_topics_ibfk_3` FOREIGN KEY (`last_message_id`) REFERENCES `nf_forum_messages` (`message_id`) ON DELETE SET NULL ON UPDATE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_forum_messages` (
   `message_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `topic_id` int(11) unsigned NOT NULL,
   `parent_id` int(11) unsigned DEFAULT NULL,
   `user_id` int(11) unsigned DEFAULT NULL,
-  `message` text DEFAULT NULL,
+  `message` mediumtext DEFAULT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
   `deleted_by` int(11) unsigned DEFAULT NULL,
@@ -69,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum_messages` (
   CONSTRAINT `nf_forum_messages_ibfk_1` FOREIGN KEY (`topic_id`) REFERENCES `nf_forum_topics` (`topic_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_forum_messages_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_forum_messages_parent_fk` FOREIGN KEY (`parent_id`) REFERENCES `nf_forum_messages` (`message_id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_forum_attachments` (
   `attachment_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -82,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum_attachments` (
   KEY `idx_file` (`file_id`),
   CONSTRAINT `nf_forum_attachments_file_fk` FOREIGN KEY (`file_id`) REFERENCES `nf_file` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_forum_attachments_message_fk` FOREIGN KEY (`message_id`) REFERENCES `nf_forum_messages` (`message_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_forum_mentions` (
   `mention_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -98,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum_mentions` (
   CONSTRAINT `nf_forum_mentions_mentioner_fk` FOREIGN KEY (`mentioner_user_id`) REFERENCES `nf_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `nf_forum_mentions_message_fk` FOREIGN KEY (`message_id`) REFERENCES `nf_forum_messages` (`message_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_forum_mentions_target_fk` FOREIGN KEY (`mentioned_user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_forum_read` (
   `user_id` int(11) unsigned NOT NULL,
@@ -106,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum_read` (
   `date` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`user_id`,`forum_id`),
   CONSTRAINT `nf_forum_read_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_forum_topics_read` (
   `topic_id` int(11) unsigned NOT NULL,
@@ -116,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum_topics_read` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `nf_forum_topics_read_ibfk_1` FOREIGN KEY (`topic_id`) REFERENCES `nf_forum_topics` (`topic_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_forum_topics_read_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_forum_track` (
   `topic_id` int(11) unsigned NOT NULL,
@@ -129,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum_track` (
   KEY `idx_user_type` (`user_id`,`type`),
   CONSTRAINT `nf_forum_track_ibfk_1` FOREIGN KEY (`topic_id`) REFERENCES `nf_forum_topics` (`topic_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_forum_track_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_forum_url` (
   `forum_id` int(11) unsigned NOT NULL,
@@ -137,6 +138,6 @@ CREATE TABLE IF NOT EXISTS `nf_forum_url` (
   `redirects` int(11) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`forum_id`),
   CONSTRAINT `nf_forum_url_ibfk_1` FOREIGN KEY (`forum_id`) REFERENCES `nf_forum` (`forum_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -107,8 +107,6 @@ a:hover, a:focus { color: var(--nf-accent-strong); text-decoration: none; }
 .dropdown-item:focus,
 .nav-link:hover,
 .nav-link:focus,
-.nf-nav-item:hover,
-.nf-nav-item:focus,
 .list-group-item:hover,
 .list-group-item:focus { text-decoration: none !important; }
 
@@ -187,26 +185,6 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 	font-size: 13px;
 	flex: 0 0 auto;
 }
-
-.nf-user-meta {
-	flex: 1 1 auto;
-	min-width: 0;
-	display: flex;
-	flex-direction: column;
-	line-height: 1.2;
-}
-
-.nf-user-name {
-	color: var(--nf-text);
-	font-weight: 600;
-	font-size: 13px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.nf-user-name:hover { color: var(--nf-accent); }
-.nf-user-role { color: var(--nf-muted); font-size: 11px; }
 
 .nf-icon-btn {
 	width: 30px;
@@ -322,13 +300,13 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 
 .nf-content > .module { min-width: 0; max-width: 100%; }
 
-/* Only the chart cards (highstock) need to clip horizontally — generic cards
+/* Only the chart cards (Chart.js) need to clip horizontally — generic cards
    keep their box-shadow + border visible */
 .nf-content .module-statistics .card,
 .nf-content .module-statistics .card .card-body { max-width: 100%; overflow-x: auto; }
 
-.nf-content .highcharts-container,
-.nf-content .highcharts-root { max-width: 100% !important; }
+.nf-content .stats-chart-body { max-width: 100%; }
+.nf-content .stats-chart-body canvas { max-width: 100% !important; }
 .nf-content h1 { font-size: 22px; }
 .nf-content h2 { font-size: 18px; }
 .nf-content h3 { font-size: 16px; }
@@ -2677,14 +2655,7 @@ i.icon:only-child { margin: 0; }
 
 /* P4.6 — Icons vertical-align dans inline elements (subtle décalage corrigé) */
 .nf-breadcrumb i,
-.nf-breadcrumb-current i,
-.nf-nav-item i:not(.nf-nav-item-arrow i) { vertical-align: middle; }
-
-/* P4.7 — Sidebar section header : hover background pour montrer interactivité */
-.nf-nav-section-header:hover {
-	background: var(--nf-surface-2);
-	border-radius: var(--nf-radius-xs);
-}
+.nf-breadcrumb-current i { vertical-align: middle; }
 
 /* P4.8 — Input addon : couleur accent au focus du form-control voisin */
 .form-control:focus + .input-group-text,
@@ -3238,446 +3209,15 @@ i.icon:only-child { margin: 0; }
 	line-height: 1;
 }
 
-/* =========================================================================
-   R2.2 (2026-05-06) — Top-tabs catégories + sidebar contextuelle
-   ======================================================================== */
-
-/* Top-tabs : barre horizontale entre le topbar et le content */
-.nf-cat-tabs {
-	display: flex;
-	align-items: stretch;
-	gap: 2px;
-	padding: 0 24px;
-	background: var(--nf-surface);
-	border-bottom: 1px solid var(--nf-border);
-	overflow-x: auto;
-	overflow-y: hidden;
-	scrollbar-width: thin;
-	flex-shrink: 0;
-	position: sticky;
-	top: 0;
-	z-index: 10;
-}
-
-.nf-cat-tabs::-webkit-scrollbar { height: 4px; }
-.nf-cat-tabs::-webkit-scrollbar-thumb { background: var(--nf-border); border-radius: 2px; }
-
-.nf-cat-tab {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	padding: 10px 16px;
-	color: var(--nf-muted);
-	text-decoration: none;
-	font-size: 13px;
-	font-weight: 500;
-	white-space: nowrap;
-	border-bottom: 2px solid transparent;
-	margin-bottom: -1px;
-	transition: color 120ms, border-color 120ms, background 120ms;
-}
-
-.nf-cat-tab:hover {
-	color: var(--nf-text);
-	background: var(--nf-bg);
-	text-decoration: none;
-}
-
-.nf-cat-tab.active {
-	color: var(--nf-accent);
-	border-bottom-color: var(--nf-accent);
-	font-weight: 600;
-}
-
-.nf-cat-tab i { font-size: 13px; }
-
-.nf-cat-tab-count {
-	background: var(--nf-bg);
-	color: var(--nf-muted);
-	font-size: 10px;
-	font-weight: 600;
-	padding: 2px 6px;
-	border-radius: 8px;
-	line-height: 1.4;
-}
-
-.nf-cat-tab.active .nf-cat-tab-count {
-	background: var(--nf-accent-soft);
-	color: var(--nf-accent);
-}
-
-@media (max-width: 767.98px) {
-	.nf-cat-tabs { padding: 0 12px; }
-	.nf-cat-tab { padding: 8px 12px; font-size: 12px; }
-	.nf-cat-tab span:not(.nf-cat-tab-count) { display: none; }
-	.nf-cat-tab i { font-size: 16px; }
-}
-
-/* Section sidebar masquée (pas la catégorie active) */
-.nf-nav-section-hidden { display: none !important; }
-
-/* Mode collapse sidebar (icons only ~64px) */
-.nf-app.nf-sidebar-collapsed .nf-sidebar {
-	width: 64px;
-	min-width: 64px;
-	overflow: visible;
-}
-
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-brand-name,
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-brand-version,
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-cmd-hint,
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-sidebar-search,
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-update-banner,
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-nav-item-label,
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-nav-item-pin,
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-nav-item-badge-wrap,
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-nav-section-toggle,
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-nav-section-header span,
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-user-meta {
-	display: none !important;
-}
-
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-brand {
-	justify-content: center;
-	padding: 0;
-}
-
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-nav-item {
-	justify-content: center;
-	padding: 10px 0;
-	position: relative;
-}
-
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-nav-item:hover::after {
-	content: attr(data-name);
-	position: absolute;
-	left: calc(100% + 8px);
-	top: 50%;
-	transform: translateY(-50%);
-	background: var(--nf-text);
-	color: var(--nf-surface);
-	padding: 4px 10px;
-	border-radius: var(--nf-radius-sm);
-	font-size: 12px;
-	white-space: nowrap;
-	z-index: 100;
-	pointer-events: none;
-	box-shadow: var(--nf-shadow);
-}
-
-.nf-app.nf-sidebar-collapsed .nf-sidebar .nf-nav-section-header {
-	display: none;
-}
-
-.nf-app.nf-sidebar-collapsed .nf-sidebar-footer {
-	flex-direction: column;
-	gap: 6px;
-	padding: 8px 4px;
-}
-
-/* Bouton toggle collapse dans le footer */
-.nf-sidebar-collapse-btn {
-	background: transparent;
-	border: none;
-	color: var(--nf-muted);
-	width: 24px;
-	height: 24px;
-	border-radius: var(--nf-radius-xs);
-	cursor: pointer;
-	transition: background 120ms;
-}
-
-.nf-sidebar-collapse-btn:hover {
-	background: var(--nf-bg);
-	color: var(--nf-text);
-}
-
-.nf-app.nf-sidebar-collapsed .nf-sidebar-collapse-btn i {
-	transform: scaleX(-1);
-}
-
-/* =========================================================================
-   R2.3 (2026-05-06) — Mode no-sidebar : layout single-column avec top-tabs + sub-tabs
-   ======================================================================== */
-
-.nf-app.nf-app-no-sidebar { display: flex; flex-direction: column; min-height: 100vh; }
-.nf-app.nf-app-no-sidebar .nf-sidebar { display: none !important; }
-.nf-app.nf-app-no-sidebar .nf-main { margin-left: 0; width: 100%; max-width: 100%; flex: 1 1 auto; display: flex; flex-direction: column; }
-
-/* Content limité à 1200px par défaut — préserve la verticalité d'origine des modules
-   (qui étaient conçus pour ~800-1000px de content avec ancienne sidebar 280px).
-   Les pages qui ont vraiment besoin de + de largeur peuvent ajouter .nf-content--wide
-   sur le module (cf .module-admin) pour passer à 1500px. */
-.nf-app.nf-app-no-sidebar .nf-content {
-	max-width: 1200px;
-	width: 100%;
-	margin: 0 auto;
-	padding: 24px 24px 40px;
-}
-
-/* Pages wide : settings hub, monitoring dashboard, modération, etc. peuvent override via .module-<name> */
-.nf-app.nf-app-no-sidebar .nf-content:has(.module-settings),
-.nf-app.nf-app-no-sidebar .nf-content:has(.module-monitoring),
-.nf-app.nf-app-no-sidebar .nf-content:has(.module-moderation),
-.nf-app.nf-app-no-sidebar .nf-content:has(.module-emails),
-.nf-app.nf-app-no-sidebar .nf-content:has(.module-access) {
-	max-width: 1500px;
-}
-
-/* Top-tabs et sub-tabs : mêmes max-width que le content pour rester alignés visuellement */
-.nf-cat-tabs > * { max-width: none; }
-.nf-cat-tabs, .nf-sub-tabs {
-	width: 100%;
-}
-
-@media (min-width: 1600px) {
-	.nf-app.nf-app-no-sidebar .nf-content { padding: 28px 24px 48px; }
-}
-
-@media (max-width: 991.98px) {
-	.nf-app.nf-app-no-sidebar .nf-content { padding: 18px 20px 32px; }
-}
-
-@media (max-width: 767.98px) {
-	.nf-app.nf-app-no-sidebar .nf-content { padding: 14px 12px 24px; }
-}
-
-/* Topbar étendu : brand + cmd-hint + breadcrumb + actions + user-pill */
-.nf-app-no-sidebar .nf-topbar {
-	display: flex;
-	align-items: center;
-	gap: 14px;
-	padding: 10px 24px;
-	background: var(--nf-surface);
-	border-bottom: 1px solid var(--nf-border);
-	flex-wrap: wrap;
-	min-height: 56px;
-	position: sticky;
-	top: 0;
-	z-index: 20;
-}
-
-.nf-app-no-sidebar .nf-brand {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	color: var(--nf-text);
-	text-decoration: none;
-	font-weight: 600;
-	flex: 0 0 auto;
-}
-
-.nf-app-no-sidebar .nf-brand:hover { color: var(--nf-accent); text-decoration: none; }
-
-.nf-app-no-sidebar .nf-brand-mark {
-	width: 28px;
-	height: 28px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: var(--nf-radius-sm);
-	background: var(--nf-accent);
-	color: #fff;
-	font-weight: 700;
-	font-size: 13px;
-}
-
-.nf-app-no-sidebar .nf-brand-name { font-size: 14px; }
-.nf-app-no-sidebar .nf-brand-version { font-size: 11px; color: var(--nf-muted); padding: 2px 6px; background: var(--nf-bg); border-radius: 10px; }
-
-.nf-app-no-sidebar .nf-cmd-hint {
-	background: var(--nf-bg);
-	border: 1px solid var(--nf-border);
-	border-radius: var(--nf-radius-sm);
-	padding: 4px 10px;
-	display: inline-flex;
-	align-items: center;
-	gap: 4px;
-	cursor: pointer;
-	color: var(--nf-muted);
-	font-size: 11px;
-	transition: background 120ms;
-}
-
-.nf-app-no-sidebar .nf-cmd-hint:hover { background: var(--nf-surface-2); color: var(--nf-text); }
-.nf-app-no-sidebar .nf-cmd-hint kbd {
-	background: var(--nf-surface);
-	border: 1px solid var(--nf-border);
-	border-radius: 3px;
-	padding: 1px 4px;
-	font-size: 10px;
-	font-family: var(--nf-font-mono);
-}
-
-.nf-app-no-sidebar .nf-update-pill {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	padding: 4px 10px;
-	background: var(--nf-warning-soft);
-	color: var(--nf-warning);
-	border-radius: 10px;
-	font-size: 12px;
-	font-weight: 500;
-	text-decoration: none;
-	transition: opacity 120ms;
-}
-.nf-app-no-sidebar .nf-update-pill:hover { opacity: 0.85; text-decoration: none; }
-
-.nf-app-no-sidebar .nf-breadcrumb {
-	flex: 1 1 auto;
-	min-width: 0;
-}
-
-.nf-app-no-sidebar .nf-topbar-actions {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	flex: 0 0 auto;
-}
-
-.nf-app-no-sidebar .nf-user-pill {
-	display: inline-flex;
-	align-items: center;
-	gap: 4px;
-	background: var(--nf-bg);
-	border-radius: 18px;
-	padding: 2px 4px 2px 2px;
-}
-
-.nf-app-no-sidebar .nf-user-pill-link {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	padding: 2px 8px 2px 2px;
-	color: var(--nf-text);
-	text-decoration: none;
-	font-size: 12.5px;
-	font-weight: 500;
-	border-radius: 16px;
-	transition: background 120ms;
-}
-.nf-app-no-sidebar .nf-user-pill-link:hover { background: var(--nf-surface); text-decoration: none; }
-
-.nf-app-no-sidebar .nf-avatar {
-	width: 26px;
-	height: 26px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	background: var(--nf-accent);
-	color: #fff;
-	font-weight: 600;
-	font-size: 11px;
-	border-radius: 50%;
-}
-
-.nf-app-no-sidebar .nf-user-pill .nf-icon-btn {
-	width: 28px;
-	height: 28px;
-	border-radius: 50%;
-}
-
-/* Sub-tabs : 2nd ligne avec les modules de la catégorie active */
-.nf-sub-tabs {
-	display: flex;
-	align-items: stretch;
-	gap: 2px;
-	padding: 6px 24px;
-	background: var(--nf-surface);
-	border-bottom: 1px solid var(--nf-border);
-	overflow-x: auto;
-	overflow-y: hidden;
-	scrollbar-width: thin;
-	flex-shrink: 0;
-	position: sticky;
-	top: 56px;
-	z-index: 9;
-}
-
-.nf-sub-tabs::-webkit-scrollbar { height: 4px; }
-.nf-sub-tabs::-webkit-scrollbar-thumb { background: var(--nf-border); border-radius: 2px; }
-
-.nf-sub-tab {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	padding: 6px 12px;
-	color: var(--nf-muted);
-	text-decoration: none;
-	font-size: 12.5px;
-	font-weight: 500;
-	white-space: nowrap;
-	border-radius: var(--nf-radius-sm);
-	transition: color 120ms, background 120ms;
-	position: relative;
-}
-
-.nf-sub-tab:hover {
-	color: var(--nf-text);
-	background: var(--nf-bg);
-	text-decoration: none;
-}
-
-.nf-sub-tab.active {
-	color: var(--nf-accent);
-	background: var(--nf-accent-soft);
-	font-weight: 600;
-}
-
-.nf-sub-tab > i:first-child { font-size: 13px; }
-
-.nf-sub-tab-pin {
-	background: transparent;
-	border: none;
-	color: var(--nf-muted-2);
-	font-size: 10px;
-	padding: 2px 4px;
-	cursor: pointer;
-	border-radius: 3px;
-	margin-left: 2px;
-	opacity: 0.4;
-	transition: opacity 120ms, color 120ms;
-}
-
-.nf-sub-tab:hover .nf-sub-tab-pin { opacity: 1; }
-.nf-sub-tab-pin:hover { color: var(--nf-accent); }
-.nf-sub-tab-pin.is-pinned { opacity: 1; color: var(--nf-accent); transform: rotate(-30deg); }
-
-@media (max-width: 767.98px) {
-	.nf-app-no-sidebar .nf-topbar { padding: 8px 12px; gap: 8px; }
-	.nf-app-no-sidebar .nf-brand-version,
-	.nf-app-no-sidebar .nf-cmd-hint,
-	.nf-app-no-sidebar .nf-user-pill-name { display: none; }
-	.nf-sub-tabs { padding: 6px 12px; top: 52px; }
-	.nf-sub-tab { padding: 6px 10px; font-size: 12px; }
-	.nf-sub-tab span { display: none; }
-}
-
-/* Mobile sidebar toggle bouton plus utilisé en mode no-sidebar */
-.nf-app-no-sidebar .nf-sidebar-toggle { display: none; }
 
 /* Animation smooth pour les transitions de sidebar (legacy) */
 .nf-sidebar {
 	transition: width 200ms ease, min-width 200ms ease;
 }
 
-.nf-nav-section {
-	animation: nfFadeIn 180ms ease-out;
-}
-
-@keyframes nfFadeIn {
-	from { opacity: 0; transform: translateY(-4px); }
-	to { opacity: 1; transform: translateY(0); }
-}
-
 /* Désactive l'animation pendant le toggle (no-transitions class set par theme.js) */
 .no-transitions, .no-transitions * { transition: none !important; animation: none !important; }
 
-/* Sticky header + footer du sidebar pour search/user toujours visibles */
-.nf-sidebar-header { position: sticky; top: 0; background: var(--nf-surface); z-index: 5; }
-.nf-sidebar-footer { position: sticky; bottom: 0; background: var(--nf-surface); z-index: 5; border-top: 1px solid var(--nf-border); }
-.nf-sidebar-search { position: sticky; top: 56px; background: var(--nf-surface); z-index: 4; padding-top: 4px; padding-bottom: 8px; }
 
 /* Scroll personnalisé pour le nav central */
 .nf-sidebar-nav {
@@ -3733,7 +3273,10 @@ i.icon:only-child { margin: 0; }
 .nf-sidebar { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: var(--nf-surface); border-right: 1px solid var(--nf-border); }
 .nf-sb-top { display: flex; align-items: center; height: 60px; padding: 0 18px; border-bottom: 1px solid var(--nf-border); flex-shrink: 0; }
 .nf-sb-brand { display: flex; align-items: center; gap: 10px; font-family: "Space Grotesk", var(--nf-font); font-weight: 700; font-size: 18px; color: var(--nf-text); text-decoration: none; }
-.nf-sb-mark { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(135deg, #2dd4bf, #22d3ee); display: grid; place-items: center; color: #04201d; font-size: 15px; }
+/* Logo de marque : PNG (tuile incluse), s'adapte au mode admin (clair/sombre) et à la taille. */
+.nf-sb-mark { width: 32px; height: 32px; border-radius: 9px; background: url('../images/brand/nf-dark.png') center / contain no-repeat; display: grid; place-items: center; }
+.nf-sb-mark > i { display: none; }
+[data-theme="dark"] .nf-sb-mark { background-image: url('../images/brand/nf-light.png'); }
 .nf-sb-brand-text small { color: var(--nf-accent); font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; margin-left: 6px; }
 
 .nf-sb-search { display: flex; align-items: center; gap: 9px; margin: 14px 14px 6px; padding: 9px 12px; background: var(--nf-surface-2); border: 1px solid var(--nf-border); border-radius: 10px; color: var(--nf-muted); font-size: 13px; cursor: pointer; transition: .15s; }

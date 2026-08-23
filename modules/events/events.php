@@ -64,9 +64,14 @@ class Events extends Module
 										])
 										->value([$this->config->events_alert_mp ? 'on' : NULL])
 							)
+							->rule($this->form_number('events_reminder_hours')
+										->title($this->lang('Rappel automatique avant un événement (heures, 0 = désactivé)'))
+										->value($this->config->events_reminder_hours === FALSE ? '24' : (string)$this->config->events_reminder_hours)
+							)
 							->success(function($data){
 								$this	->config('events_per_page', $data['events_per_page'])
-										->config('events_alert_mp', in_array('on', $data['events_alert_mp']));
+										->config('events_alert_mp', in_array('on', $data['events_alert_mp']))
+										->config('events_reminder_hours', max(0, (int)$data['events_reminder_hours']));
 								notify($this->lang('Configuration modifiée'));
 								refresh();
 							});

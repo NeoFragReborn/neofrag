@@ -1,67 +1,87 @@
-$(function(){
-	$('body').on('click', 'a.delete', function(){
-		if (!$('.delete.alert').length){
-			$.ajax({
-				url: $(this).attr('href'),
-				dataType: 'text',
-				success: function(data){
-					$('	<div class="modal fade" tabindex="-1" role="dialog">\
-							<div class="modal-dialog">\
-								<div class="modal-content">\
-									'+data+'\
-								</div>\
-							</div>\
-						</div>').appendTo('body').modal();
-				}
-			});
-		}
+NF.ready(function(){
+	document.body.addEventListener('click', function(e){
+		var trigger = e.target.closest('a.delete');
+		if (!trigger){ return; }
+		e.preventDefault();
 
-		return false;
+		if (document.querySelector('.delete.alert')){ return; }
+
+		NF.ajax({ url: trigger.getAttribute('href'), dataType: 'text' }).then(function(data){
+			var wrapper = document.createElement('div');
+			wrapper.innerHTML = '<div class="modal fade" tabindex="-1" role="dialog">'
+				+ '<div class="modal-dialog"><div class="modal-content">' + data + '</div></div>'
+				+ '</div>';
+
+			var modalEl = wrapper.firstElementChild;
+			document.body.appendChild(modalEl);
+			NF.runScripts(modalEl);
+			bootstrap.Modal.getOrCreateInstance(modalEl).show();
+		});
 	});
 
-	confirm_deletion = function(anchor){
-		$.ajax({
-			url: $(anchor).attr('href'),
-			type: 'POST',
-			data: $(anchor).attr('data-form-id')+'[]=delete',
-			dataType: 'text',
-			success: function(data){
-				if (data == 'OK'){
-					$(anchor).parents('.alert').alert('close');
-					if ((table = $(anchor).parents('.alert').nextAll('.table-area')).length){
-						$.ajax({
-							url: window.location.pathname,
-							type: 'POST',
-							data: 'table_id='+$(table).attr('data-table-id'),
-							dataType: 'json',
-							success: function(data){
-								$(table).children('.table-content').html(data.content);
-							}
-						});
-					}
-					else{
-						document.location.reload();
-					}
-				}
-				else{
-					var json = $.parseJSON(data);
+	// Bouton « Supprimer » du modal de confirmation rendu par form.php : délégué (le onclick inline
+	// serait bloqué par le CSP strict). La délégation sur body couvre le modal injecté en AJAX.
+	document.body.addEventListener('click', function(e){
+		var confirmBtn = e.target.closest('a.delete-confirm');
+		if (!confirmBtn){ return; }
+		e.preventDefault();
+		confirm_deletion(confirmBtn);
+	});
+});
 
-					if (typeof json == 'object' && typeof json.redirect != 'undefined'){
-						if (window.location.pathname == json.redirect.split('#')[0]){
-							window.location.href = json.redirect;
-							location.reload();
-						}
-						else {
-							window.location.href = json.redirect;
-						}
-					}
-					else {
-						$(anchor).parents('.alert').html('<button data-dismiss="alert" class="close" type="button">×</button>'+data);
-					}
+// Globale : appelée par le onclick des boutons de confirmation rendus côté serveur (form.php).
+window.confirm_deletion = function(anchor){
+	NF.ajax({
+		url: anchor.getAttribute('href'),
+		method: 'POST',
+		body: anchor.getAttribute('data-form-id') + '[]=delete',
+		dataType: 'text'
+	}).then(function(data){
+		if (data === 'OK'){
+			var alert = anchor.closest('.alert');
+			if (alert){ bootstrap.Alert.getOrCreateInstance(alert).close(); }
+
+			var table = null;
+			for (var node = alert ? alert.nextElementSibling : null; node; node = node.nextElementSibling){
+				if (node.classList && node.classList.contains('table-area')){ table = node; break; }
+			}
+
+			if (table){
+				NF.ajax({
+					url: window.location.pathname,
+					method: 'POST',
+					body: 'table_id=' + table.getAttribute('data-table-id'),
+					dataType: 'json'
+				}).then(function(data){
+					var content = table.querySelector(':scope > .table-content');
+					if (content){ NF.setHtml(content, data.content); }
+				});
+			}
+			else {
+				document.location.reload();
+			}
+		}
+		else {
+			var json = null;
+			try { json = JSON.parse(data); } catch (e) {}
+
+			if (json && typeof json === 'object' && typeof json.redirect !== 'undefined'){
+				if (window.location.pathname === json.redirect.split('#')[0]){
+					window.location.href = json.redirect;
+					location.reload();
+				}
+				else {
+					window.location.href = json.redirect;
 				}
 			}
-		});
+			else {
+				var alert = anchor.closest('.alert');
+				if (alert){
+					alert.innerHTML = '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>' + data;
+				}
+			}
+		}
+	});
 
-		return false;
-	};
-});
+	return false;
+};

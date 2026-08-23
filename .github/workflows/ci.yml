@@ -4,7 +4,24 @@ on:
   push:
   pull_request:
 
+# push + pull_request sur la même branche = double run : on ne garde que le plus récent.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  composer-audit:
+    name: Composer audit (CVE des dépendances verrouillées)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - name: composer audit --locked
+        run: composer audit --locked --no-interaction
+
   lint:
     name: Lint PHP (php -l)
     runs-on: ubuntu-latest
@@ -19,20 +36,73 @@ jobs:
         run: |
           find . -path ./vendor -prune -o -name '*.php' -print0 \
             | xargs -0 -n1 -P4 php -l > /dev/null
+      - name: Gardes anti-régression (anti-patterns connus)
+        run: |
+          # notify() n'accepte que success|info|warning|danger (Bootstrap). 'error'/'warn'/'fail' → rendu VERT.
+          if grep -rnE "notify\([^;]*,[[:space:]]*'(error|warn|fail|failure|ko)'\)" --include='*.php' modules/ neofrag/; then
+            echo "::error::notify() avec un type invalide (s'affiche en vert). Utiliser 'danger'."
+            exit 1
+          fi
+          # CSRF : tout fichier qui émet un lien d'action mutante (csrf_url/csrf_token) doit aussi
+          # vérifier le jeton dans le même fichier (check_csrf) — sinon l'action GET est exposée au CSRF.
+          csrf_viol=0
+          for f in $(grep -rlE "csrf_url\(|csrf_token\(" --include='*.php' modules/ neofrag/ | grep -v 'admin_helpers.php'); do
+            if ! grep -qE "check_csrf\(" "$f"; then
+              echo "::error::$f émet csrf_url/csrf_token sans check_csrf (action mutante exposée au CSRF)."
+              csrf_viol=1
+            fi
+          done
+          [ "$csrf_viol" = "1" ] && exit 1 || true
+      - name: Garde strict_types (ratchet — ne doit jamais baisser)
+        run: php tools/check-strict-types.php
+      # Les inventaires annoncés dans docs/ doivent correspondre au code : `docs/README.md` a
+      # affiché « 53 modules · 6 thèmes » pendant des semaines (réel : 54 et 7) sur une ligne qui
+      # se disait « vérifiée contre le code réel ». Invisible en relecture, trivial à détecter.
+      - name: Garde inventaires doc ↔ code
+        run: php tools/check-docs-counts.php
 
   test:
-    name: PHPUnit
+    name: PHPUnit (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # NeoFrag Reborn supporte toutes les versions PHP >= 8.2 (cf. composer.json). On les teste
+        # toutes pour attraper les régressions spécifiques à une version (ex. comportements unserialize).
+        php: ['8.2', '8.3', '8.4', '8.5']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, mysqli
+          coverage: none
+          tools: phpunit:11
+      # Les tests touchent du code qui dépend du vendor (sanitize_html → HTMLPurifier, etc.). Sans
+      # composer install, phpunit fatalise sur « Class HTMLPurifier_Config not found ». --ignore-platform-req=php
+      # permet d'installer les versions verrouillées sur les PHP plus récents (8.4/8.5) que certaines libs déclarent.
+      - name: composer install
+        run: composer install --no-interaction --no-progress --ignore-platform-req=php
+      - name: phpunit
+        run: phpunit
+
+  phpstan:
+    name: PHPStan (analyse statique)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: mbstring, intl
+          extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
-          tools: phpunit:11
-      - name: phpunit
-        run: phpunit
+      - name: composer install
+        run: composer install --no-interaction --no-progress
+      # Le bootstrap charge tout le code → toute classe qui fatalise au chargement (méthode abstraite
+      # non implémentée, redéclaration de fonction native…) remonte en erreur SÉVÈRE. C'est précisément
+      # ce qui a attrapé les 7 widgets cassés + array_last (conflit PHP 8.5). Le reste est gelé (baseline).
+      - name: phpstan
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=2G
 
   db-smoke:
     name: Schema + migration runner (smoke)
@@ -71,3 +141,53 @@ jobs:
         run: php tools/migrate.php up
       - name: Status final (tout doit être appliqué)
         run: php tools/migrate.php status
+
+  e2e-smoke:
+    name: Smoke E2E (install complète + flux critiques)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, mysqli, gd, zip, curl
+          coverage: none
+      # vendor/ est gitignored ET monté dans le conteneur web (docker-compose: ./:/var/www/html), et le
+      # Dockerfile ne fait PAS composer install. Sans cette étape, le conteneur n'a aucun vendor/ → fatal
+      # runtime dès qu'une classe vendored est instanciée (ex. PHPMailer pour l'email de lost-password → 500).
+      - name: composer install (vendor/ monté dans le conteneur web)
+        run: composer install --no-interaction --no-progress
+      - name: Démarrer MariaDB (stack compose)
+        run: docker compose up -d --wait db
+      - name: Construire + démarrer le web (apache + .htaccess réels)
+        run: docker compose up -d --build web
+      - name: Installer (tout bundlé + admin) — non-interactif
+        run: >-
+          docker compose exec -T
+          -e NF_DB_HOST=db -e NF_DB_USER=neofrag -e NF_DB_PASS=neofragpass -e NF_DB_NAME=neofrag
+          web php tools/ci-install.php
+      - name: Recharger le web (prise en compte de la config fraîche)
+        run: docker compose restart web
+      - name: Attendre que le web réponde
+        run: |
+          for i in $(seq 1 30); do
+            docker compose exec -T web php -r '$c=curl_init("http://localhost:8080/fr");curl_setopt($c,CURLOPT_RETURNTRANSFER,1);curl_exec($c);exit(curl_getinfo($c,CURLINFO_HTTP_CODE)>=200?0:1);' && exit 0
+            sleep 2
+          done
+          echo "web non prêt"; exit 1
+      - name: Smoke test (échec au moindre 5xx)
+        run: >-
+          docker compose exec -T web
+          php tools/smoke-test.php http://localhost:8080 --email=ci-admin@example.test
+      # Le job `test` tourne SANS base → les suites integration/headless (23 classes) y SKIPPENT en
+      # silence. C'est ICI, sur l'install complète, qu'elles s'exécutent réellement contre la base.
+      # Sans cette étape, un bug purement runtime/DB passe (ex. réel : newsletter scheduled_at en
+      # TIMESTAMP rejeté au-delà de 2038 ; seed nf_migrations désynchronisé d'un fichier de migration).
+      # Placé APRÈS le smoke (certains tests d'intégration réécrivent des tables jetables).
+      - name: PHPUnit complet contre la base installée (integration + headless)
+        run: >-
+          docker compose exec -T web
+          php vendor/phpunit/phpunit/phpunit --no-coverage
+      - name: Logs web (si échec)
+        if: failure()
+        run: docker compose logs web --tail 80

@@ -155,12 +155,12 @@ class Revisions extends Module
 			if ($can_restore && !$is_first)
 			{
 				$restore = '<a class="btn btn-sm btn-outline-warning" href="'.url($restore_base.'/'.(int)$row['id']).'" '
-					.'onclick="return confirm(\''.htmlspecialchars($this->lang('Restaurer cette version ? La version actuelle sera conservée dans l\'historique.'), ENT_QUOTES).'\');">'
+					.'data-confirm="'.htmlspecialchars($this->lang('Restaurer cette version ? La version actuelle sera conservée dans l\'historique.'), ENT_QUOTES).'">'
 					.icon('fas fa-undo').' '.$this->lang('Restaurer').'</a>';
 			}
 			else if ($is_first)
 			{
-				$restore = '<span class="badge badge-success">'.$this->lang('Actuelle').'</span>';
+				$restore = '<span class="badge text-bg-success">'.$this->lang('Actuelle').'</span>';
 			}
 
 			$out .= '<tr>'
@@ -169,7 +169,7 @@ class Revisions extends Module
 				.'<td>'.$author.'</td>'
 				.'<td><small>'.htmlspecialchars($row['summary']).($row['lang'] ? ' ('.htmlspecialchars($row['lang']).')' : '').'</small></td>'
 				.'<td>'.$preview.'</td>'
-				.($can_restore ? '<td class="text-right">'.$restore.'</td>' : '')
+				.($can_restore ? '<td class="text-end">'.$restore.'</td>' : '')
 				.'</tr>';
 		}
 

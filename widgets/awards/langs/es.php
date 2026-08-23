@@ -16,5 +16,8 @@ return [
 	'cbea6d24' => '%dº / %d equipos',
 	'd40929a6' => '%dº',
 	'ddaee116' => 'Con %d trofeo|Con %d trofeos',
-	'f90fb52e' => 'Todos nuestros premios'
+	'f90fb52e' => 'Todos nuestros premios',
+	// i18n 2026-06-11 (code strings)
+	'd0e2fd31' => 'Número de palmarés',
+	'042e2c3d' => 'Mostrar en un panel',
 ];

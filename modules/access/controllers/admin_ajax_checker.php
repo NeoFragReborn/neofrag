@@ -56,6 +56,25 @@ class Admin_Ajax_Checker extends Module_Checker
 	}
 
 	/**
+	 * R1.10 — checker pour matrix_modal : super-admin only + nom de module sain.
+	 * (L'existence réelle du module / de ses permissions est gérée en aval par build_matrix.)
+	 */
+	public function matrix_modal($module_name = NULL, $type = 'default', $scope_id = 0)
+	{
+		if (!$this->user() || !$this->access->effective_admin())
+		{
+			return;
+		}
+
+		if (!is_string($module_name) || !preg_match('/^[a-z0-9_-]+$/i', $module_name))
+		{
+			return;
+		}
+
+		return [$module_name, is_string($type) && $type !== '' ? $type : 'default', (int)$scope_id];
+	}
+
+	/**
 	 * R1.3 — checker pour _matrix_update : valide POST {role_id, permission, scope_id, value}.
 	 */
 	public function matrix_update()

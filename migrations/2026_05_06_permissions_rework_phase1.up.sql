@@ -43,7 +43,7 @@ CREATE TABLE nf_roles (
 	UNIQUE KEY uniq_name (name),
 	KEY idx_parent (parent_role_id),
 	CONSTRAINT fk_roles_parent FOREIGN KEY (parent_role_id) REFERENCES nf_roles(role_id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE nf_roles_lang (
 	role_id     INT UNSIGNED NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE nf_roles_lang (
 	description TEXT,
 	PRIMARY KEY (role_id, lang),
 	CONSTRAINT fk_roles_lang_role FOREIGN KEY (role_id) REFERENCES nf_roles(role_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE nf_role_permissions (
 	role_id    INT UNSIGNED NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE nf_role_permissions (
 	KEY idx_perm (permission),
 	KEY idx_perm_scope (permission, scope_id),
 	CONSTRAINT fk_rp_role FOREIGN KEY (role_id) REFERENCES nf_roles(role_id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE nf_users_roles (
 	user_id INT UNSIGNED NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE nf_users_roles (
 	KEY idx_role (role_id),
 	CONSTRAINT fk_ur_user FOREIGN KEY (user_id) REFERENCES nf_user(id)        ON DELETE CASCADE,
 	CONSTRAINT fk_ur_role FOREIGN KEY (role_id) REFERENCES nf_roles(role_id)  ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE nf_groups_roles (
 	group_id INT UNSIGNED NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE nf_groups_roles (
 	KEY idx_role (role_id),
 	CONSTRAINT fk_gr_group FOREIGN KEY (group_id) REFERENCES nf_groups(group_id) ON DELETE CASCADE,
 	CONSTRAINT fk_gr_role  FOREIGN KEY (role_id)  REFERENCES nf_roles(role_id)   ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ================================================================
 -- 3) Seed des rôles built-in (correspondent aux groupes auto admins/members/visitors)

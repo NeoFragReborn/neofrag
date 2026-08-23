@@ -43,4 +43,20 @@ return [
 	'31780935' => 'Content',
 	'2694592a' => 'Top',
 	'94b735a4' => 'Trash',
+	// Complété i18n 2026-06-11
+	'abed8e08' => 'Media',
+	'1c04f8f2' => 'Monetization',
+	// i18n 2026-06-11 (code strings)
+	'e99f6db5' => 'Permissions (matrix)',
+	'26cd0a3c' => 'Assign to users',
+	'ed45dbb4' => 'Assign to groups',
+	'f512948d' => 'Monitoring',
+	'dee32ad8' => 'Quick search (Ctrl+K)',
+	'4599e826' => 'Search…',
+	'6329b073' => 'Update available: NeoFrag %s',
+	'0e2c75ac' => 'Error',
+	'181d9c2d' => 'Quick search',
+	'cc260cbb' => 'Type a command, a module, or an action…',
+	'6fe759f4' => 'Navigate',
+	'86fab783' => 'Select',
 ];

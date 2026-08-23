@@ -22,6 +22,12 @@ class Admin_Checker extends Module_Checker
 		return $h ? [$h] : NULL;
 	}
 
+	public function _test($id, $title)
+	{
+		$h = NeoFrag()->db->select('*')->from('nf_webhooks')->where('id', $id)->row();
+		return $h ? [$h] : NULL;
+	}
+
 	public function _delete($id, $title)
 	{
 		$h = NeoFrag()->db->select('id', 'title')->from('nf_webhooks')->where('id', $id)->row();

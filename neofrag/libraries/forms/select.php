@@ -20,16 +20,7 @@ class Select extends Multiple
 	{
 		$this->_template[] = function(&$input){
 			$encode = function($data){
-				if ((is_string($data) || is_object($data)) && method_exists($data, '__toArray'))
-				{
-					$data = $data->__toArray();
-				}
-
-				array_walk($data, function(&$value, $key){
-					$value = array_merge([$key], array_map('utf8_html_entity_decode', (array)$value));
-				});
-
-				return utf8_htmlentities(json_encode(array_values($data)));
+				return Options_Encoder::encode($data);
 			};
 
 			$input = parent ::html('select')
@@ -48,9 +39,8 @@ class Select extends Multiple
 						->attr_if(!empty($this->_render) && !empty($this->_render[1]), 'data-render-optgroup', $this->_render[1]);
 			}
 
-			$this	->css('selectize')
-					->css('selectize.bootstrap3')
-					->js('selectize.min')
+			$this	->css('tom-select.bootstrap5.min')
+					->js('tom-select.complete.min')
 					->js('form')
 					->js('form_select');
 

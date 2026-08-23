@@ -55,11 +55,13 @@ class Index extends Controller_Module
 	public function _index($page_id, $title, $subtitle, $content, $layout = 'default')
 	{
 		$this	->title($title)
-				->meta_description(!empty($subtitle) ? $subtitle : preg_replace('/\[block:[a-z0-9._-]+\]/i', '', $content))
+				->meta_description(!empty($subtitle) ? $subtitle : preg_replace('/\[block:[a-z0-9._-]+[^\]]*\]/i', '', $content))
 				->breadcrumb($this->lang('Pages'), 'pages')
 				->breadcrumb($title);
 
-		$body = $this->_render_content($content);
+		// Contenu libre (+ shortcodes [block:]) PUIS les blocs de module ordonnés (Palier 1).
+		// render_instances renvoie '' s'il n'y en a pas → la page rend exactement comme avant.
+		$body = $this->_render_content($content).$this->model()->render_instances($page_id);
 
 		// Gabarit « page nue » : contenu pleine largeur, sans cadre ni titre.
 		if ($layout === 'blank')
@@ -86,12 +88,10 @@ class Index extends Controller_Module
 			return $html;
 		}
 
-		$registry = $this->model()->block_registry();
-
-		return preg_replace_callback('#<p>\s*\[block:([a-z0-9._-]+)\]\s*</p>|\[block:([a-z0-9._-]+)\]#i', function($m) use ($registry){
-			$key = strtolower($m[1] !== '' ? $m[1] : $m[2]);
-
-			return isset($registry[$key]) && is_callable($registry[$key]['render']) ? (string)call_user_func($registry[$key]['render']) : '';
+		// [block:clé] ou [block:clé p=v …] — la clé s'arrête à un espace/`]`, les paramètres
+		// (jusqu'au `]`) sont validés contre les `fields` du bloc par le modèle (render_block).
+		return preg_replace_callback('#<p>\s*\[block:([a-z0-9._-]+)([^\]]*)\]\s*</p>|\[block:([a-z0-9._-]+)([^\]]*)\]#i', function($m){
+			return $m[1] !== '' ? $this->model()->render_block($m[1], $m[2]) : $this->model()->render_block($m[3], $m[4]);
 		}, $html);
 	}
 }

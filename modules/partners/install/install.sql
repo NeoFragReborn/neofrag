@@ -3,6 +3,7 @@
 -- Régénérer : docker compose exec -T web php tools/extract-module-sql.php
 
 SET FOREIGN_KEY_CHECKS = 0;
+SET NAMES utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `nf_partners` (
   `partner_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -20,16 +21,16 @@ CREATE TABLE IF NOT EXISTS `nf_partners` (
   KEY `logo_dark` (`logo_dark`),
   CONSTRAINT `nf_partners_ibfk_1` FOREIGN KEY (`logo_light`) REFERENCES `nf_file` (`id`) ON DELETE SET NULL ON UPDATE SET NULL,
   CONSTRAINT `nf_partners_ibfk_2` FOREIGN KEY (`logo_dark`) REFERENCES `nf_file` (`id`) ON DELETE SET NULL ON UPDATE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_partners_lang` (
   `partner_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `lang` varchar(5) NOT NULL,
   `title` varchar(100) NOT NULL,
-  `description` text NOT NULL,
+  `description` mediumtext NOT NULL,
   PRIMARY KEY (`partner_id`),
   KEY `lang` (`lang`),
   CONSTRAINT `nf_partners_lang_ibfk_1` FOREIGN KEY (`partner_id`) REFERENCES `nf_partners` (`partner_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

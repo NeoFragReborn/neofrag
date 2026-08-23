@@ -44,7 +44,10 @@ class File extends Model2
 
 	static public function uploaded_file($files, $dir = NULL, $file_id = NULL, $var = NULL)
 	{
-		$orig_name = $var ? $files['name'][$var] : $files['name'];
+		// $var peut être l'index 0 d'un upload multiple ($_FILES[...]['name'][0]) : tester !== NULL plutôt
+		// que la véracité, sinon 0 (falsy) fait prendre le tableau entier au lieu de l'élément
+		// (→ basename(array) → TypeError). Identique pour NULL / nom de champ / index >= 1.
+		$orig_name = $var !== NULL ? $files['name'][$var] : $files['name'];
 
 		// Garde central : refuse les extensions exécutables/dangereuses quel que soit le
 		// type MIME annoncé par le client (défense en profondeur, cf. upload/.htaccess).
@@ -55,20 +58,20 @@ class File extends Model2
 
 		$filename = static::filename($dir, extension(basename($orig_name)));
 
-		if (move_uploaded_file($var ? $files['tmp_name'][$var] : $files['tmp_name'], $filename))
+		if (move_uploaded_file($var !== NULL ? $files['tmp_name'][$var] : $files['tmp_name'], $filename))
 		{
 			if (($file = NeoFrag()->model2('file', $file_id)) && $file->id)
 			{
 				@unlink($file->path);
 
 				return $file->set('user', NeoFrag()->user)
-							->set('name', $var ? $files['name'][$var] : $files['name'])
+							->set('name', $var !== NULL ? $files['name'][$var] : $files['name'])
 							->set('path', $filename)
 							->update();
 			}
 			else
 			{
-				return static::add($filename, $var ? $files['name'][$var] : $files['name']);
+				return static::add($filename, $var !== NULL ? $files['name'][$var] : $files['name']);
 			}
 		}
 

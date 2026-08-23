@@ -12,10 +12,11 @@ les visiteurs), son **interface d'administration**, ses **données** (tables) et
 Tu actives ou désactives les modules depuis **Admin → Thèmes & Addons**. Un module
 désactivé disparaît du site mais conserve ses données.
 
-L'installation par défaut fournit un **cœur communautaire** (forum, actualités,
-commentaires, membres, galerie, contact, modération, notifications). Tout le reste —
-gaming (équipes, événements, recrutements…), contenu avancé (wiki, FAQ, articles…),
-monétisation (boutique, dons, gamification…) — s'ajoute depuis le **marketplace**.
+L'installation fournit **tous les modules** du paquet (modèle « tout bundlé », comme
+WordPress) : ils sont installés et activés d'emblée, **sans choix de profil**. Tu règles
+ensuite leur visibilité via **Admin → Thèmes & Addons** (activer/désactiver) et
+**Admin → Permissions** (RBAC). D'autres addons, non livrés dans le paquet, s'ajoutent
+depuis le **marketplace**.
 
 ## Widgets
 
@@ -76,6 +77,13 @@ télécharges des addons (`.zip`). L'installation se fait ensuite en deux clics 
 Techniquement, un addon n'est qu'un **dossier de fichiers PHP** : tu peux le versionner,
 le partager, et le réinstaller sur n'importe quel site NeoFrag Reborn. C'est ce qui rend
 le CMS infiniment extensible — voir les guides développeur.
+
+## En pratique : monter une communauté
+
+Pour une team gaming, concrètement : dans *Thèmes & Addons* tu actives les modules **forum**, **équipes**
+et **événements** (déjà installés) et tu passes sur le thème **Nebula** ; puis, avec le **Live Editor**, tu
+places le widget **navigation** dans le *Header* et un widget de contenu (derniers sujets, prochains
+matchs…) dans la colonne latérale de l'accueil. Tout se règle dans l'admin, **sans une ligne de code**.
 
 ## Surcharge sans forker
 

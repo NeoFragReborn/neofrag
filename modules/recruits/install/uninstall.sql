@@ -3,6 +3,7 @@
 -- Régénérer : docker compose exec -T web php tools/extract-module-sql.php
 
 SET FOREIGN_KEY_CHECKS = 0;
+SET NAMES utf8mb4;
 
 DROP TABLE IF EXISTS `nf_recruits_candidacies_votes`;
 DROP TABLE IF EXISTS `nf_recruits_candidacies`;

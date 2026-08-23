@@ -4,6 +4,11 @@ use NF\NeoFrag\Loadables\Controllers\Widget as Controller_Widget;
 
 class Index extends Controller_Widget
 {
+	public function index($config = [])
+	{
+		return $this->signup($config);
+	}
+
 	public function signup($config = [])
 	{
 		$nb = (int)NeoFrag()->db->select('COUNT(*)')->from('nf_newsletter_subscribers')->where('confirmed', 1)->row();

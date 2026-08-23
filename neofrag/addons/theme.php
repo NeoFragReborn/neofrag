@@ -56,7 +56,7 @@ abstract class Theme extends Addon
 					'theme'       => $this->info()->name,
 					'page'        => $page,
 					'zone'        => array_search($zone, $this->info()->zones),
-					'disposition' => serialize($disposition)
+					'disposition' => $this->disposition->encode($disposition)
 				]);
 			}
 		}
@@ -70,7 +70,7 @@ abstract class Theme extends Addon
 	{
 		if ($dispositions = $this->db->select('disposition')->from('nf_dispositions')->where('theme', $this->info()->name)->get())
 		{
-			$this->module('live_editor')->model()->delete_widgets($this->array($dispositions)->each('unserialize'));
+			$this->module('live_editor')->model()->delete_widgets($this->array($dispositions)->each(function($d){ return $this->disposition->decode($d); }));
 
 			$this->db	->where('theme', $this->info()->name)
 						->delete('nf_dispositions');

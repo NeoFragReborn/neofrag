@@ -29,4 +29,9 @@ return [
 	'50d4ccb8' => 'Disconnetti',
 	'0f9d628a' => 'Area membri: accesso, collegamento al profilo o registrazione.',
 	'eb68e801' => 'Benvenuto <a href="',
+	// i18n 2026-06-11 (code strings)
+	'4a253c1f' => 'Esci dall\'anteprima',
+	'0552e076' => 'Modalità anteprima',
+	'1648d731' => 'I link ai dati personali sono nascosti per rispettare la privacy dell\'account di destinazione.',
+	'78aeb25c' => 'Moderazione',
 ];

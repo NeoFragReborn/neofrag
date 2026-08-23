@@ -26,7 +26,7 @@ class Admin extends Controller_Module
 		}
 		unset($c);
 
-		return $this->view('admin/index', ['campaigns' => $campaigns]);
+		return $this->view('admin/index', ['campaigns' => $campaigns, 'csrf' => $this->csrf_token()]);
 	}
 
 	public function _new()
@@ -132,6 +132,8 @@ class Admin extends Controller_Module
 
 	public function _delete($id)
 	{
+		$this->check_csrf('admin/donations');
+
 		$campaign = $this->model()->get_campaign((int)$id);
 		if (!$campaign) { $this->error(404); return; }
 
@@ -159,6 +161,7 @@ class Admin extends Controller_Module
 		return $this->view('admin/donations', [
 			'campaign'  => $campaign,
 			'donations' => $donations,
+			'csrf'      => $this->csrf_token(),
 			'totals'    => $totals
 		]);
 	}
@@ -256,6 +259,8 @@ class Admin extends Controller_Module
 
 	public function _donation_delete($id)
 	{
+		$this->check_csrf('admin/donations');
+
 		$donation = $this->model()->get_donation((int)$id);
 		if (!$donation) { $this->error(404); return; }
 		$cid = $donation['campaign_id'];

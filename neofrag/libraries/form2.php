@@ -364,7 +364,7 @@ class Form2 extends Library
 										->content($fields)
 						)
 						->append_if($buttons = $this->_buttons(), $this	->html()
-																		->attr('class', 'card-footer text-right')
+																		->attr('class', 'card-footer text-end')
 																		->content($buttons)
 						);
 		};

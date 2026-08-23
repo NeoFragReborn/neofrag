@@ -49,23 +49,6 @@ class Session extends Core
 
 			$this->_data = $this->_session->data->__extends($this);
 
-			$set_cookie = function() use ($cookie_name){
-				do
-				{
-					$this->_session->set('id', unique_id());
-				}
-				while (!$this->_session->commit());
-
-				setcookie($cookie_name, $this->_session->id, [
-					'expires'  => strtotime('+1 year'),
-					'path'     => $this->url->base,
-					'domain'   => $this->url->domain,
-					'secure'   => (bool)$this->url->https,
-					'httponly' => TRUE,
-					'samesite' => 'Lax'
-				]);
-			};
-
 			if ($this->_session())
 			{
 				// Anti-détournement de session : si le user-agent diffère fortement de celui
@@ -78,18 +61,23 @@ class Session extends Core
 
 				if (isset($expiration_date) && $this->_session->last_activity->timestamp() < $expiration_date->timestamp())
 				{
-					$set_cookie();
+					$this->_renew_id();
 				}
 
 				$this->_session->set('last_activity', NeoFrag()->date())->update();
 			}
 			else
 			{
-				$set_cookie();
+				$this->_renew_id();
+
+				// X-Real-IP est un header CLIENT (forgeable hors reverse-proxy de confiance) :
+				// validé comme IP, sinon repli sur REMOTE_ADDR — il est stocké puis affiché
+				// dans l'historique de sessions admin (XSS stocké si brut).
+				$real_ip = isset($_SERVER['HTTP_X_REAL_IP']) ? filter_var($_SERVER['HTTP_X_REAL_IP'], FILTER_VALIDATE_IP) : FALSE;
 
 				$this->set('session', [
 					'date'       => NeoFrag()->date(),
-					'ip_address' => $ip_address = isset($_SERVER['HTTP_X_REAL_IP']) ? $_SERVER['HTTP_X_REAL_IP']                     : $_SERVER['REMOTE_ADDR'],
+					'ip_address' => $ip_address = $real_ip !== FALSE ? $real_ip : $_SERVER['REMOTE_ADDR'],
 					'host_name'  => utf8_string(gethostbyaddr($ip_address)),
 					'referer'    => isset($_SERVER['HTTP_REFERER'])                 ? utf8_htmlentities($_SERVER['HTTP_REFERER'])    : '',
 					'user_agent' => isset($_SERVER['HTTP_USER_AGENT'])              ? utf8_htmlentities($_SERVER['HTTP_USER_AGENT']) : ''
@@ -164,15 +152,50 @@ class Session extends Core
 		}
 	}
 
+	// Régénère l'ID de session (+ cookie). Appelé à la création/expiration et surtout à
+	// l'élévation de privilège (login). Sur une session existante, l'UPDATE renomme l'ID en
+	// place (WHERE = ancien ID, SET = nouveau) → l'ID fixé avant le login n'existe plus en
+	// base : neutralise la fixation de session. La boucle gère la collision (improbable) d'ID.
+	private function _renew_id()
+	{
+		$cookie_name = $this->config->nf_cookie_name;
+
+		if ($this->url->https)
+		{
+			$cookie_name .= '_https';
+		}
+
+		do
+		{
+			$this->_session->set('id', unique_id());
+		}
+		while (!$this->_session->commit());
+
+		setcookie($cookie_name, $this->_session->id, [
+			'expires'  => strtotime('+1 year'),
+			'path'     => $this->url->base,
+			'domain'   => $this->url->domain,
+			'secure'   => (bool)$this->url->https,
+			'httponly' => TRUE,
+			'samesite' => 'Lax'
+		]);
+	}
+
 	public function login($user, $remember = NULL)
 	{
 		$this->_session	->set('user', $user)
-						->set_if($remember !== NULL, 'remember', $remember)
-						->update();
+						->set_if($remember !== NULL, 'remember', $remember);
+
+		// Anti-fixation de session : nouvel ID à l'élévation de privilège (le commit du nouvel
+		// ID persiste aussi l'utilisateur qu'on vient de poser).
+		$this->_renew_id();
+
+		// Même validation qu'à la création de session : X-Real-IP est forgeable.
+		$real_ip = isset($_SERVER['HTTP_X_REAL_IP']) ? filter_var($_SERVER['HTTP_X_REAL_IP'], FILTER_VALIDATE_IP) : FALSE;
 
 		$this	->model2('session_history')
 				->set('user',       $user)
-				->set('ip_address', $ip_address = isset($_SERVER['HTTP_X_REAL_IP']) ? $_SERVER['HTTP_X_REAL_IP'] : $_SERVER['REMOTE_ADDR'])
+				->set('ip_address', $ip_address = $real_ip !== FALSE ? $real_ip : $_SERVER['REMOTE_ADDR'])
 				->set('host_name',  utf8_string(gethostbyaddr($ip_address)))
 				->set('referer',    (string)$this('session', 'referer'))
 				->set('user_agent', isset($_SERVER['HTTP_USER_AGENT']) ? utf8_htmlentities($_SERVER['HTTP_USER_AGENT']) : '')

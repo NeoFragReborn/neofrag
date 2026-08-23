@@ -91,10 +91,13 @@ return [
 	'fcc11f52' => 'Mehrere',
 	'fe353392' => 'Kategorie erfolgreich bearbeitet',
 	'0e81c33b' => 'Alle Alben',
-	'2f4815d7' => 'Integration <i class="fas fa-info-circle text-muted" data-toggle="tooltip" title="Code zur Einbettung dieser Galerie in freie HTML/BBCode-Inhalte"></i>',
+	'2f4815d7' => 'Integration <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Code zur Einbettung dieser Galerie in freie HTML/BBCode-Inhalte"></i>',
 	'ff1f8094' => 'Fotogalerie mit Alben, Vorschaubildern und Beschreibungen.',
 	'52c9bbab' => 'Bearbeiten',
 	'8d9ef7a4' => 'Löschen',
 	'ca4ae516' => 'Kategorie bearbeiten',
 	'af5fdbe3' => 'Kategorie löschen',
+	// i18n 2026-06-11 (code strings)
+	'b914f016' => 'Galeriebilder',
+	'7f1f539c' => 'Ein zukünftiges Datum plant die Veröffentlichung: Das Album bleibt bis zu diesem Datum öffentlich verborgen (falls sichtbar). Leer = sofort.',
 ];

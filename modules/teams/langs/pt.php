@@ -61,4 +61,6 @@ return [
 	'8d9ef7a4' => 'Excluir',
 	'78ee8be4' => 'Modificar um cargo',
 	'dc7fea54' => 'Excluir um cargo',
+	// i18n 2026-06-11 (code strings)
+	'25e975ef' => 'Esta equipa está a recrutar — Candidatar-se',
 ];

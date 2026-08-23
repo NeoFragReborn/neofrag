@@ -32,6 +32,11 @@ final class InstallerDbTest extends TestCase
 
 	public static function setUpBeforeClass(): void
 	{
+		if (!extension_loaded('mysqli'))
+		{
+			self::markTestSkipped('Extension mysqli non chargée (test d\'intégration DB ignoré).');
+		}
+
 		mysqli_report(MYSQLI_REPORT_OFF);
 
 		$host = getenv('NF_TEST_DB_HOST') ?: 'db';
@@ -61,7 +66,7 @@ final class InstallerDbTest extends TestCase
 	{
 		if (self::$root)
 		{
-			foreach ([self::DBNAME, 'neofrag_install_test_simple', 'neofrag_install_test_gaming', 'neofrag_install_test_mkt'] as $db)
+			foreach ([self::DBNAME, 'neofrag_install_test_complete', 'neofrag_install_test_mkt', 'neofrag_install_test_addonmig'] as $db)
 			{
 				self::$root->query('DROP DATABASE IF EXISTS `' . $db . '`');
 			}
@@ -92,12 +97,12 @@ final class InstallerDbTest extends TestCase
 
 		// 4. Import du schéma → toutes les tables + historique des migrations.
 		Installer::import_sql_file($db, $schema);
-		foreach (['nf_user', 'nf_user_profile', 'nf_groups', 'nf_settings', 'nf_addon', 'nf_reactions', 'nf_notifications'] as $table)
+		foreach (['nf_user', 'nf_user_profile', 'nf_groups', 'nf_settings', 'nf_addon', 'nf_addon_migrations', 'nf_reactions', 'nf_notifications'] as $table)
 		{
 			$this->assertSame(1, $this->tableExists($db, $table), "Table {$table} manquante après import");
 		}
 		// Cœur LEAN : le schéma ne crée QUE les tables Tier 0 (≈ 52) — pas les tables des modules
-		// Tier 1/2 (apportées par leur install/install.sql à l'install d'un preset / depuis le marketplace).
+		// Tier 1/2 (apportées par leur install/install.sql à l'install — install_complete — ou via le marketplace).
 		$this->assertGreaterThanOrEqual(45, $this->tableCount($db), 'Le schéma cœur doit créer les tables Tier 0');
 		$this->assertSame(0, $this->tableExists($db, 'nf_news'),  'Lean : nf_news (Tier 1) ne doit PAS être dans le schéma cœur');
 		$this->assertSame(0, $this->tableExists($db, 'nf_shop_items'), 'Lean : nf_shop_items (Tier 2) ne doit PAS être dans le schéma cœur');
@@ -149,46 +154,38 @@ final class InstallerDbTest extends TestCase
 	}
 
 	/**
-	 * Étape installeur « Modules » : applique un preset sur un cœur lean et vérifie que les
-	 * modules/widgets Tier 1 retenus sont enregistrés + leurs tables créées, la page d'accueil
-	 * sûre fixée, et (Site simple) la page « Bienvenue » publique générée.
+	 * Modèle « tout bundlé » (option C) : install_complete() installe TOUS les modules/widgets/thèmes
+	 * locaux sur un cœur lean. Vérifie que les tables de modules sont créées (via leur install.sql),
+	 * les addons enregistrés (module + widget) et la page d'accueil sûre fixée (news).
 	 */
-	public function testPresetApplicationOnLeanCore(): void
+	public function testCompleteInstallOnLeanCore(): void
 	{
 		$root = dirname(__DIR__, 2);
 
-		// Garde-fou : aucun preset ne référence du cœur ou du Tier 2.
-		Installer::assert_presets_in_manifest($root);
+		$db = $this->freshLeanDb('neofrag_install_test_complete', $root);
+		$r  = Installer::install_complete($db, $root);
 
-		// — Site simple : news + page d'accueil « Bienvenue » —
-		$db = $this->freshLeanDb('neofrag_install_test_simple', $root);
-		$r  = Installer::apply_preset($db, $root, 'simple', ['news']);
+		$this->assertSame([], $r['errors'], 'install_complete() ne doit pas faillir');
+		$this->assertSame('news', $r['default_page'], 'Page d\'accueil = news (module présent)');
+		$this->assertSame('news', $this->scalar($db, "SELECT value FROM nf_settings WHERE name = 'nf_default_page'"));
 
-		$this->assertSame([], $r['errors'], 'apply_preset(simple) ne doit pas faillir');
-		$this->assertSame('pages/bienvenue', $r['default_page']);
-		$this->assertSame(1, $this->tableExists($db, 'nf_news'), 'Le preset installe la table nf_news');
+		// Tables de modules (Tier 1/2) créées par leur install.sql.
+		foreach (['nf_news', 'nf_forum', 'nf_teams'] as $t)
+		{
+			$this->assertSame(1, $this->tableExists($db, $t), "install_complete crée {$t}");
+		}
+
+		// Addons enregistrés : module news + widget news.
 		$this->assertGreaterThan(0, (int) $this->scalar($db, "SELECT COUNT(*) FROM nf_addon a JOIN nf_addon_type t ON a.type_id = t.id WHERE t.name = 'module' AND a.name = 'news'"), 'news enregistré comme module');
 		$this->assertGreaterThan(0, (int) $this->scalar($db, "SELECT COUNT(*) FROM nf_addon a JOIN nf_addon_type t ON a.type_id = t.id WHERE t.name = 'widget' AND a.name = 'news'"), 'widget news enregistré');
-		$this->assertGreaterThan(0, (int) $this->scalar($db, "SELECT COUNT(*) FROM nf_pages WHERE name = 'bienvenue'"), 'Page Bienvenue créée');
-		$this->assertGreaterThanOrEqual(2, (int) $this->scalar($db, "SELECT COUNT(*) FROM nf_role_permissions WHERE permission = 'pages.access_page'"), 'Accès public à la page Bienvenue (member + visitor)');
-		$this->assertSame('pages/bienvenue', $this->scalar($db, "SELECT value FROM nf_settings WHERE name = 'nf_default_page'"));
-		$this->assertSame(0, $this->tableExists($db, 'nf_forum'), 'Site simple n\'installe pas le forum');
-		$db->close();
-		self::$root->query('DROP DATABASE IF EXISTS `neofrag_install_test_simple`');
 
-		// — Gaming : tout le Tier 1 (page d'accueil = news) —
-		$db = $this->freshLeanDb('neofrag_install_test_gaming', $root);
-		$r  = Installer::apply_preset($db, $root, 'gaming', ['news', 'forum', 'gallery', 'teams', 'events', 'calendar', 'awards', 'recruits', 'games', 'partners', 'gamification']);
+		// Le résumé reflète l'install massive (modules + thèmes du paquet).
+		$this->assertContains('news', $r['installed_modules']);
+		$this->assertContains('forum', $r['installed_modules']);
+		$this->assertNotEmpty($r['installed_themes'], 'install_complete enregistre les thèmes du paquet');
 
-		$this->assertSame([], $r['errors'], 'apply_preset(gaming) ne doit pas faillir');
-		$this->assertSame('news', $r['default_page']);
-		foreach (['nf_news', 'nf_forum', 'nf_teams', 'nf_events', 'nf_awards', 'nf_partners'] as $t)
-		{
-			$this->assertSame(1, $this->tableExists($db, $t), "Gaming installe {$t}");
-		}
-		$this->assertGreaterThan(0, (int) $this->scalar($db, "SELECT COUNT(*) FROM nf_addon a JOIN nf_addon_type t ON a.type_id = t.id WHERE t.name = 'widget' AND a.name = 'about'"), 'widget about (apparié à teams) enregistré');
 		$db->close();
-		self::$root->query('DROP DATABASE IF EXISTS `neofrag_install_test_gaming`');
+		self::$root->query('DROP DATABASE IF EXISTS `neofrag_install_test_complete`');
 	}
 
 	/**
@@ -223,6 +220,47 @@ final class InstallerDbTest extends TestCase
 
 		$db->close();
 		self::$root->query('DROP DATABASE IF EXISTS `neofrag_install_test_mkt`');
+	}
+
+	/**
+	 * Migrations PAR ADDON (Phase 2) : baseline marque les *.up.sql présents comme appliqués (batch 0)
+	 * SANS les exécuter, et est idempotent. (Le mode 'up' s'exécute côté framework via Addon::migrate.)
+	 */
+	public function testAddonMigrationsBaseline(): void
+	{
+		$project_root = dirname(__DIR__, 2);   // racine du repo (pour install/schema.sql)
+		$root = $this->tempDir('addonmig');    // racine fixture (le faux addon + ses migrations)
+		$mig  = $root . '/modules/fakeaddon/install/migrations';
+		mkdir($mig, 0775, true);
+		// SQL volontairement « destructeur » : s'il était EXÉCUTÉ (au lieu d'être baseliné), le test casserait.
+		file_put_contents($mig . '/2026_01_01_a.up.sql', 'CREATE TABLE nf_should_not_exist (id INT);');
+		file_put_contents($mig . '/2026_01_02_b.up.sql', 'CREATE TABLE nf_should_not_exist (id INT);');
+
+		$db = $this->freshLeanDb('neofrag_install_test_addonmig', $project_root);
+
+		// La table de suivi est livrée par schema.sql (cœur Tier 0).
+		$this->assertSame(1, $this->tableExists($db, 'nf_addon_migrations'), 'schema.sql doit créer nf_addon_migrations');
+
+		Installer::baseline_addon_migrations($db, 'module', 'fakeaddon', $root);
+
+		$this->assertSame(2, (int) $this->scalar($db, "SELECT COUNT(*) FROM nf_addon_migrations WHERE type = 'module' AND name = 'fakeaddon'"), 'Les 2 migrations sont enregistrées');
+		$this->assertSame(0, (int) $this->scalar($db, "SELECT COUNT(*) FROM nf_addon_migrations WHERE batch <> 0"), 'Baseline = batch 0');
+		$this->assertSame(0, $this->tableExists($db, 'nf_should_not_exist'), 'Baseline ne doit PAS exécuter le SQL des migrations');
+
+		// Idempotence : rejouer ne duplique pas (INSERT IGNORE sur la clé unique type+name+migration).
+		Installer::baseline_addon_migrations($db, 'module', 'fakeaddon', $root);
+		$this->assertSame(2, (int) $this->scalar($db, "SELECT COUNT(*) FROM nf_addon_migrations WHERE name = 'fakeaddon'"), 'Baseline idempotent');
+
+		$db->close();
+		self::$root->query('DROP DATABASE IF EXISTS `neofrag_install_test_addonmig`');
+
+		@unlink($mig . '/2026_01_01_a.up.sql');
+		@unlink($mig . '/2026_01_02_b.up.sql');
+		@rmdir($mig);
+		@rmdir($root . '/modules/fakeaddon/install');
+		@rmdir($root . '/modules/fakeaddon');
+		@rmdir($root . '/modules');
+		@rmdir($root);
 	}
 
 	/** Crée une base éphémère avec le cœur lean importé (schema + seed + migrations up-only). */

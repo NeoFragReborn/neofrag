@@ -8,16 +8,16 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 <div class="card">
 	<div class="nf-card-header">
 		<span><i class="fas fa-gavel"></i> <?php echo $this->lang('Sanction #%d', (int)$sanction['id']) ?></span>
-		<?php if ($is_active): ?><span class="badge badge-success"><?php echo $this->lang('Active') ?></span>
-		<?php elseif ($is_pending): ?><span class="badge badge-warning"><?php echo $this->lang('Validation requise') ?></span>
-		<?php elseif ($is_revoked): ?><span class="badge badge-secondary"><?php echo $this->lang('Levée') ?></span>
-		<?php else: ?><span class="badge badge-light"><?php echo $this->lang('Expirée') ?></span>
+		<?php if ($is_active): ?><span class="badge text-bg-success"><?php echo $this->lang('Active') ?></span>
+		<?php elseif ($is_pending): ?><span class="badge text-bg-warning"><?php echo $this->lang('Validation requise') ?></span>
+		<?php elseif ($is_revoked): ?><span class="badge text-bg-secondary"><?php echo $this->lang('Levée') ?></span>
+		<?php else: ?><span class="badge text-bg-light"><?php echo $this->lang('Expirée') ?></span>
 		<?php endif ?>
 	</div>
 	<div class="card-body">
 		<dl class="row">
 			<dt class="col-sm-3"><?php echo $this->lang('Type') ?></dt>
-			<dd class="col-sm-9"><span class="badge badge-danger"><?php echo htmlspecialchars($sanction['type']) ?></span></dd>
+			<dd class="col-sm-9"><span class="badge text-bg-danger"><?php echo htmlspecialchars($sanction['type']) ?></span></dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('Scope') ?></dt>
 			<dd class="col-sm-9"><?php echo htmlspecialchars($sanction['scope']) ?></dd>
@@ -34,7 +34,7 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 			<dt class="col-sm-3"><?php echo $this->lang('Expire le') ?></dt>
 			<dd class="col-sm-9">
 				<?php if (empty($sanction['expires_at'])): ?>
-					<span class="badge badge-dark"><?php echo $this->lang('Permanent') ?></span>
+					<span class="badge text-bg-dark"><?php echo $this->lang('Permanent') ?></span>
 				<?php else: ?>
 					<?php echo htmlspecialchars($sanction['expires_at']) ?>
 					<?php if (!$is_expired && !$is_revoked): ?>
@@ -50,9 +50,9 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 			<dt class="col-sm-3"><?php echo $this->lang('Validation hiérarchique') ?></dt>
 			<dd class="col-sm-9">
 				<?php if (!empty($sanction['approved_at'])): ?>
-					<span class="badge badge-success"><i class="fas fa-check"></i> <?php echo $this->lang('Approuvée par @%s le %s', htmlspecialchars((string)$sanction['approver_username']), htmlspecialchars($sanction['approved_at'])) ?></span>
+					<span class="badge text-bg-success"><i class="fas fa-check"></i> <?php echo $this->lang('Approuvée par @%s le %s', htmlspecialchars((string)$sanction['approver_username']), htmlspecialchars($sanction['approved_at'])) ?></span>
 				<?php else: ?>
-					<span class="badge badge-warning"><?php echo $this->lang('En attente d\'approbation') ?></span>
+					<span class="badge text-bg-warning"><?php echo $this->lang('En attente d\'approbation') ?></span>
 				<?php endif ?>
 			</dd>
 			<?php endif ?>
@@ -73,7 +73,7 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 
 		<hr />
 
-		<div class="text-right">
+		<div class="text-end">
 			<?php if ($is_pending && $can_approve): ?>
 			<form method="post" action="<?php echo url($_modbase.'/sanctions/'.(int)$sanction['id'].'/approve') ?>" style="display:inline;"
 				data-confirm="<?php echo htmlspecialchars($this->lang('Approuver cette sanction ? Elle deviendra immédiatement active.'), ENT_QUOTES) ?>"
@@ -82,11 +82,11 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 				data-confirm-icon="fas fa-check-double"
 				data-confirm-ok="<?php echo htmlspecialchars($this->lang('Approuver'), ENT_QUOTES) ?>"
 				data-confirm-cancel="<?php echo htmlspecialchars($this->lang('Annuler'), ENT_QUOTES) ?>">
-				<button type="submit" class="btn btn-success"><i class="fas fa-check-double"></i> <?php echo $this->lang('Approuver') ?></button>
+				<input type="hidden" name="_" value="<?php echo $csrf ?>"><button type="submit" class="btn btn-success"><i class="fas fa-check-double"></i> <?php echo $this->lang('Approuver') ?></button>
 			</form>
 			<?php endif ?>
 			<?php if (($is_active || $is_pending) && $can_revoke): ?>
-			<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#nf-revoke-modal">
+			<button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#nf-revoke-modal">
 				<i class="fas fa-undo"></i> <?php echo $this->lang('Lever cette sanction') ?>
 			</button>
 			<?php endif ?>
@@ -98,13 +98,13 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 <!-- Modal stylé pour la levée de sanction -->
 <div class="modal fade" id="nf-revoke-modal" tabindex="-1" role="dialog" aria-labelledby="nf-revoke-modal-title" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered" role="document">
-		<form method="post" action="<?php echo url($_modbase.'/sanctions/'.(int)$sanction['id'].'/revoke') ?>">
+		<form method="post" action="<?php echo url($_modbase.'/sanctions/'.(int)$sanction['id'].'/revoke') ?>"><input type="hidden" name="_" value="<?php echo $csrf ?>">
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title" id="nf-revoke-modal-title">
 						<i class="fas fa-undo"></i> <?php echo $this->lang('Lever la sanction #%d', (int)$sanction['id']) ?>
 					</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>">
+					<button type="button" class="close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
@@ -114,7 +114,7 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 						<?php echo $this->lang('Tu vas lever la sanction <strong>%s</strong> appliquée à <strong>@%s</strong>. Cette action est tracée dans l\'audit log.', htmlspecialchars($sanction['type']), htmlspecialchars((string)$sanction['user_username'])) ?>
 					</div>
 					<div class="form-group">
-						<label for="nf-revoke-reason" class="font-weight-bold">
+						<label for="nf-revoke-reason" class="fw-bold">
 							<?php echo $this->lang('Raison de la levée') ?> <span class="text-danger">*</span>
 						</label>
 						<textarea
@@ -129,7 +129,7 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
 						<i class="fas fa-times"></i> <?php echo $this->lang('Annuler') ?>
 					</button>
 					<button type="submit" class="btn btn-warning">

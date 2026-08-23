@@ -40,4 +40,8 @@ return [
 	'76828c83' => 'Foto di copertina',
 	'11db7719' => 'Avatar',
 	'3dcd8730' => 'Nessuna sessione attiva',
+	// i18n 2026-06-11 (code strings)
+	'6db60ef7' => 'Menu gestito',
+	'26db591e' => '— Link manuali (sotto) —',
+	'571ec895' => 'Mostra un menu creato in «Menu» (sostituisce i link manuali qui sotto).',
 ];

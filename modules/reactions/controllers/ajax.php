@@ -15,7 +15,9 @@ class Ajax extends Controller_Module
 	{
 		header('Content-Type: application/json');
 
-		if (!$this->user() || !Reactions::is_allowed($type))
+		$reaction = (string)($_POST['reaction'] ?? 'love');
+
+		if (!$this->user() || !Reactions::is_allowed($type) || !isset(Reactions::REACTIONS[$reaction]))
 		{
 			echo json_encode(['ok' => FALSE]);
 			exit;
@@ -24,35 +26,56 @@ class Ajax extends Controller_Module
 		$id      = (int)$id;
 		$user_id = (int)$this->user->id;
 
-		$existing = $this->db	->select('id')
+		// Modèle Facebook : une réaction par (user, contenu). Même emoji re-cliqué → on retire ;
+		// emoji différent → on bascule ; aucune → on ajoute.
+		$existing = $this->db	->select('id', 'reaction')
 								->from('nf_reactions')
 								->where('user_id', $user_id)
 								->where('content_type', $type)
 								->where('content_id', $id)
 								->row();
 
-		if ($existing)
+		$added = FALSE;
+		$mine  = NULL;
+
+		if ($existing && $existing['reaction'] === $reaction)
 		{
-			$this->db->where('id', $existing)->delete('nf_reactions');
-			$reacted = FALSE;
+			$this->db->where('id', $existing['id'])->delete('nf_reactions');
+		}
+		else if ($existing)
+		{
+			$this->db->where('id', $existing['id'])->update('nf_reactions', ['reaction' => $reaction]);
+			$mine = $reaction;
 		}
 		else
 		{
 			$this->db->insert('nf_reactions', [
 				'user_id'      => $user_id,
 				'content_type' => $type,
-				'content_id'   => $id
+				'content_id'   => $id,
+				'reaction'     => $reaction
 			]);
-			$reacted = TRUE;
+			$added = TRUE;
+			$mine  = $reaction;
 		}
 
-		$count = (int)$this->db	->select('COUNT(*)')
-								->from('nf_reactions')
-								->where('content_type', $type)
-								->where('content_id', $id)
-								->row();
+		// Comptes par emoji + total.
+		$counts = [];
+		foreach ($this->db	->select('reaction', 'COUNT(*) AS n')
+							->from('nf_reactions')
+							->where('content_type', $type)
+							->where('content_id', $id)
+							->group_by('reaction')
+							->get() as $row)
+		{
+			if (isset(Reactions::REACTIONS[$row['reaction']]))
+			{
+				$counts[$row['reaction']] = (int)$row['n'];
+			}
+		}
 
-		if ($reacted && ($notif = $this->module('notifications')))
+		// Notif : seulement à l'ajout d'une nouvelle réaction (pas au switch/retrait).
+		if ($added && ($notif = $this->module('notifications')))
 		{
 			$label = $type === 'comment'
 				? $this->lang('%s a aimé votre commentaire', $this->user->username)
@@ -60,13 +83,13 @@ class Ajax extends Controller_Module
 			$notif->push_to_content_owner($type, $id, 'reaction', $label, $user_id);
 		}
 
-		// Karma + points : recalcule la réputation du propriétaire (toggle) ; crédite les points
-		// (réaction donnée + reçue) uniquement à l'ajout d'une réaction.
+		// Karma + points : recalcule la réputation du propriétaire à chaque changement ; crédite les
+		// points (réaction donnée + reçue) uniquement à l'ajout d'une NOUVELLE réaction.
 		if ($gam = $this->module('gamification'))
 		{
 			$gam->on_reaction($type, $id);
 
-			if ($reacted)
+			if ($added)
 			{
 				$gam->earn($user_id, 'reaction_given');
 
@@ -77,7 +100,7 @@ class Ajax extends Controller_Module
 			}
 		}
 
-		echo json_encode(['ok' => TRUE, 'reacted' => $reacted, 'count' => $count]);
+		echo json_encode(['ok' => TRUE, 'mine' => $mine, 'counts' => $counts, 'total' => array_sum($counts)]);
 		exit;
 	}
 }

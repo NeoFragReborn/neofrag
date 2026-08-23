@@ -6,7 +6,7 @@
 ?>
 <div class="modal-header">
 	<h5 class="modal-title"><?php echo \icon('fas fa-flag').' '.$this->lang('Signaler ce contenu') ?></h5>
-	<button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>
+	<button type="button" class="close" data-bs-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>
 </div>
 <div class="modal-body">
 	<?php
@@ -35,7 +35,7 @@
 		<input type="hidden" name="url" value="<?php echo htmlspecialchars($url) ?>" />
 
 		<div class="form-group">
-			<label class="font-weight-bold"><?php echo $this->lang('Raison du signalement') ?></label>
+			<label class="fw-bold"><?php echo $this->lang('Raison du signalement') ?></label>
 			<?php
 			$reasons = [
 				'spam'           => [\icon('fas fa-trash-alt'),    $this->lang('Spam ou contenu indésirable')],
@@ -67,7 +67,7 @@
 			<label><?php echo $this->lang('Commentaire (optionnel, 500 caractères max)') ?></label>
 			<textarea name="comment" class="form-control" rows="3" maxlength="500" placeholder="<?php echo $this->lang('Précise pourquoi ce contenu pose problème (optionnel mais aide les modérateurs).') ?>"></textarea>
 			<?php else: ?>
-			<label class="font-weight-bold"><?php echo $this->lang('Contexte (obligatoire)') ?> <span class="text-danger">*</span></label>
+			<label class="fw-bold"><?php echo $this->lang('Contexte (obligatoire)') ?> <span class="text-danger">*</span></label>
 			<textarea name="comment" class="form-control" rows="4" required minlength="15" maxlength="500" placeholder="<?php echo $this->lang('Aucune URL automatique pour ce signalement. Décris où trouver le contenu et pourquoi il pose problème. Min 15 caractères.') ?>"></textarea>
 			<small class="text-muted"><?php echo \icon('fas fa-info-circle').' '.$this->lang('Sans contexte précis, les modérateurs ne pourront pas examiner ton signalement.') ?></small>
 			<?php endif ?>
@@ -81,7 +81,7 @@
 	<div id="moderation-report-result" class="mt-3" style="display:none;"></div>
 </div>
 <div class="modal-footer">
-	<button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo $this->lang('Annuler') ?></button>
+	<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo $this->lang('Annuler') ?></button>
 	<button type="button" class="btn btn-primary" id="moderation-report-submit"><?php echo \icon('fas fa-flag').' '.$this->lang('Envoyer le signalement') ?></button>
 </div>
 
@@ -108,7 +108,7 @@
 				$result.style.display = 'block';
 				if (data.ok) {
 					$result.innerHTML = '<div class="alert alert-success"><i class="fas fa-check"></i> <?php echo addslashes($this->lang('Signalement envoyé. Un modérateur va l\'examiner.')) ?></div>';
-					setTimeout(function(){ jQuery('.modal').modal('hide'); }, 1500);
+					setTimeout(function(){ document.querySelectorAll('.modal.show').forEach(function(m){ bootstrap.Modal.getOrCreateInstance(m).hide(); }); }, 1500);
 				} else if (data.error === 'rate_limit_or_dup') {
 					$result.innerHTML = '<div class="alert alert-warning"><?php echo addslashes($this->lang('Limite atteinte ou doublon : tu as déjà signalé ce contenu récemment ou dépassé 5 reports/heure.')) ?></div>';
 					$btn.disabled = false;

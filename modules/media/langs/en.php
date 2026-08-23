@@ -48,4 +48,6 @@ return [
 	'599dba10' => 'Reset',
 	'a0dbcbc7' => 'No file matches these criteria.',
 	'8a7e7178' => '%d result|%d results',
+	// i18n 2026-06-11 (code strings)
+	'f494deec' => '%s: extension not allowed (.%s)',
 ];

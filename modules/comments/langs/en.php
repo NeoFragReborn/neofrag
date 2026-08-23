@@ -21,4 +21,12 @@ return [
 	'bc8f177d' => 'Delete selection',
 	'6c57e7dd' => 'Delete the selected comments?',
 	'ad59e4ea' => '%d comment deleted.|%d comments deleted.',
+	// Complété i18n 2026-06-11
+	'6f01ddb4' => '%s commented on your post',
+	'd6ee3cdc' => 'New comment on content you follow',
+	// i18n 2026-06-11 (code strings)
+	'06272c15' => 'Too many recent comments. Try again in %d minute(s).',
+	'6714db33' => 'Delete this comment?',
+	'6bec17f1' => 'No comment',
+	'245e9606' => 'comment|comments',
 ];

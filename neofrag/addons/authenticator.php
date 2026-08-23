@@ -17,7 +17,8 @@ abstract class Authenticator extends Addon
 
 	static public function url()
 	{
-		return (NeoFrag()->url->https ? 'https' : 'http').'://'.NeoFrag()->url->host.NeoFrag()->url->base.'user/auth';
+		// site_origin() : le redirect_uri OAuth ne doit pas dériver d'un Host forgeable.
+		return site_origin().NeoFrag()->url->base.'user/auth';
 	}
 
 	protected function __info()

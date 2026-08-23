@@ -21,20 +21,14 @@ class Live_Editor extends Model
 		$page  = $disposition['page'];
 		$zone  = $disposition['zone'];
 
-		return unserialize($disposition['disposition'], ['allowed_classes' => [
-			\NF\NeoFrag\Libraries\Array_::class,
-			\NF\NeoFrag\Displayables\Row::class,
-			\NF\NeoFrag\Displayables\Col::class,
-			\NF\NeoFrag\Displayables\Widget::class,
-			\NF\NeoFrag\Displayables\Zone::class
-		]]);
+		return $this->disposition->decode($disposition['disposition']);
 	}
 
 	public function set_disposition($disposition_id, $disposition)
 	{
 		$this->db	->where('disposition_id', $disposition_id)
 					->update('nf_dispositions', [
-						'disposition' => serialize($disposition)
+						'disposition' => $this->disposition->encode($disposition)
 					]);
 	}
 
@@ -62,23 +56,11 @@ class Live_Editor extends Model
 
 	public function check_widget($widget_id)
 	{
-		$widget = $this->db	->from('nf_widgets')
-							->where('widget_id', $widget_id)
-							->row();
-
-		if ($widget)
-		{
-			if ($widget['settings'] !== NULL)
-			{
-				$widget['settings'] = serialize($widget['settings']);
-			}
-
-			return $widget;
-		}
-		else
-		{
-			return FALSE;
-		}
+		// Renvoie la ligne nf_widgets telle quelle (settings = JSON brut stocké). On ne re-sérialise
+		// plus le champ : c'était un reliquat de l'ancien format dont la sortie n'était jamais lue
+		// (widget_settings l'ignore ; widget_update le réencode via get_settings) → code mort retiré,
+		// plus aucun serialize() runtime des settings widget.
+		return $this->db->from('nf_widgets')->where('widget_id', $widget_id)->row() ?: FALSE;
 	}
 
 	public function get_widgets(&$widgets, &$types)

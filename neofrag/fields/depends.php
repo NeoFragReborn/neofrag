@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -17,7 +18,7 @@ class Depends
 		$this->_suffix = $suffix;
 	}
 
-	public function key($key)
+	public function key($key): string
 	{
 		return $key.$this->_suffix;
 	}

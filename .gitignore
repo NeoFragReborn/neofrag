@@ -1,20 +1,20 @@
 # === Secrets & config locale (jamais versionnés) ===
+# `/config` couvre tout le dossier : db.php, crypt.php, password.php, email.php, neofrag.php
+# et url.php sont générés par l'installeur et propres à chaque déploiement.
 /config
-config/db.php
-config/crypt.php
-config/password.php
 
 # === Runtime / généré ===
-/backups
+/backups/*
+!/backups/.htaccess
 /cache
 /logs/*
 !/logs/.gitkeep
+!/logs/.htaccess
 /upload/*
 !/upload/.htaccess
 *.map
 *.scssc
 *.log
-mydatabase.db
 
 # === Dépendances (reproductibles via composer install) ===
 /vendor
@@ -22,17 +22,6 @@ mydatabase.db
 
 # === Installeur : verrou runtime (généré au 1er boot, jamais versionné) ===
 install/db.txt
-
-# === Reliquats wizard upstream (non utilisés sur le fork) ===
-install/ajax.php
-install/background.jpg
-install/DATABASE.sql
-install/htaccess.txt
-install/htaccess_check.txt
-install/install.css
-install/install.js
-install/langs/en.php
-install/logo.png
 
 # === Outils dev ===
 /.phpunit.cache
@@ -43,10 +32,6 @@ install/logo.png
 /.idea
 /.vscode
 /.playwright-mcp
-/.tmpshots
-
-# Maquette de design (scratch, non versionnée)
-_landing-preview.html
 
 # === Marketplace : .zip régénérés via tools/package-addons.php (pas de bloat binaire) ===
 /marketplace/**/*.zip
@@ -54,6 +39,6 @@ _landing-preview.html
 # === Paquets de release (régénérés via tools/build-release.php) ===
 /dist
 
-# Fichiers de sauvegarde (backups d éditions, ne jamais versionner)
+# Fichiers de sauvegarde d'édition, ne jamais versionner
 *.bak
 *.bak/

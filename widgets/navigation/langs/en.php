@@ -41,4 +41,8 @@ return [
 	'76828c83' => 'Cover photo',
 	'11db7719' => 'Avatar',
 	'3dcd8730' => 'No active session',
+	// i18n 2026-06-11 (code strings)
+	'6db60ef7' => 'Managed menu',
+	'26db591e' => '— Manual links (below) —',
+	'571ec895' => 'Displays a menu created in "Menus" (replaces the manual links below).',
 ];

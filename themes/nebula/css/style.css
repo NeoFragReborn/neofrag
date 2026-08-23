@@ -905,7 +905,10 @@ body::before {
 .nb-nav.scrolled { background: rgba(7, 10, 16, 0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom-color: var(--fg-border); }
 .nb-nav-in { max-width: 1240px; margin: 0 auto; padding: 0 28px; height: var(--nb-nav-h); display: flex; align-items: center; gap: 26px; }
 .nb-logo { display: flex; align-items: center; gap: 11px; font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 20px; color: #fff; text-decoration: none; white-space: nowrap; }
-.nb-mark { width: 36px; height: 36px; border-radius: 10px; background: var(--nb-grad); display: grid; place-items: center; color: #04201d; font-size: 16px; box-shadow: 0 6px 22px -8px rgba(45, 212, 191, 0.5); }
+/* Logo de marque : PNG (tuile + glow inclus), s'adapte au mode (clair/sombre) et à la taille. */
+.nb-mark { width: 36px; height: 36px; border-radius: 10px; background: url('../images/brand/nf-dark.png') center / contain no-repeat; display: grid; place-items: center; }
+.nb-mark > i { display: none; }
+[data-theme="dark"] .nb-mark { background-image: url('../images/brand/nf-light.png'); }
 .nb-links { display: flex; gap: 4px; }
 .nb-links a { padding: 9px 15px; border-radius: 9px; color: var(--fg-muted); font-weight: 500; font-size: 14.5px; text-decoration: none; transition: .15s; }
 .nb-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.045); }

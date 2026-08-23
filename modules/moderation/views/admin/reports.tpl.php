@@ -49,23 +49,23 @@
 					<th><?php echo $this->lang('Cible (user)') ?></th>
 					<th><?php echo $this->lang('Raison') ?></th>
 					<th><?php echo $this->lang('Commentaire') ?></th>
-					<th class="text-right"><?php echo $this->lang('Action') ?></th>
+					<th class="text-end"><?php echo $this->lang('Action') ?></th>
 				</tr>
 			</thead>
 			<tbody>
 			<?php foreach ($reports as $r):
 				$status_class = [
-					'pending'   => 'badge-warning',
-					'reviewed'  => 'badge-info',
-					'actioned'  => 'badge-success',
-					'dismissed' => 'badge-secondary',
-					'duplicate' => 'badge-light'
-				][$r['status']] ?? 'badge-secondary';
+					'pending'   => 'text-bg-warning',
+					'reviewed'  => 'text-bg-info',
+					'actioned'  => 'text-bg-success',
+					'dismissed' => 'text-bg-secondary',
+					'duplicate' => 'text-bg-light'
+				][$r['status']] ?? 'text-bg-secondary';
 			?>
 				<tr>
 					<td><small class="text-muted" title="<?php echo htmlspecialchars($r['created_at']) ?>"><?php echo time_span(strtotime($r['created_at'])) ?></small></td>
 					<td><span class="badge <?php echo $status_class ?>"><?php echo htmlspecialchars($r['status']) ?></span></td>
-					<td><span class="badge badge-light"><?php echo htmlspecialchars($r['target_type']) ?></span><br><small class="text-muted"><?php echo htmlspecialchars($r['target_id']) ?></small></td>
+					<td><span class="badge text-bg-light"><?php echo htmlspecialchars($r['target_type']) ?></span><br><small class="text-muted"><?php echo htmlspecialchars($r['target_id']) ?></small></td>
 					<td>
 						<?php if ($show_reporter && $r['reporter_username']): ?>
 							<a href="<?php echo url($_modbase.'/users/'.(int)$r['reporter_id']) ?>">@<?php echo htmlspecialchars($r['reporter_username']) ?></a>
@@ -82,9 +82,9 @@
 							<small class="text-muted">—</small>
 						<?php endif ?>
 					</td>
-					<td><span class="badge badge-secondary"><?php echo htmlspecialchars($r['reason']) ?></span></td>
+					<td><span class="badge text-bg-secondary"><?php echo htmlspecialchars($r['reason']) ?></span></td>
 					<td><?php echo htmlspecialchars(mb_strimwidth((string)$r['comment'], 0, 80, '…')) ?></td>
-					<td class="text-right">
+					<td class="text-end">
 						<a class="btn btn-sm btn-outline-primary" href="<?php echo url($_modbase.'/reports/'.(int)$r['id']) ?>"><i class="fas fa-eye"></i> <?php echo $this->lang('Détails') ?></a>
 					</td>
 				</tr>

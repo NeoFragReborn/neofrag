@@ -26,4 +26,14 @@ return [
 	'dc275fe4' => 'Filter',
 	'599dba10' => 'Reset',
 	'8a7e7178' => '%d result|%d results',
+	// i18n 2026-06-11 (code strings)
+	'f7c592f8' => 'No wiki page for now.',
+	'5dd8e248' => 'Wiki pages',
+	'86c84bca' => 'Page deleted. Any child pages were moved up to the root.',
+	'8fc6a624' => 'Current version',
+	'a30d943d' => 'Revision',
+	'3a682dba' => 'No content difference between these two versions.',
+	'cc71a928' => 'Back to the history',
+	'd8165bb3' => 'View the current version',
+	'f3d55b7e' => 'Version comparison',
 ];

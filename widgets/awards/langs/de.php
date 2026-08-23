@@ -16,5 +16,8 @@ return [
 	'cbea6d24' => '%d. / %d Teams',
 	'd40929a6' => '%d.',
 	'ddaee116' => 'Mit %d Trophäe|Mit %d Trophäen',
-	'f90fb52e' => 'Alle unsere Auszeichnungen'
+	'f90fb52e' => 'Alle unsere Auszeichnungen',
+	// i18n 2026-06-11 (code strings)
+	'd0e2fd31' => 'Anzahl der Auszeichnungen',
+	'042e2c3d' => 'In einem Panel anzeigen',
 ];

@@ -28,10 +28,7 @@ class Text extends Labelable
 
 			if ($this->_data)
 			{
-				$this	->css('jquery-ui.min')
-						->css('form_text')
-						->js('jquery-ui.min')
-						->js('form')
+				$this	->js('form')
 						->js('form_text');
 
 				$encode = function($data){

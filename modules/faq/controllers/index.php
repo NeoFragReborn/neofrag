@@ -33,10 +33,10 @@ class Index extends Controller_Module
 					$qid = 'faq-q-'.(int)$q['id'];
 					$body .= '<div class="card">';
 					$body .= '<div class="card-header" id="head-'.$qid.'">';
-					$body .= '<button class="btn btn-link text-left w-100" type="button" data-toggle="collapse" data-target="#'.$qid.'" aria-expanded="false" aria-controls="'.$qid.'">';
-					$body .= '<i class="fas fa-chevron-right mr-2"></i>'.htmlspecialchars($q['question']);
+					$body .= '<button class="btn btn-link text-start w-100" type="button" data-bs-toggle="collapse" data-target="#'.$qid.'" aria-expanded="false" aria-controls="'.$qid.'">';
+					$body .= '<i class="fas fa-chevron-right me-2"></i>'.htmlspecialchars($q['question']);
 					$body .= '</button></div>';
-					$body .= '<div id="'.$qid.'" class="collapse" aria-labelledby="head-'.$qid.'" data-parent="#faq-cat-'.(int)$g['cat']['id'].'">';
+					$body .= '<div id="'.$qid.'" class="collapse" aria-labelledby="head-'.$qid.'" data-bs-parent="#faq-cat-'.(int)$g['cat']['id'].'">';
 					$body .= '<div class="card-body">'.$q['answer'].'</div></div></div>';
 				}
 

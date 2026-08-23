@@ -8,6 +8,15 @@ namespace NF\NeoFrag\Loadables\Controllers;
 
 use NF\NeoFrag\Loadables\Controller;
 
+/**
+ * Le contrôleur de module proxie les méthodes de son addon via __call en retournant $this → chaînables.
+ *
+ * @method static title(string $title)
+ * @method static subtitle(string $subtitle)
+ * @method static icon(string $icon)
+ * @method static meta_description(string $description)
+ * @method static add_action(string $url, string $title = '', string $icon = '')
+ */
 abstract class Module extends Controller
 {
 	use \NF\NeoFrag\Traits\Admin_Helpers;

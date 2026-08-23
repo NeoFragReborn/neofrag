@@ -12,11 +12,9 @@ class Admin extends Controller_Module
 {
 	public function index($events)
 	{
-		$this	->css('fullcalendar.min')
-				->css('admin')
-				->js('moment.min')
+		$this	->css('admin')
 				->js('fullcalendar.min')
-				->js('locale-all')
+				->js('fullcalendar-locales.min')
 				->js('events');
 
 		// Stat cards
@@ -88,15 +86,15 @@ class Admin extends Controller_Module
 								'content' => function($data){
 									if (!$data['published'])
 									{
-										return '<i class="far fa-circle" data-toggle="tooltip" title="'.$this->lang('En attente de publication').'" style="color: #535353;"></i>';
+										return '<i class="far fa-circle" data-bs-toggle="tooltip" title="'.$this->lang('En attente de publication').'" style="color: #535353;"></i>';
 									}
 
 									if (!empty($data['publish_date']) && strtotime($data['publish_date']) > time())
 									{
-										return '<i class="fas fa-calendar-alt" data-toggle="tooltip" title="'.$this->lang('Programmé le %s', timetostr($this->lang('d/m/Y H:i'), $data['publish_date'])).'" style="color: #e0a32e;"></i>';
+										return '<i class="fas fa-calendar-alt" data-bs-toggle="tooltip" title="'.$this->lang('Programmé le %s', timetostr($this->lang('d/m/Y H:i'), $data['publish_date'])).'" style="color: #e0a32e;"></i>';
 									}
 
-									return '<i class="fas fa-circle" data-toggle="tooltip" title="'.$this->lang('Publié').'" style="color: #7bbb17;"></i>';
+									return '<i class="fas fa-circle" data-bs-toggle="tooltip" title="'.$this->lang('Publié').'" style="color: #7bbb17;"></i>';
 								},
 								'sort'    => function($data){
 									return $data['published'];
@@ -118,7 +116,8 @@ class Admin extends Controller_Module
 							[
 								'title'   => $this->lang('Titre'),
 								'content' => function($data){
-									return '<a href="'.url('events/'.$data['event_id'].'/'.url_title($data['title'])).'">'.$data['title'].'</a>';
+									$series = !empty($data['series_id']) ? ' <span class="badge text-bg-secondary" data-bs-toggle="tooltip" title="'.htmlspecialchars($this->lang('Occurrence d\'une série récurrente'), ENT_QUOTES).'"><i class="fas fa-repeat"></i></span>' : '';
+									return '<a href="'.url('events/'.$data['event_id'].'/'.url_title($data['title'])).'">'.$data['title'].'</a>'.$series;
 								},
 								'sort'    => function($data){
 									return $data['title'];
@@ -132,7 +131,7 @@ class Admin extends Controller_Module
 									if ($data['type'] == 1 && ($match = $this->model('matches')->get_match_info($data['event_id'])))//Matches
 									{
 										return  ($match['scores'] ? $this->model('matches')->label_global_scores($data['event_id']).'<span style="margin: 0 10px;"> vs </span>' : '<span style="margin-right: 10px;">'.$this->lang('Match à jouer').' vs </span>').
-												($match['opponent']['country'] ? '<img src="'.url('images/flags/'.$match['opponent']['country'].'.png').'" data-toggle="tooltip" title="'.get_countries()[$match['opponent']['country']].'" style="margin-right: 10px;" alt="" />' : '').
+												($match['opponent']['country'] ? '<img src="'.url('images/flags/'.$match['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.get_countries()[$match['opponent']['country']].'" style="margin-right: 10px;" alt="" />' : '').
 												$match['opponent']['title'].' <i>('.$match['game']['title'].')</i>';
 									}
 								},
@@ -164,21 +163,21 @@ class Admin extends Controller_Module
 							[
 								'title'   => $this->lang('Date'),
 								'content' => function($data){
-									return '<span data-toggle="tooltip" title="'.timetostr(NeoFrag()->lang('l j F Y, H:i'), $data['date']).'">'.timetostr(NeoFrag()->lang('d/m/Y H:i'), $data['date']).($data['date_end'] ? '&nbsp;&nbsp;<i>'.icon('fas fa-hourglass-end').(ceil((strtotime($data['date_end']) - strtotime($data['date'])) / ( 60 * 60 ))).'h</i>' : '').'</span>';
+									return '<span data-bs-toggle="tooltip" title="'.timetostr(NeoFrag()->lang('l j F Y, H:i'), $data['date']).'">'.timetostr(NeoFrag()->lang('d/m/Y H:i'), $data['date']).($data['date_end'] ? '&nbsp;&nbsp;<i>'.icon('fas fa-hourglass-end').(ceil((strtotime($data['date_end']) - strtotime($data['date'])) / ( 60 * 60 ))).'h</i>' : '').'</span>';
 								},
 								'sort'    => function($data){
 									return $data['date'];
 								}
 							],
 							[
-								'title'   => '<i class="fas fa-users" data-toggle="tooltip" title="'.$this->lang('Participants').'"></i>',
+								'title'   => '<i class="fas fa-users" data-bs-toggle="tooltip" title="'.$this->lang('Participants').'"></i>',
 								'content' => function($data){
 									return '<a href="'.url('events/'.$data['event_id'].'/'.url_title($data['title']).'#participants').'">'.$this->model('participants')->count_participants($data['event_id']).'</a>';
 								},
 								'size'    => TRUE
 							],
 							[
-								'title'   => '<i class="far fa-comments" data-toggle="tooltip" title="'.$this->lang('Commentaires').'"></i>',
+								'title'   => '<i class="far fa-comments" data-bs-toggle="tooltip" title="'.$this->lang('Commentaires').'"></i>',
 								'content' => function($data){
 									return $this->module('comments')->admin('events', $data['event_id']);
 								},
@@ -258,23 +257,60 @@ class Admin extends Controller_Module
 		$this	->subtitle($this->lang('Ajouter un événement'))
 				->form()
 				->add_rules('events')
+				->add_rules([
+					'recurrence' => [
+						'label'  => $this->lang('Répéter'),
+						'type'   => 'select',
+						'value'  => '',
+						'values' => [
+							''        => $this->lang('Aucune'),
+							'daily'   => $this->lang('Quotidienne'),
+							'weekly'  => $this->lang('Hebdomadaire'),
+							'monthly' => $this->lang('Mensuelle')
+						],
+						'size'   => 'col-3'
+					],
+					'occurrences' => [
+						'label'       => $this->lang('Occurrences'),
+						'type'        => 'number',
+						'value'       => '1',
+						'size'        => 'col-3',
+						'description' => $this->lang('Récurrence : nombre total d\'occurrences (max %d).', \NF\Modules\Events\Lib\Recurrence::MAX_OCCURRENCES)
+					]
+				])
 				->add_submit($this->lang('Ajouter'))
 				->add_back('admin/events');
 
 		if ($this->form()->is_valid($post))
 		{
-			$event_id = $this->model()->add($post['title'],
+			$dates = \NF\Modules\Events\Lib\Recurrence::dates($post['date'], $post['date_end'], $post['recurrence'] ?? '', (int)($post['occurrences'] ?? 1));
+
+			$ids = [];
+			foreach ($dates as $occurrence)
+			{
+				$ids[] = (int)$this->model()->add($post['title'],
 											$post['type'],
-											$post['date'],
-											$post['date_end'],
+											$occurrence[0],
+											$occurrence[1],
 											$post['description'],
 											$post['private_description'],
 											$post['location'],
 											$post['image'],
 											in_array('on', $post['published']),
 											$post['publish_date'] ?? '');
+			}
 
-			notify($this->lang('Événement ajouté'));
+			$event_id = $ids[0];
+
+			if (count($ids) > 1)
+			{
+				$this->model()->set_series($ids);
+				notify($this->lang('Série de %d événements créée', count($ids)));
+			}
+			else
+			{
+				notify($this->lang('Événement ajouté'));
+			}
 
 			if ($this->db->select('type')->from('nf_events_types')->where('type_id', $post['type'])->row())
 			{
@@ -465,7 +501,7 @@ class Admin extends Controller_Module
 		if ($published && !$this->model('participants')->get_participants($event_id))
 		{
 			$alert = $this	->panel()
-							->body('<div class="float-right"><a href="'.url('events/'.$event_id.'/'.url_title($title).'#participants').'" class="btn btn-info">Inviter des membres</a></div><i class="fas fa-info-circle"></i> <b>Pense-bête !</b><br />N\'oubliez pas d\'envoyer vos demandes de participation à vos membres !</b>')
+							->body('<div class="float-end"><a href="'.url('events/'.$event_id.'/'.url_title($title).'#participants').'" class="btn btn-info">Inviter des membres</a></div><i class="fas fa-info-circle"></i> <b>Pense-bête !</b><br />N\'oubliez pas d\'envoyer vos demandes de participation à vos membres !</b>')
 							->color('info');
 		}
 
@@ -479,7 +515,7 @@ class Admin extends Controller_Module
 					->add_columns([
 						[
 							'content' => function($data){
-								return $this->model('matches')->label_scores($data['score1'], $data['score2']).($data['title'] ? ' '.icon('far fa-map ml-1').' '.$data['title'] : '');
+								return $this->model('matches')->label_scores($data['score1'], $data['score2']).($data['title'] ? ' '.icon('far fa-map ms-1').' '.$data['title'] : '');
 							}
 						],
 						[
@@ -638,7 +674,7 @@ class Admin extends Controller_Module
 							->add_columns([
 								[
 									'content' => function($data){
-										$flag = $data['country'] ? '<img src="'.url('images/flags/'.$data['country'].'.png').'" data-toggle="tooltip" title="'.get_countries()[$data['country']].'" style="margin-right: 10px;" alt="" />' : '';
+										$flag = $data['country'] ? '<img src="'.url('images/flags/'.$data['country'].'.png').'" data-bs-toggle="tooltip" title="'.get_countries()[$data['country']].'" style="margin-right: 10px;" alt="" />' : '';
 
 										return $flag.'<a href="'.url('admin/events/opponents/'.$data['opponent_id'].'/'.url_title($data['title'])).'">'.$data['title'].'</a>';
 									},

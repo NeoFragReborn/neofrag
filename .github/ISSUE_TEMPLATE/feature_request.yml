@@ -1,0 +1,34 @@
+name: ✨ Proposition de fonctionnalité
+description: Suggérer une idée ou une amélioration
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problème / besoin
+      description: Quel manque ou quelle frustration cette fonctionnalité résoudrait-elle ?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solution envisagée
+      description: Décris ce que tu aimerais voir.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives envisagées
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Périmètre
+      options:
+        - Cœur (framework / admin)
+        - Module
+        - Widget
+        - Thème
+        - Marketplace / installeur
+        - Documentation
+        - Autre

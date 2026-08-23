@@ -42,7 +42,7 @@ class Aurora extends Theme
             'author'  => 'Ton Nom',
             'license' => 'Creative Commons CC BY-NC-SA 4.0',
             'version' => '1.0.0',
-            'depends' => ['neofrag' => '0.2.1'],
+            'depends' => ['neofrag' => '1.0.0'],
             'zones'   => ['Header', 'Avant-contenu', 'Contenu', 'Post-contenu', 'Footer'],
         ];
     }

@@ -22,7 +22,7 @@
 }
 </style>
 <div class="p-3">
-	<div id="partners-carousel-<?php echo $id ?>" class="carousel slide" data-ride="carousel">
+	<div id="partners-carousel-<?php echo $id ?>" class="carousel slide" data-bs-ride="carousel">
 		<div class="carousel-inner" role="listbox">
 			<?php
 			$i = 0;
@@ -52,13 +52,13 @@
 			<?php endfor ?>
 		</div>
 		<?php if ($total_slides > 1): ?>
-		<a class="carousel-control-prev" href="#partners-carousel-<?php echo $id ?>" role="button" data-slide="prev">
+		<a class="carousel-control-prev" href="#partners-carousel-<?php echo $id ?>" role="button" data-bs-slide="prev">
 			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-			<span class="sr-only">Previous</span>
+			<span class="visually-hidden">Previous</span>
 		</a>
-		<a class="carousel-control-next" href="#partners-carousel-<?php echo $id ?>" role="button" data-slide="next">
+		<a class="carousel-control-next" href="#partners-carousel-<?php echo $id ?>" role="button" data-bs-slide="next">
 			<span class="carousel-control-next-icon" aria-hidden="true"></span>
-			<span class="sr-only">Next</span>
+			<span class="visually-hidden">Next</span>
 		</a>
 		<?php endif ?>
 	</div>

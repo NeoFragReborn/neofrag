@@ -275,7 +275,7 @@ class Moderation extends Module
 	{
 		// Badge avec count de reports en attente sur l'icône admin
 		$count = (int)$this->db->select('COUNT(*)')->from('nf_reports')->where('status', 'pending')->row();
-		return $count > 0 ? '<span class="float-right badge badge-warning">'.$count.'</span>' : '';
+		return $count > 0 ? '<span class="float-end badge text-bg-warning">'.$count.'</span>' : '';
 	}
 
 	/**
@@ -309,7 +309,7 @@ class Moderation extends Module
 		       . ' data-target-id="'.htmlspecialchars((string)$id).'"'
 		       . ' data-url="'.htmlspecialchars($url).'"';
 
-		return '<a href="#" class="btn btn-sm btn-link text-muted nf-report-btn" '.$attrs.' data-toggle="tooltip" title="'.htmlspecialchars($this->lang('Signaler ce contenu')).'">'
+		return '<a href="#" class="btn btn-sm btn-link text-muted nf-report-btn" '.$attrs.' data-bs-toggle="tooltip" title="'.htmlspecialchars($this->lang('Signaler ce contenu')).'">'
 		     . '<i class="fas fa-flag"></i>'
 		     . '</a>';
 	}

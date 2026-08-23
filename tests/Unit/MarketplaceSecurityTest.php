@@ -119,4 +119,31 @@ final class MarketplaceSecurityTest extends TestCase
 	{
 		$this->assertStringStartsWith('https://', Installer::marketplace_url());
 	}
+
+	/**
+	 * sanitize_marketplace_url() = validation pure utilisée au runtime (admin marketplace/updates,
+	 * checker). Un override doit retomber sur le défaut sauf s'il vise un hôte autorisé en HTTPS:443.
+	 */
+	public function testSanitizeMarketplaceUrlRejectsForeignOrigins(): void
+	{
+		$default = Installer::MARKETPLACE_URL_DEFAULT;
+
+		foreach ([
+			NULL,
+			'',
+			'http://neofrag-reborn.xyz/marketplace',          // pas HTTPS
+			'https://evil.test/marketplace',                  // hôte hors allow-list
+			'https://neofrag-reborn.xyz:8443/marketplace',    // port non standard
+			'https://user:pass@neofrag-reborn.xyz/marketplace', // userinfo
+			'https://neofrag-reborn.xyz.evil.test/x',          // suffixe trompeur
+			'ftp://neofrag-reborn.xyz/marketplace',
+		] as $bad)
+		{
+			$this->assertSame($default, Installer::sanitize_marketplace_url($bad), 'Refusé : '.var_export($bad, TRUE));
+		}
+
+		// Override légitime accepté, slash final normalisé.
+		$this->assertSame('https://neofrag-reborn.xyz/marketplace', Installer::sanitize_marketplace_url('https://neofrag-reborn.xyz/marketplace/'));
+		$this->assertSame('https://www.neofrag-reborn.xyz/marketplace', Installer::sanitize_marketplace_url('https://www.neofrag-reborn.xyz/marketplace'));
+	}
 }

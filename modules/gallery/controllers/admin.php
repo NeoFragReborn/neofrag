@@ -18,15 +18,15 @@ class Admin extends Controller_Module
 								'content' => function($data){
 									if (!$data['published'])
 									{
-										return '<i class="far fa-eye-slash text-muted" data-toggle="tooltip" title="'.$this->lang('Non visible dans la galerie').'"></i>';
+										return '<i class="far fa-eye-slash text-muted" data-bs-toggle="tooltip" title="'.$this->lang('Non visible dans la galerie').'"></i>';
 									}
 
 									if (!empty($data['date']) && strtotime($data['date']) > time())
 									{
-										return '<i class="fas fa-calendar-alt" data-toggle="tooltip" title="'.$this->lang('Programmée le %s', timetostr($this->lang('d/m/Y H:i'), $data['date'])).'" style="color: #e0a32e;"></i>';
+										return '<i class="fas fa-calendar-alt" data-bs-toggle="tooltip" title="'.$this->lang('Programmée le %s', timetostr($this->lang('d/m/Y H:i'), $data['date'])).'" style="color: #e0a32e;"></i>';
 									}
 
-									return '<i class="fas fa-circle text-success" data-toggle="tooltip" data-original-title="'.$this->lang('Publiée dans la galerie').'"></i>';
+									return '<i class="fas fa-circle text-success" data-bs-toggle="tooltip" data-original-title="'.$this->lang('Publiée dans la galerie').'"></i>';
 								},
 								'sort'    => function($data){
 									return $data['published'];
@@ -59,12 +59,12 @@ class Admin extends Controller_Module
 							],
 							/* //TODO
 							array(
-								'title'   => $this->lang('Intégration <i class="fas fa-info-circle text-muted" data-toggle="tooltip" title="Code à intégrer pour afficher cette galerie dans un contenu libre de type html/bbcode"></i>'),
+								'title'   => $this->lang('Intégration <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Code à intégrer pour afficher cette galerie dans un contenu libre de type html/bbcode"></i>'),
 								'content' => '<code>[gallery-{gallery_id}]</code>'
 							),
 							*/
 							[
-								'title'   => '<i class="far fa-image" data-toggle="tooltip" title="'.$this->lang('Images').'"></i>',
+								'title'   => '<i class="far fa-image" data-bs-toggle="tooltip" title="'.$this->lang('Images').'"></i>',
 								'content' => function($data){
 									return $data['images'];
 								},
@@ -235,7 +235,7 @@ class Admin extends Controller_Module
 									[
 										'title'   => $this->lang('Date'),
 										'content' => function($data){
-											return '<span data-toggle="tooltip" title="'.timetostr(NeoFrag()->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
+											return '<span data-bs-toggle="tooltip" title="'.timetostr(NeoFrag()->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
 										},
 										'align'   => 'left'
 									],

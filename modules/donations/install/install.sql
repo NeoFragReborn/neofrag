@@ -3,6 +3,7 @@
 -- Régénérer : docker compose exec -T web php tools/extract-module-sql.php
 
 SET FOREIGN_KEY_CHECKS = 0;
+SET NAMES utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `nf_donations_campaigns` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -20,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `nf_donations_campaigns` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_name` (`name`),
   KEY `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_donations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -41,6 +42,6 @@ CREATE TABLE IF NOT EXISTS `nf_donations` (
   KEY `idx_campaign` (`campaign_id`,`status`),
   KEY `idx_user` (`user_id`),
   CONSTRAINT `fk_don_campaign` FOREIGN KEY (`campaign_id`) REFERENCES `nf_donations_campaigns` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

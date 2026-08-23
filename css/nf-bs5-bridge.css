@@ -1,0 +1,86 @@
+/*
+ * Pont de compatibilité Bootstrap 4 -> 5 (Lot A.2, cf. les notes du mainteneur).
+ *
+ * BS5 a supprimé quelques classes BS4 que NeoFrag utilise comme HOOKS sémantiques (donc non
+ * renommables sans casser du JS/CSS) ou dont le remplacement markup serait disproportionné :
+ *   - .form-group         : lue par live-editor.js et themes/admin/js/settings.js (sélecteurs).
+ *   - .media / .media-*   : structure des bulles talks (.media-left/right) + commentaires/forum.
+ *   - .input-group-*pend  : wrappers d'addons encore présents dans les forms.
+ *   - .close              : boutons « x » encore en markup (les versions JS sont déjà en .btn-close).
+ * On restaure leur APPARENCE (cosmétique). Theme-aware via currentColor (pas le noir codé en dur de BS4).
+ */
+
+/* Dark mode des composants Bootstrap 5 : on active le dark natif BS5 via data-bs-theme="dark"
+   (posé par le head + les theme.js), MAIS on remappe ses variables sur les tokens --nf-* du thème
+   actif — sinon les tables/cards/dropdowns BS prennent le gris #212529 par défaut au lieu de la
+   teinte du thème. Fallbacks = valeurs dark BS5 (jamais de blanc). */
+[data-bs-theme="dark"] {
+	--bs-body-bg:        var(--nf-surface, #212529);
+	--bs-body-color:     var(--nf-text, #dee2e6);
+	--bs-emphasis-color: var(--nf-text, #fff);
+	--bs-border-color:   var(--nf-border, #495057);
+	--bs-secondary-bg:   var(--nf-surface-2, #343a40);
+	--bs-tertiary-bg:    var(--nf-surface-3, #2b3035);
+	--bs-secondary-color: color-mix(in srgb, var(--nf-text, #dee2e6) 70%, transparent);
+	--bs-tertiary-color:  color-mix(in srgb, var(--nf-text, #dee2e6) 50%, transparent);
+}
+
+/* Espacement icône → texte : le helper icon() rend <i class="icon …"> suivi du texte avec une simple
+   espace, donc trop collé. On donne une petite marge de base ; les icônes SEULES (sans texte) -> 0. */
+i.icon { margin-right: .4em; }
+i.icon:only-child { margin-right: 0; }
+
+/* form-group : n'apportait que la marge basse entre champs. */
+.form-group { margin-bottom: 1rem; }
+
+/* media object (supprimé en BS5) : avatar + corps côte à côte. */
+.media { display: flex; align-items: flex-start; }
+.media-body { flex: 1 1 auto; }
+.media-left, .media-right { flex: 0 0 auto; }
+.media-right { order: 1; }
+
+/* input-group-prepend/append (supprimés en BS5 : enfants directs désormais) : garder l'inline. */
+.input-group-prepend, .input-group-append { display: flex; align-items: center; }
+.input-group-prepend { margin-right: -1px; }
+.input-group-append  { margin-left: -1px; }
+
+/* .close -> .btn-close en BS5. On restitue le bouton « x » texte, theme-aware. */
+.close {
+	box-sizing: content-box;
+	margin-left: auto;
+	padding: 0 .25rem;
+	background: transparent;
+	border: 0;
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1;
+	color: inherit;
+	opacity: .5;
+	cursor: pointer;
+}
+.close:hover { opacity: .9; }
+/* Dans une alerte, le « x » se positionne en haut à droite (BS5 ne le fait que pour .btn-close). */
+.alert { position: relative; }
+.alert > .close { position: absolute; top: 0; right: 0; padding: .75rem 1rem; }
+
+/* Zones scrollables (remplacent jquery.mCustomScrollbar) : overflow natif + scrollbar fine. */
+.panel-notifications .card-body { max-height: 255px; }
+.module-user .activity-message { max-height: 280px; }
+.module-user .message-list { max-height: 470px; }
+.widget-talks .card-body { max-height: 420px; }
+.panel-notifications .card-body,
+.module-user .activity-message,
+.module-user .message-list,
+.widget-talks .card-body {
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(127, 127, 127, .5) transparent;
+}
+.panel-notifications .card-body::-webkit-scrollbar,
+.module-user .activity-message::-webkit-scrollbar,
+.module-user .message-list::-webkit-scrollbar,
+.widget-talks .card-body::-webkit-scrollbar { width: 8px; }
+.panel-notifications .card-body::-webkit-scrollbar-thumb,
+.module-user .activity-message::-webkit-scrollbar-thumb,
+.module-user .message-list::-webkit-scrollbar-thumb,
+.widget-talks .card-body::-webkit-scrollbar-thumb { background: rgba(127, 127, 127, .5); border-radius: 4px; }

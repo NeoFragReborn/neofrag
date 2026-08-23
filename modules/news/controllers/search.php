@@ -37,4 +37,13 @@ class Search extends Controller_Module
 
 		return ['nl.title', 'nl.introduction', 'nl.content'];
 	}
+
+	/** Suggestion typeahead (titre + lien) à partir d'une ligne de résultat. */
+	public function suggest($result)
+	{
+		return [
+			'title' => $result['title'],
+			'url'   => url('news/'.$result['news_id'].'/'.url_title($result['title']))
+		];
+	}
 }

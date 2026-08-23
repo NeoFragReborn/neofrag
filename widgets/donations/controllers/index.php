@@ -9,6 +9,11 @@ use NF\NeoFrag\Loadables\Controllers\Widget as Controller_Widget;
 
 class Index extends Controller_Widget
 {
+	public function index($config = [])
+	{
+		return $this->progress($config);
+	}
+
 	public function progress($settings = [])
 	{
 		$campaign = $this->_campaign($settings);

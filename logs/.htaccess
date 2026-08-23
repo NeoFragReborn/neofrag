@@ -1,0 +1,3 @@
+# Les logs peuvent contenir des données sensibles (IP, traces, conversation SMTP).
+# Jamais servis en HTTP.
+Require all denied

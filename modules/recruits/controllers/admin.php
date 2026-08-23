@@ -112,8 +112,7 @@ class Admin extends Controller_Module
 	{
 		$this	->subtitle($title)
 				->css('recruits')
-				->js('jquery.knob')
-				->js_load('$(\'.knob\').knob();')
+				->js('knob')
 				->form()
 				->add_rules('recruit', [
 					'teams'        => $this->model()->get_teams_list(),
@@ -155,7 +154,7 @@ class Admin extends Controller_Module
 		return $this->row(
 			$this->col(
 				$this	->panel()
-						->heading($title.' <span class="ml-2">'.(string)$this->button_access($recruit_id, 'recruit').'</span>', 'fas fa-briefcase')
+						->heading($title.' <span class="ms-2">'.(string)$this->button_access($recruit_id, 'recruit').'</span>', 'fas fa-briefcase')
 						->body($this->form()->display())
 						->size('col-8')
 			),
@@ -211,7 +210,7 @@ class Admin extends Controller_Module
 									->add_columns([
 										[
 											'content' => function($data){
-												return '<a href="mailto:'.$data['email'].'" data-toggle="tooltip" title="'.$data['email'].'">'.icon('far fa-envelope').'</a>';
+												return '<a href="mailto:'.$data['email'].'" data-bs-toggle="tooltip" title="'.$data['email'].'">'.icon('far fa-envelope').'</a>';
 											},
 											'sort'    => function($data){
 												return $data['email'];
@@ -243,7 +242,7 @@ class Admin extends Controller_Module
 										[
 											'title'   => 'Date',
 											'content' => function($data){
-												return '<span data-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
+												return '<span data-bs-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
 											},
 											'sort'    => function($data){
 												return $data['date'];
@@ -314,7 +313,7 @@ class Admin extends Controller_Module
 										[
 											'title'   => 'Date',
 											'content' => function($data){
-												return '<span data-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
+												return '<span data-bs-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
 											},
 											'sort'    => function($data){
 												return $data['date'];
@@ -372,7 +371,7 @@ class Admin extends Controller_Module
 										[
 											'title'   => 'Date',
 											'content' => function($data){
-												return '<span data-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
+												return '<span data-bs-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
 											},
 											'sort'    => function($data){
 												return $data['date'];
@@ -430,7 +429,7 @@ class Admin extends Controller_Module
 										[
 											'title'   => 'Date',
 											'content' => function($data){
-												return '<span data-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
+												return '<span data-bs-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
 											},
 											'sort'    => function($data){
 												return $data['date'];
@@ -635,7 +634,7 @@ class Admin extends Controller_Module
 						->color($statut_color)
 						->footer(icon('fas fa-arrow-circle-left').' Retour aux candidatures de cette offre'),
 				$this	->panel()
-						->heading($this->lang('Candidature de').' <b>'.htmlspecialchars($pseudo).'</b> <a href="mailto:'.$email.'" class="btn btn-info btn-sm ml-2" data-toggle="tooltip" title="'.$this->lang('Contacter par e-mail').'">'.icon('far fa-envelope').'</a>', 'fab fa-black-tie')
+						->heading($this->lang('Candidature de').' <b>'.htmlspecialchars($pseudo).'</b> <a href="mailto:'.$email.'" class="btn btn-info btn-sm ms-2" data-bs-toggle="tooltip" title="'.$this->lang('Contacter par e-mail').'">'.icon('far fa-envelope').'</a>', 'fab fa-black-tie')
 						->body($this->view('candidacy', [
 							'candidacy_id'  => $candidacy_id,
 							'custom'        => $this->model()->get_candidacy_custom($candidacy_id),
@@ -666,7 +665,7 @@ class Admin extends Controller_Module
 			),
 			$this->col(
 				$this	->panel()
-						->heading($this->lang('Tendance des votes').' <span class="ml-2 small text-muted">'.$total_up.' '.icon('far fa-thumbs-up text-success').' &middot; '.$total_down.' '.icon('far fa-thumbs-down text-danger').'</span>', 'far fa-comment-dots')
+						->heading($this->lang('Tendance des votes').' <span class="ms-2 small text-muted">'.$total_up.' '.icon('far fa-thumbs-up text-success').' &middot; '.$total_down.' '.icon('far fa-thumbs-down text-danger').'</span>', 'far fa-comment-dots')
 						->body($this->view('admin-candidacy-status', [
 							'status' => $status,
 							'votes'  => $votes

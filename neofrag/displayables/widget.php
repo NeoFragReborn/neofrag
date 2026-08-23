@@ -72,6 +72,26 @@ class Widget extends Displayable
 
 	public function __toString()
 	{
+		// Garde-fou : un widget en erreur (ex. table d'un module à moitié installé) ne doit PAS faire
+		// planter toute la page (le rendu est une concaténation de chaînes — une exception ici viderait
+		// l'écran entier). On l'efface et on journalise ; le reste du site reste affiché.
+		try
+		{
+			return $this->_render();
+		}
+		catch (\Throwable $e)
+		{
+			error_log('[widget] #'.$this->_widget.' : '.$e->getMessage());
+			if (defined('NEOFRAG_DEBUG_BAR') && NEOFRAG_DEBUG_BAR)
+			{
+				throw $e; // en debug : on remonte l'erreur au lieu de la masquer
+			}
+			return '';
+		}
+	}
+
+	private function _render(): string
+	{
 		$widget_data = NeoFrag()->db->from('nf_widgets')
 									->where('widget_id', $this->_widget)
 									->row();
@@ -80,7 +100,7 @@ class Widget extends Displayable
 		{
 			$widget->data = NeoFrag()->array;
 			
-			$output = $widget->output($widget_data['type'], ($widget_data['settings'] && is_array($settings = unserialize($widget_data['settings'], ['allowed_classes' => false]))) ? $settings : []);
+			$output = $widget->output($widget_data['type'], \NF\NeoFrag\Fields\Json::decode($widget_data['settings']));
 
 			$style = function($output) use ($widget_data){
 				if (is_a($output, 'NF\NeoFrag\Libraries\Panel'))

@@ -207,7 +207,10 @@ class Driver_Query
 				}
 				else
 				{
-					$sql = '';
+					// Ensemble vide = aucun match (sémantique de IN ()) — surtout pas une
+					// condition supprimée : ->where('id', [])->delete(...) générait un
+					// DELETE sans WHERE (purge de table sur un simple oubli de garde).
+					$sql = '1 = 0';
 				}
 			}
 			else if (preg_match('/^(.+?) FIND_IN_SET$/', $this->driver->escape_keywords($where->name), $match))

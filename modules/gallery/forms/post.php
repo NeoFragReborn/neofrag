@@ -6,6 +6,7 @@
 
 $this	->rule($this->form_image('image', 'gallery')
 					->title('Image')
+					->max(1600, 1600)
 					->required()
 		)
 		->rule($this->form_text('title')

@@ -22,7 +22,7 @@
 	<li class="nav-item">
 		<a class="nav-link active" href="<?php echo \url('talks/trash') ?>">
 			<?php echo \icon('far fa-trash-alt').' '.$this->lang('Corbeille') ?>
-			<span class="badge badge-light ml-1"><?php echo (int)count($conversations) ?></span>
+			<span class="badge text-bg-light ms-1"><?php echo (int)count($conversations) ?></span>
 		</a>
 	</li>
 </ul>
@@ -49,7 +49,7 @@
 				?>
 				<li class="list-group-item d-flex justify-content-between align-items-center">
 					<div class="flex-grow-1">
-						<span class="font-weight-bold text-muted">
+						<span class="fw-bold text-muted">
 							<?php echo \icon($icon).' '.htmlspecialchars($c['name']) ?>
 						</span>
 						<?php if (!empty($c['description'])): ?>

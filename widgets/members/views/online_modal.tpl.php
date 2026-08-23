@@ -3,12 +3,12 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title" id="modal-title-online-<?php echo $name ?>"><?php echo $title ?></h5>
-				<button type="button" class="close" data-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"><span aria-hidden="true">&times;</span></button>
+				<button type="button" class="close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"><span aria-hidden="true">&times;</span></button>
 			</div>
 			<div class="modal-body">
 				<?php foreach ($users as $user): ?>
 				<div class="media">
-					<div class="mr-3 flex-shrink-0"><?php echo $this->module('user')->model2('user', $user['user_id'])->avatar() ?></div>
+					<div class="me-3 flex-shrink-0"><?php echo $this->module('user')->model2('user', $user['user_id'])->avatar() ?></div>
 					<div class="media-body">
 						<?php echo $this->user->link($user['user_id'], $user['username']) ?><br />
 						<small><?php echo icon('far fa-clock').' '.time_span($user['last_activity']) ?></small>

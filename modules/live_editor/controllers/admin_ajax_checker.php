@@ -89,7 +89,7 @@ class Admin_Ajax_Checker extends Module_Checker
 																	->where('widget_id', $post['widget_id'])
 																	->row())
 			{
-				return [$widget['widget'], $widget['type'], $widget['settings'] ? unserialize($widget['settings'], ['allowed_classes' => false]) : NULL];
+				return [$widget['widget'], $widget['type'], $widget['settings'] ? \NF\NeoFrag\Fields\Json::decode($widget['settings']) : NULL];
 			}
 			else if (!empty($post['widget']) && isset($post['type']))
 			{

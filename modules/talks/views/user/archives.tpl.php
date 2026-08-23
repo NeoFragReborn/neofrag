@@ -17,7 +17,7 @@
 	<li class="nav-item">
 		<a class="nav-link active" href="<?php echo \url('talks/archives') ?>">
 			<?php echo \icon('fas fa-archive').' '.$this->lang('Archives') ?>
-			<span class="badge badge-light ml-1"><?php echo (int)count($conversations) ?></span>
+			<span class="badge text-bg-light ms-1"><?php echo (int)count($conversations) ?></span>
 		</a>
 	</li>
 	<li class="nav-item">
@@ -45,7 +45,7 @@
 				?>
 				<li class="list-group-item d-flex justify-content-between align-items-center">
 					<div class="flex-grow-1">
-						<a href="<?php echo $href ?>" class="font-weight-bold">
+						<a href="<?php echo $href ?>" class="fw-bold">
 							<?php echo \icon($icon).' '.htmlspecialchars($c['name']) ?>
 						</a>
 						<?php if (!empty($c['description'])): ?>

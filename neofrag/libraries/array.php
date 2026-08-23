@@ -403,31 +403,37 @@ class Array_ extends Library implements \Iterator, \ArrayAccess
 		$callback($node, current($index));
 	}
 
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return current($this->_array);
 	}
 
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return key($this->_array);
 	}
 
+	#[\ReturnTypeWillChange]
 	public function next()
 	{
 		next($this->_array);
 	}
 
+	#[\ReturnTypeWillChange]
 	public function rewind()
 	{
 		reset($this->_array);
 	}
 
+	#[\ReturnTypeWillChange]
 	public function valid()
 	{
 		return array_key_exists($this->key(), $this->_array);
 	}
 
+	#[\ReturnTypeWillChange]
 	public function offsetSet($offset, $value)
 	{
 		if (is_null($offset))
@@ -440,16 +446,19 @@ class Array_ extends Library implements \Iterator, \ArrayAccess
 		}
 	}
 
+	#[\ReturnTypeWillChange]
 	public function offsetExists($offset)
 	{
 		return isset($this->_array[$offset]);
 	}
 
+	#[\ReturnTypeWillChange]
 	public function offsetUnset($offset)
 	{
 		unset($this->_array[$offset]);
 	}
 
+	#[\ReturnTypeWillChange]
 	public function offsetGet($offset)
 	{
 		if (array_key_exists($offset, $this->_array))

@@ -1,0 +1,4 @@
+# Les archives de sauvegarde contiennent le dump SQL complet + config/ (secrets).
+# Jamais servies en HTTP : téléchargement uniquement via l'admin (monitoring),
+# qui vérifie session super-admin + lit le fichier côté serveur.
+Require all denied

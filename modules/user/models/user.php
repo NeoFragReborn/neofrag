@@ -113,6 +113,10 @@ class User extends Model2
 
 	public function token()
 	{
+		// Un seul token actif par compte : une nouvelle demande invalide les précédentes
+		// (sinon chaque email de reset laisse un lien valable derrière lui).
+		NeoFrag()->db->where('user_id', $this->id)->delete('nf_user_token');
+
 		$token = $this->module('user')->model2('token')->set('user', $this);
 
 		do

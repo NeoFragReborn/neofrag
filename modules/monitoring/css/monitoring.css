@@ -204,7 +204,7 @@ span.icon.expand-icon {
 
 #modal-backup .steps-body {
 	padding-top: 20px;
-	padding-bottom: -10px;
+	padding-bottom: 0;
 }
 
 #modal-backup .steps-legends {

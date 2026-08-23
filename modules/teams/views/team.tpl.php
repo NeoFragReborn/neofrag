@@ -1,5 +1,5 @@
 <?php if ($image_id): ?>
-<span class="badge badge-dark position-absolute mt-4 ml-4"><?php echo icon('fas fa-gamepad').' '.$game ?></span>
+<span class="badge text-bg-dark position-absolute mt-4 ms-4"><?php echo icon('fas fa-gamepad').' '.$game ?></span>
 <img class="card-img" src="<?php echo NeoFrag()->model2('file', $image_id)->path() ?>" alt="">
 <?php endif ?>
 <div class="card-body">
@@ -26,7 +26,7 @@
 	<h4 class="mt-4"><?php echo $this->lang('Nos joueurs') ?></h4>
 	<ul class="list-inline mb-0">
 		<?php foreach ($players as $player): ?>
-		<li class="list-inline-item text-center" data-toggle="tooltip" title="<?php echo $player['username'].' — '.($player['online'] ? $this->lang('En ligne') : $this->lang('Hors ligne')) ?>">
+		<li class="list-inline-item text-center" data-bs-toggle="tooltip" title="<?php echo $player['username'].' — '.($player['online'] ? $this->lang('En ligne') : $this->lang('Hors ligne')) ?>">
 			<span style="position:relative;display:inline-block;">
 				<?php echo $this->module('user')->model2('user', $player['user_id'])->avatar()->append_attr('class', 'm-auto') ?>
 				<span style="position:absolute;right:2px;bottom:2px;width:10px;height:10px;border-radius:50%;border:2px solid var(--nf-bg,#fff);background:<?php echo $player['online'] ? '#2ecc71' : '#9aa0a6' ?>;"></span>

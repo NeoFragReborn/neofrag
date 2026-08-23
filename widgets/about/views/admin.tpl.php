@@ -1,7 +1,7 @@
 <ul class="nav nav-pills" id="pills-tab" role="tablist">
-	<li class="nav-item"><a class="nav-link active" id="pills-options-tab" data-toggle="pill" href="#pills-options" role="tab" aria-controls="pills-options" aria-selected="true"><?php echo icon('fas fa-cogs').' Contenu' ?></a></li>
-	<li class="nav-item"><a class="nav-link" id="pills-display-tab" data-toggle="pill" href="#pills-display" role="tab" aria-controls="pills-display" aria-selected="false"><?php echo icon('fas fa-desktop').' Affichage' ?></a></li>
-	<li class="nav-item"><a class="nav-link" id="pills-style-tab" data-toggle="pill" href="#pills-style" role="tab" aria-controls="pills-style" aria-selected="false"><?php echo icon('fas fa-paint-brush').' Style' ?></a></li>
+	<li class="nav-item"><a class="nav-link active" id="pills-options-tab" data-bs-toggle="pill" href="#pills-options" role="tab" aria-controls="pills-options" aria-selected="true"><?php echo icon('fas fa-cogs').' Contenu' ?></a></li>
+	<li class="nav-item"><a class="nav-link" id="pills-display-tab" data-bs-toggle="pill" href="#pills-display" role="tab" aria-controls="pills-display" aria-selected="false"><?php echo icon('fas fa-desktop').' Affichage' ?></a></li>
+	<li class="nav-item"><a class="nav-link" id="pills-style-tab" data-bs-toggle="pill" href="#pills-style" role="tab" aria-controls="pills-style" aria-selected="false"><?php echo icon('fas fa-paint-brush').' Style' ?></a></li>
 </ul>
 <div class="tab-content border-light" id="pills-tabContent">
 	<div class="tab-pane fade show active" id="pills-options" role="tabpanel" aria-labelledby="pills-options-tab">
@@ -14,15 +14,15 @@
 				</select>
 			</div>
 			<div class="col-3">
-				<div class="btn-group" data-toggle="buttons">
-					<label class="btn btn-light<?php if ($teamname_align == 'text-left') echo ' active' ?>">
-						<input type="radio" name="settings[teamname_align]" value="text-left"<?php if ($teamname_align == 'text-left') echo ' checked' ?>><?php echo icon('fas fa-align-left') ?>
+				<div class="btn-group" data-bs-toggle="buttons">
+					<label class="btn btn-light<?php if ($teamname_align == 'text-start') echo ' active' ?>">
+						<input type="radio" name="settings[teamname_align]" value="text-start"<?php if ($teamname_align == 'text-start') echo ' checked' ?>><?php echo icon('fas fa-align-left') ?>
 					</label>
 					<label class="btn btn-light<?php if ($teamname_align == 'text-center') echo ' active' ?>">
 						<input type="radio" name="settings[teamname_align]" value="text-center"<?php if ($teamname_align == 'text-center') echo ' checked' ?>><?php echo icon('fas fa-align-center') ?>
 					</label>
-					<label class="btn btn-light<?php if ($teamname_align == 'text-right') echo ' active' ?>">
-						<input type="radio" name="settings[teamname_align]" value="text-right"<?php if ($teamname_align == 'text-right') echo ' checked' ?>><?php echo icon('fas fa-align-right') ?>
+					<label class="btn btn-light<?php if ($teamname_align == 'text-end') echo ' active' ?>">
+						<input type="radio" name="settings[teamname_align]" value="text-end"<?php if ($teamname_align == 'text-end') echo ' checked' ?>><?php echo icon('fas fa-align-right') ?>
 					</label>
 				</div>
 			</div>
@@ -36,15 +36,15 @@
 				</select>
 			</div>
 			<div class="col-3">
-				<div class="btn-group" data-toggle="buttons">
-					<label class="btn btn-light<?php if ($logo_align == 'text-left') echo ' active' ?>">
-						<input type="radio" name="settings[logo_align]" value="text-left"<?php if ($logo_align == 'text-left') echo ' checked' ?>><?php echo icon('fas fa-align-left') ?>
+				<div class="btn-group" data-bs-toggle="buttons">
+					<label class="btn btn-light<?php if ($logo_align == 'text-start') echo ' active' ?>">
+						<input type="radio" name="settings[logo_align]" value="text-start"<?php if ($logo_align == 'text-start') echo ' checked' ?>><?php echo icon('fas fa-align-left') ?>
 					</label>
 					<label class="btn btn-light<?php if ($logo_align == 'text-center') echo ' active' ?>">
 						<input type="radio" name="settings[logo_align]" value="text-center"<?php if ($logo_align == 'text-center') echo ' checked' ?>><?php echo icon('fas fa-align-center') ?>
 					</label>
-					<label class="btn btn-light<?php if ($logo_align == 'text-right') echo ' active' ?>">
-						<input type="radio" name="settings[logo_align]" value="text-right"<?php if ($logo_align == 'text-right') echo ' checked' ?>><?php echo icon('fas fa-align-right') ?>
+					<label class="btn btn-light<?php if ($logo_align == 'text-end') echo ' active' ?>">
+						<input type="radio" name="settings[logo_align]" value="text-end"<?php if ($logo_align == 'text-end') echo ' checked' ?>><?php echo icon('fas fa-align-right') ?>
 					</label>
 				</div>
 			</div>
@@ -89,15 +89,15 @@
 				</select>
 			</div>
 			<div class="col-3">
-				<div class="btn-group" data-toggle="buttons">
-					<label class="btn btn-light<?php if ($biographie_align == 'text-left') echo ' active' ?>">
-						<input type="radio" name="settings[biographie_align]" value="text-left"<?php if ($biographie_align == 'text-left') echo ' checked' ?>><?php echo icon('fas fa-align-left') ?>
+				<div class="btn-group" data-bs-toggle="buttons">
+					<label class="btn btn-light<?php if ($biographie_align == 'text-start') echo ' active' ?>">
+						<input type="radio" name="settings[biographie_align]" value="text-start"<?php if ($biographie_align == 'text-start') echo ' checked' ?>><?php echo icon('fas fa-align-left') ?>
 					</label>
 					<label class="btn btn-light<?php if ($biographie_align == 'text-center') echo ' active' ?>">
 						<input type="radio" name="settings[biographie_align]" value="text-center"<?php if ($biographie_align == 'text-center') echo ' checked' ?>><?php echo icon('fas fa-align-center') ?>
 					</label>
-					<label class="btn btn-light<?php if ($biographie_align == 'text-right') echo ' active' ?>">
-						<input type="radio" name="settings[biographie_align]" value="text-right"<?php if ($biographie_align == 'text-right') echo ' checked' ?>><?php echo icon('fas fa-align-right') ?>
+					<label class="btn btn-light<?php if ($biographie_align == 'text-end') echo ' active' ?>">
+						<input type="radio" name="settings[biographie_align]" value="text-end"<?php if ($biographie_align == 'text-end') echo ' checked' ?>><?php echo icon('fas fa-align-right') ?>
 					</label>
 				</div>
 			</div>

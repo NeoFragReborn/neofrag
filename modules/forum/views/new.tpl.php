@@ -48,7 +48,7 @@
 		</tbody>
 	</table>
 </form>
-<script src="https://cdn.jsdelivr.net/npm/tinymce@7.6.1/tinymce.min.js"></script>
+<script src="<?php echo js('tinymce/tinymce.min.js') ?>"></script>
 <script>(function(){
 	function init(){
 		if (typeof tinymce === "undefined") { setTimeout(init, 100); return; }
@@ -59,7 +59,8 @@
 			branding: false,
 			promotion: false,
 			license_key: "gpl",
-			
+			skin: (document.documentElement.getAttribute("data-theme") === "dark") ? "oxide-dark" : "oxide",
+			content_css: (document.documentElement.getAttribute("data-theme") === "dark") ? "dark" : "default",
 			plugins: "advlist autolink lists link image charmap preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media table emoticons codesample help",
 			toolbar: "undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample | emoticons charmap | searchreplace fullscreen | removeformat",
 			content_style: "body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;font-size:14px;}",

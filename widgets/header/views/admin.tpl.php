@@ -1,5 +1,5 @@
 <ul class="nav nav-pills" id="pills-tab" role="tablist">
-	<li class="nav-item"><a class="nav-link active" id="pills-options-tab" data-toggle="pill" href="#pills-options" role="tab" aria-controls="pills-options" aria-selected="true"><?php echo icon('fas fa-cogs').' Options' ?></a></li>
+	<li class="nav-item"><a class="nav-link active" id="pills-options-tab" data-bs-toggle="pill" href="#pills-options" role="tab" aria-controls="pills-options" aria-selected="true"><?php echo icon('fas fa-cogs').' Options' ?></a></li>
 </ul>
 <div class="tab-content border-light" id="pills-tabContent">
 	<div class="tab-pane fade show active" id="pills-options" role="tabpanel" aria-labelledby="pills-options-tab">
@@ -16,9 +16,9 @@
 			<label for="settings-align" class="col-3 col-form-label"><?php echo $this->lang('Alignement') ?></label>
 			<div class="col-3">
 				<select class="form-control" name="settings[align]" id="settings-align">
-					<option value="text-left"<?php if (isset($align) && $align == 'text-left') echo ' selected="selected"' ?>><?php echo $this->lang('Gauche') ?></option>
+					<option value="text-start"<?php if (isset($align) && $align == 'text-start') echo ' selected="selected"' ?>><?php echo $this->lang('Gauche') ?></option>
 					<option value="text-center"<?php if (!isset($align) || $align == 'text-center') echo ' selected="selected"' ?>><?php echo $this->lang('Centré') ?></option>
-					<option value="text-right"<?php if (isset($align) && $align == 'text-right') echo ' selected="selected"' ?>><?php echo $this->lang('Droite') ?></option>
+					<option value="text-end"<?php if (isset($align) && $align == 'text-end') echo ' selected="selected"' ?>><?php echo $this->lang('Droite') ?></option>
 				</select>
 			</div>
 		</div>

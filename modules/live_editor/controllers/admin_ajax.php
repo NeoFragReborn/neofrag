@@ -66,7 +66,7 @@ class Admin_Ajax extends Controller_Module
 				'theme'       => $theme,
 				'page'        => $url,
 				'zone'        => $zone,
-				'disposition' => serialize($disposition)
+				'disposition' => $this->disposition->encode($disposition)
 			]);
 
 			$disposition['disposition_id'] = $id;

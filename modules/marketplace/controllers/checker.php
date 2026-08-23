@@ -12,12 +12,10 @@ class Checker extends Module_Checker
 	{
 		require_once NEOFRAG_CMS . '/install/lib/installer.php';
 
-		// Origine fixe nf_marketplace_url (défaut neofrag-reborn.xyz).
-		$url = Installer::MARKETPLACE_URL_DEFAULT;
-		if (is_string($cfg = $this->config->nf_marketplace_url) && $cfg !== '')
-		{
-			$url = $cfg;
-		}
+		// Origine fixe validée contre l'allow-list (défaut neofrag-reborn.xyz) : un override
+		// nf_marketplace_url ne peut pointer que vers un hôte autorisé en HTTPS (anti-SSRF).
+		$cfg = $this->config->nf_marketplace_url;
+		$url = Installer::sanitize_marketplace_url(is_string($cfg) ? $cfg : NULL);
 
 		$cache_file = NEOFRAG_CMS . '/cache/marketplace-catalog.json';
 		$catalog    = NULL;

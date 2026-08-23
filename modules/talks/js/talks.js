@@ -44,15 +44,15 @@ $(function(){
 
 	refresh();
 
-	$('.widget.widget-talks .card-body').mCustomScrollbar({
-		theme: 'dark',
-		callbacks: {
-			onScroll:function(){
-				if (this.mcs.topPct >= 97){
-					update($(this).find('[data-talk-id]:first'), true);
-				}
+	// Scroll natif + infinite-scroll (remplace mCustomScrollbar) : charge plus près du bas.
+	$('.widget.widget-talks .card-body').each(function(){
+		var el = this;
+		el.addEventListener('scroll', function(){
+			var max = el.scrollHeight - el.clientHeight;
+			if (max > 0 && (el.scrollTop / max) * 100 >= 97){
+				update($(el).find('[data-talk-id]:first'), true);
 			}
-		}
+		});
 	});
 
 	$('.widget.widget-talks .card-footer form').submit(function(){

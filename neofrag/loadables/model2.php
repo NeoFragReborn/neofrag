@@ -750,29 +750,13 @@ abstract class Model2 extends NeoFrag implements \NF\NeoFrag\Loadable
 		}
 	}
 
+	// Crochet d'audit générique au niveau ORM (create/update/delete). Volontairement INACTIF (no-op) :
+	// l'audit est assuré de façon ciblée par la lib Audit_Log (table nf_audit_log) sur les actions admin
+	// sensibles — logger TOUTES les écritures ORM serait redondant, coûteux et verbeux. L'ancienne
+	// implémentation (model2('log_db')/nf_log_db) n'a jamais été finie ni testée (et était buggée :
+	// _get_by_primaries() sans retour → count(null)) ; elle est retirée. La table nf_log_db reste dans le
+	// schéma pour compat. Réactiver = ajouter un vrai backend ici si un audit exhaustif devient requis.
 	protected function _log($action, $data, $primaries = NULL)
 	{
-		return;//TODO
-
-		if (!defined('static::LOG') || static::LOG)
-		{
-			$actions = [
-				'create' => 0,
-				'update' => 1,
-				'delete' => 2
-			];
-
-			if (!$primaries)
-			{
-				$this->_get_by_primaries($primaries);
-			}
-
-			$this	->model2('log_db')
-					->action($actions[$action])
-					->model($this->__table)
-					->primaries(count($primaries) == 1 && isset($primaries['id']) ? $primaries['id'] : serialize($primaries))
-					->data($data)
-					->create();
-		}
 	}
 }

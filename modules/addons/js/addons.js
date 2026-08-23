@@ -1,37 +1,41 @@
-$(function(){
-	var $addons = $('#addons');
-	if (!$addons.length) return;
+NF.ready(function(){
+	var addons = document.getElementById('addons');
+	if (!addons){ return; }
 
 	var FILTER_KEY = 'nf-addons-filter';
 
 	var syncActive = function(filter){
-		$('.addons-filter-btn').removeClass('active is-active mixitup-control-active');
-		$('.addons-filter-btn[data-filter="' + filter + '"]').addClass('active');
+		document.querySelectorAll('.addons-filter-btn').forEach(function(btn){
+			btn.classList.remove('active', 'is-active', 'mixitup-control-active');
+		});
+		var active = document.querySelector('.addons-filter-btn[data-filter="' + filter + '"]');
+		if (active){ active.classList.add('active'); }
 	};
 
-	var mix = mixitup($addons[0], {
+	var mix = mixitup(addons, {
 		selectors: { control: '[data-filter]' },
 		animation: { enable: false }
 	});
 
-	// Sync active state visually on every filter button click. Works even when
-	// MixItUp uses its own toggleClass (mixitup-control-active) — we wipe all
-	// possible classes and apply the indigo one only on the clicked button.
-	$(document).on('click', '.addons-filter-btn', function(){
-		var f = $(this).attr('data-filter') || 'all';
-		syncActive(f);
-		try { sessionStorage.setItem(FILTER_KEY, f); } catch (e) {}
+	// Sync de l'état actif au clic (même quand MixItUp pose sa propre classe) : on efface toutes les
+	// classes possibles puis on applique la classe active sur le bouton cliqué.
+	document.addEventListener('click', function(e){
+		var btn = e.target.closest('.addons-filter-btn');
+		if (!btn){ return; }
+		var filter = btn.getAttribute('data-filter') || 'all';
+		syncActive(filter);
+		try { sessionStorage.setItem(FILTER_KEY, filter); } catch (err) {}
 	});
 
-	// Restore last filter selection on page load
+	// Restaure le dernier filtre au chargement.
 	try {
 		var saved = sessionStorage.getItem(FILTER_KEY);
-		if (saved && saved !== 'all') {
-			var $btn = $('.addons-filter-btn[data-filter="' + saved + '"]');
-			if ($btn.length) {
+		if (saved && saved !== 'all'){
+			var btn = document.querySelector('.addons-filter-btn[data-filter="' + saved + '"]');
+			if (btn){
 				mix.filter(saved);
 				syncActive(saved);
 			}
 		}
-	} catch (e) {}
+	} catch (err) {}
 });

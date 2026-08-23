@@ -39,7 +39,7 @@ class Events extends Model
 	{
 		$types = array_keys($this->model('types')->get_types());
 
-		$this->db	->select('e.event_id', 'e.title', 'e.type_id', 't.title as type_title', 't.type', 't.color', 't.icon', 'e.date', 'e.date_end', 'e.description', 'e.private_description', 'e.location', 'e.image_id', 'e.published', 'e.publish_date', 'u.id as user_id', 'u.username', 'COUNT(mr.round_id) as nb_rounds', 'm.webtv', 'm.website')
+		$this->db	->select('e.event_id', 'e.title', 'e.type_id', 't.title as type_title', 't.type', 't.color', 't.icon', 'e.date', 'e.date_end', 'e.description', 'e.private_description', 'e.location', 'e.image_id', 'e.published', 'e.publish_date', 'e.series_id', 'u.id as user_id', 'u.username', 'COUNT(mr.round_id) as nb_rounds', 'm.webtv', 'm.website')
 					->from('nf_events e')
 					->join('nf_events_types t',           'e.type_id = t.type_id')
 					->join('nf_events_participants p',    'e.event_id = p.event_id', 'LEFT')
@@ -136,5 +136,99 @@ class Events extends Model
 
 		$this->db	->where('event_id', $event_id)
 					->delete('nf_events');
+	}
+
+	/** Relie une liste d'occurrences en série (series_id = la 1re). No-op si < 2 occurrences. */
+	public function set_series(array $event_ids)
+	{
+		if (count($event_ids) < 2)
+		{
+			return;
+		}
+
+		$this->db	->where('event_id', array_map('intval', $event_ids))
+					->update('nf_events', ['series_id' => (int) $event_ids[0]]);
+	}
+
+	/** Supprime toutes les occurrences d'une série (réutilise delete() : image + commentaires + ligne). */
+	public function delete_series($series_id)
+	{
+		foreach ($this->db->select('event_id')->from('nf_events')->where('series_id', (int) $series_id)->get() as $event_id)
+		{
+			$this->delete((int) $event_id);
+		}
+	}
+
+	/**
+	 * Rappels : notifie les participants (tout sauf « Absent ») des événements publiés qui débutent dans
+	 * la fenêtre `events_reminder_hours` (défaut 24 h ; 0 = désactivé). Appelé par l'endpoint cron.
+	 * Idempotent : `reminder_sent_at` est posé atomiquement avant l'envoi → un seul rappel par événement.
+	 * @return int événements rappelés
+	 */
+	public function send_due_reminders($limit = 50)
+	{
+		$raw   = $this->config->events_reminder_hours;
+		$hours = ($raw === FALSE || $raw === NULL || $raw === '') ? 24 : (int)$raw; // FALSE = setting absent (cf. Config::__get)
+
+		if ($hours <= 0)
+		{
+			return 0;
+		}
+
+		$now      = date('Y-m-d H:i:s');
+		$deadline = date('Y-m-d H:i:s', strtotime('+'.$hours.' hours'));
+		$count    = 0;
+
+		foreach ($this->db	->select('event_id', 'title')
+							->from('nf_events')
+							->where('published', '1')
+							->where('reminder_sent_at', NULL)
+							->where('date >', $now)
+							->where('date <=', $deadline)
+							->order_by('date ASC')
+							->limit($limit)
+							->get(FALSE) as $event)
+		{
+			// Claim atomique : seul le 1er passage qui pose reminder_sent_at envoie les notifs.
+			$claimed = (int)$this->db	->where('event_id', (int)$event['event_id'])
+										->where('reminder_sent_at', NULL)
+										->update('nf_events', ['reminder_sent_at' => $now]);
+
+			if ($claimed < 1)
+			{
+				continue;
+			}
+
+			$this->_remind_participants((int)$event['event_id'], (string)$event['title']);
+			$count++;
+		}
+
+		return $count;
+	}
+
+	// Notif cloche à chaque participant encore concerné. push_unique = anti-doublon.
+	protected function _remind_participants($event_id, $title)
+	{
+		if (!($notifications = $this->module('notifications')))
+		{
+			return;
+		}
+
+		$url = 'events/'.$event_id.'/'.url_title($title);
+
+		foreach ($this->reminder_recipients($event_id) as $user_id)
+		{
+			$notifications->push_unique((int)$user_id, 'event-reminder', $this->lang('Rappel : l\'événement « %s » commence bientôt', $title), $url, NULL);
+		}
+	}
+
+	/** Destinataires d'un rappel : tous les participants SAUF les absents (status 2). */
+	public function reminder_recipients($event_id)
+	{
+		return $this->db	->select('user_id')
+							->from('nf_events_participants')
+							->where('event_id', $event_id)
+							->where('status <>', 2)
+							->get();
 	}
 }

@@ -91,10 +91,13 @@ return [
 	'fcc11f52' => 'Múltiplo',
 	'fe353392' => 'Categoria editada com sucesso',
 	'0e81c33b' => 'Todos os álbuns',
-	'2f4815d7' => 'Integração <i class="fas fa-info-circle text-muted" data-toggle="tooltip" title="Código para incorporar e exibir esta galeria em conteúdo HTML/BBCode livre"></i>',
+	'2f4815d7' => 'Integração <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Código para incorporar e exibir esta galeria em conteúdo HTML/BBCode livre"></i>',
 	'ff1f8094' => 'Galeria de fotos com álbuns, miniaturas e descrições.',
 	'52c9bbab' => 'Modificar',
 	'8d9ef7a4' => 'Excluir',
 	'ca4ae516' => 'Modificar uma categoria',
 	'af5fdbe3' => 'Excluir uma categoria',
+	// i18n 2026-06-11 (code strings)
+	'b914f016' => 'Imagens da galeria',
+	'7f1f539c' => 'Uma data futura agenda a publicação: o álbum permanece oculto publicamente até essa data (se visível). Vazio = imediato.',
 ];

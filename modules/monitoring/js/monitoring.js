@@ -1,79 +1,80 @@
-$(function(){
-	$('.panel-notifications .card-body').mCustomScrollbar({
-		theme: 'dark',
-		setHeight: 255
-	});
-
-	var printSize = function(bytes, decimals, callback){
+NF.ready(function(){
+	var printSize = function(bytes, decimals){
 		var sz = ('KMGTP').split('');
 		var factor = Math.floor((String(bytes).length - 1) / 3);
-		var unit = (typeof sz[factor - 1] != 'undefined' ? sz[factor - 1] : '')+'o';
-		return (bytes / Math.pow(1024, factor)).toFixed(typeof decimals != 'undefined' ? decimals : 2)+'<small>'+unit+'</small>';
+		var unit = (typeof sz[factor - 1] !== 'undefined' ? sz[factor - 1] : '') + 'o';
+		return (bytes / Math.pow(1024, factor)).toFixed(typeof decimals !== 'undefined' ? decimals : 2) + '<small>' + unit + '</small>';
 	};
+
+	function setHtmlAll(selector, html){
+		document.querySelectorAll(selector).forEach(function(el){ el.innerHTML = html; });
+	}
 
 	var loading = false;
 
-	var refresh = function(refresh){
-		if (loading) {
-			return;
-		}
-
+	var refresh = function(forceRefresh){
+		if (loading){ return false; }
 		loading = true;
-		$('.knob').val(0).trigger('change');
-		$('.module-monitoring .refresh > i').addClass('fa-spin');
-		$('#storage-pourcent, #monitoring-text').html('&nbsp')
-		$('#storage-total, #storage-free, #storage-database, #storage-files, #storage-used, #monitoring-danger, #monitoring-warning, #monitoring-info').html('<?php echo icon('fas fa-spinner fa-spin') ?>');
-		$('.table-notifications').html('');
-		$('.panel-infos i.text-success, .panel-infos i.text-danger').addClass('fas fa-spinner fa-spin').removeClass('fa-check-square text-success fa-exclamation-triangle text-danger');
-		$('.panel-infos [data-label]').each(function(){
-			$(this).html($(this).data('label'));
-		});
-		$('.panel-monitoring').addClass('bg-gray').removeClass('bg-red bg-orange bg-green');
-		$('.monitoring-icon-status').removeClass('beat-fast beat-medium beat-slow');
-		$('#tree').treeview('remove');
 
-		$.post('<?php echo url('admin/ajax/monitoring.json') ?>', {refresh: typeof refresh != 'undefined' && refresh ? refresh : 0}, function(data){
+		document.querySelectorAll('.knob').forEach(function(k){ if (k._nfKnobUpdate){ k._nfKnobUpdate(0); } });
+		document.querySelectorAll('.module-monitoring .refresh > i').forEach(function(i){ i.classList.add('fa-spin'); });
+		setHtmlAll('#storage-pourcent, #monitoring-text', '&nbsp');
+		['storage-total', 'storage-free', 'storage-database', 'storage-files', 'storage-used', 'monitoring-danger', 'monitoring-warning', 'monitoring-info'].forEach(function(id){
+			var el = document.getElementById(id);
+			if (el){ el.innerHTML = '<?php echo icon('fas fa-spinner fa-spin') ?>'; }
+		});
+		setHtmlAll('.table-notifications', '');
+		document.querySelectorAll('.panel-infos i.text-success, .panel-infos i.text-danger').forEach(function(el){
+			el.classList.add('fas', 'fa-spinner', 'fa-spin');
+			el.classList.remove('fa-check-square', 'text-success', 'fa-exclamation-triangle', 'text-danger');
+		});
+		document.querySelectorAll('.panel-infos [data-label]').forEach(function(el){ el.innerHTML = NF.data(el, 'label'); });
+		document.querySelectorAll('.panel-monitoring').forEach(function(el){ el.classList.add('bg-gray'); el.classList.remove('bg-red', 'bg-orange', 'bg-green'); });
+		document.querySelectorAll('.monitoring-icon-status').forEach(function(el){ el.classList.remove('beat-fast', 'beat-medium', 'beat-slow'); });
+
+		NF.post('<?php echo url('admin/ajax/monitoring.json') ?>', { refresh: (typeof forceRefresh !== 'undefined' && forceRefresh) ? forceRefresh : 0 }).then(function(data){
 			var used     = data.storage.total - data.storage.free;
 			var pourcent = Math.ceil(used / data.storage.total * 100);
 
-			$('.knob').val(pourcent).trigger('change').trigger('configure', {
-				fgColor: pourcent >= 90 ? '#d9534f' : (pourcent >= 75 ? '#f0ad4e' : '#25C7F0')
+			var knobColor = pourcent >= 90 ? '#d9534f' : (pourcent >= 75 ? '#f0ad4e' : '#25C7F0');
+			document.querySelectorAll('.knob').forEach(function(k){ if (k._nfKnobUpdate){ k._nfKnobUpdate(pourcent, knobColor); } });
+
+			Object.keys(data.storage).forEach(function(key){
+				var el = document.getElementById('storage-' + key);
+				if (el){ el.innerHTML = printSize(data.storage[key]); }
 			});
 
-			$.each(data.storage, function(key, value){
-				$('#storage-'+key).html(printSize(value));
-			});
-
-			$('#storage-used').html(printSize(used));
-			$('#storage-pourcent').html('Utilisé ('+pourcent+' %)');
+			var usedEl = document.getElementById('storage-used');
+			if (usedEl){ usedEl.innerHTML = printSize(used); }
+			var pctEl = document.getElementById('storage-pourcent');
+			if (pctEl){ pctEl.innerHTML = 'Utilisé (' + pourcent + ' %)'; }
 
 			var notifications = '';
-			var count = {
-				danger: 0,
-				warning: 0,
-				info: 0
-			};
+			var count = { danger: 0, warning: 0, info: 0 };
 
-			$.each(data.notifications, function(i, notification){
-				notifications += '	<tr>\
-										<td class="col-2"><span class="badge badge-'+notification[1]+'">'+(notification[1] == 'danger' ? '<?php echo icon('fas fa-bug') ?> Erreur' : (notification[1] == 'warning' ? '<?php echo icon('fas fa-bolt') ?> Anomalie' : '<?php echo icon('fas fa-exclamation-circle') ?> Conseil'))+'</span></td>\
-										<td class="align-middle">'+notification[0]+'</td>\
-									</tr>';
+			data.notifications.forEach(function(notification){
+				notifications += '<tr>'
+					+ '<td class="col-2"><span class="badge badge-' + notification[1] + '">'
+					+ (notification[1] === 'danger' ? '<?php echo icon('fas fa-bug') ?> Erreur' : (notification[1] === 'warning' ? '<?php echo icon('fas fa-bolt') ?> Anomalie' : '<?php echo icon('fas fa-exclamation-circle') ?> Conseil'))
+					+ '</span></td>'
+					+ '<td class="align-middle">' + notification[0] + '</td>'
+					+ '</tr>';
 				count[notification[1]]++;
 			});
 
-			$('.table-notifications').html('<tbody>'+notifications+'</tbody>');
+			setHtmlAll('.table-notifications', '<tbody>' + notifications + '</tbody>');
 
-			$.each(count, function(key, value){
-				$('#monitoring-'+key).html(value);
+			Object.keys(count).forEach(function(key){
+				var el = document.getElementById('monitoring-' + key);
+				if (el){ el.innerHTML = count[key]; }
 			});
 
-			$('#monitoring-text').html(count.danger ? '<?php echo $this->lang('Le navire coule !') ?>' : (count.warning ? '<?php echo $this->lang('Iceberg droit devant !') ?>' : '<?php echo $this->lang('Tout est en ordre, capitaine !') ?>'));
-			$('.panel-monitoring').removeClass('bg-gray').addClass(count.danger ? 'bg-red' : (count.warning ? 'bg-orange' : 'bg-green'));
-			$('.monitoring-icon-status').addClass(count.danger ? 'beat-fast' : (count.warning ? 'beat-medium' : 'beat-slow'));
+			var textEl = document.getElementById('monitoring-text');
+			if (textEl){ textEl.innerHTML = count.danger ? '<?php echo $this->lang('Le navire coule !') ?>' : (count.warning ? '<?php echo $this->lang('Iceberg droit devant !') ?>' : '<?php echo $this->lang('Tout est en ordre, capitaine !') ?>'); }
+			document.querySelectorAll('.panel-monitoring').forEach(function(el){ el.classList.remove('bg-gray'); el.classList.add(count.danger ? 'bg-red' : (count.warning ? 'bg-orange' : 'bg-green')); });
+			document.querySelectorAll('.monitoring-icon-status').forEach(function(el){ el.classList.add(count.danger ? 'beat-fast' : (count.warning ? 'beat-medium' : 'beat-slow')); });
 
-			$('#tree').treeview({
-				data: data.files,
+			nfTreeview(document.getElementById('tree'), data.files, {
 				collapseIcon: 'far fa-folder-open',
 				expandIcon: 'far fa-folder',
 				emptyIcon: 'far fa-file',
@@ -81,79 +82,107 @@ $(function(){
 				levels: 1
 			});
 
-			$.each(data.server, function(key, value){
+			Object.keys(data.server).forEach(function(key){
+				var value  = data.server[key];
 				var result = value;
+				var span   = document.querySelector('#server-' + key + ' > span');
 
-				if (Array.isArray(result)){
+				if (Array.isArray(value)){
 					result = value[0];
-					$('#server-'+key+' > span').attr('data-label', $('#server-'+key+' > span').html()).html(value[1]);
+					if (span){ span.setAttribute('data-label', span.innerHTML); span.innerHTML = value[1]; }
 				}
 
-				$('#server-'+key+' > i').removeClass('fas fa-spinner fa-spin').addClass(result ? 'fas fa-check-square text-success' : 'fas fa-exclamation-triangle text-danger');
+				var icon = document.querySelector('#server-' + key + ' > i');
+				if (icon){
+					icon.classList.remove('fas', 'fa-spinner', 'fa-spin');
+					icon.classList.add('fas');
+					if (result){ icon.classList.add('fa-check-square', 'text-success'); }
+					else { icon.classList.add('fa-exclamation-triangle', 'text-danger'); }
+				}
 			});
 
 			loading = false;
-			$('.module-monitoring .refresh > i').removeClass('fa-spin');
+			document.querySelectorAll('.module-monitoring .refresh > i').forEach(function(i){ i.classList.remove('fa-spin'); });
 		});
 	};
 
-	$('.module-monitoring .refresh').click(function(){
-		return refresh(true);
+	document.querySelectorAll('.module-monitoring .refresh').forEach(function(el){
+		el.addEventListener('click', function(e){ e.preventDefault(); refresh(true); });
 	});
 
-	$('#modal-backup .btn-primary').click(function(){
-		var $btn = $(this);
+	var backupBtn = document.querySelector('#modal-backup .btn-primary');
+	if (backupBtn){
+		backupBtn.addEventListener('click', function(e){
+			e.preventDefault();
 
-		$btn.html('<?php echo icon('fas fa-spinner fa-spin').' '.$this->lang('Sauvegarde en cours...') ?>').addClass('disabled');
-		$('#modal-backup .step:eq(0)').addClass('active');
+			var origHtml = backupBtn.innerHTML;
+			backupBtn.innerHTML = '<?php echo icon('fas fa-spinner fa-spin').' '.$this->lang('Sauvegarde en cours...') ?>';
+			backupBtn.classList.add('disabled');
 
-		$('#modal-backup').on('hidden.bs.modal', function(){
-			$btn.button('reset');
-			$('#modal-backup .step').removeClass('active');
-			$('#modal-backup .progress-bar').data('value', 0).css('width', 0);
-		});
+			var modalEl = document.getElementById('modal-backup');
+			var steps   = modalEl.querySelectorAll('.step');
+			if (steps[0]){ steps[0].classList.add('active'); }
 
-		$.ajax({
-			url: '<?php echo url('admin/ajax/monitoring/backup.json') ?>',
-			cache: false,
-			xhr: function(){
-				var xhr = new window.XMLHttpRequest();
-				xhr.addEventListener('progress', function(){
-					var data = xhr.response.split(';')
-						.map(function(value){ return value.trim(); })
-						.filter(function(value){ return value.length > 0; })
-						.map(function(value){
-							try { return JSON.parse(value); }
-							catch (e) { return null; }
-						})
-						.filter(function(v){ return v !== null; });
+			modalEl.addEventListener('hidden.bs.modal', function(){
+				backupBtn.innerHTML = origHtml;
+				backupBtn.classList.remove('disabled');
+				modalEl.querySelectorAll('.step').forEach(function(s){ s.classList.remove('active'); });
+				modalEl.querySelectorAll('.progress-bar').forEach(function(b){ b.setAttribute('data-value', 0); b.style.width = 0; });
+			});
 
-					$.each(data, function(key, data){
-						var $progressBar = $('#modal-backup .progress-bar:eq('+data[0]+')');
-						var value = $progressBar.data('value');
+			fetch('<?php echo url('admin/ajax/monitoring/backup') ?>', {
+				headers: { 'X-Requested-With': 'XMLHttpRequest' },
+				credentials: 'same-origin',
+				cache: 'no-store'
+			}).then(function(response){
+				var reader  = response.body.getReader();
+				var decoder = new TextDecoder();
+				var buffer  = '';
 
-						if (typeof value == 'undefined' || value < data[1]){
-							$progressBar.addClass('progress-bar-striped active').data('value', data[1]).css('width', data[1]+'%');
+				function processBuffer(){
+					buffer.split(';').forEach(function(chunk){
+						chunk = chunk.trim();
+						if (!chunk){ return; }
+						var d;
+						try { d = JSON.parse(chunk); } catch (err){ return; }
 
-							if (data[1] == 100){
-								$progressBar.removeClass('progress-bar-striped active');
-								$('#modal-backup .step:eq('+(data[0]+1)+')').addClass('active');
+						var bar = modalEl.querySelectorAll('.progress-bar')[d[0]];
+						if (!bar){ return; }
+						var value = parseFloat(bar.getAttribute('data-value'));
+
+						if (isNaN(value) || value < d[1]){
+							bar.classList.add('progress-bar-striped', 'active');
+							bar.setAttribute('data-value', d[1]);
+							bar.style.width = d[1] + '%';
+
+							if (d[1] === 100){
+								bar.classList.remove('progress-bar-striped', 'active');
+								var nextStep = modalEl.querySelectorAll('.step')[d[0] + 1];
+								if (nextStep){ nextStep.classList.add('active'); }
 							}
 						}
 					});
-				}, false);
-				return xhr;
-			},
-			success: function(){
-				setTimeout(function(){
-					$('#modal-backup').modal('hide');
-					notify('Sauvegarde réalisée dans le dossier <b>backups</b> de votre FTP');
-				}, 1000);
-			}
-		});
+				}
 
-		return false;
-	});
+				function pump(){
+					return reader.read().then(function(result){
+						if (result.done){
+							setTimeout(function(){
+								bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+								notify('Sauvegarde réalisée dans le dossier <b>backups</b> de votre FTP');
+							}, 1000);
+							return;
+						}
+						buffer += decoder.decode(result.value, { stream: true });
+						processBuffer();
+						return pump();
+					});
+				}
+
+				return pump();
+			});
+		});
+	}
 
 	refresh();
 });

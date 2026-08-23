@@ -5,7 +5,7 @@ declare(strict_types=1);
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
  */
 
-function now($timestamp = NULL)
+function now($timestamp = NULL): string
 {
 	return timetostr('Y-m-d H:i:s', $timestamp);
 }
@@ -15,7 +15,7 @@ function strtoseconds($string)
 	return strtotime($string, 0);
 }
 
-function timetostr($format, $timestamp = NULL)
+function timetostr($format, $timestamp = NULL): string
 {
 	// Le fichier est en strict_types : on caste explicitement car les appelants passent souvent
 	// des objets stringables (Lang pour $format, Date pour $timestamp) — sinon strtotime()/date()
@@ -27,7 +27,13 @@ function timetostr($format, $timestamp = NULL)
 		$timestamp = time();
 	}
 
-	if (!is_numeric($timestamp))
+	if (is_a($timestamp, 'NF\NeoFrag\Libraries\Date'))
+	{
+		// Un objet Date a un __toString LOCALISÉ (« Le 1 mai 2026 à 09:00 ») que strtotime() ne sait
+		// pas parser → 0 → 01/01/1970. On lit son timestamp Unix directement (comme time_span()).
+		$timestamp = $timestamp->timestamp();
+	}
+	else if (!is_numeric($timestamp))
 	{
 		$timestamp = strtotime((string)$timestamp);
 	}
@@ -53,7 +59,7 @@ function timetostr($format, $timestamp = NULL)
 	return utf8_string(ucfirst(preg_replace('/ +/', ' ', strtolower($output))));
 }
 
-function time_span($timestamp)
+function time_span($timestamp): string
 {
 	if (!is_a($timestamp, 'NF\NeoFrag\Libraries\Date') && !is_numeric($timestamp))
 	{

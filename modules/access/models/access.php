@@ -75,6 +75,162 @@ class Access extends Model
 	}
 
 	// ================================================================
+	// Construction de la matrice Permissions × Rôles (R1.3)
+	// Partagé par la vue pleine page (admin/access/matrix) ET la modale AJAX
+	// (admin/ajax/access/matrix-modal) — un seul calcul, deux enveloppes.
+	// ================================================================
+
+	/**
+	 * Construit la matrice d'un module pour un scope donné.
+	 *
+	 * @param  string $module_name
+	 * @param  string $type      'default' | 'category' | ... (avec fallback si absent)
+	 * @param  int    $scope_id  0 = global
+	 * @return array|null  ['module_name','module_title','module_icon','type','scope_id','access','roles','matrix'] ou NULL si pas de permissions
+	 */
+	public function build_matrix($module_name, $type = 'default', $scope_id = 0)
+	{
+		$module = NeoFrag()->module($module_name);
+
+		if (!$module || !method_exists($module, 'permissions'))
+		{
+			return NULL;
+		}
+
+		$all_perms = $module->get_permissions($type);
+
+		// Fallback : si le type demandé n'existe pas (ex: 'default' sur un module qui n'a que 'category'),
+		// prendre le premier type disponible. Permet à button_access(scope=0) de marcher sur forum/talks/etc.
+		if (!$all_perms || empty($all_perms['access']))
+		{
+			$all_module_perms = $module->permissions();
+			if (is_array($all_module_perms) && !empty($all_module_perms))
+			{
+				foreach ($all_module_perms as $available_type => $candidate)
+				{
+					if (!empty($candidate['access']))
+					{
+						$type      = $available_type;
+						$all_perms = $candidate;
+						break;
+					}
+				}
+			}
+		}
+
+		if (!$all_perms || empty($all_perms['access']))
+		{
+			return NULL;
+		}
+
+		$scope_id = (int)$scope_id;
+
+		$rows = $this->db	->select('role_id', 'name', 'title', 'color', 'icon', 'parent_role_id', 'built_in', '`order`')
+							->from('nf_roles')
+							->order_by('`order`', 'name')
+							->get(FALSE);
+
+		$roles = [];
+		foreach ($rows as $r)
+		{
+			$roles[(int)$r['role_id']] = [
+				'role_id'        => (int)$r['role_id'],
+				'name'           => $r['name'],
+				'title'          => $r['title'],
+				'color'          => $r['color'],
+				'icon'           => $r['icon'],
+				'parent_role_id' => $r['parent_role_id'] !== NULL ? (int)$r['parent_role_id'] : NULL,
+				'built_in'       => (bool)$r['built_in']
+			];
+		}
+
+		// Pré-calculer la matrice : pour chaque (permission, role) → ['value','source','parent_role_name'].
+		$matrix = [];
+		foreach ($all_perms['access'] as $category)
+		{
+			foreach ($category['access'] as $action => $info)
+			{
+				$permission = $module_name.'.'.$action;
+
+				foreach ($roles as $role_id => $role)
+				{
+					$matrix[$permission][$role_id] = $this->_resolve_matrix_cell($role_id, $permission, $scope_id, $roles);
+				}
+			}
+		}
+
+		return [
+			'module_name'  => $module_name,
+			'module_title' => $module->info()->title,
+			'module_icon'  => $module->info()->icon,
+			'type'         => $type,
+			'scope_id'     => $scope_id,
+			'access'       => $all_perms,
+			'roles'        => $roles,
+			'matrix'       => $matrix
+		];
+	}
+
+	/**
+	 * Résout la valeur d'une cellule : direct dans le rôle, hérité du parent (walk), wildcard, ou default.
+	 */
+	private function _resolve_matrix_cell($role_id, $permission, $scope_id, $roles)
+	{
+		// Lookup direct dans nf_role_permissions pour ce rôle
+		$row = $this->db	->select('authorized')
+							->from('nf_role_permissions')
+							->where('role_id',    $role_id)
+							->where('permission', $permission)
+							->where('scope_id',   $scope_id)
+							->row(FALSE);
+
+		if (is_array($row) && isset($row['authorized']))
+		{
+			return ['value' => $row['authorized'], 'source' => 'direct', 'parent_role_name' => NULL];
+		}
+
+		// Wildcard direct ?
+		$dot = strpos($permission, '.');
+		if ($dot !== FALSE)
+		{
+			$wildcard = substr($permission, 0, $dot).'.*';
+			$row = $this->db->select('authorized')->from('nf_role_permissions')
+							->where('role_id', $role_id)->where('permission', $wildcard)->where('scope_id', $scope_id)
+							->row(FALSE);
+
+			if (is_array($row) && isset($row['authorized']))
+			{
+				return ['value' => $row['authorized'], 'source' => 'wildcard', 'parent_role_name' => NULL];
+			}
+		}
+
+		// Walk parent chain
+		$cursor = $roles[$role_id]['parent_role_id'] ?? NULL;
+		$depth  = 0;
+		while ($cursor !== NULL && $depth < 20)
+		{
+			$row = $this->db->select('authorized')->from('nf_role_permissions')
+							->where('role_id', $cursor)->where('permission', $permission)->where('scope_id', $scope_id)
+							->row(FALSE);
+
+			if (is_array($row) && isset($row['authorized']))
+			{
+				return [
+					'value'            => $row['authorized'],
+					'source'           => 'inherited',
+					'parent_role_name' => $roles[$cursor]['title'] ?? $roles[$cursor]['name']
+				];
+			}
+
+			$cursor = $roles[$cursor]['parent_role_id'] ?? NULL;
+			$depth++;
+		}
+
+		// Aucune définition explicite → default
+		return ['value' => 'default', 'source' => 'none', 'parent_role_name' => NULL];
+	}
+
+	// ================================================================
 	// Roles CRUD (utilisé par R1.4)
 	// ================================================================
 

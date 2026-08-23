@@ -27,12 +27,14 @@ class Monitoring extends Model
 
 		foreach (scandir($dir) as $file)
 		{
-			if (preg_match('/^(\d{14})\.zip$/', $file, $m))
+			// Suffixe aléatoire depuis 2026-06 ; l'ancien format date-seule reste listé/purgeable.
+			if (preg_match('/^(\d{14})(-[a-f0-9]{16})?\.zip$/', $file, $m))
 			{
 				$path = $dir.'/'.$file;
 				$mtime = filemtime($path) ?: 0;
 				$backups[] = [
 					'name'      => $file,
+					'slug'      => substr($file, 0, -4),
 					'size'      => filesize($path) ?: 0,
 					'mtime'     => $mtime,
 					'date'      => preg_replace('/^(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', '$1-$2-$3 $4:$5:$6', $m[1]),
@@ -167,16 +169,19 @@ class Monitoring extends Model
 				'icon'  => 'far fa-envelope',
 				'check' => [
 					'email' => [
-						'title' => $this->lang('Test du serveur...'),
+						'title' => $this->lang('Transport email'),
 						'check' => function(&$errors, &$title){
-							if (!$this->email->to('test@neofr.ag')->subject('email_check')->message('default', ['content' => ''])->send())
+							// PAS d'envoi live ici : tester par un vrai envoi à chaque chargement spammerait
+							// (et échoue selon l'hôte : relais externe, From rejeté…) → fausse alerte permanente.
+							// On rapporte le transport configuré ; la délivrabilité réelle se teste à la demande.
+							if ($this->email->has_smtp())
 							{
-								$errors[] = [$this->lang('Le serveur d\'envoi d\'email doit être configuré'), 'danger'];
-								$title = $this->lang('Échec');
-								return FALSE;
+								$title = 'SMTP';
+								return TRUE;
 							}
 
-							$title = 'OK';
+							// Aucun SMTP → fonction mail() de PHP (par défaut, OK sur la plupart des mutualisés).
+							$title = $this->lang('mail() PHP');
 							return TRUE;
 						}
 					]

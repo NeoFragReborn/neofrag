@@ -1,0 +1,27 @@
+<?php
+
+return [
+	'60fa2d8b' => 'Webhooks',
+	'e0aefed7' => 'No webhook. Add one to notify an external service (Discord, Zapier…).',
+	'41810f47' => 'event|events',
+	'1d3a2b86' => 'Delete this webhook?',
+	'0d42c963' => 'New webhook',
+	'7c64bf57' => 'Outgoing webhooks',
+	'dc0a7793' => 'webhook|webhooks',
+	'469c4dd2' => 'Webhook deleted.',
+	'43a0c8f1' => 'Destination URL',
+	'881c4ccc' => 'Secret (HMAC signature, optional)',
+	'ec7da682' => 'Trigger events',
+	'533563a7' => 'Activation',
+	'cb2f349a' => 'Webhook active',
+	'1cdc2004' => 'Webhook created.',
+	'6ee050af' => 'Webhook updated.',
+	'06ce17b3' => 'Edit the webhook',
+	'f28f0121' => 'Notifies external services (Discord, Zapier…) by signed webhook on each event.',
+	'283dfe30' => 'Manage webhooks',
+	'fbfc5373' => 'Test',
+	'4ad1bd6e' => 'Test sent to %s — HTTP %s response.',
+	'749713ce' => 'Test failed: %s',
+	'16922d8f' => 'Non-public host (blocked by SSRF protection).',
+	'f9289163' => 'Invalid URL or cURL unavailable.',
+];

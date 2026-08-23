@@ -321,143 +321,14 @@ class Admin_Checker extends Module_Checker
 			return [NULL, $modules_list, 'default', 0, NULL, [], []];
 		}
 
-		$module = $this->module($module_name);
+		$data = $this->model()->build_matrix($module_name, $type, $scope_id);
 
-		if (!$module || !method_exists($module, 'permissions'))
+		if ($data === NULL)
 		{
 			$this->error->not_found();
 			return;
 		}
 
-		$all_perms = $module->get_permissions($type);
-
-		// Fallback : si le type demandé n'existe pas (ex: 'default' demandé mais module n'a que 'category'),
-		// prendre le premier type disponible. Permet à button_access avec scope=0 de fonctionner sur forum/talks/etc.
-		if (!$all_perms || empty($all_perms['access']))
-		{
-			$all_module_perms = $module->permissions();
-			if (is_array($all_module_perms) && !empty($all_module_perms))
-			{
-				foreach ($all_module_perms as $available_type => $candidate)
-				{
-					if (!empty($candidate['access']))
-					{
-						$type = $available_type;
-						$all_perms = $candidate;
-						break;
-					}
-				}
-			}
-		}
-
-		if (!$all_perms || empty($all_perms['access']))
-		{
-			$this->error->not_found();
-			return;
-		}
-
-		$scope_id = (int)$scope_id;
-
-		// Récupérer les rôles à afficher en colonnes
-		$rows  = NeoFrag()->db	->select('role_id', 'name', 'title', 'color', 'icon', 'parent_role_id', 'built_in', '`order`')
-								->from('nf_roles')
-								->order_by('`order`', 'name')
-								->get(FALSE);
-
-		$roles = [];
-		foreach ($rows as $r)
-		{
-			$roles[(int)$r['role_id']] = [
-				'role_id'        => (int)$r['role_id'],
-				'name'           => $r['name'],
-				'title'          => $r['title'],
-				'color'          => $r['color'],
-				'icon'           => $r['icon'],
-				'parent_role_id' => $r['parent_role_id'] !== NULL ? (int)$r['parent_role_id'] : NULL,
-				'built_in'       => (bool)$r['built_in']
-			];
-		}
-
-		// Pré-calculer la matrice : pour chaque (permission, role), retourne :
-		//   ['value' => 'allow|never|default', 'source' => 'direct|inherited|none', 'parent_role_name' => 'XX|null']
-		$matrix = [];
-
-		foreach ($all_perms['access'] as $category)
-		{
-			foreach ($category['access'] as $action => $info)
-			{
-				$permission = $module_name.'.'.$action;
-
-				foreach ($roles as $role_id => $role)
-				{
-					$matrix[$permission][$role_id] = $this->_resolve_cell($role_id, $permission, $scope_id, $roles);
-				}
-			}
-		}
-
-		return [$module_name, $modules_list, $type, $scope_id, $all_perms, $roles, $matrix];
-	}
-
-	/**
-	 * Résout la valeur d'une cellule : direct dans le rôle, hérité du parent, ou default.
-	 */
-	private function _resolve_cell($role_id, $permission, $scope_id, $roles)
-	{
-		// Lookup direct dans nf_role_permissions pour ce rôle
-		$row = NeoFrag()->db	->select('authorized')
-								->from('nf_role_permissions')
-								->where('role_id',    $role_id)
-								->where('permission', $permission)
-								->where('scope_id',   $scope_id)
-								->row(FALSE);
-
-		if (is_array($row) && isset($row['authorized']))
-		{
-			return [
-				'value'            => $row['authorized'],
-				'source'           => 'direct',
-				'parent_role_name' => NULL
-			];
-		}
-
-		// Wildcard direct ?
-		$dot = strpos($permission, '.');
-		if ($dot !== FALSE)
-		{
-			$wildcard = substr($permission, 0, $dot).'.*';
-			$row = NeoFrag()->db->select('authorized')->from('nf_role_permissions')
-								->where('role_id', $role_id)->where('permission', $wildcard)->where('scope_id', $scope_id)
-								->row(FALSE);
-
-			if (is_array($row) && isset($row['authorized']))
-			{
-				return ['value' => $row['authorized'], 'source' => 'wildcard', 'parent_role_name' => NULL];
-			}
-		}
-
-		// Walk parent chain
-		$cursor = $roles[$role_id]['parent_role_id'] ?? NULL;
-		$depth  = 0;
-		while ($cursor !== NULL && $depth < 20)
-		{
-			$row = NeoFrag()->db->select('authorized')->from('nf_role_permissions')
-								->where('role_id', $cursor)->where('permission', $permission)->where('scope_id', $scope_id)
-								->row(FALSE);
-
-			if (is_array($row) && isset($row['authorized']))
-			{
-				return [
-					'value'            => $row['authorized'],
-					'source'           => 'inherited',
-					'parent_role_name' => $roles[$cursor]['title'] ?? $roles[$cursor]['name']
-				];
-			}
-
-			$cursor = $roles[$cursor]['parent_role_id'] ?? NULL;
-			$depth++;
-		}
-
-		// Aucune définition explicite → default
-		return ['value' => 'default', 'source' => 'none', 'parent_role_name' => NULL];
+		return [$data['module_name'], $modules_list, $data['type'], $data['scope_id'], $data['access'], $data['roles'], $data['matrix']];
 	}
 }

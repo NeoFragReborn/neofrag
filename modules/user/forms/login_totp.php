@@ -59,7 +59,7 @@ $this	->compact()
 			// Si le code ressemble à un TOTP (6 chiffres) → vérifier TOTP
 			if (preg_match('/^\d{6}$/', $code))
 			{
-				$verified = $totp->verify($user->totp_secret, $code);
+				$verified = $totp->verify($this->crypt->decrypt_secret($user->totp_secret), $code);
 			}
 			// Sinon, tenter un code de récupération
 			else

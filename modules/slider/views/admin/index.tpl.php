@@ -53,19 +53,19 @@
 						</td>
 						<td class="text-center">
 							<?php if (!empty($slide['active'])): ?>
-								<span class="badge badge-success"><?php echo icon('fas fa-check').' '.$this->lang('Actif') ?></span>
+								<span class="badge text-bg-success"><?php echo icon('fas fa-check').' '.$this->lang('Actif') ?></span>
 							<?php else: ?>
-								<span class="badge badge-secondary"><?php echo icon('fas fa-eye-slash').' '.$this->lang('Inactif') ?></span>
+								<span class="badge text-bg-secondary"><?php echo icon('fas fa-eye-slash').' '.$this->lang('Inactif') ?></span>
 							<?php endif ?>
 						</td>
 						<td class="text-center">
-							<a class="btn btn-sm btn-light" href="<?php echo url('admin/slider/toggle/'.(int)$slide['id']) ?>" data-toggle="tooltip" title="<?php echo !empty($slide['active']) ? $this->lang('Désactiver') : $this->lang('Activer') ?>">
+							<a class="btn btn-sm btn-light" href="<?php echo url('admin/slider/toggle/'.(int)$slide['id']) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo !empty($slide['active']) ? $this->lang('Désactiver') : $this->lang('Activer') ?>">
 								<?php echo icon(!empty($slide['active']) ? 'fas fa-eye-slash' : 'fas fa-eye') ?>
 							</a>
-							<a class="btn btn-sm btn-primary" href="<?php echo url('admin/slider/edit/'.(int)$slide['id']) ?>" data-toggle="tooltip" title="<?php echo $this->lang('Modifier') ?>">
+							<a class="btn btn-sm btn-primary" href="<?php echo url('admin/slider/edit/'.(int)$slide['id']) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Modifier') ?>">
 								<?php echo icon('fas fa-edit') ?>
 							</a>
-							<a class="btn btn-sm btn-danger" href="<?php echo url('admin/slider/delete/'.(int)$slide['id']) ?>" data-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Confirmer la suppression de cette slide ?'), ENT_QUOTES) ?>">
+							<a class="btn btn-sm btn-danger" href="<?php echo url('admin/slider/delete/'.(int)$slide['id']) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Confirmer la suppression de cette slide ?'), ENT_QUOTES) ?>">
 								<?php echo icon('fas fa-times') ?>
 							</a>
 						</td>

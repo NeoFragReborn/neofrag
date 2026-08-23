@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  *
@@ -11,7 +12,7 @@
  * on peut donc l'appliquer à l'entrée (stockage) ET à la sortie (rendu) sans double-échappement.
  */
 
-function sanitize_html($html)
+function sanitize_html($html): string
 {
 	static $purifier = NULL;
 

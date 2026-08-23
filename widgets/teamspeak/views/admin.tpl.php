@@ -1,6 +1,6 @@
 <ul class="nav nav-pills" id="ts-tabs" role="tablist">
-	<li class="nav-item"><a class="nav-link active" id="ts-options-tab" data-toggle="pill" href="#ts-options" role="tab"><?php echo icon('fas fa-cogs').' '.$this->lang('Options') ?></a></li>
-	<li class="nav-item"><a class="nav-link" id="ts-help-tab" data-toggle="pill" href="#ts-help" role="tab"><?php echo icon('far fa-life-ring').' '.$this->lang('Aide') ?></a></li>
+	<li class="nav-item"><a class="nav-link active" id="ts-options-tab" data-bs-toggle="pill" href="#ts-options" role="tab"><?php echo icon('fas fa-cogs').' '.$this->lang('Options') ?></a></li>
+	<li class="nav-item"><a class="nav-link" id="ts-help-tab" data-bs-toggle="pill" href="#ts-help" role="tab"><?php echo icon('far fa-life-ring').' '.$this->lang('Aide') ?></a></li>
 </ul>
 <div class="tab-content border-light" id="ts-tabContent">
 	<div class="tab-pane fade show active" id="ts-options" role="tabpanel">

@@ -10,6 +10,7 @@ use NF\NeoFrag\Loadables\Controllers\Widget as Controller_Widget;
 class Index extends Controller_Widget
 {
 	const CACHE_TTL = 300; // 5 minutes
+	const NEG_CACHE_TTL = 120; // après un échec, ne pas re-tenter la requête bloquante pendant 2 min
 
 	public function index($settings = [])
 	{
@@ -73,27 +74,33 @@ class Index extends Controller_Widget
 		}
 		else
 		{
-			$raw = @$this->network($endpoint, ['timeout' => 5])->get();
+			$fail_file = $cache_dir.'/'.md5($endpoint).'.fail';
 
-			if (!$raw)
+			// Cache négatif : après un échec récent, ne pas refaire la requête bloquante (5 s) à
+			// chaque rendu de page pendant NEG_CACHE_TTL (sert le cache périmé s'il existe).
+			if (is_file($fail_file) && (time() - filemtime($fail_file)) < self::NEG_CACHE_TTL)
 			{
-				// On error, fall back to stale cache if present
-				if (is_file($cache_file))
-				{
-					$xml = @simplexml_load_string(file_get_contents($cache_file));
-				}
-				else
-				{
-					return NULL;
-				}
+				$xml = is_file($cache_file) ? @simplexml_load_string(file_get_contents($cache_file)) : NULL;
 			}
 			else
 			{
-				$xml = @simplexml_load_string($raw);
-				if ($xml && !empty($xml->groupDetails) && (string)$xml->groupDetails->groupName !== '')
+				$raw = @$this->network($endpoint, ['timeout' => 5])->get();
+
+				if (!is_dir($cache_dir)) @mkdir($cache_dir, 0775, TRUE);
+
+				if (!$raw)
 				{
-					if (!is_dir($cache_dir)) @mkdir($cache_dir, 0775, TRUE);
-					@file_put_contents($cache_file, $raw);
+					@touch($fail_file);
+					$xml = is_file($cache_file) ? @simplexml_load_string(file_get_contents($cache_file)) : NULL;
+				}
+				else
+				{
+					$xml = @simplexml_load_string($raw);
+					if ($xml && !empty($xml->groupDetails) && (string)$xml->groupDetails->groupName !== '')
+					{
+						@unlink($fail_file);
+						@file_put_contents($cache_file, $raw);
+					}
 				}
 			}
 		}

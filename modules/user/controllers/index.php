@@ -89,7 +89,7 @@ class Index extends Controller_Module
 				'admin'              => (bool)$user->admin,
 				'totp_enabled'       => (bool)$user->totp_enabled
 			],
-			'sessions_actives' => $this->db	->select('id', 'UNIX_TIMESTAMP(date) AS started_at', 'UNIX_TIMESTAMP(last_activity) AS last_activity', 'data')
+			'sessions_actives' => $this->db	->select('id', 'UNIX_TIMESTAMP(last_activity) AS last_activity', 'data')
 											->from('nf_session')
 											->where('user_id', $user->id)
 											->get(),
@@ -243,7 +243,7 @@ class Index extends Controller_Module
 			{
 				$codes = $totp->generate_recovery_codes(10);
 
-				$this->user	->set('totp_secret', $pending_secret)
+				$this->user	->set('totp_secret', $this->crypt->encrypt_secret($pending_secret))
 							->set('totp_enabled', 1)
 							->update();
 
@@ -412,7 +412,9 @@ class Index extends Controller_Module
 												return user_agent($session->data->session->user_agent);
 											})
 											->col('Adresse IP', function($session){
-												return geolocalisation($ip_address = $session->data->session->ip_address).'<span data-toggle="tooltip" data-original-title="'.$session->data->session->host_name.'">'.$ip_address.'</span>';
+												// host_name = reverse DNS, contrôlé par le propriétaire de l'IP → échappé.
+												$ip_address = $session->data->session->ip_address;
+												return geolocalisation($ip_address).'<span data-bs-toggle="tooltip" data-original-title="'.htmlspecialchars((string)$session->data->session->host_name, ENT_QUOTES).'">'.htmlspecialchars((string)$ip_address, ENT_QUOTES).'</span>';
 											})
 											->col($this->lang('Site référent'), function($session){
 												return $session->data->session->referer ? urltolink($session->data->session->referer) : $this->lang('Aucun');
@@ -558,7 +560,27 @@ class Index extends Controller_Module
 							->set_if($data['avatar'],   'avatar',   $data['avatar'])
 							->update();
 
-					$this->session->login($auth->user);
+					// Mêmes gardes que la voie mot de passe (forms/login.php) : le lien
+					// social ne doit ouvrir ni un compte banni, ni un compte 2FA sans
+					// second facteur.
+					$user = $auth->user;
+
+					if ($this->moderation->is_banned((int)$user->id, 'global'))
+					{
+						$msg = $this->moderation->block_message_for_user((int)$user->id, 'global');
+						notify($msg ?: $this->lang('Ce compte est banni.'), 'danger');
+					}
+					else if ($user->totp_enabled)
+					{
+						$this->session->set('totp', 'pending_user_id', $user->id);
+						$this->session->set('totp', 'pending_remember', 0);
+						$this->session->set('totp', 'pending_expires', time() + 300);
+						$this->session->append('modals', 'ajax/user/login');
+					}
+					else
+					{
+						$this->session->login($user);
+					}
 				}
 			}
 			else if ($this->user())
@@ -594,6 +616,24 @@ class Index extends Controller_Module
 	{
 		$this->session->append('modals', 'ajax/user/lost-password/'.$token->id);
 		redirect();
+	}
+
+	// Entrées NON-AJAX de la connexion / inscription. Les thèmes exposent `user/login` et
+	// `user/registration` en href des boutons d'en-tête (le clic normal ouvre la modale via
+	// `data-modal-ajax`, ces URLs sont le repli sans JS / clic milieu / lien copié). Le routage
+	// automatique cherche la méthode dans CE contrôleur (cf. neofrag/core/output.php) : sans
+	// elles, seul `ajax/user/*` répondait et les deux URLs renvoyaient 404.
+	// Même idiome que `lost_password()` : on programme la modale, puis retour à la page précédente.
+	public function login()
+	{
+		$this->session->append('modals', 'ajax/user/auth');
+		redirect_back();
+	}
+
+	public function registration()
+	{
+		$this->session->append('modals', 'ajax/user/register');
+		redirect_back();
 	}
 
 	public function logout()
@@ -665,10 +705,7 @@ class Index extends Controller_Module
 
 	private function _panel_activities($user_id = NULL)
 	{
-		$this	->css('activities')
-				->js('user')
-				->css('jquery.mCustomScrollbar.min')
-				->js('jquery.mCustomScrollbar.min');
+		$this->css('activities');
 
 		if ($user_id === NULL)
 		{

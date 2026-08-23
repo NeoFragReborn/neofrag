@@ -124,7 +124,7 @@ class Admin extends Controller_Module
 						$tooltip_lines[] = strip_tags((string)NeoFrag()->groups->display($sid, TRUE, FALSE));
 					}
 					$tooltip_text = implode(' • ', $tooltip_lines);
-					$members_html .= '<span class="nf-member-groups-more" data-toggle="tooltip" title="'.htmlspecialchars($tooltip_text).'">+'.count($secondary_ids).'</span>';
+					$members_html .= '<span class="nf-member-groups-more" data-bs-toggle="tooltip" title="'.htmlspecialchars($tooltip_text).'">+'.count($secondary_ids).'</span>';
 				}
 				$members_html .= '</div>';
 			}
@@ -373,8 +373,8 @@ class Admin extends Controller_Module
 			foreach ($rows as $row)
 			{
 				$badge = $row['success']
-					? '<span class="badge badge-success">OK</span>'
-					: '<span class="badge badge-danger">FAIL</span>';
+					? '<span class="badge text-bg-success">OK</span>'
+					: '<span class="badge text-bg-danger">FAIL</span>';
 				$user_disp = $row['username']
 					? htmlspecialchars($row['username']).' (#'.($row['user_id'] ?: '?').')'
 					: '<i class="text-muted">anonyme</i>';

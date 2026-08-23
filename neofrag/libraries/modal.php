@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -35,7 +36,7 @@ class Modal extends Library
 		return $this;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		$content = '';
 
@@ -53,7 +54,7 @@ class Modal extends Library
 
 		$content = '<div class="modal-header">
 						<h5 class="modal-title">'.$this->_header.'</h5>
-						<button type="button" class="close" data-dismiss="modal" aria-label="'.$this->lang('Fermer').'"><span aria-hidden="true">&times;</span></button>
+						<button type="button" class="close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'"><span aria-hidden="true">&times;</span></button>
 					</div>
 					'.$content.'
 					'.($this->_buttons ? $this->button->static_footer($this->_buttons, 'right')->append_attr('class', 'modal-footer') : '');
@@ -178,7 +179,7 @@ class Modal extends Library
 
 	public function open()
 	{
-		NeoFrag()->js_load('$(\'#'.$this->id.'\').modal(\'show\');');
+		NeoFrag()->js_load('bootstrap.Modal.getOrCreateInstance(document.getElementById(\''.$this->id.'\')).show();');
 		return $this;
 	}
 

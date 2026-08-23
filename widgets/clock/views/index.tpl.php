@@ -23,7 +23,7 @@
 		<li class="list-group-item widget-clock-birthday-item">
 			<i class="fas fa-gift fa-fw"></i>
 			<?php echo $this->user->link($b['user_id'], $b['username']) ?>
-			<span class="float-right text-muted"><?php echo $age ?> <?php echo $this->lang('ans') ?></span>
+			<span class="float-end text-muted"><?php echo $age ?> <?php echo $this->lang('ans') ?></span>
 		</li>
 			<?php endforeach ?>
 		<?php else: ?>

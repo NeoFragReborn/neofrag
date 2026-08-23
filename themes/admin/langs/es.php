@@ -42,4 +42,21 @@ return [
 	'fc87bc46' => 'Ver el sitio',
 	'31780935' => 'Contenido',
 	'2694592a' => 'Arriba',
+	// Complété i18n 2026-06-11
+	'abed8e08' => 'Multimedia',
+	'1c04f8f2' => 'Monetización',
+	'94b735a4' => 'Papelera',
+	// i18n 2026-06-11 (code strings)
+	'e99f6db5' => 'Permisos (matriz)',
+	'26cd0a3c' => 'Asignar a usuarios',
+	'ed45dbb4' => 'Asignar a grupos',
+	'f512948d' => 'Monitorización',
+	'dee32ad8' => 'Búsqueda rápida (Ctrl+K)',
+	'4599e826' => 'Buscar…',
+	'6329b073' => 'Actualización disponible: NeoFrag %s',
+	'0e2c75ac' => 'Error',
+	'181d9c2d' => 'Búsqueda rápida',
+	'cc260cbb' => 'Escribe un comando, un módulo o una acción…',
+	'6fe759f4' => 'Navegar',
+	'86fab783' => 'Seleccionar',
 ];

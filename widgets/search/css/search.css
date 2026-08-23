@@ -1,0 +1,49 @@
+/* Menu de recherche instantanée (typeahead). Couleurs via tokens --nf-* du thème (fallbacks neutres). */
+.nf-search { position: relative; }
+
+.nf-search-suggest {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	z-index: 1050;
+	margin-top: 2px;
+	background: var(--nf-surface, #fff);
+	color: var(--nf-text, #212529);
+	border: 1px solid var(--nf-border, rgba(0, 0, 0, .15));
+	border-radius: var(--nf-radius-sm, .25rem);
+	box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .175);
+	max-height: 60vh;
+	overflow-y: auto;
+	text-align: left;
+}
+
+.nf-search-suggest-item {
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+	padding: .4rem .75rem;
+	color: inherit;
+	text-decoration: none;
+	border-bottom: 1px solid var(--nf-border, rgba(0, 0, 0, .08));
+	white-space: nowrap;
+}
+
+.nf-search-suggest-item:last-child { border-bottom: 0; }
+
+.nf-search-suggest-item:hover,
+.nf-search-suggest-item.active {
+	background: var(--nf-accent, #0d6efd);
+	color: #fff;
+}
+
+.nf-search-suggest-title {
+	flex: 1 1 auto;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.nf-search-suggest-mod {
+	opacity: .65;
+	font-size: .8em;
+}

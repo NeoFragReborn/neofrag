@@ -9,4 +9,7 @@ return [
 	'72928445' => 'Próximos eventos del calendario.',
 	'baef19d8' => 'Próximos eventos',
 	'fd283f69' => 'Calendario',
+	// i18n 2026-06-11 (code strings)
+	'e7c90f18' => 'Número de eventos',
+	'042e2c3d' => 'Mostrar en un panel',
 ];

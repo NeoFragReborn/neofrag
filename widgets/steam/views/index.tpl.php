@@ -40,7 +40,7 @@ $group_url  = 'https://steamcommunity.com/groups/'.htmlspecialchars($url);
 
 		<a href="<?php echo $group_url ?>" target="_blank" rel="noopener" class="btn btn-sm btn-block widget-steam-btn">
 			<i class="fab fa-steam"></i> <?php echo $this->lang('Voir le groupe') ?>
-			<i class="fas fa-external-link-alt ml-1"></i>
+			<i class="fas fa-external-link-alt ms-1"></i>
 		</a>
 	</div>
 </div>

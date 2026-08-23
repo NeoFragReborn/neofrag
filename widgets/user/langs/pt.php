@@ -29,4 +29,9 @@ return [
 	'50d4ccb8' => 'Sair',
 	'0f9d628a' => 'Área de membros: login, link para o perfil ou registro.',
 	'eb68e801' => 'Bem-vindo <a href="',
+	// i18n 2026-06-11 (code strings)
+	'4a253c1f' => 'Sair da pré-visualização',
+	'0552e076' => 'Modo de pré-visualização',
+	'1648d731' => 'As ligações aos dados pessoais estão ocultas para respeitar a privacidade da conta-alvo.',
+	'78aeb25c' => 'Moderação',
 ];

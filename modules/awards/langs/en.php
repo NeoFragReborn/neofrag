@@ -32,4 +32,7 @@ return [
 	'ec91a486' => 'Awards (palmares) assignable to members or teams — gaming module.',
 	'52c9bbab' => 'Edit',
 	'8d9ef7a4' => 'Delete',
+	// i18n 2026-06-11 (code strings)
+	'abc845df' => 'awards',
+	'46ef5764' => 'Awards',
 ];

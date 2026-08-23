@@ -77,4 +77,9 @@ return [
 	'abe737fd' => 'Social networks',
 	'c77f6c43' => 'Powered by',
 	'275eec43' => 'Molten-metal gaming theme: lava red on charcoal, night by default plus a day mode, ember glow, Rajdhani headings. Fully customizable.',
+	// i18n 2026-06-11 (code strings)
+	'8c7b5204' => 'NeoFrag Reborn community theme: dark navy + teal, glassmorphism. Widget home, navbar + sidebar — for your team, your guild or your community.',
+	'8a3b82de' => 'Community',
+	'593399a1' => 'Welcome to',
+	'2128bc55' => 'NeoFrag Reborn is the community continuation of NeoFrag, created by Michaël BILCOT &amp; Jérémy VALENTIN. Open source, LGPLv3.',
 ];

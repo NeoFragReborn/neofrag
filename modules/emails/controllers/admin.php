@@ -99,16 +99,16 @@ class Admin extends Controller_Module
 				$html .= '<div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap;">';
 				if ($enabled)
 				{
-					$html .= '<span class="badge badge-success">'.$this->lang('Actif').'</span>';
+					$html .= '<span class="badge text-bg-success">'.$this->lang('Actif').'</span>';
 				}
 				else
 				{
-					$html .= '<span class="badge badge-secondary">'.$this->lang('Désactivé').'</span>';
+					$html .= '<span class="badge text-bg-secondary">'.$this->lang('Désactivé').'</span>';
 				}
-				$html .= '<span class="badge badge-light">'.icon('fas fa-language').' '.(int)$t['lang_count'].'</span>';
+				$html .= '<span class="badge text-bg-light">'.icon('fas fa-language').' '.(int)$t['lang_count'].'</span>';
 				$html .= '<div style="margin-left:auto;display:flex;gap:4px;">';
 				$html .= '<a class="btn btn-sm btn-primary" href="'.url('admin/emails/edit/'.$t['template_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'">'.icon('fas fa-edit').'</a>';
-				$html .= '<a class="btn btn-sm '.($enabled ? 'btn-outline-warning' : 'btn-outline-success').'" href="'.url('admin/emails/toggle/'.$t['template_id'].'/'.$slug).'" title="'.$this->lang($enabled ? 'Désactiver' : 'Activer').'">'.icon($enabled ? 'fas fa-toggle-off' : 'fas fa-toggle-on').'</a>';
+				$html .= '<a class="btn btn-sm '.($enabled ? 'btn-outline-warning' : 'btn-outline-success').'" href="'.$this->csrf_url('admin/emails/toggle/'.$t['template_id'].'/'.$slug).'" title="'.$this->lang($enabled ? 'Désactiver' : 'Activer').'">'.icon($enabled ? 'fas fa-toggle-off' : 'fas fa-toggle-on').'</a>';
 				$html .= '<a class="btn btn-sm btn-outline-info" href="'.url('admin/emails/test/'.$t['template_id'].'/'.$slug).'" title="'.$this->lang('Envoi de test').'">'.icon('fas fa-paper-plane').'</a>';
 				$html .= '</div>';
 				$html .= '</div>';
@@ -404,6 +404,8 @@ class Admin extends Controller_Module
 
 	public function _toggle($template)
 	{
+		$this->check_csrf('admin/emails');
+
 		$enable = empty($template['enabled']);
 		$this->model()->set_enabled($template['template_id'], $enable);
 		notify($this->lang($enable ? 'Template activé' : 'Template désactivé'));
@@ -445,11 +447,12 @@ class Admin extends Controller_Module
 
 				if ($ok)
 				{
-					notify($this->lang('Email de test envoyé à %s', $data['email']));
+					notify($this->lang('Email de test envoyé à %s (via %s)', $data['email'], $this->email->last_transport()));
 				}
 				else
 				{
-					notify($this->lang('Échec de l\'envoi'), 'error');
+					$err = $this->email->last_error();
+					notify($this->lang('Échec de l\'envoi').($err ? ' — '.htmlspecialchars($err) : ''), 'danger');
 				}
 
 				redirect('admin/emails');

@@ -1,10 +1,18 @@
+<?php $nf_maintenance_bg = $this->config->nf_maintenance_background ? NeoFrag()->model2('file', $this->config->nf_maintenance_background)->path() : ''; ?>
 html,
 body {
-	background-image: url("<?php echo NeoFrag()->model2('file', $this->config->nf_maintenance_background)->path() ?: '/images/maintenance.jpg' ?>");
-	background-position: <?php echo $this->config->nf_maintenance_background_position ?: 'center top' ?>;
+<?php if ($nf_maintenance_bg): ?>
+	background-image: url("<?php echo $nf_maintenance_bg ?>");
+	background-position: <?php echo $this->config->nf_maintenance_background_position ?: 'center center' ?>;
 	background-repeat: <?php echo $this->config->nf_maintenance_background_repeat ?: 'no-repeat' ?>;
+	background-size: cover;
+<?php else: ?>
+	/* Aucune image configurée : dégradé CSS plein écran (couvre tout format d'écran, ultrawide compris). */
+	background-image: radial-gradient(130% 130% at 50% 0%, #2b3346 0%, #1a1d27 60%, #101218 100%);
+	background-size: cover;
+<?php endif ?>
 	background-attachment: scroll;
-	background-color: <?php echo get_colors($this->config->nf_maintenance_background_color ?: '#343a40') ?>;
+	background-color: <?php echo get_colors($this->config->nf_maintenance_background_color ?: '#1a1d27') ?>;
 	height: 100%;
 }
 

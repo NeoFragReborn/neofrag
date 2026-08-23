@@ -5,7 +5,7 @@ declare(strict_types=1);
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
  */
 
-function notify($message, $type = 'success')
+function notify($message, $type = 'success'): void
 {
 	NeoFrag()->session->append('notifications', [
 		'message' => (string)$message,
@@ -13,7 +13,7 @@ function notify($message, $type = 'success')
 	]);
 }
 
-function notifications()
+function notifications(): void
 {
 	if ($notifications = NeoFrag()->session('notifications'))
 	{

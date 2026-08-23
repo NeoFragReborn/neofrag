@@ -11,6 +11,38 @@ use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 class Admin_Ajax extends Controller_Module
 {
 	/**
+	 * R1.10 — Matrice des permissions en MODALE (ouverte depuis button_access / le bouton
+	 * « Permissions » du header admin). Réutilise build_matrix() + la vue admin/matrix ;
+	 * la sauvegarde reste matrix_update (matrix.js, inchangé).
+	 */
+	public function matrix_modal($module_name, $type = 'default', $scope_id = 0)
+	{
+		$data = $this->model()->build_matrix($module_name, $type, $scope_id);
+
+		if ($data === NULL)
+		{
+			return $this->modal($this->lang('Permissions'), 'fas fa-unlock-alt')
+						->body('<div class="alert alert-warning" style="margin:0">'.$this->lang('Aucune permission à configurer pour ce module.').'</div>')
+						->close();
+		}
+
+		$this->css('access')->js('matrix');
+
+		return $this->modal($this->lang('Permissions de %s', $data['module_title']), ($data['module_icon'] ?: 'fas fa-unlock-alt'))
+					->large()
+					->body($this->view('admin/matrix', [
+						'module_name'  => $data['module_name'],
+						'module_title' => $data['module_title'],
+						'type'         => $data['type'],
+						'scope_id'     => $data['scope_id'],
+						'access'       => $data['access'],
+						'roles'        => $data['roles'],
+						'matrix'       => $data['matrix']
+					]))
+					->close();
+	}
+
+	/**
 	 * R1.3 — endpoint AJAX pour la matrice : set/clear une permission.
 	 */
 	public function matrix_update($role_id, $permission, $scope_id, $value)

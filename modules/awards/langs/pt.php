@@ -32,4 +32,7 @@ return [
 	'ec91a486' => 'Prêmios (palmares) atribuíveis a membros ou equipes — módulo gaming.',
 	'52c9bbab' => 'Modificar',
 	'8d9ef7a4' => 'Excluir',
+	// i18n 2026-06-11 (code strings)
+	'abc845df' => 'palmarés',
+	'46ef5764' => 'Recompensas',
 ];

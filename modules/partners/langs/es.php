@@ -40,4 +40,6 @@ return [
 	'f11bfc56' => 'Para mostrarse sobre un fondo oscuro <i>(según el tema utilizado)</i>',
 	'e230fd60' => 'Para mostrarse sobre un fondo claro <i>(según el tema utilizado)</i>',
 	'be53bc1a' => 'Indique el código promocional que sus usuarios pueden usar para beneficiarse de promociones gracias a su socio',
+	// i18n 2026-06-11 (code strings)
+	'39e91bd5' => 'socio|socios',
 ];

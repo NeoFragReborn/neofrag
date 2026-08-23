@@ -19,6 +19,14 @@ $NF_ROOT   = dirname(__DIR__);
 $NF_CONFIG = $NF_ROOT . '/config';
 $NF_LOCK   = __DIR__ . '/db.txt';
 
+// NEOFRAG_VERSION est défini par le root index.php au boot du CMS, mais l'installeur est servi
+// EN DIRECT sur /install/ (hors de ce boot) → layout.php fatale sur la constante absente. On la
+// lit donc nous-mêmes depuis le root index.php (même source que tools/build-release.php).
+if (!defined('NEOFRAG_VERSION')) {
+	$nf_index = (string) @file_get_contents($NF_ROOT . '/index.php');
+	define('NEOFRAG_VERSION', preg_match("/NEOFRAG_VERSION',\\s*'([^']+)'/", $nf_index, $nf_m) ? $nf_m[1] : '1.0.0');
+}
+
 // --- Garde « déjà installé » ------------------------------------------------
 if (Installer::is_already_installed($NF_CONFIG)) {
 	if (!is_file($NF_LOCK)) {
@@ -35,15 +43,11 @@ if (empty($_SESSION['nf_install_csrf'])) {
 }
 $CSRF = $_SESSION['nf_install_csrf'];
 
-// L'étape « Modules » (choix du profil + presets) vient AVANT « Administrateur » : le verrou
-// « déjà installé » (Installer::is_already_installed) sonde la présence d'un membre dans nf_user ;
-// dès que l'admin est créé, le wizard rendrait la main au framework. On applique donc le preset
-// tant qu'aucun compte n'existe encore. (Spec : « étape Modules » — positionnée avant l'admin pour
-// cette contrainte de verrou.)
+// Modèle « tout bundlé » : l'install massive (tous les modules/widgets/thèmes locaux) se fait dans
+// l'étape « Base de données » via Installer::install_complete() — il n'y a plus d'étape « Modules ».
 const NF_STEPS = [
 	'requirements' => 'Prérequis',
 	'database'     => 'Base de données',
-	'modules'      => 'Modules',
 	'admin'        => 'Administrateur',
 	'finish'       => 'Terminé',
 ];
@@ -66,10 +70,10 @@ function nf_current_step(string $config_dir): string
 	$has_config = Installer::read_db_config($config_dir) !== null;
 
 	if (!isset(NF_STEPS[$step])) {
-		return $has_config ? 'modules' : 'requirements';
+		return $has_config ? 'admin' : 'requirements';
 	}
-	// Garde-fous de cohérence : pas de modules/admin sans config DB (schéma importé).
-	if (in_array($step, ['modules', 'admin'], true) && !$has_config) {
+	// Garde-fou de cohérence : pas d'admin sans config DB (schéma + modules importés).
+	if ($step === 'admin' && !$has_config) {
 		return 'database';
 	}
 
@@ -81,21 +85,12 @@ $old    = $_POST;
 $done   = false; // passe à true après création de l'admin → écran final
 $step   = nf_current_step($NF_CONFIG);
 
-// Catalogue marketplace (Tier 2 distant) — récupéré pour l'étape Modules (rendu + install).
-// NULL si le domaine est injoignable → MODE DÉGRADÉ : presets locaux seuls, l'install ne bloque jamais.
-$nf_catalog = ($step === 'modules') ? Installer::fetch_catalog(Installer::marketplace_url()) : null;
-
 // --- Traitement des soumissions ---------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if (!hash_equals($CSRF, $_POST['csrf'] ?? '')) {
 		$errors[] = 'Session expirée, merci de recommencer l\'étape.';
 	} elseif ($step === 'database') {
 		$errors = nf_handle_database($NF_CONFIG, $NF_ROOT);
-		if (!$errors) {
-			nf_redirect('modules');
-		}
-	} elseif ($step === 'modules') {
-		$errors = nf_handle_modules($NF_CONFIG, $NF_ROOT, $nf_catalog);
 		if (!$errors) {
 			nf_redirect('admin');
 		}
@@ -109,82 +104,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 /**
- * Étape « modules » : applique le preset choisi (active des modules Tier 1 locaux + leurs widgets,
- * joue leur install.sql, fixe la page d'accueil, crée la page « Bienvenue » pour « Site simple »),
- * puis TÉLÉCHARGE+INSTALLE les addons Tier 2 cochés depuis le marketplace distant (intégrité SHA-256,
- * anti-zip-slip — cf. Installer::install_remote_addon). Tourne tant qu'aucun admin n'existe (cf.
- * NF_STEPS). Le récap est gardé en session pour l'écran final.
- */
-function nf_handle_modules(string $config_dir, string $root, ?array $catalog): array
-{
-	$cfg = Installer::read_db_config($config_dir);
-	if ($cfg === null) {
-		return ['Configuration de base de données introuvable, reprenez l\'étape précédente.'];
-	}
-
-	$presets = Installer::presets();
-	$preset  = (string) ($_POST['preset'] ?? '');
-	if (!isset($presets[$preset])) {
-		$preset = (string) array_key_first($presets);
-	}
-
-	// Modules cochés (cases décochables). Absent = aucun module Tier 1 retenu (cœur seul).
-	$selected = (isset($_POST['modules']) && is_array($_POST['modules'])) ? array_values($_POST['modules']) : [];
-
-	try {
-		$db      = Installer::connect($cfg);
-		$summary = Installer::apply_preset($db, $root, $preset, $selected);
-
-		// Tier 2 distant : le client n'envoie que des NOMS ; on résout les métadonnées (sha256, file…)
-		// depuis le catalogue SERVEUR (jamais celles du client) avant tout téléchargement.
-		$tier2_names = (isset($_POST['tier2']) && is_array($_POST['tier2'])) ? array_values($_POST['tier2']) : [];
-		$installed_t2 = [];
-		$skipped_t2   = [];
-
-		if ($tier2_names && is_array($catalog)) {
-			$by_name = $widget_metas = [];
-			foreach ($catalog['addons'] as $a) {
-				if (($a['tier'] ?? null) == 2 && in_array($a['type'] ?? '', ['module', 'theme'], true)) {
-					$by_name[$a['name']] = $a;
-				}
-				if (($a['type'] ?? '') === 'widget') {
-					$widget_metas[$a['name']] = $a; // pour télécharger les fichiers des widgets appariés
-				}
-			}
-			$base = Installer::marketplace_url($db);
-			foreach ($tier2_names as $name) {
-				if (!isset($by_name[$name])) {
-					continue; // nom non présent dans le catalogue serveur → ignoré
-				}
-				$r = Installer::install_remote_addon($db, $root, $by_name[$name], $base, $widget_metas);
-				if ($r['ok']) {
-					$installed_t2[] = $name;
-				} else {
-					$skipped_t2[] = $name . ' (' . $r['error'] . ')';
-				}
-			}
-		}
-
-		$db->close();
-	} catch (\Throwable $e) {
-		return ['Échec de la configuration des modules : ' . $e->getMessage()];
-	}
-
-	$_SESSION['nf_install_summary'] = [
-		'preset'      => $presets[$preset]['title'],
-		'modules'     => $summary['installed_modules'],
-		'homepage'    => $summary['default_page'],
-		'errors'      => $summary['errors'],
-		'tier2'       => $installed_t2,
-		'tier2_skipped' => $skipped_t2,
-	];
-
-	return [];
-}
-
-/**
  * Étape « base de données » : teste la connexion, écrit la config, crée la base
- * au besoin, importe schéma + seed + migrations. Renvoie la liste d'erreurs (vide = OK).
+ * au besoin, importe schéma + seed + migrations, puis installe TOUS les modules/widgets/thèmes
+ * locaux (Installer::install_complete, modèle « tout bundlé »). Renvoie la liste d'erreurs (vide = OK).
  */
 function nf_handle_database(string $config_dir, string $root): array
 {
@@ -214,11 +136,24 @@ function nf_handle_database(string $config_dir, string $root): array
 		}
 
 		Installer::write_config($config_dir, $cfg);
+		Installer::write_site_url($config_dir, Installer::request_origin($_SERVER));
 
 		$db = Installer::connect($cfg);
 		Installer::import_sql_file($db, $root . '/install/schema.sql');
 		Installer::import_sql_file($db, $root . '/install/seed.sql');
 		Installer::run_migrations($db, $root . '/migrations', null);
+
+		// Modèle « tout bundlé » : installe TOUS les modules/widgets/thèmes locaux (aucun choix, aucun
+		// marketplace requis). Le résumé est gardé en session pour l'écran final.
+		$summary = Installer::install_complete($db, $root);
+		$_SESSION['nf_install_summary'] = [
+			'modules'  => $summary['installed_modules'],
+			'widgets'  => $summary['installed_widgets'],
+			'themes'   => $summary['installed_themes'],
+			'homepage' => $summary['default_page'],
+			'errors'   => $summary['errors'],
+		];
+
 		$db->close();
 	} catch (\Throwable $e) {
 		return ['Échec de l\'initialisation de la base : ' . $e->getMessage()];
@@ -235,6 +170,8 @@ function nf_handle_admin(string $config_dir, string $lock): array
 	$email    = trim($_POST['email'] ?? '');
 	$pass     = (string) ($_POST['password'] ?? '');
 	$pass2    = (string) ($_POST['password2'] ?? '');
+	$wm       = (string) ($_POST['webmaster_password'] ?? '');
+	$wm2      = (string) ($_POST['webmaster_password2'] ?? '');
 
 	$errors = [];
 	if ($site === '') {
@@ -252,6 +189,14 @@ function nf_handle_admin(string $config_dir, string $lock): array
 	if ($pass !== $pass2) {
 		$errors[] = 'Les deux mots de passe ne correspondent pas.';
 	}
+	// Mot de passe webmaster : facultatif ici (peut être défini plus tard depuis Monitoring), mais
+	// s'il est fourni il doit être valide et confirmé.
+	if ($wm !== '' && strlen($wm) < 8) {
+		$errors[] = 'Le mot de passe webmaster doit faire au moins 8 caractères.';
+	}
+	if ($wm !== '' && $wm !== $wm2) {
+		$errors[] = 'Les deux mots de passe webmaster ne correspondent pas.';
+	}
 	if ($errors) {
 		return $errors;
 	}
@@ -266,22 +211,43 @@ function nf_handle_admin(string $config_dir, string $lock): array
 		Installer::create_admin($db, ['username' => $username, 'email' => $email, 'password' => $pass]);
 		Installer::set_setting($db, 'nf_name', $site);
 
-		// Contenu du wiki (documentation) — UNIQUEMENT si le module wiki est installé (ses tables
-		// existent). En cœur lean, wiki est un addon Tier 2 (marketplace) : aucun preset ne l'installe,
-		// donc nf_wiki_pages est absent et wiki.sql ferait échouer toute l'install. La doc wiki sera
-		// réintégrée à l'install du module wiki (Phase 2 marketplace).
+		if ($wm !== '') {
+			Installer::set_webmaster_password($config_dir, $wm);
+		}
+
+		// Email « De » par défaut sur le DOMAINE d'installation (sinon le défaut noreply@neofrag.com
+		// est rejeté par le MTA : un serveur n'envoie pas « au nom de » un domaine qu'il ne possède pas).
+		$host = preg_replace(['/:\d+$/', '/^www\./'], '', strtolower($_SERVER['HTTP_HOST'] ?? ''));
+		if ($host !== '' && strpos($host, '.') !== false && !str_contains($host, 'localhost')) {
+			Installer::set_setting($db, 'nf_contact', 'noreply@' . $host);
+		}
+
+		// Contenu du wiki (documentation). En « tout bundlé », le module wiki est installé (install_complete)
+		// donc nf_wiki_pages existe et la doc s'importe. La garde table_exists reste un filet (ex. un paquet
+		// démo qui n'embarquerait pas le module wiki).
 		if (is_file($wiki_sql = __DIR__ . '/wiki.sql') && Installer::table_exists($db, 'nf_wiki_pages')) {
 			Installer::import_sql_file($db, $wiki_sql);
 		}
 
-		// Paquet DÉMO : best-effort. demo.sql (dump cœur-riche) référence des tables de modules qui
-		// peuvent ne pas exister selon le preset choisi → un échec ne doit pas bloquer l'install.
-		// (Un demo.sql aligné sur un preset = chantier Phase 2 démo.)
+		// Mise en page de la VITRINE (paquet PRINCIPAL uniquement) : dispositions + thème vitrine actif.
+		// Le code du thème/widget landing et la doc (wiki.sql) sont bundlés à part ; ce fichier ne porte
+		// que la mise en page, perdue à la réinstallation. Best-effort : un échec ne bloque pas l'install
+		// (le site reste fonctionnel sur nebula). Appliqué APRÈS le seed (override nf_default_theme).
+		if (is_file($vitrine_sql = __DIR__ . '/vitrine.sql')) {
+			try {
+				Installer::import_sql_file($db, $vitrine_sql);
+			} catch (\Throwable $e) {
+				error_log('[install] vitrine.sql ignoré : ' . $e->getMessage());
+			}
+		}
+
+		// Paquet DÉMO : best-effort. demo.sql (dump cœur-riche) référence des tables de modules ; en
+		// « tout bundlé » elles existent toutes, mais on garde le try/catch (un échec ne bloque pas l'install).
 		if (is_file($demo_sql = __DIR__ . '/demo.sql')) {
 			try {
 				Installer::import_sql_file($db, $demo_sql);
 			} catch (\Throwable $e) {
-				error_log('[install] demo.sql ignoré (cœur lean — voir Phase 2 démo) : ' . $e->getMessage());
+				error_log('[install] demo.sql ignoré : ' . $e->getMessage());
 			}
 		}
 

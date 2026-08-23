@@ -51,8 +51,7 @@ class Index extends Controller_Module
 	public function statistics()
 	{
 		$this	->css('awards')
-				->js('jquery.knob')
-				->js_load('$(\'.knob\').knob();');
+				->js('knob');
 
 		return $this->array
 					->append($this	->panel()

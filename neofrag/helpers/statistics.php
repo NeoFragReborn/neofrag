@@ -8,7 +8,7 @@ declare(strict_types=1);
 // Comptabilise une vue de contenu une seule fois par session (jamais pour les crawlers), pour éviter
 // le gonflage artificiel des compteurs sur refresh / clics répétés d'un même visiteur. Retourne TRUE
 // si la vue doit être incrémentée (1re fois cette session pour ce contenu), FALSE sinon.
-function count_view($type, $id)
+function count_view($type, $id): bool
 {
 	if (is_crawler())
 	{

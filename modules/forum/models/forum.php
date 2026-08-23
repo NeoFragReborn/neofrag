@@ -10,6 +10,10 @@ use NF\NeoFrag\Loadables\Model;
 
 class Forum extends Model
 {
+	use Forum_Subscriptions; // abonnements aux sujets (forum_subscriptions.php)
+	use Forum_Mentions;      // mentions @user (forum_mentions.php)
+	use Forum_Moderation;    // split / merge / trash (forum_moderation.php)
+
 	public function get_categories_list($forum_id = NULL)
 	{
 		$categories = [];
@@ -193,7 +197,7 @@ class Forum extends Model
 				$forum['subforums'] = [];
 			}
 
-			$forum['icon']       = icon(($forum['url'] ? 'fas fa-globe' : ($forum['has_unread'] ? 'fas fa-comments' : 'far fa-comments')).($mini ? '' : ' fa-3x'));
+			$forum['icon']       = icon(($forum['url'] ? 'fas fa-globe' : ($forum['has_unread'] ? 'fas fa-comments' : 'far fa-comments')).($mini ? '' : ' fa-2x'));
 		}
 
 		return $forums;
@@ -253,8 +257,8 @@ class Forum extends Model
 			$last_message_date = strtotime($topic['last_message_date'] ?: $topic['date']);
 			$unread = $this->user() && $forum_read < $last_message_date && (!isset($topics_read[$topic['topic_id']]) || $topics_read[$topic['topic_id']] < $last_message_date);
 			$topic['icon'] = '	<span class="topic-icon">
-								'.icon(($unread ? 'fas' : 'far').' fa-'.($topic['announce'] ? 'flag' : 'comments').' fa-3x').'
-								'.($topic['locked'] ? icon('fas fa-lock fa-3x') : '').'
+								'.icon(($unread ? 'fas' : 'far').' fa-'.($topic['announce'] ? 'flag' : 'comments').' fa-2x').'
+								'.($topic['locked'] ? icon('fas fa-lock fa-2x') : '').'
 							</span>';
 
 			if (!$unread)
@@ -282,14 +286,7 @@ class Forum extends Model
 								->get();
 
 		// Calcul de la profondeur pour rendu nested (Phase 6)
-		$depths = [];
-		foreach ($messages as &$m)
-		{
-			$pid = (int)$m['parent_id'];
-			$m['depth'] = ($pid && isset($depths[$pid])) ? $depths[$pid] + 1 : 0;
-			$depths[(int)$m['message_id']] = $m['depth'];
-		}
-		unset($m);
+		$messages = \NF\Modules\Forum\Lib\Forum_Threading::assign_depths($messages);
 
 		// Phase B — enrichir chaque message d'une référence au parent (username + excerpt)
 		// pour rendre cliquable le bandeau "En réponse à" dans la vue.
@@ -497,6 +494,17 @@ class Forum extends Model
 			'is_starter'      => TRUE,
 			'mentioned_users' => $mentioned_users
 		]);
+
+		if ($wh = $this->module('webhooks'))
+		{
+			$wh->trigger('forum.topic', [
+				'topic_id' => $topic_id,
+				'forum_id' => (int)$forum_id,
+				'title'    => $title,
+				'user_id'  => (int)$this->user->id,
+				'url'      => url('forum/topic/'.$topic_id.'/'.url_title($title))
+			]);
+		}
 
 		$this->get_topics($forum_id);
 
@@ -841,40 +849,12 @@ class Forum extends Model
 
 	private function _to_boolean_query($query)
 	{
-		// Convertit "foo bar" → "+foo* +bar*" pour AND-search avec stemming
-		// Garde les "phrases entre guillemets" et les exclusions -mot
-		$tokens = preg_split('/\s+/', $query);
-		$out = [];
-
-		foreach ($tokens as $tok)
-		{
-			$tok = trim($tok);
-			if ($tok === '') continue;
-
-			if ($tok[0] === '"' && substr($tok, -1) === '"')
-			{
-				$out[] = $tok;
-			}
-			else if ($tok[0] === '-' && strlen($tok) > 1)
-			{
-				$out[] = '-'.preg_replace('/[^\p{L}\p{N}_]/u', '', substr($tok, 1));
-			}
-			else
-			{
-				$clean = preg_replace('/[^\p{L}\p{N}_]/u', '', $tok);
-				if (strlen($clean) >= 3)
-				{
-					$out[] = '+'.$clean.'*';
-				}
-			}
-		}
-
-		return implode(' ', $out);
+		return \NF\Modules\Forum\Lib\Forum_Search::to_boolean_query((string)$query);
 	}
 
 	private function _quote($s)
 	{
-		return "'".str_replace("'", "''", (string)$s)."'";
+		return \NF\Modules\Forum\Lib\Forum_Search::quote((string)$s);
 	}
 
 	// =================================================================
@@ -921,7 +901,7 @@ class Forum extends Model
 			$depth++;
 		}
 
-		if ($depth >= $max_depth)
+		if (!\NF\Modules\Forum\Lib\Forum_Threading::parent_depth_allows_reply($depth, $max_depth))
 		{
 			return NULL;
 		}
@@ -958,16 +938,7 @@ class Forum extends Model
 								->order_by('message_id')
 								->get();
 
-		// Calcul depth via passage parent_id → depth en mémoire
-		$depths = [];
-		foreach ($messages as &$m)
-		{
-			$pid = (int)$m['parent_id'];
-			$m['depth'] = ($pid && isset($depths[$pid])) ? $depths[$pid] + 1 : 0;
-			$depths[(int)$m['message_id']] = $m['depth'];
-		}
-
-		return $messages;
+		return \NF\Modules\Forum\Lib\Forum_Threading::assign_depths($messages);
 	}
 
 	// =================================================================
@@ -975,457 +946,14 @@ class Forum extends Model
 	// =================================================================
 
 	// =================================================================
-	// Subscriptions (Phase 3) — utilise nf_forum_track
-	// =================================================================
-
-	public function is_subscribed($topic_id, $user_id)
-	{
-		return (bool)$this->db	->select('1')
-								->from('nf_forum_track')
-								->where('topic_id', (int)$topic_id)
-								->where('user_id',  (int)$user_id)
-								->where('type',     'topic')
-								->row();
-	}
-
-	public function subscribe($topic_id, $user_id)
-	{
-		if ($this->is_subscribed($topic_id, $user_id))
-		{
-			return FALSE;
-		}
-
-		$this->db->insert('nf_forum_track', [
-			'topic_id' => (int)$topic_id,
-			'user_id'  => (int)$user_id,
-			'type'     => 'topic'
-		]);
-
-		return TRUE;
-	}
-
-	public function unsubscribe($topic_id, $user_id)
-	{
-		$this->db	->where('topic_id', (int)$topic_id)
-					->where('user_id',  (int)$user_id)
-					->where('type',     'topic')
-					->delete('nf_forum_track');
-
-		return TRUE;
-	}
-
-	public function get_subscriptions($user_id)
-	{
-		return $this->db->select(	't.topic_id',
-									't.title',
-									't.forum_id',
-									't.last_message_id',
-									't.count_messages',
-									'f.title as forum_title',
-									'tr.created_at as subscribed_at',
-									'tr.last_notified_at',
-									'um.username as last_username',
-									'm.date as last_message_date'
-								)
-						->from('nf_forum_track tr')
-						->join('nf_forum_topics t',   't.topic_id = tr.topic_id')
-						->join('nf_forum f',          'f.forum_id = t.forum_id')
-						->join('nf_forum_messages m', 'm.message_id = t.last_message_id')
-						->join('nf_user um',          'um.id = m.user_id AND um.deleted = "0"')
-						->where('tr.user_id', (int)$user_id)
-						->where('tr.type',    'topic')
-						->order_by('m.date DESC')
-						->get();
-	}
-
-	public function get_subscribers($topic_id, $exclude_user_id = NULL)
-	{
-		$this->db	->select('tr.user_id', 'u.username', 'u.email')
-					->from('nf_forum_track tr')
-					->join('nf_user u', 'u.id = tr.user_id AND u.deleted = "0"')
-					->where('tr.topic_id', (int)$topic_id)
-					->where('tr.type',     'topic')
-					->where('u.email !=',  '');
-
-		if ($exclude_user_id !== NULL)
-		{
-			$this->db->where('tr.user_id !=', (int)$exclude_user_id);
-		}
-
-		return $this->db->get();
-	}
-
-	public function mark_subscribers_notified($topic_id, $user_ids)
-	{
-		if (empty($user_ids))
-		{
-			return;
-		}
-
-		$this->db	->where('topic_id', (int)$topic_id)
-					->where('user_id',  array_map('intval', $user_ids))
-					->where('type',     'topic')
-					->update('nf_forum_track', 'last_notified_at = CURRENT_TIMESTAMP');
-	}
+	// Abonnements aux sujets → trait Forum_Subscriptions (forum_subscriptions.php)
 
 	// =================================================================
-	// /Subscriptions
-	// =================================================================
-
-	// =================================================================
-	// Mentions @user (Phase 4) — utilise nf_forum_mentions
-	// =================================================================
-
-	public function parse_mentions($content)
-	{
-		// Capture @username ou @"User Name" (avec espaces si guillemets)
-		// Username NeoFrag = varchar(100), pas de regex char class restrictive sur ce fork
-		// On accepte: lettres, chiffres, _, -, espaces (si entre guillemets)
-		$mentions = [];
-
-		if (preg_match_all('/(?:^|[\s\(\[\>])@(?:"([^"]+)"|([a-zA-Z0-9_\-]+))/u', $content, $matches, PREG_SET_ORDER))
-		{
-			foreach ($matches as $match)
-			{
-				$username = !empty($match[1]) ? $match[1] : $match[2];
-				$mentions[$username] = TRUE;
-			}
-		}
-
-		return array_keys($mentions);
-	}
-
-	public function record_mentions($message_id, $mentioner_user_id, $content)
-	{
-		$usernames = $this->parse_mentions($content);
-
-		if (empty($usernames))
-		{
-			return [];
-		}
-
-		$users = $this->db	->select('id', 'username', 'email')
-							->from('nf_user')
-							->where('username', $usernames)
-							->where('deleted', '0')
-							->where('id !=', (int)$mentioner_user_id)
-							->get();
-
-		if (empty($users))
-		{
-			return [];
-		}
-
-		// Cleanup les mentions existantes pour ce message (cas edit)
-		$this->db	->where('message_id', (int)$message_id)
-					->delete('nf_forum_mentions');
-
-		$mentioned = [];
-
-		foreach ($users as $user)
-		{
-			$this->db->insert('nf_forum_mentions', [
-				'message_id'        => (int)$message_id,
-				'mentioned_user_id' => (int)$user['id'],
-				'mentioner_user_id' => (int)$mentioner_user_id
-			]);
-
-			$mentioned[] = $user;
-		}
-
-		return $mentioned;
-	}
-
-	public function get_unread_mentions($user_id)
-	{
-		return $this->db->select(	'mn.mention_id',
-									'mn.message_id',
-									'mn.created_at',
-									'm.topic_id',
-									't.title as topic_title',
-									'um.username as mentioner_username'
-								)
-						->from('nf_forum_mentions mn')
-						->join('nf_forum_messages m', 'm.message_id = mn.message_id')
-						->join('nf_forum_topics t',   't.topic_id = m.topic_id')
-						->join('nf_user um',          'um.id = mn.mentioner_user_id')
-						->where('mn.mentioned_user_id', (int)$user_id)
-						->where('mn.read_at', NULL)
-						->order_by('mn.created_at DESC')
-						->get();
-	}
-
-	public function mark_mention_read($mention_id, $user_id)
-	{
-		$this->db	->where('mention_id', (int)$mention_id)
-					->where('mentioned_user_id', (int)$user_id)
-					->update('nf_forum_mentions', 'read_at = CURRENT_TIMESTAMP');
-	}
-
-	public function mark_all_mentions_read($user_id)
-	{
-		$this->db	->where('mentioned_user_id', (int)$user_id)
-					->where('read_at', NULL)
-					->update('nf_forum_mentions', 'read_at = CURRENT_TIMESTAMP');
-	}
-
+	// Mentions @user → trait Forum_Mentions (forum_mentions.php).
 	// render_mentions vit dans le module class (forum.php) pour être accessible
 	// depuis les vues via $this->output->module()->render_mentions(...)
 
-	// =================================================================
-	// /Mentions
-	// =================================================================
-
-	// =================================================================
-	// Mod avancée (Phase 7-bis) — split / merge / trash
-	// =================================================================
-
-	public function split_topic($source_topic_id, array $message_ids, $new_title)
-	{
-		$message_ids = array_filter(array_map('intval', $message_ids));
-		if (empty($message_ids))
-		{
-			return FALSE;
-		}
-
-		$source = $this->db	->select('forum_id', 'message_id as starter_id')
-							->from('nf_forum_topics')
-							->where('topic_id', (int)$source_topic_id)
-							->row();
-		if (!$source)
-		{
-			return FALSE;
-		}
-
-		// Sécurité : on ne permet pas de split le starter (il deviendrait orphelin de topic)
-		$message_ids = array_diff($message_ids, [(int)$source['starter_id']]);
-		if (empty($message_ids))
-		{
-			return FALSE;
-		}
-
-		// Le nouveau starter du new topic = le plus ancien message déplacé
-		sort($message_ids);
-		$new_starter_id = (int)$message_ids[0];
-
-		$this->db->transaction();
-
-		try
-		{
-			// Crée le nouveau topic
-			$new_topic_id = $this->db->ignore_foreign_keys()->insert('nf_forum_topics', [
-				'forum_id'   => (int)$source['forum_id'],
-				'message_id' => $new_starter_id,
-				'status'     => '0'
-			]);
-
-			// Title du nouveau topic
-			$this->db	->where('topic_id', $new_topic_id)
-						->update('nf_forum_topics', ['title' => (string)$new_title]);
-
-			// Déplace les messages sélectionnés vers le nouveau topic
-			$ids_csv = implode(',', $message_ids);
-			$this->db	->where('message_id IN ('.$ids_csv.')')
-						->update('nf_forum_messages', ['topic_id' => $new_topic_id]);
-
-			// Recompte les counts
-			$source_count = $this->db->from('nf_forum_messages')->where('topic_id', (int)$source_topic_id)->count() - 1;
-			$new_count    = $this->db->from('nf_forum_messages')->where('topic_id', $new_topic_id)->count() - 1;
-
-			$source_last = $this->db->select('message_id')->from('nf_forum_messages')->where('topic_id', (int)$source_topic_id)->order_by('message_id DESC')->row();
-			$new_last    = $this->db->select('message_id')->from('nf_forum_messages')->where('topic_id', $new_topic_id)->order_by('message_id DESC')->row();
-
-			$this->db	->where('topic_id', (int)$source_topic_id)
-						->update('nf_forum_topics', [
-							'count_messages'  => max(0, $source_count),
-							'last_message_id' => $source_last ?: NULL
-						]);
-
-			$this->db	->where('topic_id', $new_topic_id)
-						->update('nf_forum_topics', [
-							'count_messages'  => max(0, $new_count),
-							'last_message_id' => $new_last ?: NULL
-						]);
-
-			// Update forum count_topics
-			$this->db	->where('forum_id', (int)$source['forum_id'])
-						->update('nf_forum', 'count_topics = count_topics + 1');
-
-			$this->db->commit();
-		}
-		catch (\Throwable $e)
-		{
-			$this->db->rollback();
-			throw $e;
-		}
-
-		$this->events->fire('forum.topic.split', [
-			'source_topic_id' => (int)$source_topic_id,
-			'new_topic_id'    => (int)$new_topic_id,
-			'message_ids'     => $message_ids,
-			'forum_id'        => (int)$source['forum_id']
-		]);
-
-		return $new_topic_id;
-	}
-
-	public function merge_topics($source_topic_id, $target_topic_id)
-	{
-		if ((int)$source_topic_id === (int)$target_topic_id)
-		{
-			return FALSE;
-		}
-
-		$source = $this->db	->select('forum_id', 'count_messages')
-							->from('nf_forum_topics')
-							->where('topic_id', (int)$source_topic_id)
-							->row();
-		$target = $this->db	->select('forum_id', 'count_messages')
-							->from('nf_forum_topics')
-							->where('topic_id', (int)$target_topic_id)
-							->row();
-
-		if (!$source || !$target)
-		{
-			return FALSE;
-		}
-
-		$this->db->transaction();
-
-		try
-		{
-			// Déplacer tous les messages du source vers le target
-			$this->db	->where('topic_id', (int)$source_topic_id)
-						->update('nf_forum_messages', ['topic_id' => (int)$target_topic_id]);
-
-			// Supprimer le source topic (mais garder ses messages déjà déplacés)
-			// On set message_id et last_message_id NULL avant pour éviter FK violation
-			$this->db	->where('topic_id', (int)$source_topic_id)
-						->update('nf_forum_topics', ['message_id' => NULL, 'last_message_id' => NULL]);
-			$this->db	->where('topic_id', (int)$source_topic_id)
-						->delete('nf_forum_topics');
-
-			// Recompte target
-			$target_count = $this->db->from('nf_forum_messages')->where('topic_id', (int)$target_topic_id)->count() - 1;
-			$target_last  = $this->db->select('message_id')->from('nf_forum_messages')->where('topic_id', (int)$target_topic_id)->order_by('message_id DESC')->row();
-
-			$this->db	->where('topic_id', (int)$target_topic_id)
-						->update('nf_forum_topics', [
-							'count_messages'  => max(0, $target_count),
-							'last_message_id' => $target_last ?: NULL
-						]);
-
-			// Update forum count_topics (-1 car source disparu)
-			$this->db	->where('forum_id', (int)$source['forum_id'])
-						->update('nf_forum', 'count_topics = GREATEST(count_topics - 1, 0)');
-
-			$this->db->commit();
-		}
-		catch (\Throwable $e)
-		{
-			$this->db->rollback();
-			throw $e;
-		}
-
-		$this->events->fire('forum.topics.merged', [
-			'source_topic_id' => (int)$source_topic_id,
-			'target_topic_id' => (int)$target_topic_id,
-			'forum_id'        => (int)$target['forum_id']
-		]);
-
-		return TRUE;
-	}
-
-	public function get_trashed_messages($limit = 100)
-	{
-		return $this->db->select(	'm.message_id',
-									'm.topic_id',
-									'm.user_id',
-									'm.deleted_at',
-									'm.deleted_by',
-									'm.deleted_reason',
-									't.title as topic_title',
-									't.forum_id',
-									'f.title as forum_title',
-									'u.username',
-									'ud.username as deleter_username'
-								)
-						->from('nf_forum_messages m')
-						->join('nf_forum_topics t', 't.topic_id = m.topic_id')
-						->join('nf_forum f',        'f.forum_id = t.forum_id')
-						->join('nf_user u',         'u.id = m.user_id')
-						->join('nf_user ud',        'ud.id = m.deleted_by')
-						->where('m.deleted_at IS NOT NULL')
-						->order_by('m.deleted_at DESC')
-						->limit((int)$limit)
-						->get();
-	}
-
-	public function restore_message($message_id)
-	{
-		$msg = $this->db	->select('topic_id', 'message_id')
-							->from('nf_forum_messages')
-							->where('message_id', (int)$message_id)
-							->where('deleted_at IS NOT NULL')
-							->row();
-
-		if (!$msg)
-		{
-			return FALSE;
-		}
-
-		// On ne restaure pas le message text (NULL) car on l'a perdu au soft-delete legacy
-		// Mais on enlève les flags deleted_*
-		$this->db	->where('message_id', (int)$message_id)
-					->update('nf_forum_messages', 'deleted_at = NULL, deleted_by = NULL, deleted_reason = NULL');
-
-		return TRUE;
-	}
-
-	public function hard_delete_message($message_id)
-	{
-		$this->db->transaction();
-
-		try
-		{
-			$msg = $this->db	->select('topic_id')
-								->from('nf_forum_messages')
-								->where('message_id', (int)$message_id)
-								->row();
-
-			if (!$msg)
-			{
-				$this->db->rollback();
-				return FALSE;
-			}
-
-			$this->db	->where('message_id', (int)$message_id)
-						->delete('nf_forum_messages');
-
-			// Update topic count
-			$count = $this->db->from('nf_forum_messages')->where('topic_id', (int)$msg)->count() - 1;
-			$last  = $this->db->select('message_id')->from('nf_forum_messages')->where('topic_id', (int)$msg)->order_by('message_id DESC')->row();
-
-			$this->db	->where('topic_id', (int)$msg)
-						->update('nf_forum_topics', [
-							'count_messages'  => max(0, $count),
-							'last_message_id' => $last ?: NULL
-						]);
-
-			$this->db->commit();
-		}
-		catch (\Throwable $e)
-		{
-			$this->db->rollback();
-			throw $e;
-		}
-
-		return TRUE;
-	}
-
-	// =================================================================
-	// /Mod avancée
-	// =================================================================
+	// Modération avancée (split / merge / trash) → trait Forum_Moderation (forum_moderation.php)
 
 	// =================================================================
 	// Admin attachments (Phase 5-bis)
@@ -1731,19 +1259,18 @@ class Forum extends Model
 
 	public function get_allowed_mimes()
 	{
-		$default = 'image/jpeg,image/png,image/gif,image/webp,application/pdf,text/plain,application/zip';
-		$value = isset($this->config->forum_attachments_mimes) && $this->config->forum_attachments_mimes
-				? $this->config->forum_attachments_mimes
-				: $default;
-		return array_filter(array_map('trim', explode(',', $value)));
+		$configured = (isset($this->config->forum_attachments_mimes) && $this->config->forum_attachments_mimes)
+				? (string)$this->config->forum_attachments_mimes
+				: NULL;
+		return \NF\Modules\Forum\Lib\Forum_Attachment_Rules::parse_mimes($configured);
 	}
 
 	public function get_max_size_bytes()
 	{
 		$kb = isset($this->config->forum_attachments_size_max_kb)
 				? (int)$this->config->forum_attachments_size_max_kb
-				: 5120; // 5 MB default
-		return $kb * 1024;
+				: NULL;
+		return \NF\Modules\Forum\Lib\Forum_Attachment_Rules::max_bytes($kb);
 	}
 
 	// =================================================================

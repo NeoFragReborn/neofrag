@@ -9,7 +9,7 @@
 	<div>
 		<?php echo $this->lang('Module : <strong>%s</strong>', htmlspecialchars($module_title)) ?>
 		<?php if ($scope_id > 0): ?>
-			<span class="badge badge-info ml-2"><?php echo $this->lang('Scope %d', $scope_id) ?></span>
+			<span class="badge text-bg-info ms-2"><?php echo $this->lang('Scope %d', $scope_id) ?></span>
 		<?php endif ?>
 	</div>
 	<div>
@@ -64,7 +64,7 @@
 									$tooltip = $this->lang('Via wildcard %s.*', explode('.', $perm)[0]);
 								}
 							?>
-							<td class="<?php echo $cell_class ?>" data-role-id="<?php echo (int)$role['role_id'] ?>" data-current="<?php echo htmlspecialchars($value) ?>" <?php if ($tooltip): ?>data-toggle="tooltip" title="<?php echo htmlspecialchars($tooltip, ENT_QUOTES) ?>"<?php endif ?>>
+							<td class="<?php echo $cell_class ?>" data-role-id="<?php echo (int)$role['role_id'] ?>" data-current="<?php echo htmlspecialchars($value) ?>" <?php if ($tooltip): ?>data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($tooltip, ENT_QUOTES) ?>"<?php endif ?>>
 								<div class="matrix-radios">
 									<label class="matrix-radio matrix-radio-allow" title="<?php echo htmlspecialchars($this->lang('Autoriser'), ENT_QUOTES) ?>">
 										<input type="radio" name="cell-<?php echo (int)$role['role_id'] ?>-<?php echo md5($perm) ?>" value="allow" <?php if ($source === 'direct' && $value === 'allow') echo 'checked' ?> <?php if ($source !== 'direct') echo 'data-inherited="1"' ?> />

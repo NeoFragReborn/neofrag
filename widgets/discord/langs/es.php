@@ -11,7 +11,10 @@ return [
 	'6a97e63a' => 'Snowflake ID numérico del servidor (clic derecho en el nombre del servidor en Discord → "Copiar ID del servidor"). Modo dev requerido.',
 	'6cb57f33' => 'Tema (iframe)',
 	'd743b52b' => 'Opcional. De lo contrario, el enlace se obtiene automáticamente de Discord.',
-	'df4700c0' => 'No se pudo cargar la información del servidor de Discord. Asegúrate de que el widget esté <strong>activado en los ajustes del servidor de Discord</strong> (Ajustes → Widget → Activar widget del servidor).',
+	'8f44c74a' => 'El widget de este servidor de Discord no está activado: <strong>Configuración del servidor → Widget → Activar widget del servidor</strong>.',
+	'fee4ebb0' => 'ID de servidor de Discord no encontrado. Activa el <strong>Modo desarrollador</strong> (Ajustes → Avanzado), luego clic derecho en el <strong>servidor</strong> → "Copiar ID del servidor" (no confundir con un ID de canal o un código de invitación).',
+	'ae074439' => 'Servidor de Discord inalcanzable. Si tu alojamiento bloquea las peticiones salientes, cambia el widget al modo <strong>iframe</strong> en sus ajustes.',
+	'9a81093c' => 'Error del lado de Discord (%s). Inténtalo de nuevo en unos minutos.',
 	'e16d555c' => 'Nativo',
 	'fdd16ad9' => 'Nativo (integrado en el tema)',
 	'816f205c' => 'Discord',
@@ -35,4 +38,6 @@ return [
 	'2547c34e' => '%d más',
 	'a12b1086' => 'Canales de voz',
 	'f930d5d6' => 'Unirse al servidor',
+	'5b00c662' => 'miembros en línea',
+	'2aa68b91' => 'miembro en línea',
 ];

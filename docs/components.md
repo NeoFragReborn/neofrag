@@ -1,7 +1,7 @@
 # Composants — NeoFrag Reborn 1.0.0
 
-Inventaire des **52 modules · 39 widgets · 6 thèmes**. L'état/bugs de chaque composant
-est dans [historique.md](historique.md) ; l'architecture du framework dans [architecture.md](architecture.md).
+Inventaire des **54 modules · 39 widgets · 7 thèmes**. L'état/bugs de chaque composant
+est dans [historique.md](internal/historique.md) ; l'architecture du framework dans [architecture.md](architecture.md).
 La pile gamification/boutique/monétisation a sa doc dédiée : [gamification.md](gamification.md).
 
 ## Anatomie d'un module
@@ -16,7 +16,10 @@ Un module = un dossier `modules/{x}/` avec un manifeste `{x}.php` (`namespace NF
   (contrôle d'accès avant exécution).
 - **models/** (Model2), **views/** `*.tpl.php`, **forms/**, **langs/** (`{code}.php`, clés crc32b).
 
-Il n'y a **pas** de dossier `install/` par module (le schéma vit dans `migrations/` + `schema.sql`).
+Un module **livre ses tables** dans `modules/{x}/install/install.sql` (suppression dans
+`install/uninstall.sql`), joué automatiquement à l'installation. Les évolutions de schéma entre
+versions passent par des **migrations par-addon** (`modules/{x}/install/migrations/*.up.sql`, suivies
+dans `nf_addon_migrations`).
 
 ## Anatomie d'un widget
 
@@ -24,14 +27,16 @@ Il n'y a **pas** de dossier `install/` par module (le schéma vit dans `migratio
 un tableau `types` de variantes de rendu), `controllers/` (`index`=rendu, `admin`=config,
 `checker`=validation), `views/*.tpl.php`, `langs/`.
 
-## 52 modules (par domaine)
+## 54 modules (par domaine)
 
-**Système & core (17)** — `access` (RBAC : rôles/permissions, audit log) · `addons` (install/activation) ·
+**Système & core (19)** — `access` (RBAC : rôles/permissions, audit log) · `addons` (install/activation) ·
 `admin` (dashboard back-office) · `user` (inscription, login 2FA, profil, RGPD, export membres CSV/JSON) ·
 `settings` (config globale) · `search` (agrégateur cross-modules) · `statistics` (dashboard agrégé) ·
 `comments` (commentaires polymorphes) · `pages` (pages statiques + **routeur fallback** + injection de blocs
 de module via `[block:clé]`) · `monitoring` (intégrité, backups ; auto-update upstream **désactivé** sur le
-fork) · `tools` (SCSS, cache) · `emails` (templates email) · `revisions` (historique + restauration
+fork) · `tools` (SCSS, cache) · `files` (gestionnaire de fichiers : arborescence de `upload/files/`, ACL par
+fichier/dossier, téléchargement public par slug) · `emails` (templates email) · `emojis` (émojis personnalisés
+`:nom:` uploadés en admin, rendus partout via le helper `bbcode()` ; cœur, hors marketplace) · `revisions` (historique + restauration
 générique, news/articles) · `trash` (corbeille soft-delete cross-module : news/articles/galerie/commentaires/forum) ·
 `menu` (constructeur de menus nommés réutilisables, items hiérarchiques, rendu via widget `navigation`) ·
 `webhooks` (webhooks sortants signés HMAC déclenchés par les événements) · `marketplace` (catalogue public
@@ -79,7 +84,7 @@ webhook signé). Détail : [gamification.md](gamification.md).
 - **Langues (6)** : `language_en`, `language_fr`, `language_de`, `language_es`, `language_it`,
   `language_pt`.
 
-## 6 thèmes
+## 7 thèmes
 
 - **admin** — back-office (dark mode complet, command palette).
 - **vitrine** — thème vitrine « NeoFrag Reborn » (navbar glass full-dark, landing, cloche + compte dans la nav). Core.
@@ -87,6 +92,7 @@ webhook signé). Détail : [gamification.md](gamification.md).
 - **blockcraft** — public, identité « blocs » (vert herbe, coins carrés, ombres-blocs), jour/nuit.
 - **granite** — public, « pierre taillée » (teal/ardoise, titres Oswald, plat hairline), jour/nuit.
 - **forge** — public, « fonte en fusion » (rouge lave, Rajdhani, lueur de braise), nuit par défaut.
+- **extend** — port BS5 du thème « Extend » de Chewbaka (navy & bleu acier, titres Economica, jour/nuit, multi-zones). Distribuable via la marketplace.
 
 > Le thème `dungeon` a été retiré. CSS thème = template PHP à tokens (`--bc-*`/`--gr-*`/`--fg-*`), couleurs
 > d'accent/fond/images **configurables en admin**. Installation d'un thème déposé sur disque : admin →

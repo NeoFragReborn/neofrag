@@ -33,7 +33,7 @@ class Admin extends Controller_Module
 								}
 							],
 							[
-								'title'   => '<i class="fas fa-users" data-toggle="tooltip" title="'.$this->lang('Joueurs').'"></i>',
+								'title'   => '<i class="fas fa-users" data-bs-toggle="tooltip" title="'.$this->lang('Joueurs').'"></i>',
 								'content' => function($data){
 									return $data['users'];
 								},

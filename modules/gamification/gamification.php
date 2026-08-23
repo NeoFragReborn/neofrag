@@ -108,7 +108,10 @@ class Gamification extends Module
 	{
 		$v = $this->config->{$key};
 
-		return ($v === NULL || $v === '') ? (int)$default : (int)$v;
+		// Config::__get renvoie FALSE pour un setting absent (parent::__get) : le traiter comme
+		// « non défini » sinon (int)false = 0 écraserait silencieusement TOUS les barèmes par défaut
+		// (karma + points) tant qu'un admin ne les a pas saisis.
+		return ($v === NULL || $v === '' || $v === FALSE) ? (int)$default : (int)$v;
 	}
 
 	/* ------------------------------------------------------------------ Karma */

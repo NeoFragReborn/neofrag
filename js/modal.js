@@ -2,115 +2,121 @@ var modal = new function(){
 	var _modals = {};
 	var _scripts;
 
+	// Interprète une réponse AJAX standard (refresh / redirect / css / js / notify) puis appelle `callback`.
+	// Renvoie une Promise qui se résout (avec la valeur de callback) APRÈS chargement des scripts data.js —
+	// la sémantique attendue par form.submit().then(...).
 	this.exec = function(callback){
 		return function(data){
-			if (typeof data.success != 'undefined' && data.success == 'refresh'){
+			if (typeof data.success !== 'undefined' && data.success === 'refresh'){
 				location.reload();
-				return;
+				return new Promise(function(){}); // la page se recharge : ne résout jamais
 			}
 
-			if (typeof data.redirect != 'undefined'){
+			if (typeof data.redirect !== 'undefined'){
 				window.location.href = data.redirect;
-				return;
+				return new Promise(function(){});
 			}
 
-			if (typeof data.css != 'undefined'){
-				$('head').append(data.css);
+			if (typeof data.css !== 'undefined'){
+				var holder = document.createElement('div');
+				holder.innerHTML = data.css;
+				while (holder.firstChild){ document.head.appendChild(holder.firstChild); }
 			}
 
-			var promises = [];
+			var chain = Promise.resolve();
 
-			if (typeof data.js != 'undefined'){
-				if (typeof _scripts == 'undefined'){
+			if (typeof data.js !== 'undefined'){
+				if (typeof _scripts === 'undefined'){
 					_scripts = [];
-
-					$('script').each(function(){
-						var src = $(this).attr('src');
-
-						if (typeof src != 'undefined'){
-							_scripts.push(src);
-						}
+					document.querySelectorAll('script').forEach(function(s){
+						if (s.src){ _scripts.push(s.src); }
 					});
 				}
 
-				$.each(data.js, function(_, js){
-					if ($.inArray(js, _scripts) == -1){
-						var d = $.Deferred();
-
-						$.when.apply($, promises).then(function(){
-							$.getScript(js).then(function(){
-								_scripts.push(js);
-								d.resolve();
-							});
+				data.js.forEach(function(js){
+					if (_scripts.indexOf(js) === -1){
+						chain = chain.then(function(){
+							return NF.loadScript(js).then(function(){ _scripts.push(js); });
 						});
-
-						promises.push(d);
 					}
 				});
 			}
 
-			if (typeof data.notify != 'undefined'){
-				$.each(data.notify, function(_, n){
-					notify(n.message, n.type);
-				});
+			if (typeof data.notify !== 'undefined'){
+				data.notify.forEach(function(n){ notify(n.message, n.type); });
 			}
 
-			$.when.apply($, promises).then(function(){
-				callback(data);
-			});
+			return chain.then(function(){ return callback(data); });
 		};
 	};
 
 	this.load = function(url){
 		var show = function(){
-			$('.modal.show').modal('hide');
-			_modals[url].modal();
+			document.querySelectorAll('.modal.show').forEach(function(m){
+				bootstrap.Modal.getOrCreateInstance(m).hide();
+			});
+			bootstrap.Modal.getOrCreateInstance(_modals[url]).show();
 		};
 
-		if (typeof _modals[url] == 'undefined'){
-			$.ajax({
-				url: url,
-				cache: false,
-				success: this.exec(function(data){
-					if (typeof data.content != 'undefined'){
-						var $modal = _modals[url] = $(data.content).appendTo('body').closest('.modal');
+		if (typeof _modals[url] === 'undefined'){
+			NF.ajax({ url: url }).then(this.exec(function(data){
+				if (typeof data.content === 'undefined'){ return data; }
 
-						$('body').trigger('nf.load');
+				// Insère le HTML de la modale puis ré-exécute ses <script> avec le nonce CSP.
+				var holder   = document.createElement('div');
+				holder.innerHTML = data.content;
 
-						var $form = $modal.find('form');
+				var inserted = [];
+				while (holder.firstChild){
+					var node = holder.firstChild;
+					holder.removeChild(node);
+					document.body.appendChild(node);
+					inserted.push(node);
+				}
 
-						if (typeof form != 'undefined' && $form.length){
-							$modal.on('submit', 'form', function(e){
-								e.preventDefault();
-
-								var $submit = $modal.find('[type="submit"]');
-
-								if ($submit.hasClass('disabled')){
-									return;
-								}
-
-								$submit.addClass('disabled');
-
-								form.submit($form).then(function(data){
-									$submit.removeClass('disabled');
-
-									if (typeof data.modal != 'undefined' && data.modal == 'dispose'){
-										//TODO modal('dispose') doesn't work?
-										$modal.modal('hide').on('hidden.bs.modal', function(){
-											$modal.remove();
-											delete _modals[url];
-										});
-									}
-								});
-							});
-
-							form.load($form);
-						}
-
-						show();
+				var modalEl = null;
+				inserted.forEach(function(node){
+					if (node.nodeType !== 1){ return; }
+					NF.runScripts(node);
+					if (!modalEl){
+						modalEl = node.matches('.modal') ? node : node.querySelector('.modal');
 					}
-				})
-			});
+				});
+
+				_modals[url] = modalEl;
+
+				document.body.dispatchEvent(new CustomEvent('nf.load', { bubbles: true }));
+
+				var formEl = modalEl ? modalEl.querySelector('form') : null;
+
+				if (typeof form !== 'undefined' && formEl){
+					modalEl.addEventListener('submit', function(e){
+						e.preventDefault();
+
+						var submitBtn = modalEl.querySelector('[type="submit"]');
+						if (submitBtn && submitBtn.classList.contains('disabled')){ return; }
+						if (submitBtn){ submitBtn.classList.add('disabled'); }
+
+						form.submit(e.target).then(function(data){
+							if (submitBtn){ submitBtn.classList.remove('disabled'); }
+
+							if (typeof data.modal !== 'undefined' && data.modal === 'dispose'){
+								modalEl.addEventListener('hidden.bs.modal', function(){
+									modalEl.remove();
+									delete _modals[url];
+								});
+								bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+							}
+						});
+					});
+
+					form.load(formEl);
+				}
+
+				show();
+
+				return data;
+			}));
 		}
 		else {
 			show();
@@ -120,9 +126,11 @@ var modal = new function(){
 	return this;
 };
 
-$(function(){
-	$(document).on('click', '[data-modal-ajax]', function(e){
-		modal.load($(this).data('modal-ajax'));
+NF.ready(function(){
+	document.addEventListener('click', function(e){
+		var trigger = e.target.closest('[data-modal-ajax]');
+		if (!trigger){ return; }
 		e.preventDefault();
+		modal.load(NF.data(trigger, 'modal-ajax'));
 	});
 });

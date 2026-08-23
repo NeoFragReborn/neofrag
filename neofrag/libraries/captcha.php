@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,12 +11,12 @@ use NF\NeoFrag\Library;
 
 class Captcha extends Library
 {
-	public function is_ok()
+	public function is_ok(): bool
 	{
 		return $this->config->nf_captcha_public_key && $this->config->nf_captcha_private_key;
 	}
 
-	public function is_valid()
+	public function is_valid(): bool
 	{
 		if ($response = post('g-recaptcha-response'))
 		{
@@ -29,7 +30,7 @@ class Captcha extends Library
 		return FALSE;
 	}
 
-	public function display()
+	public function display(): string
 	{
 		return '<div class="g-recaptcha" data-sitekey="'.$this->config->nf_captcha_public_key.'"></div>';
 	}

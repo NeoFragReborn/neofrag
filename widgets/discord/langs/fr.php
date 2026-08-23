@@ -11,7 +11,12 @@ return [
 	'6a97e63a' => 'Snowflake ID numérique du serveur (clic-droit sur le nom du serveur dans Discord → "Copier l\'ID du serveur"). Mode dev requis.',
 	'6cb57f33' => 'Thème (iframe)',
 	'd743b52b' => 'Optionnel. Sinon le lien est récupéré automatiquement depuis Discord.',
-	'df4700c0' => 'Impossible de charger les informations du serveur Discord. Vérifiez que le widget est <strong>activé dans les paramètres du serveur Discord</strong> (Paramètres → Widget → Activer le widget du serveur).',
+	'8f44c74a' => 'Le widget de ce serveur Discord n\'est pas activé : <strong>Paramètres du serveur → Widget → Activer le widget du serveur</strong>.',
+	'fee4ebb0' => 'ID de serveur Discord introuvable. Active le <strong>Mode développeur</strong> (Paramètres → Avancés), puis clic droit sur le <strong>serveur</strong> → « Copier l\'identifiant du serveur » (à ne pas confondre avec un ID de salon ou un code d\'invitation).',
+	'ae074439' => 'Serveur Discord injoignable. Si l\'hébergement bloque les requêtes sortantes, passe le widget en mode <strong>iframe</strong> dans ses réglages.',
+	'9a81093c' => 'Erreur côté Discord (%s). Réessaie dans quelques minutes.',
+	'5b00c662' => 'membres en ligne',
+	'2aa68b91' => 'membre en ligne',
 	'e16d555c' => 'Natif',
 	'fdd16ad9' => 'Natif (intégré au thème)'
 ];

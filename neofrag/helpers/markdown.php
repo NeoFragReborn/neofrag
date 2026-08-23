@@ -16,7 +16,7 @@ use League\CommonMark\GithubFlavoredMarkdownConverter;
  * @param bool $github_flavored Active GFM (tables, task lists, autolinks, etc.) — défaut TRUE
  * @return string HTML rendu
  */
-function markdown_to_html($markdown, $github_flavored = TRUE)
+function markdown_to_html($markdown, $github_flavored = TRUE): string
 {
 	static $converter = NULL, $gfm_converter = NULL;
 
@@ -53,7 +53,7 @@ function markdown_to_html($markdown, $github_flavored = TRUE)
  * @param string $content
  * @return bool TRUE si Markdown probable
  */
-function looks_like_markdown($content)
+function looks_like_markdown($content): bool
 {
 	if (preg_match('#<(p|div|h[1-6]|ul|ol|li|table|article|section|main)\b#i', $content))
 	{
@@ -71,7 +71,7 @@ function looks_like_markdown($content)
 /**
  * Rendu universel : si content ressemble à du Markdown, convertit. Sinon retourne tel quel.
  */
-function render_content($content)
+function render_content($content): string
 {
 	if (looks_like_markdown($content))
 	{

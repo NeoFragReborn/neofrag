@@ -46,7 +46,9 @@ return [
         'donations'    => ['nf_donations_campaigns', 'nf_donations'],
         'payments'     => ['nf_payment_packs', 'nf_payments'],
         'ads'          => ['nf_ads'],
-        'newsletter'   => ['nf_newsletter_campaigns', 'nf_newsletter_subscribers'],
+        'newsletter'   => ['nf_newsletter_campaigns', 'nf_newsletter_subscribers', 'nf_newsletter_queue', 'nf_newsletter_templates'],
+        'files'        => ['nf_files_directories'],
+        'emojis'       => ['nf_custom_emojis'],
 
         // Sans table propre (lit nf_news/nf_articles) → pas de SQL embarqué.
         'feeds'        => [],
@@ -61,7 +63,7 @@ return [
         'nf_groups', 'nf_groups_lang', 'nf_groups_roles',
         'nf_roles', 'nf_roles_lang', 'nf_role_permissions',
         'nf_settings', 'nf_dispositions', 'nf_widgets',
-        'nf_pages', 'nf_pages_lang', 'nf_menus', 'nf_menus_items',
+        'nf_pages', 'nf_pages_lang', 'nf_pages_instances', 'nf_menus', 'nf_menus_items',
         'nf_comment', 'nf_reactions', 'nf_revisions', 'nf_notifications', 'nf_subscriptions',
         'nf_sanctions', 'nf_reports', 'nf_reports_attachments_snapshot',
         'nf_talks', 'nf_talks_participants', 'nf_talks_messages', 'nf_talks_attachments',
@@ -69,6 +71,6 @@ return [
         'nf_email_templates', 'nf_email_template_translations',
         'nf_i18n', 'nf_tracking', 'nf_audit_log', 'nf_cookie_consent',
         'nf_ip_banlist', 'nf_rate_limit', 'nf_session', 'nf_session_history',
-        'nf_log_db', 'nf_log_i18n', 'nf_migrations',
+        'nf_log_db', 'nf_log_i18n', 'nf_migrations', 'nf_addon_migrations',
     ],
 ];

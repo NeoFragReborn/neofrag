@@ -274,7 +274,7 @@ class Table extends Library
 		{
 			if (!$this->_ajax && $this->_is_searchable())
 			{
-				$search_input = '	<div class="table-search float-left">
+				$search_input = '	<div class="table-search float-start">
 										<div class="form-group has-feedback">
 											<input class="form-control" data-provide="typeahead" data-items="5" data-source="'.utf8_htmlentities('['.implode(', ', array_unique(array_filter($words))).']').'" type="text"'.(!empty($search) ? ' value="'.$search.'"' : '').' placeholder="'.NeoFrag()->lang('Rechercher').'" autocomplete="off" />
 										</div>
@@ -329,8 +329,8 @@ class Table extends Library
 
 			if ($this->_pagination && !empty($this->output->module()->pagination) && $this->output->module()->pagination->count() > 10)
 			{
-				$output .= '<div class="form-group float-left">
-								<select class="form-control" style="width: auto;" onchange="window.location=\''.url($this->output->module()->pagination->get_url()).'/\'+$(this).find(\'option:selected\').data(\'url\')" autocomplete="off">
+				$output .= '<div class="form-group float-start">
+								<select class="form-control" style="width: auto;" data-nf-nav-select data-nf-nav-base="'.url($this->output->module()->pagination->get_url()).'" autocomplete="off">
 									<option value="10"'. ($this->output->module()->pagination->get_items_per_page() == 10  ? ' selected="selected"' : '').' data-url="page/1/10">'.NeoFrag()->lang('%d résultat|%d résultats', 10, 10).'</option>
 									<option value="25"'. ($this->output->module()->pagination->get_items_per_page() == 25  ? ' selected="selected"' : '').' data-url="page/1/25">'.NeoFrag()->lang('%d résultat|%d résultats', 25, 25).'</option>
 									<option value="50"'. ($this->output->module()->pagination->get_items_per_page() == 50  ? ' selected="selected"' : '').' data-url="page/1/50">'.NeoFrag()->lang('%d résultat|%d résultats', 50, 50).'</option>
@@ -471,7 +471,7 @@ class Table extends Library
 
 			if (!empty($pagination))
 			{
-				$output .= '<div class="float-right">'.$pagination.'</div>';
+				$output .= '<div class="float-end">'.$pagination.'</div>';
 			}
 
 			$output .= '<i>'.NeoFrag()->lang('%d résultat|%d résultats', $count, $count).($count < $count_results ? NeoFrag()->lang(' sur %d au total', $count_results) : '').'</i>';

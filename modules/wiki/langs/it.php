@@ -18,4 +18,23 @@ return [
 	'c90a715a' => 'Eliminare questa pagina? Anche le revisioni andranno perse.',
 	'8d9ef7a4' => 'Elimina',
 	'6bd5ed80' => 'Pagine collaborative con cronologia automatica delle revisioni.',
+	// i18n 2026-06-11
+	'd3a89139' => 'Nessuna pagina corrisponde a questi criteri.',
+	'524a4abe' => 'Cerca un titolo o slug…',
+	'17a7d347' => 'Tutti gli stati',
+	'e401d59e' => 'Pubblicate',
+	'633b7ff4' => 'Bozze',
+	'dc275fe4' => 'Filtra',
+	'599dba10' => 'Reimposta',
+	'8a7e7178' => '%d risultato|%d risultati',
+	// i18n 2026-06-11 (code strings)
+	'f7c592f8' => 'Nessuna pagina wiki per il momento.',
+	'5dd8e248' => 'Pagine wiki',
+	'86c84bca' => 'Pagina eliminata. Le eventuali pagine figlie sono state spostate alla radice.',
+	'8fc6a624' => 'Versione attuale',
+	'a30d943d' => 'Revisione',
+	'3a682dba' => 'Nessuna differenza di contenuto tra queste due versioni.',
+	'cc71a928' => 'Torna alla cronologia',
+	'd8165bb3' => 'Vedi la versione attuale',
+	'f3d55b7e' => 'Confronto delle versioni',
 ];

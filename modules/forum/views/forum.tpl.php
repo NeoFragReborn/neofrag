@@ -2,8 +2,8 @@
 	<thead class="forum-heading">
 		<tr>
 			<th class="col-7" colspan="2"><h5 class="m-0"><?php echo icon($icon).' '.$title ?></h5></th>
-			<th class="col-2"><h5 class="m-0"><?php echo icon('fas fa-signal') ?><span class="d-none d-sm-inline-block ml-1"><?php echo $this->lang('Statistiques') ?></span></h5></th>
-			<th class="col-3"><h5 class="m-0"><?php echo icon('far fa-comment') ?><span class="d-none d-sm-inline-block ml-1"><?php echo $this->lang('Dernier message') ?></span></h5></th>
+			<th class="col-2"><h5 class="m-0"><?php echo icon('fas fa-signal') ?><span class="d-none d-sm-inline-block ms-1"><?php echo $this->lang('Statistiques') ?></span></h5></th>
+			<th class="col-3"><h5 class="m-0"><?php echo icon('far fa-comment') ?><span class="d-none d-sm-inline-block ms-1"><?php echo $this->lang('Dernier message') ?></span></h5></th>
 		</tr>
 	</thead>
 	<tbody class="forum-content">
@@ -16,7 +16,7 @@
 				<?php
 					if ($topic['count_messages'] > $this->config->forum_messages_per_page)
 					{
-						echo '<div class="float-right">'.$this->pagination->display('forum/topic/'.$topic['topic_id'].'/'.url_title($topic['title']), ceil($topic['count_messages'] / $this->config->forum_messages_per_page), 'xs').'</div>';
+						echo '<div class="float-end">'.$this->pagination->display('forum/topic/'.$topic['topic_id'].'/'.url_title($topic['title']), ceil($topic['count_messages'] / $this->config->forum_messages_per_page), 'xs').'</div>';
 					}
 				?>
 				<h5 class="m-0"><a href="<?php echo url('forum/topic/'.$topic['topic_id'].'/'.url_title($topic['title'])) ?>"><?php echo $topic['title'] ?></a></h5>

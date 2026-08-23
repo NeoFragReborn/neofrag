@@ -36,7 +36,7 @@ class Textarea extends Labelable
 						'if (window.__nf_tinymce_loaded) { __nf_tinymce_attach(); return; }'.
 						'window.__nf_tinymce_loaded = true;'.
 						'var s = document.createElement("script");'.
-						's.src = "https://cdn.jsdelivr.net/npm/tinymce@7.6.1/tinymce.min.js";'.
+						's.src = "'.js('tinymce/tinymce.min.js').'";'.
 						's.onload = __nf_tinymce_attach;'.
 						'document.head.appendChild(s);'.
 						'function __nf_tinymce_attach(){'.
@@ -48,6 +48,8 @@ class Textarea extends Labelable
 								'branding: false,'.
 								'promotion: false,'.
 								'license_key: "gpl",'.
+								'skin: (document.documentElement.getAttribute("data-theme") === "dark") ? "oxide-dark" : "oxide",'.
+								'content_css: (document.documentElement.getAttribute("data-theme") === "dark") ? "dark" : "default",'.
 								'plugins: "advlist autolink lists link image charmap preview anchor searchreplace wordcount visualblocks code fullscreen emoticons codesample help",'.
 								'toolbar: "undo redo | bold italic underline strikethrough | forecolor | alignleft aligncenter alignright | bullist numlist | link image | emoticons | removeformat | code fullscreen",'.
 								'content_style: "body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;font-size:14px;}",'.

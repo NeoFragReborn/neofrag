@@ -1,5 +1,13 @@
 <?php
 declare(strict_types=1);
+// Outil d'administration : jamais servi en HTTP (sinon maintenance/migrations/dumps
+// seraient executables par n'importe qui si tools/ etait expose par erreur).
+if (PHP_SAPI !== 'cli')
+{
+	http_response_code(404);
+	exit;
+}
+
 
 /**
  * NeoFrag Reborn — packaging du marketplace.

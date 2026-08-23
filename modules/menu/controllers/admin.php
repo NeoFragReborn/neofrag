@@ -19,17 +19,17 @@ class Admin extends Controller_Module
 		}
 		else
 		{
-			$body = '<table class="table table-hover" style="margin:0;"><thead><tr><th>'.$this->lang('Titre').'</th><th>'.$this->lang('Identifiant').'</th><th class="text-right">'.$this->lang('Items').'</th><th class="text-right"></th></tr></thead><tbody>';
+			$body = '<table class="table table-hover" style="margin:0;"><thead><tr><th>'.$this->lang('Titre').'</th><th>'.$this->lang('Identifiant').'</th><th class="text-end">'.$this->lang('Items').'</th><th class="text-end"></th></tr></thead><tbody>';
 			foreach ($menus as $m)
 			{
 				$slug  = url_title($m['title']);
 				$body .= '<tr>'
 					.'<td><strong>'.htmlspecialchars($m['title']).'</strong></td>'
 					.'<td><code>'.htmlspecialchars($m['name']).'</code></td>'
-					.'<td class="text-right">'.(int)$m['nb'].'</td>'
-					.'<td class="text-right" style="white-space:nowrap;">'
+					.'<td class="text-end">'.(int)$m['nb'].'</td>'
+					.'<td class="text-end" style="white-space:nowrap;">'
 					.'<a class="btn btn-sm btn-outline-primary" href="'.url('admin/menu/edit/'.$m['menu_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
-					.'<a class="btn btn-sm btn-outline-danger" href="'.url('admin/menu/delete/'.$m['menu_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ce menu et tous ses items ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
+					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/menu/delete/'.$m['menu_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ce menu et tous ses items ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 			}
 			$body .= '</tbody></table>';
@@ -44,6 +44,8 @@ class Admin extends Controller_Module
 	public function _menu_edit($menu) { return $this->_menu_form($menu); }
 	public function _menu_delete($menu)
 	{
+		$this->check_csrf('admin/menu');
+
 		NeoFrag()->db->where('menu_id', $menu['menu_id'])->delete('nf_menus'); // CASCADE → items supprimés
 		notify($this->lang('Menu supprimé.'));
 		redirect('admin/menu');
@@ -112,9 +114,9 @@ class Admin extends Controller_Module
 				$body  .= '<tr>'
 					.'<td style="'.$pad.'">'.($depth ? '<i class="fas fa-level-up-alt fa-rotate-90 text-muted" style="margin-right:6px;"></i>' : '').($it['icon'] ? '<i class="'.htmlspecialchars($it['icon']).'" style="margin-right:6px;"></i>' : '').'<strong>'.htmlspecialchars($it['title']).'</strong>'
 					.($it['url'] ? ' <small class="text-muted">'.htmlspecialchars($it['url']).'</small>' : '').'</td>'
-					.'<td class="text-right" style="white-space:nowrap;">'
+					.'<td class="text-end" style="white-space:nowrap;">'
 					.'<a class="btn btn-sm btn-outline-primary" href="'.url('admin/menu/item/edit/'.$it['item_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
-					.'<a class="btn btn-sm btn-outline-danger" href="'.url('admin/menu/item/delete/'.$it['item_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer cet item (et ses sous-items) ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
+					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/menu/item/delete/'.$it['item_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer cet item (et ses sous-items) ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 				foreach ($children[$it['item_id']] ?? [] as $child)
 				{
@@ -134,6 +136,8 @@ class Admin extends Controller_Module
 	public function _item_edit($item) { return $this->_item_form($this->model()->get_menu($item['menu_id']), $item); }
 	public function _item_delete($item)
 	{
+		$this->check_csrf('admin/menu');
+
 		// Supprime l'item et ses enfants directs (1 niveau de sous-menu).
 		NeoFrag()->db->where('parent_id', $item['item_id'])->delete('nf_menus_items');
 		NeoFrag()->db->where('item_id', $item['item_id'])->delete('nf_menus_items');

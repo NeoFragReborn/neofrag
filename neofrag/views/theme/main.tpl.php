@@ -4,7 +4,8 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=0">
 <meta content="IE=edge, chrome=1" http-equiv="X-UA-Compatible">
-<script>(function(){try{var k=<?php echo $this->url->admin ? "'nf-admin-theme'" : "'nf-dungeon-theme'" ?>;var t=localStorage.getItem(k);if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script>window.__nfNonce=<?php echo json_encode($GLOBALS['nf_csp_nonce'] ?? '') ?>;</script>
+<script>(function(){try{var k=<?php echo $this->url->admin ? "'nf-admin-theme'" : "'nf-dungeon-theme'" ?>;var t=localStorage.getItem(k);if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-bs-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
 <?php if ($this->config->nf_theme_color): ?>
 <meta name="theme-color" content="<?php echo $this->config->nf_theme_color ?>">
 <?php endif ?>
@@ -13,6 +14,10 @@
 <link rel="author" href="<?php echo url('humans.txt') ?>" type="text/plain">
 <?php endif ?>
 <link rel="shortcut icon" href="<?php echo $path = ($this->config->nf_favicon && ($favicon = NeoFrag()->model2('file', $this->config->nf_favicon)->path())) ? $favicon : image('favicon.png') ?>" type="<?php echo get_mime_by_extension(extension($path)) ?>">
+<link rel="apple-touch-icon" href="<?php echo image('apple-touch-icon.png') ?>">
+<?php if (!$this->config->nf_favicon): // favicon par défaut : variante claire quand le navigateur est en mode sombre ?>
+<link rel="icon" href="<?php echo image('favicon-dark.png') ?>" media="(prefers-color-scheme: dark)" type="image/png">
+<?php endif ?>
 <?php echo $this->output->css() ?>
 <?php foreach ($this->config->langs as $lang): ?>
 <link rel="alternate" href="<?php echo $this->url->base.implode('/', array_merge([$lang->info()->name], $this->url->segments)).$this->url->query ?>" hreflang="<?php echo $lang->info()->name ?>">
@@ -58,11 +63,19 @@ if ($nf_og_image && strpos($nf_og_image, '://') === FALSE) {
 </head>
 <body>
 <?php if ($this->config->nf_maintenance && !$this->url->admin && isset($this->user) && $this->access->effective_admin() && $this->output->module()->name != 'live_editor'): ?>
-	<div class="bg-danger py-2">
+	<style>
+	/* Bandeau sticky : fournit son espace en haut ET reste visible au scroll. Décale la navbar
+	   FIXE de la vitrine (.vt-nav) en dessous — sinon elle recouvre le bandeau (no-op sur les
+	   thèmes à navbar en flux normal, qui sont déjà poussés par le bandeau). */
+	#nf-maint-banner { position: sticky; top: 0; z-index: 1031; min-height: 52px; display: flex; align-items: center; }
+	body.nf-maint-on .vt-nav { top: 52px; }
+	</style>
+	<script>document.body.classList.add('nf-maint-on');</script>
+	<div id="nf-maint-banner" class="bg-danger py-2 w-100">
 		<div class="container">
 			<div class="row align-items-center">
 				<div class="col-6 text-white"><?php echo icon('fas fa-power-off').' '.$this->lang('Site en opération de maintenance') ?></div>
-				<div class="col-6 text-right"><a href="<?php echo url('admin/settings/maintenance') ?>" class="btn btn-outline-light"><?php echo $this->lang('Ouvrir le site') ?></a></div>
+				<div class="col-6 text-end"><a href="<?php echo url('admin/settings/maintenance') ?>" class="btn btn-outline-light"><?php echo $this->lang('Ouvrir le site') ?></a></div>
 			</div>
 		</div>
 	</div>
@@ -84,7 +97,7 @@ if (isset($this->user) && $this->user->admin && method_exists($this->access, 'ge
 					<i class="fas fa-eye"></i>
 					<strong><?php echo $this->lang('Mode preview actif') ?></strong> ·
 					<?php echo $this->lang('Tu vois le site comme %s : <strong>%s</strong>', $preview['type'] === 'role' ? $this->lang('rôle') : $this->lang('user'), htmlspecialchars($preview['label'])) ?>
-					<small class="ml-2 text-muted">
+					<small class="ms-2 text-muted">
 						<?php echo $this->lang('(actif depuis %s, expire dans %d min)', date('H:i', $preview['started_at']), max(0, ceil((1800 - (time() - $preview['started_at'])) / 60))) ?>
 					</small>
 				</div>
@@ -99,19 +112,156 @@ if (isset($this->user) && $this->user->admin && method_exists($this->access, 'ge
 <?php endif ?>
 <?php echo $body ?>
 <?php echo $debug_bar ?>
+<script type="text/javascript">
+// Primitives DOM minimales post-jQuery (NF.*). Centralise les seuls points où la parité avec jQuery est
+// subtile : (1) X-Requested-With sur l'AJAX same-origin (détection serveur, url.php) ; (2) ré-exécution des
+// <script> insérés en AJAX avec le nonce CSP (les réponses JSON ne sont pas noncées par le filtre PHP) ;
+// (3) lecture data-* compatible jQuery (.data() : coercion JSON/nombre/booléen). Ce n'est PAS un mini-jQuery :
+// aucun sélecteur ni chaînage, juste ces primitives.
+window.NF = (function(){
+	var nonce = window.__nfNonce || '';
+
+	function ready(fn){
+		if (document.readyState !== 'loading'){ fn(); }
+		else { document.addEventListener('DOMContentLoaded', fn); }
+	}
+
+	function data(el, name){
+		var raw = el.getAttribute('data-' + name);
+		if (raw === null){ return undefined; }
+		if (raw === 'true'){ return true; }
+		if (raw === 'false'){ return false; }
+		if (raw === 'null'){ return null; }
+		if (raw !== '' && String(+raw) === raw){ return +raw; }
+		var c = raw.charAt(0);
+		if (c === '{' || c === '['){ try { return JSON.parse(raw); } catch (e){} }
+		return raw;
+	}
+
+	function ajax(opts){
+		var url     = opts.url;
+		var method  = (opts.method || 'GET').toUpperCase();
+		var headers = {};
+		if (opts.headers){ for (var k in opts.headers){ headers[k] = opts.headers[k]; } }
+
+		var sameOrigin = !/^https?:\/\//i.test(url) || url.indexOf(window.location.origin) === 0;
+		if (sameOrigin && !('X-Requested-With' in headers)){
+			headers['X-Requested-With'] = 'XMLHttpRequest';
+		}
+
+		var init = { method: method, headers: headers, credentials: 'same-origin' };
+		if (opts.signal){ init.signal = opts.signal; }
+		if (typeof opts.body !== 'undefined'){
+			// String -> form-urlencoded (fetch enverrait text/plain par défaut ; le serveur lit $_POST).
+			if (typeof opts.body === 'string' && !('Content-Type' in headers)){
+				headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+			}
+			init.body = opts.body;
+		} else if (opts.data && method !== 'GET'){
+			// Sérialisation type jQuery $.param : une valeur tableau -> clé[].
+			var sp = new URLSearchParams();
+			Object.keys(opts.data).forEach(function(k){
+				var v = opts.data[k];
+				if (Array.isArray(v)){
+					var arrKey = /\[\]$/.test(k) ? k : k + '[]'; // ne pas doubler des [] déjà présents dans le name
+					v.forEach(function(item){ sp.append(arrKey, item); });
+				}
+				else if (v !== null && v !== undefined){ sp.append(k, v); }
+			});
+			init.body = sp;
+		}
+
+		return fetch(url, init).then(function(response){
+			return opts.dataType === 'text' ? response.text() : response.json();
+		});
+	}
+
+	function post(url, data){
+		return ajax({ url: url, method: 'POST', data: data });
+	}
+
+	function recreateScript(old){
+		var s = document.createElement('script');
+		for (var i = 0; i < old.attributes.length; i++){
+			s.setAttribute(old.attributes[i].name, old.attributes[i].value);
+		}
+		if (nonce){ s.setAttribute('nonce', nonce); }
+		s.textContent = old.textContent;
+		old.parentNode.replaceChild(s, old);
+	}
+
+	// innerHTML n'exécute jamais les <script> : on les recrée (avec nonce) pour rétablir l'exécution.
+	function runScripts(root){
+		if (root.tagName === 'SCRIPT'){ recreateScript(root); return; }
+		root.querySelectorAll('script').forEach(recreateScript);
+	}
+
+	function setHtml(el, html){
+		el.innerHTML = html;
+		runScripts(el);
+	}
+
+	function loadScript(src){
+		return new Promise(function(resolve, reject){
+			var s = document.createElement('script');
+			if (nonce){ s.setAttribute('nonce', nonce); }
+			s.src = src;
+			s.onload = function(){ resolve(); };
+			s.onerror = function(){ reject(new Error('script: ' + src)); };
+			document.head.appendChild(s);
+		});
+	}
+
+	return {
+		ready: ready, data: data, ajax: ajax, post: post,
+		setHtml: setHtml, runScripts: runScripts, loadScript: loadScript
+	};
+})();
+</script>
 <?php echo $this->output->js() ?>
 <script type="text/javascript">
-$(function(){
-	$('body').trigger('nf.load');
+// Le nonçage des <script> insérés en AJAX est désormais géré par NF.setHtml/NF.runScripts/NF.loadScript
+// (réponses JSON non noncées par le filtre PHP). Plus de hook jQuery nécessaire.
+NF.ready(function(){
+	document.body.dispatchEvent(new CustomEvent('nf.load', { bubbles: true }));
 
-	$('body').popover({
-		selector: '[data-toggle=popover]',
+	// Popover étend Tooltip : BS5 refuse deux instances sur le même hôte, donc on délègue
+	// depuis deux éléments distincts (html / body). Le `selector` couvre tout le document.
+	new bootstrap.Popover(document.documentElement, {
+		selector: '[data-bs-toggle="popover"]',
 		container: 'body',
 		trigger: 'hover'
 	});
 
-	$('body').tooltip({
-		selector: '[data-toggle=tooltip]'
+	new bootstrap.Tooltip(document.body, {
+		selector: '[data-bs-toggle="tooltip"]'
+	});
+
+	// Comportements UI délégués. Remplacent les gestionnaires inline on*="" que le CSP strict
+	// (script-src sans 'unsafe-inline') bloque ; la délégation sur `document` couvre en prime le
+	// contenu injecté en AJAX (modales), ce que les handlers inline ne faisaient jamais.
+	document.addEventListener('change', function(e){
+		var el = e.target;
+		if (!el || !el.matches) { return; }
+		// [data-nf-submit-on-change] : soumet le formulaire au changement (filtres).
+		if (el.matches('[data-nf-submit-on-change]') && el.form) { el.form.submit(); return; }
+		// [data-nf-nav-select] : navigue vers base + '/' + data-url de l'option choisie (pagination).
+		if (el.matches('[data-nf-nav-select]')) {
+			var opt = el.options[el.selectedIndex];
+			if (opt) { window.location = (el.getAttribute('data-nf-nav-base') || '') + '/' + (opt.getAttribute('data-url') || ''); }
+			return;
+		}
+		// [data-nf-file-name] : reflète le nom du fichier choisi dans l'élément cible (par id).
+		if (el.matches('[data-nf-file-name]')) {
+			var tgt = document.getElementById(el.getAttribute('data-nf-file-name'));
+			if (tgt) { tgt.textContent = (el.files && el.files[0]) ? el.files[0].name : ''; }
+			return;
+		}
+	});
+	document.addEventListener('click', function(e){
+		// [data-nf-select-on-click] : sélectionne le contenu d'un champ (copier-coller).
+		var sel = e.target.closest ? e.target.closest('[data-nf-select-on-click]') : null;
+		if (sel && typeof sel.select === 'function') { sel.select(); }
 	});
 
 	<?php echo $this->output->js_load() ?>
@@ -157,19 +307,31 @@ $(function(){
 		<strong>🍪 <?php echo $this->lang('Cookies & confidentialité') ?></strong> — <?php echo $this->lang('Ce site utilise des cookies essentiels pour fonctionner. Vous pouvez accepter les cookies analytiques pour nous aider à améliorer le site, ou les refuser.') ?> <a href="<?php echo url('mentions-legales') ?>"><?php echo $this->lang('En savoir plus') ?></a>
 	</div>
 	<div class="nf-cookie-banner__buttons">
-		<button class="nf-cookie-banner__btn nf-cookie-banner__btn--accept" onclick="nfCookieConsent('full')"><?php echo $this->lang('Tout accepter') ?></button>
-		<button class="nf-cookie-banner__btn nf-cookie-banner__btn--reject" onclick="nfCookieConsent('essentials')"><?php echo $this->lang('Refuser non-essentiels') ?></button>
+		<button type="button" class="nf-cookie-banner__btn nf-cookie-banner__btn--accept" data-nf-consent="full"><?php echo $this->lang('Tout accepter') ?></button>
+		<button type="button" class="nf-cookie-banner__btn nf-cookie-banner__btn--reject" data-nf-consent="essentials"><?php echo $this->lang('Refuser non-essentiels') ?></button>
 	</div>
 </div>
 <script>
-function nfCookieConsent(level) {
-	var d = new Date();
-	d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
-	document.cookie = "nf_consent=" + level + ";expires=" + d.toUTCString() + ";path=/;SameSite=Lax";
-	var banner = document.getElementById('nf-cookie-banner');
-	if (banner) banner.style.display = 'none';
-	document.dispatchEvent(new CustomEvent('nf:consent', { detail: { level: level } }));
-}
+// Handlers liés en JS (addEventListener), PAS en onclick="" inline : le CSP strict (script-src sans
+// 'unsafe-inline') bloque les gestionnaires d'événements inline — même noncés, les nonces ne les couvrent
+// pas. Ce <script> reçoit un nonce (injecté par index.php) et s'exécute donc normalement.
+(function() {
+	function nfCookieConsent(level) {
+		var d = new Date();
+		d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+		document.cookie = "nf_consent=" + level + ";expires=" + d.toUTCString() + ";path=/;SameSite=Lax";
+		var banner = document.getElementById('nf-cookie-banner');
+		if (banner) banner.style.display = 'none';
+		document.dispatchEvent(new CustomEvent('nf:consent', { detail: { level: level } }));
+	}
+
+	var buttons = document.querySelectorAll('#nf-cookie-banner [data-nf-consent]');
+	for (var i = 0; i < buttons.length; i++) {
+		buttons[i].addEventListener('click', function() {
+			nfCookieConsent(this.getAttribute('data-nf-consent'));
+		});
+	}
+})();
 </script>
 <?php endif ?>
 </body>

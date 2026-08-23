@@ -22,7 +22,7 @@ class Index extends Controller_Module
 		$tabs = '<ul class="nav nav-tabs mb-3">'
 			.'<li class="nav-item"><a class="nav-link '.($tab === 'index' ? 'active' : '').'" href="'.url('calendar').'">'.$this->lang('À venir').'</a></li>'
 			.'<li class="nav-item"><a class="nav-link '.($tab === 'past' ? 'active' : '').'" href="'.url('calendar/past').'">'.$this->lang('Passés').'</a></li>'
-			.'<li class="nav-item ml-auto"><a class="nav-link" href="'.url('calendar/ical').'"><i class="fas fa-calendar-alt"></i> '.$this->lang('Export iCal').'</a></li>'
+			.'<li class="nav-item ms-auto"><a class="nav-link" href="'.url('calendar/ical').'"><i class="fas fa-calendar-alt"></i> '.$this->lang('Export iCal').'</a></li>'
 			.'</ul>';
 
 		if (empty($events))

@@ -9,7 +9,7 @@
 					<small class="text-muted"><i class="far fa-calendar"></i> <?php echo $this->lang('Jusqu\'au %s', timetostr('j F Y', $c['deadline'])) ?></small>
 					<?php endif ?>
 				</div>
-				<span class="badge badge-success badge-pill"><?php echo $c['percentage'] ?>%</span>
+				<span class="badge text-bg-success rounded-pill"><?php echo $c['percentage'] ?>%</span>
 			</div>
 
 			<div class="donation-progress mb-3">

@@ -92,7 +92,7 @@ abstract class Widget extends Addon
 	{
 		if (($controller = @$this->controller('checker')) && $controller->has_method($type))
 		{
-			return serialize(call_user_func_array([$controller, $type], [$settings]));
+			return \NF\NeoFrag\Fields\Json::encode(call_user_func_array([$controller, $type], [$settings]));
 		}
 	}
 }

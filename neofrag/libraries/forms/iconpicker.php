@@ -11,9 +11,7 @@ class Iconpicker extends Labelable
 	public function __invoke($name)
 	{
 		$this->_template[] = function(&$input){
-			$this	->css('bootstrap-iconpicker.min')
-					->js('bootstrap-iconpicker.bundle.min')
-					->js('iconpicker');
+			NeoFrag()->js('iconpicker');
 
 			$input = $this	->html('button')
 							->attr('type', 'button')

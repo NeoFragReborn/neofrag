@@ -15,11 +15,18 @@ class Mysqli extends Driver
 
 	public function connect()
 	{
+		// PHP 8.1+ active MYSQLI_REPORT_ERROR|STRICT par défaut : toute erreur SQL devient
+		// une exception fatale et court-circuite le contrat d'erreur du framework
+		// ($request->error, page 503 lisible). On restaure le mode dégradé conçu.
+		mysqli_report(MYSQLI_REPORT_OFF);
+
 		$this->db = @new \mysqli($this->info->hostname, $this->info->username, $this->info->password, $this->info->database);
 
 		if (!$this->db->connect_error)
 		{
-			$this->db->set_charset('utf8');
+			// utf8mb4 : 'utf8' (= utf8mb3) rejetait tout caractère 4 octets — un emoji
+			// dans un message forum/chat provoquait une erreur 1366.
+			$this->db->set_charset('utf8mb4');
 
 			$this->db->query('SET sql_mode  = "'.trim(str_replace('ONLY_FULL_GROUP_BY', '', $this->db->query('SELECT @@sql_mode')->fetch_row()[0]), ',').'"');
 			$this->db->query('SET time_zone = "+00:00"');
@@ -98,6 +105,24 @@ class Mysqli extends Driver
 	public function free($results)
 	{
 		$results[1]->free_result();
+	}
+
+	// Contrôle transactionnel via l'API mysqli, hors prepared statements :
+	// MySQL 8 refuse PREPARE 'START TRANSACTION' (erreur 1295), MariaDB l'accepte —
+	// router ces ordres vers prepare() cassait toutes les transactions sur MySQL 8.
+	public function transaction()
+	{
+		$this->db->begin_transaction();
+	}
+
+	public function commit()
+	{
+		$this->db->commit();
+	}
+
+	public function rollback()
+	{
+		$this->db->rollback();
 	}
 
 	public function lock($tables)

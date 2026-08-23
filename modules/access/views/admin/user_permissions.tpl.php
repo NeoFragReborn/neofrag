@@ -6,7 +6,7 @@
 		<?php echo icon('fas fa-info-circle').' '.$this->lang('Cette page liste les permissions <strong>effectives</strong> de %s — c\'est-à-dire ce qu\'il peut <em>réellement</em> faire en tenant compte de ses rôles directs, des rôles via ses groupes, de l\'inheritance, et du bypass admin si actif.', '<strong>'.htmlspecialchars($user['username']).'</strong>') ?>
 	</div>
 	<div>
-		<a class="btn btn-sm btn-warning ml-3" href="<?php echo url('admin/access/preview/user/'.(int)$user['id']) ?>"
+		<a class="btn btn-sm btn-warning ms-3" href="<?php echo url('admin/access/preview/user/'.(int)$user['id']) ?>"
 			data-confirm="<?php echo htmlspecialchars($this->lang('Activer le mode preview "voir comme %s" ? Tu verras le site avec ses permissions, son admin status, etc.', $user['username']), ENT_QUOTES) ?>"
 			data-confirm-title="<?php echo htmlspecialchars($this->lang('Voir comme cet utilisateur'), ENT_QUOTES) ?>"
 			data-confirm-style="warning"
@@ -46,16 +46,16 @@
 							<?php if ($scope_id == 0): ?>
 								<small class="text-muted"><?php echo $this->lang('global') ?></small>
 							<?php else: ?>
-								<span class="badge badge-light"><?php echo (int)$scope_id ?></span>
+								<span class="badge text-bg-light"><?php echo (int)$scope_id ?></span>
 							<?php endif ?>
 						</td>
 						<td class="text-center">
 							<?php if ($info['value'] === 'allow'): ?>
-								<span class="badge badge-success"><i class="fas fa-check"></i> allow</span>
+								<span class="badge text-bg-success"><i class="fas fa-check"></i> allow</span>
 							<?php elseif ($info['value'] === 'never'): ?>
-								<span class="badge badge-danger"><i class="fas fa-ban"></i> never</span>
+								<span class="badge text-bg-danger"><i class="fas fa-ban"></i> never</span>
 							<?php else: ?>
-								<span class="badge badge-secondary">default</span>
+								<span class="badge text-bg-secondary">default</span>
 							<?php endif ?>
 						</td>
 						<td><small><?php echo htmlspecialchars($info['source']) ?></small></td>

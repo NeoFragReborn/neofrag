@@ -17,5 +17,11 @@
 	<label>Confirmation
 		<input name="password2" type="password" required>
 	</label>
+	<label>Mot de passe webmaster <span class="hint">(sudo des actions sensibles — DISTINCT du login, 8 car. min ; laisser vide pour le définir plus tard depuis Monitoring)</span>
+		<input name="webmaster_password" type="password">
+	</label>
+	<label>Confirmation webmaster
+		<input name="webmaster_password2" type="password">
+	</label>
 	<button class="btn" type="submit">Créer le compte</button>
 </form>

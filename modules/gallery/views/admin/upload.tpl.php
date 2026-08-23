@@ -1,12 +1,12 @@
 <div role="tabpanel tab-upload">
 	<ul class="nav nav-tabs" role="tablist">
-		<li role="presentation" class="active"><a href="#multiple" aria-controls="multiple" role="tab" data-toggle="tab"><?php echo $this->lang('Multiple') ?></a></li>
-		<li role="presentation"><a href="#single" aria-controls="single" role="tab" data-toggle="tab"><?php echo $this->lang('Simple') ?></a></li>
+		<li role="presentation" class="active"><a href="#multiple" aria-controls="multiple" role="tab" data-bs-toggle="tab"><?php echo $this->lang('Multiple') ?></a></li>
+		<li role="presentation"><a href="#single" aria-controls="single" role="tab" data-bs-toggle="tab"><?php echo $this->lang('Simple') ?></a></li>
 	</ul>
 	<div class="tab-content">
 		<div role="tabpanel" class="tab-pane active" id="multiple">
 			<div class="upload-infos">
-				<span class="progress-size float-right"></span>
+				<span class="progress-size float-end"></span>
 				<span class="progress-percent"></span>
 				<div class="progress">
 					<div class="progress-bar progress-bar-primary" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 10%;"></div>

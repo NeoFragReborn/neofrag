@@ -44,5 +44,17 @@ return [
 	'e5c58157' => 'Häufig gestellte Fragen',
 	'ef99d01b' => 'Kategorie erstellt.',
 	'f126e15d' => 'Entwurf|Entwürfe',
-	'fb9e1051' => 'Keine Kategorie.'
+	'fb9e1051' => 'Keine Kategorie.',
+	// i18n 2026-06-11
+	'fd522668' => 'Keine Frage entspricht diesen Kriterien.',
+	'96924e66' => 'Frage oder Antwort suchen…',
+	'db1a293b' => 'Alle Kategorien',
+	'17a7d347' => 'Alle Status',
+	'e401d59e' => 'Veröffentlicht',
+	'633b7ff4' => 'Entwürfe',
+	'dc275fe4' => 'Filtern',
+	'599dba10' => 'Zurücksetzen',
+	'8a7e7178' => '%d Ergebnis|%d Ergebnisse',
+	// i18n 2026-06-11 (code strings)
+	'50d3b0b0' => 'Antwort',
 ];

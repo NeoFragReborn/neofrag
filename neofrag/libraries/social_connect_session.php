@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Adaptateur de session NeoFrag pour SocialConnect (anciennement bundled dans lib/SocialConnect/Provider/Session/NeoFrag.php).

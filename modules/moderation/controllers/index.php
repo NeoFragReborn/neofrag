@@ -124,6 +124,7 @@ class Index extends Controller_Module
 
 		return $this->view('admin/report_detail', [
 			'report'         => $report,
+			'csrf'           => $this->csrf_token(),
 			'reporter_score' => $reporter_score,
 			'target_history' => $target_history,
 			'show_reporter'  => TRUE,
@@ -173,6 +174,7 @@ class Index extends Controller_Module
 
 		return $this->view('admin/sanction_detail', [
 			'sanction'    => $sanction,
+			'csrf'        => $this->csrf_token(),
 			'can_approve' => (bool)$this->access('moderation', 'approve'),
 			'can_revoke'  => (bool)$this->access('moderation', 'revoke'),
 			'_user_side'  => TRUE
@@ -256,6 +258,8 @@ class Index extends Controller_Module
 
 	public function _report_dismiss($id)
 	{
+		$this->check_csrf('moderation/reports');
+
 		$report = $this->moderation->get_report($id);
 		if (!$report) { notify($this->lang('Signalement introuvable.'), 'danger'); redirect('moderation/reports'); }
 
@@ -267,6 +271,8 @@ class Index extends Controller_Module
 
 	public function _report_sanction($id)
 	{
+		$this->check_csrf('moderation/reports');
+
 		$report = $this->moderation->get_report($id);
 		if (!$report) { notify($this->lang('Signalement introuvable.'), 'danger'); redirect('moderation/reports'); }
 		if (!$report['target_user_id']) { notify($this->lang('Pas de user cible identifié.'), 'danger'); redirect('moderation/reports/'.$id); }
@@ -313,6 +319,8 @@ class Index extends Controller_Module
 
 	public function _sanction_approve($id)
 	{
+		$this->check_csrf('moderation/sanctions');
+
 		if ($this->moderation->approve($id, (int)$this->user->id))
 		{
 			notify($this->lang('Sanction approuvée.'));
@@ -326,6 +334,8 @@ class Index extends Controller_Module
 
 	public function _sanction_revoke($id)
 	{
+		$this->check_csrf('moderation/sanctions');
+
 		$reason = trim((string)($_POST['reason'] ?? ''));
 		if ($reason === '')
 		{

@@ -1,13 +1,15 @@
 <script>(function(){
 	function init(){
-		if (typeof jQuery === "undefined" || !jQuery.fn.popover) { setTimeout(init, 100); return; }
-		jQuery(".forum-profile-has-popover").popover({ container: "body", boundary: "viewport" });
+		if (typeof bootstrap === "undefined" || !bootstrap.Popover) { setTimeout(init, 100); return; }
+		document.querySelectorAll(".forum-profile-has-popover").forEach(function(el){
+			new bootstrap.Popover(el, { container: "body" });
+		});
 	}
 	if (document.readyState === "loading") { document.addEventListener("DOMContentLoaded", init); } else { init(); }
 })();</script>
 <div class="forum-thread" data-forum-view="messages">
 	<div class="forum-thread-header">
-		<div class="float-right">
+		<div class="float-end">
 			<?php echo icon('fas fa-users').' '.$this->lang('%d participant|%d participants', $nb_users, $nb_users) ?>
 		</div>
 		<h5 class="m-0"><?php echo icon('far fa-comments').' '.$this->lang('%d réponse|%d réponses', $nb_messages, $nb_messages) ?></h5>
@@ -19,13 +21,13 @@
 				<?php echo $this->output->module()->get_profile($message['user_id'], $profile) ?>
 			</div>
 			<div class="forum-message-cell">
-				<div class="actions float-right">
+				<div class="actions float-end">
 				<?php if ($this->user() && empty($is_locked)): ?>
-					<a href="<?php echo url('forum/topic/'.$topic_id.'/'.url_title($title)).'?reply_to='.(int)$message['message_id'].'#reply' ?>" class="btn btn-sm btn-light" data-toggle="tooltip" title="<?php echo $this->lang('Répondre à ce message') ?>"><?php echo icon('fas fa-reply') ?></a>
+					<a href="<?php echo url('forum/topic/'.$topic_id.'/'.url_title($title)).'?reply_to='.(int)$message['message_id'].'#reply' ?>" class="btn btn-sm btn-light" data-bs-toggle="tooltip" title="<?php echo $this->lang('Répondre à ce message') ?>"><?php echo icon('fas fa-reply') ?></a>
 				<?php endif ?>
 				<?php if (($this->user() && $this->user->id == $message['user_id']) || $this->access('forum', 'category_modify', $category_id)): ?>
-					<a href="<?php echo url('forum/message/edit/'.$message['message_id'].'/'.url_title($title)) ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="<?php echo $this->lang('Editer') ?>"><?php echo icon('fas fa-edit') ?></a>
-					<a href="<?php echo url('forum/message/delete/'.$message['message_id'].'/'.url_title($title)) ?>" class="btn btn-sm btn-primary delete" data-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>"><?php echo icon('fas fa-times') ?></a>
+					<a href="<?php echo url('forum/message/edit/'.$message['message_id'].'/'.url_title($title)) ?>" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="<?php echo $this->lang('Editer') ?>"><?php echo icon('fas fa-edit') ?></a>
+					<a href="<?php echo url('forum/message/delete/'.$message['message_id'].'/'.url_title($title)) ?>" class="btn btn-sm btn-primary delete" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>"><?php echo icon('fas fa-times') ?></a>
 				<?php endif ?>
 				<?php if (($mod = $this->module('moderation'))): echo $mod->report_button('forum_message', (int)$message['message_id'], url('forum/topic/'.$topic_id.'/'.url_title($title)).'#'.(int)$message['message_id'], NULL, (int)$message['user_id']); endif ?>
 				</div>

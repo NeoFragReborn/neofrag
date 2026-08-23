@@ -18,4 +18,23 @@ return [
 	'c90a715a' => '¿Eliminar esta página? También se perderán las revisiones.',
 	'8d9ef7a4' => 'Eliminar',
 	'6bd5ed80' => 'Páginas colaborativas con historial de revisiones automático.',
+	// i18n 2026-06-11
+	'd3a89139' => 'Ninguna página coincide con estos criterios.',
+	'524a4abe' => 'Buscar un título o slug…',
+	'17a7d347' => 'Todos los estados',
+	'e401d59e' => 'Publicadas',
+	'633b7ff4' => 'Borradores',
+	'dc275fe4' => 'Filtrar',
+	'599dba10' => 'Restablecer',
+	'8a7e7178' => '%d resultado|%d resultados',
+	// i18n 2026-06-11 (code strings)
+	'f7c592f8' => 'Ninguna página wiki por el momento.',
+	'5dd8e248' => 'Páginas wiki',
+	'86c84bca' => 'Página eliminada. Las posibles páginas hijas se han subido a la raíz.',
+	'8fc6a624' => 'Versión actual',
+	'a30d943d' => 'Revisión',
+	'3a682dba' => 'Ninguna diferencia de contenido entre estas dos versiones.',
+	'cc71a928' => 'Volver al historial',
+	'd8165bb3' => 'Ver la versión actual',
+	'f3d55b7e' => 'Comparación de versiones',
 ];

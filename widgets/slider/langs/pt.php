@@ -23,4 +23,6 @@ return [
 	'77c705a8' => 'Ativar esta slide (caso contrário oculta)',
 	'd396a751' => 'Anterior',
 	'ebcb0841' => 'Seguinte',
+	// i18n 2026-06-11 (code strings)
+	'77703fae' => 'Configura o slider na administração para adicionar os teus próprios slides.',
 ];

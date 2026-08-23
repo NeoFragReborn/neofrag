@@ -28,7 +28,7 @@ ligne de code, et entièrement extensible quand tu en as envie.
 
 ## En bref
 
-NeoFrag Reborn s'installe sur un hébergement **PHP 8.3+ / MySQL ou MariaDB** classique
+NeoFrag Reborn s'installe sur un hébergement **PHP 8.2+ / MySQL ou MariaDB** classique
 (mutualisé compris). Une fois en place, tu composes ton site à la souris : tu actives
 des **modules** (forum, actualités, galerie…), tu places des **widgets** dans les
 **zones** de ton **thème**, et tu télécharges des compléments depuis le **marketplace**.

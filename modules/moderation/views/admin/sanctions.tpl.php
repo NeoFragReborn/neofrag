@@ -45,7 +45,7 @@
 					<th><?php echo $this->lang('Émis par') ?></th>
 					<th><?php echo $this->lang('Durée / Expiration') ?></th>
 					<th><?php echo $this->lang('Statut') ?></th>
-					<th class="text-right"><?php echo $this->lang('Action') ?></th>
+					<th class="text-end"><?php echo $this->lang('Action') ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -62,23 +62,23 @@
 					<td><small><?php echo htmlspecialchars((string)$s['issuer_username']) ?></small></td>
 					<td>
 						<?php if (empty($s['expires_at'])): ?>
-							<span class="badge badge-dark"><?php echo $this->lang('Permanent') ?></span>
+							<span class="badge text-bg-dark"><?php echo $this->lang('Permanent') ?></span>
 						<?php else: ?>
 							<small><?php echo htmlspecialchars($s['expires_at']) ?></small>
 						<?php endif ?>
 					</td>
 					<td>
 						<?php if ($is_revoked): ?>
-							<span class="badge badge-secondary"><?php echo $this->lang('Levée') ?></span>
+							<span class="badge text-bg-secondary"><?php echo $this->lang('Levée') ?></span>
 						<?php elseif ($is_pending): ?>
-							<span class="badge badge-warning"><?php echo $this->lang('Validation requise') ?></span>
+							<span class="badge text-bg-warning"><?php echo $this->lang('Validation requise') ?></span>
 						<?php elseif ($is_expired): ?>
-							<span class="badge badge-light"><?php echo $this->lang('Expirée') ?></span>
+							<span class="badge text-bg-light"><?php echo $this->lang('Expirée') ?></span>
 						<?php else: ?>
-							<span class="badge badge-success"><?php echo $this->lang('Active') ?></span>
+							<span class="badge text-bg-success"><?php echo $this->lang('Active') ?></span>
 						<?php endif ?>
 					</td>
-					<td class="text-right">
+					<td class="text-end">
 						<a class="btn btn-sm btn-outline-primary" href="<?php echo url($_modbase.'/sanctions/'.(int)$s['id']) ?>"><i class="fas fa-eye"></i></a>
 					</td>
 				</tr>

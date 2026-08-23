@@ -5,7 +5,7 @@
 <?php if (!empty($match['opponent']))://Matches ?>
 <div class="card-body text-center">
 	<div class="row no-gutters align-items-center">
-		<div class="text-right col-<?php echo ($icon = NeoFrag()->model2('file', $match['team']['icon_id'])->path()) ? 4 : 5 ?>">
+		<div class="text-end col-<?php echo ($icon = NeoFrag()->model2('file', $match['team']['icon_id'])->path()) ? 4 : 5 ?>">
 			<h5 class="m-0">
 				<a href="<?php echo url('events/team/'.$match['team_id'].'/'.$match['team']['name']) ?>">
 				<?php echo $match['team']['title'].' '.$this->model('matches')->display_scores($match['scores'], $color) ?>
@@ -13,7 +13,7 @@
 			</h5>
 		</div>
 		<?php if ($icon): ?>
-		<div class="text-left col-1">
+		<div class="text-start col-1">
 			<img src="<?php echo $icon ?>" class="img-fluid" alt="" />
 		</div>
 		<?php endif ?>
@@ -27,18 +27,18 @@
 			</div>
 		<?php endif ?>
 		<?php if ($match['opponent']['image_id']): ?>
-		<div class="text-right col-1">
+		<div class="text-end col-1">
 			<img src="<?php echo NeoFrag()->model2('file', $match['opponent']['image_id'])->path() ?>" class="img-fluid" alt="" />
 		</div>
 		<?php endif ?>
-		<div class="text-left col-xs-<?php echo $match['opponent']['image_id'] ? 4 : 5 ?>">
+		<div class="text-start col-xs-<?php echo $match['opponent']['image_id'] ? 4 : 5 ?>">
 			<h5 class="m-0">
 				<?php
 					$opponent = $this->model('matches')->display_scores($match['scores'], $color, TRUE).' '.$match['opponent']['title'];
 
 					if ($match['opponent']['country'])
 					{
-						$opponent .= '<img src="'.url('images/flags/'.$match['opponent']['country'].'.png').'" data-toggle="tooltip" title="'.get_countries()[$match['opponent']['country']].'" style="margin-left: 10px;" alt="" />';
+						$opponent .= '<img src="'.url('images/flags/'.$match['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.get_countries()[$match['opponent']['country']].'" style="margin-left: 10px;" alt="" />';
 					}
 
 					if ($match['opponent']['website'])
@@ -56,17 +56,17 @@
 <?php if (!empty($rounds)): ?>
 <div class="card-body">
 	<?php if ($mode): ?>
-		<p class="<?php echo count($rounds) > 1 ? 'float-right' : 'text-center' ?>"><?php echo icon('fas fa-cog') ?>Mode: <?php echo $mode ?></p>
+		<p class="<?php echo count($rounds) > 1 ? 'float-end' : 'text-center' ?>"><?php echo icon('fas fa-cog') ?>Mode: <?php echo $mode ?></p>
 	<?php endif ?>
 	<?php if (count($rounds) > 1): ?>
-		<p class="font-weight-bold">Détail des manches</p>
+		<p class="fw-bold">Détail des manches</p>
 		<?php for ($i = 0; $i < count($rounds); $i++) { ?>
 			<div class="card-group mb-2">
 				<div class="card text-center justify-content-center">
 					<h6 class="m-0"><?php echo $match['team']['title'].' '.$this->model('matches')->display_scores([$rounds[$i]['score1'], $rounds[$i]['score2']], $color) ?></h6>
 				</div>
 				<div class="card p-2 col-3 text-center">
-					<span class="badge badge-dark">Manche <?php echo $i+1 ?></span>
+					<span class="badge text-bg-dark">Manche <?php echo $i+1 ?></span>
 					<h4 class="my-2"><?php echo $rounds[$i]['score1'] ?>:<?php echo $rounds[$i]['score2'] ?></h4>
 					<a href="#"><?php echo $this->label($rounds[$i]['title'], 'far fa-map')->popover_if($rounds[$i]['image_id'], function($id){ return utf8_htmlentities('<img src="'.NeoFrag()->model2('file', $id)->path().'" class="img-fluid" alt="" />'); })?></a>
 				</div>
@@ -105,7 +105,7 @@ endif;
 </div>
 <?php endif ?>
 <div class="card-footer">
-	<div class="float-right">
+	<div class="float-end">
 		<ul class="list-inline m-0">
 			<li class="list-inline-item"><a href="<?php echo $link.'#participants' ?>"><?php echo icon('fas fa-users').' '.$participants ?></a></li>
 			<?php if (($comments = $this->module('comments')) && $comments->is_enabled()): ?>
@@ -115,7 +115,7 @@ endif;
 	</div>
 	<ul class="list-inline m-0">
 		<li class="list-inline-item"><?php echo $this->label($type['title'], $type['icon'], $type['color'], 'events/type/'.$type['type_id'].'/'.url_title($type['title'])) ?></li>
-		<li class="list-inline-item"><?php echo icon('far fa-clock') ?> <?php echo '<span data-toggle="tooltip" title="'.timetostr(NeoFrag()->lang('l j F Y, H:i'), $date).'">'.timetostr(NeoFrag()->lang('d/m/Y H:i'), $date).'</span>'.($date_end ? '&nbsp;&nbsp;<span data-toggle="tooltip" title="Durée"><i>'.icon('fas fa-hourglass-end').(ceil((strtotime($date_end) - strtotime($date)) / ( 60 * 60 ))).'h</i></span>' : '') ?></li>
+		<li class="list-inline-item"><?php echo icon('far fa-clock') ?> <?php echo '<span data-bs-toggle="tooltip" title="'.timetostr(NeoFrag()->lang('l j F Y, H:i'), $date).'">'.timetostr(NeoFrag()->lang('d/m/Y H:i'), $date).'</span>'.($date_end ? '&nbsp;&nbsp;<span data-bs-toggle="tooltip" title="Durée"><i>'.icon('fas fa-hourglass-end').(ceil((strtotime($date_end) - strtotime($date)) / ( 60 * 60 ))).'h</i></span>' : '') ?></li>
 		<?php if (strtotime($date) > time()): ?>
 		<li class="list-inline-item"><?php echo icon('far fa-hourglass-half') ?> <span class="nf-countdown" data-countdown="<?php echo (int)strtotime($date) ?>"></span></li>
 		<?php endif ?>

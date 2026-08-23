@@ -61,4 +61,6 @@ return [
 	'8d9ef7a4' => 'Delete',
 	'78ee8be4' => 'Edit a role',
 	'dc7fea54' => 'Delete a role',
+	// i18n 2026-06-11 (code strings)
+	'25e975ef' => 'This team is recruiting — Apply',
 ];

@@ -17,4 +17,16 @@ return [
 	'c18f1b3c' => 'Commenti',
 	'c5db4c8a' => 'Conferma di eliminazione',
 	'38012b05' => 'Rispondi',
+	// i18n 2026-06-11
+	93714304 => 'Seleziona tutto',
+	'bc8f177d' => 'Elimina la selezione',
+	'6c57e7dd' => 'Eliminare i commenti selezionati?',
+	'ad59e4ea' => '%d commento eliminato.|%d commenti eliminati.',
+	'6f01ddb4' => '%s ha commentato il tuo post',
+	'd6ee3cdc' => 'Nuovo commento su un contenuto che segui',
+	// i18n 2026-06-11 (code strings)
+	'06272c15' => 'Troppi commenti recenti. Riprova tra %d minuto/i.',
+	'6714db33' => 'Eliminare questo commento?',
+	'6bec17f1' => 'Nessun commento',
+	'245e9606' => 'commento|commenti',
 ];

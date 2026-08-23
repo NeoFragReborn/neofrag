@@ -1,141 +1,190 @@
 <?php
 /**
  * https://neofr.ag
+ * Widget « Statut live » multi-chaînes / multi-plateformes (Twitch, YouTube). Les chaînes sont déclarées
+ * en `provider:chaîne` ; chaque provider (lib/) normalise son statut, le contrôleur orchestre le cache HTTP.
  */
 
 namespace NF\Widgets\Twitch\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Widget as Controller_Widget;
+use NF\Widgets\Twitch\Lib\Twitch_Provider;
+use NF\Widgets\Twitch\Lib\Youtube_Provider;
 
 class Index extends Controller_Widget
 {
-	const CACHE_TTL_STREAM = 60;
-	const CACHE_TTL_USER   = 3600;
+	const CACHE_TTL     = 60;  // statut live (GET)
+	const NEG_CACHE_TTL = 120; // après un échec, pas de re-tentative bloquante
+	const MAX_CHANNELS  = 12;
 
 	public function index($settings = [])
 	{
-		$username      = strtolower(trim($settings['username']      ?? ''));
-		$client_id     = trim($settings['client_id']     ?? '');
-		$client_secret = trim($settings['client_secret'] ?? '');
-		$open_mode     = ($settings['open_mode']         ?? 'popup') === 'newtab' ? 'newtab' : 'popup';
-		$show_offline  = ($settings['show_offline']      ?? '1') === '1';
+		$channels = $this->_parse_channels($settings);
 
-		if (!$username)
+		if (!$channels)
 		{
 			return $this->panel()
-						->heading($this->lang('Twitch'), 'fab fa-twitch')
-						->body('<div class="alert alert-warning m-2">'.$this->lang('Configurez le pseudo Twitch dans le panneau d\'administration.').'</div>', FALSE);
+						->heading($this->lang('Live'), 'fas fa-broadcast-tower')
+						->body('<div class="alert alert-warning m-2">'.$this->lang('Configurez au moins une chaîne dans le panneau d\'administration.').'</div>', FALSE);
 		}
 
-		$user = $stream = NULL;
+		$creds = [
+			'client_id'     => trim($settings['client_id']     ?? ''),
+			'client_secret' => trim($settings['client_secret'] ?? ''),
+			'api_key'       => trim($settings['api_key']       ?? ''),
+		];
 
-		// API access requires creds. Without them, we fallback to public-only display.
-		if ($client_id && $client_secret)
+		$show_offline = ($settings['show_offline'] ?? '1') === '1';
+		$open_mode    = ($settings['open_mode']    ?? 'popup') === 'newtab' ? 'newtab' : 'popup';
+
+		$providers = ['twitch' => new Twitch_Provider(), 'youtube' => new Youtube_Provider()];
+		$http      = $this->_make_http();
+
+		$results = [];
+		foreach ($channels as $c)
 		{
-			$user   = $this->_fetch_user($username, $client_id, $client_secret);
-			$stream = $this->_fetch_stream($username, $client_id, $client_secret);
+			if (!isset($providers[$c['provider']]))
+			{
+				continue;
+			}
+
+			$status = $providers[$c['provider']]->fetch($c['channel'], $creds, $http);
+			$results[] = $status ?: $this->_unknown_status($c['provider'], $c['channel']);
 		}
 
-		$this->css('twitch');
+		// Direct d'abord.
+		usort($results, function($a, $b){ return (int)($b['is_live'] ?? FALSE) <=> (int)($a['is_live'] ?? FALSE); });
 
-		$is_live = !empty($stream['type']) && $stream['type'] === 'live';
+		// Masquer les hors-ligne CONFIRMÉS si l'option le demande (on garde les « inconnus » = statut indispo).
+		if (!$show_offline)
+		{
+			$results = array_values(array_filter($results, function($r){ return !empty($r['is_live']) || !empty($r['unknown']); }));
+		}
 
-		// Build embed URLs
-		$embed_url   = 'https://player.twitch.tv/?channel='.urlencode($username).'&parent='.urlencode($_SERVER['HTTP_HOST'] ?? 'localhost');
-		$channel_url = 'https://www.twitch.tv/'.urlencode($username);
-
-		// If offline + show_offline=0 + we know it's offline (creds OK), hide widget
-		if (!$is_live && !$show_offline && $user)
+		if (!$results)
 		{
 			return '';
 		}
 
+		$this->css('twitch');
+
 		return $this->panel()
-					->heading($this->lang('Twitch'), 'fab fa-twitch')
-					->body($this->view('index', [
-						'username'    => $username,
-						'user'        => $user,
-						'stream'      => $stream,
-						'is_live'     => $is_live,
-						'embed_url'   => $embed_url,
-						'channel_url' => $channel_url,
-						'open_mode'   => $open_mode,
-						'has_creds'   => $client_id && $client_secret
-					]), FALSE);
+					->heading($this->lang('Live'), 'fas fa-broadcast-tower')
+					->body($this->view('index', ['channels' => $results, 'open_mode' => $open_mode]), FALSE);
 	}
 
-	private function _get_token($client_id, $client_secret)
+	/** « provider:chaîne » par ligne → liste normalisée ; rétro-compat de l'ancien réglage `username` (Twitch). */
+	private function _parse_channels($settings)
 	{
-		$cache_dir  = 'cache/widget_twitch';
-		$token_file = $cache_dir.'/token_'.md5($client_id).'.json';
+		$out = [];
 
-		if (is_file($token_file))
+		foreach (preg_split('/[\r\n]+/', (string)($settings['channels'] ?? ''), -1, PREG_SPLIT_NO_EMPTY) as $line)
 		{
-			$cached = @json_decode(file_get_contents($token_file), TRUE);
-			if (is_array($cached) && !empty($cached['access_token']) && ($cached['expires_at'] ?? 0) > time() + 60)
+			$line = trim($line);
+
+			if (strpos($line, ':') !== FALSE)
 			{
-				return $cached['access_token'];
+				list($p, $ch) = explode(':', $line, 2);
+			}
+			else
+			{
+				$p = 'twitch'; $ch = $line;
+			}
+
+			$p  = strtolower(trim($p));
+			$ch = trim($ch);
+
+			if ($ch !== '' && in_array($p, ['twitch', 'youtube'], TRUE))
+			{
+				$out[] = ['provider' => $p, 'channel' => $ch];
 			}
 		}
 
-		$resp = @$this->network('https://id.twitch.tv/oauth2/token', ['timeout' => 5])
-					   ->header('Content-Type: application/x-www-form-urlencoded')
-					   ->post([
-						   'client_id'     => $client_id,
-						   'client_secret' => $client_secret,
-						   'grant_type'    => 'client_credentials'
-					   ]);
-
-		if (!$resp) return NULL;
-		$data = @json_decode($resp, TRUE);
-		if (empty($data['access_token'])) return NULL;
-
-		if (!is_dir($cache_dir)) @mkdir($cache_dir, 0775, TRUE);
-		@file_put_contents($token_file, json_encode([
-			'access_token' => $data['access_token'],
-			'expires_at'   => time() + (int)($data['expires_in'] ?? 3600)
-		]));
-
-		return $data['access_token'];
-	}
-
-	private function _api_get($url, $client_id, $client_secret, $cache_ttl)
-	{
-		$cache_dir  = 'cache/widget_twitch';
-		$cache_file = $cache_dir.'/'.md5($url).'.json';
-
-		if (is_file($cache_file) && (time() - filemtime($cache_file)) < $cache_ttl)
+		if (!$out && !empty($settings['username']))
 		{
-			return @json_decode(file_get_contents($cache_file), TRUE);
+			$out[] = ['provider' => 'twitch', 'channel' => strtolower(trim($settings['username']))];
 		}
 
-		$token = $this->_get_token($client_id, $client_secret);
-		if (!$token) return NULL;
-
-		$resp = @$this->network($url, ['timeout' => 5])
-					   ->header('Client-Id: '.$client_id)
-					   ->header('Authorization: Bearer '.$token)
-					   ->get();
-
-		if (!$resp) return NULL;
-		$data = @json_decode($resp, TRUE);
-		if (!is_array($data)) return NULL;
-
-		if (!is_dir($cache_dir)) @mkdir($cache_dir, 0775, TRUE);
-		@file_put_contents($cache_file, json_encode($data));
-
-		return $data;
+		return array_slice($out, 0, self::MAX_CHANNELS);
 	}
 
-	private function _fetch_user($username, $client_id, $client_secret)
+	// Entrée minimale quand le fetch échoue (creds absents / API KO) : la chaîne reste affichée en « statut indispo ».
+	private function _unknown_status($provider, $channel)
 	{
-		$data = $this->_api_get('https://api.twitch.tv/helix/users?login='.urlencode($username), $client_id, $client_secret, self::CACHE_TTL_USER);
-		return $data['data'][0] ?? NULL;
+		$urls = [
+			'twitch'  => 'https://www.twitch.tv/'.rawurlencode($channel),
+			'youtube' => 'https://www.youtube.com/channel/'.rawurlencode($channel),
+		];
+
+		return [
+			'provider'     => $provider,
+			'channel'      => $channel,
+			'display_name' => $channel,
+			'avatar'       => '',
+			'is_live'      => FALSE,
+			'unknown'      => TRUE,
+			'title'        => '',
+			'game'         => '',
+			'viewers'      => NULL,
+			'thumbnail'    => '',
+			'channel_url'  => $urls[$provider] ?? '#',
+			'embed_url'    => '',
+		];
 	}
 
-	private function _fetch_stream($username, $client_id, $client_secret)
+	/** Transport HTTP caché partagé par les providers : GET caché (CACHE_TTL), POST (token) caché selon expires_in,
+	 *  cache négatif après échec. Signature : fn(method, url, headers[], body?): ?array. */
+	private function _make_http(): callable
 	{
-		$data = $this->_api_get('https://api.twitch.tv/helix/streams?user_login='.urlencode($username), $client_id, $client_secret, self::CACHE_TTL_STREAM);
-		return $data['data'][0] ?? NULL;
+		$cache_dir = 'cache/widget_twitch';
+
+		return function(string $method, string $url, array $headers = [], $body = NULL) use ($cache_dir)
+		{
+			$is_get     = strtoupper($method) === 'GET';
+			$key        = md5($method.'|'.$url.'|'.json_encode($body));
+			$cache_file = $cache_dir.'/'.$key.'.json';
+			$fail_file  = $cache_dir.'/'.$key.'.fail';
+
+			if (is_file($cache_file))
+			{
+				$cached = @json_decode(file_get_contents($cache_file), TRUE);
+				if (is_array($cached) && ($cached['_exp'] ?? 0) > time())
+				{
+					return $cached['_data'];
+				}
+			}
+
+			if (is_file($fail_file) && (time() - filemtime($fail_file)) < self::NEG_CACHE_TTL)
+			{
+				return NULL;
+			}
+
+			$mark_fail = function() use ($cache_dir, $fail_file) {
+				if (!is_dir($cache_dir)) { @mkdir($cache_dir, 0775, TRUE); }
+				@touch($fail_file);
+			};
+
+			$req = $this->network($url, ['timeout' => 5])->type('text');
+			foreach ($headers as $h)
+			{
+				$req->header($h);
+			}
+
+			$resp = $is_get ? @$req->get() : @$req->post($body);
+
+			if (!$resp || !is_array($data = @json_decode($resp, TRUE)))
+			{
+				$mark_fail();
+				return NULL;
+			}
+
+			$ttl = (!$is_get && isset($data['expires_in'])) ? max(60, (int)$data['expires_in'] - 60) : self::CACHE_TTL;
+
+			if (!is_dir($cache_dir)) { @mkdir($cache_dir, 0775, TRUE); }
+			@unlink($fail_file);
+			@file_put_contents($cache_file, json_encode(['_exp' => time() + $ttl, '_data' => $data]));
+
+			return $data;
+		};
 	}
 }

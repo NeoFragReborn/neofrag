@@ -34,4 +34,4 @@ CREATE TABLE IF NOT EXISTS nf_users_messages_attachments (
   CONSTRAINT nf_um_att_file_fk
     FOREIGN KEY (file_id) REFERENCES nf_file(id)
     ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;

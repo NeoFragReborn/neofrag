@@ -1,16 +1,29 @@
-$(function(){
+NF.ready(function(){
 	var updating = false;
+	var chart    = null;
 
-	// Lit une variable CSS de la charte admin (s'adapte au thème clair/sombre)
+	// Lit une variable CSS de la charte admin (s'adapte au thème clair/sombre).
 	function cssVar(name, fallback){
 		var v = getComputedStyle(document.documentElement).getPropertyValue(name);
 		v = (v || '').trim();
 		return v || fallback;
 	}
 
+	// rgba(color, alpha) sans dépendance externe (gère #rgb, #rrggbb, rgb()/rgba()).
 	function withAlpha(color, alpha){
-		try { return Highcharts.color(color).setOpacity(alpha).get('rgba'); }
-		catch (e){ return color; }
+		color = (color || '').trim();
+		var m;
+		if ((m = color.match(/^#([0-9a-f]{3})$/i))){
+			color = '#' + m[1].replace(/./g, '$&$&');
+		}
+		if ((m = color.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i))){
+			return 'rgba(' + parseInt(m[1],16) + ',' + parseInt(m[2],16) + ',' + parseInt(m[3],16) + ',' + alpha + ')';
+		}
+		if ((m = color.match(/^rgba?\(([^)]+)\)/i))){
+			var p = m[1].split(',').slice(0,3).map(function(x){ return x.trim(); });
+			return 'rgba(' + p.join(',') + ',' + alpha + ')';
+		}
+		return color;
 	}
 
 	function theme(){
@@ -20,9 +33,12 @@ $(function(){
 			text    : cssVar('--nf-text', '#e8edf2'),
 			muted   : cssVar('--nf-muted', '#8a93a3'),
 			grid    : cssVar('--nf-border-soft', 'rgba(255,255,255,.08)'),
-			surface : cssVar('--nf-surface', '#141b27'),
-			font    : cssVar('--nf-font', 'inherit')
+			surface : cssVar('--nf-surface', '#141b27')
 		};
+	}
+
+	function fmtDate(ms){
+		return new Date(ms).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 	}
 
 	var update = function(){
@@ -32,85 +48,111 @@ $(function(){
 
 		updating = true;
 
-		var data = {};
+		// Sérialise le formulaire avec ses names natifs (les champs portent déjà des `name[]` :
+		// URLSearchParams(FormData) = la soumission native du form, sans ré-ajouter de crochets).
+		var formEl = document.querySelector('form');
+		var params = formEl ? new URLSearchParams(new FormData(formEl)) : new URLSearchParams();
 
-		$.each($('form').serializeArray(), function(){
-			if (data[this.name] !== undefined){
-				if (!data[this.name].push){
-					data[this.name] = [data[this.name]];
-				}
-
-				data[this.name].push(this.value || '');
-			}
-			else {
-				data[this.name] = this.value || '';
-			}
-		});
-
-		$.post('<?php echo url('admin/ajax/statistics.json') ?>', data, function(series){
+		NF.ajax({ url: '<?php echo url('admin/ajax/statistics.json') ?>', method: 'POST', body: params }).then(function(series){
 			var t = theme();
+			series = series || [];
 
-			(series || []).forEach(function(s, i){
+			var datasets = series.map(function(s, i){
 				var c = s.color || t.palette[i % t.palette.length];
-				s.type      = 'areaspline';
-				s.color     = c;
-				s.lineWidth = 2.5;
-				s.fillColor = {
-					linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-					stops: [[0, withAlpha(c, 0.28)], [1, withAlpha(c, 0)]]
+
+				return {
+					label                : s.name,
+					data                  : (s.data || []).map(function(p){ return { x: p[0], y: p[1] }; }),
+					borderColor           : c,
+					borderWidth           : 2.5,
+					tension               : 0.4,   // courbe lissée (équivalent areaspline)
+					fill                  : true,
+					pointRadius           : 0,
+					pointHoverRadius      : 4,
+					pointHoverBorderWidth : 2,
+					pointHoverBorderColor : c,
+					pointHoverBackgroundColor : t.surface,
+					// Dégradé vertical de remplissage (fondu vers le bas) — recalculé quand l'aire est connue.
+					backgroundColor       : function(ctx){
+						var area = ctx.chart.chartArea;
+						if (!area){
+							return withAlpha(c, 0.15);
+						}
+						var g = ctx.chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+						g.addColorStop(0, withAlpha(c, 0.28));
+						g.addColorStop(1, withAlpha(c, 0));
+						return g;
+					}
 				};
-				s.marker = { enabled: false, radius: 3, states: { hover: { enabled: true, radius: 4, lineWidth: 2 } } };
 			});
 
-			$('#highcharts').highcharts({
-				chart: {
-					type: 'areaspline',
-					backgroundColor: 'transparent',
-					zoomType: 'x',
-					style: { fontFamily: t.font },
-					spacing: [10, 4, 6, 4]
-				},
-				title:   { text: null },
-				credits: { enabled: false },
-				legend: {
-					enabled: (series || []).length > 1,
-					itemStyle:      { color: t.muted, fontWeight: '600' },
-					itemHoverStyle: { color: t.text }
-				},
-				xAxis: {
-					type: 'datetime',
-					lineColor: t.grid,
-					tickColor: t.grid,
-					gridLineWidth: 0,
-					labels: { style: { color: t.muted, fontSize: '11px' } }
-				},
-				yAxis: {
-					min: 0,
-					title: { text: null },
-					gridLineColor: t.grid,
-					gridLineDashStyle: 'Dash',
-					labels: { style: { color: t.muted, fontSize: '11px' } }
-				},
-				tooltip: {
-					shared: true,
-					backgroundColor: t.surface,
-					borderColor: t.grid,
-					borderRadius: 8,
-					shadow: false,
-					style: { color: t.text },
-					xDateFormat: '%e %b %Y'
-				},
-				plotOptions: {
-					areaspline: { states: { hover: { lineWidth: 3 } } },
-					series: { marker: { enabled: false } }
-				},
-				series: series
-			});
-		}).always(function(){
+			var cfg = {
+				type: 'line',
+				data: { datasets: datasets },
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					animation: { duration: 300 },
+					interaction: { mode: 'index', intersect: false },
+					plugins: {
+						legend: {
+							display: series.length > 1,
+							labels: { color: t.muted, usePointStyle: true, boxWidth: 8, font: { weight: '600' } }
+						},
+						tooltip: {
+							backgroundColor: t.surface,
+							borderColor: t.grid,
+							borderWidth: 1,
+							titleColor: t.text,
+							bodyColor: t.text,
+							padding: 10,
+							cornerRadius: 8,
+							callbacks: {
+								title: function(items){ return items.length ? fmtDate(items[0].parsed.x) : ''; }
+							}
+						}
+					},
+					scales: {
+						x: {
+							type: 'linear',
+							grid: { display: false },
+							border: { color: t.grid },
+							ticks: {
+								color: t.muted,
+								font: { size: 11 },
+								maxTicksLimit: 8,
+								maxRotation: 0,
+								autoSkip: true,
+								callback: function(v){ return fmtDate(v); }
+							}
+						},
+						y: {
+							beginAtZero: true,
+							grid: { color: t.grid },
+							border: { display: false },
+							ticks: { color: t.muted, font: { size: 11 }, precision: 0 }
+						}
+					}
+				}
+			};
+
+			if (chart){
+				chart.destroy();
+			}
+
+			var canvas = document.getElementById('stats-chart');
+			if (canvas && typeof Chart !== 'undefined'){
+				chart = new Chart(canvas, cfg);
+			}
+		}).catch(function(){}).finally(function(){
 			updating = false;
 		});
 	};
 
 	update();
-	$('form input, form select, .date').on('change changeDate dp.change', update);
+
+	// flatpickr émet un `change` natif sur l'input (les anciens events changeDate/dp.change sont obsolètes).
+	document.querySelectorAll('form input, form select, .date').forEach(function(el){
+		el.addEventListener('change', update);
+	});
 });

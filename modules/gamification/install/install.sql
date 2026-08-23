@@ -3,6 +3,7 @@
 -- Régénérer : docker compose exec -T web php tools/extract-module-sql.php
 
 SET FOREIGN_KEY_CHECKS = 0;
+SET NAMES utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `nf_user_points` (
   `user_id` int(11) unsigned NOT NULL,
@@ -12,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `nf_user_points` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`user_id`),
   CONSTRAINT `fk_upoints_user` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_karma` (
   `user_id` int(11) unsigned NOT NULL,
@@ -23,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `nf_karma` (
   PRIMARY KEY (`user_id`),
   KEY `idx_score` (`score`),
   CONSTRAINT `fk_karma_user` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_points_log` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -36,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `nf_points_log` (
   KEY `idx_user` (`user_id`),
   KEY `idx_user_type_date` (`user_id`,`type`,`created_at`),
   CONSTRAINT `fk_plog_user` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_vip` (
   `user_id` int(11) unsigned NOT NULL,
@@ -46,6 +47,6 @@ CREATE TABLE IF NOT EXISTS `nf_vip` (
   PRIMARY KEY (`user_id`),
   KEY `idx_expires` (`expires_at`),
   CONSTRAINT `fk_vip_user` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

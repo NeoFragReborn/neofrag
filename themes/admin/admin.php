@@ -44,16 +44,13 @@ class Admin extends Theme
 			refresh();
 		}
 
-		$this	->css('bootstrap.min')
+		$this	->css('bootstrap.min')->css('nf-bs5-bridge')
 				->css('fonts/open-sans')
 				->css('fonts/titillium-web')
 				->css('icons/Pe-icon-7-stroke')
 				->css('icons/fontawesome.min')
 				->css('style')
-				->js('jquery-3.7.1.min')
-				->js('popper.min')
-				->js('bootstrap.min')
-				->js('bootstrap-notify.min')
+				->js('bootstrap.bundle.min')
 				->js('modal')
 				->js('notify')
 				->js('confirm')

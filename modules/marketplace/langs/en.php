@@ -1,0 +1,17 @@
+<?php
+
+return [
+	'e0a855b1' => 'Marketplace',
+	'd1871ac3' => 'Theme',
+	'847ab781' => 'Connectors',
+	'cb9c2f46' => 'Connector',
+	'e4eaa342' => 'Compatibility',
+	'4283fa8d' => 'Provided widgets',
+	'69ecec58' => 'No dependency',
+	'3f27844a' => 'Extend your site',
+	'51ada26d' => '%s modules, widgets, themes and connectors to download and install in a few clicks.',
+	'2380f362' => 'All',
+	'8aea98fb' => 'View details',
+	'6155f804' => 'NeoFrag Reborn addon.',
+	'99ceec93' => 'Installation: download the .zip then go to <b>Admin → Themes &amp; Addons → Add</b> and upload the archive.',
+];

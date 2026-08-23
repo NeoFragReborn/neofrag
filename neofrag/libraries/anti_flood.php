@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,7 +11,7 @@ use NF\NeoFrag\Library;
 
 class Anti_Flood extends Library
 {
-	public function __invoke($message = '', $time = '')
+	public function __invoke($message = '', $time = ''): static
 	{
 		if (($date = $this->session('anti_flood', 'actions', $this->__id())) && $date->timestamp() > $this->date()->sub($time ?: '+10 minutes')->timestamp())
 		{

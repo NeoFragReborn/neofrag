@@ -123,6 +123,7 @@ class Admin extends Controller_Module
 
 		return $this->view('admin/report_detail', [
 			'report'         => $report,
+			'csrf'           => $this->csrf_token(),
 			'reporter_score' => $reporter_score,
 			'target_history' => $target_history,
 			'show_reporter'  => (bool)$this->access('moderation', 'see_reporter')
@@ -170,6 +171,7 @@ class Admin extends Controller_Module
 
 		return $this->view('admin/sanction_detail', [
 			'sanction' => $sanction,
+			'csrf' => $this->csrf_token(),
 			'can_approve' => $this->access('moderation', 'approve'),
 			'can_revoke'  => $this->access('moderation', 'revoke')
 		]);
@@ -249,6 +251,8 @@ class Admin extends Controller_Module
 
 	public function _report_dismiss($id)
 	{
+		$this->check_csrf('admin/moderation/reports');
+
 		$report = $this->moderation->get_report($id);
 		if (!$report) { notify($this->lang('Signalement introuvable.'), 'danger'); redirect('admin/moderation/reports'); }
 
@@ -260,6 +264,8 @@ class Admin extends Controller_Module
 
 	public function _report_sanction($id)
 	{
+		$this->check_csrf('admin/moderation/reports');
+
 		$report = $this->moderation->get_report($id);
 		if (!$report) { notify($this->lang('Signalement introuvable.'), 'danger'); redirect('admin/moderation/reports'); }
 		if (!$report['target_user_id']) { notify($this->lang('Pas de user cible identifié.'), 'danger'); redirect('admin/moderation/reports/'.$id); }
@@ -316,6 +322,8 @@ class Admin extends Controller_Module
 
 	public function _sanction_approve($id)
 	{
+		$this->check_csrf('admin/moderation/sanctions');
+
 		if ($this->moderation->approve($id, (int)$this->user->id))
 		{
 			notify($this->lang('Sanction approuvée.'));
@@ -329,6 +337,8 @@ class Admin extends Controller_Module
 
 	public function _sanction_revoke($id)
 	{
+		$this->check_csrf('admin/moderation/sanctions');
+
 		$reason = trim((string)($_POST['reason'] ?? ''));
 		if ($reason === '')
 		{
@@ -370,7 +380,7 @@ class Admin extends Controller_Module
 				.'<th>'.$this->lang('Banni par').'</th>'
 				.'<th>'.$this->lang('Expire').'</th>'
 				.'<th>'.$this->lang('Créé le').'</th>'
-				.'<th class="text-right" style="width:100px;"></th>'
+				.'<th class="text-end" style="width:100px;"></th>'
 				.'</tr></thead><tbody>';
 
 		if (empty($bans))
@@ -381,7 +391,7 @@ class Admin extends Controller_Module
 		{
 			foreach ($bans as $b)
 			{
-				$expires = empty($b['expires_at']) ? '<span class="badge badge-danger">'.$this->lang('Permanent').'</span>' : htmlspecialchars($b['expires_at']);
+				$expires = empty($b['expires_at']) ? '<span class="badge text-bg-danger">'.$this->lang('Permanent').'</span>' : htmlspecialchars($b['expires_at']);
 				$by      = !empty($b['banned_by_username']) ? htmlspecialchars($b['banned_by_username']) : '<em class="text-muted">'.$this->lang('Système').'</em>';
 
 				$body .= '<tr>';
@@ -390,8 +400,8 @@ class Admin extends Controller_Module
 				$body .= '<td>'.$by.'</td>';
 				$body .= '<td>'.$expires.'</td>';
 				$body .= '<td>'.htmlspecialchars($b['created_at']).'</td>';
-				$body .= '<td class="text-right">';
-				$body .= '<a class="btn btn-sm btn-danger" href="'.url('admin/moderation/banlist/delete/'.(int)$b['ban_id']).'" data-confirm="'.$this->lang('Supprimer le ban de cette IP ?').'" title="'.$this->lang('Supprimer le ban').'">'.icon('fas fa-trash').'</a>';
+				$body .= '<td class="text-end">';
+				$body .= '<a class="btn btn-sm btn-danger" href="'.$this->csrf_url('admin/moderation/banlist/delete/'.(int)$b['ban_id']).'" data-confirm="'.$this->lang('Supprimer le ban de cette IP ?').'" title="'.$this->lang('Supprimer le ban').'">'.icon('fas fa-trash').'</a>';
 				$body .= '</td>';
 				$body .= '</tr>';
 			}
@@ -466,6 +476,8 @@ class Admin extends Controller_Module
 
 	public function _banlist_delete($ban)
 	{
+		$this->check_csrf('admin/moderation/banlist');
+
 		$this->db->where('ban_id', (int)$ban['ban_id'])->delete('nf_ip_banlist');
 
 		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('banlist.ip_removed', [

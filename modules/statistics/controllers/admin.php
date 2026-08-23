@@ -12,8 +12,8 @@ class Admin extends Controller_Module
 {
 	public function index()
 	{
-		$this	->js('statistics')
-				->js('highstock');
+		$this	->js('chart.umd.min')
+				->js('statistics');
 
 		// Stats with comparison (current vs prior period)
 		$stats = $this->_collect_stats();
@@ -60,7 +60,7 @@ class Admin extends Controller_Module
 			.'<div class="nf-card-header">'
 			.'<span><i class="fas fa-chart-line"></i> '.$this->lang('Évolution dans le temps').'</span>'
 			.'</div>'
-			.'<div class="stats-chart-body"><div id="highcharts" style="height:440px;width:100%;"></div></div>'
+			.'<div class="stats-chart-body" style="position:relative;height:440px;width:100%;"><canvas id="stats-chart"></canvas></div>'
 			.'</div>';
 
 		// Inline JS for preset buttons
@@ -81,12 +81,9 @@ class Admin extends Controller_Module
 			var endIn = document.querySelector('input[name="end"]');
 			if (startIn) startIn.value = fmt(from);
 			if (endIn) endIn.value = fmt(to);
-			// Rafraîchit le graphe (update() est lié en change via jQuery)
-			if (window.jQuery) {
-				jQuery('input[name="start"], input[name="end"]').trigger('change');
-			} else if (startIn) {
-				startIn.dispatchEvent(new Event('change', {bubbles:true}));
-			}
+			// Rafraîchit le graphe (statistics.js écoute 'change' sur les champs du form).
+			if (startIn) startIn.dispatchEvent(new Event('change', {bubbles:true}));
+			if (endIn) endIn.dispatchEvent(new Event('change', {bubbles:true}));
 		});
 	});
 })();

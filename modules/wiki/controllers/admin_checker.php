@@ -45,6 +45,19 @@ class Admin_Checker extends Module_Checker
 		$filters['drafts']    = count($pages) - $published;
 		$filters['active']    = $filters['q'] !== '' || $filters['status'] !== '';
 
+		$filters['sort_cols'] = [
+			'date'      => $this->lang('Date'),
+			'title'     => $this->lang('Titre'),
+			'views'     => $this->lang('Vues'),
+			'revisions' => $this->lang('Révisions')
+		];
+		list($pages, $filters['sort']) = $this->sort_items($pages, [
+			'date'      => 'created_at',
+			'title'     => 'title',
+			'views'     => 'views',
+			'revisions' => 'nb_revisions'
+		], 'date', 'desc');
+
 		return [$this->module->pagination->fix_items_per_page(20)->get_data($pages, $page), $filters];
 	}
 

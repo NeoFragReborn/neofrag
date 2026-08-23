@@ -18,15 +18,15 @@ class Admin extends Controller_Module
 						'content' => function($data){
 							if (!$data['published'])
 							{
-								return '<i class="far fa-circle" data-toggle="tooltip" title="'.$this->lang('En attente de publication').'" style="color: #535353;"></i>';
+								return '<i class="far fa-circle" data-bs-toggle="tooltip" title="'.$this->lang('En attente de publication').'" style="color: #535353;"></i>';
 							}
 
 							if (!empty($data['date']) && strtotime($data['date']) > time())
 							{
-								return '<i class="fas fa-calendar-alt" data-toggle="tooltip" title="'.$this->lang('Programmée le %s', timetostr($this->lang('d/m/Y H:i'), $data['date'])).'" style="color: #e0a32e;"></i>';
+								return '<i class="fas fa-calendar-alt" data-bs-toggle="tooltip" title="'.$this->lang('Programmée le %s', timetostr($this->lang('d/m/Y H:i'), $data['date'])).'" style="color: #e0a32e;"></i>';
 							}
 
-							return '<i class="fas fa-circle" data-toggle="tooltip" title="'.$this->lang('Publiée').'" style="color: #7bbb17;"></i>';
+							return '<i class="fas fa-circle" data-bs-toggle="tooltip" title="'.$this->lang('Publiée').'" style="color: #7bbb17;"></i>';
 						},
 						'sort'    => function($data){
 							return $data['published'];
@@ -36,7 +36,7 @@ class Admin extends Controller_Module
 					[
 						'title'   => $this->lang('Titre de la page'),
 						'content' => function($data){
-							return $data['published'] ? '<a href="'.url($data['name']).'">'.$data['title'].'</a><small class="ml-2">'.$data['subtitle'].'</small>' : $data['title'];
+							return $data['published'] ? '<a href="'.url($data['name']).'">'.$data['title'].'</a><small class="ms-2">'.$data['subtitle'].'</small>' : $data['title'];
 						},
 						'sort'    => function($data){
 							return $data['title'];
@@ -108,7 +108,9 @@ class Admin extends Controller_Module
 			redirect_back('admin/pages');
 		}
 
-		return $this->admin_back('admin/pages', $this->lang('Pages')).$this->admin_card('fas fa-plus', $this->lang('Ajouter une page'), $this->form()->display().$this->_blocks_help());
+		return $this->admin_back('admin/pages', $this->lang('Pages')).$this->admin_card('fas fa-plus', $this->lang('Ajouter une page'), $this->form()->display()
+			.'<div class="alert alert-info mt-3">'.icon('fas fa-cubes').' '.$this->lang('Enregistrez d\'abord la page : vous pourrez ensuite y composer des blocs de module en l\'éditant.').'</div>'
+			.$this->_blocks_help());
 	}
 
 	public function _edit($page_id, $name, $published, $title, $subtitle, $content, $layout, $tab, $date = '')
@@ -144,7 +146,15 @@ class Admin extends Controller_Module
 			redirect_back('admin/pages');
 		}
 
-		return $this->admin_back('admin/pages', $this->lang('Pages')).$this->admin_card('fas fa-edit', $this->lang('Édition de la page').' — '.$title, $this->form()->display().$this->_blocks_help());
+		$this->js('sortable.lib.min')->js('composer');
+
+		$composer = $this->view('admin/composer', [
+			'page_id'   => $page_id,
+			'blocks'    => $this->model()->blocks_for_composer(),
+			'instances' => $this->model()->get_instances($page_id, FALSE)
+		]);
+
+		return $this->admin_back('admin/pages', $this->lang('Pages')).$this->admin_card('fas fa-edit', $this->lang('Édition de la page').' — '.$title, $this->form()->display().$composer.$this->_blocks_help());
 	}
 
 	/** Note d'aide listant les blocs de module injectables via [block:clé] dans le contenu. */
@@ -161,7 +171,38 @@ class Admin extends Controller_Module
 
 		foreach ($blocks as $key => $def)
 		{
-			$items .= '<li><code>[block:'.$key.']</code> — '.htmlspecialchars($def['title']).'</li>';
+			// Exemple avec paramètres déclarés (Palier 0) : [block:news.category id=… count=5].
+			$example = '[block:'.$key;
+			$legend  = [];
+
+			foreach ($def['fields'] ?? [] as $name => $spec)
+			{
+				$spec  = (array) $spec;
+				$type  = $spec['type'] ?? 'string';
+				$d     = $spec['default'] ?? NULL;
+				$shown = '…';
+
+				if ($type === 'int' && (int) $d > 0)
+				{
+					$shown = (string) (int) $d;
+				}
+				else if ($type === 'bool')
+				{
+					$shown = 'on';
+				}
+				else if (is_string($d) && $d !== '')
+				{
+					$shown = $d;
+				}
+
+				$example  .= ' '.$name.'='.$shown;
+				$legend[]  = $name.' ('.$type.')';
+			}
+
+			$example .= ']';
+
+			$items .= '<li><code>'.htmlspecialchars($example).'</code> — '.htmlspecialchars($def['title'])
+				.($legend ? ' <small class="text-muted">— '.htmlspecialchars(implode(', ', $legend)).'</small>' : '').'</li>';
 		}
 
 		return '<div class="alert alert-info mt-3"><i class="fas fa-puzzle-piece"></i> '

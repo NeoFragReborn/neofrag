@@ -12,22 +12,27 @@ function array_last_key($array)
 	return end($keys);
 }
 
-function array_last($array)
+if (!function_exists('array_last'))
 {
-	return end($array);
+	// PHP 8.5 fournit array_last() nativement (même sémantique : dernière valeur). Sans ce garde,
+	// redéclarer la fonction ferait fataliser le boot (« Cannot redeclare array_last ») sur PHP 8.5+.
+	function array_last($array)
+	{
+		return end($array);
+	}
 }
 
-function array_offset_left($array, $offset = 1)
+function array_offset_left($array, $offset = 1): array
 {
 	return array_slice($array, $offset);
 }
 
-function array_offset_right($array, $length = 1)
+function array_offset_right($array, $length = 1): array
 {
 	return array_slice($array, 0, -$length);
 }
 
-function array_natsort(&$array, $data = NULL)
+function array_natsort(&$array, $data = NULL): void
 {
 	uasort($array, function($a, $b) use ($data){
 		return str_nat($a, $b, $data);

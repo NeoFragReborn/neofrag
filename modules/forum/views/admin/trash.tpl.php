@@ -32,8 +32,8 @@
 					<td><small><code><?php echo htmlspecialchars($m['deleted_reason'] ?: '—') ?></code></small></td>
 					<td><small><?php echo time_span(strtotime($m['deleted_at'])) ?></small></td>
 					<td class="text-center">
-						<button type="submit" name="restore[]" value="<?php echo (int)$m['message_id'] ?>" class="btn btn-success btn-sm" data-toggle="tooltip" title="<?php echo $this->lang('Restaurer') ?>"><?php echo icon('fas fa-undo') ?></button>
-						<button type="submit" name="purge[]" value="<?php echo (int)$m['message_id'] ?>" class="btn btn-danger btn-sm" data-toggle="tooltip" title="<?php echo $this->lang('Purger définitivement') ?>"
+						<button type="submit" name="restore[]" value="<?php echo (int)$m['message_id'] ?>" class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="<?php echo $this->lang('Restaurer') ?>"><?php echo icon('fas fa-undo') ?></button>
+						<button type="submit" name="purge[]" value="<?php echo (int)$m['message_id'] ?>" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="<?php echo $this->lang('Purger définitivement') ?>"
 								data-confirm="<?php echo htmlspecialchars($this->lang('Confirmer la suppression définitive de ce message ?'), ENT_QUOTES) ?>"
 								data-confirm-title="<?php echo htmlspecialchars($this->lang('Purger définitivement'), ENT_QUOTES) ?>"
 								data-confirm-icon="fas fa-times"><?php echo icon('fas fa-times') ?></button>

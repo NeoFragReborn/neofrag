@@ -1,0 +1,52 @@
+name: 🐛 Rapport de bug
+description: Signaler un comportement incorrect
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de signaler un bug ! Pour une **faille de sécurité**, n'utilise pas ce formulaire —
+        voir [SECURITY.md](../blob/main/SECURITY.md).
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Que se passe-t-il, et qu'attendais-tu ?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Étapes de reproduction
+      description: Étape par étape, du plus simple possible.
+      placeholder: |
+        1. Aller sur …
+        2. Cliquer sur …
+        3. Observer …
+    validations:
+      required: true
+  - type: input
+    id: php
+    attributes:
+      label: Version de PHP
+      placeholder: "8.3.x"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version de NeoFrag Reborn
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environnement
+      description: Hébergement (mutualisé/VPS/Docker), MySQL/MariaDB, navigateur si pertinent.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / erreurs
+      description: Extrait pertinent de `logs/php.log` ou de la console. (Caviarde les secrets.)
+      render: text

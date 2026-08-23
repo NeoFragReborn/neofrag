@@ -81,4 +81,6 @@ return [
 	'a32ca295' => 'Até %s',
 	'51746598' => 'Ver campanha',
 	'b29b863e' => 'Nenhuma campanha ativa no momento.',
+	// i18n 2026-06-11 (code strings)
+	'4f180bc1' => 'Doações',
 ];

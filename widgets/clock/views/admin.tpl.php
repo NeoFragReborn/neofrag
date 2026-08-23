@@ -1,5 +1,5 @@
 <ul class="nav nav-pills" id="clock-tabs" role="tablist">
-	<li class="nav-item"><a class="nav-link active" id="clock-options-tab" data-toggle="pill" href="#clock-options" role="tab" aria-controls="clock-options" aria-selected="true"><?php echo icon('fas fa-cogs').' '.$this->lang('Options') ?></a></li>
+	<li class="nav-item"><a class="nav-link active" id="clock-options-tab" data-bs-toggle="pill" href="#clock-options" role="tab" aria-controls="clock-options" aria-selected="true"><?php echo icon('fas fa-cogs').' '.$this->lang('Options') ?></a></li>
 </ul>
 <div class="tab-content border-light" id="clock-tabContent">
 	<div class="tab-pane fade show active" id="clock-options" role="tabpanel" aria-labelledby="clock-options-tab">

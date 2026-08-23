@@ -1,7 +1,10 @@
 <?php /* Fichier JS traité par PHP (pour url()), comme modules/reactions/js/reactions.js */ ?>
-$(function(){
-	$('body').on('click', '[data-notif-read-all]', function(e){
+NF.ready(function(){
+	document.body.addEventListener('click', function(e){
+		var trigger = e.target.closest('[data-notif-read-all]');
+		if (!trigger){ return; }
 		e.preventDefault();
+
 		fetch('<?php echo \url('ajax/notifications/read-all') ?>', {
 			method: 'POST',
 			credentials: 'same-origin',
@@ -9,15 +12,17 @@ $(function(){
 		})
 		.then(function(r){ return r.json(); })
 		.then(function(){
-			$('.nf-notif-badge').remove();
-			$('.nf-notif-item.unread').removeClass('unread');
+			document.querySelectorAll('.nf-notif-badge').forEach(function(b){ b.remove(); });
+			document.querySelectorAll('.nf-notif-item.unread').forEach(function(i){ i.classList.remove('unread'); });
 		})
 		.catch(function(){});
 	});
 
 	// Marque une notif lue au clic (la navigation vers le lien continue normalement).
-	$('body').on('click', '.nf-notif-item[data-notif-id]', function(){
-		var id = $(this).attr('data-notif-id');
+	document.body.addEventListener('click', function(e){
+		var item = e.target.closest('.nf-notif-item[data-notif-id]');
+		if (!item){ return; }
+		var id = item.getAttribute('data-notif-id');
 		try {
 			fetch('<?php echo \url('ajax/notifications/read') ?>/' + encodeURIComponent(id), {
 				method: 'POST',
@@ -25,16 +30,18 @@ $(function(){
 				keepalive: true,
 				headers: { 'X-Requested-With': 'XMLHttpRequest' }
 			});
-		} catch (e) {}
+		} catch (e2) {}
 	});
 
 	// Bouton Suivre / Suivi (toggle abonnement).
-	$('body').on('click', '[data-follow-toggle]', function(){
-		var btn = $(this);
-		if (btn.hasClass('nf-follow-loading')) return;
-		var type = btn.attr('data-follow-type');
-		var id   = btn.attr('data-follow-id');
-		btn.addClass('nf-follow-loading');
+	document.body.addEventListener('click', function(e){
+		var btn = e.target.closest('[data-follow-toggle]');
+		if (!btn){ return; }
+		if (btn.classList.contains('nf-follow-loading')){ return; }
+
+		var type = btn.getAttribute('data-follow-type');
+		var id   = btn.getAttribute('data-follow-id');
+		btn.classList.add('nf-follow-loading');
 
 		fetch('<?php echo \url('ajax/notifications/subscribe') ?>/' + encodeURIComponent(type) + '/' + encodeURIComponent(id), {
 			method: 'POST',
@@ -43,15 +50,19 @@ $(function(){
 		})
 		.then(function(r){ return r.json(); })
 		.then(function(d){
-			if (d && d.ok) {
-				btn.toggleClass('following', !!d.following)
-				   .toggleClass('btn-secondary', !!d.following)
-				   .toggleClass('btn-outline-secondary', !d.following);
-				btn.find('i').attr('class', (d.following ? 'fas' : 'far') + ' fa-bell');
-				btn.find('.nf-follow-label').text(d.following ? btn.attr('data-label-following') : btn.attr('data-label-follow'));
+			if (d && d.ok){
+				btn.classList.toggle('following', !!d.following);
+				btn.classList.toggle('btn-secondary', !!d.following);
+				btn.classList.toggle('btn-outline-secondary', !d.following);
+
+				var icon = btn.querySelector('i');
+				if (icon){ icon.className = (d.following ? 'fas' : 'far') + ' fa-bell'; }
+
+				var label = btn.querySelector('.nf-follow-label');
+				if (label){ label.textContent = d.following ? btn.getAttribute('data-label-following') : btn.getAttribute('data-label-follow'); }
 			}
 		})
 		.catch(function(){})
-		.finally(function(){ btn.removeClass('nf-follow-loading'); });
+		.finally(function(){ btn.classList.remove('nf-follow-loading'); });
 	});
 });

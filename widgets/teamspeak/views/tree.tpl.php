@@ -13,7 +13,51 @@
 	</div>
 
 	<div class="widget-ts-tree-content">
-		<?php echo $tree_html ?>
+		<?php
+		$client_icon = function($c) {
+			if (!empty($c['snd_off'])) return 'fa-volume-xmark';
+			if (!empty($c['mic_off'])) return 'fa-microphone-slash';
+			if (!empty($c['away']))    return 'fa-clock';
+			return 'fa-microphone';
+		};
+
+		$spacer_label = function($name) {
+			$label = preg_replace('/^\[[^\]]*\]/', '', $name); // retire [spacer]/[cspacer]/[*spacer]…
+			return trim((string)$label, " \t-_=*.~");
+		};
+
+		$render = function($nodes) use (&$render, $client_icon, $spacer_label) {
+			echo '<ul class="widget-ts-channels">';
+			foreach ($nodes as $n) {
+				if (!empty($n['is_spacer'])) {
+					$lbl = $spacer_label($n['name']);
+					echo '<li class="widget-ts-spacer">'.($lbl !== '' ? '<span>'.htmlspecialchars($lbl).'</span>' : '').'</li>';
+					continue;
+				}
+				echo '<li class="widget-ts-channel">';
+				echo '<div class="widget-ts-channel-name"><i class="fas fa-comment-dots"></i> <span class="widget-ts-channel-label">'.htmlspecialchars($n['name']).'</span>';
+				if (!empty($n['clients'])) {
+					echo ' <span class="widget-ts-channel-count">'.count($n['clients']).'</span>';
+				}
+				echo '</div>';
+				if (!empty($n['clients'])) {
+					echo '<ul class="widget-ts-clients">';
+					foreach ($n['clients'] as $c) {
+						$away = !empty($c['away']) ? ' is-away' : '';
+						echo '<li class="widget-ts-client'.$away.'"><i class="fas '.$client_icon($c).'"></i> '.htmlspecialchars($c['name']).'</li>';
+					}
+					echo '</ul>';
+				}
+				if (!empty($n['children'])) {
+					$render($n['children']);
+				}
+				echo '</li>';
+			}
+			echo '</ul>';
+		};
+
+		$render($tree ?? []);
+		?>
 	</div>
 
 	<a href="<?php echo htmlspecialchars($ts_url) ?>" class="widget-ts-cta">

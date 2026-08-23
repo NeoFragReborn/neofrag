@@ -3,6 +3,7 @@
 -- Régénérer : docker compose exec -T web php tools/extract-module-sql.php
 
 SET FOREIGN_KEY_CHECKS = 0;
+SET NAMES utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `nf_gallery` (
   `gallery_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -10,7 +11,8 @@ CREATE TABLE IF NOT EXISTS `nf_gallery` (
   `image_id` int(11) unsigned DEFAULT NULL,
   `name` varchar(100) NOT NULL,
   `published` enum('0','1') NOT NULL DEFAULT '0',
-  `date` timestamp NOT NULL DEFAULT current_timestamp(),
+  -- datetime : une `date` future programme/masque l'album (cf. models/gallery.php). TIMESTAMP plafonne à 2038.
+  `date` datetime NOT NULL DEFAULT current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
   `deleted_by` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`gallery_id`),
@@ -19,17 +21,17 @@ CREATE TABLE IF NOT EXISTS `nf_gallery` (
   KEY `idx_deleted_at` (`deleted_at`),
   CONSTRAINT `nf_gallery_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `nf_gallery_categories` (`category_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_gallery_ibfk_2` FOREIGN KEY (`image_id`) REFERENCES `nf_file` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_gallery_lang` (
   `gallery_id` int(11) unsigned NOT NULL,
   `lang` varchar(5) NOT NULL,
   `title` varchar(100) NOT NULL,
-  `description` text NOT NULL,
+  `description` mediumtext NOT NULL,
   PRIMARY KEY (`gallery_id`,`lang`),
   KEY `lang` (`lang`),
   CONSTRAINT `nf_gallery_lang_ibfk_1` FOREIGN KEY (`gallery_id`) REFERENCES `nf_gallery` (`gallery_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_gallery_categories` (
   `category_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -41,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `nf_gallery_categories` (
   KEY `icon_id` (`icon_id`),
   CONSTRAINT `nf_gallery_categories_ibfk_1` FOREIGN KEY (`image_id`) REFERENCES `nf_file` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `nf_gallery_categories_ibfk_2` FOREIGN KEY (`icon_id`) REFERENCES `nf_file` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_gallery_categories_lang` (
   `category_id` int(11) unsigned NOT NULL,
@@ -50,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `nf_gallery_categories_lang` (
   PRIMARY KEY (`category_id`,`lang`),
   KEY `lang` (`lang`),
   CONSTRAINT `nf_gallery_categories_lang_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `nf_gallery_categories` (`category_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_gallery_images` (
   `image_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -59,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `nf_gallery_images` (
   `file_id` int(11) unsigned NOT NULL,
   `gallery_id` int(11) unsigned NOT NULL,
   `title` varchar(100) NOT NULL,
-  `description` text NOT NULL,
+  `description` mediumtext NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp(),
   `views` int(11) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`image_id`),
@@ -71,6 +73,6 @@ CREATE TABLE IF NOT EXISTS `nf_gallery_images` (
   CONSTRAINT `nf_gallery_images_ibfk_2` FOREIGN KEY (`gallery_id`) REFERENCES `nf_gallery` (`gallery_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_gallery_images_ibfk_3` FOREIGN KEY (`thumbnail_file_id`) REFERENCES `nf_file` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_gallery_images_ibfk_4` FOREIGN KEY (`original_file_id`) REFERENCES `nf_file` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -40,4 +40,8 @@ return [
 	'76828c83' => 'Titelbild',
 	'11db7719' => 'Avatar',
 	'3dcd8730' => 'Keine aktive Sitzung',
+	// i18n 2026-06-11 (code strings)
+	'6db60ef7' => 'Verwaltetes Menü',
+	'26db591e' => '— Manuelle Links (unten) —',
+	'571ec895' => 'Zeigt ein in „Menüs" erstelltes Menü an (ersetzt die manuellen Links unten).',
 ];

@@ -31,9 +31,9 @@
 						<td class="matrix-perm-cell">
 							<?php echo htmlspecialchars($u['username']) ?>
 							<?php if ($u['admin']): ?>
-								<small class="badge badge-danger ml-1" data-toggle="tooltip" title="<?php echo $this->lang('Bypass admin actif') ?>"><i class="fas fa-rocket"></i></small>
+								<small class="badge text-bg-danger ms-1" data-bs-toggle="tooltip" title="<?php echo $this->lang('Bypass admin actif') ?>"><i class="fas fa-rocket"></i></small>
 							<?php endif ?>
-							<a href="<?php echo url('admin/access/user-permissions/'.(int)$u['id'].'/'.url_title($u['username'])) ?>" class="btn btn-link btn-sm py-0 px-2" data-toggle="tooltip" title="<?php echo $this->lang('Voir permissions effectives') ?>">
+							<a href="<?php echo url('admin/access/user-permissions/'.(int)$u['id'].'/'.url_title($u['username'])) ?>" class="btn btn-link btn-sm py-0 px-2" data-bs-toggle="tooltip" title="<?php echo $this->lang('Voir permissions effectives') ?>">
 								<?php echo icon('fas fa-eye') ?>
 							</a>
 						</td>

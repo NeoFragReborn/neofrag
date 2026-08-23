@@ -217,7 +217,10 @@ class Output extends Core
 				{
 					$method = 'index';
 				}
-				else if (strpos($segments[0], '_') === 0)
+				// Méthode interne protégée : un segment commençant par `_` est rejeté. On rejette AUSSI
+				// `-` car l'auto-routage convertit `-`→`_` (str_replace plus bas) → `/module/-foo`
+				// atteindrait sinon la méthode interne `_foo`.
+				else if (strpos($segments[0], '_') === 0 || strpos($segments[0], '-') === 0)
 				{
 					parent::error();
 				}
@@ -288,20 +291,40 @@ class Output extends Core
 					return $page();
 				}
 
-				//Checker Controller
-				if ($has_checker = ($checker = @$module->controller($name('checker'))) && $checker->has_method($method))
+				//Checker Controller — durci : une erreur inattendue (ex. table d'un module à moitié
+				//installé) bascule sur la page d'erreur standard au lieu de fataler tout le site.
+				try
 				{
-					$segments = call_user_func_array([$checker, $method], is_array($segments) ? array_values($segments) : $segments);
-				}
-
-				if ((!$has_checker && $this->url->extension == '') || ($has_checker && $checker->valid() && is_array($segments)))
-				{
-					//Controller
-					if (($controller = @$module->controller($controller ?: 'index')) && $controller->has_method($method))
+					if ($has_checker = ($checker = @$module->controller($name('checker'))) && $checker->has_method($method))
 					{
-						// PHP 8 : call_user_func_array refuse les arrays avec clés string+numeric mixtes
-						// (interprété comme named args mélangés). On force un array purement indexé.
-						return call_user_func_array([$controller, $method], array_values($segments));
+						$segments = call_user_func_array([$checker, $method], is_array($segments) ? array_values($segments) : $segments);
+					}
+
+					if ((!$has_checker && $this->url->extension == '') || ($has_checker && $checker->valid() && is_array($segments)))
+					{
+						//Controller
+						if (($controller = @$module->controller($controller ?: 'index')) && $controller->has_method($method))
+						{
+							// PHP 8 : call_user_func_array refuse les arrays avec clés string+numeric mixtes
+							// (interprété comme named args mélangés). On force un array purement indexé.
+							return call_user_func_array([$controller, $method], array_values($segments));
+						}
+					}
+				}
+				catch (\NF\NeoFrag\Exception $e)
+				{
+					throw $e; // erreurs framework (404, redirections…) : flux inchangé
+				}
+				catch (\Throwable $e)
+				{
+					error_log('[output] '.$this->url->request.' : '.$e->getMessage());
+					if (defined('NEOFRAG_DEBUG_BAR') && NEOFRAG_DEBUG_BAR)
+					{
+						throw $e;
+					}
+					if (ob_get_level())
+					{
+						ob_clean(); // jette la sortie partielle du module en échec → page d'erreur propre
 					}
 				}
 
@@ -402,8 +425,7 @@ class Output extends Core
 
 					parent	::css('fonts/open-sans')
 							->css('live-editor')
-							->css('jquery-ui.min')
-							->js('jquery-ui.min');
+							->js('sortable.lib.min');
 				}
 
 				$body .= $this->url->maintenance ? $this->module() : $this->_theme->view('body');
@@ -426,7 +448,7 @@ class Output extends Core
 
 			if (!$this->url->ajax() && $this->access->effective_admin() && $this->url->request != 'admin/monitoring' && parent::module('monitoring')->need_checking())
 			{
-				$this->js_load('$.post(\''.url('admin/ajax/monitoring.json').'\', {refresh: false});');
+				$this->js_load('NF.post(\''.url('admin/ajax/monitoring.json').'\', {refresh: false});');
 			}
 
 			$output = $this->_theme->view('theme/main', [

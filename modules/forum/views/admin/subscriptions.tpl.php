@@ -5,7 +5,7 @@
 	<table class="table table-hover table-sm">
 		<thead>
 			<tr>
-				<th width="40"><input type="checkbox" id="subs-select-all" data-toggle="tooltip" title="<?php echo htmlspecialchars($this->lang('Tout sélectionner'), ENT_QUOTES) ?>" /></th>
+				<th width="40"><input type="checkbox" id="subs-select-all" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($this->lang('Tout sélectionner'), ENT_QUOTES) ?>" /></th>
 				<th><?php echo $this->lang('Utilisateur') ?></th>
 				<th><?php echo $this->lang('Sujet') ?></th>
 				<th><?php echo $this->lang('Forum') ?></th>
@@ -24,7 +24,7 @@
 					<td><small><?php echo time_span(strtotime($s['created_at'])) ?></small></td>
 					<td><small><?php echo $s['last_notified_at'] ? time_span(strtotime($s['last_notified_at'])) : '<i class="text-muted">'.$this->lang('jamais').'</i>' ?></small></td>
 					<td class="text-center">
-						<button type="submit" name="unsub[]" value="<?php echo (int)$s['topic_id'].'_'.(int)$s['user_id'] ?>" class="btn btn-warning btn-sm" data-toggle="tooltip" title="<?php echo $this->lang('Désabonner') ?>"><?php echo icon('fas fa-bell-slash') ?></button>
+						<button type="submit" name="unsub[]" value="<?php echo (int)$s['topic_id'].'_'.(int)$s['user_id'] ?>" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="<?php echo $this->lang('Désabonner') ?>"><?php echo icon('fas fa-bell-slash') ?></button>
 					</td>
 				</tr>
 			<?php endforeach ?>

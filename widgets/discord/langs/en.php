@@ -11,7 +11,10 @@ return [
 	'6a97e63a' => 'Numeric Snowflake ID of the server (right-click on server name in Discord → "Copy Server ID"). Dev mode required.',
 	'6cb57f33' => 'Theme (iframe)',
 	'd743b52b' => 'Optional. Otherwise the link is fetched automatically from Discord.',
-	'df4700c0' => 'Unable to load Discord server information. Make sure the widget is <strong>enabled in the Discord server settings</strong> (Settings → Widget → Enable Server Widget).',
+	'8f44c74a' => 'This Discord server\'s widget is not enabled: <strong>Server Settings → Widget → Enable Server Widget</strong>.',
+	'fee4ebb0' => 'Discord server ID not found. Enable <strong>Developer Mode</strong> (Settings → Advanced), then right-click the <strong>server</strong> → "Copy Server ID" (not to be confused with a channel ID or an invite code).',
+	'ae074439' => 'Discord server unreachable. If your hosting blocks outbound requests, switch the widget to <strong>iframe</strong> mode in its settings.',
+	'9a81093c' => 'Discord-side error (%s). Try again in a few minutes.',
 	'e16d555c' => 'Native',
 	'fdd16ad9' => 'Native (integrated to the theme)',
 	'816f205c' => 'Discord',
@@ -35,4 +38,6 @@ return [
 	'2547c34e' => '%d others',
 	'a12b1086' => 'Voice channels',
 	'f930d5d6' => 'Join the server',
+	'5b00c662' => 'members online',
+	'2aa68b91' => 'member online',
 ];

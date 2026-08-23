@@ -138,6 +138,10 @@ class Network extends Library
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->_timeout);
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
 
+		// User-Agent par défaut : sans lui, les API derrière Cloudflare (ex. mcsrvstat.us) renvoient 403.
+		// Un header User-Agent explicite (->header('User-Agent: …')) reste prioritaire.
+		curl_setopt($ch, CURLOPT_USERAGENT, 'NeoFrag/'.(defined('NEOFRAG_VERSION') ? NEOFRAG_VERSION : '1.0').' (+https://neofr.ag)');
+
 		if ($this->_auth)
 		{
 			curl_setopt($ch, CURLOPT_USERPWD, $this->_auth);

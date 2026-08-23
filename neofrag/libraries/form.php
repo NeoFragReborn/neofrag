@@ -449,14 +449,14 @@ class Form extends Library
 			{
 				return '<div class="modal-header">
 							<h5 class="modal-title">'.$title.'</h5>
-							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">'.NeoFrag()->lang('Fermer').'</span></button>
+							<button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span><span class="visually-hidden">'.NeoFrag()->lang('Fermer').'</span></button>
 						</div>
 						<div class="modal-body">
 							'.$message.'
 						</div>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">'.NeoFrag()->lang('Annuler').'</button>
-							<a class="btn btn-danger delete-confirm" href="'.url($this->url->request).'" data-form-id="'.$this->token().'" onclick="return confirm_deletion(this);">'.NeoFrag()->lang('Supprimer').'</a>
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">'.NeoFrag()->lang('Annuler').'</button>
+							<a class="btn btn-danger delete-confirm" href="'.url($this->url->request).'" data-form-id="'.$this->token().'">'.NeoFrag()->lang('Supprimer').'</a>
 						</div>';
 			}
 			else
@@ -638,7 +638,7 @@ class Form extends Library
 
 		if ($popover)
 		{
-			return ' data-toggle="popover" data-trigger="hover" data-placement="right" data-html="true" data-content="'.utf8_htmlentities(implode('<br /><br />', $popover)).'"';
+			return ' data-bs-toggle="popover" data-trigger="hover" data-placement="right" data-html="true" data-content="'.utf8_htmlentities(implode('<br /><br />', $popover)).'"';
 		}
 	}
 
@@ -648,13 +648,23 @@ class Form extends Library
 
 		if (in_array($type, ['date', 'datetime', 'time']))
 		{
-			$types = ['date' => 'L', 'datetime' => 'L LT', 'time' => 'LT'];
+			$lang    = $this->config->lang->info()->name;
+			$formats = $this->config->lang->date();
+			$format  = $type === 'datetime' ? $formats['short_date_time'] : ($type === 'time' ? $formats['short_time'] : $formats['short_date']);
 
-			NeoFrag()	->css('bootstrap-datetimepicker.min')
-								->js('bootstrap-datetimepicker/moment.min')
-								->js('bootstrap-datetimepicker/bootstrap-datetimepicker.min')
-								->js('bootstrap-datetimepicker/locales/'.$this->config->lang->info()->name)
-								->js_load('$(".input-group.'.$type.'").datetimepicker({allowInputToggle: true, locale: "'.$this->config->lang->info()->name.'", format: "'.$types[$type].'"});');
+			NeoFrag()->css('flatpickr.min')->js('flatpickr.min');
+
+			if ($lang !== 'en')
+			{
+				NeoFrag()->js('flatpickr/l10n/'.$lang);
+			}
+
+			NeoFrag()->js_load('flatpickr(".input-group.'.$type.' input", {'
+				.'dateFormat: "'.$format.'", '
+				.($lang !== 'en' ? 'locale: "'.$lang.'", ' : '')
+				.'enableTime: '.($type !== 'date' ? 'true' : 'false').', '
+				.'noCalendar: '.($type === 'time' ? 'true' : 'false').', '
+				.'time_24hr: true, allowInput: true});');
 
 			$classes[] = $type;
 
@@ -700,9 +710,7 @@ class Form extends Library
 
 			$options['icon'] = FALSE;
 
-			NeoFrag()	->css('bootstrap-colorpicker.min')
-						->js('bootstrap-colorpicker.min')
-						->js('colorpicker');
+			NeoFrag()->js('colorpicker');
 		}
 
 		$output = '';
@@ -785,20 +793,7 @@ class Form extends Library
 
 	private function _display_iconpicker($var, $options, $post)
 	{
-		NeoFrag()	->css('bootstrap-iconpicker.min')
-					->js('bootstrap-iconpicker.bundle.min')
-					->js_load('	$(".btn.iconpicker").iconpicker({
-									arrowPrevIconClass: "fas fa-caret-left",
-									arrowNextIconClass: "fas fa-caret-right",
-									cols: 10,
-									rows: 5,
-									iconset: "fontawesome",
-									labelHeader: "'.NeoFrag()->lang('{0} sur {1} pages').'",
-									labelFooter: "<div class=\"float-right\">'.NeoFrag()->lang('{2} icônes').'</div>",
-									searchText: "'.NeoFrag()->lang('Rechercher...').'",
-									selectedClass: "btn-primary",
-									unselectedClass: ""
-								});');
+		NeoFrag()->js('iconpicker');
 
 		return '<button id="form_'.$this->token().'_'.$var.'" name="'.$this->token().'['.$var.']" class="btn btn-light'.((isset($this->_errors[$var])) ? ' btn-danger' : '').' iconpicker" data-icon="'.addcslashes($this->_display_value($var, $options), '"').'"></button>';
 	}
@@ -964,7 +959,7 @@ class Form extends Library
 				'if (window.__nf_tinymce_loaded) { __nf_tinymce_attach(); return; }'.
 				'window.__nf_tinymce_loaded = true;'.
 				'var s = document.createElement("script");'.
-				's.src = "https://cdn.jsdelivr.net/npm/tinymce@7.6.1/tinymce.min.js";'.
+				's.src = "'.js('tinymce/tinymce.min.js').'";'.
 				's.onload = __nf_tinymce_attach;'.
 				'document.head.appendChild(s);'.
 				'function __nf_tinymce_attach(){'.

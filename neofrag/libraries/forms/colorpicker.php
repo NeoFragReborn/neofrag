@@ -20,9 +20,7 @@ class Colorpicker extends Text
 		};
 
 		$this->_template[] = function(&$input){
-			$this	->css('bootstrap-colorpicker.min')
-					->js('bootstrap-colorpicker.min')
-					->js('colorpicker');
+			NeoFrag()->js('colorpicker');
 
 			$input->append_attr('class', 'color');
 		};

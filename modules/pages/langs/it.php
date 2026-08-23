@@ -32,4 +32,13 @@ return [
 	'e1b5ca71' => 'Pagine',
 	'52c9bbab' => 'Modifica',
 	'8d9ef7a4' => 'Elimina',
+	// i18n 2026-06-11 (code strings)
+	'fffae9b2' => 'Blocchi di modulo iniettabili — incolla il codice nel contenuto:',
+	'a858201f' => 'Pagine disponibili',
+	'bd0ae7ae' => 'Nessuna pagina pubblicata per il momento.',
+	'0b2225c8' => 'Modello',
+	'3346e037' => 'Normale (con cornice)',
+	'f2100516' => 'Pagina nuda (larghezza piena)',
+	'78b7cadc' => '«Pagina nuda» mostra il contenuto senza cornice né titolo — ideale per una pagina composta da blocchi.',
+	'42bd0172' => 'Una data futura programma la pubblicazione: la pagina resta nascosta pubblicamente fino a quella data (se pubblicata). Vuoto = immediato.',
 ];

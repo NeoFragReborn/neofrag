@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.0.0');
+define('NEOFRAG_VERSION', '1.1.0');
 
 error_reporting(E_ALL);
 
@@ -211,5 +211,46 @@ foreach ([
 }
 
 define('NEOFRAG_CORE', TRUE);
+
+// CSP stricte : un nonce par requête, injecté sur TOUS les <script> du HTML final + dans l'en-tête CSP
+// (servie ici, plus dans .htaccess). Permet de retirer 'unsafe-inline' du script-src sans noncer chaque
+// template à la main, et couvre aussi le JS inline généré dynamiquement (qui lit window.__nfNonce).
+$GLOBALS['nf_csp_nonce'] = rtrim(strtr(base64_encode(random_bytes(16)), '+/', '-_'), '=');
+
+ob_start(function($html){
+	$nonce = $GLOBALS['nf_csp_nonce'];
+
+	// Uniquement les réponses HTML : les réponses JSON (modales AJAX) peuvent contenir « <script »
+	// dans leur champ `content` — il ne faut SURTOUT pas y injecter de nonce (ça casserait le JSON).
+	$is_html = FALSE;
+	foreach (headers_list() as $h)
+	{
+		if (stripos($h, 'content-type:') === 0)
+		{
+			$is_html = stripos($h, 'text/html') !== FALSE;
+			break;
+		}
+	}
+
+	if (!$is_html || stripos($html, '<script') === FALSE)
+	{
+		return $html;
+	}
+
+	if (!headers_sent())
+	{
+		// script-src : plus de `https:` générique (n'importe quelle origine https). Allowlist précise —
+		// 'self' couvre tout le JS NeoFrag + TinyMCE/CodeMirror auto-hébergés ; google/gstatic = reCAPTCHA.
+		// style-src garde 'unsafe-inline' (styles inline BS5/TinyMCE) + fonts.googleapis.com (@import des
+		// thèmes). img/font/connect gardent `https:` (avatars, fonts gstatic, widgets Steam/Twitch).
+		header("Content-Security-Policy: default-src 'self'; object-src 'none'; ".
+			"script-src 'self' 'nonce-$nonce' https://www.google.com https://www.gstatic.com; ".
+			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; ".
+			"img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https:; ".
+			"frame-src 'self' https://www.google.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
+	}
+
+	return preg_replace('/<script(?=[\s>])(?![^>]*\bnonce=)/i', '<script nonce="'.$nonce.'"', $html);
+});
 
 NeoFrag()->output();

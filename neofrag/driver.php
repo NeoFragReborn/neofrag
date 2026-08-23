@@ -28,6 +28,9 @@ abstract class Driver
 	abstract public function check_foreign_keys($check);
 	abstract public function fetch($check, $type = 'assoc');
 	abstract public function free($check);
+	abstract public function transaction();
+	abstract public function commit();
+	abstract public function rollback();
 	abstract public function lock($tables);
 	abstract public function unlock($tables);
 	abstract public function tables();

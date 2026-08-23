@@ -87,7 +87,7 @@ class Date extends Library
 				}
 				else if ($timestamp < strtotime('+22 days midnight'))
 				{
-					$output = NeoFrag()->lang('Dans %d jours', floor($diff / 87840 * -1));
+					$output = NeoFrag()->lang('Dans %d jours', floor($diff / 86400 * -1));
 				}
 			}
 			else if ($diff > 0)
@@ -102,7 +102,7 @@ class Date extends Library
 				}
 				else if ($timestamp >= strtotime('20 days ago midnight'))
 				{
-					$output = NeoFrag()->lang('Il y a %d jours', floor($diff / 87840));
+					$output = NeoFrag()->lang('Il y a %d jours', floor($diff / 86400));
 				}
 			}
 			else
@@ -130,7 +130,7 @@ class Date extends Library
 				}
 				else if ($timestamp < strtotime('+22 days midnight'))
 				{
-					$output = NeoFrag()->lang('Dans %d jours à %s', floor($diff / 87840 * -1), $this->short_time());
+					$output = NeoFrag()->lang('Dans %d jours à %s', floor($diff / 86400 * -1), $this->short_time());
 				}
 			}
 			else if ($diff > 0)

@@ -32,4 +32,7 @@ return [
 	'ec91a486' => 'Auszeichnungen (Palmarès), zuweisbar an Mitglieder oder Teams — Gaming-Modul.',
 	'52c9bbab' => 'Bearbeiten',
 	'8d9ef7a4' => 'Löschen',
+	// i18n 2026-06-11 (code strings)
+	'abc845df' => 'Auszeichnungen',
+	'46ef5764' => 'Auszeichnungen',
 ];

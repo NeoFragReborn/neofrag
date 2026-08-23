@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -13,7 +14,7 @@ class Css extends Library
 	protected $_file;
 	protected $_media;
 
-	public function __invoke($file, $media = '')
+	public function __invoke($file, $media = ''): static
 	{
 		$this->_file  = $file;
 		$this->_media = $media;
@@ -23,7 +24,7 @@ class Css extends Library
 		return $this;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		if (is_valid_url($this->_file))
 		{
@@ -33,7 +34,8 @@ class Css extends Library
 		{
 			$path = path($this->_file.'.css', 'css', $this->__caller);
 
-			if ($v = (int)$this->config->nf_version_css)
+			// ?v= = mtime du fichier (auto-invalidation à chaque modif/upload) ; repli sur nf_version_css.
+			if ($v = asset_version($this->_file.'.css', 'css', $this->__caller) ?: (int)$this->config->nf_version_css)
 			{
 				$path .= '?v='.$v;
 			}

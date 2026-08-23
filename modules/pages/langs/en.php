@@ -32,4 +32,13 @@ return [
 	'e1b5ca71' => 'Pages',
 	'52c9bbab' => 'Edit',
 	'8d9ef7a4' => 'Delete',
+	// i18n 2026-06-11 (code strings)
+	'fffae9b2' => 'Injectable module blocks — paste the code into the content:',
+	'a858201f' => 'Available pages',
+	'bd0ae7ae' => 'No published page for now.',
+	'0b2225c8' => 'Template',
+	'3346e037' => 'Normal (framed)',
+	'f2100516' => 'Bare page (full width)',
+	'78b7cadc' => '"Bare page" renders the content without a frame or title — ideal for a page made of blocks.',
+	'42bd0172' => 'A future date schedules publication: the page stays publicly hidden until that date (if published). Empty = immediate.',
 ];

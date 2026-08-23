@@ -15,11 +15,17 @@ class Admin extends Controller_Module
 	{
 		$this->title($this->lang('Corbeille'))->icon('fas fa-trash-restore');
 
-		$types = Trash::TYPES;
+		// On ne garde que les types dont la table existe : un module optionnel non installé (modèle tout
+		// bundlé, activé à la carte) n'a pas sa table → sinon la requête fataliserait (« table doesn't exist »).
+		$types = array_filter(Trash::TYPES, function($cfg){
+			return NeoFrag()->db->table_exists($cfg['table']);
+		});
 
 		// Action en masse (POST) : restaurer / purger la sélection.
 		if (!empty($_POST['bulk_action']) && !empty($_POST['selected']) && is_array($_POST['selected']))
 		{
+			$this->check_csrf('admin/trash');
+
 			$action = (string)$_POST['bulk_action'];
 			$done   = 0;
 
@@ -108,7 +114,7 @@ class Admin extends Controller_Module
 	{
 		// Barre de filtre par type.
 		$toolbar = '<form method="get" action="'.url('admin/trash').'" style="margin-bottom:12px;">'
-			.'<select name="type" class="form-control form-control-sm" style="width:auto;display:inline-block;" onchange="this.form.submit()">'
+			.'<select name="type" class="form-control form-control-sm" style="width:auto;display:inline-block;" data-nf-submit-on-change>'
 			.'<option value="">'.$this->lang('Tous les types').'</option>';
 		foreach ($types as $type => $cfg)
 		{
@@ -126,7 +132,7 @@ class Admin extends Controller_Module
 		{
 			$rows .= '<tr>'
 				.'<td><input type="checkbox" name="selected[]" value="'.htmlspecialchars($it['type'].':'.(int)$it['id']).'" class="nf-trash-cb"></td>'
-				.'<td><span class="badge badge-secondary">'.htmlspecialchars($it['label']).'</span></td>'
+				.'<td><span class="badge text-bg-secondary">'.htmlspecialchars($it['label']).'</span></td>'
 				.'<td>'.htmlspecialchars(str_shortener(trim(strip_tags((string)$it['title'])), 80, '…')).'</td>'
 				.'<td><small>'.htmlspecialchars((string)$it['deleted_at']).'</small></td>'
 				.'<td><small>'.($it['deleted_by'] ? htmlspecialchars((string)$it['deleted_by']) : '—').'</small></td>'
@@ -136,11 +142,11 @@ class Admin extends Controller_Module
 		$confirm_purge = htmlspecialchars($this->lang('Purger définitivement la sélection ? Action irréversible.'), ENT_QUOTES);
 
 		return $toolbar
-			.'<form method="post" action="'.url('admin/trash').'">'
+			.'<form method="post" action="'.url('admin/trash').'"><input type="hidden" name="_" value="'.$this->csrf_token().'">'
 			.'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">'
 				.'<label style="display:flex;align-items:center;gap:6px;font-size:13px;margin:0;cursor:pointer;"><input type="checkbox" id="nf-trash-all"> '.$this->lang('Tout sélectionner').'</label>'
 				.'<button type="submit" name="bulk_action" value="restore" class="btn btn-sm btn-success">'.icon('fas fa-trash-restore').' '.$this->lang('Restaurer').'</button>'
-				.'<button type="submit" name="bulk_action" value="purge" class="btn btn-sm btn-danger" onclick="return confirm(\''.$confirm_purge.'\');">'.icon('fas fa-times').' '.$this->lang('Purger').'</button>'
+				.'<button type="submit" name="bulk_action" value="purge" class="btn btn-sm btn-danger" data-confirm="'.$confirm_purge.'">'.icon('fas fa-times').' '.$this->lang('Purger').'</button>'
 			.'</div>'
 			.'<div class="table-responsive"><table class="table table-sm table-hover"><thead><tr>'
 			.'<th></th><th>'.$this->lang('Type').'</th><th>'.$this->lang('Titre').'</th><th>'.$this->lang('Supprimé le').'</th><th>'.$this->lang('Par').'</th>'

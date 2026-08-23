@@ -185,6 +185,68 @@ final class Installer
 		}
 	}
 
+	/**
+	 * Origine canonique (scheme://host) dérivée de la requête d'INSTALLATION — le seul moment
+	 * où le Host est de confiance (c'est l'admin qui installe). Figée ensuite dans config/url.php
+	 * pour que les URLs absolues (e-mails de reset, callbacks OAuth, retours de paiement) ne
+	 * dépendent plus jamais du Host des requêtes, forgeable.
+	 */
+	public static function request_origin(array $server): string
+	{
+		$host = (string) ($server['HTTP_HOST'] ?? '');
+
+		if ($host === '' || !preg_match('/^[A-Za-z0-9.\[\]:-]+$/', $host))
+		{
+			return '';
+		}
+
+		$https = (!empty($server['HTTPS']) && strtolower((string) $server['HTTPS']) !== 'off')
+			|| (!empty($server['HTTP_X_FORWARDED_PROTO']) && strtolower(explode(',', (string) $server['HTTP_X_FORWARDED_PROTO'])[0]) === 'https');
+
+		return ($https ? 'https' : 'http').'://'.$host;
+	}
+
+	/** Écrit config/url.php (origine canonique du site). Ne fait rien si $origin est vide. */
+	public static function write_site_url(string $config_dir, string $origin): void
+	{
+		$origin = rtrim(trim($origin), '/');
+
+		if ($origin === '')
+		{
+			return;
+		}
+
+		$php = "<?php\n\n"
+			."// Origine canonique du site, figée à l'installation. Toutes les URLs absolues\n"
+			."// (liens d'e-mails : reset de mot de passe, validation ; callbacks OAuth ; retours\n"
+			."// de paiement) sont construites dessus — jamais sur le Host de la requête, forgeable.\n"
+			."// À modifier à la main si le site change de domaine.\n"
+			."\$url['site'] = ".var_export($origin, TRUE).";\n";
+
+		self::write_file(rtrim($config_dir, '/\\').'/url.php', $php);
+	}
+
+	/**
+	 * Écrit config/webmaster.php avec le hash argon2id du mot de passe webmaster (sudo des actions
+	 * sensibles). Même format que lit NF\NeoFrag\Libraries\Webmaster. Ne touche à rien si $plain est vide.
+	 */
+	public static function set_webmaster_password(string $config_dir, string $plain): void
+	{
+		$plain = trim($plain);
+
+		if ($plain === '')
+		{
+			return;
+		}
+
+		$php = "<?php\n\n"
+			."// Hash argon2id du mot de passe webmaster (sudo). Généré par NeoFrag — ne pas éditer à la main.\n"
+			."\$webmaster['hash'] = ".var_export(password_hash($plain, PASSWORD_ARGON2ID), TRUE).";\n";
+
+		self::write_file(rtrim($config_dir, '/\\').'/webmaster.php', $php);
+		@chmod(rtrim($config_dir, '/\\').'/webmaster.php', 0600);
+	}
+
 	/** Modèle config/email.php : hôte SMTP vide => mail() PHP (mutualisé). Cf. build-release (doc SMTP). */
 	private static function email_config_template(): string
 	{
@@ -411,8 +473,8 @@ final class Installer
 		$hash     = password_hash($enc($admin['password']), PASSWORD_ARGON2ID);
 
 		$stmt = $db->prepare(
-			"INSERT INTO nf_user (username, password, salt, email, admin, language, data, deleted)
-			 VALUES (?, ?, '', ?, '1', NULL, '', '0')"
+			"INSERT INTO nf_user (username, password, salt, email, registration_date, last_activity_date, admin, language, data, deleted)
+			 VALUES (?, ?, '', ?, NOW(), NOW(), '1', NULL, '', '0')"
 		);
 		$stmt->bind_param('sss', $username, $hash, $email);
 		$stmt->execute() || self::throw_db('Création du compte admin', $db);
@@ -460,105 +522,71 @@ final class Installer
 		$stmt->execute() || self::throw_db("set_setting {$name}", $db);
 	}
 
-	// === Presets (étape installeur « Modules ») ================================
-
-	/** Définition des presets (install/lib/presets.php), mémoïsée (require ne renvoie le tableau qu'une fois). */
-	public static function presets(): array
-	{
-		static $presets = NULL;
-		if ($presets === NULL)
-		{
-			$presets = require __DIR__.'/presets.php';
-		}
-		return $presets;
-	}
+	// === Installation des addons (modèle « tout bundlé ») =====================
 
 	/**
-	 * Applique un preset sur une base déjà initialisée (schema + seed + admin). Standalone :
-	 * uniquement mysqli + FS (le framework n'est pas bootable tant que l'install n'est pas finie).
-	 *
-	 * Pour chaque module RETENU (sous-ensemble coché du preset) : enregistre nf_addon (module +
-	 * widgets appariés) puis joue modules/<name>/install/install.sql (idempotent, FK désactivées).
-	 * Ajoute les widgets sans module du preset (extra_widgets), recalcule une page d'accueil SÛRE
-	 * (jamais 404), et — pour « Site simple » — crée la page « Bienvenue » (module pages, cœur).
-	 *
-	 * @param string[] $selected_modules sous-ensemble des modules du preset (cases cochées)
-	 * @return array{installed_modules:string[], installed_widgets:string[], default_page:string, errors:string[]}
+	 * Modèle « tout bundlé » (option C) : installe TOUS les modules/widgets/thèmes présents dans le paquet
+	 * (chacun via son install.sql local s'il en a un) et les enregistre activés. Aucune dépendance au
+	 * marketplace. Per-module try/catch : un module fautif n'abandonne pas l'install. FK désactivées le
+	 * temps de l'import massif (ordre des install.sql non garanti vs FKs croisées).
 	 */
-	public static function apply_preset(mysqli $db, string $root, string $preset_key, array $selected_modules): array
+	public static function install_complete(mysqli $db, string $root): array
 	{
-		$presets = self::presets();
-		if (!isset($presets[$preset_key]))
-		{
-			throw new RuntimeException("Preset inconnu : {$preset_key}");
-		}
-		$preset = $presets[$preset_key];
-
-		// On ne retient que des modules réellement déclarés par le preset (anti-injection).
-		$modules  = array_values(array_intersect(array_keys($preset['modules']), $selected_modules));
 		$type_ids = self::addon_type_ids($db);
 		$errors   = [];
-		$installed_modules = $installed_widgets = [];
+		$modules  = $widgets = $themes = [];
 
-		foreach ($modules as $name)
+		$db->query('SET FOREIGN_KEY_CHECKS=0');
+
+		foreach (glob($root.'/modules/*', GLOB_ONLYDIR) ?: [] as $dir)
 		{
-			$sql = $root.'/modules/'.$name.'/install/install.sql';
+			$name = basename($dir);
 			try
 			{
-				// On joue l'install.sql AVANT d'enregistrer module + widgets : si la création des tables
-				// échoue, rien n'est enregistré (ni module ni widgets) → pas d'addon ni de widget orphelin.
+				$sql = $dir.'/install/install.sql';
 				if (is_file($sql))
 				{
 					self::import_sql_file($db, $sql);
 				}
-
 				self::register_addon($db, $type_ids['module'], $name);
-				$installed_modules[] = $name;
-
-				foreach ($preset['modules'][$name] as $widget)
-				{
-					self::register_addon($db, $type_ids['widget'], $widget);
-					$installed_widgets[] = $widget;
-				}
+				self::baseline_addon_migrations($db, 'module', $name, $root);
+				$modules[] = $name;
 			}
 			catch (\Throwable $e)
 			{
-				// Tier 1 = source locale de confiance : un échec est un vrai bug, mais on n'abandonne
-				// pas toute l'install (les autres modules s'installent ; l'erreur est remontée).
-				error_log("[install] preset {$preset_key} module {$name} : ".$e->getMessage());
+				error_log("[install] complete module {$name} : ".$e->getMessage());
 				$errors[] = "Module « {$name} » : ".$e->getMessage();
 			}
 		}
 
-		foreach ($preset['extra_widgets'] ?? [] as $widget)
+		// Widgets : pas de SQL ; tous les modules étant présents, aucun widget n'est orphelin.
+		foreach (glob($root.'/widgets/*', GLOB_ONLYDIR) ?: [] as $dir)
 		{
-			self::register_addon($db, $type_ids['widget'], $widget);
-			$installed_widgets[] = $widget;
+			self::register_addon($db, $type_ids['widget'], basename($dir));
+			self::baseline_addon_migrations($db, 'widget', basename($dir), $root);
+			$widgets[] = basename($dir);
 		}
 
-		// Page d'accueil : welcome > news > forum > gallery > pages (module cœur → jamais de 404).
-		if (!empty($preset['welcome_page']))
+		if (isset($type_ids['theme']))
 		{
-			self::create_welcome_page($db);
-			$default_page = 'pages/bienvenue';
-		}
-		else
-		{
-			$default_page = 'pages';
-			foreach (['news', 'forum', 'gallery'] as $candidate)
+			foreach (glob($root.'/themes/*', GLOB_ONLYDIR) ?: [] as $dir)
 			{
-				if (in_array($candidate, $installed_modules, TRUE))
-				{
-					$default_page = $candidate;
-					break;
-				}
+				self::register_addon($db, $type_ids['theme'], basename($dir));
+				self::baseline_addon_migrations($db, 'theme', basename($dir), $root);
+				$themes[] = basename($dir);
 			}
 		}
+
+		$db->query('SET FOREIGN_KEY_CHECKS=1');
+
+		// Page d'accueil sûre : news si installé, sinon la page cœur (jamais de 404).
+		$default_page = in_array('news', $modules, TRUE) ? 'news' : 'pages';
 		self::set_setting($db, 'nf_default_page', $default_page);
 
 		return [
-			'installed_modules' => $installed_modules,
-			'installed_widgets' => array_values(array_unique($installed_widgets)),
+			'installed_modules' => $modules,
+			'installed_widgets' => $widgets,
+			'installed_themes'  => $themes,
 			'default_page'      => $default_page,
 			'errors'            => $errors,
 		];
@@ -586,78 +614,43 @@ final class Installer
 	}
 
 	/**
-	 * Crée la page « Bienvenue » (module pages, cœur) + ses droits d'accès publics, et la rend
-	 * servable en page d'accueil via nf_default_page='pages/bienvenue'. Réentrant (no-op si déjà là).
+	 * BASELINE des migrations d'un addon (install neuf) : marque <type>s/<name>/install/migrations/*.up.sql
+	 * comme appliquées (batch 0) SANS les exécuter — install.sql porte déjà le schéma à jour. Les deltas
+	 * postérieurs seront joués par l'updater admin (Addon::update). Miroir standalone d'Addon::migrate('baseline').
 	 */
-	private static function create_welcome_page(mysqli $db): void
+	public static function baseline_addon_migrations(mysqli $db, string $type, string $name, string $root): void
 	{
-		if (self::scalar($db, "SELECT page_id FROM nf_pages WHERE name = 'bienvenue'") !== NULL)
+		$files = glob($root.'/'.$type.'s/'.$name.'/install/migrations/*.up.sql') ?: [];
+		if (!$files)
 		{
 			return;
 		}
 
-		$db->query("INSERT INTO nf_pages (name, published, layout) VALUES ('bienvenue', '1', 'default')")
-			|| self::throw_db('création page bienvenue', $db);
-		$page_id = (int) $db->insert_id;
+		self::ensure_addon_migrations_table($db);
 
-		$title    = 'Bienvenue';
-		$subtitle = 'Votre site est en ligne';
-		$content  = self::welcome_content();
-
-		// Le checker pages résout par `name` (lang-agnostique) ; on insère néanmoins une traduction
-		// par langue activée pour que la page apparaisse aussi dans la liste /pages de chaque langue.
-		$langs = [];
-		$res = $db->query("SELECT a.name FROM nf_addon a JOIN nf_addon_type t ON a.type_id = t.id WHERE t.name = 'language'");
-		while ($res && $row = $res->fetch_assoc())
+		$stmt = $db->prepare('INSERT IGNORE INTO nf_addon_migrations (type, name, migration, batch) VALUES (?, ?, ?, 0)');
+		foreach ($files as $file)
 		{
-			$langs[] = $row['name'];
-		}
-		if (!$langs)
-		{
-			$langs = ['fr'];
-		}
-
-		$stmt = $db->prepare('INSERT INTO nf_pages_lang (page_id, lang, title, subtitle, content) VALUES (?, ?, ?, ?, ?)');
-		foreach ($langs as $lang)
-		{
-			$stmt->bind_param('issss', $page_id, $lang, $title, $subtitle, $content);
-			$stmt->execute() || self::throw_db('création page bienvenue (lang)', $db);
-		}
-
-		// Accès public : le checker exige pages.access_page au scope = page_id. On l'accorde aux
-		// rôles built-in member + visitor (super_admin a déjà *.* allow au scope 0).
-		foreach (self::role_ids($db, ['member', 'visitor']) as $role_id)
-		{
-			$stmt = $db->prepare("INSERT INTO nf_role_permissions (role_id, permission, scope_id, authorized) VALUES (?, 'pages.access_page', ?, 'allow')");
-			$stmt->bind_param('ii', $role_id, $page_id);
-			$stmt->execute() || self::throw_db('droit accès page bienvenue', $db);
+			$migration = basename($file, '.up.sql');
+			$stmt->bind_param('sss', $type, $name, $migration);
+			$stmt->execute() || self::throw_db("baseline migration {$migration}", $db);
 		}
 	}
 
-	/** Contenu par défaut de la page d'accueil « Site simple » (rendu par bbcode() — texte simple). */
-	private static function welcome_content(): string
+	private static function ensure_addon_migrations_table(mysqli $db): void
 	{
-		return "Félicitations, votre site NeoFrag Reborn est en ligne !\n\n"
-			."Cette page d'accueil est un exemple : modifiez-la (ou remplacez-la) depuis l'administration, "
-			."section « Pages ». Vous pouvez choisir n'importe quelle page ou module comme page d'accueil "
-			."dans « Réglages → Préférences générales ».\n\n"
-			."Publiez vos premières actualités, agencez le menu et les widgets via l'éditeur en direct, puis "
-			."installez des modules supplémentaires depuis le marketplace. Bonne personnalisation !";
-	}
-
-	/** @param string[] $names @return int[] role_ids des rôles built-in nommés. */
-	private static function role_ids(mysqli $db, array $names): array
-	{
-		$out = [];
-		foreach ($names as $name)
-		{
-			$id = self::scalar($db, "SELECT role_id FROM nf_roles WHERE name = '".$db->real_escape_string($name)."'");
-			if ($id !== NULL)
-			{
-				$out[] = (int) $id;
-			}
-		}
-		return $out;
+		$db->query(
+			'CREATE TABLE IF NOT EXISTS `nf_addon_migrations` (
+				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`type` varchar(32) NOT NULL,
+				`name` varchar(100) NOT NULL,
+				`migration` varchar(191) NOT NULL,
+				`batch` int(10) unsigned NOT NULL DEFAULT 0,
+				`applied_at` timestamp NOT NULL DEFAULT current_timestamp(),
+				PRIMARY KEY (`id`),
+				UNIQUE KEY `uniq_addon_migration` (`type`,`name`,`migration`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+		) || self::throw_db('Création table nf_addon_migrations', $db);
 	}
 
 	private static function scalar(mysqli $db, string $sql)
@@ -667,46 +660,6 @@ final class Installer
 		return $row ? $row[0] : NULL;
 	}
 
-	/**
-	 * Garde-fou (tests) : chaque module/widget de presets.php doit appartenir au Tier 1 (`identity`)
-	 * du manifeste — jamais au cœur (déjà installé) ni au Tier 2 (marketplace distant).
-	 */
-	public static function assert_presets_in_manifest(string $root): void
-	{
-		$presets  = self::presets();
-		$manifest = require $root.'/tools/addons-manifest.php';
-		$id_mod   = $manifest['identity']['module'] ?? [];
-		$id_wid   = $manifest['identity']['widget'] ?? [];
-
-		foreach ($presets as $key => $preset)
-		{
-			foreach (array_keys($preset['modules']) as $m)
-			{
-				if (!in_array($m, $id_mod, TRUE))
-				{
-					throw new RuntimeException("Preset {$key} : module « {$m} » hors Tier 1 (identity).");
-				}
-			}
-			foreach ($preset['modules'] as $widgets)
-			{
-				foreach ($widgets as $w)
-				{
-					if (!in_array($w, $id_wid, TRUE))
-					{
-						throw new RuntimeException("Preset {$key} : widget « {$w} » hors Tier 1 (identity).");
-					}
-				}
-			}
-			foreach ($preset['extra_widgets'] ?? [] as $w)
-			{
-				if (!in_array($w, $id_wid, TRUE))
-				{
-					throw new RuntimeException("Preset {$key} : widget extra « {$w} » hors Tier 1 (identity).");
-				}
-			}
-		}
-	}
-
 	// === Marketplace distant (Tier 2) — fetch / download / install sécurisés ===
 	//
 	// Sécurité (spec §7) : HTTPS strict, vérification SHA-256, anti-zip-slip, tailles/timeout
@@ -714,8 +667,8 @@ final class Installer
 	// de code distant (on extrait + on joue install.sql idempotent, comme un addon local).
 	// Standalone (curl + FS + mysqli) → utilisable par l'étape installeur ET l'admin.
 
-	const MARKETPLACE_URL_DEFAULT = 'https://www.neofrag-reborn.xyz/marketplace';
-	const MARKETPLACE_HOSTS       = ['www.neofrag-reborn.xyz', 'neofrag-reborn.xyz']; // origines autorisées
+	const MARKETPLACE_URL_DEFAULT = 'https://neofrag-reborn.xyz/marketplace';
+	const MARKETPLACE_HOSTS       = ['neofrag-reborn.xyz', 'www.neofrag-reborn.xyz']; // origines autorisées (www toléré)
 	const MARKETPLACE_MAX_ZIP     = 10485760; // 10 Mo par zip
 	const MARKETPLACE_MAX_CATALOG = 2097152;  // 2 Mo pour le catalogue
 	const MARKETPLACE_TIMEOUT     = 15;       // secondes (connexion + transfert)
@@ -728,10 +681,23 @@ final class Installer
 	 */
 	public static function marketplace_url(?mysqli $db = NULL): string
 	{
-		if ($db !== NULL && ($v = self::scalar($db, "SELECT value FROM nf_settings WHERE name = 'nf_marketplace_url'")) && is_string($v) && $v !== '')
+		$v = $db !== NULL ? self::scalar($db, "SELECT value FROM nf_settings WHERE name = 'nf_marketplace_url'") : NULL;
+
+		return self::sanitize_marketplace_url(is_string($v) ? $v : NULL);
+	}
+
+	/**
+	 * Valide un override d'URL marketplace (depuis nf_settings) contre l'allow-list — fonction pure,
+	 * réutilisable au runtime (le framework lit la config via le service-locator, pas un mysqli brut).
+	 * Toute valeur vide/invalide retombe sur le défaut codé : une valeur injectée en base (DB compromise)
+	 * ne peut pas rediriger les fetchs vers un hôte interne/arbitraire (anti-SSRF).
+	 */
+	public static function sanitize_marketplace_url(?string $value): string
+	{
+		if ($value !== NULL && $value !== '')
 		{
-			$v = rtrim($v, '/');
-			$p = parse_url($v);
+			$value = rtrim($value, '/');
+			$p     = parse_url($value);
 
 			if (is_array($p)
 				&& ($p['scheme'] ?? '') === 'https'
@@ -739,7 +705,7 @@ final class Installer
 				&& (int) ($p['port'] ?? 443) === 443
 				&& !isset($p['user']) && !isset($p['pass']))
 			{
-				return $v;
+				return $value;
 			}
 		}
 
@@ -765,67 +731,6 @@ final class Installer
 		$data = json_decode($json, TRUE);
 
 		return (is_array($data) && isset($data['addons']) && is_array($data['addons'])) ? $data : NULL;
-	}
-
-	/**
-	 * Télécharge + vérifie (SHA-256) + extrait (anti-zip-slip) + installe un addon Tier 2 distant.
-	 * Retourne ['ok'=>bool, 'error'=>?string, 'widgets'=>string[]]. Ne lève jamais (l'appelant
-	 * peut sauter l'addon et continuer).
-	 */
-	/**
-	 * @param array<string,array> $widget_metas widgets du catalogue indexés par nom — pour
-	 *   TÉLÉCHARGER les fichiers des widgets appariés (zip séparé) plutôt que d'enregistrer une
-	 *   coquille vide. Un widget annoncé mais absent du catalogue est simplement ignoré (zéro orphelin).
-	 */
-	public static function install_remote_addon(mysqli $db, string $root, array $meta, string $base_url, array $widget_metas = []): array
-	{
-		$installed_widgets = [];
-
-		try
-		{
-			$r        = self::download_and_extract($meta, $base_url, $root);
-			$type_ids = self::addon_type_ids($db);
-
-			// Addon principal : enregistrement + install.sql (idempotent). Aucune exécution de code distant.
-			self::register_addon($db, $type_ids[$r['type']], $r['name']);
-			$sql = $root.'/'.$r['type'].'s/'.$r['name'].'/install/install.sql';
-			if (is_file($sql))
-			{
-				self::import_sql_file($db, $sql);
-			}
-
-			// Widgets appariés : on télécharge LEURS fichiers (zip séparé) + ligne + install.sql.
-			// L'échec d'UN widget n'annule PAS l'install du module (déjà persisté) — on saute ce widget.
-			foreach ($r['widgets'] as $w)
-			{
-				if (!isset($widget_metas[$w]))
-				{
-					continue; // pas dans le catalogue → on n'enregistre pas un widget sans fichiers
-				}
-				try
-				{
-					$wr = self::download_and_extract($widget_metas[$w], $base_url, $root);
-					self::register_addon($db, $type_ids['widget'], $wr['name']);
-					$wsql = $root.'/widgets/'.$wr['name'].'/install/install.sql';
-					if (is_file($wsql))
-					{
-						self::import_sql_file($db, $wsql);
-					}
-					$installed_widgets[] = $wr['name'];
-				}
-				catch (\Throwable $e)
-				{
-					error_log('[marketplace] widget '.$w.' (de '.($meta['name'] ?? '?').') : '.$e->getMessage());
-				}
-			}
-		}
-		catch (\Throwable $e)
-		{
-			// Échec de l'addon PRINCIPAL → install ratée.
-			return ['ok' => FALSE, 'error' => $e->getMessage(), 'widgets' => []];
-		}
-
-		return ['ok' => TRUE, 'error' => NULL, 'widgets' => $installed_widgets];
 	}
 
 	/**

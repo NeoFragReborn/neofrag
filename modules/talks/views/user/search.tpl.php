@@ -1,8 +1,8 @@
 <div class="card mb-3">
 	<div class="card-body">
 		<form method="get" action="<?php echo url('talks/search') ?>" class="form-inline">
-			<input type="text" name="q" class="form-control flex-grow-1 mr-2 mb-2" placeholder="<?php echo $this->lang('Rechercher (min 3 caractères)') ?>" value="<?php echo htmlspecialchars($query) ?>" />
-			<select name="talk_id" class="form-control mr-2 mb-2">
+			<input type="text" name="q" class="form-control flex-grow-1 me-2 mb-2" placeholder="<?php echo $this->lang('Rechercher (min 3 caractères)') ?>" value="<?php echo htmlspecialchars($query) ?>" />
+			<select name="talk_id" class="form-control me-2 mb-2">
 				<option value=""><?php echo $this->lang('Toutes mes conversations') ?></option>
 				<?php foreach ($my_convs as $c): ?>
 					<option value="<?php echo (int)$c['talk_id'] ?>" <?php echo $talk_id == $c['talk_id'] ? 'selected' : '' ?>><?php echo htmlspecialchars($c['name']) ?></option>
@@ -28,7 +28,7 @@
 					<div class="mb-2 pb-2" style="border-bottom: 1px dashed rgba(0,0,0,0.1);">
 						<div>
 							<strong><a href="<?php echo url('talks/'.(int)$r['talk_id'].'/'.\url_title($r['talk_name'])) ?>"><?php echo htmlspecialchars($r['talk_name']) ?></a></strong>
-							<small class="text-muted ml-2">
+							<small class="text-muted ms-2">
 								<?php echo \icon('fas fa-user').' '.htmlspecialchars($r['username'] ?? '?') ?>
 								· <?php echo \time_span($r['date']) ?>
 							</small>

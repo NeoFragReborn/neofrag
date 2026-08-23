@@ -43,8 +43,15 @@ class Ajax_Checker extends Module_Checker
 	{
 		$this->error_if($this->user());
 
-		if ($token = $this->model2('token', $token))
+		if (($token = $this->model2('token', $token)) && $token())
 		{
+			// Un lien de reset / validation n'est valable qu'une heure.
+			if ($token->date && $token->date->timestamp() < time() - 3600)
+			{
+				$token->delete();
+				return;
+			}
+
 			return [$token];
 		}
 	}

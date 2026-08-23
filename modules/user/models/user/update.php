@@ -107,7 +107,7 @@ class Update extends \NF\NeoFrag\Actions\Update
 								->size('col-12 col-lg-5')
 								->append(
 									$this	->panel()
-											->heading($this->lang('Groupes').'<a href="'.\url('admin/access/user-permissions/'.$user->id.'/'.\url_title($user->username)).'" class="float-right btn btn-sm btn-outline-info" data-toggle="tooltip" title="'.$this->lang('Voir permissions effectives').'">'.\icon('fas fa-key').' '.$this->lang('Permissions').'</a>', 'fas fa-users')
+											->heading($this->lang('Groupes').'<a href="'.\url('admin/access/user-permissions/'.$user->id.'/'.\url_title($user->username)).'" class="float-end btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="'.$this->lang('Voir permissions effectives').'">'.\icon('fas fa-key').' '.$this->lang('Permissions').'</a>', 'fas fa-users')
 											->body($this->view('admin/groups', [
 												'user_id' => $user->id,
 												'form_id' => $form_groups->token()

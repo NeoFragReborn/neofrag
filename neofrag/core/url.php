@@ -8,6 +8,30 @@ namespace NF\NeoFrag\Core;
 
 use NF\NeoFrag\Core;
 
+/**
+ * Propriétés de l'URL courante (renseignées au routage, lues via __get). Annotations pour l'IDE + PHPStan.
+ *
+ * @property mixed $request
+ * @property mixed $admin
+ * @property mixed $segments
+ * @property mixed $base
+ * @property mixed $ajax
+ * @property mixed $location
+ * @property mixed $https
+ * @property mixed $query
+ * @property mixed $back
+ * @property mixed $host
+ * @property mixed $extension
+ * @property mixed $cli
+ * @property mixed $subdomain
+ * @property mixed $redirect
+ * @property mixed $production
+ * @property mixed $maintenance
+ * @property mixed $external
+ * @property mixed $refresh
+ * @property mixed $domain
+ * @property mixed $ajax_header
+ */
 class Url extends Core
 {
 	protected $_const      = [];
@@ -117,7 +141,7 @@ class Url extends Core
 					$this	->config('nf_maintenance', FALSE, 'bool')
 							->config('nf_maintenance_opening', '');
 				}
-				else if (!$this->user->admin && !preg_match('#(ajax/user/(lost-password|login)|user/lost-password/[a-z0-9]+|user/logout)#', $this->url->request))
+				else if (!$this->user->admin && !preg_match('#(ajax/user/(lost-password|login|auth)|user/lost-password/[a-z0-9]+|user/logout)#', $this->url->request))
 				{
 					header('HTTP/1.0 503 Service Unavailable');
 

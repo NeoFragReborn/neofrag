@@ -1,10 +1,10 @@
 <div class="card mb-3">
 	<div class="card-body">
 		<form method="get" action="<?php echo url('forum/search') ?>" class="form-inline">
-			<div class="form-group flex-grow-1 mr-2 mb-2">
+			<div class="form-group flex-grow-1 me-2 mb-2">
 				<input type="text" name="q" class="form-control w-100" placeholder="<?php echo $this->lang('Rechercher dans le forum (min 3 caractères)') ?>" value="<?php echo htmlspecialchars($query) ?>" />
 			</div>
-			<div class="form-group mr-2 mb-2">
+			<div class="form-group me-2 mb-2">
 				<select name="forum" class="form-control">
 					<option value=""><?php echo $this->lang('Tous les forums') ?></option>
 					<?php foreach ($forums as $key => $label): ?>
@@ -15,10 +15,10 @@
 					<?php endforeach ?>
 				</select>
 			</div>
-			<div class="form-group mr-2 mb-2">
+			<div class="form-group me-2 mb-2">
 				<input type="text" name="author" class="form-control" placeholder="<?php echo $this->lang('Auteur') ?>" value="<?php echo htmlspecialchars((string)$author) ?>" />
 			</div>
-			<div class="form-group mr-2 mb-2">
+			<div class="form-group me-2 mb-2">
 				<select name="sort" class="form-control">
 					<option value="relevance"  <?php echo $sort === 'relevance'  ? 'selected' : '' ?>><?php echo $this->lang('Pertinence') ?></option>
 					<option value="date_desc"  <?php echo $sort === 'date_desc'  ? 'selected' : '' ?>><?php echo $this->lang('Date (récent)') ?></option>

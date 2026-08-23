@@ -37,7 +37,7 @@ if (!empty($user_id))
 ?>
 <div class="forum-profile<?php echo $has_extras ? ' forum-profile-has-popover' : '' ?>"
 	<?php if ($has_extras): ?>
-		data-toggle="popover"
+		data-bs-toggle="popover"
 		data-trigger="hover focus"
 		data-placement="right"
 		data-html="true"

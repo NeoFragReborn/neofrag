@@ -14,7 +14,7 @@
 	<?php if ($settings['display_teamname'] == 'oui'): ?>
 		<?php if ($this->config->nf_team_name): ?><h3 class="<?php echo $settings['teamname_align'] ?>"<?php echo $settings['style_title'] ? ' style="color: '.$settings['style_title'].'"' : '' ?>><?php echo $this->config->nf_team_name ?></h3><?php endif ?>
 		<?php if ($settings['display_type'] == 'oui' || $settings['display_date'] == 'oui'): ?>
-		<ul class="list-inline <?php echo $settings['teamname_align'] ? $settings['teamname_align'] : 'text-left' ?>"<?php echo $settings['style_title'] ? ' style="color: '.$settings['style_title'].'"' : '' ?>>
+		<ul class="list-inline <?php echo $settings['teamname_align'] ? $settings['teamname_align'] : 'text-start' ?>"<?php echo $settings['style_title'] ? ' style="color: '.$settings['style_title'].'"' : '' ?>>
 			<?php if ($settings['display_type'] == 'oui' && $this->config->nf_team_type): ?><li class="list-inline-item"><?php echo icon('fas fa-university').' '.$this->config->nf_team_type ?></li><?php endif ?>
 			<?php if ($settings['display_date'] == 'oui' && $this->config->nf_team_creation): ?><li class="list-inline-item"><?php echo icon('fas fa-calendar-alt').' '.timetostr('j M Y', $this->config->nf_team_creation) ?></li><?php endif ?>
 		</ul>

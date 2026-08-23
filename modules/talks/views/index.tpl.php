@@ -35,7 +35,7 @@ foreach ($messages as $i => $message)
 	$avatar = ob_get_clean();
 	ob_start();
 ?>
-	<div class="media-body<?php if ($media == 'right') echo ' text-right' ?>">
+	<div class="media-body<?php if ($media == 'right') echo ' text-end' ?>">
 		<?php
 			if (($this->user() && $this->user->id == $message['user_id']) || $this->access('talks', 'delete', $message['talk_id']))
 			{

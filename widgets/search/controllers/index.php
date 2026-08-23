@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -12,6 +13,8 @@ class Index extends Controller_Widget
 {
 	public function index($settings = [])
 	{
+		$this->css('search')->js('search');
+
 		return $this->view('index', $settings);
 	}
 }

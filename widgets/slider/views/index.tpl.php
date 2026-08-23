@@ -9,11 +9,11 @@ $resolve_image = function($src) {
 	return '/' . ltrim($src, '/');
 };
 ?>
-<div id="<?php echo $slider_uid ?>" class="carousel slide" data-ride="carousel" data-interval="5000">
+<div id="<?php echo $slider_uid ?>" class="carousel slide" data-bs-ride="carousel" data-interval="5000">
 	<?php if (count($slides) > 1): ?>
 		<ol class="carousel-indicators">
 			<?php foreach ($slides as $i => $slide): ?>
-				<li data-target="#<?php echo $slider_uid ?>" data-slide-to="<?php echo $i ?>"<?php echo $i === 0 ? ' class="active"' : '' ?>></li>
+				<li data-bs-target="#<?php echo $slider_uid ?>" data-bs-slide-to="<?php echo $i ?>"<?php echo $i === 0 ? ' class="active"' : '' ?>></li>
 			<?php endforeach ?>
 		</ol>
 	<?php endif ?>
@@ -41,13 +41,13 @@ $resolve_image = function($src) {
 		<?php endforeach ?>
 	</div>
 	<?php if (count($slides) > 1): ?>
-		<a class="carousel-control-prev" href="#<?php echo $slider_uid ?>" role="button" data-slide="prev">
+		<a class="carousel-control-prev" href="#<?php echo $slider_uid ?>" role="button" data-bs-slide="prev">
 			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-			<span class="sr-only"><?php echo $this->lang('Précédent') ?></span>
+			<span class="visually-hidden"><?php echo $this->lang('Précédent') ?></span>
 		</a>
-		<a class="carousel-control-next" href="#<?php echo $slider_uid ?>" role="button" data-slide="next">
+		<a class="carousel-control-next" href="#<?php echo $slider_uid ?>" role="button" data-bs-slide="next">
 			<span class="carousel-control-next-icon" aria-hidden="true"></span>
-			<span class="sr-only"><?php echo $this->lang('Suivant') ?></span>
+			<span class="visually-hidden"><?php echo $this->lang('Suivant') ?></span>
 		</a>
 	<?php endif ?>
 </div>

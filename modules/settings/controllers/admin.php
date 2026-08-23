@@ -66,6 +66,13 @@ class Admin extends Controller_Module
 				'color' => 'danger'
 			],
 			[
+				'title' => $this->lang('Email (SMTP)'),
+				'desc'  => $this->lang('Serveur d\'envoi des emails — auto-détecté, ou SMTP personnalisé'),
+				'icon'  => 'fas fa-envelope',
+				'url'   => 'admin/settings/email',
+				'color' => 'info'
+			],
+			[
 				'title' => $this->lang('Copyright'),
 				'desc'  => $this->lang('Mentions légales, copyright affiché en bas de site'),
 				'icon'  => 'far fa-copyright',
@@ -606,6 +613,87 @@ class Admin extends Controller_Module
 		});
 	}
 
+	public function email()
+	{
+		$this	->subtitle($this->lang('Email (SMTP)'))
+				->icon('fas fa-envelope');
+
+		$this	->form()
+				->add_rules([
+					'smtp_host' => [
+						'label'       => $this->lang('Serveur SMTP'),
+						'description' => $this->lang('Laisser vide : NeoFrag envoie tout seul (mail() ou relais local de l\'hébergeur).'),
+						'value'       => $this->config->nf_smtp_host,
+						'type'        => 'text'
+					],
+					'smtp_port' => [
+						'label' => $this->lang('Port'),
+						'value' => $this->config->nf_smtp_port ?: '',
+						'type'  => 'text'
+					],
+					'smtp_secure' => [
+						'label'  => $this->lang('Sécurité'),
+						'values' => ['' => $this->lang('Aucune'), 'tls' => 'TLS', 'ssl' => 'SSL'],
+						'value'  => $this->config->nf_smtp_secure,
+						'type'   => 'select'
+					],
+					'smtp_username' => [
+						'label' => $this->lang('Utilisateur'),
+						'value' => $this->config->nf_smtp_username,
+						'type'  => 'text'
+					],
+					'smtp_password' => [
+						'label'       => $this->lang('Mot de passe'),
+						'description' => $this->config->nf_smtp_password
+							? $this->lang('Un mot de passe est déjà enregistré (non affiché par sécurité) — laisse vide pour le conserver, ou saisis-en un nouveau.')
+							: $this->lang('Mot de passe du compte SMTP.'),
+						'value'       => '',
+						'type'        => 'password'
+					]
+				])
+				->add_submit($this->lang('Valider'))
+				->display_required(FALSE);
+
+		if ($this->form()->is_valid($post))
+		{
+			// secure : forcer une valeur de la whitelist (un select scalaire n'est pas validé par le form).
+			$secure = in_array($post['smtp_secure'], ['', 'tls', 'ssl'], TRUE) ? $post['smtp_secure'] : '';
+
+			$this	->config('nf_smtp_host',     trim($post['smtp_host']))
+					->config('nf_smtp_port',     (int)$post['smtp_port'], 'int')
+					->config('nf_smtp_secure',   $secure)
+					->config('nf_smtp_username', trim($post['smtp_username']));
+
+			// Mot de passe : ne ré-écrire QUE s'il est renseigné. Le form met les champs vides à NULL (pas ''),
+			// donc on teste avec empty() — sinon un envoi avec le champ vide écraserait le mot de passe par NULL.
+			if (!empty($post['smtp_password']))
+			{
+				$this->config('nf_smtp_password', $this->crypt->encrypt_secret($post['smtp_password']));
+			}
+
+			$this->_audit('email');
+
+			// Garde-fou : un utilisateur SMTP sans mot de passe désactive silencieusement l'authentification.
+			if (trim($post['smtp_username']) !== '' && empty($post['smtp_password']) && !$this->config->nf_smtp_password)
+			{
+				notify($this->lang('Réglages enregistrés — mais le mot de passe SMTP est vide : l\'authentification ne sera pas active.'), 'warning');
+			}
+			else
+			{
+				notify($this->lang('Configuration email enregistrée'));
+			}
+
+			refresh();
+		}
+
+		return $this->_layout(function($col){
+			$col->append($this	->panel()
+								->heading($this->lang('Serveur d\'envoi des emails'), 'fas fa-envelope')
+								->body('<div class="alert alert-info">'.$this->lang('NeoFrag envoie les emails <b>tout seul</b> sur la plupart des hébergements (rien à régler). Renseigne un serveur SMTP <b>uniquement si l\'envoi échoue</b> : celui de ton hébergeur (souvent <code>mail.ton-domaine</code>, port 465/SSL ou 587/TLS) ou un service externe (Brevo, Mailgun…). Teste ensuite un envoi depuis la page <a href="'.url('admin/emails').'">Emails</a>.').'</div>'.$this->form()->display())
+			);
+		});
+	}
+
 	public function maintenance()
 	{
 		$this	->subtitle($this->lang('Maintenance'))
@@ -843,7 +931,7 @@ class Admin extends Controller_Module
 		$copyright_raw = utf8_html_entity_decode($this->config->nf_copyright);
 		if (!in_string('{neofrag}', $copyright_raw))
 		{
-			$copyright_raw .= '<div class="float-right">'.$this->lang('Propulsé par %s', '{neofrag}').'</div>';
+			$copyright_raw .= '<div class="float-end">'.$this->lang('Propulsé par %s', '{neofrag}').'</div>';
 		}
 		$copyright_rendered = preg_replace_callback('/\{('.implode('|', array_keys($keywords)).')\}/i', function($match) use ($keywords){
 			return $keywords[$match[1]];

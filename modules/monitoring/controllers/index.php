@@ -60,6 +60,23 @@ class Index extends Controller_Module
 			}
 		}
 
+		// Newsletter : envoie un lot des campagnes échues (file batchée), borné pour ne pas faire traîner le cron.
+		if ($newsletter = $this->module('newsletter'))
+		{
+			/** @var \NF\Modules\Newsletter\Models\Newsletter $model */
+			$model    = $newsletter->model('newsletter');
+			$r        = $model->process_due();
+			$report[] = 'newsletter: '.(int)$r['sent'].' sent, '.(int)$r['failed'].' failed, '.(int)$r['campaigns'].' done';
+		}
+
+		// Events : rappels aux participants des événements qui débutent bientôt (fenêtre configurable).
+		if ($events = $this->module('events'))
+		{
+			/** @var \NF\Modules\Events\Models\Events $emodel */
+			$emodel   = $events->model('events');
+			$report[] = 'events: '.(int)$emodel->send_due_reminders().' reminded';
+		}
+
 		$this->_respond(200, "OK\n".implode("\n", $report)."\n");
 	}
 

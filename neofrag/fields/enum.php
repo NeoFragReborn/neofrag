@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -15,7 +16,7 @@ class Enum
 		$this->_values = array_map('strval', func_get_args());
 	}
 
-	public function raw($value, $is_nullable)
+	public function raw($value, $is_nullable): ?string
 	{
 		$value = strval($value);
 

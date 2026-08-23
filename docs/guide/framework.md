@@ -15,7 +15,7 @@ $this->config    // configuration du site (nf_name, nf_default_theme…)
 $this->user      // membre courant
 $this->url       // requête / segments / base
 $this->lang(...) // traduction
-$this->load->module('forum');   // un module
+$this->module('forum');         // un module
 NeoFrag()->model2('addon');      // un modèle
 ```
 
@@ -26,13 +26,13 @@ Un module déclare ses routes dans `__info().routes` : `motif => méthode`.
 ```php
 'routes' => [
     ''                 => 'index',   // page d'accueil du module
-    '{url_title}_{id}' => '_show',    // /module/slug_42
+    '{id}/{url_title}' => '_show',    // /module/42/slug
     'admin{pages}'     => 'index',    // admin paginée
 ],
 ```
 
-- Placeholders **fixes** : `{id}` (entier), `{url_title}` (slug). Un placeholder inconnu
-  → 404 silencieux.
+- Placeholders **fixes** : `{id}` (entier), `{key_id}`, `{url_title}` (slug), `{url_title*}`,
+  `{page}` et `{pages}` (pagination). Un placeholder inconnu → 404 silencieux.
 - Cycle : le **checker** (`controllers/checker.php`) valide la route et charge les
   données ; ce qu'il **retourne** devient les arguments de la méthode homonyme du
   **contrôleur** (`controllers/index.php`).
@@ -59,16 +59,25 @@ NeoFrag()->db->where('id', $id)->delete('nf_news');
 ```
 
 Pour les entités gérées (addons, fichiers…), passe par les **modèles** :
-`NeoFrag()->model2('addon')`, `NeoFrag()->model2('file', $id)->delete()`.
+`NeoFrag()->model2('addon')`, `NeoFrag()->model2('file', $id)->delete()`. Pour itérer un ensemble typé
+(p. ex. tous les addons installés), `NeoFrag()->collection('addon')->get()`.
 
-## Formulaires — Form2
+## Formulaires — `form()` & `form2()`
 
-`form2()` construit, valide (CSRF inclus) et traite un formulaire.
+Deux API coexistent — choisis selon le contexte :
+
+- **`form2()`** — fluide, chaque champ est un objet `form_*()`. Idéale pour les formulaires **publics** ou
+  **riches**, et c'est la **seule** qui valide un formulaire de **confirmation seule** (sans champ).
+- **`form()`** — l'API **historique**, employée par les **écrans d'administration** des modules : champs
+  déclarés en tableau via `add_rules([...])`, traitée par `is_valid($post)`, rendue par `->display()`.
+  Exemple complet dans [Créer un module](create-a-module.md) (§7 — l'administration).
+
+`form2()` construit, valide (CSRF inclus) et traite un formulaire :
 
 ```php
 return $this->form2()
-    ->rule($this->form_input('title')->label($this->lang('Titre'))->required())
-    ->rule($this->form_textarea('body')->label($this->lang('Contenu')))
+    ->rule($this->form_text('title')->title($this->lang('Titre'))->required())
+    ->rule($this->form_textarea('body')->title($this->lang('Contenu')))
     ->success(function ($data) {
         NeoFrag()->db->insert('nf_news', $data);
         notify('Enregistré');
@@ -82,7 +91,7 @@ return $this->form2()
 ## Tables — Table2
 
 `table2()` rend des listes paginées, triables et cherchables à partir d'une requête —
-idéal pour les écrans d'administration (voir un module existant qui l'emploie).
+idéal pour les écrans d'administration (ex. la liste des membres, `modules/user/controllers/admin.php`).
 
 ## Traductions
 

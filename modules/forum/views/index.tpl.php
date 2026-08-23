@@ -8,7 +8,7 @@
 				}
 				else if (!empty($image_id) && ($img = NeoFrag()->model2('file', $image_id)->path()))
 				{
-					echo '<img src="'.url($img).'" alt="" class="forum-category-img mr-1" /> ';
+					echo '<img src="'.url($img).'" alt="" class="forum-category-img me-1" /> ';
 				}
 				else
 				{
@@ -16,10 +16,10 @@
 				}
 				echo $title;
 			?></h5></th>
-			<th class="col-2"><h5 class="m-0"><?php echo icon('fas fa-signal') ?><span class="d-none d-sm-inline-block ml-1"><?php echo $this->lang('Statistiques') ?></span></h5></th>
-			<th class="col-3"><h5 class="m-0"><?php echo icon('far fa-comment') ?><span class="d-none d-sm-inline-block ml-1"><?php echo $this->lang('Dernier message') ?></span></h5></th>
+			<th class="col-2"><h5 class="m-0"><?php echo icon('fas fa-signal') ?><span class="d-none d-sm-inline-block ms-1"><?php echo $this->lang('Statistiques') ?></span></h5></th>
+			<th class="col-3"><h5 class="m-0"><?php echo icon('far fa-comment') ?><span class="d-none d-sm-inline-block ms-1"><?php echo $this->lang('Dernier message') ?></span></h5></th>
 			<?php if ($this->url->admin): ?>
-			<th class="col-1 text-right">
+			<th class="col-1 text-end">
 				<?php echo $this->button_access($category_id, 'category') ?>
 				<?php echo $this->button_update('admin/forum/categories/'.$category_id.'/'.url_title($title)) ?>
 				<?php echo $this->button_delete('admin/forum/categories/delete/'.$category_id.'/'.url_title($title)) ?>
@@ -41,7 +41,7 @@
 					echo '<ul class="subforums mb-0 mt-1'.($this->url->admin ? ' list-group' : ' list-inline').'">';
 					foreach ($forum['subforums'] as $subforum):
 						echo '<li'.($this->url->admin ? ' data-forum-id="'.$subforum['forum_id'].'" class="list-group-item p-2"' : ' class="list-inline-item"').'>'.
-								($this->url->admin ? '<div class="float-right">'.$this->button_update('admin/forum/'.$subforum['forum_id'].'/'.url_title($subforum['title'])).' '.$this->button_delete('admin/forum/delete/'.$subforum['forum_id'].'/'.url_title($subforum['title'])).'</div>' : '')
+								($this->url->admin ? '<div class="float-end">'.$this->button_update('admin/forum/'.$subforum['forum_id'].'/'.url_title($subforum['title'])).' '.$this->button_delete('admin/forum/delete/'.$subforum['forum_id'].'/'.url_title($subforum['title'])).'</div>' : '')
 								.($this->url->admin ? icon('fas fa-arrows-alt-v') : $subforum['icon']).' <a href="'.url('forum/'.$subforum['forum_id'].'/'.url_title($subforum['title'])).'">'.$subforum['title'].'</a>'.
 							'</li>';
 					endforeach;
@@ -72,7 +72,7 @@
 				<?php endif; endif ?>
 			</td>
 			<?php if ($this->url->admin): ?>
-			<td class="col-1 text-right">
+			<td class="col-1 text-end">
 				<?php echo $this->button_update('admin/forum/'.$forum['forum_id'].'/'.url_title($forum['title'])) ?>
 				<?php echo $this->button_delete('admin/forum/delete/'.$forum['forum_id'].'/'.url_title($forum['title'])) ?>
 			</td>

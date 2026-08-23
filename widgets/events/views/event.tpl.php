@@ -5,7 +5,7 @@
 	<?php if (!empty($match['opponent']))://Matches ?>
 	<div class="text-center"<?php echo !$description ?: ' style="margin-bottom: 10px;"' ?>>
 		<div class="row no-gutters align-items-center">
-			<div class="text-right col-5">
+			<div class="text-end col-5">
 				<h6 class="m-0">
 					<a href="<?php echo url('events/team/'.$match['team_id'].'/'.$match['team']['name']) ?>">
 					<?php if ($icon = NeoFrag()->model2('file', $match['team']['icon_id'])->path()) echo '<img src="'.NeoFrag()->model2('file', $icon)->path().'" style="margin-right: 10px;" alt="" />' ?>
@@ -23,11 +23,11 @@
 				</div>
 			<?php endif ?>
 			<?php if ($match['opponent']['image_id']): ?>
-			<div class="text-right col-1">
+			<div class="text-end col-1">
 				<img src="<?php echo NeoFrag()->model2('file', $match['opponent']['image_id'])->path() ?>" class="img-fluid" alt="" />
 			</div>
 			<?php endif ?>
-			<div class="text-left col-<?php echo $match['opponent']['image_id'] ? 4 : 5 ?>">
+			<div class="text-start col-<?php echo $match['opponent']['image_id'] ? 4 : 5 ?>">
 				<h6 class="m-0">
 					<?php echo '<a href="'.url('events/'.$event_id.'/'.url_title($title)).'">'.$this->module('events')->model('matches')->display_scores($match['scores'], $color, TRUE).' '.$match['opponent']['title'].'</a>' ?>
 				</h6>
@@ -36,13 +36,13 @@
 	</div>
 	<?php endif ?>
 	<?php if ($description): ?>
-	<div class="text-left">
+	<div class="text-start">
 		<?php echo str_shortener(strip_tags(str_replace('<br />', ' ', bbcode($description))), 150) ?>
 	</div>
 	<?php endif ?>
 </div>
 <div class="card-footer">
-	<div class="float-right">
+	<div class="float-end">
 		<ul class="list-inline m-0">
 			<li class="list-inline-item"><a href="<?php echo $link.'#participants' ?>"><small><?php echo icon('fas fa-users').' '.$participants ?></small></a></li>
 			<?php if (($comments = $this->module('comments')) && $comments->is_enabled()): ?>

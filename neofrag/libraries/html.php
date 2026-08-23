@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -35,7 +36,7 @@ class Html extends Library
 		return $this;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		$tag     = $this->_tag;
 		$attrs   = $this->_attrs;
@@ -49,8 +50,12 @@ class Html extends Library
 			}
 		}
 
+		// Échappe la valeur d'attribut à la frontière de rendu (defense-in-depth) : un `"`
+		// littéral fermerait le `="…"` et permettrait une injection. Quote-only volontairement —
+		// les call-sites qui pré-échappent (Label/form/select via utf8_htmlentities) ne contiennent
+		// plus de `"` littéral, donc aucun double-encodage (`&amp;`/`&quot;` restent intacts).
 		array_walk($attrs, function(&$value, $key){
-			$value = $key.($value !== NULL ? '="'.$value.'"' : '');
+			$value = $key.($value !== NULL ? '="'.str_replace('"', '&quot;', (string) $value).'"' : '');
 		});
 
 		$content = '<'.implode(' ', array_merge([$tag], $attrs)).'>'.($content || $this->_end_tag ? $content.'</'.$tag.'>' : '');
@@ -85,6 +90,28 @@ class Html extends Library
 			$this->_attrs[$name] .= $separator.$value;
 		}
 
+		return $this;
+	}
+
+	/**
+	 * Pose ou complète l'attribut `class` en dédoublonnant les tokens.
+	 * `class('a b')` remplace ; `class('c', TRUE)` (défaut) fusionne avec l'existant.
+	 */
+	public function class($class, $append = TRUE)
+	{
+		$tokens = ($append && !empty($this->_attrs['class']))
+			? explode(' ', (string) $this->_attrs['class'])
+			: [];
+
+		foreach (is_array($class) ? $class : explode(' ', (string) $class) as $token)
+		{
+			if (($token = trim($token)) !== '' && !in_array($token, $tokens, TRUE))
+			{
+				$tokens[] = $token;
+			}
+		}
+
+		$this->_attrs['class'] = implode(' ', $tokens);
 		return $this;
 	}
 

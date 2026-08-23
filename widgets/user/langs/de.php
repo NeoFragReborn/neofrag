@@ -29,4 +29,9 @@ return [
 	'50d4ccb8' => 'Abmelden',
 	'0f9d628a' => 'Mitgliederbereich: Anmeldung, Link zum Profil oder Registrierung.',
 	'eb68e801' => 'Willkommen <a href="',
+	// i18n 2026-06-11 (code strings)
+	'4a253c1f' => 'Vorschau verlassen',
+	'0552e076' => 'Vorschaumodus',
+	'1648d731' => 'Links zu persönlichen Daten sind ausgeblendet, um die Privatsphäre des Zielkontos zu schützen.',
+	'78aeb25c' => 'Moderation',
 ];

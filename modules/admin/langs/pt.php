@@ -68,5 +68,16 @@ return [
 	'f126e15d' => 'rascunho|rascunhos',
 	'f5f82556' => 'Estado do sistema',
 	'f642f974' => 'Visitantes (30d)',
-	'f6a49161' => 'Sem bugs em curso'
+	'f6a49161' => 'Sem bugs em curso',
+	// i18n 2026-06-11 (code strings)
+	'68ac49cb' => 'Chatbox do staff',
+	'b0cbcaf2' => 'Abrir a conversa',
+	'6e7fcb93' => 'Ainda nenhuma mensagem. Sê o primeiro a escrever na chatbox do staff.',
+	'508c13c0' => 'Escrever uma mensagem ao staff…',
+	'0b9cde7d' => 'GD (imagens)',
+	'38792ae1' => 'Zip (marketplace)',
+	'203b22b1' => 'Fileinfo (envio)',
+	'893241bc' => 'cURL (rede)',
+	'3f805424' => 'Presente',
+	'bc645dc3' => 'Ausente',
 ];

@@ -50,17 +50,17 @@
 					<div class="addon-card-title-wrap">
 						<span class="badge badge-<?php echo $type_color ?>"><?php echo $type_label ?></span>
 						<?php if ($is_enabled): ?>
-						<span class="badge badge-success"><span class="dot"></span> <?php echo $this->lang('Actif') ?></span>
+						<span class="badge text-bg-success"><span class="dot"></span> <?php echo $this->lang('Actif') ?></span>
 						<?php else: ?>
-						<span class="badge badge-secondary"><span class="dot"></span> <?php echo $this->lang('Inactif') ?></span>
+						<span class="badge text-bg-secondary"><span class="dot"></span> <?php echo $this->lang('Inactif') ?></span>
 						<?php endif ?>
 					</div>
 					<div class="dropdown addon-card-actions">
-						<a href="#" class="addon-card-action-btn" data-toggle="dropdown" aria-label="<?php echo $this->lang('Actions') ?>"><i class="fas fa-ellipsis-h"></i></a>
-						<div class="dropdown-menu dropdown-menu-right">
+						<a href="#" class="addon-card-action-btn" data-bs-toggle="dropdown" aria-label="<?php echo $this->lang('Actions') ?>"><i class="fas fa-ellipsis-h"></i></a>
+						<div class="dropdown-menu dropdown-menu-end">
 							<?php foreach ($addon->addon()->__actions as $name => $action): ?>
 								<?php if (list($title2, $iconA, $colorA, $modal) = $action): ?>
-									<?php $url = url('admin/addons/'.$name.'/'.$addon->url()) ?>
+									<?php $url = url('admin/addons/'.$name.'/'.$addon->url()).(in_array($name, ['enable', 'disable', 'order', 'reset', 'delete'], TRUE) ? '?_='.$csrf : '') ?>
 									<a class="dropdown-item" <?php echo $modal ? 'href="#" data-modal-ajax="'.$url.'"' : 'href="'.$url.'"' ?>>
 										<i class="<?php echo $iconA ?> text-<?php echo $colorA ?>"></i> <?php echo $title2 ?>
 									</a>

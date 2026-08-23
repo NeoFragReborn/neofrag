@@ -1,25 +1,96 @@
-.nf-reaction-btn {
+/* Réactions multi-emoji (façon Discord/Facebook) : bouton principal + picker au survol + résumé.
+   Couleurs via tokens du thème (--dungeon-* puis --nf-*, fallbacks neutres). */
+.nf-reactions {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	vertical-align: middle;
+}
+.nf-reactions.nf-reaction-loading { opacity: .55; pointer-events: none; }
+
+.nf-reaction-control {
+	position: relative;
+	display: inline-flex;
+}
+
+.nf-reaction-main {
 	display: inline-flex;
 	align-items: center;
 	gap: 5px;
 	border: 1px solid var(--dungeon-border, var(--nf-border, #ccc));
 	background: transparent;
-	color: var(--dungeon-muted, var(--nf-muted, #777));
 	border-radius: 999px;
-	padding: 2px 12px;
-	font-size: 13px;
-	line-height: 1.6;
+	padding: 2px 10px;
+	font-size: 15px;
+	line-height: 1.5;
 	cursor: pointer;
-	transition: color .15s, border-color .15s, background .15s;
+	transition: border-color .15s, background .15s, transform .1s;
 }
-.nf-reaction-btn:hover:not([disabled]) {
-	color: var(--dungeon-danger, var(--nf-danger, #e0245e));
-	border-color: var(--dungeon-danger, var(--nf-danger, #e0245e));
+.nf-reaction-main:hover:not([disabled]) {
+	border-color: var(--dungeon-accent, var(--nf-accent, #6c5ce7));
+	background: color-mix(in srgb, var(--dungeon-accent, #6c5ce7) 10%, transparent);
 }
-.nf-reaction-btn.reacted {
-	color: var(--dungeon-danger, var(--nf-danger, #e0245e));
-	border-color: var(--dungeon-danger, var(--nf-danger, #e0245e));
-	background: color-mix(in srgb, var(--dungeon-danger, #e0245e) 10%, transparent);
+.nf-reaction-main.reacted {
+	border-color: var(--dungeon-accent, var(--nf-accent, #6c5ce7));
+	background: color-mix(in srgb, var(--dungeon-accent, #6c5ce7) 14%, transparent);
 }
-.nf-reaction-btn[disabled] { cursor: default; opacity: .65; }
-.nf-reaction-btn.nf-reaction-loading { opacity: .5; pointer-events: none; }
+.nf-reaction-main[disabled] { cursor: default; opacity: .65; }
+.nf-reaction-emoji { font-size: 16px; line-height: 1; }
+
+/* Picker : caché par défaut, affiché au survol du contrôle (desktop) ou via .open (tactile). */
+.nf-reaction-picker {
+	position: absolute;
+	bottom: calc(100% + 6px);
+	left: 0;
+	display: flex;
+	gap: 2px;
+	padding: 4px 6px;
+	background: var(--dungeon-surface, var(--nf-surface, #fff));
+	border: 1px solid var(--dungeon-border, var(--nf-border, rgba(0,0,0,.15)));
+	border-radius: 999px;
+	box-shadow: 0 4px 14px rgba(0,0,0,.18);
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(4px) scale(.96);
+	transform-origin: bottom left;
+	transition: opacity .12s, transform .12s, visibility .12s;
+	z-index: 60;
+}
+.nf-reaction-control:hover .nf-reaction-picker,
+.nf-reactions.open .nf-reaction-picker {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0) scale(1);
+}
+
+.nf-reaction-pick {
+	border: 0;
+	background: transparent;
+	cursor: pointer;
+	font-size: 20px;
+	line-height: 1;
+	padding: 3px;
+	border-radius: 50%;
+	transition: transform .1s, background .1s;
+}
+.nf-reaction-pick:hover { transform: scale(1.35) translateY(-2px); }
+.nf-reaction-pick.picked { background: color-mix(in srgb, var(--dungeon-accent, #6c5ce7) 22%, transparent); }
+
+/* Résumé : pills emoji + compte. */
+.nf-reaction-summary {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	align-items: center;
+}
+.nf-reaction-tally {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	font-size: 12px;
+	line-height: 1.4;
+	padding: 1px 7px;
+	border-radius: 999px;
+	background: var(--dungeon-surface-2, var(--nf-surface-2, rgba(0,0,0,.05)));
+	color: var(--dungeon-muted, var(--nf-muted, #777));
+}

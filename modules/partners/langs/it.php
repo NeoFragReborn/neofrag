@@ -40,4 +40,6 @@ return [
 	'f11bfc56' => 'Per essere visualizzato su uno sfondo scuro <i>(a seconda del tema utilizzato)</i>',
 	'e230fd60' => 'Per essere visualizzato su uno sfondo chiaro <i>(a seconda del tema utilizzato)</i>',
 	'be53bc1a' => 'Indica il codice promozionale che i tuoi utenti possono utilizzare per beneficiare di promozioni grazie al tuo partner',
+	// i18n 2026-06-11 (code strings)
+	'39e91bd5' => 'partner|partner',
 ];

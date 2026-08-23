@@ -1,0 +1,27 @@
+<?php
+
+return [
+	'60fa2d8b' => 'Webhooks',
+	'e0aefed7' => 'Kein Webhook. Füge einen hinzu, um einen externen Dienst zu benachrichtigen (Discord, Zapier…).',
+	'41810f47' => 'Ereignis|Ereignisse',
+	'1d3a2b86' => 'Diesen Webhook löschen?',
+	'0d42c963' => 'Neuer Webhook',
+	'7c64bf57' => 'Ausgehende Webhooks',
+	'dc0a7793' => 'Webhook|Webhooks',
+	'469c4dd2' => 'Webhook gelöscht.',
+	'43a0c8f1' => 'Ziel-URL',
+	'881c4ccc' => 'Secret (HMAC-Signatur, optional)',
+	'ec7da682' => 'Auslösende Ereignisse',
+	'533563a7' => 'Aktivierung',
+	'cb2f349a' => 'Webhook aktiv',
+	'1cdc2004' => 'Webhook erstellt.',
+	'6ee050af' => 'Webhook aktualisiert.',
+	'06ce17b3' => 'Webhook bearbeiten',
+	'f28f0121' => 'Benachrichtigt externe Dienste (Discord, Zapier…) per signiertem Webhook bei jedem Ereignis.',
+	'283dfe30' => 'Webhooks verwalten',
+	'fbfc5373' => 'Testen',
+	'4ad1bd6e' => 'Test an %s gesendet — HTTP-Antwort %s.',
+	'749713ce' => 'Test fehlgeschlagen: %s',
+	'16922d8f' => 'Nicht öffentlicher Host (durch SSRF-Schutz blockiert).',
+	'f9289163' => 'Ungültige URL oder cURL nicht verfügbar.',
+];

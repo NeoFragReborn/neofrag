@@ -1,6 +1,12 @@
 <div class="widget-discord">
 	<div class="widget-discord-header">
-		<div class="widget-discord-icon"><i class="fab fa-discord"></i></div>
+		<div class="widget-discord-icon">
+			<?php if (!empty($icon_url)): ?>
+				<img src="<?php echo htmlspecialchars($icon_url) ?>" alt="" class="widget-discord-server-icon" loading="lazy" />
+			<?php else: ?>
+				<i class="fab fa-discord"></i>
+			<?php endif ?>
+		</div>
 		<div class="widget-discord-meta">
 			<div class="widget-discord-name"><?php echo htmlspecialchars($name) ?></div>
 			<div class="widget-discord-status">
@@ -54,7 +60,7 @@
 	<a href="<?php echo htmlspecialchars($instant_invite) ?>" target="_blank" rel="noopener" class="widget-discord-cta">
 		<i class="fab fa-discord"></i>
 		<span><?php echo $this->lang('Rejoindre le serveur') ?></span>
-		<i class="fas fa-external-link-alt ml-auto"></i>
+		<i class="fas fa-external-link-alt ms-auto"></i>
 	</a>
 	<?php endif ?>
 </div>

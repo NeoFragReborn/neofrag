@@ -32,4 +32,13 @@ return [
 	'e1b5ca71' => 'Páginas',
 	'52c9bbab' => 'Modificar',
 	'8d9ef7a4' => 'Eliminar',
+	// i18n 2026-06-11 (code strings)
+	'fffae9b2' => 'Bloques de módulo inyectables — pega el código en el contenido:',
+	'a858201f' => 'Páginas disponibles',
+	'bd0ae7ae' => 'Ninguna página publicada por el momento.',
+	'0b2225c8' => 'Plantilla',
+	'3346e037' => 'Normal (con marco)',
+	'f2100516' => 'Página desnuda (ancho completo)',
+	'78b7cadc' => '«Página desnuda» muestra el contenido sin marco ni título, ideal para una página compuesta de bloques.',
+	'42bd0172' => 'Una fecha futura programa la publicación: la página permanece oculta públicamente hasta esa fecha (si está publicada). Vacío = inmediato.',
 ];

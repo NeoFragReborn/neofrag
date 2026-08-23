@@ -21,7 +21,9 @@ class Admin_Ajax_Checker extends Module_Checker
 
 	public function backup()
 	{
-		$this->extension('json');
+		// Pas d'extension .json sur l'URL : le backup streame du text/event-stream (pas du JSON), et
+		// surtout l'URL en .json se faisait avaler par nginx/Plesk (« smart static ») → 404 côté prod.
+		// On route donc comme /…/phpinfo (sans extension) ; le contrôleur backup() pose ses propres headers.
 		return [];
 	}
 

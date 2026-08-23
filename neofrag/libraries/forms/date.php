@@ -40,11 +40,27 @@ class Date extends Text
 		};
 
 		$this->_template[] = function(&$input){
-			$this	->css('bootstrap-datetimepicker.min')
-					->js('bootstrap-datetimepicker/moment.min')
-					->js('bootstrap-datetimepicker/bootstrap-datetimepicker.min')
-					->js('bootstrap-datetimepicker/locales/'.$this->config->lang->info()->name)
-					->js_load('$(".input-group.'.$this->_datetime_type.'").datetimepicker({allowInputToggle: true, locale: "'.$this->config->lang->info()->name.'", format: "'.$this->_datetime_format.'"});');
+			$lang    = $this->config->lang->info()->name;
+			$formats = $this->config->lang->date();
+			// Les formats lang->date() sont en tokens PHP date() (d/m/Y, H:i) = identiques à flatpickr,
+			// donc on garde la validation date2sql/regexp inchangée (display = ce que date2sql attend).
+			$format  = $this->_datetime_type === 'datetime' ? $formats['short_date_time']
+					 : ($this->_datetime_type === 'time'     ? $formats['short_time'] : $formats['short_date']);
+
+			$this->css('flatpickr.min')
+				 ->js('flatpickr.min');
+
+			if ($lang !== 'en')
+			{
+				NeoFrag()->js('flatpickr/l10n/'.$lang);
+			}
+
+			NeoFrag()->js_load('flatpickr(".input-group.'.$this->_datetime_type.' input", {'
+				.'dateFormat: "'.$format.'", '
+				.($lang !== 'en' ? 'locale: "'.$lang.'", ' : '')
+				.'enableTime: '.($this->_datetime_type !== 'date' ? 'true' : 'false').', '
+				.'noCalendar: '.($this->_datetime_type === 'time' ? 'true' : 'false').', '
+				.'time_24hr: true, allowInput: true});');
 
 			$input->append_attr('class', $this->_datetime_type);
 		};

@@ -21,7 +21,6 @@ class Index extends Controller_Module
 					->css('maintenance')
 					->exec_if($this->config->nf_maintenance_opening, function(){
 						$this	->css('jquery.countdown')
-								->js('jquery.countdown')
 								->js('maintenance');
 					})
 					->view('maintenance');

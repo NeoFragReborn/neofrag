@@ -12,13 +12,7 @@ class Zone extends Displayable
 {
 	public function display($disposition)
 	{
-		$output = unserialize($disposition['disposition'], ['allowed_classes' => [
-			\NF\NeoFrag\Libraries\Array_::class,
-			\NF\NeoFrag\Displayables\Row::class,
-			\NF\NeoFrag\Displayables\Col::class,
-			\NF\NeoFrag\Displayables\Widget::class,
-			\NF\NeoFrag\Displayables\Zone::class
-		]]);
+		$output = NeoFrag()->disposition->decode($disposition['disposition']);
 
 		if ($live_editor = NeoFrag()->output->live_editor())
 		{

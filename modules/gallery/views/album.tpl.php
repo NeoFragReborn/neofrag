@@ -5,7 +5,7 @@
 <?php endif ?>
 <div class="card-body">
 	<h5 class="card-title mb-0"><?php echo $title ?></h5>
-	<p><a href="<?php echo url('gallery/'.$category_id.'/'.$category_name) ?>" class="badge badge-dark"><?php echo $category_title ?></a></p>
+	<p><a href="<?php echo url('gallery/'.$category_id.'/'.$category_name) ?>" class="badge text-bg-dark"><?php echo $category_title ?></a></p>
 	<?php if ($description): ?>
 		<p><?php echo bbcode($description) ?></p>
 	<?php endif ?>

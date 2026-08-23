@@ -26,6 +26,46 @@ namespace NF\NeoFrag\Traits;
 trait Admin_Helpers
 {
 	/**
+	 * Jeton CSRF de session pour les actions MUTANTES déclenchées par lien GET
+	 * (delete / toggle / close / restore…). SameSite=Lax n'arrête pas une navigation
+	 * top-level : sans jeton, un simple lien piégé suffit à déclencher l'action sur
+	 * un admin connecté. Pour les formulaires, préférer form2/confirm_deletion()
+	 * qui portent déjà leur propre jeton.
+	 */
+	protected function csrf_token()
+	{
+		$tokens = (array)$this->session('csrf');
+
+		if (empty($tokens['admin']))
+		{
+			$this->session->set('csrf', 'admin', $tokens['admin'] = bin2hex(random_bytes(16)));
+		}
+
+		return $tokens['admin'];
+	}
+
+	/** URL d'action mutante : url() + jeton CSRF en query (?_=token). */
+	protected function csrf_url($url)
+	{
+		return \url($url).'?_='.$this->csrf_token();
+	}
+
+	/**
+	 * Rejette la requête si le jeton CSRF (param `_`, GET ou POST) est absent/invalide,
+	 * avec redirection vers $redirect. À appeler en TÊTE de toute action mutante.
+	 */
+	protected function check_csrf($redirect)
+	{
+		$token = $_GET['_'] ?? $_POST['_'] ?? NULL;
+
+		if (!is_string($token) || !hash_equals($this->csrf_token(), $token))
+		{
+			notify($this->lang('Action non autorisée (jeton de sécurité invalide).'), 'danger');
+			redirect($redirect);
+		}
+	}
+
+	/**
 	 * Bouton retour standardisé (.settings-section-back du theme admin).
 	 *
 	 * @param string $url    URL relative (sera passée à url())
@@ -189,6 +229,34 @@ trait Admin_Helpers
 		}
 
 		$html .= '</div>';
+
+		return $html;
+	}
+
+	/**
+	 * Sélecteurs de tri (colonne + sens) pour une grille admin, à insérer dans un <form method="get">
+	 * de toolbar. Le tri s'applique à la soumission du form (bouton « Filtrer »), exactement comme les
+	 * autres filtres ; il est calculé côté checker via sort_items() (allowlist). Ici on ne fait que l'UI.
+	 *
+	 * @param array $cols  ['cle' => 'Libellé'] — mêmes clés que l'allowlist passée à sort_items().
+	 * @param array $state ['key' => , 'dir' => ] retourné par sort_items().
+	 */
+	protected function sort_select(array $cols, array $state)
+	{
+		$html = '<label class="text-muted" style="font-size:12px;display:flex;align-items:center;gap:6px;margin:0;">'
+			.'<i class="fas fa-sort"></i> '.$this->lang('Trier').'</label>';
+
+		$html .= '<select name="sort" class="form-control form-control-sm" style="width:auto;">';
+		foreach ($cols as $key => $label)
+		{
+			$html .= '<option value="'.htmlspecialchars((string)$key).'"'.(($state['key'] ?? '') === $key ? ' selected' : '').'>'.htmlspecialchars((string)$label).'</option>';
+		}
+		$html .= '</select>';
+
+		$html .= '<select name="order" class="form-control form-control-sm" style="width:auto;">';
+		$html .= '<option value="desc"'.(($state['dir'] ?? '') === 'desc' ? ' selected' : '').'>'.$this->lang('Décroissant').'</option>';
+		$html .= '<option value="asc"'.(($state['dir'] ?? '') === 'asc' ? ' selected' : '').'>'.$this->lang('Croissant').'</option>';
+		$html .= '</select>';
 
 		return $html;
 	}

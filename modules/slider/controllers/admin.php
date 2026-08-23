@@ -18,7 +18,7 @@ class Admin extends Controller_Module
 
 		$slides = $this->model()->get_slides(FALSE);
 
-		return $this->view('admin/index', ['slides' => $slides]);
+		return $this->view('admin/index', ['slides' => $slides, 'csrf' => $this->csrf_token()]);
 	}
 
 	public function _add()
@@ -132,6 +132,8 @@ class Admin extends Controller_Module
 
 	public function _delete($id)
 	{
+		$this->check_csrf('admin/slider');
+
 		$slide = $this->model()->get_slide((int)$id);
 		if (!$slide)
 		{
@@ -146,6 +148,8 @@ class Admin extends Controller_Module
 
 	public function _toggle($id)
 	{
+		$this->check_csrf('admin/slider');
+
 		$slide = $this->model()->get_slide((int)$id);
 		if (!$slide)
 		{

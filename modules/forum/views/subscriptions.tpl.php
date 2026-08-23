@@ -2,8 +2,8 @@
 	<thead class="forum-heading">
 		<tr>
 			<th class="col-6"><h5 class="m-0"><?php echo icon('fas fa-bell').' '.$this->lang('Sujets suivis') ?></h5></th>
-			<th class="col-2"><h5 class="m-0"><?php echo icon('fas fa-folder') ?><span class="d-none d-sm-inline-block ml-1"><?php echo $this->lang('Forum') ?></span></h5></th>
-			<th class="col-2"><h5 class="m-0"><?php echo icon('far fa-comment') ?><span class="d-none d-sm-inline-block ml-1"><?php echo $this->lang('Dernier message') ?></span></h5></th>
+			<th class="col-2"><h5 class="m-0"><?php echo icon('fas fa-folder') ?><span class="d-none d-sm-inline-block ms-1"><?php echo $this->lang('Forum') ?></span></h5></th>
+			<th class="col-2"><h5 class="m-0"><?php echo icon('far fa-comment') ?><span class="d-none d-sm-inline-block ms-1"><?php echo $this->lang('Dernier message') ?></span></h5></th>
 			<th class="col-2 text-center"><h5 class="m-0"><?php echo $this->lang('Action') ?></h5></th>
 		</tr>
 	</thead>
@@ -27,7 +27,7 @@
 				<?php endif ?>
 			</td>
 			<td class="col-2 text-center">
-				<a class="btn btn-outline-danger btn-sm" href="<?php echo url('forum/topic/unsubscribe/'.$sub['topic_id'].'/'.url_title($sub['title'])) ?>" data-toggle="tooltip" title="<?php echo $this->lang('Se désabonner') ?>"><?php echo icon('fas fa-bell-slash') ?></a>
+				<a class="btn btn-outline-danger btn-sm" href="<?php echo url('forum/topic/unsubscribe/'.$sub['topic_id'].'/'.url_title($sub['title'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Se désabonner') ?>"><?php echo icon('fas fa-bell-slash') ?></a>
 			</td>
 		</tr>
 		<?php endforeach ?>

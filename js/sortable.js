@@ -1,25 +1,36 @@
-$(function(){
-	var sortable = function(){
-		$('.btn-sortable').each(function(){
-			var $btn = $(this);
-			$btn.parents($btn.data('parent')+':first').sortable({
-				axis: 'y',
-				cursor: 'move',
-				intersect: 'pointer',
-				items: $btn.data('items'),
-				opacity: 0.6,
-				revert: true,
-				update: function(event, ui){
-					$.post($btn.data('update'), {
-						id: $(ui.item).find('.btn-sortable:first').data('id'),
-						position: $(this).find($btn.data('items')).index(ui.item)
+// Tri générique des listes via SortableJS (remplace jQuery UI sortable). Chaque `.btn-sortable` est la
+// poignée de glissement de son item ; le conteneur est `data-parent`, les items `data-items`, et l'ordre
+// est POSTé sur `data-update`.
+(function(){
+	function sortable(){
+		document.querySelectorAll('.btn-sortable').forEach(function(btn){
+			var container = btn.closest(btn.dataset.parent);
+			if (!container || container._nfSortable){ return; }
+			container._nfSortable = true;
+
+			new Sortable(container, {
+				draggable: String(btn.dataset.items).replace(/^\s*>\s*/, ''),
+				handle: '.btn-sortable',
+				animation: 150,
+				onEnd: function(evt){
+					var handle = evt.item.querySelector('.btn-sortable');
+					fetch(btn.dataset.update, {
+						method: 'POST',
+						headers: {'X-Requested-With': 'XMLHttpRequest'},
+						body: new URLSearchParams({
+							id: handle ? handle.dataset.id : '',
+							position: evt.newIndex
+						})
 					});
 				}
 			});
 		});
-	};
+	}
 
-	$('body').on('nf.load', sortable);
+	function init(){
+		document.body.addEventListener('nf.load', sortable);
+		sortable();
+	}
 
-	sortable();
-});
+	if (document.readyState !== 'loading'){ init(); } else { document.addEventListener('DOMContentLoaded', init); }
+})();

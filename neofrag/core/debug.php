@@ -150,7 +150,7 @@ class Debug extends Core
 
 			foreach ($this->_timeline as $time)
 			{
-				$class = 'float-left';
+				$class = 'float-start';
 
 				if (preg_match('/class="(.*?)"/', $time[0], $match))
 				{
@@ -160,7 +160,7 @@ class Debug extends Core
 				$output .= '	<tr>
 									<td class="col-1">'.$time[0].'</td>
 									<td>
-										<div class="float-left" style="height: 25px; width: '.str_replace(',', '.', floor(($time[1] - $this->_timeline[0][1]) * 100 / $total)).'%;"></div>
+										<div class="float-start" style="height: 25px; width: '.str_replace(',', '.', floor(($time[1] - $this->_timeline[0][1]) * 100 / $total)).'%;"></div>
 										<div class="'.$class.'" style="height: 25px; display: block; padding: 0; width: '.str_replace(',', '.', max(1, floor(($time[2] - $time[1]) * 100 / $total))).'%;"></div>
 									</td>
 								</tr>';
@@ -238,36 +238,36 @@ class Debug extends Core
 								if ($type == "info")
 								{
 									$class_type = $type;
-									$type = '<span class="badge badge-success">Info</span>';
+									$type = '<span class="badge text-bg-success">Info</span>';
 								}
 								else if ($type == "warning")
 								{
 									$class_type = $type;
-									$type = '<span class="badge badge-warning">Warning</span>';
+									$type = '<span class="badge text-bg-warning">Warning</span>';
 									$warning++;
 								}
 								else if ($type == "error")
 								{
 									$class_type = $type;
-									$type = '<span class="badge badge-danger">Error</span>';
+									$type = '<span class="badge text-bg-danger">Error</span>';
 									$error++;
 								}
 								else if ($type == "notice")
 								{
 									$class_type = $type;
-									$type = '<span class="badge badge-info">Notice</span>';
+									$type = '<span class="badge text-bg-info">Notice</span>';
 									$notice++;
 								}
 								else if ($type == "deprecated")
 								{
 									$class_type = $type;
-									$type = '<span class="badge badge-warning">Deprecated</span>';
+									$type = '<span class="badge text-bg-warning">Deprecated</span>';
 									$deprecated++;
 								}
 								else if ($type == "strict")
 								{
 									$class_type = $type;
-									$type = '<span class="badge badge-secondary">Strict</span>';
+									$type = '<span class="badge text-bg-secondary">Strict</span>';
 									$strict++;
 								}
 
@@ -277,9 +277,9 @@ class Debug extends Core
 									$result .= '	<tr class="row-'.$class_type.'">';
 								}
 								
-								$result .= '		<td class="col-3"><b>'.($i + 1).'</b><div class="float-right">'.$type.'</div></td>
+								$result .= '		<td class="col-3"><b>'.($i + 1).'</b><div class="float-end">'.$type.'</div></td>
 													<td class="col-6">'.utf8_htmlentities($text).'</td>
-													<td class="col-3 text-right">'.$file.' <code>'.$line.'</code></td>
+													<td class="col-3 text-end">'.$file.' <code>'.$line.'</code></td>
 												</tr>';	
 							
 							}
@@ -288,23 +288,23 @@ class Debug extends Core
 
 							if ($error)
 							{
-								$label = '<span class="badge badge-danger">'.$error.'</span>';
+								$label = '<span class="badge text-bg-danger">'.$error.'</span>';
 							}
 							else if ($warning)
 							{
-								$label = '<span class="badge badge-warning">'.$warning.'</span>';
+								$label = '<span class="badge text-bg-warning">'.$warning.'</span>';
 							}
 							else if ($strict)
 							{
-								$label = '<span class="badge badge-secondary">'.$strict.'</span>';
+								$label = '<span class="badge text-bg-secondary">'.$strict.'</span>';
 							}
 							else if ($notice)
 							{
-								$label = '<span class="badge badge-info">'.$notice.'</span>';
+								$label = '<span class="badge text-bg-info">'.$notice.'</span>';
 							}
 							else if ($deprecated)
 							{
-								$label = '<span class="badge badge-warning">'.$deprecated.'</span>';
+								$label = '<span class="badge text-bg-warning">'.$deprecated.'</span>';
 							}
 
 							return $result;

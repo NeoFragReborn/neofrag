@@ -94,7 +94,7 @@ table.table-access td.no-padding {
 	border: 1px solid var(--nf-border, #dee2e6);
 	border-radius: 4px;
 	overflow: hidden;
-	background: #fff;
+	background: var(--nf-surface, #fff);
 }
 
 .matrix-radio {

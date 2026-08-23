@@ -92,6 +92,13 @@ class Checker extends Module_Checker
 
 		if (($token = $this->model2('token', $token)) && $token())
 		{
+			// Un lien de reset / validation n'est valable qu'une heure.
+			if ($token->date && $token->date->timestamp() < time() - 3600)
+			{
+				$token->delete();
+				return;
+			}
+
 			return [$token];
 		}
 	}
@@ -109,6 +116,29 @@ class Checker extends Module_Checker
 		$this->error->unconnected();
 
 		return [$this->collection('auth')->where('_.user_id', $this->user->id)->order_by('_.id')->paginate($page)];
+	}
+
+	// Pendants non-AJAX de Ajax_Checker::login() / ::register(). On redirige au lieu d'`error_if`
+	// (comme logout ci-dessous) : ces URLs sont atteintes depuis un lien d'en-tête, une page
+	// d'erreur pour un visiteur déjà connecté ou une inscription fermée serait un faux négatif.
+	public function login()
+	{
+		if ($this->user())
+		{
+			redirect();
+		}
+
+		return [];
+	}
+
+	public function registration()
+	{
+		if ($this->user() || !$this->config->nf_registration_status)
+		{
+			redirect();
+		}
+
+		return [];
 	}
 
 	public function logout()

@@ -1,44 +1,56 @@
-$(function(){
-	$modal = $('#c2dac90bb0731401a293d27ee036757a');
+NF.ready(function(){
+	var modal = document.getElementById('c2dac90bb0731401a293d27ee036757a');
+	if (!modal){ return; }
 
-	$modal.find('.accordion .list-group-item input[name="select-all"]').click(function(){
-		var checked = this.checked || this.indeterminate;
-		$(this).parents('.list-group-item:first').find('.collapse input[type="checkbox"]').filter(function(){
-			return checked != this.checked;
-		}).trigger('click');
+	// Case « tout sélectionner » d'un groupe : (dé)coche tous les enfants qui diffèrent de l'état cible,
+	// via un vrai click (pour déclencher leur propre handler de synchronisation ci-dessous).
+	modal.addEventListener('click', function(e){
+		var selectAll = e.target.closest('.accordion .list-group-item input[name="select-all"]');
+		if (!selectAll){ return; }
+
+		var checked = selectAll.checked || selectAll.indeterminate;
+		var group   = selectAll.closest('.list-group-item');
+		if (!group){ return; }
+
+		group.querySelectorAll('.collapse input[type="checkbox"]').forEach(function(cb){
+			if (checked !== cb.checked){ cb.click(); }
+		});
 	});
 
-	$modal.find('.collapse input[type="checkbox"]').click(function(){
-		var $checkbox = $(this);
+	// Case d'un participant : synchronise les doublons (même valeur dans plusieurs groupes) et recalcule
+	// l'état (coché / indéterminé) de la case « tout sélectionner » du groupe.
+	modal.addEventListener('click', function(e){
+		var checkbox = e.target.closest('.collapse input[type="checkbox"]');
+		if (!checkbox){ return; }
 
-		$modal.find('.collapse input[type="checkbox"][value="'+$checkbox.val()+'"]').each(function(){
-			if (this != $checkbox[0]){
-				$(this).prop('checked', $checkbox[0].checked);
+		modal.querySelectorAll('.collapse input[type="checkbox"][value="' + checkbox.value + '"]').forEach(function(cb){
+			if (cb !== checkbox){
+				cb.checked = checkbox.checked;
 			}
 
-			var checked = total = 0;
+			var group = cb.closest('.list-group-item');
+			if (!group){ return; }
 
-			$(this).parents('.list-group-item:first').find('.collapse input[type="checkbox"]').each(function(){
-				total ++;
-
-				if (this.checked){
-					checked++;
-				}
+			var checked = 0, total = 0;
+			group.querySelectorAll('.collapse input[type="checkbox"]').forEach(function(c){
+				total++;
+				if (c.checked){ checked++; }
 			});
 
-			var $title_checkbox = $(this).parents('.list-group-item:first').find('.list-group-item input[name="select-all"]');
+			var title = group.querySelector('.list-group-item input[name="select-all"]');
+			if (!title){ return; }
 
 			if (!checked){
-				$title_checkbox.prop('checked', false);
-				$title_checkbox.prop('indeterminate', false);
+				title.checked = false;
+				title.indeterminate = false;
 			}
-			else if (checked == total){
-				$title_checkbox.prop('checked', true);
-				$title_checkbox.prop('indeterminate', false);
+			else if (checked === total){
+				title.checked = true;
+				title.indeterminate = false;
 			}
-			else{
-				$title_checkbox.prop('checked', false);
-				$title_checkbox.prop('indeterminate', true);
+			else {
+				title.checked = false;
+				title.indeterminate = true;
 			}
 		});
 	});

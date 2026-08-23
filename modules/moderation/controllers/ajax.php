@@ -261,7 +261,9 @@ class Ajax extends Controller_Module
 		foreach ($rows as $r)
 		{
 			$size_kb = $r['file_size'] ? round($r['file_size'] / 1024, 1).' KB' : '?';
-			$out .= '- '.($r['name'] ?? 'unknown').' ('.$r['mime_type'].', '.$size_kb.', file_id='.$r['file_id'].', path='.($r['path'] ?? 'N/A').")\n";
+			// Le nom de fichier vient du CLIENT (nf_file.name, stocké brut) : échappé ici car
+			// le snapshot est rendu en HTML dans le panneau de modération (XSS stocké sinon).
+			$out .= '- '.htmlspecialchars($r['name'] ?? 'unknown', ENT_QUOTES).' ('.$r['mime_type'].', '.$size_kb.', file_id='.$r['file_id'].', path='.htmlspecialchars($r['path'] ?? 'N/A', ENT_QUOTES).")\n";
 		}
 		return $out;
 	}

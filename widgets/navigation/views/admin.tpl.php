@@ -18,10 +18,10 @@ $current_menu = isset($menu) ? $menu : '';
 	</div>
 </div>
 <?php endif ?>
-<a id="link-delete" class="btn btn-outline-danger float-right" href="#" data-toggle="popover" title="<?php echo $this->lang('Supprimer un lien') ?>" data-content="<?php echo $this->lang('Déplacez un lien ici pour le supprimer') ?>" data-placement="top"><?php echo icon('far fa-trash-alt').$this->lang('Supprimer') ?></a>
+<a id="link-delete" class="btn btn-outline-danger float-end" href="#" data-bs-toggle="popover" title="<?php echo $this->lang('Supprimer un lien') ?>" data-content="<?php echo $this->lang('Déplacez un lien ici pour le supprimer') ?>" data-placement="top"><?php echo icon('far fa-trash-alt').$this->lang('Supprimer') ?></a>
 <ul class="nav nav-pills" id="pills-tab" role="tablist">
-	<li class="nav-item"><a class="nav-link active" id="pills-links-tab" data-toggle="pill" href="#pills-links" role="tab" aria-controls="pills-links" aria-selected="true"><?php echo icon('fas fa-cogs').' Liens' ?></a></li>
-	<li class="nav-item"><a class="nav-link" id="pills-add-tab" data-toggle="pill" href="#pills-add" role="tab" aria-controls="pills-add" aria-selected="false"><?php echo icon('fas fa-plus').' Ajouter' ?></a></li>
+	<li class="nav-item"><a class="nav-link active" id="pills-links-tab" data-bs-toggle="pill" href="#pills-links" role="tab" aria-controls="pills-links" aria-selected="true"><?php echo icon('fas fa-cogs').' Liens' ?></a></li>
+	<li class="nav-item"><a class="nav-link" id="pills-add-tab" data-bs-toggle="pill" href="#pills-add" role="tab" aria-controls="pills-add" aria-selected="false"><?php echo icon('fas fa-plus').' Ajouter' ?></a></li>
 </ul>
 <div class="tab-content border-light" id="pills-tabContent">
 	<div class="tab-pane fade show active" id="pills-links" role="tabcard" aria-labelledby="pills-links-tab">
@@ -32,8 +32,8 @@ $current_menu = isset($menu) ? $menu : '';
 				<input type="hidden" name="settings[url][]" id="edit-url" value="<?php echo $link['url'] ?>" />
 				<input type="hidden" name="settings[target][]" id="edit-target" value="<?php echo !empty($link['target']) ? $link['target'] : '_parent' ?>" />
 				<ul class="list-inline m-0">
-					<li class="list-inline-item"><a href="#" class="move-link" data-toggle="tooltip" title="<?php echo $this->lang('Ordonner') ?>"><?php echo icon('fas fa-arrows-alt-v') ?></a></li>
-					<li class="list-inline-item"><span data-toggle="tooltip" title="<?php echo $link['url'] ?>"><?php echo icon('fas fa-link') ?></span></li>
+					<li class="list-inline-item"><a href="#" class="move-link" data-bs-toggle="tooltip" title="<?php echo $this->lang('Ordonner') ?>"><?php echo icon('fas fa-arrows-alt-v') ?></a></li>
+					<li class="list-inline-item"><span data-bs-toggle="tooltip" title="<?php echo $link['url'] ?>"><?php echo icon('fas fa-link') ?></span></li>
 					<li class="list-inline-item"><?php echo $link['title'] ?></li>
 				</ul>
 			</li>
@@ -44,7 +44,7 @@ $current_menu = isset($menu) ? $menu : '';
 		<div id="add-link">
 			<div class="card px-2 py-3">
 				<div class="card-heading">
-					<a class="type-collapse" role="button" data-toggle="collapse" data-parent="#add-link" href="#type-module" aria-controls="type-module">
+					<a class="type-collapse" role="button" data-bs-toggle="collapse" data-bs-parent="#add-link" href="#type-module" aria-controls="type-module">
 						<?php echo icon('fas fa-edit') ?> <b>Lien vers un module</b>
 					</a>
 				</div>
@@ -114,7 +114,7 @@ $current_menu = isset($menu) ? $menu : '';
 			if ($pages): ?>
 			<div class="card px-2 py-3" style="margin-top: 5px !important;">
 				<div class="card-heading">
-					<a class="type-collapse" role="button" data-toggle="collapse" data-parent="#add-link" href="#type-page" aria-controls="type-page">
+					<a class="type-collapse" role="button" data-bs-toggle="collapse" data-bs-parent="#add-link" href="#type-page" aria-controls="type-page">
 						<?php echo icon('far fa-file-alt') ?> <b>Lien vers une page</b>
 					</a>
 				</div>
@@ -158,7 +158,7 @@ $current_menu = isset($menu) ? $menu : '';
 			<?php endif ?>
 			<div class="card px-2 py-3" style="margin-top: 5px !important;">
 				<div class="card-heading">
-					<a class="type-collapse link-item" role="button" data-link-title="" data-link-url="" data-toggle="collapse" data-parent="#add-link" href="#type-custom" aria-controls="type-custom">
+					<a class="type-collapse link-item" role="button" data-link-title="" data-link-url="" data-bs-toggle="collapse" data-bs-parent="#add-link" href="#type-custom" aria-controls="type-custom">
 						<?php echo icon('fas fa-link') ?> <b><?php echo $this->lang('Lien personnalisé') ?></b>
 					</a>
 				</div>
@@ -197,122 +197,114 @@ $current_menu = isset($menu) ? $menu : '';
 	</div>
 </div>
 
+<?php NeoFrag()->js('sortable.lib.min') ?>
 <script type="text/javascript">
-	$(function(){
-		//OK
-		$('#pills-links .list-group').sortable({
-			connectWith: '#link-delete',
-			cursor: 'move',
-			intersect: 'pointer',
-			revert: true
+	document.addEventListener('DOMContentLoaded', function(){
+		function setInvalid(sel, invalid){
+			var el = document.querySelector(sel);
+			var group = el ? el.closest('.form-group') : null;
+			if (group){ group.classList.toggle('is-invalid', invalid); }
+		}
+
+		// SortableJS (remplace jQuery UI sortable/droppable) : la liste de liens + une zone de
+		// suppression partagent un group ; déposer un lien sur #link-delete le supprime.
+		document.querySelectorAll('#pills-links .list-group').forEach(function(el){
+			new Sortable(el, { group: 'nav-links', animation: 150 });
 		});
 
-		$('#link-delete').droppable({
-			accept: '#pills-links .list-group li',
-			tolerance: 'pointer',
-			drop: function(event, ui){
-				ui.draggable.remove();
-			}
-		});
+		var linkDelete = document.getElementById('link-delete');
+		if (linkDelete){
+			new Sortable(linkDelete, {
+				group: 'nav-links',
+				animation: 150,
+				onAdd: function(evt){ evt.item.remove(); }
+			});
+		}
 
 		var active_id = '';
-		$('a.type-collapse').on('click', function(){
-			active_id = $(this).attr('href');
 
-			$('.card-collapse .card-body').each(function(){
-				$(this).hide();
+		document.querySelectorAll('a.type-collapse').forEach(function(tab){
+			tab.addEventListener('click', function(){
+				active_id = this.getAttribute('href');
+
+				document.querySelectorAll('.card-collapse .card-body').forEach(function(el){ el.style.display = 'none'; });
+				document.querySelectorAll('.form-group').forEach(function(el){ el.classList.remove('has-error'); });
+
+				var list = document.querySelector(active_id + ' .list-group');
+				if (list){ list.style.display = ''; }
 			});
+		});
 
-			$('.form-group').each(function(){
-				$(this).removeClass('has-error');
+		document.querySelectorAll('#add-link .link-item').forEach(function(item){
+			item.addEventListener('click', function(){
+				var title = document.querySelector(active_id + ' #settings-title');
+				var url   = document.querySelector(active_id + ' #settings-url');
+				if (title){ title.value = this.dataset.linkTitle; }
+				if (url){ url.value = this.dataset.linkUrl; }
+				var list = document.querySelector(active_id + ' .list-group');
+				var body = document.querySelector(active_id + ' .card-body');
+				if (list){ list.style.display = 'none'; }
+				if (body){ body.style.display = ''; }
 			});
-
-			$(active_id+' .list-group').show();
 		});
 
-		$('#add-link .link-item').on('click', function(){
-			$(active_id+' #settings-title').val($(this).data('link-title'));
-			$(active_id+' #settings-url').val($(this).data('link-url'));
-			$(active_id+' .list-group').hide();
-			$(active_id+' .card-body').show();
+		document.querySelectorAll('.cancel-link').forEach(function(btn){
+			btn.addEventListener('click', function(){
+				var body = document.querySelector(active_id + ' .card-body');
+				var list = document.querySelector(active_id + '.list-group');
+				if (body){ body.style.display = 'none'; }
+				if (list){ list.style.display = ''; }
+				active_id = '';
+			});
 		});
 
-		/*
-		$(document).on('click', '.list-group li a.edit-link', function() {
-			var title     = $(this).parent().find('#edit-title').val();
-			var url       = $(this).parent().find('#edit-url').val();
-			var target    = $(this).parent().find('#edit-target').val();
+		document.querySelectorAll('#add-link .btn-primary').forEach(function(btn){
+			btn.addEventListener('click', function(e){
+				e.preventDefault();
 
-			$('#pills-links .form-edit #settings-title').val(title);
-			$('#pills-links .form-edit #settings-url').val(url);
-			$('#pills-links .form-edit #settings-target option[value="'+target+'"]').prop('selected', true);
+				var titleEl  = document.querySelector(active_id + ' #settings-title');
+				var urlEl    = document.querySelector(active_id + ' #settings-url');
+				var targetEl = document.querySelector(active_id + ' #settings-target');
+				var title  = titleEl ? titleEl.value : '';
+				var url    = urlEl ? urlEl.value : '';
+				var target = targetEl ? targetEl.value : '';
 
-			$('#pills-links .list-group').hide();
-			$('#pills-links .form-edit').show();
-		});
-		*/
+				if (title && url && target){
+					['#pills-links-tab', '#pills-links'].forEach(function(s){ var el = document.querySelector(s); if (el){ el.classList.add('active', 'show'); } });
+					['#pills-add-tab', '#pills-add'].forEach(function(s){ var el = document.querySelector(s); if (el){ el.classList.remove('active', 'show'); } });
 
-		$('.cancel-link').click(function(){
-			$(active_id+' .card-body').hide();
-			$(active_id+ '.list-group').show();
+					var list = document.querySelector('#pills-links .list-group');
+					if (list){
+						list.insertAdjacentHTML('beforeend', '<li class="list-group-item ui-sortable-handle">' +
+								'<input type="hidden" name="settings[title][]" id="edit-title" value="' + title + '" />' +
+								'<input type="hidden" name="settings[url][]" id="edit-url" value="' + url + '" />' +
+								'<input type="hidden" name="settings[target][]" id="edit-target" value="' + target + '" />' +
+								'<ul class="list-inline m-0">' +
+									'<li class="list-inline-item"><a href="#" class="move-link" data-bs-toggle="tooltip" title="<?php echo $this->lang('Ordonner') ?>"><?php echo icon('fas fa-arrows-alt-v') ?></a></li>' +
+									'<li class="list-inline-item"><span data-bs-toggle="tooltip" title="' + url + '"><?php echo icon('fas fa-link') ?></span></li>' +
+									'<li class="list-inline-item">' + title + '</li>' +
+								'</ul>' +
+							'</li>');
+					}
 
-			active_id = '';
-		});
+					setInvalid(active_id + ' #settings-title', false);
+					setInvalid(active_id + ' #settings-url', false);
+					setInvalid(active_id + ' #settings-target', false);
 
-		$('#add-link .btn-primary').click(function(){
-			var title  = $(active_id+' #settings-title').val();
-			var url    = $(active_id+' #settings-url').val();
-			var target = $(active_id+' #settings-target').val();
+					if (titleEl){ titleEl.value = ''; }
+					if (urlEl){ urlEl.value = ''; }
 
-			if (title && url && target){
-				$('#pills-links-tab, #pills-links').addClass('active show');
-				$('#pills-add-tab, #pills-add').removeClass('active show');
-
-				$('<li class="list-group-item ui-sortable-handle">\
-						<input type="hidden" name="settings[title][]" id="edit-title" value="'+title+'" />\
-						<input type="hidden" name="settings[url][]" id="edit-url" value="'+url+'" />\
-						<input type="hidden" name="settings[target][]" id="edit-target" value="'+target+'" />\
-						<ul class="list-inline m-0">\
-							<li class="list-inline-item"><a href="#" class="move-link" data-toggle="tooltip" title="<?php echo $this->lang('Ordonner') ?>"><?php echo icon('fas fa-arrows-alt-v') ?></a></li>\
-							<li class="list-inline-item"><span data-toggle="tooltip" title="'+url+'"><?php echo icon('fas fa-link') ?></span></li>\
-							<li class="list-inline-item">'+title+'</li>\
-						</ul>\
-					</li>').appendTo('#pills-links .list-group');
-
-				$(active_id+' #settings-title').parents('.form-group:first').removeClass('is-invalid');
-				$(active_id+' #settings-url').parents('.form-group:first').removeClass('is-invalid');
-				$(active_id+' #settings-target').parents('.form-group:first').removeClass('is-invalid');
-
-				$(active_id+' #settings-title').val('');
-				$(active_id+' #settings-url').val('');
-
-				$(active_id+' .card-body').hide();
-				$(active_id+' .list-group').show();
-			}
-			else {
-				if (!title){
-					$(active_id+' #settings-title').parents('.form-group:first').addClass('is-invalid');
+					var body = document.querySelector(active_id + ' .card-body');
+					var listShow = document.querySelector(active_id + ' .list-group');
+					if (body){ body.style.display = 'none'; }
+					if (listShow){ listShow.style.display = ''; }
 				}
 				else {
-					$(active_id+' #settings-title').parents('.form-group:first').removeClass('is-invalid');
+					setInvalid(active_id + ' #settings-title', !title);
+					setInvalid(active_id + ' #settings-url', !url);
+					setInvalid(active_id + ' #settings-target', !target);
 				}
-
-				if (!url){
-					$(active_id+' #settings-url').parents('.form-group:first').addClass('is-invalid');
-				}
-				else {
-					$(active_id+' #settings-url').parents('.form-group:first').removeClass('is-invalid');
-				}
-
-				if (!target){
-					$(active_id+' #settings-target').parents('.form-group:first').addClass('is-invalid');
-				}
-				else {
-					$(active_id+' #settings-target').parents('.form-group:first').removeClass('is-invalid');
-				}
-			}
-
-			return false;
+			});
 		});
 	});
 </script>

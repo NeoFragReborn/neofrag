@@ -15,8 +15,7 @@ class Admin extends Controller_Module
 		$this	->css('fonts/open-sans')
 				->css('live-editor')
 				->js('live-editor')
-				->css('jquery-ui.min')
-				->js('jquery-ui.min');
+				->js('sortable.lib.min');
 
 		$modules = $pages = [];
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -12,7 +13,7 @@ class Js_Load extends Library
 {
 	protected $_script;
 
-	public function __invoke($script)
+	public function __invoke($script): static
 	{
 		$this->_script = $script;
 
@@ -21,7 +22,7 @@ class Js_Load extends Library
 		return $this;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return (string)$this->_script;
 	}

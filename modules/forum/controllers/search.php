@@ -39,4 +39,13 @@ class Search extends Controller_Module
 
 		return ['t.title', 'm.message'];
 	}
+
+	/** Suggestion typeahead (titre + lien) à partir d'une ligne de résultat. */
+	public function suggest($result)
+	{
+		return [
+			'title' => $result['topic_title'],
+			'url'   => url('forum/topic/'.$result['topic_id'].'/'.url_title($result['topic_title']).'#'.$result['message_id'])
+		];
+	}
 }

@@ -20,7 +20,7 @@ class Admin extends Controller_Module
 		}
 		else
 		{
-			$body = '<table class="table table-hover" style="margin:0;"><thead><tr><th>'.$this->lang('Titre').'</th><th>'.$this->lang('URL').'</th><th>'.$this->lang('Événements').'</th><th class="text-right">'.$this->lang('Actif').'</th><th class="text-right"></th></tr></thead><tbody>';
+			$body = '<table class="table table-hover" style="margin:0;"><thead><tr><th>'.$this->lang('Titre').'</th><th>'.$this->lang('URL').'</th><th>'.$this->lang('Événements').'</th><th class="text-end">'.$this->lang('Actif').'</th><th class="text-end"></th></tr></thead><tbody>';
 			foreach ($hooks as $h)
 			{
 				$slug   = url_title($h['title']);
@@ -29,10 +29,11 @@ class Admin extends Controller_Module
 					.'<td><strong>'.htmlspecialchars($h['title']).'</strong></td>'
 					.'<td><small class="text-muted">'.htmlspecialchars($h['url']).'</small></td>'
 					.'<td>'.htmlspecialchars($events).'</td>'
-					.'<td class="text-right">'.(!empty($h['enabled']) ? '<span class="badge badge-success">'.$this->lang('Oui').'</span>' : '<span class="badge badge-secondary">'.$this->lang('Non').'</span>').'</td>'
-					.'<td class="text-right" style="white-space:nowrap;">'
+					.'<td class="text-end">'.(!empty($h['enabled']) ? '<span class="badge text-bg-success">'.$this->lang('Oui').'</span>' : '<span class="badge text-bg-secondary">'.$this->lang('Non').'</span>').'</td>'
+					.'<td class="text-end" style="white-space:nowrap;">'
+					.'<a class="btn btn-sm btn-outline-secondary" href="'.$this->csrf_url('admin/webhooks/test/'.$h['id'].'/'.$slug).'" title="'.$this->lang('Tester').'"><i class="fas fa-paper-plane"></i></a> '
 					.'<a class="btn btn-sm btn-outline-primary" href="'.url('admin/webhooks/edit/'.$h['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
-					.'<a class="btn btn-sm btn-outline-danger" href="'.url('admin/webhooks/delete/'.$h['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ce webhook ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
+					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/webhooks/delete/'.$h['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ce webhook ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 			}
 			$body .= '</tbody></table>';
@@ -45,8 +46,47 @@ class Admin extends Controller_Module
 
 	public function _add()  { return $this->_form(NULL); }
 	public function _edit($h) { return $this->_form($h); }
+
+	public function _test($h)
+	{
+		$this->check_csrf('admin/webhooks');
+
+		/** @var Webhooks $module */
+		$module = $this->module('webhooks');
+		$result = $module->test($h);
+
+		if ($result['ok'])
+		{
+			notify($this->lang('Test envoyé à %s — réponse HTTP %s.', $h['title'], $result['status']));
+		}
+		else
+		{
+			if ($result['status'] !== NULL)
+			{
+				$detail = 'HTTP '.$result['status'];
+			}
+			else if ($result['error'] === 'invalid_url')
+			{
+				$detail = $this->lang('URL invalide ou cURL indisponible.');
+			}
+			else if ($result['error'] === 'ssrf_blocked')
+			{
+				$detail = $this->lang('Hôte non public (bloqué par la protection anti-SSRF).');
+			}
+			else
+			{
+				$detail = $result['error'];
+			}
+
+			notify($this->lang('Échec du test : %s', $detail), 'danger');
+		}
+
+		redirect('admin/webhooks');
+	}
 	public function _delete($h)
 	{
+		$this->check_csrf('admin/webhooks');
+
 		NeoFrag()->db->where('id', $h['id'])->delete('nf_webhooks');
 		notify($this->lang('Webhook supprimé.'));
 		redirect('admin/webhooks');

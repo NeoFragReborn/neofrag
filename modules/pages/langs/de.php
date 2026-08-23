@@ -32,4 +32,13 @@ return [
 	'e1b5ca71' => 'Seiten',
 	'52c9bbab' => 'Bearbeiten',
 	'8d9ef7a4' => 'Löschen',
+	// i18n 2026-06-11 (code strings)
+	'fffae9b2' => 'Injizierbare Modul-Blöcke — füge den Code in den Inhalt ein:',
+	'a858201f' => 'Verfügbare Seiten',
+	'bd0ae7ae' => 'Derzeit keine veröffentlichte Seite.',
+	'0b2225c8' => 'Vorlage',
+	'3346e037' => 'Normal (mit Rahmen)',
+	'f2100516' => 'Leere Seite (volle Breite)',
+	'78b7cadc' => '„Leere Seite" gibt den Inhalt ohne Rahmen oder Titel wieder — ideal für eine aus Blöcken zusammengesetzte Seite.',
+	'42bd0172' => 'Ein zukünftiges Datum plant die Veröffentlichung: Die Seite bleibt bis zu diesem Datum öffentlich verborgen (falls veröffentlicht). Leer = sofort.',
 ];

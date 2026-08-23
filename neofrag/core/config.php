@@ -8,6 +8,83 @@ namespace NF\NeoFrag\Core;
 
 use NF\NeoFrag\Core;
 
+/**
+ * Settings exposés via __get() (depuis nf_settings). Annotations pour l'IDE + PHPStan.
+ * @property mixed $nf_analytics
+ * @property mixed $nf_captcha_private_key
+ * @property mixed $nf_captcha_public_key
+ * @property mixed $nf_contact
+ * @property mixed $nf_cookie_expire
+ * @property mixed $nf_cookie_name
+ * @property mixed $nf_copyright
+ * @property mixed $nf_cron_key
+ * @property mixed $nf_email_transport
+ * @property mixed $nf_smtp_host
+ * @property mixed $nf_smtp_port
+ * @property mixed $nf_smtp_username
+ * @property mixed $nf_smtp_password
+ * @property mixed $nf_smtp_secure
+ * @property mixed $nf_default_page
+ * @property mixed $nf_default_theme
+ * @property mixed $nf_description
+ * @property mixed $nf_favicon
+ * @property mixed $nf_http_authentication
+ * @property mixed $nf_http_authentication_name
+ * @property mixed $nf_humans_txt
+ * @property mixed $nf_maintenance
+ * @property mixed $nf_maintenance_background
+ * @property mixed $nf_maintenance_background_color
+ * @property mixed $nf_maintenance_background_position
+ * @property mixed $nf_maintenance_background_repeat
+ * @property mixed $nf_maintenance_content
+ * @property mixed $nf_maintenance_logo
+ * @property mixed $nf_maintenance_opening
+ * @property mixed $nf_maintenance_text_color
+ * @property mixed $nf_maintenance_title
+ * @property mixed $nf_moderation_auto_escalation
+ * @property mixed $nf_moderation_default_ban_temp_duration_seconds
+ * @property mixed $nf_moderation_default_mute_duration_seconds
+ * @property mixed $nf_moderation_enabled
+ * @property mixed $nf_moderation_preserve_content_snapshot
+ * @property mixed $nf_moderation_report_flag_threshold_per_day
+ * @property mixed $nf_moderation_report_rate_limit_per_hour
+ * @property mixed $nf_moderation_require_approval_ban_perm
+ * @property mixed $nf_moderation_require_approval_ban_temp
+ * @property mixed $nf_moderation_snapshot_attachments_enabled
+ * @property mixed $nf_moderation_snapshot_max_size_mb
+ * @property mixed $nf_moderation_warning_threshold_ban
+ * @property mixed $nf_moderation_warning_threshold_mute
+ * @property mixed $nf_moderation_warning_window_days
+ * @property mixed $nf_monitoring_last_check
+ * @property mixed $nf_name
+ * @property mixed $nf_registration_charte
+ * @property mixed $nf_registration_status
+ * @property mixed $nf_robots_txt
+ * @property mixed $nf_social_behance
+ * @property mixed $nf_social_deviantart
+ * @property mixed $nf_social_dribble
+ * @property mixed $nf_social_facebook
+ * @property mixed $nf_social_flickr
+ * @property mixed $nf_social_github
+ * @property mixed $nf_social_google
+ * @property mixed $nf_social_instagram
+ * @property mixed $nf_social_steam
+ * @property mixed $nf_social_twitch
+ * @property mixed $nf_social_twitter
+ * @property mixed $nf_social_youtube
+ * @property mixed $nf_team_biographie
+ * @property mixed $nf_team_creation
+ * @property mixed $nf_team_logo
+ * @property mixed $nf_team_name
+ * @property mixed $nf_team_type
+ * @property mixed $nf_theme_color
+ * @property mixed $nf_update_callback
+ * @property mixed $nf_version_css
+ * @property mixed $nf_welcome
+ * @property mixed $nf_welcome_content
+ * @property mixed $nf_welcome_title
+ * @property mixed $nf_welcome_user_id
+ */
 class Config extends Core
 {
 	protected $_const = [];

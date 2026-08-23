@@ -22,6 +22,8 @@ class Email extends Library
 	protected $_footer;
 	protected $_attachments = [];
 	protected $_config = [];
+	protected $_error;
+	protected $_transport = '';
 
 	public function __construct($caller, $config = [])
 	{
@@ -43,6 +45,38 @@ class Email extends Library
 				return $this->config->nf_description.' | <a href="'.url('//').'">'.$this->config->nf_name.'</a>';
 			};
 		}
+
+		// SMTP saisi dans l'admin (nf_settings) : prioritaire sur config/email.php quand renseigné →
+		// l'utilisateur configure son SMTP depuis le panel, sans toucher aux fichiers, et ça survit aux
+		// redéploiements. Si non renseigné (host vide) : on garde config/email.php puis l'auto-détection.
+		if ($host = (string) $this->config->nf_smtp_host)
+		{
+			$this->_config['smtp'] = [
+				'host'     => $host,
+				'port'     => (int) $this->config->nf_smtp_port,
+				'username' => (string) $this->config->nf_smtp_username,
+				'password' => $this->crypt->decrypt_secret((string) $this->config->nf_smtp_password),
+				'secure'   => (string) $this->config->nf_smtp_secure,
+			];
+		}
+	}
+
+	/** Vrai si un serveur SMTP est configuré (host renseigné). Sinon NeoFrag utilise la fonction mail() de PHP. */
+	public function has_smtp()
+	{
+		return !empty($this->_config['smtp']['host']);
+	}
+
+	/** Dernière erreur d'envoi (PHPMailer ErrorInfo) — pour l'afficher/diagnostiquer après un send() à FALSE. */
+	public function last_error()
+	{
+		return $this->_error;
+	}
+
+	/** Transport effectivement utilisé au dernier envoi (mail() / relais local 127.0.0.1:25 / SMTP configuré) — diagnostic. */
+	public function last_transport()
+	{
+		return $this->_transport;
 	}
 
 	public function __sleep()
@@ -146,6 +180,7 @@ class Email extends Library
 		if (!$emails_module || !$emails_module->is_enabled())
 		{
 			// Module emails pas installé / désactivé → fallback silencieux : le caller pourra utiliser ->subject()/->message()
+			$this->_error = 'Le module Emails est désactivé.';
 			return $this;
 		}
 
@@ -154,6 +189,7 @@ class Email extends Library
 		$template = $model->get_by_key($key);
 		if (!$template)
 		{
+			$this->_error = 'Template email introuvable : '.$key;
 			return $this;
 		}
 
@@ -167,6 +203,7 @@ class Email extends Library
 		$translation = $model->get_translation($template['template_id'], $lang);
 		if (!$translation)
 		{
+			$this->_error = 'Traduction du template « '.$key.' » introuvable pour la langue « '.$lang.' ».';
 			return $this;
 		}
 
@@ -213,6 +250,12 @@ class Email extends Library
 	{
 		if (!$this->_to || !$this->_subject || !$this->_view)
 		{
+			$missing = [];
+			if (!$this->_to)      $missing[] = 'destinataire';
+			if (!$this->_subject) $missing[] = 'sujet';
+			if (!$this->_view)    $missing[] = 'corps';
+			$this->_error = $this->_error ?: 'Email incomplet ('.implode(', ', $missing).' manquant).';
+
 			return FALSE;
 		}
 
@@ -220,7 +263,7 @@ class Email extends Library
 
 		$PHPMailer = new \PHPMailer\PHPMailer\PHPMailer;
 
-		$PHPMailer->SMTPDebug   = 0;
+		$PHPMailer->SMTPDebug   = 2; // capture la conversation SMTP (journalisée seulement en cas d'échec)
 		$PHPMailer->Debugoutput = function($message) use (&$debug){
 			$debug[] = $message;
 		};
@@ -277,7 +320,7 @@ class Email extends Library
 
 		foreach (array_unique($this->_cc) as $to)
 		{
-			$mail->AddCC($to);
+			$PHPMailer->AddCC($to);
 		}
 
 		foreach (array_unique($this->_bcc) as $to)
@@ -306,10 +349,39 @@ class Email extends Library
 			$PHPMailer->AltBody = trim(strip_tags($PHPMailer->Body));
 		});
 
-		$sent = $PHPMailer->send();
+		if (!empty($this->_config['smtp']['host']))
+		{
+			// SMTP explicitement configuré (admin ou config/email.php) : on l'utilise en priorité.
+			$this->_transport = 'SMTP '.$this->_config['smtp']['host'];
+			$sent = $PHPMailer->send();
+
+			if (!$sent)
+			{
+				// SMTP configuré mais en échec (identifiants erronés, relais injoignable…) : ne pas bloquer
+				// TOUT l'envoi du site — on retombe sur l'auto-détection (relais local / mail()).
+				if (method_exists($PHPMailer, 'smtpClose'))
+				{
+					$PHPMailer->smtpClose();
+				}
+				$sent = $this->_send_auto($PHPMailer);
+			}
+		}
+		else
+		{
+			// Aucun SMTP configuré : envoi « clé en main » — on détecte automatiquement le transport qui
+			// marche sur cet hébergement (relais SMTP local puis mail()), sans service externe.
+			$sent = $this->_send_auto($PHPMailer);
+		}
 
 		if (!$sent)
 		{
+			// La vraie cause de l'échec (From rejeté, mail() KO, SMTP refusé…) est dans ErrorInfo.
+			// On la mémorise (last_error()), on la journalise, puis on déverse la conversation SMTP.
+			// On garde un message déjà posé par l'auto-détection (ex. aucun transport disponible).
+			$this->_error = $this->_error ?: $PHPMailer->ErrorInfo;
+
+			error_log('[email] échec envoi'.($this->has_smtp() ? ' (SMTP '.$this->_config['smtp']['host'].')' : ' (mail() PHP)').' : '.$PHPMailer->ErrorInfo);
+
 			foreach ($debug as $message)
 			{
 				trigger_error(utf8_string($message, is_windows() ? 'CP1252' : ''), E_USER_WARNING);
@@ -317,5 +389,81 @@ class Email extends Library
 		}
 
 		return $sent;
+	}
+
+	// Détection automatique du transport sur un hébergement NON configuré : essaie d'abord les relais SMTP
+	// LOCAUX de l'hébergeur (Postfix/Exim — présents sur la quasi-totalité des mutualisés), puis PHP mail()
+	// en dernier (mail() renvoie souvent TRUE sans réellement livrer). Aucun service externe. Mémorise le
+	// transport qui marche (nf_email_transport) ; le cache reste un INDICE — on retombe sur la liste complète
+	// s'il a cessé de marcher, et on mémorise l'échec total (TTL) pour ne pas re-tester en boucle.
+	private function _send_auto($PHPMailer)
+	{
+		$defaults = ['127.0.0.1:25', 'localhost:25', '127.0.0.1:587', 'mail'];
+		$cached   = (string) $this->config->nf_email_transport;
+
+		// Échec total mémorisé récemment (sentinelle 'none:<ts>') : ne pas re-dérouler la détection lente à
+		// chaque envoi tant que rien ne marche (TTL court pour re-tenter ensuite).
+		if (strpos($cached, 'none:') === 0)
+		{
+			if (time() - (int) substr($cached, 5) < 600)
+			{
+				$this->_error = 'Aucun transport email disponible sur cet hébergement (détection récente en échec).';
+				return FALSE;
+			}
+			$cached = '';
+		}
+
+		// Le transport mémorisé est essayé en premier, mais s'il a cessé de marcher on enchaîne sur les
+		// autres candidats dans le MÊME appel (sinon l'email courant serait perdu).
+		$candidates = $cached !== '' ? array_merge([$cached], array_values(array_diff($defaults, [$cached]))) : $defaults;
+
+		foreach ($candidates as $transport)
+		{
+			if ($transport === 'mail')
+			{
+				if (!function_exists('mail') || preg_match('/(^|,)\s*mail\s*(,|$)/i', (string) ini_get('disable_functions')))
+				{
+					continue; // mail() désactivé par l'hébergeur
+				}
+				$PHPMailer->isMail();
+			}
+			else
+			{
+				list($host, $port) = explode(':', $transport);
+				$PHPMailer->isSMTP();
+				$PHPMailer->Host        = $host;
+				$PHPMailer->Port        = (int) $port;
+				$PHPMailer->SMTPAuth    = FALSE;
+				$PHPMailer->SMTPAutoTLS = FALSE;
+				$PHPMailer->SMTPSecure  = '';
+				$PHPMailer->Timeout     = 5; // ne pas bloquer si le relais est absent
+			}
+
+			$this->_transport = $transport === 'mail' ? 'mail()' : 'SMTP local '.$transport;
+
+			if (@$PHPMailer->send())
+			{
+				$this->_remember($transport);
+				return TRUE;
+			}
+
+			if (method_exists($PHPMailer, 'smtpClose'))
+			{
+				$PHPMailer->smtpClose();
+			}
+		}
+
+		$this->_remember('none:'.time()); // mémorise l'échec total (TTL) → pas de re-détection lente immédiate
+		return FALSE;
+	}
+
+	/** Mémorise le transport auto-détecté via Config (UPSERT nf_settings + maj du cache mémoire $_const →
+	 *  les envois suivants de la MÊME requête sont directs, sans re-dérouler la détection). */
+	private function _remember($transport)
+	{
+		if ((string) $this->config->nf_email_transport !== (string) $transport)
+		{
+			$this->config('nf_email_transport', $transport, 'string');
+		}
 	}
 }

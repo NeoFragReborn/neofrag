@@ -6,6 +6,56 @@
 
 namespace NF\NeoFrag;
 
+/**
+ * Cœur + service-locator. Les services sont résolus dynamiquement via __get() ; ces annotations les
+ * rendent visibles de l'IDE et de PHPStan sans changer le runtime (cf. les notes du mainteneur, chunk 1).
+ *
+ * On ne type ici QUE les services dont la classe expose une vraie API déclarée. Volontairement
+ * absents : $user (\NF\NeoFrag\Models\User, Model2) et $lang (\NF\NeoFrag\Libraries\Lang), qui
+ * exposent leurs membres par magie (__get sur colonnes SQL, info()…) : les typer ferait cascader
+ * ~330 faux positifs « property/method not found ». Les laisser en `mixed` est ici le bon choix.
+ *
+ * @property \NF\NeoFrag\Core\Db            $db
+ * @property \NF\NeoFrag\Core\Config        $config
+ * @property \NF\NeoFrag\Core\Session       $session
+ * @property \NF\NeoFrag\Core\Url           $url
+ * @property \NF\NeoFrag\Core\Output        $output
+ * @property \NF\NeoFrag\Core\Access        $access
+ * @property \NF\NeoFrag\Core\Groups        $groups
+ * @property \NF\NeoFrag\Core\Events        $events
+ * @property \NF\NeoFrag\Core\Input         $input
+ * @property \NF\NeoFrag\Core\Debug         $debug
+ * @property \NF\NeoFrag\Libraries\Crypt      $crypt
+ * @property \NF\NeoFrag\Libraries\Moderation $moderation
+ * @property \NF\NeoFrag\Libraries\Password   $password
+ * @property \NF\NeoFrag\Libraries\Network    $network
+ * @property \NF\NeoFrag\Libraries\Rate_Limit $rate_limit
+ * @property \NF\NeoFrag\Libraries\Captcha    $captcha
+ * @property \NF\NeoFrag\Libraries\Anti_Flood $anti_flood
+ *
+ * @method string                           lang(string $key, mixed ...$args)
+ * @method void                             debug(mixed ...$args)
+ * @method \NF\NeoFrag\Loadables\Model      model(string $name, mixed ...$args)
+ * @method \NF\NeoFrag\Loadables\Model2     model2(string $name, mixed ...$args)
+ * @method \NF\NeoFrag\Addons\Module        module(string $name)
+ * @method \NF\NeoFrag\Libraries\Collection collection(?string $name = null, mixed ...$args)
+ * @method \NF\NeoFrag\Libraries\Form       form(mixed ...$args)
+ * @method \NF\NeoFrag\Libraries\Panel      panel(mixed ...$args)
+ * @method \NF\NeoFrag\Libraries\Date       date(mixed ...$args)
+ * @method \NF\NeoFrag\Libraries\Table      table(mixed ...$args)
+ * @method \NF\NeoFrag\Libraries\Breadcrumb breadcrumb(mixed ...$args)
+ * @method \NF\NeoFrag\Libraries\Pagination pagination(mixed ...$args)
+ * @method \NF\NeoFrag\Libraries\Email      email(mixed ...$args)
+ * @method \NF\NeoFrag\Displayables\Col     col(mixed ...$args)
+ * @method \NF\NeoFrag\Displayables\Row     row(mixed ...$args)
+ * @method \NF\NeoFrag\Displayables\Widget  widget(mixed ...$args)
+ * @method \NF\NeoFrag\Libraries\View       view(string $view = '', array $data = [])
+ * @method \NF\NeoFrag\Libraries\Form       form2(mixed ...$args)
+ * @method bool                             access(string $module, string $action, int $id = 0, ?int $group_id = null, ?int $user_id = null)
+ * @method \NF\NeoFrag\Libraries\Button     button(mixed ...$args)
+ * @method \NF\NeoFrag\Libraries\Html       html(mixed ...$args)
+ * @method \NF\NeoFrag\Libraries\Error      error(mixed ...$args)
+ */
 #[\AllowDynamicProperties]
 class NeoFrag
 {

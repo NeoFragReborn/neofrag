@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -13,7 +14,7 @@ class Json extends Library
 	protected $_output;
 	protected $_notifications;
 
-	public function __invoke($output, $notifications = TRUE)
+	public function __invoke($output, $notifications = TRUE): static
 	{
 		$this->_output        = $output;
 		$this->_notifications = $notifications;
@@ -21,7 +22,7 @@ class Json extends Library
 		return $this;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		header('Content-Type: application/json; charset=UTF-8');
 

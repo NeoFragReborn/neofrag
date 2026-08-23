@@ -2,19 +2,19 @@
 	<li class="nav-item">
 		<a class="nav-link<?php echo ($filter ?? 'all') === 'all' ? ' active' : '' ?>" href="<?php echo \url('talks') ?>">
 			<?php echo \icon('far fa-comments').' '.$this->lang('Toutes') ?>
-			<span class="badge badge-light ml-1"><?php echo (int)($counts['all'] ?? 0) ?></span>
+			<span class="badge text-bg-light ms-1"><?php echo (int)($counts['all'] ?? 0) ?></span>
 		</a>
 	</li>
 	<li class="nav-item">
 		<a class="nav-link<?php echo ($filter ?? '') === 'private' ? ' active' : '' ?>" href="<?php echo \url('talks?type=private') ?>">
 			<?php echo \icon('far fa-envelope').' '.$this->lang('Messagerie privée') ?>
-			<span class="badge badge-light ml-1"><?php echo (int)($counts['private'] ?? 0) ?></span>
+			<span class="badge text-bg-light ms-1"><?php echo (int)($counts['private'] ?? 0) ?></span>
 		</a>
 	</li>
 	<li class="nav-item">
 		<a class="nav-link<?php echo ($filter ?? '') === 'public' ? ' active' : '' ?>" href="<?php echo \url('talks?type=public') ?>">
 			<?php echo \icon('fas fa-hashtag').' '.$this->lang('Salons publics') ?>
-			<span class="badge badge-light ml-1"><?php echo (int)($counts['public'] ?? 0) ?></span>
+			<span class="badge text-bg-light ms-1"><?php echo (int)($counts['public'] ?? 0) ?></span>
 		</a>
 	</li>
 	<li class="nav-item">
@@ -56,11 +56,11 @@
 						<li class="list-group-item">
 							<div class="d-flex justify-content-between align-items-start">
 								<div class="flex-grow-1">
-									<a href="<?php echo $href ?>" class="font-weight-bold">
+									<a href="<?php echo $href ?>" class="fw-bold">
 										<?php echo \icon($icon).' '.htmlspecialchars($c['name']) ?>
 									</a>
 									<?php if ((int)$c['unread_count'] > 0): ?>
-										<span class="badge badge-danger ml-1"><?php echo (int)$c['unread_count'] ?></span>
+										<span class="badge text-bg-danger ms-1"><?php echo (int)$c['unread_count'] ?></span>
 									<?php endif ?>
 									<?php if (!empty($c['description'])): ?>
 										<div class="small text-muted"><?php echo htmlspecialchars(mb_substr($c['description'], 0, 100)) ?></div>
@@ -106,7 +106,7 @@
 								</small>
 							</div>
 							<?php if (!empty($p['is_joined'])): ?>
-								<span class="badge badge-success"><?php echo $this->lang('Rejoint') ?></span>
+								<span class="badge text-bg-success"><?php echo $this->lang('Rejoint') ?></span>
 							<?php else: ?>
 								<a class="btn btn-sm btn-outline-primary" href="<?php echo $href ?>"><?php echo $this->lang('Rejoindre') ?></a>
 							<?php endif ?>

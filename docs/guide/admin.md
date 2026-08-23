@@ -6,7 +6,7 @@ L'administration se trouve sous **/admin**. Elle adopte la charte NeoFrag Reborn
 ## Repères
 
 - **Barre latérale** : les modules sont regroupés par catégories claires — *Contenu*,
-  *Communauté*, *Connaissance*, *Média*, *Gaming*, *Monétisation* — plus *Système* et
+  *Communauté*, *Connaissance* (wiki, FAQ), *Média*, *Gaming*, *Monétisation* — plus *Système* et
   *Monitoring*. Les sections se déplient en accordéon ; une catégorie vide est masquée.
 - **Épingles** : survole un module dans la sidebar et clique l'épingle pour l'ajouter à
   *Épinglé* (raccourcis en haut, mémorisés dans ton navigateur).
@@ -28,11 +28,22 @@ L'administration se trouve sous **/admin**. Elle adopte la charte NeoFrag Reborn
 | Composer les pages à la souris | *Système → Live Editor* |
 | Sauvegardes, mises à jour, état du site, journal d'audit | *Monitoring* |
 
+> **Monitoring** réunit la **santé du site** (vérifications d'intégrité des fichiers, espace disque, infos
+> serveur, état des tâches cron), les **sauvegardes** (créer / télécharger / restaurer) et le **journal
+> d'audit** des actions sensibles (réglages, addons, comptes).
+
 ## Permissions
 
 NeoFrag Reborn fonctionne par **rôles**. La **matrice de permissions** (par module)
 règle, pour chaque rôle, l'accès et les actions. Tu assignes les rôles aux membres et
 aux groupes depuis *Système*.
+
+**Exemple — créer un rôle « Modérateur »** :
+
+1. Dans *Système → Permissions*, **crée un rôle** « Modérateur ».
+2. Sur sa colonne de la **matrice**, coche les actions voulues (modérer le forum, gérer les
+   commentaires…) → **vert = autorisé**.
+3. Dans *Système → Utilisateurs*, édite un membre et **assigne-lui ce rôle** : il hérite aussitôt de ces accès.
 
 ## Réglages essentiels
 

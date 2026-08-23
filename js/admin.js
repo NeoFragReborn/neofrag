@@ -1,18 +1,36 @@
-$(function(){
-	$('.list-group-item').on('click', function(){
-		$('.list-group-item, .tab-content .tab-pane').removeClass('active');
-		$(this).addClass('active');
-		$('.tab-content .tab-pane[data-tab="'+$(this).attr('href').replace('#', '')+'"]').addClass('active');
-		$('.tab-content').parents('.card:first').find('h6.card-header').html($(this).html());
-	});
+(function(){
+	function activate(item){
+		document.querySelectorAll('.list-group-item, .tab-content .tab-pane').forEach(function(el){
+			el.classList.remove('active');
+		});
+		item.classList.add('active');
 
-	var hashchange = function(){
-		var $item = $('[href="'+window.location.hash+'"]');
+		var tab = (item.getAttribute('href') || '').replace('#', '');
+		var pane = document.querySelector('.tab-content .tab-pane[data-tab="' + tab + '"]');
+		if (pane){ pane.classList.add('active'); }
 
-		$($item.length ? $item : $('.list-group-item:first')).trigger('click');
-	};
+		var content = document.querySelector('.tab-content');
+		var card = content ? content.closest('.card') : null;
+		var header = card ? card.querySelector('h6.card-header') : null;
+		if (header){ header.innerHTML = item.innerHTML; }
+	}
 
-	$(window).on('hashchange', hashchange);
+	function init(){
+		document.querySelectorAll('.list-group-item').forEach(function(item){
+			item.addEventListener('click', function(){ activate(this); });
+		});
 
-	hashchange();
-});
+		function hashchange(){
+			var item = window.location.hash
+				? document.querySelector('[href="' + window.location.hash + '"]')
+				: null;
+			if (!item){ item = document.querySelector('.list-group-item'); }
+			if (item){ item.click(); }
+		}
+
+		window.addEventListener('hashchange', hashchange);
+		hashchange();
+	}
+
+	if (document.readyState !== 'loading'){ init(); } else { document.addEventListener('DOMContentLoaded', init); }
+})();

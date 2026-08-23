@@ -8,7 +8,9 @@ $this	->col(function($session){
 			return user_agent($session->data->session?->user_agent);
 		})
 		->col('Adresse IP', function($session){
-			return geolocalisation($ip_address = $session->data->session?->ip_address).'<span data-toggle="tooltip" data-original-title="'.($session->data->session?->host_name ?? '').'">'.$ip_address.'</span>';
+			// host_name = reverse DNS, contrôlé par le propriétaire de l'IP → échappé.
+			$ip_address = $session->data->session?->ip_address;
+			return geolocalisation($ip_address).'<span data-bs-toggle="tooltip" data-original-title="'.htmlspecialchars((string)($session->data->session?->host_name ?? ''), ENT_QUOTES).'">'.htmlspecialchars((string)$ip_address, ENT_QUOTES).'</span>';
 		})
 		->col($this->lang('Site référent'), function($session){
 			return ($referer = $session->data->session?->referer) ? urltolink($referer) : $this->lang('Aucun');

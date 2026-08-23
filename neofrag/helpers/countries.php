@@ -5,7 +5,7 @@ declare(strict_types=1);
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
  */
 
-function get_countries()
+function get_countries(): array
 {
 	//https://github.com/mledoze/countries
 	$countries =  [

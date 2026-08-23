@@ -15,12 +15,17 @@ class Ajax extends Controller_Module
 		$types  = array_keys($this->model('types')->get_types());
 		$events = [];
 
+		// FullCalendar 6 envoie start/end en ISO8601 ('YYYY-MM-DDTHH:MM:SS±TZ') -> on normalise
+		// vers le format SQL comparable à la colonne `date` ('YYYY-MM-DD HH:MM:SS').
+		$start = substr(str_replace('T', ' ', (string)($_GET['start'] ?? '')), 0, 19);
+		$end   = substr(str_replace('T', ' ', (string)($_GET['end']   ?? '')), 0, 19);
+
 		foreach ($this->db	->select('e.event_id as id', 'e.title', 't.color', 't.icon', 'e.date as start', 'e.date_end as end')
 							->from('nf_events e')
 							->join('nf_events_types t', 'e.type_id = t.type_id')
-							->where('(date >=',    $_GET['start'], 'AND', 'date <=',     $_GET['end'], 'OR')
-							->where('date_end >=', $_GET['start'], 'AND', 'date_end <=', $_GET['end'], 'OR')
-							->where('date <',      $_GET['start'], 'AND', 'date_end >',  $_GET['end'], ') AND')
+							->where('(date >=',    $start, 'AND', 'date <=',     $end, 'OR')
+							->where('date_end >=', $start, 'AND', 'date_end <=', $end, 'OR')
+							->where('date <',      $start, 'AND', 'date_end >',  $end, ') AND')
 							->where('e.published', TRUE)
 							->where('t.type_id', $types)
 							->get() as $event)

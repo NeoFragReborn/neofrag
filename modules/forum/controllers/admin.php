@@ -14,7 +14,7 @@ class Admin extends Controller_Module
 	{
 		$this	->subtitle($this->lang('Liste des forums'))
 				->css('forum')
-				->js('jquery-ui.min')
+				->js('sortable.lib.min')
 				->js('forum');
 
 		$categories = $this->model()->get_categories();

@@ -124,7 +124,7 @@ class Index extends Controller_Widget
 	{
 		$endpoint = 'https://api.mcsrvstat.us/'.($variant === 'bedrock' ? 'bedrock/3' : '3').'/'.urlencode($host).':'.(int)$port;
 
-		$json = @$this->network($endpoint, ['timeout' => 6])->get();
+		$json = @$this->network($endpoint, ['timeout' => 6])->type('text')->get();
 		if (!$json) return ['online' => FALSE];
 
 		$raw = @json_decode($json, TRUE);
@@ -138,7 +138,10 @@ class Index extends Controller_Widget
 		return [
 			'online'      => TRUE,
 			'name'        => is_array($raw['motd']['clean'] ?? NULL) ? trim(implode(' ', $raw['motd']['clean'])) : ($raw['hostname'] ?? $host),
-			'motd_html'   => is_array($raw['motd']['html'] ?? NULL) ? implode('<br>', $raw['motd']['html']) : '',
+			// Le MOTD HTML vient d'une API tierce (l'opérateur du serveur de jeu le contrôle, pas
+			// l'admin du site) : assaini par allow-list (HTMLPurifier garde les <span style=color>
+			// des couleurs Minecraft mais retire script/onerror…) avant rendu brut dans la vue.
+			'motd_html'   => is_array($raw['motd']['html'] ?? NULL) ? sanitize_html(implode('<br>', $raw['motd']['html'])) : '',
 			'players'     => (int)($raw['players']['online'] ?? 0),
 			'players_max' => (int)($raw['players']['max'] ?? 0),
 			'players_list'=> array_slice($raw['players']['list'] ?? [], 0, 16),

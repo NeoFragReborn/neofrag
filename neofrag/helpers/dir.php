@@ -5,7 +5,7 @@ declare(strict_types=1);
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
  */
 
-function dir_create()
+function dir_create(): void
 {
 	foreach (func_get_args() as $dir)
 	{
@@ -13,13 +13,13 @@ function dir_create()
 	}
 }
 
-function dir_temp()
+function dir_temp(): string
 {
 	while (file_exists($tmp = (ini_get('upload_tmp_dir') ?: sys_get_temp_dir()).'/'.unique_id()));
 	return $tmp;
 }
 
-function dir_scan($dirs = '.', $callback = NULL, $dir_callback = NULL)
+function dir_scan($dirs = '.', $callback = NULL, $dir_callback = NULL): array
 {
 	$result = [];
 
@@ -56,13 +56,13 @@ function dir_scan($dirs = '.', $callback = NULL, $dir_callback = NULL)
 	return $result;
 }
 
-function dir_remove($directory)
+function dir_remove($directory): void
 {
 	dir_scan($directory, 'unlink', 'dir_remove');
 	rmdir($directory);
 }
 
-function dir_copy($src, $dst)
+function dir_copy($src, $dst): void
 {
 	dir_create($dst);
 

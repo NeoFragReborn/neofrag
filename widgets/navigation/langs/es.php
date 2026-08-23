@@ -40,4 +40,8 @@ return [
 	'76828c83' => 'Foto de portada',
 	'11db7719' => 'Avatar',
 	'3dcd8730' => 'Sin sesión activa',
+	// i18n 2026-06-11 (code strings)
+	'6db60ef7' => 'Menú gestionado',
+	'26db591e' => '— Enlaces manuales (abajo) —',
+	'571ec895' => 'Muestra un menú creado en «Menús» (reemplaza los enlaces manuales de abajo).',
 ];

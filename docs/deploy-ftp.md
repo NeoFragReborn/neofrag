@@ -17,6 +17,9 @@ Les deux embarquent `vendor/` (aucun `composer install` requis) et le `.htaccess
 - Une base **MySQL/MariaDB** (créée depuis le panel, ou créée par l'installeur si les droits le permettent).
 - Apache avec **`mod_rewrite`** et `AllowOverride All` (le `.htaccess` route vers `index.php`). Sur la
   plupart des mutualisés c'est actif par défaut ; sinon demander au support.
+- **Hébergement nginx / Plesk** : le `.htaccess` n'est lu QUE par Apache → sous nginx il faut router les
+  URLs vers `index.php` (sinon les appels AJAX en `.json` renvoient 404 : backup qui tourne sans fin,
+  arbre d'intégrité du Monitoring vide…). Voir la note **« nginx / Plesk »** dans la section Notes.
 
 ## Site principal — étapes
 
@@ -26,9 +29,10 @@ Les deux embarquent `vendor/` (aucun `composer install` requis) et le `.htaccess
    `config/`, `cache/`, `logs/`, `upload/`, `backups/`. (Ces dossiers sont créés au besoin ; le seul
    indispensable en écriture au départ est `config/`.)
 3. Visiter **`https://<domaine>/install/`** → l'assistant en 4 étapes :
-   prérequis → base de données → compte admin → fin. Il génère `config/db.php` + les secrets
-   (`crypt.php`, `password.php`), importe le schéma + le seed, applique les migrations, pose le verrou
-   `install/db.txt`.
+   prérequis → base de données → compte admin → fin (l'étape « base de données » installe automatiquement
+   tous les modules/widgets/thèmes livrés, modèle « tout bundlé »). Il génère `config/db.php` + les secrets
+   (`crypt.php`, `password.php`) + `config/url.php` (origine canonique du site, figée pour les liens
+   d'e-mail), importe le schéma + le seed, applique les migrations, pose le verrou `install/db.txt`.
 4. Terminé : le site répond sur `https://<domaine>/` avec le thème **vitrine** par défaut.
 5. **(optionnel) Parution programmée** : ajouter un cron 5 min qui appelle l'endpoint de publication.
    **Copie l'URL exacte affichée dans Admin → Monitoring** (elle inclut le bon préfixe de langue) ;
@@ -81,4 +85,43 @@ contient `NEOFRAG_DEMO=TRUE`) et les **données de démo**.
   (ne pas réessayer sur une base à moitié créée).
 - **Mises à jour** : remplacer les fichiers (hors `config/`, `upload/`, `backups/`) par la nouvelle version,
   puis visiter le site (les migrations en attente s'appliquent). Sauvegarder d'abord (Admin → Monitoring).
-- **Sécurité** : durcir la CSP du `.htaccess` (retirer `unsafe-inline`/`unsafe-eval`) une fois le rendu validé.
+- **Sécurité** : CSP stricte déjà active par défaut — servie par `index.php` (nonce par requête, plus
+  d'`unsafe-inline`/`unsafe-eval` ni de `https:` générique sur le `script-src`), en-têtes de sécurité dans
+  `.htaccess`. Rien à durcir à la main.
+
+## nginx / Plesk (important)
+
+Le `.htaccess` (réécriture vers `index.php`) n'est lu **que par Apache**. Beaucoup d'hébergeurs servent
+via **nginx** — en particulier **Plesk** avec son option « Traitement intelligent des fichiers statiques »
+(*Smart static files processing*), qui sert les extensions comme **`.json`** directement comme des
+fichiers. Or NeoFrag appelle ses endpoints AJAX en `.json` (ex. `…/admin/ajax/monitoring/backup.json`,
+`…/admin/ajax/monitoring.json`). Sous nginx ils sont alors servis en statique → **404**, ce qui casse
+**toute l'AJAX `.json`** : la sauvegarde « tourne sans fin » (le JS reçoit un 404 sans le voir), l'arbre
+d'intégrité du Monitoring reste vide, etc.
+
+**Symptôme typique** (console F12) : `GET …/admin/ajax/…json → 404` + `bootstrap-treeview: Not initialized`.
+
+Deux corrections (au choix) :
+
+1. **Plesk (le plus simple)** : *Sites web & Domaines* → ton domaine → **Paramètres Apache & nginx** →
+   **décocher « Traitement intelligent des fichiers statiques »** → *Appliquer*. nginx repasse alors toutes
+   les requêtes à Apache, qui applique le `.htaccess`.
+2. **OU directive nginx** (hébergement nginx pur, ou si tu gardes le smart static) — dans
+   *Directives nginx supplémentaires* :
+   ```nginx
+   location ~ \.json$ { try_files $uri /index.php?$args; }
+   ```
+   (sert un vrai fichier `.json` s'il existe, sinon route vers `index.php` — équivalent du `.htaccess`).
+
+### Dossiers sensibles sous nginx (⚠ sécurité)
+
+Le `.htaccess` interdit aussi l'accès direct à `backups/`, `logs/` et `config/` (les archives de
+sauvegarde contiennent le **dump SQL + les secrets de `config/`**). Sous **nginx sans `.htaccess`**, ces
+dossiers seraient servis en statique → **fuite de secrets**. Si tu n'as pas décoché le smart static
+(option 1), ajoute dans les *Directives nginx supplémentaires* :
+
+```nginx
+location ~ ^/(backups|logs|config)/ { deny all; }
+```
+
+Le repo fournit un `nginx.conf` de référence (racine) avec ces règles, à adapter avant tout usage réel.

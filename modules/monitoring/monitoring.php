@@ -28,6 +28,8 @@ class Monitoring extends Module
 				'admin/delete/{url_title}'             => '_backup_delete',
 				'admin/purge'                          => '_backups_purge',
 				'admin/cron/reset'                     => '_cron_reset',
+				'admin/webmaster'                      => 'webmaster',
+				'admin/files'                          => 'files',
 				'cron'                                 => 'cron'
 			]
 		];
@@ -56,7 +58,7 @@ class Monitoring extends Module
 			{
 				if ($count)
 				{
-					return '<span class="float-right badge badge-'.$class.'">'.$count.'</span>';
+					return '<span class="float-end badge badge-'.$class.'">'.$count.'</span>';
 				}
 			}
 		}

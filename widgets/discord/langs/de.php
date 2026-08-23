@@ -11,7 +11,10 @@ return [
 	'6a97e63a' => 'Numerische Snowflake-ID des Servers (Rechtsklick auf den Servernamen in Discord → "Server-ID kopieren"). Entwicklermodus erforderlich.',
 	'6cb57f33' => 'Theme (iframe)',
 	'd743b52b' => 'Optional. Andernfalls wird der Link automatisch von Discord abgerufen.',
-	'df4700c0' => 'Discord-Serverinformationen konnten nicht geladen werden. Stellen Sie sicher, dass das Widget <strong>in den Discord-Servereinstellungen aktiviert</strong> ist (Einstellungen → Widget → Server-Widget aktivieren).',
+	'8f44c74a' => 'Das Widget dieses Discord-Servers ist nicht aktiviert: <strong>Servereinstellungen → Widget → Server-Widget aktivieren</strong>.',
+	'fee4ebb0' => 'Discord-Server-ID nicht gefunden. Aktiviere den <strong>Entwicklermodus</strong> (Einstellungen → Erweitert), dann Rechtsklick auf den <strong>Server</strong> → „Server-ID kopieren“ (nicht mit einer Kanal-ID oder einem Einladungscode zu verwechseln).',
+	'ae074439' => 'Discord-Server nicht erreichbar. Wenn dein Hosting ausgehende Anfragen blockiert, stelle das Widget in seinen Einstellungen auf den <strong>iframe</strong>-Modus um.',
+	'9a81093c' => 'Discord-seitiger Fehler (%s). Versuche es in ein paar Minuten erneut.',
 	'e16d555c' => 'Nativ',
 	'fdd16ad9' => 'Nativ (in das Theme integriert)',
 	'816f205c' => 'Discord',
@@ -35,4 +38,6 @@ return [
 	'2547c34e' => '%d weitere',
 	'a12b1086' => 'Sprachkanäle',
 	'f930d5d6' => 'Server beitreten',
+	'5b00c662' => 'Mitglieder online',
+	'2aa68b91' => 'Mitglied online',
 ];

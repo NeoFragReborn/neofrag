@@ -166,7 +166,7 @@
 		bar.className = 'settings-save-bar';
 		var inner = document.createElement('div');
 		inner.className = 'settings-save-bar-inner';
-		inner.innerHTML = '<div class="settings-save-bar-info"><i class="far fa-edit"></i> <span>Unsaved changes</span></div>' +
+		inner.innerHTML = '<div class="settings-save-bar-info"><i class="far fa-edit"></i> <span>Modifications non enregistrées</span></div>' +
 			'<div class="settings-save-bar-actions"></div>';
 		var actionsContainer = inner.querySelector('.settings-save-bar-actions');
 		var btns = lastRow.querySelectorAll('button, input[type=submit]');

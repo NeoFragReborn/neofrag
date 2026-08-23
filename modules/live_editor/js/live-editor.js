@@ -1,173 +1,192 @@
 if (document && document.body){ document.body.classList.add('nf-le-chrome'); }
 
+// switchClass de jQuery UI (retiré) -> bascule de classe simple (la transition est cosmétique).
+var nfLeSwitchClass = function(el, oldClass, newClass){
+	if (!el){ return; }
+	if (oldClass){ el.classList.remove(oldClass); }
+	if (newClass){ el.classList.add(newClass); }
+};
+
+// Style « courant » d'un widget : data-widget-style (attribut serveur) puis suivi en mémoire.
+var nfLeWidgetStyle = function(widget, value){
+	if (arguments.length > 1){ widget._nfWidgetStyle = value; return value; }
+	return widget._nfWidgetStyle !== undefined ? widget._nfWidgetStyle : NF.data(widget, 'widget-style');
+};
+
 var nfLeCloneModal = function(templateId){
 	var tpl = document.getElementById(templateId);
 	if (!tpl || !tpl.content){
 		return null;
 	}
-	return $(tpl.content.cloneNode(true)).find('.modal');
+	return tpl.content.cloneNode(true).querySelector('.modal');
 };
 
 var nfLeOpenModal = function(templateId, title){
-	if ($('body').find('.live-editor-modal').length){
+	if (document.querySelector('.live-editor-modal')){
 		return null;
 	}
-	var $modal = nfLeCloneModal(templateId);
-	if (!$modal || !$modal.length){
+	var modal = nfLeCloneModal(templateId);
+	if (!modal){
 		return null;
 	}
 	if (title){
-		$modal.find('.nf-le-modal-title-text').text(title);
+		var titleEl = modal.querySelector('.nf-le-modal-title-text');
+		if (titleEl){ titleEl.textContent = title; }
 	}
-	return $modal.appendTo('body');
+	document.body.appendChild(modal);
+	return modal;
 };
 
-var modal_style = function(title, $element, styles, callback){
-	var $modal = nfLeOpenModal('nf-le-tpl-modal-style', title);
-	if (!$modal){ return; }
+var modal_style = function(title, element, styles, callback){
+	var modal = nfLeOpenModal('nf-le-tpl-modal-style', title);
+	if (!modal){ return; }
 
-	$modal.find('.modal-body').html($(styles).html());
-	$modal.data('element', $element).modal();
+	var stylesEl = document.querySelector(styles);
+	modal.querySelector('.modal-body').innerHTML = stylesEl ? stylesEl.innerHTML : '';
+	modal._nfElement = element;
+	bootstrap.Modal.getOrCreateInstance(modal).show();
 
-	var $widget = $element.parents('.widget:first');
+	var widget = element.closest('.widget');
 
-	$element.data('previous-style', $widget.data('widget-style'));
+	element._nfPreviousStyle = nfLeWidgetStyle(widget);
 
-	$modal.find('[data-style]').each(function(){
-		if ($(this).data('style') == $widget.data('widget-style')){
-			$(this).addClass('active');
-			return false;
+	var entries = modal.querySelectorAll('[data-style]');
+	for (var i = 0; i < entries.length; i++){
+		if (NF.data(entries[i], 'style') == nfLeWidgetStyle(widget)){
+			entries[i].classList.add('active');
+			break;
 		}
+	}
+
+	modal.addEventListener('hidden.bs.modal', function(){
+		if (element._nfPreviousStyle != nfLeWidgetStyle(widget)){
+			nfLeSwitchClass(element, element._nfPreviousStyle, nfLeWidgetStyle(widget));
+		}
+		modal.remove();
 	});
 
-	$modal.on('hidden.bs.modal', function(){
-		if ($element.data('previous-style') != $widget.data('widget-style')){
-			$element.switchClass($element.data('previous-style'), $widget.data('widget-style'), 200);
-		}
-		$(this).remove();
-	});
-
-	$modal.find('[data-action="confirm"]').on('click', function(){
-		var style = $element.data('previous-style');
-		$widget.data('widget-style', style);
-		$modal.modal('hide');
+	modal.querySelector('[data-action="confirm"]').addEventListener('click', function(){
+		var style = element._nfPreviousStyle;
+		nfLeWidgetStyle(widget, style);
+		bootstrap.Modal.getOrCreateInstance(modal).hide();
 		callback(style);
 	});
 };
 
 var modal_settings = function(title, settings, callback){
 	var load_settings = function(){
-		var widget = $('#live-editor-settings-widget').val();
-		var type   = $('#live-editor-settings-type').val();
+		var settingsEl = document.getElementById('live-editor-settings');
+		var widget = document.getElementById('live-editor-settings-widget').value;
+		var type   = document.getElementById('live-editor-settings-type').value;
 
-		if ($('#live-editor-settings').data('widget-id') && $('#live-editor-settings').data('original-widget') == widget && $('#live-editor-settings').data('original-type') == type){
-			var data = {
-				widget_id: $('#live-editor-settings').data('widget-id')
-			};
+		var data;
+		if (NF.data(settingsEl, 'widget-id') && NF.data(settingsEl, 'original-widget') == widget && NF.data(settingsEl, 'original-type') == type){
+			data = { widget_id: NF.data(settingsEl, 'widget-id') };
 		}
 		else {
-			var data = {
-				widget: widget,
-				type: type
-			};
+			data = { widget: widget, type: type };
 		}
 
-		$('#live-editor-settings').html('');
+		settingsEl.innerHTML = '';
 
-		$.post('<?php echo url('admin/ajax/live-editor/widget-admin') ?>', data, function(data){
-			if (data){
-				$('#live-editor-settings').html(data);
-			}
+		NF.post('<?php echo url('admin/ajax/live-editor/widget-admin') ?>', data).then(function(html){
+			if (html){ NF.setHtml(settingsEl, html); }
 		});
 	};
 
-	var $modal = nfLeOpenModal('nf-le-tpl-modal-settings', title);
-	if (!$modal){ return; }
+	var modal = nfLeOpenModal('nf-le-tpl-modal-settings', title);
+	if (!modal){ return; }
 
-	$modal.find('.modal-body').html(settings);
+	NF.setHtml(modal.querySelector('.modal-body'), settings);
 
-	$modal.on('change', '#live-editor-settings-widget', function(){
-		var $widgets = $(this), count = 0;
+	modal.addEventListener('change', function(e){
+		if (!e.target.closest('#live-editor-settings-widget')){ return; }
 
-		$('#live-editor-settings-type option:selected').prop('selected', false);
+		var widgets = document.getElementById('live-editor-settings-widget');
+		var typeSelect = document.getElementById('live-editor-settings-type');
+		var count = 0;
 
-		$('#live-editor-settings-type option').each(function(){
-			if ($(this).data('widget') == $widgets.val()){
-				$(this).show();
+		Array.prototype.forEach.call(typeSelect.querySelectorAll('option'), function(opt){ opt.selected = false; });
+
+		Array.prototype.forEach.call(typeSelect.querySelectorAll('option'), function(opt){
+			if (NF.data(opt, 'widget') == widgets.value){
+				opt.style.display = '';
 				count++;
 			}
 			else {
-				$(this).hide();
+				opt.style.display = 'none';
 			}
 		});
 
+		var typeGroup = typeSelect.closest('.form-group');
+
 		if (count){
-			$('#live-editor-settings-type').parents('.form-group:first').show();
-			$('#live-editor-settings-type option[data-widget="'+$(this).val()+'"]:first').prop('selected', true);
+			if (typeGroup){ typeGroup.style.display = ''; }
+			var firstOpt = typeSelect.querySelector('option[data-widget="' + widgets.value + '"]');
+			if (firstOpt){ firstOpt.selected = true; }
 		}
-		else {
-			$('#live-editor-settings-type').parents('.form-group:first').hide();
+		else if (typeGroup){
+			typeGroup.style.display = 'none';
 		}
 
-		if ($(this).val() == 'module'){
-			$('#live-editor-settings-title').data('value', $('#live-editor-settings-title').val());
-			$('#live-editor-settings-title').val('').parents('.form-group:first').hide();
+		var titleField = document.getElementById('live-editor-settings-title');
+		var titleGroup = titleField.closest('.form-group');
+
+		if (widgets.value == 'module'){
+			titleField._nfValue = titleField.value;
+			titleField.value = '';
+			if (titleGroup){ titleGroup.style.display = 'none'; }
 		}
 		else {
-			if (!$('#live-editor-settings-title').val()){
-				var value = $('#live-editor-settings-title').data('value');
-
-				if (value){
-					$('#live-editor-settings-title').val(value);
-				}
+			if (!titleField.value && titleField._nfValue){
+				titleField.value = titleField._nfValue;
 			}
-
-			$('#live-editor-settings-title').parents('.form-group:first').show();
+			if (titleGroup){ titleGroup.style.display = ''; }
 		}
 
-		if (!$modal.find('#live-editor-settings-type option[data-widget="'+$('#live-editor-settings-widget').val()+'"]').length){
-			$('#live-editor-settings-type').val('index').parents('.form-group:first').hide();
+		if (!modal.querySelector('#live-editor-settings-type option[data-widget="' + widgets.value + '"]')){
+			typeSelect.value = 'index';
+			if (typeGroup){ typeGroup.style.display = 'none'; }
 		}
 
 		load_settings();
 	});
 
-	$modal.on('change', '#live-editor-settings-type', function(){
-		load_settings();
+	modal.addEventListener('change', function(e){
+		if (e.target.closest('#live-editor-settings-type')){ load_settings(); }
 	});
 
-	$('#live-editor-settings-type').trigger('change');
+	document.getElementById('live-editor-settings-type').dispatchEvent(new Event('change', { bubbles: true }));
 
-	$modal.find('#live-editor-settings-form').submit(function(){
-		$modal.find('[data-action="confirm"]').trigger('click');
-		return false;
+	var settingsForm = modal.querySelector('#live-editor-settings-form');
+	if (settingsForm){
+		settingsForm.addEventListener('submit', function(e){
+			e.preventDefault();
+			modal.querySelector('[data-action="confirm"]').click();
+		});
+	}
+
+	bootstrap.Modal.getOrCreateInstance(modal).show();
+
+	modal.addEventListener('hidden.bs.modal', function(){
+		modal.remove();
 	});
 
-	$modal.modal();
+	modal.querySelector('[data-action="confirm"]').addEventListener('click', function(){
+		var form = document.getElementById('live-editor-settings-form');
+		form.dispatchEvent(new CustomEvent('nf.live-editor-settings.submit', { bubbles: true }));
 
-	$modal.on('hidden.bs.modal', function(){
-		$(this).remove();
-	});
+		bootstrap.Modal.getOrCreateInstance(modal).hide();
 
-	$modal.find('[data-action="confirm"]').on('click', function(){
-		$('#live-editor-settings-form').trigger('nf.live-editor-settings.submit');
-
-		$modal.modal('hide');
-
-		var settings = {};
-
-		settings.settings = null;
-
-		$.each($('#live-editor-settings-form').serializeArray(), function(){
-			if (settings[this.name] !== undefined){
-				if (!settings[this.name].push){
-					settings[this.name] = [settings[this.name]];
-				}
-
-				settings[this.name].push(this.value || '');
+		// Sérialise le form avec ses names natifs (doublons -> tableau ; NF.ajax gère le suffixe []).
+		var settings = { settings: null };
+		new FormData(form).forEach(function(value, name){
+			if (settings[name] !== undefined){
+				if (!Array.isArray(settings[name])){ settings[name] = [settings[name]]; }
+				settings[name].push(value || '');
 			}
 			else {
-				settings[this.name] = this.value || '';
+				settings[name] = value || '';
 			}
 		});
 
@@ -180,511 +199,515 @@ var modal_settings = function(title, settings, callback){
 };
 
 var modal_fork = function(callback){
-	var $modal = nfLeOpenModal('nf-le-tpl-modal-fork');
-	if (!$modal){ return; }
+	var modal = nfLeOpenModal('nf-le-tpl-modal-fork');
+	if (!modal){ return; }
 
-	$modal.modal();
+	bootstrap.Modal.getOrCreateInstance(modal).show();
 
-	$modal.on('hidden.bs.modal', function(){
-		$(this).remove();
-	});
+	modal.addEventListener('hidden.bs.modal', function(){ modal.remove(); });
 
-	$modal.find('[data-action="confirm"]').on('click', function(){
-		$modal.modal('hide');
+	modal.querySelector('[data-action="confirm"]').addEventListener('click', function(){
+		bootstrap.Modal.getOrCreateInstance(modal).hide();
 		callback();
 	});
 };
 
 var modal_delete = function(message, callback){
-	var $modal = nfLeOpenModal('nf-le-tpl-modal-delete');
-	if (!$modal){ return; }
+	var modal = nfLeOpenModal('nf-le-tpl-modal-delete');
+	if (!modal){ return; }
 
-	$modal.find('.modal-body').html(message);
-	$modal.modal();
+	modal.querySelector('.modal-body').innerHTML = message;
+	bootstrap.Modal.getOrCreateInstance(modal).show();
 
-	$modal.on('hidden.bs.modal', function(){
-		$(this).remove();
-	});
+	modal.addEventListener('hidden.bs.modal', function(){ modal.remove(); });
 
-	$modal.find('[data-action="confirm"]').on('click', function(){
-		$modal.modal('hide');
+	modal.querySelector('[data-action="confirm"]').addEventListener('click', function(){
+		bootstrap.Modal.getOrCreateInstance(modal).hide();
 		callback();
 	});
 };
 
-$(function(){
-	var $widgets = $('[data-mode="<?php echo \NF\NeoFrag\Core\Output::WIDGETS ?>"]');
+NF.ready(function(){
+	var widgetsMode = document.querySelector('[data-mode="<?php echo \NF\NeoFrag\Core\Output::WIDGETS ?>"]');
 
-	$('form[target="live-editor-iframe"]').submit();
+	var liveEditorForm = function(){ return document.querySelector('form[target="live-editor-iframe"]'); };
+	var liveEditorValue = function(){ var i = document.querySelector('input[type="hidden"][name="live_editor"]'); return i ? i.value : ''; };
+	var showSave = function(){ document.querySelectorAll('.live-editor-save').forEach(function(s){ s.style.display = ''; }); };
+	var hideSave = function(){ document.querySelectorAll('.live-editor-save').forEach(function(s){ s.style.display = 'none'; }); };
 
-	$('.live-editor-screen[data-width]').click(function(){
-		var width = $(this).data('width');
+	var initialForm = liveEditorForm();
+	if (initialForm){ initialForm.submit(); }
 
-		if (width == '100%'){
-			var size = '20px';
-			width = 'calc('+width+' - 40px)';
-		}
-		else {
-			var size = 'calc(50% - '+width+' / 2)';
-		}
+	document.querySelectorAll('.live-editor-screen[data-width]').forEach(function(screen){
+		screen.addEventListener('click', function(){
+			var width = NF.data(this, 'width');
+			var size;
 
-		$('.live-editor-iframe').width(width).css('left', size);
-		$('.live-editor-screen').removeClass('active');
-		$(this).addClass('active');
-		$('#navbarDropdownScreen').html($(this).html()+' <?php echo icon('fas fa-angle-down') ?>');
-	});
-
-	$('.live-editor-mode').click(function(){
-		$(this).toggleClass('active');
-
-		if ($(this).data('mode') == <?php echo \NF\NeoFrag\Core\Output::WIDGETS ?>){
-			return;
-		}
-
-		var mode = <?php echo $this->output->live_editor() ?>;
-		$('.live-editor-mode.active').each(function(){
-			mode += $(this).data('mode');
-		});
-
-		$('input[type="hidden"][name="live_editor"]').val(mode);
-		$('form[target="live-editor-iframe"]').submit();
-	});
-
-	$('#modules-links-collapse').on('click', '.dropdown-menu > a', function(){
-		$('#live-editor-map').html('<?php echo icon('fas fa-spinner fa-spin').' '.$this->lang('Chargement en cours...') ?>');
-		$('form[target="live-editor-iframe"]').prop('action', $(this).attr('href')).submit();
-		$('.dropdown-menu').removeClass('show');
-		$('.nav-item.dropdown').removeClass('show');
-		return false;
-	});
-
-	/* Styles Overview */
-	$('body').on('click', '.live-editor-overview:not(.active)', function(){
-		var $element = $(this).parents('.modal:first').data('element');
-		$element.switchClass($element.data('previous-style'), $(this).data('style'), 200);
-		$element.data('previous-style', $(this).data('style'));
-		$('.live-editor-overview').removeClass('active');
-		$(this).addClass('active');
-	});
-
-	$('.live-editor-iframe iframe').on('load', function(){
-		var $iframe = $(this).contents();
-
-		$('#live-editor-map').html($iframe.find('#live_editor').data('module-title'));
-
-		$iframe.on('mouseover', '.widget, .module', function(){
-			if ($widgets.hasClass('active') && !$(this).find('.widget-hover').length){
-				$iframe.find('.widget-hover').remove();
-				if ($(this).css('position') === 'static'){
-					$(this).css('position', 'relative');
-				}
-				var isModule  = $(this).hasClass('module');
-				var typeLabel = isModule ? '<?php echo $this->lang('Module') ?>' : '<?php echo $this->lang('Widget') ?>';
-				var title     = $(this).data('title') || '';
-				var styleBtn  = isModule ? '' : '<button type="button" class="nf-le-btn live-editor-style" title="<?php echo $this->lang('Apparence') ?>" aria-label="<?php echo $this->lang('Apparence') ?>"><?php echo icon('fas fa-paint-brush') ?></button>';
-				$('<div class="widget-hover nf-le-widget-hover">'+
-						'<div class="nf-le-widget-hover-card">'+
-							'<span class="nf-le-widget-hover-type">'+typeLabel+'</span>'+
-							'<span class="nf-le-widget-hover-title">'+title+'</span>'+
-							'<div class="nf-le-toolbar" role="toolbar">'+
-								styleBtn+
-								'<button type="button" class="nf-le-btn live-editor-setting" title="<?php echo $this->lang('Configurer') ?>" aria-label="<?php echo $this->lang('Configurer') ?>"><?php echo icon('fas fa-cog') ?></button>'+
-								'<button type="button" class="nf-le-btn nf-le-btn-danger live-editor-delete" title="<?php echo $this->lang('Supprimer') ?>" aria-label="<?php echo $this->lang('Supprimer') ?>"><?php echo icon('far fa-trash-alt') ?></button>'+
-							'</div>'+
-						'</div>'+
-					'</div>').prependTo(this).fadeTo('fast', 1);
-			}
-		});
-
-		$iframe.on('mouseleave', '.widget-hover', function(){
-			$(this).remove();
-		});
-
-		$iframe.on('click', 'a', function(){
-			var href = $(this).attr('href');
-
-			if (href.match(/<?php echo str_replace('/', '\/', url()) ?>(?!(admin|live-editor|#))/)){
-				$('#live-editor-map').html('<?php echo icon('fas fa-spinner fa-spin').' '.$this->lang('Chargement en cours...') ?>');
-				$('form[target="live-editor-iframe"]').prop('action', href).submit();
-			}
-
-			return false;
-		});
-
-		/* Zone Fork */
-		$iframe.on('click', '.live-editor-zone .live-editor-fork', function(){
-			var $this = $(this);
-			var fork = function(){
-				$('.live-editor-save').show();
-
-				var $zone = $this.parents('[data-disposition-id]:first');
-
-				$.post('<?php echo url('admin/ajax/live-editor/zone-fork') ?>', {
-					disposition_id: $zone.data('disposition-id'),
-					url: $iframe[0].location.pathname,
-					live_editor: $('input[type="hidden"][name="live_editor"]').val()
-				}, function(data){
-					if ($(data).find('.live-editor-widget.module').length){
-						$('form[target="live-editor-iframe"]').submit();
-					}
-					else {
-						$zone.replaceWith(data);
-					}
-				}).always(function(){
-					$('.live-editor-save').hide();
-				});
-			};
-
-			if ($this.data('enabled')){
-				modal_fork(fork);
+			if (width == '100%'){
+				size = '20px';
+				width = 'calc(' + width + ' - 40px)';
 			}
 			else {
-				fork();
+				size = 'calc(50% - ' + width + ' / 2)';
 			}
+
+			document.querySelectorAll('.live-editor-iframe').forEach(function(f){ f.style.width = width; f.style.left = size; });
+			document.querySelectorAll('.live-editor-screen').forEach(function(s){ s.classList.remove('active'); });
+			this.classList.add('active');
+			var dropdown = document.getElementById('navbarDropdownScreen');
+			if (dropdown){ dropdown.innerHTML = this.innerHTML + ' <?php echo icon('fas fa-angle-down') ?>'; }
 		});
+	});
 
-		/* Row Add */
-		$iframe.on('click', '.live-editor-add-row', function(){
-			var $this = $(this).parents('[data-disposition-id]:first');
-			$('.live-editor-save').show();
+	document.querySelectorAll('.live-editor-mode').forEach(function(modeBtn){
+		modeBtn.addEventListener('click', function(){
+			this.classList.toggle('active');
 
-			$.post('<?php echo url('admin/ajax/live-editor/row-add') ?>', {
-				disposition_id: $this.data('disposition-id'),
-				live_editor: $('input[type="hidden"][name="live_editor"]').val()
-			}, function(data){
-				var $rows_button = $('.live-editor-mode[data-mode="<?php echo \NF\NeoFrag\Core\Output::ROWS ?>"]');
+			if (NF.data(this, 'mode') == <?php echo \NF\NeoFrag\Core\Output::WIDGETS ?>){
+				return;
+			}
 
-				if (!$rows_button.hasClass('active')){
-					$rows_button.trigger('click');
-				}
-				else {
-					$this.append(data);
-				}
-			}).always(function(){
-				$('.live-editor-save').hide();
+			var mode = <?php echo $this->output->live_editor() ?>;
+			document.querySelectorAll('.live-editor-mode.active').forEach(function(m){
+				mode += NF.data(m, 'mode');
 			});
+
+			var hidden = document.querySelector('input[type="hidden"][name="live_editor"]');
+			if (hidden){ hidden.value = mode; }
+			var form = liveEditorForm();
+			if (form){ form.submit(); }
 		});
+	});
 
-		/* Row Move */
-		$iframe.find('[data-disposition-id]').sortable({
-			axis: 'y',
-			containment: 'parent',
-			cursor: 'move',
-			intersect: 'pointer',
-			items: '> .live-editor-row',
-			opacity: 0.6,
-			placeholder: 'live-editor-placeholder',
-			revert: true,
-			start: function(event, ui){
-				ui.placeholder.css('height', ui.item.height());
-			},
-			update: function(event, ui){
-				$('.live-editor-save').show();
+	var modulesLinks = document.getElementById('modules-links-collapse');
+	if (modulesLinks){
+		modulesLinks.addEventListener('click', function(e){
+			var link = e.target.closest('.dropdown-menu > a');
+			if (!link){ return; }
+			e.preventDefault();
 
-				$.post('<?php echo url('admin/ajax/live-editor/row-move') ?>', {
-					disposition_id: $(this).data('disposition-id'),
-					row_id: ui.item.find('.row:first').data('row-id'),
-					position: $(this).find('.live-editor-row').index(ui.item)
-				}).always(function(){
-					$('.live-editor-save').hide();
-				});
-			}
+			var map = document.getElementById('live-editor-map');
+			if (map){ map.innerHTML = '<?php echo icon('fas fa-spinner fa-spin').' '.$this->lang('Chargement en cours...') ?>'; }
+			var form = liveEditorForm();
+			if (form){ form.action = link.getAttribute('href'); form.submit(); }
+			document.querySelectorAll('.dropdown-menu').forEach(function(m){ m.classList.remove('show'); });
+			document.querySelectorAll('.nav-item.dropdown').forEach(function(m){ m.classList.remove('show'); });
 		});
+	}
 
-		/* Row Style */
-		$iframe.on('click', '.live-editor-row-header .live-editor-style', function(){
-			var $this = $(this);
-			var $row = $this.parents('.live-editor-row-header:first').next('.row');
+	/* Styles Overview */
+	document.body.addEventListener('click', function(e){
+		var overview = e.target.closest('.live-editor-overview:not(.active)');
+		if (!overview){ return; }
 
-			modal_style('<?php echo $this->lang('Apparence de la ligne') ?>', $row, '.live-editor-styles-row', function(style){
-				$('.live-editor-save').show();
+		var modal = overview.closest('.modal');
+		var element = modal ? modal._nfElement : null;
+		if (!element){ return; }
 
-				$.post('<?php echo url('admin/ajax/live-editor/row-style') ?>', {
-					disposition_id: $this.parents('[data-disposition-id]:first').data('disposition-id'),
-					row_id: $row.data('row-id'),
-					style: style
-				}).always(function(){
-					$('.live-editor-save').hide();
-				});
-			});
-		});
+		nfLeSwitchClass(element, element._nfPreviousStyle, NF.data(overview, 'style'));
+		element._nfPreviousStyle = NF.data(overview, 'style');
+		document.querySelectorAll('.live-editor-overview').forEach(function(o){ o.classList.remove('active'); });
+		overview.classList.add('active');
+	});
 
-		/* Row Delete */
-		$iframe.on('click', '.live-editor-row-header .live-editor-delete', function(){
-			var $this = $(this);
+	document.querySelectorAll('.live-editor-iframe iframe').forEach(function(iframe){
+		iframe.addEventListener('load', function(){
+			var doc = iframe.contentDocument || iframe.contentWindow.document;
 
-			modal_delete('<?php echo $this->lang('Êtes-vous sûr(e) de vouloir supprimer cette <b>ligne</b> ?<br />Toutes les <b>colonnes</b> et <b>widgets</b> contenus seront également supprimés.') ?>', function(){
-				var $row = $this.parents('.live-editor-row-header:first').next('.row');
+			var liveEditorEl = doc.querySelector('#live_editor');
+			var map = document.getElementById('live-editor-map');
+			if (map && liveEditorEl){ map.innerHTML = NF.data(liveEditorEl, 'module-title'); }
 
-				$('.live-editor-save').show();
+			doc.addEventListener('mouseover', function(e){
+				var el = e.target.closest('.widget, .module');
+				if (!el){ return; }
 
-				$.post('<?php echo url('admin/ajax/live-editor/row-delete') ?>', {
-					disposition_id: $this.parents('[data-disposition-id]:first').data('disposition-id'),
-					row_id: $row.data('row-id')
-				}, function(){
-					$row.parents('.live-editor-row:first').remove();
-				}).always(function(){
-					$('.live-editor-save').hide();
-				});
-			});
-		});
+				if (widgetsMode && widgetsMode.classList.contains('active') && !el.querySelector('.widget-hover')){
+					doc.querySelectorAll('.widget-hover').forEach(function(h){ h.remove(); });
+					if (getComputedStyle(el).position === 'static'){
+						el.style.position = 'relative';
+					}
+					var isModule  = el.classList.contains('module');
+					var typeLabel = isModule ? '<?php echo $this->lang('Module') ?>' : '<?php echo $this->lang('Widget') ?>';
+					var title     = NF.data(el, 'title') || '';
+					var styleBtn  = isModule ? '' : '<button type="button" class="nf-le-btn live-editor-style" title="<?php echo $this->lang('Apparence') ?>" aria-label="<?php echo $this->lang('Apparence') ?>"><?php echo icon('fas fa-paint-brush') ?></button>';
 
-		/* Col Add */
-		$iframe.on('click', '.live-editor-add-col', function(){
-			var $row = $(this).parents('.live-editor-row-header:first').next('[data-row-id]:first');
-			$('.live-editor-save').show();
-
-			$.post('<?php echo url('admin/ajax/live-editor/col-add') ?>', {
-				disposition_id: $(this).parents('[data-disposition-id]:first').data('disposition-id'),
-				row_id: $row.data('row-id'),
-				live_editor: $('input[type="hidden"][name="live_editor"]').val()
-			}, function(data){
-				var $cols_button = $('.live-editor-mode[data-mode="<?php echo \NF\NeoFrag\Core\Output::COLS ?>"]');
-
-				if (!$cols_button.hasClass('active')){
-					$cols_button.trigger('click');
+					var hover = document.createElement('div');
+					hover.className = 'widget-hover nf-le-widget-hover';
+					hover.innerHTML = '<div class="nf-le-widget-hover-card">' +
+							'<span class="nf-le-widget-hover-type">' + typeLabel + '</span>' +
+							'<span class="nf-le-widget-hover-title">' + title + '</span>' +
+							'<div class="nf-le-toolbar" role="toolbar">' +
+								styleBtn +
+								'<button type="button" class="nf-le-btn live-editor-setting" title="<?php echo $this->lang('Configurer') ?>" aria-label="<?php echo $this->lang('Configurer') ?>"><?php echo icon('fas fa-cog') ?></button>' +
+								'<button type="button" class="nf-le-btn nf-le-btn-danger live-editor-delete" title="<?php echo $this->lang('Supprimer') ?>" aria-label="<?php echo $this->lang('Supprimer') ?>"><?php echo icon('far fa-trash-alt') ?></button>' +
+							'</div>' +
+						'</div>';
+					hover.style.opacity = '0';
+					hover.style.transition = 'opacity .2s';
+					hover.addEventListener('mouseleave', function(){ hover.remove(); });
+					el.insertBefore(hover, el.firstChild);
+					requestAnimationFrame(function(){ hover.style.opacity = '1'; });
 				}
-				else {
-					$row.append(data);
-				}
-			}).always(function(){
-				$('.live-editor-save').hide();
 			});
-		});
 
-		/* Col Move */
-		$iframe.find('[data-row-id]').sortable({
-			axis: 'x',
-			containment: 'parent',
-			cursor: 'move',
-			intersect: 'pointer',
-			items: '> [data-col-id]',
-			opacity: 0.6,
-			placeholder: 'live-editor-placeholder',
-			revert: true,
-			start: function(event, ui){
-				if (match = ui.item.prop('class').match(/(col-\d{1,2})/)){
-					ui.placeholder.addClass(match[1]);
-					ui.placeholder.css('height', ui.item.height());
+			doc.addEventListener('click', function(e){
+				var link = e.target.closest('a');
+				if (!link || !doc.contains(link)){ return; }
+				// Délégué plus bas pour les boutons spécifiques ; ici uniquement les liens de navigation.
+				if (e.target.closest('.live-editor-fork, .live-editor-add-row, .live-editor-add-col, .live-editor-add-widget, .live-editor-style, .live-editor-setting, .live-editor-delete, .live-editor-size')){ return; }
+
+				var href = link.getAttribute('href');
+				if (href && href.match(/<?php echo str_replace('/', '\/', url()) ?>(?!(admin|live-editor|#))/)){
+					if (map){ map.innerHTML = '<?php echo icon('fas fa-spinner fa-spin').' '.$this->lang('Chargement en cours...') ?>'; }
+					var form = liveEditorForm();
+					if (form){ form.action = href; form.submit(); }
 				}
-			},
-			update: function(event, ui){
-				$('.live-editor-save').show();
 
-				$.post('<?php echo url('admin/ajax/live-editor/col-move') ?>', {
-					disposition_id: $(this).parents('[data-disposition-id]:first').data('disposition-id'),
-					row_id: $(this).data('row-id'),
-					col_id: ui.item.data('col-id'),
-					position: $(this).find('[data-col-id]').index(ui.item)
-				}).always(function(){
-					$('.live-editor-save').hide();
-				});
-			}
-		});
-
-		/* Col Size */
-		$iframe.on('click', '.live-editor-col .live-editor-size', function(){
-			var $col       = $(this).parents('[data-col-id]:first');
-			var classList  = $col.prop('class');
-			var oldSize    = 12;
-			var prefix     = 'col-lg-';
-			var match      = classList.match(/\bcol-lg-(\d{1,2})\b/);
-
-			if (match){
-				oldSize = parseInt(match[1], 10);
-			}
-			else if (match = classList.match(/\bcol-(\d{1,2})\b/)){
-				oldSize = parseInt(match[1], 10);
-				prefix  = 'col-';
-			}
-
-			var newSize = Math.max(1, Math.min(12, oldSize + parseInt($(this).data('size'), 10)));
-
-			if (newSize !== oldSize){
-				$col.removeClass(prefix + oldSize).addClass(prefix + newSize);
-
-				$('.live-editor-save').show();
-
-				$.post('<?php echo url('admin/ajax/live-editor/col-size') ?>', {
-					disposition_id: $(this).parents('[data-disposition-id]:first').data('disposition-id'),
-					row_id:         $(this).parents('[data-row-id]:first').data('row-id'),
-					col_id:         $col.data('col-id'),
-					size:           newSize
-				}).always(function(){
-					$('.live-editor-save').hide();
-				});
-			}
-		});
-
-		/* Col Delete */
-		$iframe.on('click', '.live-editor-col > .nf-le-col-header .live-editor-delete', function(){
-			var $this = $(this);
-			var $col  = $(this).parents('[data-col-id]:first');
-
-			modal_delete('<?php echo $this->lang('Êtes-vous sûr(e) de vouloir supprimer cette <b>colonne</b> ?<br />Tous les <b>widgets</b> contenus seront également supprimés.') ?>', function(){
-				$('.live-editor-save').show();
-
-				$.post('<?php echo url('admin/ajax/live-editor/col-delete') ?>', {
-					disposition_id: $this.parents('[data-disposition-id]:first').data('disposition-id'),
-					row_id: $this.parents('[data-row-id]:first').data('row-id'),
-					col_id: $col.data('col-id')
-				}, function(){
-					$col.remove();
-				}).always(function(){
-					$('.live-editor-save').hide();
-				});
+				e.preventDefault();
 			});
-		});
 
-		/* Widget Add */
-		$iframe.on('click', '.live-editor-add-widget', function(){
-			var $col  = $(this).parents('[data-col-id]:first');
-			var data    = {
-				disposition_id: $(this).parents('[data-disposition-id]:first').data('disposition-id'),
-				row_id: $(this).parents('[data-row-id]:first').data('row-id'),
-				col_id: $col.data('col-id'),
-				widget_id: -1
-			};
+			/* Zone Fork */
+			doc.addEventListener('click', function(e){
+				var btn = e.target.closest('.live-editor-zone .live-editor-fork');
+				if (!btn){ return; }
 
-			$.post('<?php echo url('admin/ajax/live-editor/widget-settings') ?>', data, function(html){
-				modal_settings('<?php echo $this->lang('Nouveau Widget') ?>', html, function(settings){
-					$.extend(data, settings);
-					$.extend(data, {
-						live_editor: $('input[type="hidden"][name="live_editor"]').val()
-					});
+				var fork = function(){
+					showSave();
+					var zone = btn.closest('[data-disposition-id]');
 
-					$('.live-editor-save').show();
-
-					$.post('<?php echo url('admin/ajax/live-editor/widget-add') ?>', data, function(data){
-						if (settings.widget == 'module'){
-							$('form[target="live-editor-iframe"]').submit();
+					NF.post('<?php echo url('admin/ajax/live-editor/zone-fork') ?>', {
+						disposition_id: NF.data(zone, 'disposition-id'),
+						url: doc.location.pathname,
+						live_editor: liveEditorValue()
+					}).then(function(data){
+						var tmp = document.createElement('div');
+						tmp.innerHTML = data;
+						if (tmp.querySelector('.live-editor-widget.module')){
+							var form = liveEditorForm();
+							if (form){ form.submit(); }
 						}
 						else {
-							$col.find('.live-editor-col:first').append(data);
+							zone.outerHTML = data;
 						}
-					}).always(function(){
-						$('.live-editor-save').hide();
+					}).catch(function(){}).finally(hideSave);
+				};
+
+				if (NF.data(btn, 'enabled')){ modal_fork(fork); }
+				else { fork(); }
+			});
+
+			/* Row Add */
+			doc.addEventListener('click', function(e){
+				var btn = e.target.closest('.live-editor-add-row');
+				if (!btn){ return; }
+
+				var disposition = btn.closest('[data-disposition-id]');
+				showSave();
+
+				NF.post('<?php echo url('admin/ajax/live-editor/row-add') ?>', {
+					disposition_id: NF.data(disposition, 'disposition-id'),
+					live_editor: liveEditorValue()
+				}).then(function(data){
+					var rowsButton = document.querySelector('.live-editor-mode[data-mode="<?php echo \NF\NeoFrag\Core\Output::ROWS ?>"]');
+					if (rowsButton && !rowsButton.classList.contains('active')){
+						rowsButton.click();
+					}
+					else {
+						disposition.insertAdjacentHTML('beforeend', data);
+					}
+				}).catch(function(){}).finally(hideSave);
+			});
+
+			/* Row Move */
+			doc.querySelectorAll('[data-disposition-id]').forEach(function(el){
+				new Sortable(el, {
+					draggable: '.live-editor-row',
+					animation: 150,
+					ghostClass: 'live-editor-placeholder',
+					onEnd: function(evt){
+						showSave();
+						var handle = evt.item.querySelector('.row');
+						NF.post('<?php echo url('admin/ajax/live-editor/row-move') ?>', {
+							disposition_id: NF.data(evt.to, 'disposition-id'),
+							row_id: handle ? NF.data(handle, 'row-id') : '',
+							position: evt.newIndex
+						}).catch(function(){}).finally(hideSave);
+					}
+				});
+			});
+
+			/* Row Style */
+			doc.addEventListener('click', function(e){
+				var btn = e.target.closest('.live-editor-row-header .live-editor-style');
+				if (!btn){ return; }
+
+				var header = btn.closest('.live-editor-row-header');
+				var row    = header ? header.nextElementSibling : null;
+
+				modal_style('<?php echo $this->lang('Apparence de la ligne') ?>', row, '.live-editor-styles-row', function(style){
+					showSave();
+					NF.post('<?php echo url('admin/ajax/live-editor/row-style') ?>', {
+						disposition_id: NF.data(btn.closest('[data-disposition-id]'), 'disposition-id'),
+						row_id: NF.data(row, 'row-id'),
+						style: style
+					}).catch(function(){}).finally(hideSave);
+				});
+			});
+
+			/* Row Delete */
+			doc.addEventListener('click', function(e){
+				var btn = e.target.closest('.live-editor-row-header .live-editor-delete');
+				if (!btn){ return; }
+
+				modal_delete('<?php echo $this->lang('Êtes-vous sûr(e) de vouloir supprimer cette <b>ligne</b> ?<br />Toutes les <b>colonnes</b> et <b>widgets</b> contenus seront également supprimés.') ?>', function(){
+					var header = btn.closest('.live-editor-row-header');
+					var row    = header ? header.nextElementSibling : null;
+					showSave();
+
+					NF.post('<?php echo url('admin/ajax/live-editor/row-delete') ?>', {
+						disposition_id: NF.data(btn.closest('[data-disposition-id]'), 'disposition-id'),
+						row_id: NF.data(row, 'row-id')
+					}).then(function(){
+						var wrapper = row ? row.closest('.live-editor-row') : null;
+						if (wrapper){ wrapper.remove(); }
+					}).catch(function(){}).finally(hideSave);
+				});
+			});
+
+			/* Col Add */
+			doc.addEventListener('click', function(e){
+				var btn = e.target.closest('.live-editor-add-col');
+				if (!btn){ return; }
+
+				var header = btn.closest('.live-editor-row-header');
+				var row    = header ? header.nextElementSibling : null;
+				showSave();
+
+				NF.post('<?php echo url('admin/ajax/live-editor/col-add') ?>', {
+					disposition_id: NF.data(btn.closest('[data-disposition-id]'), 'disposition-id'),
+					row_id: NF.data(row, 'row-id'),
+					live_editor: liveEditorValue()
+				}).then(function(data){
+					var colsButton = document.querySelector('.live-editor-mode[data-mode="<?php echo \NF\NeoFrag\Core\Output::COLS ?>"]');
+					if (colsButton && !colsButton.classList.contains('active')){
+						colsButton.click();
+					}
+					else if (row){
+						row.insertAdjacentHTML('beforeend', data);
+					}
+				}).catch(function(){}).finally(hideSave);
+			});
+
+			/* Col Move */
+			doc.querySelectorAll('[data-row-id]').forEach(function(el){
+				new Sortable(el, {
+					draggable: '[data-col-id]',
+					animation: 150,
+					ghostClass: 'live-editor-placeholder',
+					onEnd: function(evt){
+						showSave();
+						NF.post('<?php echo url('admin/ajax/live-editor/col-move') ?>', {
+							disposition_id: NF.data(evt.to.closest('[data-disposition-id]'), 'disposition-id'),
+							row_id: NF.data(evt.to, 'row-id'),
+							col_id: NF.data(evt.item, 'col-id'),
+							position: evt.newIndex
+						}).catch(function(){}).finally(hideSave);
+					}
+				});
+			});
+
+			/* Col Size */
+			doc.addEventListener('click', function(e){
+				var btn = e.target.closest('.live-editor-col .live-editor-size');
+				if (!btn){ return; }
+
+				var col       = btn.closest('[data-col-id]');
+				var classList = col.getAttribute('class') || '';
+				var oldSize   = 12;
+				var prefix    = 'col-lg-';
+				var match     = classList.match(/\bcol-lg-(\d{1,2})\b/);
+
+				if (match){
+					oldSize = parseInt(match[1], 10);
+				}
+				else if ((match = classList.match(/\bcol-(\d{1,2})\b/))){
+					oldSize = parseInt(match[1], 10);
+					prefix  = 'col-';
+				}
+
+				var newSize = Math.max(1, Math.min(12, oldSize + parseInt(NF.data(btn, 'size'), 10)));
+
+				if (newSize !== oldSize){
+					col.classList.remove(prefix + oldSize);
+					col.classList.add(prefix + newSize);
+					showSave();
+
+					NF.post('<?php echo url('admin/ajax/live-editor/col-size') ?>', {
+						disposition_id: NF.data(btn.closest('[data-disposition-id]'), 'disposition-id'),
+						row_id:         NF.data(btn.closest('[data-row-id]'), 'row-id'),
+						col_id:         NF.data(col, 'col-id'),
+						size:           newSize
+					}).catch(function(){}).finally(hideSave);
+				}
+			});
+
+			/* Col Delete */
+			doc.addEventListener('click', function(e){
+				var btn = e.target.closest('.live-editor-col > .nf-le-col-header .live-editor-delete');
+				if (!btn){ return; }
+
+				var col = btn.closest('[data-col-id]');
+
+				modal_delete('<?php echo $this->lang('Êtes-vous sûr(e) de vouloir supprimer cette <b>colonne</b> ?<br />Tous les <b>widgets</b> contenus seront également supprimés.') ?>', function(){
+					showSave();
+					NF.post('<?php echo url('admin/ajax/live-editor/col-delete') ?>', {
+						disposition_id: NF.data(btn.closest('[data-disposition-id]'), 'disposition-id'),
+						row_id: NF.data(btn.closest('[data-row-id]'), 'row-id'),
+						col_id: NF.data(col, 'col-id')
+					}).then(function(){
+						if (col){ col.remove(); }
+					}).catch(function(){}).finally(hideSave);
+				});
+			});
+
+			/* Widget Add */
+			doc.addEventListener('click', function(e){
+				var btn = e.target.closest('.live-editor-add-widget');
+				if (!btn){ return; }
+
+				var col  = btn.closest('[data-col-id]');
+				var data = {
+					disposition_id: NF.data(btn.closest('[data-disposition-id]'), 'disposition-id'),
+					row_id: NF.data(btn.closest('[data-row-id]'), 'row-id'),
+					col_id: NF.data(col, 'col-id'),
+					widget_id: -1
+				};
+
+				NF.post('<?php echo url('admin/ajax/live-editor/widget-settings') ?>', data).then(function(html){
+					modal_settings('<?php echo $this->lang('Nouveau Widget') ?>', html, function(settings){
+						Object.assign(data, settings, { live_editor: liveEditorValue() });
+						showSave();
+
+						NF.post('<?php echo url('admin/ajax/live-editor/widget-add') ?>', data).then(function(result){
+							if (settings.widget == 'module'){
+								var form = liveEditorForm();
+								if (form){ form.submit(); }
+							}
+							else {
+								var target = col.querySelector('.live-editor-col');
+								if (target){ target.insertAdjacentHTML('beforeend', result); }
+							}
+						}).catch(function(){}).finally(hideSave);
 					});
 				});
 			});
-		});
 
-		/* Widget Move */
-		$iframe.find('[data-col-id]').sortable({
-			axis: 'y',
-			containment: 'parent',
-			cursor: 'move',
-			intersect: 'pointer',
-			items: '[data-widget-id]',
-			opacity: 0.6,
-			placeholder: 'live-editor-placeholder',
-			revert: true,
-			start: function(event, ui){
-				ui.placeholder.css('height', ui.item.height());
-			},
-			update: function(event, ui){
-				$('.live-editor-save').show();
-
-				$.post('<?php echo url('admin/ajax/live-editor/widget-move') ?>', {
-					disposition_id: $(this).parents('[data-disposition-id]:first').data('disposition-id'),
-					row_id: $(this).parents('[data-row-id]:first').data('row-id'),
-					col_id: $(this).data('col-id'),
-					widget_id: ui.item.data('widget-id'),
-					position: $(this).find('[data-widget-id]').index(ui.item)
-				}).always(function(){
-					$('.live-editor-save').hide();
-				});
-			}
-		});
-
-		/* Widget Style */
-		$iframe.on('click', '.live-editor-widget .live-editor-style', function(){
-			var $widget = $(this).parents('[data-widget-id]:first');
-			var data    = {
-				disposition_id: $(this).parents('[data-disposition-id]:first').data('disposition-id'),
-				row_id: $(this).parents('[data-row-id]:first').data('row-id'),
-				col_id: $(this).parents('[data-col-id]:first').data('col-id'),
-				widget_id: $widget.data('widget-id')
-			};
-
-			modal_style('<?php echo $this->lang('Apparence du Widget') ?>', $widget.children('.card'), '.live-editor-styles-widget', function(style){
-				$.extend(data, {
-					style: style
-				});
-
-				$('.live-editor-save').show();
-
-				$.post('<?php echo url('admin/ajax/live-editor/widget-style') ?>', data).always(function(){
-					$('.live-editor-save').hide();
+			/* Widget Move */
+			doc.querySelectorAll('[data-col-id]').forEach(function(el){
+				new Sortable(el, {
+					draggable: '[data-widget-id]',
+					animation: 150,
+					ghostClass: 'live-editor-placeholder',
+					onEnd: function(evt){
+						showSave();
+						NF.post('<?php echo url('admin/ajax/live-editor/widget-move') ?>', {
+							disposition_id: NF.data(evt.to.closest('[data-disposition-id]'), 'disposition-id'),
+							row_id: NF.data(evt.to.closest('[data-row-id]'), 'row-id'),
+							col_id: NF.data(evt.to, 'col-id'),
+							widget_id: NF.data(evt.item, 'widget-id'),
+							position: evt.newIndex
+						}).catch(function(){}).finally(hideSave);
+					}
 				});
 			});
-		});
 
-		/* Widget Settings */
-		$iframe.on('click', '.live-editor-widget .live-editor-setting', function(){
-			var $widget = $(this).parents('[data-widget-id]:first');
-			var data    = {
-				disposition_id: $(this).parents('[data-disposition-id]:first').data('disposition-id'),
-				row_id: $(this).parents('[data-row-id]:first').data('row-id'),
-				col_id: $(this).parents('[data-col-id]:first').data('col-id'),
-				widget_id: $widget.data('widget-id')
-			};
+			/* Widget Style */
+			doc.addEventListener('click', function(e){
+				var btn = e.target.closest('.live-editor-widget .live-editor-style');
+				if (!btn){ return; }
 
-			$.post('<?php echo url('admin/ajax/live-editor/widget-settings') ?>', data, function(html){
-				modal_settings('<?php echo $this->lang('Configuration du Widget') ?>', html, function(settings){
-					$.extend(data, settings);
+				var widget = btn.closest('[data-widget-id]');
+				var data   = {
+					disposition_id: NF.data(btn.closest('[data-disposition-id]'), 'disposition-id'),
+					row_id: NF.data(btn.closest('[data-row-id]'), 'row-id'),
+					col_id: NF.data(btn.closest('[data-col-id]'), 'col-id'),
+					widget_id: NF.data(widget, 'widget-id')
+				};
 
-					$('.live-editor-save').show();
+				modal_style('<?php echo $this->lang('Apparence du Widget') ?>', widget.querySelector('.card'), '.live-editor-styles-widget', function(style){
+					Object.assign(data, { style: style });
+					showSave();
+					NF.post('<?php echo url('admin/ajax/live-editor/widget-style') ?>', data).catch(function(){}).finally(hideSave);
+				});
+			});
 
-					$.post('<?php echo url('admin/ajax/live-editor/widget-update') ?>', data, function(data){
-						if (settings.widget == 'module'){
-							$('form[target="live-editor-iframe"]').submit();
-						}
-						else {
-							$widget.replaceWith(data);
-						}
-					}).always(function(){
-						$('.live-editor-save').hide();
+			/* Widget Settings */
+			doc.addEventListener('click', function(e){
+				var btn = e.target.closest('.live-editor-widget .live-editor-setting');
+				if (!btn){ return; }
+
+				var widget = btn.closest('[data-widget-id]');
+				var data   = {
+					disposition_id: NF.data(btn.closest('[data-disposition-id]'), 'disposition-id'),
+					row_id: NF.data(btn.closest('[data-row-id]'), 'row-id'),
+					col_id: NF.data(btn.closest('[data-col-id]'), 'col-id'),
+					widget_id: NF.data(widget, 'widget-id')
+				};
+
+				NF.post('<?php echo url('admin/ajax/live-editor/widget-settings') ?>', data).then(function(html){
+					modal_settings('<?php echo $this->lang('Configuration du Widget') ?>', html, function(settings){
+						Object.assign(data, settings);
+						showSave();
+
+						NF.post('<?php echo url('admin/ajax/live-editor/widget-update') ?>', data).then(function(result){
+							if (settings.widget == 'module'){
+								var form = liveEditorForm();
+								if (form){ form.submit(); }
+							}
+							else {
+								widget.outerHTML = result;
+							}
+						}).catch(function(){}).finally(hideSave);
 					});
 				});
 			});
-		});
 
-		/* Widget Delete */
-		$iframe.on('click', '.live-editor-widget .live-editor-delete', function(){
-			var $this = $(this);
-			var $widget = $this.parents('[data-widget-id]:first');
+			/* Widget Delete */
+			doc.addEventListener('click', function(e){
+				var btn = e.target.closest('.live-editor-widget .live-editor-delete');
+				if (!btn){ return; }
 
-			//data doit être construit avant l'appel à la modal
-			var data  = {
-				disposition_id: $this.parents('[data-disposition-id]:first').data('disposition-id'),
-				row_id: $this.parents('[data-row-id]:first').data('row-id'),
-				col_id: $this.parents('[data-col-id]:first').data('col-id'),
-				widget_id: $widget.data('widget-id')
-			};
+				var widget = btn.closest('[data-widget-id]');
+				var data   = {
+					disposition_id: NF.data(btn.closest('[data-disposition-id]'), 'disposition-id'),
+					row_id: NF.data(btn.closest('[data-row-id]'), 'row-id'),
+					col_id: NF.data(btn.closest('[data-col-id]'), 'col-id'),
+					widget_id: NF.data(widget, 'widget-id')
+				};
 
-			modal_delete('<?php echo $this->lang('Êtes-vous sûr(e) de vouloir supprimer ce <b>widget</b> ?') ?>', function(){
-				$('.live-editor-save').show();
-
-				$.post('<?php echo url('admin/ajax/live-editor/widget-delete') ?>', data, function(){
-					$widget.remove();
-					$('.live-editor-save').hide();
+				modal_delete('<?php echo $this->lang('Êtes-vous sûr(e) de vouloir supprimer ce <b>widget</b> ?') ?>', function(){
+					showSave();
+					NF.post('<?php echo url('admin/ajax/live-editor/widget-delete') ?>', data).then(function(){
+						if (widget){ widget.remove(); }
+						hideSave();
+					}).catch(hideSave);
 				});
 			});
 		});
 	});
 });
 
-$('[data-typer]').attr('data-typer', function(i, txt){
-	var $typer = $(this),
-		tot = txt.length,
-		pauseMax = 300,
-		pauseMin = 60,
-		ch = 0;
+document.querySelectorAll('[data-typer]').forEach(function(typer){
+	var txt      = typer.getAttribute('data-typer');
+	var tot      = txt.length;
+	var pauseMax = 300;
+	var pauseMin = 60;
+	var ch       = 0;
 
-	(function typeIt() {
-		if (ch > tot) return;
-		$typer.text(txt.substring(0, ch++));
+	(function typeIt(){
+		if (ch > tot){ return; }
+		typer.textContent = txt.substring(0, ch++);
 		setTimeout(typeIt, ~~(Math.random() * (pauseMax - pauseMin + 1) + pauseMin));
 	}());
 });

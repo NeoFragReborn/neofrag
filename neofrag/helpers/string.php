@@ -6,13 +6,13 @@ declare(strict_types=1);
  */
 
 //Camelcase to Underscored
-function cc2u($string)
+function cc2u($string): string
 {
 	return strtolower(preg_replace('/([^A-Z])([A-Z])/', '\\1_\\2', $string));
 }
 
 //Underscored to lower-camelcase
-function u2lcc($string)
+function u2lcc($string): string
 {
 	$string = strtolower(preg_replace('/_+/', '_', trim($string, '_')));
 	if (preg_match_all('/_(.?)/', $string, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER))
@@ -28,12 +28,12 @@ function u2lcc($string)
 }
 
 //Underscored to upper-camelcase
-function u2ucc($string)
+function u2ucc($string): string
 {
 	return ucfirst(u2lcc($string));
 }
 
-function in_string($needle, $haystack, $strict = TRUE)
+function in_string($needle, $haystack, $strict = TRUE): bool
 {
 	$needle = (string)$needle;
 
@@ -52,7 +52,7 @@ function in_string($needle, $haystack, $strict = TRUE)
 	}
 }
 
-function is_empty($data)
+function is_empty($data): bool
 {
 	if (is_array($data))
 	{
@@ -64,7 +64,7 @@ function is_empty($data)
 	}
 }
 
-function url_title($string)
+function url_title($string): string
 {
 	static $strings = [];
 
@@ -118,7 +118,7 @@ function url_title($string)
 	return $strings[$string];
 }
 
-function str_nat($a, $b, $data = NULL)
+function str_nat($a, $b, $data = NULL): int
 {
 	if ($data === NULL || !is_callable($data))
 	{
@@ -130,7 +130,7 @@ function str_nat($a, $b, $data = NULL)
 	return strnatcasecmp(url_title($data($a)), url_title($data($b)));
 }
 
-function escape_html_tags($string, $callback)
+function escape_html_tags($string, $callback): string
 {
 	$offset = 0;
 	$string = '>'.$string;
@@ -154,7 +154,7 @@ function escape_html_tags($string, $callback)
 	return substr($string, 1);
 }
 
-function strtoarray($delimiter, $string, $limit = PHP_INT_MAX)
+function strtoarray($delimiter, $string, $limit = PHP_INT_MAX): array
 {
 	return !is_empty($string) ? explode($delimiter, $string, $limit) : [];
 }
@@ -188,36 +188,38 @@ function strtolink($string, $is_html = FALSE)
 	}, $string);
 }
 
-function unique_id($list = [])
+function unique_id($list = []): string
 {
+	// CSPRNG obligatoire : ces IDs servent de secrets (ID de session, tokens de reset
+	// mot de passe / validation email, jetons CSRF) — uniqid() était prédictible.
 	do
 	{
-		$id = strtolower(substr(preg_replace('/[^A-Za-z0-9]/', '', base64_encode(str_repeat(sha1(uniqid('', TRUE), TRUE), 3))), 0, 32));
+		$id = bin2hex(random_bytes(16));
 	}
 	while ($list && in_array($id, $list));
 
 	return $id;
 }
 
-function is_valid_email($email)
+function is_valid_email($email): bool
 {
 	return filter_var($email, FILTER_VALIDATE_EMAIL) !== FALSE;
 }
 
-function is_valid_url($url)
+function is_valid_url($url): bool
 {
 	$url = (string)$url; // strict_types : éviter la TypeError si un non-string (ex. ID int) arrive ici
 	return preg_match('/^(tel|geo):.+/', $url) || filter_var($url, FILTER_VALIDATE_URL) !== FALSE;
 }
 
-function utf8_htmlentities($string, $flags = ENT_COMPAT)
+function utf8_htmlentities($string, $flags = ENT_COMPAT): string
 {
 	// (string) : appelé avec des objets stringables (Label, Lang…) ; strict_types ferait sinon
 	// lever une TypeError à htmlentities().
 	return htmlentities((string)$string, $flags, 'UTF-8');
 }
 
-function utf8_html_entity_decode($string, $flags = ENT_COMPAT)
+function utf8_html_entity_decode($string, $flags = ENT_COMPAT): string
 {
 	return html_entity_decode((string)$string, $flags, 'UTF-8');
 }
@@ -234,7 +236,7 @@ function utf8_string($string, $default = '')
 	return $string;
 }
 
-function str_shortener($string, $max_length, $end = '&#8230;')
+function str_shortener($string, $max_length, $end = '&#8230;'): string
 {
 	if (strlen($string) <= $max_length)
 	{
@@ -264,19 +266,58 @@ function str_shortener($string, $max_length, $end = '&#8230;')
 // puis sanitization serveur (allow-list, anti XSS stocké). Garde le nom historique `bbcode()` car
 // appelé par de nombreuses vues ; la conversion BBCode→HTML legacy a été retirée (plus aucun contenu
 // BBCode : fork vidé, l'éditeur produit du HTML).
-function bbcode($string)
+function bbcode($string): string
 {
-	return sanitize_html(nl2br(strtolink((string)$string, TRUE)));
+	// custom_emojis() APRÈS sanitize_html : on injecte un <img> à src contrôlée (notre upload) pour des
+	// noms allowlistés (DB) → pas re-filtré par HTMLPurifier, et no-op s'il n'y a aucun emoji custom.
+	return custom_emojis(sanitize_html(nl2br(strtolink((string)$string, TRUE))));
 }
 
-function highlight($string, $keywords, $max_length = 256)
+/** Map des emojis custom : ':nom:' → balise <img>. Chargée une fois par requête (cache statique). */
+function custom_emojis_map(): array
+{
+	static $map = NULL;
+
+	if ($map === NULL)
+	{
+		$map = [];
+
+		try
+		{
+			foreach (NeoFrag()->db->select('name', 'image_id')->from('nf_custom_emojis')->get(FALSE) as $e)
+			{
+				if (!empty($e['image_id']) && ($url = NeoFrag()->model2('file', (int)$e['image_id'])->path()))
+				{
+					$token       = ':'.$e['name'].':';
+					$map[$token] = '<img class="nf-emoji" src="'.$url.'" alt="'.htmlspecialchars($token, ENT_QUOTES).'" title="'.htmlspecialchars($token, ENT_QUOTES).'" style="height:1.4em;width:auto;vertical-align:text-bottom;">';
+				}
+			}
+		}
+		catch (\Throwable $e)
+		{
+			$map = [];
+		}
+	}
+
+	return $map;
+}
+
+/** Remplace les ':nom:' déclarés par leur <img>. $map injectable (tests) ; sinon chargée depuis la DB. */
+function custom_emojis($html, ?array $map = NULL): string
+{
+	$map = $map ?? custom_emojis_map();
+
+	return $map ? strtr((string)$html, $map) : (string)$html;
+}
+
+function highlight($string, $keywords, $max_length = 256): string
 {
 	$string = nl2br(preg_replace($patern = '/'.implode('|', array_map(function($a){ return preg_quote($a, '/'); }, $keywords)).'/i', '<mark>\0</mark>', htmlspecialchars(utf8_html_entity_decode(strip_tags(bbcode($string))), ENT_COMPAT, 'UTF-8')));
 
 	return str_shortener(substr($string, strpos($string, '<mark>')), $max_length);
 }
 
-function version_format($version)
+function version_format($version): string
 {
 	$rc = '';
 

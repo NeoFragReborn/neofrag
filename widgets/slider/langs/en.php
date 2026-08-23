@@ -24,4 +24,6 @@ return [
 	'77c705a8' => 'Enable this slide (otherwise hidden)',
 	'd396a751' => 'Previous',
 	'ebcb0841' => 'Next',
+	// i18n 2026-06-11 (code strings)
+	'77703fae' => 'Configure the slider in the admin to add your own slides.',
 ];

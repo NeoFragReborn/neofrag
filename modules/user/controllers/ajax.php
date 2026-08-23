@@ -123,6 +123,14 @@ class Ajax extends Controller_Module
 
 						$user->set_password($user->password)->create();
 
+						if ($wh = $this->module('webhooks'))
+						{
+							$wh->trigger('user.registered', [
+								'user_id'  => (int)$user->id,
+								'username' => $user->username
+							]);
+						}
+
 						// Welcome message via talks (post-migration MP → Talks unifié).
 						// Crée une conversation direct entre nf_welcome_user_id et le nouvel user.
 						if ($this->config->nf_welcome && $this->config->nf_welcome_user_id && !empty($this->config->nf_welcome_title) && !empty($this->config->nf_welcome_content))
@@ -225,14 +233,31 @@ class Ajax extends Controller_Module
 		return $this->form2('password_required')
 					->compact()
 					->success(function($data) use ($token){
-						$token	->delete()
-								->user
-								->set_password($data['password'])
+						$user = $token->delete()->user;
+
+						$user	->set_password($data['password'])
 								->update();
 
 						notify($this->lang('Nouveau mot de passe enregistré'));
 
-						$this->session->login($token->user);
+						// Mêmes gardes que la voie mot de passe : le reset prouve le
+						// contrôle de l'email, pas le second facteur ni la levée d'un ban.
+						if ($this->moderation->is_banned((int)$user->id, 'global'))
+						{
+							$msg = $this->moderation->block_message_for_user((int)$user->id, 'global');
+							notify($msg ?: $this->lang('Ce compte est banni.'), 'danger');
+						}
+						else if ($user->totp_enabled)
+						{
+							$this->session->set('totp', 'pending_user_id', $user->id);
+							$this->session->set('totp', 'pending_remember', 0);
+							$this->session->set('totp', 'pending_expires', time() + 300);
+							$this->session->append('modals', 'ajax/user/login');
+						}
+						else
+						{
+							$this->session->login($user);
+						}
 
 						refresh();
 					})

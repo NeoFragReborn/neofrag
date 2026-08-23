@@ -40,7 +40,7 @@ class Admin extends Controller_Module
 				$body .= '<div class="nf-content-card-foot">';
 				$body .= '<span class="nf-content-card-spacer"></span>';
 				$body .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/wiki/edit/'.$p['slug']).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
-				$body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/wiki/delete/'.$p['slug']).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer cette page ? Les révisions seront aussi perdues.'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				$body .= '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/wiki/delete/'.$p['slug']).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer cette page ? Les révisions seront aussi perdues.'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$body .= '</div>';
 				$body .= '</div>';
 			}
@@ -57,6 +57,7 @@ class Admin extends Controller_Module
 			$toolbar .= '<option value="'.$val.'"'.($filters['status'] === $val ? ' selected' : '').'>'.htmlspecialchars($label).'</option>';
 		}
 		$toolbar .= '</select>';
+		$toolbar .= $this->sort_select($filters['sort_cols'], $filters['sort']);
 		$toolbar .= '<button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-filter"></i> '.$this->lang('Filtrer').'</button>';
 		if (!empty($filters['active']))
 		{
@@ -83,6 +84,8 @@ class Admin extends Controller_Module
 	public function _edit($p) { return $this->_form($p); }
 	public function _delete($p)
 	{
+		$this->check_csrf('admin/wiki');
+
 		// Aussi supprimer les pages enfants ? Pour l'instant non, on les libère (parent_id NULL)
 		NeoFrag()->db->where('parent_id', $p['id'])->update('nf_wiki_pages', ['parent_id' => NULL]);
 		NeoFrag()->db->where('page_id', $p['id'])->delete('nf_wiki_revisions');

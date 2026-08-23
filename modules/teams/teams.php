@@ -19,7 +19,7 @@ class Teams extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
-			'admin'       => 'gaming',
+			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => [
 				'neofrag' => '0.2.0'

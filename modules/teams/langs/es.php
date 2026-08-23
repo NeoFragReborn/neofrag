@@ -61,4 +61,6 @@ return [
 	'8d9ef7a4' => 'Eliminar',
 	'78ee8be4' => 'Modificar un rol',
 	'dc7fea54' => 'Eliminar un rol',
+	// i18n 2026-06-11 (code strings)
+	'25e975ef' => 'Este equipo está reclutando — Postular',
 ];

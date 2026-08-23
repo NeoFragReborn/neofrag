@@ -4,7 +4,7 @@
 		{
 			echo '	<li><h5>'.icon('fas fa-bars').' '.$category['title'].'</h5></li>
 					<li>
-						<ul class="forum-tree forum-tree-forums list-unstyled ml-4">';
+						<ul class="forum-tree forum-tree-forums list-unstyled ms-4">';
 
 			foreach ($category['forums'] as $forum_id => $forum)
 			{
@@ -13,7 +13,7 @@
 				if ($forum['subforums'])
 				{
 					echo '	<li>
-								<ul class="forum-tree forum-tree-subforums list-unstyled ml-4">';
+								<ul class="forum-tree forum-tree-subforums list-unstyled ms-4">';
 
 					foreach ($forum['subforums'] as $subforum_id => $subforum)
 					{

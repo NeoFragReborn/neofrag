@@ -31,7 +31,7 @@ else
 	<div class="text-muted small mt-2"><?php echo icon('fas fa-user-shield').' '.htmlspecialchars($preview_target['label']) ?></div>
 	<?php endif ?>
 	<?php if ($preview_active): ?>
-	<div class="alert alert-warning mt-3 mb-0 py-2 px-3 small text-left">
+	<div class="alert alert-warning mt-3 mb-0 py-2 px-3 small text-start">
 		<?php echo icon('fas fa-eye') ?> <strong><?php echo $this->lang('Mode preview') ?></strong><br>
 		<?php echo $this->lang('Les liens vers les données personnelles sont masqués pour respecter la vie privée du compte cible.') ?>
 	</div>
@@ -50,12 +50,12 @@ else
 	</li>
 	<li class="list-group-item">
 		<?php echo icon('far fa-envelope') ?> <a href="<?php echo url('talks?type=private') ?>"><?php echo $this->lang('Messagerie') ?></a>
-		<?php if ($messages = $this->module('talks')->model()->get_unread_count($this->user->id)): ?><span class="badge badge-danger nf-user-menu-badge"><?php echo $messages ?></span><?php endif ?>
+		<?php if ($messages = $this->module('talks')->model()->get_unread_count($this->user->id)): ?><span class="badge text-bg-danger nf-user-menu-badge"><?php echo $messages ?></span><?php endif ?>
 	</li>
 	<?php if ($this->access('moderation', 'view_reports')): ?>
 	<li class="list-group-item">
 		<?php echo icon('fas fa-shield-alt') ?> <a href="<?php echo url('moderation') ?>"><?php echo $this->lang('Modération') ?></a>
-		<?php $pending = (int)$this->db->select('COUNT(*)')->from('nf_reports')->where('status', 'pending')->row(); if ($pending > 0): ?><span class="badge badge-warning nf-user-menu-badge"><?php echo $pending ?></span><?php endif ?>
+		<?php $pending = (int)$this->db->select('COUNT(*)')->from('nf_reports')->where('status', 'pending')->row(); if ($pending > 0): ?><span class="badge text-bg-warning nf-user-menu-badge"><?php echo $pending ?></span><?php endif ?>
 	</li>
 	<?php endif ?>
 	<?php if ($this->access->effective_admin()): ?>

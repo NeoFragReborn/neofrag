@@ -5,7 +5,7 @@ declare(strict_types=1);
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
  */
 
-function user_agent($user_agent)
+function user_agent($user_agent): string
 {
 	if (!is_empty($user_agent))
 	{
@@ -18,7 +18,7 @@ function user_agent($user_agent)
 	}
 }
 
-function is_crawler()
+function is_crawler(): bool
 {
 	//https://github.com/JayBizzle/Crawler-Detect
 	$crawlers = [

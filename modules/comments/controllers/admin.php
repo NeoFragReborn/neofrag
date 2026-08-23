@@ -17,6 +17,8 @@ class Admin extends Controller_Module
 		// Suppression en masse (POST) puis refresh.
 		if (!empty($_POST['bulk_delete']) && !empty($_POST['selected']) && is_array($_POST['selected']))
 		{
+			$this->check_csrf('admin/comments');
+
 			$ids = array_values(array_filter(array_map('intval', $_POST['selected'])));
 
 			if ($ids)
@@ -72,7 +74,7 @@ class Admin extends Controller_Module
 				.'<button type="submit" name="bulk_delete" value="1" class="btn btn-sm btn-outline-danger" data-confirm="'.htmlspecialchars($this->lang('Supprimer les commentaires sélectionnés ?'), ENT_QUOTES).'"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer la sélection').'</button>'
 				.'</div>';
 
-			$body = '<form method="post" action="'.htmlspecialchars(url($this->url->request), ENT_QUOTES).'">'.$bulk_bar.$body.'</form>'
+			$body = '<form method="post" action="'.htmlspecialchars(url($this->url->request), ENT_QUOTES).'"><input type="hidden" name="_" value="'.$this->csrf_token().'">'.$bulk_bar.$body.'</form>'
 				.'<script>(function(){var a=document.getElementById("nf-bulk-all");if(a){a.addEventListener("change",function(){document.querySelectorAll(".nf-bulk-cb").forEach(function(c){c.checked=a.checked;});});}})();</script>';
 		}
 

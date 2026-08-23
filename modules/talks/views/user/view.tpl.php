@@ -96,16 +96,16 @@
 						<textarea name="talk_message" id="nf-talks-staff-editor" placeholder="<?php echo $this->lang('Ton message...') ?>"></textarea>
 						<div class="d-flex justify-content-between align-items-center mt-2">
 							<small class="form-text text-muted">
-								<label class="btn btn-light btn-sm mb-0" style="cursor:pointer;" data-toggle="tooltip" title="<?php echo $this->lang('Joindre un fichier') ?>">
+								<label class="btn btn-light btn-sm mb-0" style="cursor:pointer;" data-bs-toggle="tooltip" title="<?php echo $this->lang('Joindre un fichier') ?>">
 									<?php echo \icon('fas fa-paperclip') ?>
-									<input type="file" name="talk_attachment" style="display:none;" onchange="document.getElementById('talk-attached-name').textContent = this.files[0] ? this.files[0].name : '';" />
+									<input type="file" name="talk_attachment" style="display:none;" data-nf-file-name="talk-attached-name" />
 								</label>
-								<span class="text-info ml-2" id="talk-attached-name"></span>
+								<span class="text-info ms-2" id="talk-attached-name"></span>
 							</small>
 							<button type="submit" class="btn btn-primary"><?php echo \icon('fas fa-paper-plane').' '.$this->lang('Envoyer') ?></button>
 						</div>
 					</form>
-					<script src="https://cdn.jsdelivr.net/npm/tinymce@7.6.1/tinymce.min.js"></script>
+					<script src="<?php echo js('tinymce/tinymce.min.js') ?>"></script>
 					<script>(function(){
 						function init(){
 							if (typeof tinymce === "undefined") { setTimeout(init, 100); return; }
@@ -116,7 +116,8 @@
 								branding: false,
 								promotion: false,
 								license_key: "gpl",
-								
+								skin: (document.documentElement.getAttribute("data-theme") === "dark") ? "oxide-dark" : "oxide",
+								content_css: (document.documentElement.getAttribute("data-theme") === "dark") ? "dark" : "default",
 								plugins: "advlist autolink lists link image charmap preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media table emoticons codesample help",
 								toolbar: "undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample | emoticons charmap | searchreplace fullscreen | removeformat",
 								content_style: "body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;font-size:14px;}"
@@ -128,9 +129,9 @@
 					<form method="post" action="<?php echo url('talks/'.(int)$talk_id.'/'.\url_title($title)) ?>" enctype="multipart/form-data">
 						<div class="input-group">
 							<div class="input-group-prepend">
-								<label class="btn btn-light mb-0" style="cursor:pointer;" data-toggle="tooltip" title="<?php echo $this->lang('Joindre un fichier') ?>">
+								<label class="btn btn-light mb-0" style="cursor:pointer;" data-bs-toggle="tooltip" title="<?php echo $this->lang('Joindre un fichier') ?>">
 									<?php echo \icon('fas fa-paperclip') ?>
-									<input type="file" name="talk_attachment" style="display:none;" onchange="document.getElementById('talk-attached-name').textContent = this.files[0] ? this.files[0].name : '';" />
+									<input type="file" name="talk_attachment" style="display:none;" data-nf-file-name="talk-attached-name" />
 								</label>
 							</div>
 							<input type="text" name="talk_message" class="form-control" placeholder="<?php echo $this->lang('Ton message...') ?>" autocomplete="off" maxlength="2000" />
@@ -141,7 +142,7 @@
 						<small class="form-text text-muted">
 							<span><?php echo $this->lang('Max 2000 caractères.') ?></span>
 							<span class="text-info" id="talk-attached-name" style="margin-left:8px;"></span>
-							<span class="float-right">
+							<span class="float-end">
 								<?php echo $this->lang('Fichiers : %s · max %s', htmlspecialchars(implode(', ', $allowed_mimes ?? [])), \human_size((int)($max_size_bytes ?? 5242880))) ?>
 							</span>
 						</small>
@@ -164,7 +165,7 @@
 							<?php echo $this->user->link((int)$p['user_id'], $p['username']) ?>
 						</span>
 						<?php if ($p['role'] === 'admin'): ?>
-							<span class="badge badge-warning" title="<?php echo $this->lang('Admin de la conversation') ?>"><?php echo \icon('fas fa-crown') ?></span>
+							<span class="badge text-bg-warning" title="<?php echo $this->lang('Admin de la conversation') ?>"><?php echo \icon('fas fa-crown') ?></span>
 						<?php endif ?>
 					</li>
 				<?php endforeach ?>

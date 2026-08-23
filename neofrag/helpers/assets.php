@@ -5,12 +5,12 @@ declare(strict_types=1);
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
  */
 
-function is_asset($extension = NULL)
+function is_asset($extension = NULL): bool
 {
 	return !in_array($extension ?: extension($_SERVER['REQUEST_URI']), ['', 'php', 'json', 'txt', 'xml']);
 }
 
-function icon($icon)
+function icon($icon): string
 {
 	if (preg_match('/^(fa[bsrld] fa-.+)/', $icon, $match))
 	{
@@ -24,7 +24,7 @@ function icon($icon)
 	return '<i class="icon">'.$icon.'</i>';
 }
 
-function path($file, $file_type = '', $caller = NULL)
+function path($file, $file_type = '', $caller = NULL): string
 {
 	if (is_valid_url($file))
 	{
@@ -53,17 +53,43 @@ function path($file, $file_type = '', $caller = NULL)
 	return url($file_type.'/'.$file);
 }
 
-function image($file, $caller = NULL)
+/**
+ * Version de cache d'un asset = mtime du fichier résolu (overrides inclus). Lie le ?v= au fichier :
+ * toute modification (édition/upload) invalide automatiquement le cache du navigateur, sans bump manuel
+ * de nf_version_css. Retourne 0 si le fichier n'est pas localisable (URL externe, introuvable) → l'appelant
+ * retombe alors sur nf_version_css.
+ */
+function asset_version($file, $file_type = '', $caller = NULL): int
+{
+	if (is_valid_url($file) || !in_array($file_type, ['images', 'css', 'js', 'fonts']))
+	{
+		return 0;
+	}
+
+	if (!$caller)
+	{
+		$caller = Neofrag()->output->theme() ?: Neofrag();
+	}
+
+	if (($rel = $caller->__path('assets', $file_type.'/'.$file)) && is_file($abs = NEOFRAG_CMS.'/'.$rel))
+	{
+		return (int) @filemtime($abs);
+	}
+
+	return 0;
+}
+
+function image($file, $caller = NULL): string
 {
 	return path($file, 'images', $caller);
 }
 
-function css($file, $caller = NULL)
+function css($file, $caller = NULL): string
 {
 	return path($file, 'css', $caller);
 }
 
-function js($file, $caller = NULL)
+function js($file, $caller = NULL): string
 {
 	return path($file, 'js', $caller);
 }

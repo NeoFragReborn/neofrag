@@ -23,4 +23,6 @@ return [
 	'77c705a8' => 'Diese Slide aktivieren (sonst ausgeblendet)',
 	'd396a751' => 'Zurück',
 	'ebcb0841' => 'Weiter',
+	// i18n 2026-06-11 (code strings)
+	'77703fae' => 'Konfiguriere den Slider in der Verwaltung, um eigene Slides hinzuzufügen.',
 ];

@@ -134,7 +134,9 @@ abstract class Addon extends NeoFrag implements \NF\NeoFrag\Loadable
 			}
 		}
 
-		return $this;
+		// Migrations par-addon : BASELINE — marque les migrations présentes comme appliquées SANS les
+		// exécuter (install.sql porte déjà le schéma à jour). Les deltas postérieurs seront joués par update().
+		return $this->migrate('baseline');
 	}
 
 	public function uninstall($remove = TRUE)
@@ -172,5 +174,116 @@ abstract class Addon extends NeoFrag implements \NF\NeoFrag\Loadable
 	{
 		return $this->uninstall(FALSE)
 					->install();
+	}
+
+	/**
+	 * Mise à jour d'un addon DÉJÀ installé (après remplacement de ses fichiers par une nouvelle version) :
+	 * réimporte install.sql (idempotent — crée d'éventuelles nouvelles tables, préserve l'existant) PUIS
+	 * applique les migrations de schéma en attente (ALTER/rename/données). À utiliser à la place de reset()
+	 * pour une MAJ : reset() BASELINE les migrations (les marque sans les jouer), update() les EXÉCUTE.
+	 */
+	public function update()
+	{
+		if (nf_demo())
+		{
+			return $this;
+		}
+
+		$file = NEOFRAG_CMS.'/'.$this->__addon->type->name.'s/'.$this->__info['name'].'/install/install.sql';
+
+		if (is_file($file) && ($sql = file_get_contents($file)) !== FALSE && trim($sql) !== '')
+		{
+			if (($error = $this->db->import($sql)) !== TRUE)
+			{
+				error_log('[addon.update] '.$this->__addon->type->name.'/'.$this->__info['name'].': '.$error);
+			}
+		}
+
+		return $this->migrate('up');
+	}
+
+	/**
+	 * Runner de migrations PAR ADDON : <type>s/<name>/install/migrations/*.up.sql, suivies dans
+	 * nf_addon_migrations (clé unique type+name+migration). Deux modes :
+	 *  - 'baseline' : marque toutes les migrations présentes comme appliquées SANS les exécuter
+	 *    (install neuf — install.sql porte déjà le schéma à jour).
+	 *  - 'up' : exécute, dans l'ordre (préfixe daté), les migrations pas encore enregistrées (MAJ).
+	 * Stoppe à la première erreur (ne marque ni la migration fautive ni les suivantes).
+	 */
+	public function migrate($mode = 'up')
+	{
+		if (nf_demo())
+		{
+			return $this;
+		}
+
+		$type = $this->__addon->type->name;
+		$name = $this->__info['name'];
+		$dir  = NEOFRAG_CMS.'/'.$type.'s/'.$name.'/install/migrations';
+
+		if (!($files = glob($dir.'/*.up.sql')))
+		{
+			return $this;
+		}
+
+		$migrations = array_map(function($file){ return basename($file, '.up.sql'); }, $files);
+		sort($migrations);
+
+		$this->_ensure_addon_migrations_table();
+
+		$applied   = [];
+		$max_batch = 0;
+
+		foreach ($this->db->select('migration', 'batch')->from('nf_addon_migrations')->where('type', $type)->where('name', $name)->get(FALSE) as $row)
+		{
+			$applied[$row['migration']] = TRUE;
+			$max_batch = max($max_batch, (int)$row['batch']);
+		}
+
+		$batch = $max_batch + 1;
+
+		foreach ($migrations as $migration)
+		{
+			if (isset($applied[$migration]))
+			{
+				continue;
+			}
+
+			if ($mode === 'up')
+			{
+				$sql = file_get_contents($dir.'/'.$migration.'.up.sql');
+
+				if ($sql !== FALSE && trim($sql) !== '' && ($error = $this->db->import($sql)) !== TRUE)
+				{
+					error_log('[addon.migrate] '.$type.'/'.$name.' '.$migration.': '.$error);
+					break;
+				}
+			}
+
+			$this->db->insert('nf_addon_migrations', [
+				'type'      => $type,
+				'name'      => $name,
+				'migration' => $migration,
+				'batch'     => $mode === 'up' ? $batch : 0,
+			]);
+		}
+
+		return $this;
+	}
+
+	private function _ensure_addon_migrations_table()
+	{
+		$this->db->query(
+			'CREATE TABLE IF NOT EXISTS `nf_addon_migrations` (
+				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				`type` varchar(32) NOT NULL,
+				`name` varchar(100) NOT NULL,
+				`migration` varchar(191) NOT NULL,
+				`batch` int(10) unsigned NOT NULL DEFAULT 0,
+				`applied_at` timestamp NOT NULL DEFAULT current_timestamp(),
+				PRIMARY KEY (`id`),
+				UNIQUE KEY `uniq_addon_migration` (`type`,`name`,`migration`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
+		);
 	}
 }

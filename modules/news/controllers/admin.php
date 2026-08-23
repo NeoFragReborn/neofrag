@@ -28,9 +28,6 @@ class Admin extends Controller_Module
 			}
 		}
 
-		// Tri par date desc
-		usort($news, function($a, $b){ return $b['date'] <=> $a['date']; });
-
 		// Cards news
 		$news_html = '<div class="nf-card-grid">';
 		$count = 0;
@@ -112,6 +109,7 @@ class Admin extends Controller_Module
 			$toolbar .= '<option value="'.$val.'"'.($filters['status'] === $val ? ' selected' : '').'>'.htmlspecialchars($label).'</option>';
 		}
 		$toolbar .= '</select>';
+		$toolbar .= $this->sort_select($filters['sort_cols'], $filters['sort']);
 		$toolbar .= '<button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-filter"></i> '.$this->lang('Filtrer').'</button>';
 		if (!empty($filters['active']))
 		{

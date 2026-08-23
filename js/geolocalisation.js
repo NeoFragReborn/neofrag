@@ -1,23 +1,38 @@
-$('body').on('nf.load', function(){
-	var data = $.makeArray($.unique($('[data-geolocalisation]').map(function(){
-		return $(this).attr('data-geolocalisation');
-	}))).filter(function(a){
-		return a;
-	});
+// Requête vers neofr.ag (cross-origin) : pas de header X-Requested-With (déclencherait un preflight CORS) ;
+// jQuery ne l'ajoutait pas non plus en cross-domain.
+document.body.addEventListener('nf.load', function(){
+	var ips = Array.from(new Set(
+		Array.from(document.querySelectorAll('[data-geolocalisation]'))
+			.map(function(el){ return el.getAttribute('data-geolocalisation'); })
+			.filter(function(a){ return a; })
+	));
 
-	if (data.length){
-		$.ajax({
-			url: 'https://neofr.ag/geolocalisation.json',
-			type: 'POST',
-			data: {
-				ip_address: data
-			},
-			crossDomain: false,
-			success: function(data){
-				$.each(data, function(ip, data){
-					$('[data-geolocalisation="'+ip+'"]').replaceWith('<img src="'+(data['flag'] ? '<?php echo url('images/flags') ?>/'+data['flag'] : '<?php echo image('icons/user-silhouette-question.png') ?>')+'" data-toggle="tooltip" title="'+data['location']+'" style="margin-right: 10px;" alt="" />');
-				});
-			}
-		})
-	}
+	if (!ips.length){ return; }
+
+	var body = new URLSearchParams();
+	ips.forEach(function(ip){ body.append('ip_address[]', ip); });
+
+	fetch('https://neofr.ag/geolocalisation.json', {
+		method: 'POST',
+		body: body
+	}).then(function(response){
+		return response.json();
+	}).then(function(data){
+		Object.keys(data).forEach(function(ip){
+			var entry = data[ip];
+			var src = entry['flag']
+				? '<?php echo url('images/flags') ?>/' + entry['flag']
+				: '<?php echo image('icons/user-silhouette-question.png') ?>';
+
+			document.querySelectorAll('[data-geolocalisation="' + ip + '"]').forEach(function(el){
+				var img = document.createElement('img');
+				img.src = src;
+				img.setAttribute('data-bs-toggle', 'tooltip');
+				img.setAttribute('title', entry['location']);
+				img.style.marginRight = '10px';
+				img.alt = '';
+				el.replaceWith(img);
+			});
+		});
+	});
 });

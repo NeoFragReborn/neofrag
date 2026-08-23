@@ -3,15 +3,15 @@
 		<h5>Tous nos podiums</h5>
 		<div class="row">
 			<div class="col text-center">
-				<span data-toggle="tooltip" title="1ère place"><?php echo icon('fas fa-trophy trophy-gold fa-2x') ?></span>
+				<span data-bs-toggle="tooltip" title="1ère place"><?php echo icon('fas fa-trophy trophy-gold fa-2x') ?></span>
 				<h4 class="m-0"><?php echo $total_gold[0] ?></h4>
 			</div>
 			<div class="col text-center">
-				<span data-toggle="tooltip" title="2ème place"><?php echo icon('fas fa-trophy trophy-silver fa-2x') ?></span>
+				<span data-bs-toggle="tooltip" title="2ème place"><?php echo icon('fas fa-trophy trophy-silver fa-2x') ?></span>
 				<h4 class="m-0"><?php echo $total_silver[0] ?></h4>
 			</div>
 			<div class="col text-center">
-				<span data-toggle="tooltip" title="3ème place"><?php echo icon('fas fa-trophy trophy-bronze fa-2x') ?></span>
+				<span data-bs-toggle="tooltip" title="3ème place"><?php echo icon('fas fa-trophy trophy-bronze fa-2x') ?></span>
 				<h4 class="m-0"><?php echo $total_bronze[0] ?></h4>
 			</div>
 		</div>

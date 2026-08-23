@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -101,7 +102,7 @@ class Label extends Html
 		return $this;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		$output = parent::__toString();
 		return $output != '<span></span>' ? $output : '';

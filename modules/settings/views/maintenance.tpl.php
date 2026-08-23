@@ -33,7 +33,7 @@
 				{
 					if ($url = $this->config->{'nf_social_'.$name})
 					{
-						echo '<a class="nav-link" href="'.$url.'" data-toggle="tooltip" title="'.$title.'">'.icon('fab fa-'.$name).'</a>';
+						echo '<a class="nav-link" href="'.$url.'" data-bs-toggle="tooltip" title="'.$title.'">'.icon('fab fa-'.$name).'</a>';
 					}
 				}
 				?>
@@ -42,7 +42,7 @@
 					<?php echo $this->user->username ?>
 				</div>
 				<?php endif ?>
-				<?php echo $this->user() ? '<a href="'.url('user/logout').'" class="nav-link">'.icon('fas fa-times').' '.$this->lang('Déconnexion').'</a>' : '<a href="#" class="nav-link ml-5" data-modal-ajax="'.url('ajax/user/auth').'">'.icon('fas fa-sign-in-alt').' '.$this->lang('Se connecter').'</a>' ?>
+				<?php echo $this->user() ? '<a href="'.url('user/logout').'" class="nav-link">'.icon('fas fa-times').' '.$this->lang('Déconnexion').'</a>' : '<a href="#" class="nav-link ms-5" data-modal-ajax="'.url('ajax/user/auth').'">'.icon('fas fa-sign-in-alt').' '.$this->lang('Se connecter').'</a>' ?>
 			</nav>
 		</div>
 	</header>
@@ -58,7 +58,7 @@
 		<?php endif ?>
 	</main>
 	<footer class="mastfoot mt-auto">
-		<div class="inner text-left">
+		<div class="inner text-start">
 			<?php echo $this->widget('copyright')->output()->style('card-transparent') ?>
 		</div>
 	</footer>

@@ -50,6 +50,140 @@ class Pages extends Model
 		return $registry;
 	}
 
+	/**
+	 * Palier 0 page-builder — rend un bloc PARAMÉTRIQUE : résout la clé dans le registre,
+	 * valide ses paramètres (`[block:clé p=v …]`) contre les `fields` déclarés via la lib
+	 * locator-free Block_Settings, puis appelle `render($settings)`. Chaîne vide si la clé est
+	 * inconnue ou le bloc non rendu. Le `render` reçoit des settings DÉJÀ validés/bornés.
+	 *
+	 * @param  string $key    clé du bloc (ex. 'news.category')
+	 * @param  string $params ce qui suit la clé dans le shortcode (ex. ' id=3 count=5')
+	 */
+	public function render_block($key, $params = '', $registry = NULL)
+	{
+		$registry = $registry !== NULL ? $registry : $this->block_registry();
+		$key      = strtolower($key);
+
+		if (!isset($registry[$key]) || !is_callable($registry[$key]['render'] ?? NULL))
+		{
+			return '';
+		}
+
+		return (string) call_user_func($registry[$key]['render'], \NF\Modules\Pages\Lib\Block_Settings::parse($registry[$key], (string) $params));
+	}
+
+	// ================================================================
+	// Palier 1 page-builder — blocs de module ordonnés/configurés par page (nf_pages_instances)
+	// ================================================================
+
+	/** Instances d'une page, ordonnées (settings décodés en array). */
+	public function get_instances($page_id, $only_enabled = TRUE)
+	{
+		$this->db	->select('instance_id', 'block', 'settings', 'position', 'enabled')
+					->from('nf_pages_instances')
+					->where('page_id', (int) $page_id);
+
+		if ($only_enabled)
+		{
+			$this->db->where('enabled', TRUE);
+		}
+
+		$rows = $this->db->order_by('position', 'instance_id')->get(FALSE);
+
+		foreach ($rows as &$row)
+		{
+			$row['enabled']  = (bool) (int) $row['enabled'];
+			$row['settings'] = \NF\NeoFrag\Fields\Json::decode($row['settings']);
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * Remplace les instances d'une page par la liste ordonnée fournie (composer). Chaque item
+	 * = ['block' => clé, 'settings' => array]. Les blocs INCONNUS sont ignorés et les settings
+	 * validés contre les `fields` déclarés (Block_Settings::from_array) → frontière sûre.
+	 */
+	public function set_instances($page_id, array $list)
+	{
+		$page_id  = (int) $page_id;
+		$registry = $this->block_registry();
+
+		$this->db->where('page_id', $page_id)->delete('nf_pages_instances');
+
+		$position = 0;
+
+		foreach ($list as $item)
+		{
+			$block = strtolower((string) ($item['block'] ?? ''));
+
+			if (!isset($registry[$block]))
+			{
+				continue;
+			}
+
+			$this->db->insert('nf_pages_instances', [
+				'page_id'  => $page_id,
+				'block'    => $block,
+				'settings' => \NF\NeoFrag\Fields\Json::encode(\NF\Modules\Pages\Lib\Block_Settings::from_array($registry[$block], (array) ($item['settings'] ?? []))),
+				'position' => $position++,
+				'enabled'  => (!array_key_exists('enabled', $item) || $item['enabled']) ? '1' : '0'
+			]);
+		}
+	}
+
+	/** HTML des instances actives d'une page (chaîne vide si aucune → la page rend normalement). */
+	public function render_instances($page_id)
+	{
+		$registry = $this->block_registry();
+		$html     = '';
+
+		foreach ($this->get_instances($page_id) as $instance)
+		{
+			$block = $instance['block'];
+
+			if (!isset($registry[$block]) || !is_callable($registry[$block]['render'] ?? NULL))
+			{
+				continue;
+			}
+
+			// Re-validation defense-in-depth : les settings stockés peuvent dater d'un `fields` antérieur.
+			$settings = \NF\Modules\Pages\Lib\Block_Settings::from_array($registry[$block], (array) $instance['settings']);
+
+			$html .= (string) call_user_func($registry[$block]['render'], $settings);
+		}
+
+		return $html !== '' ? '<div class="nf-page-blocks">'.$html.'</div>' : '';
+	}
+
+	/** Registre des blocs au format JS-friendly pour le composer admin : clé → {title, fields}. */
+	public function blocks_for_composer()
+	{
+		$out = [];
+
+		foreach ($this->block_registry() as $key => $def)
+		{
+			$out[$key] = [
+				'title'  => (string) ($def['title'] ?? $key),
+				'fields' => array_map(function($spec){
+					$spec = (array) $spec;
+
+					return [
+						'type'       => $spec['type']       ?? 'string',
+						'default'    => $spec['default']    ?? NULL,
+						'min'        => $spec['min']        ?? NULL,
+						'max'        => $spec['max']        ?? NULL,
+						'max_length' => $spec['max_length'] ?? NULL
+					];
+				}, $def['fields'] ?? [])
+			];
+		}
+
+		ksort($out);
+
+		return $out;
+	}
+
 	public function check_page($page_id, $title, $lang = 'default', $all = FALSE)
 	{
 		if ($lang == 'default')
@@ -150,6 +284,9 @@ class Pages extends Model
 	{
 		$this->db	->where('page_id', $page_id)
 					->delete('nf_pages');
+
+		$this->db	->where('page_id', (int) $page_id)
+					->delete('nf_pages_instances');
 
 		$this->access->delete('pages', $page_id);
 	}

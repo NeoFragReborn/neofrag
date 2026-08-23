@@ -61,4 +61,6 @@ return [
 	'8d9ef7a4' => 'Löschen',
 	'78ee8be4' => 'Rolle bearbeiten',
 	'dc7fea54' => 'Rolle löschen',
+	// i18n 2026-06-11 (code strings)
+	'25e975ef' => 'Dieses Team rekrutiert — Bewerben',
 ];

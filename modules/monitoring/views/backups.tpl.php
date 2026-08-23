@@ -10,7 +10,7 @@ foreach ($backups as $b)
 <div class="card panel-backups">
 	<div class="nf-card-header">
 		<span><i class="fas fa-archive"></i> <?php echo $this->lang('Sauvegardes existantes') ?>
-			<small class="text-muted ml-2">
+			<small class="text-muted ms-2">
 				<?php echo $this->lang('%d fichier|%d fichiers', count($backups), count($backups)) ?>
 				<?php if (count($backups)): ?> — <?php echo human_size($total_size) ?><?php endif ?>
 			</small>
@@ -33,9 +33,9 @@ foreach ($backups as $b)
 					<tr>
 						<th><?php echo $this->lang('Date') ?></th>
 						<th><?php echo $this->lang('Fichier') ?></th>
-						<th class="text-right"><?php echo $this->lang('Taille') ?></th>
-						<th class="text-right"><?php echo $this->lang('Ancienneté') ?></th>
-						<th class="text-right"><?php echo $this->lang('Actions') ?></th>
+						<th class="text-end"><?php echo $this->lang('Taille') ?></th>
+						<th class="text-end"><?php echo $this->lang('Ancienneté') ?></th>
+						<th class="text-end"><?php echo $this->lang('Actions') ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -43,15 +43,15 @@ foreach ($backups as $b)
 					<tr>
 						<td><?php echo icon('far fa-clock').' '.htmlspecialchars($b['date']) ?></td>
 						<td><code><?php echo htmlspecialchars($b['name']) ?></code></td>
-						<td class="text-right"><?php echo human_size($b['size']) ?></td>
-						<td class="text-right<?php echo $b['age_days'] > 30 ? ' text-warning' : '' ?>">
+						<td class="text-end"><?php echo human_size($b['size']) ?></td>
+						<td class="text-end<?php echo $b['age_days'] > 30 ? ' text-warning' : '' ?>">
 							<?php echo $b['age_days'] === 0.0 ? $this->lang('Aujourd\'hui') : $this->lang('%d jour|%d jours', (int)$b['age_days'], (int)$b['age_days']) ?>
 						</td>
-						<td class="text-right">
-							<a class="btn btn-sm btn-outline-primary" href="<?php echo url('admin/monitoring/download/'.urlencode($b['name'])) ?>" data-toggle="tooltip" title="<?php echo $this->lang('Télécharger') ?>">
+						<td class="text-end">
+							<a class="btn btn-sm btn-outline-primary" href="<?php echo url('admin/monitoring/download/'.urlencode($b['slug'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Télécharger') ?>">
 								<?php echo icon('fas fa-download') ?>
 							</a>
-							<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/monitoring/delete/'.urlencode($b['name'])) ?>?_=<?php echo $csrf ?>" data-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer définitivement cette sauvegarde ?'), ENT_QUOTES) ?>">
+							<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/monitoring/delete/'.urlencode($b['slug'])) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer définitivement cette sauvegarde ?'), ENT_QUOTES) ?>">
 								<?php echo icon('fas fa-trash-alt') ?>
 							</a>
 						</td>

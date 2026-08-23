@@ -29,4 +29,9 @@ return [
 	'50d4ccb8' => 'Cerrar sesión',
 	'0f9d628a' => 'Área de miembros: inicio de sesión, enlace al perfil o registro.',
 	'eb68e801' => 'Bienvenido <a href="',
+	// i18n 2026-06-11 (code strings)
+	'4a253c1f' => 'Salir de la vista previa',
+	'0552e076' => 'Modo de vista previa',
+	'1648d731' => 'Los enlaces a los datos personales están ocultos para respetar la privacidad de la cuenta objetivo.',
+	'78aeb25c' => 'Moderación',
 ];

@@ -45,6 +45,17 @@ class Admin_Checker extends Module_Checker
 		$filters['capped']  = $filters['matched'] >= self::SEARCH_CAP;
 		$filters['active']  = $filters['q'] !== '' || $filters['type'] !== '';
 
+		$filters['sort_cols'] = [
+			'date'  => $this->lang('Date'),
+			'title' => $this->lang('Nom'),
+			'size'  => $this->lang('Taille')
+		];
+		list($medias, $filters['sort']) = $this->sort_items($medias, [
+			'date'  => 'ts',
+			'title' => 'original_name',
+			'size'  => 'size_bytes'
+		], 'date', 'desc');
+
 		return [
 			$this->module->pagination->fix_items_per_page(24)->get_data($medias, $page),
 			$total_count,

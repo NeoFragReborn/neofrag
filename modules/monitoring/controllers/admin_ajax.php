@@ -112,7 +112,7 @@ class Admin_Ajax extends Controller_Module
 								$tags[] = $this->lang('Protégé en écriture');
 								$this->_notify($this->lang('Le dossier <code>%s</code> est protégé en écriture', $dir.$name), 'warning');
 							}
-							$output[] = ['text' => $name, 'tags' => $tags, 'nodes' => $treeview($node, $dir.$name.'/')];
+							$output[] = ['text' => utf8_htmlentities($name), 'tags' => $tags, 'nodes' => $treeview($node, $dir.$name.'/')];
 						}
 						else
 						{
@@ -143,7 +143,7 @@ class Admin_Ajax extends Controller_Module
 								$tags[] = $this->lang('Protégé en écriture');
 								$this->_notify($this->lang('Le fichier <code>%s</code> est protégé en écriture', $dir.$name), 'warning');
 							}
-							$output[] = ['text' => $name, 'tags' => $tags];
+							$output[] = ['text' => utf8_htmlentities($name), 'tags' => $tags];
 						}
 					}
 					return $output;
@@ -189,7 +189,7 @@ class Admin_Ajax extends Controller_Module
 							{
 								$tags[] = $this->lang('Protégé en écriture');
 							}
-							$output[] = ['text' => $name, 'tags' => $tags, 'nodes' => $treeview($node, $dir.$name.'/')];
+							$output[] = ['text' => utf8_htmlentities($name), 'tags' => $tags, 'nodes' => $treeview($node, $dir.$name.'/')];
 						}
 						else
 						{
@@ -198,7 +198,7 @@ class Admin_Ajax extends Controller_Module
 							{
 								$tags[] = $this->lang('Protégé en écriture');
 							}
-							$output[] = ['text' => $name, 'tags' => $tags];
+							$output[] = ['text' => utf8_htmlentities($name), 'tags' => $tags];
 						}
 					}
 					return $output;
@@ -408,7 +408,9 @@ class Admin_Ajax extends Controller_Module
 	{
 		// Désactive tout buffering serveur pour permettre le streaming progressif vers le browser.
 		// Sans ça, le JS xhr.progress n'est jamais déclenché et la progress bar reste figée à 0.
-		@apache_setenv('no-gzip', 1);
+		// apache_setenv n'existe que sous mod_php : en PHP 8, l'appeler sous fpm-fcgi/PHP-FPM lève une
+		// Error « fonction inconnue » que @ ne masque pas → fatal au lancement de la sauvegarde.
+		if (function_exists('apache_setenv')) { @apache_setenv('no-gzip', 1); }
 		@ini_set('zlib.output_compression', 0);
 		@ini_set('output_buffering', 'off');
 		@ini_set('implicit_flush', 1);
@@ -444,7 +446,16 @@ class Admin_Ajax extends Controller_Module
 	{
 		dir_create('backups');
 
-		while (file_exists(($file = 'backups/'.date('YmdHis')).'.zip') || file_exists($dump = $file.'.sql'))
+		// Défense en profondeur : si le dossier a été créé au runtime (déploiement sans le
+		// .htaccess versionné), on le re-pose — l'archive contient le dump SQL + config/.
+		if (!file_exists('backups/.htaccess'))
+		{
+			file_put_contents('backups/.htaccess', "Require all denied\n");
+		}
+
+		// Suffixe aléatoire : le nom ne doit pas être devinable (l'archive contient des secrets,
+		// et la protection HTTP dépend de la config serveur — AllowOverride, parité nginx).
+		while (file_exists(($file = 'backups/'.date('YmdHis').'-'.bin2hex(random_bytes(8))).'.zip') || file_exists($dump = $file.'.sql'))
 		{
 			sleep(1);
 		}
@@ -481,5 +492,288 @@ class Admin_Ajax extends Controller_Module
 		// Map 'error' → 'danger' (legacy) car 'error' n'est pas une couleur valide dans get_colors()
 		if ($type === 'error') $type = 'danger';
 		$this->_notifications[] = [(string)$message, get_colors($type) ? $type : 'danger'];
+	}
+
+	// ===== Gestionnaire de fichiers webmaster ================================================
+	// Toutes les écritures sont gardées par : super-admin (effective_admin) + sudo webmaster + CSRF,
+	// et confinées sous NEOFRAG_CMS par File_Jail. Zones protégées (secrets/garde-fou) interdites.
+
+	const FM_MAX_BYTES = 2097152; // 2 Mo : lecture/édition texte
+	const FM_PROTECTED = ['config', 'logs', 'backups', 'cache'];
+	const FM_NO_DELETE = ['index.php', '.htaccess', 'composer.json', 'composer.lock'];
+
+	// Gardes : renvoient NULL si OK, sinon le tableau de réponse à émettre. L'appelant fait
+	// `if ($e = $this->_fm_deny_*()) return $this->json($e);` — la sortie passe TOUJOURS par un
+	// `return $this->json(...)`, jamais par un `return;` nu (qui produit une réponse vide).
+	private function _fm_deny_admin(): ?array
+	{
+		return $this->access->effective_admin() ? NULL : ['error' => (string) $this->lang('Action réservée à l\'administrateur.')];
+	}
+
+	/** NULL si la fenêtre sudo est ouverte, sinon signale au JS d'afficher la modale. */
+	private function _fm_deny_sudo(): ?array
+	{
+		return (new \NF\NeoFrag\Libraries\Webmaster($this))->sudo_active() ? NULL : ['sudo' => 'required'];
+	}
+
+	private function _fm_deny_csrf(): ?array
+	{
+		$tokens = (array) $this->session('csrf');
+
+		return (!empty($tokens['monitoring']) && is_string(post('csrf')) && hash_equals($tokens['monitoring'], (string) post('csrf')))
+			? NULL
+			: ['error' => (string) $this->lang('Jeton de sécurité invalide. Recharge la page.')];
+	}
+
+	/** Résout un chemin relatif sous la racine d'install, en refusant les zones protégées. NULL = rejet. */
+	private function _fm_path($rel): ?string
+	{
+		$root = NEOFRAG_CMS;
+		$abs  = \NF\NeoFrag\Libraries\File_Jail::resolve($root, (string) $rel);
+
+		if ($abs === NULL || \NF\NeoFrag\Libraries\File_Jail::is_protected($root, $abs, self::FM_PROTECTED))
+		{
+			return NULL;
+		}
+
+		return $abs;
+	}
+
+	/** Chemin relatif (affichage) depuis l'absolu. */
+	private function _fm_rel(string $abs): string
+	{
+		$root = rtrim(str_replace('\\', '/', realpath(NEOFRAG_CMS) ?: NEOFRAG_CMS), '/');
+		return ltrim(substr(str_replace('\\', '/', $abs), strlen($root)), '/');
+	}
+
+	/** POST password → ouvre la fenêtre sudo (rate-limité + audité). */
+	public function sudo()
+	{
+		if ($e = $this->_fm_deny_admin())
+		{
+			return $this->json($e);
+		}
+
+		$r = (new \NF\NeoFrag\Libraries\Webmaster($this))->attempt((string) post('password'));
+
+		if (!empty($r['ok']))
+		{
+			return $this->json(['ok' => TRUE]);
+		}
+
+		$msg = !empty($r['locked'])
+			? (string) $this->lang('Trop de tentatives. Réessaie dans %d min.', (int) ceil(($r['retry_after'] ?? 0) / 60))
+			: (string) $this->lang('Mot de passe webmaster incorrect.');
+
+		return $this->json(['ok' => FALSE, 'error' => $msg]);
+	}
+
+	/** Liste le contenu d'un dossier (jaillé, zones protégées masquées). */
+	public function fs_list()
+	{
+		if ($e = $this->_fm_deny_admin())
+		{
+			return $this->json($e);
+		}
+
+		$abs = $this->_fm_path((string) post('dir') ?: '.');
+
+		if ($abs === NULL || !is_dir($abs))
+		{
+			return $this->json(['error' => (string) $this->lang('Dossier inaccessible.')]);
+		}
+
+		$dirs = $files = [];
+
+		foreach (scandir($abs) ?: [] as $name)
+		{
+			if ($name === '.' || $name === '..')
+			{
+				continue;
+			}
+
+			$child = $abs.'/'.$name;
+
+			if (\NF\NeoFrag\Libraries\File_Jail::is_protected(NEOFRAG_CMS, $child, self::FM_PROTECTED))
+			{
+				continue; // config/, logs/, backups/, cache/ jamais exposés
+			}
+
+			$rel = $this->_fm_rel($child);
+
+			if (is_dir($child))
+			{
+				$dirs[] = ['name' => $name, 'path' => $rel, 'type' => 'dir'];
+			}
+			else
+			{
+				$files[] = ['name' => $name, 'path' => $rel, 'type' => 'file'];
+			}
+		}
+
+		$sort = function($a, $b){ return strcasecmp($a['name'], $b['name']); };
+		usort($dirs, $sort);
+		usort($files, $sort);
+
+		return $this->json(['path' => $this->_fm_rel($abs), 'entries' => array_merge($dirs, $files)]);
+	}
+
+	/** Contenu d'un fichier (refus binaire/trop gros). */
+	public function fs_read()
+	{
+		if ($e = $this->_fm_deny_admin())
+		{
+			return $this->json($e);
+		}
+
+		$abs = $this->_fm_path((string) post('path'));
+
+		if ($abs === NULL || !is_file($abs))
+		{
+			return $this->json(['error' => (string) $this->lang('Fichier inaccessible.')]);
+		}
+
+		if (filesize($abs) > self::FM_MAX_BYTES)
+		{
+			return $this->json(['error' => (string) $this->lang('Fichier trop volumineux pour l\'éditeur (%s max).', human_size(self::FM_MAX_BYTES))]);
+		}
+
+		$content = (string) file_get_contents($abs);
+
+		if (\NF\NeoFrag\Libraries\File_Jail::is_binary($content))
+		{
+			return $this->json(['error' => (string) $this->lang('Fichier binaire : édition impossible.'), 'binary' => TRUE]);
+		}
+
+		return $this->json([
+			'path'    => $this->_fm_rel($abs),
+			'content' => $content,
+			'mode'    => \NF\NeoFrag\Libraries\File_Jail::editor_mode($abs)
+		]);
+	}
+
+	/** Enregistre un fichier (sudo) : écriture atomique + sauvegarde .nfbak de l'ancienne version. */
+	public function fs_save()
+	{
+		if ($e = $this->_fm_deny_admin() ?? $this->_fm_deny_csrf() ?? $this->_fm_deny_sudo())
+		{
+			return $this->json($e);
+		}
+
+		$abs     = $this->_fm_path((string) post('path'));
+		$content = (string) post('content');
+
+		if ($abs === NULL || is_dir($abs))
+		{
+			return $this->json(['error' => (string) $this->lang('Chemin invalide.')]);
+		}
+
+		if (strlen($content) > self::FM_MAX_BYTES)
+		{
+			return $this->json(['error' => (string) $this->lang('Contenu trop volumineux (%s max).', human_size(self::FM_MAX_BYTES))]);
+		}
+
+		if (is_file($abs))
+		{
+			@copy($abs, $abs.'.nfbak'); // undo rapide
+		}
+
+		$tmp = $abs.'.nftmp';
+
+		if (@file_put_contents($tmp, $content, LOCK_EX) === FALSE || !@rename($tmp, $abs))
+		{
+			@unlink($tmp);
+			return $this->json(['error' => (string) $this->lang('Écriture impossible (permissions ?).')]);
+		}
+
+		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('webmaster.file_saved', ['target_id' => $this->_fm_rel($abs), 'details' => ['bytes' => strlen($content)]]);
+
+		return $this->json(['ok' => TRUE]);
+	}
+
+	/** Crée un dossier (sudo). */
+	public function fs_mkdir()
+	{
+		if ($e = $this->_fm_deny_admin() ?? $this->_fm_deny_csrf() ?? $this->_fm_deny_sudo())
+		{
+			return $this->json($e);
+		}
+
+		$name = trim(basename(str_replace('\\', '/', (string) post('name'))));
+		$abs  = $this->_fm_path(trim((string) post('dir'), '/').'/'.$name);
+
+		if ($name === '' || $abs === NULL)
+		{
+			return $this->json(['error' => (string) $this->lang('Nom de dossier invalide.')]);
+		}
+
+		if (is_dir($abs) || !@mkdir($abs, 0755))
+		{
+			return $this->json(['error' => (string) $this->lang('Création du dossier impossible.')]);
+		}
+
+		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('webmaster.dir_created', ['target_id' => $this->_fm_rel($abs)]);
+
+		return $this->json(['ok' => TRUE]);
+	}
+
+	/** Renomme un fichier/dossier dans son dossier (sudo). */
+	public function fs_rename()
+	{
+		if ($e = $this->_fm_deny_admin() ?? $this->_fm_deny_csrf() ?? $this->_fm_deny_sudo())
+		{
+			return $this->json($e);
+		}
+
+		$src  = $this->_fm_path((string) post('path'));
+		$name = trim(basename(str_replace('\\', '/', (string) post('name'))));
+
+		if ($src === NULL || !file_exists($src) || $name === '')
+		{
+			return $this->json(['error' => (string) $this->lang('Renommage impossible.')]);
+		}
+
+		$dst = $this->_fm_path($this->_fm_rel(dirname($src)).'/'.$name);
+
+		if ($dst === NULL || file_exists($dst) || !@rename($src, $dst))
+		{
+			return $this->json(['error' => (string) $this->lang('Renommage impossible (cible existante ?).')]);
+		}
+
+		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('webmaster.renamed', ['target_id' => $this->_fm_rel($src), 'details' => ['to' => $this->_fm_rel($dst)]]);
+
+		return $this->json(['ok' => TRUE]);
+	}
+
+	/** Supprime un fichier ou un dossier (sudo). Refuse les fichiers critiques racine. */
+	public function fs_delete()
+	{
+		if ($e = $this->_fm_deny_admin() ?? $this->_fm_deny_csrf() ?? $this->_fm_deny_sudo())
+		{
+			return $this->json($e);
+		}
+
+		$abs = $this->_fm_path((string) post('path'));
+
+		if ($abs === NULL || !file_exists($abs))
+		{
+			return $this->json(['error' => (string) $this->lang('Suppression impossible.')]);
+		}
+
+		if (in_array($this->_fm_rel($abs), self::FM_NO_DELETE, TRUE))
+		{
+			return $this->json(['error' => (string) $this->lang('Ce fichier critique ne peut pas être supprimé ici.')]);
+		}
+
+		$ok = is_dir($abs) ? dir_remove($abs) : @unlink($abs);
+
+		if (!$ok)
+		{
+			return $this->json(['error' => (string) $this->lang('Suppression impossible (permissions ?).')]);
+		}
+
+		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('webmaster.deleted', ['target_id' => $this->_fm_rel($abs)]);
+
+		return $this->json(['ok' => TRUE]);
 	}
 }

@@ -1,21 +1,31 @@
-$(function(){
-	$('a[data-help]').click(function(){
-		if ($('.help.alert').length == 0){
-			help = $(this);
-			$.ajax({
-				url: '<?php echo url() ?>'+help.data('help'),
-				dataType: 'text',
-				success: function(data){
-					$('#alerts').append('<div class="col-12">\
-											<div class="help alert alert-info fade in">\
-												<button data-dismiss="alert" class="close" type="button">×</button>\
-												<h4 class="alert-heading"><?php echo icon('far fa-life-ring').' '.$this->lang('Aide') ?></h4>\
-												'+data+'\
-											</div>\
-										</div>');
-				}
+(function(){
+	function init(){
+		document.querySelectorAll('a[data-help]').forEach(function(link){
+			link.addEventListener('click', function(e){
+				e.preventDefault();
+
+				if (document.querySelector('.help.alert')){ return; }
+
+				var self = this;
+				fetch('<?php echo url() ?>' + self.dataset.help, {
+					headers: {'X-Requested-With': 'XMLHttpRequest'}
+				}).then(function(response){
+					return response.text();
+				}).then(function(data){
+					var alerts = document.getElementById('alerts');
+					if (!alerts){ return; }
+
+					var column = document.createElement('div');
+					column.className = 'col-12';
+					column.innerHTML = '<div class="help alert alert-info alert-dismissible fade show">'
+						+ '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>'
+						+ '<h4 class="alert-heading"><?php echo icon('far fa-life-ring').' '.$this->lang('Aide') ?></h4>'
+						+ data
+						+ '</div>';
+					alerts.appendChild(column);
+				});
 			});
-		}
-		return false;
-	});
-});
+		});
+	}
+	if (document.readyState !== 'loading'){ init(); } else { document.addEventListener('DOMContentLoaded', init); }
+})();

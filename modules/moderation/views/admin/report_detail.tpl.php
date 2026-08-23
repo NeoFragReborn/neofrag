@@ -19,7 +19,7 @@ $status_class = [
 				<?php if (!empty($report['url'])): ?>
 				<a class="btn btn-sm btn-outline-secondary" href="<?php echo htmlspecialchars($report['url']) ?>" target="_blank"><i class="fas fa-external-link-alt"></i> <?php echo $this->lang('Voir le contenu en contexte') ?></a>
 				<?php else: ?>
-				<span class="badge badge-light" title="<?php echo htmlspecialchars($this->lang('Aucune URL de contexte fournie. Voir le commentaire du reporter pour situer le contenu.')) ?>"><i class="fas fa-unlink"></i> <?php echo $this->lang('Pas de contexte URL') ?></span>
+				<span class="badge text-bg-light" title="<?php echo htmlspecialchars($this->lang('Aucune URL de contexte fournie. Voir le commentaire du reporter pour situer le contenu.')) ?>"><i class="fas fa-unlink"></i> <?php echo $this->lang('Pas de contexte URL') ?></span>
 				<?php endif ?>
 			</div>
 			<div class="card-body">
@@ -28,10 +28,10 @@ $status_class = [
 					<dd class="col-sm-9"><?php echo htmlspecialchars($report['created_at']) ?> <small class="text-muted">(<?php echo time_span(strtotime($report['created_at'])) ?>)</small></dd>
 
 					<dt class="col-sm-3"><?php echo $this->lang('Type cible') ?></dt>
-					<dd class="col-sm-9"><span class="badge badge-light"><?php echo htmlspecialchars($report['target_type']) ?></span> <code><?php echo htmlspecialchars($report['target_id']) ?></code></dd>
+					<dd class="col-sm-9"><span class="badge text-bg-light"><?php echo htmlspecialchars($report['target_type']) ?></span> <code><?php echo htmlspecialchars($report['target_id']) ?></code></dd>
 
 					<dt class="col-sm-3"><?php echo $this->lang('Raison') ?></dt>
-					<dd class="col-sm-9"><span class="badge badge-secondary"><?php echo htmlspecialchars($report['reason']) ?></span></dd>
+					<dd class="col-sm-9"><span class="badge text-bg-secondary"><?php echo htmlspecialchars($report['reason']) ?></span></dd>
 
 					<?php if (!empty($report['comment'])): ?>
 					<dt class="col-sm-3"><?php echo $this->lang('Commentaire reporter') ?></dt>
@@ -55,7 +55,12 @@ $status_class = [
 			</div>
 			<div class="card-body">
 				<div style="background:rgba(0,0,0,.04);padding:12px;border-radius:6px;">
-					<?php echo $report['content_snapshot'] /* déjà sanitized au moment du report */ ?>
+					<?php
+					// Re-sanitize au rendu : le snapshot agrège du contenu editor (sanitized) ET des
+					// parts texte construites avec des données client (noms de PJ) — ne jamais faire
+					// confiance à l'échappement amont pour du HTML affiché côté modérateur.
+					echo sanitize_html($report['content_snapshot'])
+					?>
 				</div>
 			</div>
 		</div>
@@ -79,18 +84,18 @@ $status_class = [
 				<thead><tr>
 					<th><?php echo $this->lang('Nom') ?></th>
 					<th><?php echo $this->lang('Type') ?></th>
-					<th class="text-right"><?php echo $this->lang('Taille') ?></th>
+					<th class="text-end"><?php echo $this->lang('Taille') ?></th>
 					<th><?php echo $this->lang('SHA-256') ?></th>
-					<th class="text-right"><?php echo $this->lang('Action') ?></th>
+					<th class="text-end"><?php echo $this->lang('Action') ?></th>
 				</tr></thead>
 				<tbody>
 				<?php foreach ($snapshot_attachments as $a): ?>
 					<tr>
 						<td><i class="fas fa-file"></i> <?php echo htmlspecialchars($a['original_name']) ?></td>
 						<td><small class="text-muted"><code><?php echo htmlspecialchars($a['mime_type']) ?></code></small></td>
-						<td class="text-right"><small><?php echo round((int)$a['file_size'] / 1024, 1) ?> KB</small></td>
+						<td class="text-end"><small><?php echo round((int)$a['file_size'] / 1024, 1) ?> KB</small></td>
 						<td><small class="text-muted" title="<?php echo htmlspecialchars($a['sha256_hash']) ?>"><code><?php echo htmlspecialchars(substr((string)$a['sha256_hash'], 0, 12)) ?>…</code></small></td>
-						<td class="text-right">
+						<td class="text-end">
 							<a class="btn btn-sm btn-outline-primary" href="<?php echo url($_modbase.'/snapshot/download/'.(int)$a['id']) ?>" download>
 								<i class="fas fa-download"></i> <?php echo $this->lang('Télécharger') ?>
 							</a>
@@ -107,7 +112,7 @@ $status_class = [
 		<div class="card mb-3">
 			<div class="nf-card-header"><span><i class="fas fa-gavel"></i> <?php echo $this->lang('Actions') ?></span></div>
 			<div class="card-body">
-				<form method="post" action="<?php echo url($_modbase.'/reports/'.(int)$report['id'].'/sanction') ?>">
+				<form method="post" action="<?php echo url($_modbase.'/reports/'.(int)$report['id'].'/sanction') ?>"><input type="hidden" name="_" value="<?php echo $csrf ?>">
 					<div class="row">
 						<div class="col-md-6">
 							<label><?php echo $this->lang('Type de sanction') ?></label>
@@ -196,7 +201,7 @@ $status_class = [
 				<hr />
 
 				<!-- Dismiss form (sans sanction) -->
-				<form method="post" action="<?php echo url($_modbase.'/reports/'.(int)$report['id'].'/dismiss') ?>" class="mt-2">
+				<form method="post" action="<?php echo url($_modbase.'/reports/'.(int)$report['id'].'/dismiss') ?>" class="mt-2"><input type="hidden" name="_" value="<?php echo $csrf ?>">
 					<div class="form-group">
 						<label><?php echo $this->lang('Ignorer ce signalement (note interne)') ?></label>
 						<input type="text" name="note" class="form-control" maxlength="500" placeholder="<?php echo $this->lang('Pourquoi ce signalement est rejeté ? (optionnel, interne)') ?>" />
@@ -235,9 +240,9 @@ $status_class = [
 				<hr class="my-2" />
 				<small class="d-block text-muted"><?php echo $this->lang('Qualité du reporter (signalements)') ?></small>
 				<div class="mt-1">
-					<span class="badge badge-success"><?php echo (int)$reporter_score['counts']['actioned'] ?> <?php echo $this->lang('actionnés') ?></span>
-					<span class="badge badge-secondary"><?php echo (int)$reporter_score['counts']['dismissed'] ?> <?php echo $this->lang('rejetés') ?></span>
-					<span class="badge badge-light"><?php echo (int)$reporter_score['counts']['pending'] ?> <?php echo $this->lang('en cours') ?></span>
+					<span class="badge text-bg-success"><?php echo (int)$reporter_score['counts']['actioned'] ?> <?php echo $this->lang('actionnés') ?></span>
+					<span class="badge text-bg-secondary"><?php echo (int)$reporter_score['counts']['dismissed'] ?> <?php echo $this->lang('rejetés') ?></span>
+					<span class="badge text-bg-light"><?php echo (int)$reporter_score['counts']['pending'] ?> <?php echo $this->lang('en cours') ?></span>
 				</div>
 				<?php if ($reporter_score['is_suspect']): ?>
 				<div class="alert alert-warning mt-2 mb-0 p-2"><small><i class="fas fa-exclamation-triangle"></i> <?php echo $this->lang('Reporter suspect (faux signalements répétés)') ?></small></div>
@@ -263,12 +268,12 @@ $status_class = [
 				<strong><a href="<?php echo url($_modbase.'/users/'.(int)$report['target_user_id']) ?>">@<?php echo htmlspecialchars((string)$report['target_username']) ?></a></strong>
 				<hr class="my-2" />
 				<small class="d-block text-muted mb-1"><?php echo $this->lang('Signalements reçus (20 derniers)') ?></small>
-				<span class="badge badge-warning"><?php echo count($target_history['reports_received']) ?></span>
+				<span class="badge text-bg-warning"><?php echo count($target_history['reports_received']) ?></span>
 				<?php if (!empty($target_history['active_sanctions'])): ?>
 				<hr class="my-2" />
 				<small class="d-block text-muted mb-1"><?php echo $this->lang('Sanctions actives') ?></small>
 				<?php foreach ($target_history['active_sanctions'] as $s): ?>
-				<div class="badge badge-danger d-block mb-1 text-left p-2">
+				<div class="badge text-bg-danger d-block mb-1 text-start p-2">
 					<?php echo htmlspecialchars($s['type']) ?> · <?php echo htmlspecialchars($s['scope']) ?>
 					<?php if (!empty($s['expires_at'])): ?> · <?php echo $this->lang('jusqu\'au %s', htmlspecialchars($s['expires_at'])) ?><?php endif ?>
 				</div>

@@ -1,14 +1,16 @@
-$(function(){
-	$('ul.groups input[type=checkbox]').change(function(){
-		if ($(this).prop('value') == 'admins' || $(this).prop('value') == 'members'){
-			other = $(this).prop('value') == 'admins' ? $('ul.groups input[type=checkbox][value=members]') : $('ul.groups input[type=checkbox][value=admins]');
-
-			if ($(this).prop('checked')){
-				other.prop('checked', false);
-			}
-			else{
-				other.prop('checked', 'checked');
-			}
-		}
-	});
-});
+(function(){
+	function init(){
+		document.querySelectorAll('ul.groups input[type=checkbox]').forEach(function(checkbox){
+			checkbox.addEventListener('change', function(){
+				if (this.value === 'admins' || this.value === 'members'){
+					var selector = this.value === 'admins'
+						? 'ul.groups input[type=checkbox][value=members]'
+						: 'ul.groups input[type=checkbox][value=admins]';
+					var other = document.querySelector(selector);
+					if (other){ other.checked = !this.checked; }
+				}
+			});
+		});
+	}
+	if (document.readyState !== 'loading'){ init(); } else { document.addEventListener('DOMContentLoaded', init); }
+})();

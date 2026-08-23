@@ -1,14 +1,22 @@
 <?php
 declare(strict_types=1);
+// Outil d'administration : jamais servi en HTTP (sinon maintenance/migrations/dumps
+// seraient executables par n'importe qui si tools/ etait expose par erreur).
+if (PHP_SAPI !== 'cli')
+{
+	http_response_code(404);
+	exit;
+}
+
 
 /**
  * NeoFrag Reborn — régénère le schéma de référence et le seed d'installation depuis la
  * base vive, en mode CŒUR LEAN (Tier 0 uniquement). À relancer à chaque release.
  *
  * Le paquet livre un cœur lean : schema.sql + seed.sql ne contiennent QUE le Tier 0
- * (cf. tools/addons-manifest.php). Les tables et l'enregistrement nf_addon des modules
- * Tier 1 (presets) / Tier 2 (marketplace) sont apportés à l'install par leur
- * modules/<name>/install/install.sql (cf. install/lib/installer.php::apply_preset()).
+ * (cf. tools/addons-manifest.php). Les tables et l'enregistrement nf_addon des autres
+ * modules/widgets/thèmes sont apportés à l'install par leur
+ * modules/<name>/install/install.sql (cf. install/lib/installer.php::install_complete()).
  *
  * Produit (depuis la base vive cœur-riche, filtrée par tier — la base de dev n'est pas
  * modifiée) :
@@ -147,6 +155,7 @@ function write_schema(mysqli $db, array $tables): void
         $create = show_create($db, $table);
         // Retire le compteur AUTO_INCREMENT : un schéma de référence ne fige pas un id de départ.
         $create = preg_replace('/ AUTO_INCREMENT=\d+/', '', $create);
+        $create = portable_collation($create);
 
         $out .= "DROP TABLE IF EXISTS `{$table}`;\n{$create};\n\n";
     }
@@ -210,9 +219,10 @@ function addon_type_name(int $type_id): string
 }
 
 /**
- * widget_id référencés par les dispositions CŒUR (thème nebula). Les dispositions
- * sérialisent des arbres Array_/Row/Col/Widget ; on extrait les id par regex
- * (s:10:"\0*\0_widget";i:<id>;) sans charger les classes du framework.
+ * widget_id référencés par les dispositions CŒUR (thème nebula), sans charger les classes
+ * du framework. Gère les DEUX formats de stockage des dispositions :
+ *   - JSON (depuis la migration 2026_06) : objets widget `{"id":<id>, …}` ;
+ *   - legacy PHP-serialized : `s:10:"\0*\0_widget";i:<id>;`.
  */
 function kept_widget_ids(mysqli $db, array $manifest): array
 {
@@ -222,7 +232,20 @@ function kept_widget_ids(mysqli $db, array $manifest): array
         if (!is_core_addon($manifest, 'theme', (string) $row['theme'])) {
             continue;
         }
-        if (preg_match_all('/_widget";i:(\d+);/', (string) $row['disposition'], $m)) {
+        $disposition = (string) $row['disposition'];
+
+        // JSON (nouveau) : seuls les widgets portent une clé "id".
+        if ($disposition !== '' && ($disposition[0] === '[' || $disposition[0] === '{')) {
+            if (preg_match_all('/"id"\s*:\s*(\d+)/', $disposition, $m)) {
+                foreach ($m[1] as $id) {
+                    $ids[(int) $id] = true;
+                }
+            }
+            continue;
+        }
+
+        // Legacy PHP-serialized.
+        if (preg_match_all('/_widget";i:(\d+);/', $disposition, $m)) {
             foreach ($m[1] as $id) {
                 $ids[(int) $id] = true;
             }
@@ -290,6 +313,17 @@ function show_create(mysqli $db, string $table): string
     $res = $db->query("SHOW CREATE TABLE `{$table}`");
     $row = $res->fetch_row();
     return $row[1];
+}
+
+/**
+ * Normalise les collations MariaDB-11-only (uca1400) vers une collation UNIVERSELLE
+ * (utf8mb*_unicode_ci, supportée par MySQL 5.7+/8 ET MariaDB 10+/11). La base de dev tourne
+ * sous MariaDB 11 → SHOW CREATE TABLE émet uca1400 ; sans normalisation le schéma cœur est
+ * ININSTALLABLE sur la plupart des hébergements (MySQL 8, MariaDB 10.6 LTS Plesk).
+ */
+function portable_collation(string $sql): string
+{
+    return preg_replace('/(utf8mb[34])_uca1400_ai_ci/', '$1_unicode_ci', $sql);
 }
 
 function table_exists(mysqli $db, string $table): bool

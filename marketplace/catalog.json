@@ -2,8 +2,8 @@
     "schema": 1,
     "project": "NeoFrag Reborn",
     "base_version": "1.0.0",
-    "generated_at": "2026-06-06T21:44:12+00:00",
-    "count": 51,
+    "generated_at": "2026-06-17T15:39:48+00:00",
+    "count": 52,
     "addons": [
         {
             "type": "module",
@@ -15,8 +15,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/ads.zip",
-            "size": 5266,
-            "sha256": "76494b36d529a1f4f683703d7b00aee3ce6f44f986b1b659e82caf6369d9496f",
+            "size": 8572,
+            "sha256": "89d71b9fed4e1bad17cec9ebbca1d57266eb200dddcbab5cef9cbb5f433dc940",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -36,8 +36,8 @@
             "version": "1.0",
             "author": "user_id",
             "file": "modules/articles.zip",
-            "size": 25347,
-            "sha256": "9c592be86e353c8b1b70e4d7b1bb401b34b8127dae7c445be1a05fadb58ccc51",
+            "size": 28883,
+            "sha256": "33195b90d7266ca6093382747e3797cd0f67118d5ec83869839f32a57cac19b9",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -57,8 +57,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "modules/awards.zip",
-            "size": 18615,
-            "sha256": "0496208b1eeea8af9d64b24df93e0b3951e6ecf360dd82ea38cfd44767e5464e",
+            "size": 18855,
+            "sha256": "9ac42b2dbb17f4ef3564f6c57e73d6ebee259ff807eb6f6690fb089daa2cd349",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -78,8 +78,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/bugtracker.zip",
-            "size": 15475,
-            "sha256": "43670fd70d5bcb6ac5071b82ae72c613d6c03335aa564750806d44fabbf7a86c",
+            "size": 15731,
+            "sha256": "c79902c6709aed004ccd1209d840cab9ea9e4e7f7a8baa44f73d4f016439df60",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -97,8 +97,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/calendar.zip",
-            "size": 12430,
-            "sha256": "ee3ee09cd5697c019956a143a1afc0631e7fc455ebd75626028c43d2b988b4d7",
+            "size": 12468,
+            "sha256": "80b86ddce4403dff6aaf4fb56f21ea5827c840d553c05a28b6cee44ba549256b",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -118,8 +118,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/classifieds.zip",
-            "size": 11743,
-            "sha256": "d1036dfd2cfef9d85298bbbaceb2ece8991211eabdd92a25ec34c3490bb4d3ac",
+            "size": 17567,
+            "sha256": "e5846165027d92b17f253cc5f2f994362f438ab8de84d5b47024eb9d7b6c1754",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -137,8 +137,8 @@
             "version": "1.0",
             "author": "NeoFrag",
             "file": "modules/donations.zip",
-            "size": 23498,
-            "sha256": "43edb8279a6a2e3bdb4ff1d04b4867a06a644e5f7365c2d3832606f0495e9405",
+            "size": 23769,
+            "sha256": "df7f4c88c6bbcd7f86a7b3cc255d5f417c95428f87b8303e35ac63e2266a51c4",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -158,8 +158,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/downloads.zip",
-            "size": 15763,
-            "sha256": "e0032f5f319c6b927132d5ea0f64902b9372f0b0e91c7584b199b0c078cb89ca",
+            "size": 16645,
+            "sha256": "a0c134503b506c4ce34c5122d92c0f695ba93f90242ad34148a3202ff0d0cf2d",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -179,8 +179,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "modules/events.zip",
-            "size": 202078,
-            "sha256": "9d321352153c67aaf9d1bf4fbe6d85513ac5df1e4afeb2efd815512f7e4037bb",
+            "size": 139089,
+            "sha256": "086769d1066c4b369b1eb153e0273e8c47cfc1a9f839b093534143d8e5c90d6e",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -200,8 +200,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/faq.zip",
-            "size": 12391,
-            "sha256": "a0066acfeebef7ac46b38f6f7dcdce756848d6df7f823c72b2a30c507cec168c",
+            "size": 13239,
+            "sha256": "0bf7f8f65c4c089799400e028e9196efbf3a5edf4efae2e74ad8ab56242b7d28",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -219,8 +219,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/feeds.zip",
-            "size": 2310,
-            "sha256": "666dd63a0f9ca26eb773097cee14294244f4da5d7958c5e63d7cc4d0d4348047",
+            "size": 3679,
+            "sha256": "c6c79edc3b02d4ada28298e730ffe37c9e63b49b0732e3796358b6869d593194",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -238,8 +238,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "modules/forum.zip",
-            "size": 85021,
-            "sha256": "3cf9d6394fe04a547055324d46580d5998aac2af8efdc6ead90cc5e8ea0ca2f0",
+            "size": 93353,
+            "sha256": "f342364c97febe5972e6557dec92452e224c47ce1688689c4b14c19f7030319a",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -259,8 +259,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "modules/gallery.zip",
-            "size": 47194,
-            "sha256": "094560861bd891a3030d8789999c69a7f35781ec8670b8395a222a351e403282",
+            "size": 48004,
+            "sha256": "b9ee8058ecfafa60b0def87fabae27e08f1d9724dc254e7f197e4a5148ef0ee1",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -280,8 +280,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "modules/games.zip",
-            "size": 14769,
-            "sha256": "7ffd5577965ff3b6ef377c3c21c6d541ae1bf74d854e83861aac0c895533ecb0",
+            "size": 14790,
+            "sha256": "3d02d2c1ae2d9794131e375dc8b7a0361a65e218ac4679151862f8106e7d7f5a",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -299,8 +299,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/gamification.zip",
-            "size": 7024,
-            "sha256": "98acd2b5d82fca970227813e475158686f3c0ecb4e0c4fbe85a6351f46b7dcec",
+            "size": 9093,
+            "sha256": "04597265cada1f1faf5e7ce6ffcb624914a6a727bf2c6ba3fc145aab844a7c6e",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -318,8 +318,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/guestbook.zip",
-            "size": 12570,
-            "sha256": "5d864ad5459056aa8f772e9449ee8f26f5762fa97b128a0d3d97bd4e18180ec8",
+            "size": 13671,
+            "sha256": "53295e16fb51f9f6f35cfaed673292e40de288782f7fa50089436e200cdfd7b4",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -339,8 +339,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/links.zip",
-            "size": 13334,
-            "sha256": "b7d6c97811a67f125bb52c67b1b025331b5ada0a81e37bc7144f531579518041",
+            "size": 14160,
+            "sha256": "d3ff597bd2d30a3a8ef05cdf640a06cffd10fe540ce83d6fced1cda9d04c1c4b",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -360,8 +360,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "modules/news.zip",
-            "size": 30986,
-            "sha256": "d50e58e6a328465f986ea434ddf81ead4b230c56c713faba3e0ca8749cad0a95",
+            "size": 34650,
+            "sha256": "71f845727be9115804090aa115966d71ad302629e941b79d01d864d0af75e61f",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -381,8 +381,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/newsletter.zip",
-            "size": 16305,
-            "sha256": "e1d6100fa3baca9db9832af8a14058d753cf7d3a6bc202e5d0de79553c128a0b",
+            "size": 29291,
+            "sha256": "08bd762ebbf324a8b36dc88a22421e7d1d8f6db432f30036e0b8ce485212e9a7",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -402,8 +402,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "modules/partners.zip",
-            "size": 15102,
-            "sha256": "197d4e27f819a472bfaad37013c9c25cfb7ca8a5ffd8b53d6aedb5077877c4b1",
+            "size": 15299,
+            "sha256": "354d5109ed2f41592bbb6f883e60579977bc5db89693607acb7345fc923cfa81",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -423,8 +423,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/payments.zip",
-            "size": 9516,
-            "sha256": "b032c0753af3134ec3bf0331f1e94d835856b0b5ad50fd5ea8475887462fe97c",
+            "size": 13996,
+            "sha256": "a5799bff62bc04663df42a73fa22998e8e6234b8996159f97a011d0fd430e3ee",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -442,8 +442,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "modules/recruits.zip",
-            "size": 38612,
-            "sha256": "239b1f195c7e77866afaef10d41b70d4c3bc96b4c290d046889d20bc5de17a7e",
+            "size": 40692,
+            "sha256": "9b76341e603de8ef8aa5facecb08af2d3fa76d7d5280286dcfc2f1df40d13c19",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -463,8 +463,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/shop.zip",
-            "size": 9000,
-            "sha256": "cc1a13d2667a98dfd3491c43d36f0050dfe1de3f1dded7d2cea2f8a164281335",
+            "size": 12567,
+            "sha256": "f5d6adb190b7c0c9227db1840b30aecfdbac3520f608ccc94737750906ebe585",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -482,8 +482,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/surveys.zip",
-            "size": 16462,
-            "sha256": "4f3000b416c0c4f9752042f3bbd2686b47eb349c61f01e4619c706f7bb5b09b7",
+            "size": 17255,
+            "sha256": "bb432cb0fa5fc333187d9d859558ff4cbaf5d93fe1cdec0b249df7084ff7c34e",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -503,8 +503,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "modules/teams.zip",
-            "size": 21541,
-            "sha256": "cb9730a6850617efc4624e56c5b3046671ad5682562f2f9b7a98e1319558e063",
+            "size": 21806,
+            "sha256": "15a6f79e914dfc3b3d5997006c51e3776acd3fbd6604c596114ae966512a89d3",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -524,8 +524,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "modules/wiki.zip",
-            "size": 15114,
-            "sha256": "f73a4cb9bcd25ed65a2e38edb32977720c9d03e9af2fdf6a2bb8023a442eff80",
+            "size": 17214,
+            "sha256": "dc169a33fdb17d648ef9bcc100f2cc533cdb3fdb531a35cde12272c245bd456f",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -543,8 +543,27 @@
             "version": "1.0.0",
             "author": "NeoFrag fork",
             "file": "themes/blockcraft.zip",
-            "size": 34850,
-            "sha256": "0374049d51c81baa99d30d3573cc3a05abc67e3092cdc0b804ac38dd3cab1a57",
+            "size": 40409,
+            "sha256": "f273af2237170c72bb088e3c427ee5b2ff87d1d63b0d8d7728b772b6654e1dc8",
+            "requires": {
+                "base": ">=1.0.0",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "theme",
+            "name": "extend",
+            "tier": 2,
+            "category": "theme",
+            "title": "Extend",
+            "description": "Thème « Extend » : navy et bleu acier, titres condensés Economica, bascule nuit/jour, mise en page riche (navigation, bannière, multi-zones). Entièrement personnalisable.",
+            "version": "1.0.0",
+            "author": "Chewbaka — port NeoFrag Reborn",
+            "file": "themes/extend.zip",
+            "size": 64213,
+            "sha256": "bed09a459d68fcd5e391ce91fa42b1c604d13d731be3282d7f30095aeba1aa9b",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -562,8 +581,8 @@
             "version": "1.0.0",
             "author": "NeoFrag fork",
             "file": "themes/forge.zip",
-            "size": 33112,
-            "sha256": "188a137cf6030ef5eb0f68389c9abd67354c824e8d0fd724d5ce5cbfab54c509",
+            "size": 38730,
+            "sha256": "3abfa1d14b697a8ef48f8878043664ad7035f86105bb90d3d9e44de50699e562",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -581,8 +600,8 @@
             "version": "1.0.0",
             "author": "NeoFrag fork",
             "file": "themes/granite.zip",
-            "size": 34122,
-            "sha256": "8b5f98b3d904056553243a843394d90c464d8cf7745af32d6047bfec90c79234",
+            "size": 39655,
+            "sha256": "d0523324d116ba88cc8d2cb89058be73fa88aa302b530af83ef55eab22abeefb",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -600,8 +619,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "widgets/about.zip",
-            "size": 5654,
-            "sha256": "fc4beef3330058b2b01780d31ab3bf9534e9fafc9121102673af8bd82cba1e87",
+            "size": 5666,
+            "sha256": "bcaeb261f5b11d99236ee1a4171e6da38ce7162b6fe523ffbe5933d6a77c0023",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -619,8 +638,8 @@
             "version": "1.0",
             "author": "NeoFrag Reborn",
             "file": "widgets/ads.zip",
-            "size": 2461,
-            "sha256": "66cc5e681d0005bdb9f2ef72c81aa3363e138dbd1fa459b5a1a0ad645791b246",
+            "size": 4233,
+            "sha256": "f9e76da8282ced2acc918660d4b1e604cd65264fd6a86f2b6f227967df300166",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -638,8 +657,8 @@
             "version": "1.0",
             "author": "NeoFrag",
             "file": "widgets/articles.zip",
-            "size": 4592,
-            "sha256": "4a006e7984c59a1e70b441a0b6f6cdc63127ff18ef6df98b7b4b8b5179e0c45a",
+            "size": 4920,
+            "sha256": "c0fa0029b148aebb01c2371fd296c4d1bd2f7b18d99e945c3bcbc7429dc57f8e",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -657,8 +676,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "widgets/awards.zip",
-            "size": 6869,
-            "sha256": "945f2034755298bb02b278ca7cf3c8676ce1081ee38b81ea65657ce9281a1ca8",
+            "size": 7188,
+            "sha256": "0fc56e2dc402c33c5c2c46217bad49c20aa15ef84e21e3e45b2e28d986b9b9cf",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -676,8 +695,8 @@
             "version": "1.0",
             "author": "NeoFrag",
             "file": "widgets/calendar.zip",
-            "size": 4676,
-            "sha256": "079df3a3f2d4893e4e289ca2b6c59fa2e3b77c5eff6ded4d3e500df2d878f640",
+            "size": 5033,
+            "sha256": "ba335fd53dd066aeb2414b2ef5fad07b20a7373edeabc795858017ad15a89a59",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -695,8 +714,8 @@
             "version": "1.0",
             "author": "NeoFrag",
             "file": "widgets/donations.zip",
-            "size": 10595,
-            "sha256": "dbe86bb10d49f555e0f2e8dc2cc96218349bb193461da6a87093ddd1a2136578",
+            "size": 10614,
+            "sha256": "36fce86b3ba4588e57bc06f227e3cbd0b8c4c6f7d0ba9792020d6d3d11af7ca3",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -714,8 +733,8 @@
             "version": "1.0",
             "author": "NeoFrag",
             "file": "widgets/downloads.zip",
-            "size": 3294,
-            "sha256": "42963daa5a9d0b158c4fd364be17476cea9f10d6ebacd4bfed88af6e8fdfb8d1",
+            "size": 3310,
+            "sha256": "ddda0447e681fcb183e3dad9ff5e3a748ccebeea8c53568dcc9ac92779534ade",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -733,8 +752,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "widgets/events.zip",
-            "size": 13631,
-            "sha256": "1c4e966bbb5ed44811f5ee329bcac1e6467ee6866b41a983fd8dc5fc16aec95c",
+            "size": 13638,
+            "sha256": "de37dabf9df5e21a53224d50b032183295ef4f822fc2b81b8ff5c7e23f05f66d",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -752,8 +771,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "widgets/forum.zip",
-            "size": 8059,
-            "sha256": "b2300c4d624eb2a7af3f9f165a80be52c9ada104a06aa16deb108829efa071a6",
+            "size": 8060,
+            "sha256": "eab3addc32d23b8afb0f2196c947a73f0b10488476200c04b015e6b43fa7699c",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -771,8 +790,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "widgets/gallery.zip",
-            "size": 10096,
-            "sha256": "7fe5aad03951de8b831469805937ab36468aa58771fbba48f267ba13527de923",
+            "size": 10108,
+            "sha256": "56da9a8f817b7168e7b93379d3152242f9b72fb7c01fe02be1435a4c447b195b",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -790,8 +809,8 @@
             "version": "1.0",
             "author": "NeoFrag",
             "file": "widgets/gameserver.zip",
-            "size": 15119,
-            "sha256": "b0d257c83adee0d0d085100da918f44dc4aade706b4152b417316f80d5f5b0ff",
+            "size": 15326,
+            "sha256": "3773a98e141050d82370d183fac006bd5bf3e45da9e696c79250a15189152964",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -809,8 +828,8 @@
             "version": "1.0",
             "author": "NeoFrag",
             "file": "widgets/guestbook.zip",
-            "size": 4651,
-            "sha256": "52b6ff80eeb3159f1c31afd54804cc144fda373676848f85e5fe453f0a052dbb",
+            "size": 5005,
+            "sha256": "94d97fa58b0750b0ed7527138d163ca273e3ec454c391cbcee52be662dcc6476",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -828,8 +847,8 @@
             "version": "1.0",
             "author": "NeoFrag",
             "file": "widgets/links.zip",
-            "size": 4385,
-            "sha256": "75a7ed698feac870383e1e85cb699de1d9e0dbb4d605513f5b21501b4b4dcb30",
+            "size": 4735,
+            "sha256": "9dc5d959a1fe0de8dc62657d6a6233cbb1f9c228161993b3f92deaef5ea8646f",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -847,8 +866,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "widgets/news.zip",
-            "size": 5750,
-            "sha256": "3563c7df533d850a15f498a82bcd1b06b245f00bee282153c7453a67b4046175",
+            "size": 5754,
+            "sha256": "1bc836c08b51313a877dcbfb952f0ca58a08fe089e3c8e3e55a320927f907cca",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -866,8 +885,8 @@
             "version": "1.0",
             "author": "NeoFrag",
             "file": "widgets/newsletter.zip",
-            "size": 3521,
-            "sha256": "01d07da2eea6c9838d01c43af79be9035940502ff771aed5d97d44d0ebbbb628",
+            "size": 3537,
+            "sha256": "c35ce55ebeca39a7407c219490901bedf3a0a3e462dab2a300ef6116385a4cbe",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -885,8 +904,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "widgets/partners.zip",
-            "size": 7435,
-            "sha256": "03744fe5708a4e2f5043c1e33434140b2d277685047accee33fd8bd9450a4618",
+            "size": 7525,
+            "sha256": "ab352e225e159e5fcf7ffb04ac0faf5cf57724360ead1c8b5dad8adac47ecbc2",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -904,8 +923,8 @@
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "widgets/recruits.zip",
-            "size": 5077,
-            "sha256": "a46569df72296f8651aa06e761debfd796be339e52f6255fcf1e535c5b9eabc6",
+            "size": 5081,
+            "sha256": "48a7d05a62d3f6f263edc80aec5353bd35bb14e14644fda542b2b2d2d67b2d2e",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -923,8 +942,8 @@
             "version": "2.0",
             "author": "NeoFrag",
             "file": "widgets/steam.zip",
-            "size": 9663,
-            "sha256": "41307be2b61c2cfd8891ae2011ed3503983b44a1d296fa81ffb21bda9d747dd0",
+            "size": 9832,
+            "sha256": "1be5ccb18785e0fd9b4d5aae78077bfb5b2414defa4554af79fbbc2ad5d7f02c",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -942,8 +961,8 @@
             "version": "1.0",
             "author": "NeoFrag",
             "file": "widgets/surveys.zip",
-            "size": 2715,
-            "sha256": "a628236150221e6c29bc3490edaaad1a398f22f3fa5ce28556d8e66af57fa99e",
+            "size": 2730,
+            "sha256": "473dd9017e7ecaf395daa7200a543788e4ca588a1132e2d572b9217d9b38541c",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -962,7 +981,7 @@
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "file": "widgets/teams.zip",
             "size": 4240,
-            "sha256": "0498ce9cac0e8429d118f95281cc73e11c9ab581de8f1de59d2b9ded965f3dec",
+            "sha256": "174a803200e3dd1fd4ee272943d7c47e4410be1c4eba446ee63928c8e90207b0",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -980,8 +999,8 @@
             "version": "3.0",
             "author": "NeoFrag",
             "file": "widgets/teamspeak.zip",
-            "size": 13020,
-            "sha256": "f28d51a93ed111ab5558726945037785291b092ac829c523f5e2b341a58e8981",
+            "size": 14879,
+            "sha256": "545535b6dbc788e54b89db364d7d8a349907d4c3eb9e6ed9c7329950fad45b65",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []
@@ -994,13 +1013,13 @@
             "name": "twitch",
             "tier": 1,
             "category": "identite",
-            "title": "Streamer Twitch",
-            "description": "Affiche le statut live d'un streamer Twitch (jeu, viewers, titre, miniature) avec lecteur intégré dans une popup.",
-            "version": "2.0",
+            "title": "Statut live",
+            "description": "Statut en direct de plusieurs chaînes Twitch / YouTube (jeu, viewers, titre, miniature) avec lecteur intégré.",
+            "version": "3.0",
             "author": "NeoFrag",
             "file": "widgets/twitch.zip",
-            "size": 15414,
-            "sha256": "9e87dc662ed20813109140462df4d4f5c278b8978a35768dbe863cfd19323acb",
+            "size": 23129,
+            "sha256": "a13dedb9281bfcb94585411e3cd0713965f25af63416424133fbd828c9e3edc6",
             "requires": {
                 "base": ">=1.0.0",
                 "addons": []

@@ -30,11 +30,11 @@
 			+     '<div class="modal-content">'
 			+       '<div class="modal-header">'
 			+         '<h5 class="modal-title" id="nf-confirm-title"><i class="fas fa-exclamation-triangle text-warning"></i> <span class="title-text">Confirmation</span></h5>'
-			+         '<button type="button" class="close" data-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>'
+			+         '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>'
 			+       '</div>'
 			+       '<div class="modal-body" id="nf-confirm-body"></div>'
 			+       '<div class="modal-footer">'
-			+         '<button type="button" class="btn btn-secondary" data-dismiss="modal" id="nf-confirm-cancel">Annuler</button>'
+			+         '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="nf-confirm-cancel">Annuler</button>'
 			+         '<button type="button" class="btn btn-danger" id="nf-confirm-ok">Confirmer</button>'
 			+       '</div>'
 			+     '</div>'
@@ -70,11 +70,11 @@
 		var newOk = $ok.cloneNode(true);
 		$ok.parentNode.replaceChild(newOk, $ok);
 		newOk.addEventListener('click', function(){
-			jQuery(modal).modal('hide');
+			bootstrap.Modal.getOrCreateInstance(modal).hide();
 			if (typeof opts.onConfirm === 'function') opts.onConfirm();
 		});
 
-		jQuery(modal).modal('show');
+		bootstrap.Modal.getOrCreateInstance(modal).show();
 	}
 
 	function escapeHtml(s){

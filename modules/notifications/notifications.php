@@ -108,6 +108,20 @@ class Notifications extends Module
 		$content_id = (int)$content_id;
 		$lang       = $this->config->lang->info()->name;
 
+		// Modèle « tout bundlé, activé à la carte » : la table d'un module non installé peut être absente.
+		// On tolère son absence (lien vide) au lieu de fataliser sur « table doesn't exist ».
+		$content_tables = [
+			'comment'       => 'nf_comment',
+			'news'          => 'nf_news_lang',
+			'articles'      => 'nf_articles_lang',
+			'article'       => 'nf_articles_lang',
+			'forum-message' => 'nf_forum_messages',
+		];
+		if (isset($content_tables[$content]) && !$this->db->table_exists($content_tables[$content]))
+		{
+			return '';
+		}
+
 		if ($content === 'comment')
 		{
 			$c = $this->db->select('module', 'module_id')->from('nf_comment')->where('id', $content_id)->row(FALSE);
@@ -321,13 +335,13 @@ class Notifications extends Module
 			}
 		}
 
-		$badge = $count > 0 ? '<span class="badge badge-danger nf-notif-badge">'.($count > 99 ? '99+' : $count).'</span>' : '';
+		$badge = $count > 0 ? '<span class="badge text-bg-danger nf-notif-badge">'.($count > 99 ? '99+' : $count).'</span>' : '';
 
 		return '<li class="nav-item dropdown nf-notif">'
-			.'<a class="nav-link" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="'.htmlspecialchars($this->lang('Notifications'), ENT_QUOTES).'">'
+			.'<a class="nav-link" href="#" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="'.htmlspecialchars($this->lang('Notifications'), ENT_QUOTES).'">'
 			.icon('far fa-bell').$badge
 			.'</a>'
-			.'<div class="dropdown-menu dropdown-menu-right nf-notif-menu">'
+			.'<div class="dropdown-menu dropdown-menu-end nf-notif-menu">'
 			.'<div class="dropdown-header d-flex justify-content-between align-items-center">'
 			.'<span>'.$this->lang('Notifications').'</span>'
 			.($count > 0 ? '<a href="#" data-notif-read-all class="small">'.$this->lang('Tout marquer comme lu').'</a>' : '')

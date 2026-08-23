@@ -35,7 +35,7 @@ class Admin extends Controller_Module
 				$body .= '<div class="nf-content-card-foot">';
 				$body .= '<span class="nf-content-card-spacer"></span>';
 				$body .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/calendar/'.$e['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
-				$body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/calendar/delete/'.$e['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				$body .= '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/calendar/delete/'.$e['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$body .= '</div>';
 				$body .= '</div>';
 			}
@@ -52,6 +52,8 @@ class Admin extends Controller_Module
 	public function _edit($e) { return $this->_form($e); }
 	public function _delete($e)
 	{
+		$this->check_csrf('admin/calendar');
+
 		NeoFrag()->db->where('id', $e['id'])->delete('nf_calendar_events');
 		notify($this->lang('Événement supprimé.'));
 		redirect('admin/calendar');

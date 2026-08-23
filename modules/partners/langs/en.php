@@ -40,4 +40,6 @@ return [
 	'f11bfc56' => 'For display on a dark background <i>(depending on the theme used)</i>',
 	'e230fd60' => 'For display on a light background <i>(depending on the theme used)</i>',
 	'be53bc1a' => 'Enter the promo code that your users can use to benefit from promotions through your partner',
+	// i18n 2026-06-11 (code strings)
+	'39e91bd5' => 'partner|partners',
 ];

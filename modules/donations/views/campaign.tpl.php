@@ -55,7 +55,7 @@
 				<li class="list-group-item donation-item">
 					<div class="d-flex align-items-start">
 						<div class="donation-avatar"><?php echo mb_strtoupper(mb_substr($display_name, 0, 1)) ?></div>
-						<div class="flex-grow-1 ml-3">
+						<div class="flex-grow-1 ms-3">
 							<div class="donation-donor-row">
 								<strong><?php echo htmlspecialchars($display_name) ?></strong>
 								<span class="donation-donor-amount"><?php echo number_format($d['amount'], 2, ',', ' ') ?> <?php echo htmlspecialchars($d['currency']) ?></span>

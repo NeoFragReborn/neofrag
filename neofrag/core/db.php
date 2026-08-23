@@ -52,9 +52,9 @@ class Db extends Core
 			foreach (self::$_requests as $i => $request)
 			{
 				$result .= '	<tr>
-									<td class="col-1"><b>'.($i + 1).'</b><div class="float-right"><span class="badge badge-'.(!empty($request->error) ? 'danger' : 'success').'">'.round($request->time * 1000, 3).' ms</span></div></td>
+									<td class="col-1"><b>'.($i + 1).'</b><div class="float-end"><span class="badge badge-'.(!empty($request->error) ? 'danger' : 'success').'">'.round($request->time * 1000, 3).' ms</span></div></td>
 									<td class="col-8">'.$request->debug().'</td>
-									<td class="col-3 text-right">'.(isset($request->file) ? $request->file.' <code>'.$request->line : '').'</code></td>
+									<td class="col-3 text-end">'.(isset($request->file) ? $request->file.' <code>'.$request->line : '').'</code></td>
 								</tr>';
 
 				$total_time   += $request->time;
@@ -64,7 +64,7 @@ class Db extends Core
 			if (!empty(self::$_requests))
 			{
 				$result .= '	<tr>
-									<td><b>Total</b><div class="float-right"><span class="badge badge-success">'.round($total_time * 1000, 3).' ms</span></div></td>
+									<td><b>Total</b><div class="float-end"><span class="badge text-bg-success">'.round($total_time * 1000, 3).' ms</span></div></td>
 									<td colspan="2"></td>
 								</tr>';
 			}
@@ -379,27 +379,44 @@ class Db extends Core
 		return $this;
 	}
 
+	// Via l'API du driver, jamais via le pipeline prepared-statement :
+	// MySQL 8 refuse PREPARE 'START TRANSACTION' (erreur 1295).
 	public function transaction()
 	{
-		$this->execute('START TRANSACTION');
+		$this->_driver('transaction');
 		return $this;
 	}
 
 	public function commit()
 	{
-		$this->execute('COMMIT');
+		$this->_driver('commit');
 		return $this;
 	}
 
 	public function rollback()
 	{
-		$this->execute('ROLLBACK');
+		$this->_driver('rollback');
 		return $this;
 	}
 
 	public function tables()
 	{
 		return $this->_driver('tables');
+	}
+
+	// Vrai si la table existe. Permet au code cœur de tolérer l'absence de la table d'un module
+	// optionnel non installé (modèle « tout bundlé, activé à la carte ») au lieu de fataliser sur
+	// « table doesn't exist ». Résultat mis en cache pour la requête courante.
+	public function table_exists($table)
+	{
+		static $tables = NULL;
+
+		if ($tables === NULL)
+		{
+			$tables = array_flip($this->tables());
+		}
+
+		return isset($tables[$table]);
 	}
 
 	public function table_create($table)

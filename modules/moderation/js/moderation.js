@@ -34,7 +34,7 @@
 		$content.innerHTML = '<div class="modal-body text-center py-5"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
 
 		// Show modal first (instant feedback)
-		jQuery($shell).modal('show');
+		bootstrap.Modal.getOrCreateInstance($shell).show();
 
 		var qs = '?type=' + encodeURIComponent(targetType) +
 		         '&id='   + encodeURIComponent(targetId)   +
@@ -44,10 +44,13 @@
 			.then(function(r){ return r.text(); })
 			.then(function(html){
 				$content.innerHTML = html;
-				// Re-execute scripts inline (fetch ne le fait pas)
+				// Re-execute scripts inline (fetch ne le fait pas). Le script est inséré dans la page :
+				// il doit porter le nonce CSP de la PAGE (window.__nfNonce), pas celui de la réponse fetch.
 				$content.querySelectorAll('script').forEach(function(s){
 					var n = document.createElement('script');
-					n.text = s.text;
+					if (s.src){ n.src = s.src; } else { n.text = s.text; }
+					if (s.type){ n.type = s.type; }
+					if (window.__nfNonce){ n.setAttribute('nonce', window.__nfNonce); }
 					s.parentNode.replaceChild(n, s);
 				});
 			})

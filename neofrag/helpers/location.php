@@ -5,7 +5,7 @@ declare(strict_types=1);
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
  */
 
-function url($url = '')
+function url($url = ''): string
 {
 	return NeoFrag()->url($url);
 }
@@ -25,29 +25,50 @@ function refresh()
 	return NeoFrag()->url->refresh();
 }
 
-function urltolink($url)
+function urltolink($url): string
 {
 	return '<a href="'.$url.'">'.parse_url($url, PHP_URL_HOST).'</a>';
 }
 
-// URL absolue (scheme + host + chemin résolu par url()). Les crawlers et les endpoints de partage
-// social exigent de l'absolu ; url() ne renvoie que du root-relative (/fr/...).
-function absolute_url($path = '')
+// Origine canonique du site (scheme://host, sans slash final). Figée dans config/url.php
+// à l'installation : les URLs absolues sensibles (liens d'e-mails de reset/validation,
+// callbacks OAuth, retours de paiement) ne doivent JAMAIS dériver du Host de la requête,
+// forgeable (password-reset poisoning). Fallback sur la requête si non configurée (dev).
+function site_origin(): string
 {
-	$host = $_SERVER['HTTP_HOST'] ?? '';
+	static $origin;
 
-	if ($host === '')
+	if ($origin === NULL)
 	{
-		return url($path);
+		$url = [];
+
+		if (check_file('config/url.php'))
+		{
+			include 'config/url.php';
+		}
+
+		$origin = rtrim((string)($url['site'] ?? ''), '/');
+
+		if ($origin === '' && !empty($_SERVER['HTTP_HOST']))
+		{
+			$origin = (NeoFrag()->url->https ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'];
+		}
 	}
 
-	return (NeoFrag()->url->https ? 'https' : 'http').'://'.$host.url($path);
+	return $origin;
+}
+
+// URL absolue (scheme + host + chemin résolu par url()). Les crawlers et les endpoints de partage
+// social exigent de l'absolu ; url() ne renvoie que du root-relative (/fr/...).
+function absolute_url($path = ''): string
+{
+	return ($origin = site_origin()) !== '' ? $origin.url($path) : url($path);
 }
 
 // Boutons de partage modernes : partage natif (Web Share API, géré en JS) + X / Facebook / WhatsApp +
 // copier-le-lien. $url doit être ABSOLU (cf. absolute_url()). Progressive enhancement : les liens
 // fonctionnent sans JS ; le JS (theme enhance.js) ajoute le partage natif et la copie.
-function share_buttons($url, $title = '')
+function share_buttons($url, $title = ''): string
 {
 	$url   = (string)$url;
 	$title = (string)$title;

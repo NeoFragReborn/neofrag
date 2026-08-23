@@ -4,6 +4,11 @@ use NF\NeoFrag\Loadables\Controllers\Widget as Controller_Widget;
 
 class Index extends Controller_Widget
 {
+	public function index($config = [])
+	{
+		return $this->upcoming($config);
+	}
+
 	public function upcoming($config = [])
 	{
 		$count = max(1, min(20, (int)($config['count'] ?? 5)));
@@ -29,7 +34,7 @@ class Index extends Controller_Widget
 				$ts = strtotime($e['start_at']);
 				$color = $e['color'] ? $e['color'] : '#03c1a2';
 				$body .= '<li class="py-1 border-bottom" style="border-left:3px solid '.htmlspecialchars($color).';padding-left:0.5rem">';
-				$body .= '<a href="'.url('calendar/'.$e['id'].'/'.url_title($e['title'])).'"><i class="far fa-calendar mr-1"></i>'.htmlspecialchars($e['title']).'</a>';
+				$body .= '<a href="'.url('calendar/'.$e['id'].'/'.url_title($e['title'])).'"><i class="far fa-calendar me-1"></i>'.htmlspecialchars($e['title']).'</a>';
 				$body .= '<br><small class="text-muted">'.($e['all_day'] ? date('j M Y', $ts) : date('j M Y H:i', $ts)).'</small>';
 				$body .= '</li>';
 			}

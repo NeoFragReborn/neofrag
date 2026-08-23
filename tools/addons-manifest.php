@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * NeoFrag Reborn — manifeste de découplage / packaging (3 tiers). Voir docs/packaging-profils.md.
+ * NeoFrag Reborn — manifeste de découplage / packaging (3 tiers). Voir les notes du mainteneur.
  *
  * Tier 0 — Noyau : tout ce qui n'est listé NI dans 'identity' NI dans 'optional'. Toujours installé,
  *   non désinstallable, jamais packagé. Infra (access, admin, addons, settings, user, members,
@@ -58,7 +58,7 @@ return [
 		// Thèmes additionnels (admin + nebula restent cœur ; vitrine = hors distribution publique).
 		// granite/blockcraft/forge référencent talks/slider → OK car talks/slider sont en CŒUR.
 		'theme' => [
-			'granite', 'blockcraft', 'forge',
+			'granite', 'blockcraft', 'forge', 'extend',
 		],
 		// NB : les connecteurs sociaux (discord/github/google) sont en CŒUR (décision 2026-06-06 :
 		// « login avec Discord/Google/GitHub » par défaut, gaming oblige). Pas listés ici.

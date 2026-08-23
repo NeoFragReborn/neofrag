@@ -486,7 +486,7 @@ class Forum extends Module
 					return $match[0]; // Pas un user valide → laissé brut
 				}
 
-				return $prefix.'<a class="forum-mention" href="'.\url('user/'.(int)$resolved[$username].'/'.\url_title($username)).'" data-toggle="tooltip" title="'.htmlspecialchars($username).'">@'.htmlspecialchars($username).'</a>';
+				return $prefix.'<a class="forum-mention" href="'.\url('user/'.(int)$resolved[$username].'/'.\url_title($username)).'" data-bs-toggle="tooltip" title="'.htmlspecialchars($username).'">@'.htmlspecialchars($username).'</a>';
 			},
 			$content
 		);

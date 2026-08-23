@@ -2,16 +2,13 @@
 	'use strict';
 
 	var STORAGE_THEME = 'nf-admin-theme';
-	var STORAGE_COLLAPSED = 'nf-admin-collapsed-sections';
-	var STORAGE_PINNED = 'nf-admin-pinned';
-	var STORAGE_SIDEBAR = 'nf-admin-sidebar-collapsed';
 
 	function getStored(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
 	function setStored(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 	function sysDark() { return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; }
 
 	// ============ THEME ============
-	function applyTheme(t) { document.documentElement.setAttribute('data-theme', t); }
+	function applyTheme(t) { document.documentElement.setAttribute('data-theme', t); document.documentElement.setAttribute('data-bs-theme', t === 'dark' ? 'dark' : 'light'); }
 	function syncThemeButton(t) {
 		var btn = document.querySelector('.theme-toggle');
 		if (!btn) return;
@@ -35,171 +32,6 @@
 		});
 	}
 	applyTheme(getStored(STORAGE_THEME) || (sysDark() ? 'dark' : 'light'));
-
-	// ============ SIDEBAR FILTER ============
-	function initFilter() {
-		var input = document.getElementById('nfNavFilter');
-		if (!input) return;
-		input.addEventListener('input', function() {
-			var q = input.value.toLowerCase().trim();
-			document.querySelectorAll('.nf-nav-section').forEach(function(sec) {
-				var anyVisible = false;
-				sec.querySelectorAll('.nf-nav-item').forEach(function(item) {
-					var label = (item.querySelector('.nf-nav-item-label') || {}).textContent || '';
-					var match = !q || label.toLowerCase().indexOf(q) !== -1;
-					item.style.display = match ? '' : 'none';
-					if (match) anyVisible = true;
-				});
-				sec.style.display = (q && !anyVisible) ? 'none' : '';
-				if (q) sec.classList.remove('collapsed');
-			});
-		});
-	}
-
-	// ============ SECTION COLLAPSE ============
-	function loadCollapsed() {
-		try { return JSON.parse(getStored(STORAGE_COLLAPSED) || '[]'); } catch (e) { return []; }
-	}
-	function saveCollapsed(arr) { setStored(STORAGE_COLLAPSED, JSON.stringify(arr)); }
-	function initSections() {
-		var collapsed = loadCollapsed();
-		document.querySelectorAll('.nf-nav-section').forEach(function(sec) {
-			var id = sec.dataset.section;
-			if (!id) return;
-			if (collapsed.indexOf(id) !== -1) sec.classList.add('collapsed');
-			var header = sec.querySelector('.nf-nav-section-header');
-			if (!header) return;
-			header.addEventListener('click', function() {
-				sec.classList.toggle('collapsed');
-				var c = loadCollapsed();
-				if (sec.classList.contains('collapsed')) {
-					if (c.indexOf(id) === -1) c.push(id);
-				} else {
-					c = c.filter(function(x) { return x !== id; });
-				}
-				saveCollapsed(c);
-			});
-		});
-	}
-
-	// ============ PINNED MODULES ============
-	function loadPinned() {
-		try { return JSON.parse(getStored(STORAGE_PINNED) || '[]'); } catch (e) { return []; }
-	}
-	function savePinned(arr) { setStored(STORAGE_PINNED, JSON.stringify(arr)); }
-
-	function renderPinnedClones() {
-		var pinned = loadPinned();
-		var pinnedSection = document.querySelector('.nf-nav-section[data-section="pinned"] .nf-nav-section-items');
-		if (!pinnedSection) return;
-
-		// Remove old clones (anything we added)
-		pinnedSection.querySelectorAll('.nf-nav-item[data-pin-clone]').forEach(function(el) { el.remove(); });
-
-		// Mark all pinnable items with current state
-		document.querySelectorAll('.nf-nav-item-pin').forEach(function(pin) {
-			var item = pin.closest('.nf-nav-item');
-			if (!item) return;
-			var name = pin.dataset.pinName;
-			var isPinned = pinned.indexOf(name) !== -1;
-			item.classList.toggle('is-pinned', isPinned);
-			pin.setAttribute('title', isPinned ? 'Désépingler' : 'Épingler');
-			pin.setAttribute('aria-label', isPinned ? 'Désépingler' : 'Épingler');
-		});
-
-		// Insert clones for each pinned name (in user's pin order)
-		pinned.forEach(function(name) {
-			// Find the original item (in any section other than pinned)
-			var originals = document.querySelectorAll('.nf-nav-item-pin[data-pin-name="' + cssEscape(name) + '"]');
-			if (originals.length === 0) return;
-			var originalItem = originals[0].closest('.nf-nav-item');
-			if (!originalItem) return;
-
-			var clone = originalItem.cloneNode(true);
-			clone.setAttribute('data-pin-clone', '1');
-			// Re-evaluate active state for the cloned position (same href so unchanged)
-			pinnedSection.appendChild(clone);
-		});
-	}
-
-	function cssEscape(s) {
-		return String(s).replace(/[^a-zA-Z0-9_-]/g, function(c) { return '\\' + c; });
-	}
-
-	function togglePin(name) {
-		var pinned = loadPinned();
-		var idx = pinned.indexOf(name);
-		if (idx === -1) pinned.push(name);
-		else pinned.splice(idx, 1);
-		savePinned(pinned);
-		renderPinnedClones();
-	}
-
-	function initPinning() {
-		// Bind sur les pins de sidebar (ancien) ET sur les sub-tab pins (nouveau)
-		var allPins = document.querySelectorAll('.nf-nav-item-pin, .nf-sub-tab-pin');
-		allPins.forEach(function(pin) {
-			pin.addEventListener('mousedown', function(e) {
-				e.preventDefault();
-				e.stopPropagation();
-			});
-			pin.addEventListener('click', function(e) {
-				e.preventDefault();
-				e.stopPropagation();
-				e.stopImmediatePropagation();
-				togglePin(pin.dataset.pinName);
-				updateSubTabPinStates();
-				return false;
-			});
-			pin.addEventListener('keydown', function(e) {
-				if (e.key !== 'Enter' && e.key !== ' ') return;
-				e.preventDefault();
-				e.stopPropagation();
-				togglePin(pin.dataset.pinName);
-				updateSubTabPinStates();
-			});
-		});
-		renderPinnedClones();
-		updateSubTabPinStates();
-	}
-
-	// Met à jour l'état visuel "is-pinned" sur les sub-tab pins
-	function updateSubTabPinStates() {
-		var pinned = loadPinned();
-		document.querySelectorAll('.nf-sub-tab-pin').forEach(function(pin) {
-			var name = pin.dataset.pinName;
-			var isPinned = pinned.indexOf(name) !== -1;
-			pin.classList.toggle('is-pinned', isPinned);
-			pin.setAttribute('title', isPinned ? 'Désépingler' : 'Épingler');
-			pin.setAttribute('aria-label', isPinned ? 'Désépingler' : 'Épingler');
-		});
-	}
-
-	// ============ SIDEBAR COLLAPSE (icons only) ============
-	function applySidebarCollapse(collapsed) {
-		var app = document.querySelector('.nf-app');
-		if (!app) return;
-		app.classList.toggle('nf-sidebar-collapsed', !!collapsed);
-		var btn = document.getElementById('nfSidebarCollapseBtn');
-		if (btn) {
-			btn.setAttribute('title', collapsed ? 'Déplier la barre latérale' : 'Replier la barre latérale');
-			btn.setAttribute('aria-label', collapsed ? 'Déplier la barre latérale' : 'Replier la barre latérale');
-		}
-	}
-
-	function initSidebarCollapse() {
-		var btn = document.getElementById('nfSidebarCollapseBtn');
-		var stored = getStored(STORAGE_SIDEBAR) === '1';
-		applySidebarCollapse(stored);
-		if (!btn) return;
-		btn.addEventListener('click', function(e) {
-			e.preventDefault();
-			var app = document.querySelector('.nf-app');
-			var newState = !app.classList.contains('nf-sidebar-collapsed');
-			setStored(STORAGE_SIDEBAR, newState ? '1' : '0');
-			applySidebarCollapse(newState);
-		});
-	}
 
 	// ============ MOBILE SIDEBAR ============
 	function initMobileSidebar() {
@@ -356,11 +188,7 @@
 				toggleTheme();
 			});
 		}
-		initFilter();
-		initSections();
-		initPinning();
 		initMobileSidebar();
-		initSidebarCollapse();
 		initPalette();
 
 		// Follow system if no stored choice

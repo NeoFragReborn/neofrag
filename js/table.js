@@ -1,64 +1,82 @@
-$(function(){
+NF.ready(function(){
 	var request = {};
 
-	$('body').on('change', 'th > input[type="checkbox"].table-checkbox', function(){
-		$('td > input[type="checkbox"].table-checkbox').prop('checked', $(this).is(':checked'));
-		$(this).data('original-title', ($(this).is(':checked')) ? 'Désélectionner tout' : 'Sélectionner toutes les lignes').tooltip('show');
-	});
+	function ajaxTable(table, params){
+		var tableId = NF.data(table, 'table-id');
 
-	$('body').on('change', checkbox = 'td > input[type="checkbox"].table-checkbox', function(){
-		$('th > input[type="checkbox"].table-checkbox')
-			.prop('checked', $(checkbox).length == $(checkbox+':checked').length)
-			.data('original-title', ($(this).is(':checked')) ? 'Désélectionner tout' : 'Sélectionner toutes les lignes');
-	});
+		if (request[tableId]){ request[tableId].abort(); }
 
-	$('body').on('click', '.table thead .sort', function(){
-		var $col     = $(this);
-		var $table   = $col.parents('.table-area:first');
-		var table_id = $table.data('table-id');
+		var controller = new AbortController();
+		request[tableId] = controller;
 
-		if (request[table_id] != null){
-			request[table_id].abort();
-		}
+		params.set('table_id', tableId);
 
-		request[table_id] = $.ajax({
-			url: $table.data('ajax-url') ? $table.data('ajax-url') : window.location.pathname,
-			type: 'POST',
-			data: ($table.data('ajax-post') ? $table.data('ajax-post')+'&' : '')+'sort=['+$col.data('column')+',"'+$col.data('order-by')+'"]&table_id='+table_id,
-			dataType: 'json',
-			success: function(data){
-				$table.find('.table-content').html(data.content);
-				$('body').trigger('nf.load');
-			}
+		return NF.ajax({
+			url: NF.data(table, 'ajax-url') ? NF.data(table, 'ajax-url') : window.location.pathname,
+			method: 'POST',
+			body: params,
+			signal: controller.signal
+		}).then(function(data){
+			NF.setHtml(table.querySelector('.table-content'), data.content);
+			document.body.dispatchEvent(new CustomEvent('nf.load', { bubbles: true }));
+			return data;
+		}).catch(function(e){
+			if (e.name !== 'AbortError'){ throw e; }
 		});
+	}
+
+	document.body.addEventListener('change', function(e){
+		var head = e.target.closest('th > input[type="checkbox"].table-checkbox');
+		if (head){
+			document.querySelectorAll('td > input[type="checkbox"].table-checkbox').forEach(function(cb){
+				cb.checked = head.checked;
+			});
+			var label = head.checked ? 'Désélectionner tout' : 'Sélectionner toutes les lignes';
+			head.setAttribute('data-bs-original-title', label);
+			bootstrap.Tooltip.getOrCreateInstance(head).show();
+			return;
+		}
+
+		var cell = e.target.closest('td > input[type="checkbox"].table-checkbox');
+		if (cell){
+			var all     = document.querySelectorAll('td > input[type="checkbox"].table-checkbox');
+			var checked = document.querySelectorAll('td > input[type="checkbox"].table-checkbox:checked');
+			var label2  = cell.checked ? 'Désélectionner tout' : 'Sélectionner toutes les lignes';
+			document.querySelectorAll('th > input[type="checkbox"].table-checkbox').forEach(function(h){
+				h.checked = all.length === checked.length;
+				h.setAttribute('data-bs-original-title', label2);
+			});
+		}
 	});
 
-	$('body').on('keyup', '.table-search input', function(){
-		var $input   = $(this);
-		var $table   = $input.parents('.table-area:first');
-		var table_id = $table.data('table-id');
+	document.body.addEventListener('click', function(e){
+		var col = e.target.closest('.table thead .sort');
+		if (!col){ return; }
 
-		if (request[table_id] != null){
-			request[table_id].abort();
+		var table  = col.closest('.table-area');
+		var params = new URLSearchParams(NF.data(table, 'ajax-post') || '');
+		params.set('sort', '[' + NF.data(col, 'column') + ',"' + NF.data(col, 'order-by') + '"]');
+
+		ajaxTable(table, params);
+	});
+
+	document.body.addEventListener('keyup', function(e){
+		var input = e.target.closest('.table-search input');
+		if (!input){ return; }
+
+		var table = input.closest('.table-area');
+
+		var feedback = input.nextElementSibling;
+		if (!feedback || !feedback.classList.contains('form-control-feedback')){
+			input.insertAdjacentHTML('afterend', '<span class="form-control-feedback" style="background: url(<?php echo image('ajax-loader.gif') ?>) 50% 50% no-repeat;"></span>');
 		}
 
-		if (!$input.next('.form-control-feedback').length){
-			$input.after('<span class="form-control-feedback" style="background: url(<?php echo image('ajax-loader.gif') ?>) 50% 50% no-repeat;"></span>');
-		}
+		var params = new URLSearchParams(NF.data(table, 'ajax-post') || '');
+		params.set('search', input.value);
 
-		request[table_id] = $.ajax({
-			url: $table.data('ajax-url') ? $table.data('ajax-url') : window.location.pathname,
-			type: 'POST',
-			data: ($table.data('ajax-post') ? $table.data('ajax-post')+'&' : '')+'search='+$input.val()+'&table_id='+table_id,
-			dataType: 'json',
-			success: function(data){
-				/*input.typeahead().data('typeahead').source = data.search;*/ //TODO
-
-				$table.find('.table-content').html(data.content);
-				$input.next('.form-control-feedback').remove();
-
-				$('body').trigger('nf.load');
-			}
+		ajaxTable(table, params).then(function(){
+			var fb = input.nextElementSibling;
+			if (fb && fb.classList.contains('form-control-feedback')){ fb.remove(); }
 		});
 	});
 });

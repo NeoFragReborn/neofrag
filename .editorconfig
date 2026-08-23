@@ -1,0 +1,51 @@
+# Conventions d'indentation réelles du dépôt, pas une convention souhaitée : elles sont
+# constatées dans le code existant. Ce fichier évite qu'un éditeur reformate silencieusement
+# un fichier et produise un diff illisible.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Code applicatif : TABULATIONS. Convention héritée de NeoFrag et appliquée dans
+# neofrag/, modules/, widgets/, themes/, install/lib/.
+[*.php]
+indent_style = tab
+
+# Outils CLI : 4 espaces. Écrits pour le fork, ils assument une convention distincte —
+# la règle est « ne pas mélanger dans un même fichier », pas « tout uniformiser ».
+[tools/*.php]
+indent_style = space
+indent_size = 4
+
+[*.{js,css,scss}]
+indent_style = tab
+
+# Les minifiés et le vendor front ne sont pas éditables à la main.
+[*.min.{js,css}]
+indent_style = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+
+[{js/tinymce,js/codemirror,js/flatpickr,vendor}/**]
+indent_style = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[*.{json,neon}]
+indent_style = space
+indent_size = 4
+
+[*.sql]
+indent_style = space
+indent_size = 2
+
+# Deux espaces en fin de ligne = retour à la ligne en Markdown.
+[*.md]
+trim_trailing_whitespace = false

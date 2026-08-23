@@ -210,12 +210,12 @@ class Admin extends Controller_Module
 		// Form TinyMCE : textarea native + tinymce.init pour la richesse
 		$html .= '<form method="post" action="'.$send_url.'" style="padding:12px 18px;border-top:1px solid var(--nf-border);" id="nf-staff-chat-form">';
 		$html .= '<textarea name="talk_message" id="nf-staff-chat-editor" placeholder="'.htmlspecialchars($this->lang('Écrire un message au staff…')).'"></textarea>';
-		$html .= '<div class="text-right mt-2"><button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i> '.htmlspecialchars($this->lang('Envoyer')).'</button></div>';
+		$html .= '<div class="text-end mt-2"><button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i> '.htmlspecialchars($this->lang('Envoyer')).'</button></div>';
 		$html .= '</form>';
 		$html .= '</div>';
 
-		// TinyMCE 7 GPL via CDN
-		$html .= '<script src="https://cdn.jsdelivr.net/npm/tinymce@7.6.1/tinymce.min.js"></script>';
+		// TinyMCE 7 GPL auto-hébergé (js/tinymce, servi en statique via .htaccess)
+		$html .= '<script src="'.js('tinymce/tinymce.min.js').'"></script>';
 		$html .= '<script>(function(){
 			function init(){
 				if (typeof tinymce === "undefined") { setTimeout(init, 100); return; }
@@ -230,8 +230,8 @@ class Admin extends Controller_Module
 					plugins: "advlist autolink lists link image charmap preview anchor pagebreak searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media table emoticons codesample help",
 					toolbar: "undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample | emoticons charmap | searchreplace fullscreen | removeformat",
 					content_style: "body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;font-size:14px;}",
-					skin: (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "oxide-dark" : "oxide",
-					content_css: (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "default",
+					skin: (document.documentElement.getAttribute("data-theme") === "dark") ? "oxide-dark" : "oxide",
+					content_css: (document.documentElement.getAttribute("data-theme") === "dark") ? "dark" : "default",
 					setup: function(editor){
 						editor.on("init", function(){
 							var box = document.getElementById("nf-staff-chat-messages");
@@ -386,7 +386,7 @@ class Admin extends Controller_Module
 				->order_by('id DESC')->limit(3)->get();
 			foreach ($users as $u)
 			{
-				$ts = (int)$u['registration_date'];
+				$ts = !empty($u['registration_date']) ? strtotime($u['registration_date']) : 0;
 				if (!$ts) continue;
 				$out[] = [
 					'kind' => 'login', 'icon' => 'fas fa-user-plus',
@@ -432,20 +432,37 @@ class Admin extends Controller_Module
 		$rows[] = [
 			'label' => $this->lang('Cache'),
 			'badge' => $cache_active ? $this->lang('Actif') : $this->lang('Inactif'),
-			'badge_class' => $cache_active ? 'badge-success' : 'badge-danger'
+			'badge_class' => $cache_active ? 'text-bg-success' : 'text-bg-danger'
 		];
 
 		$maintenance = !empty($this->config->nf_maintenance);
 		$rows[] = [
 			'label' => $this->lang('Maintenance'),
 			'badge' => $maintenance ? $this->lang('Activée') : $this->lang('Désactivée'),
-			'badge_class' => $maintenance ? 'badge-warning' : 'badge-secondary'
+			'badge_class' => $maintenance ? 'text-bg-warning' : 'text-bg-secondary'
 		];
 
 		$online = $this->_safe_count('nf_session', [
 			['last_activity > DATE_SUB(NOW(), INTERVAL 5 MINUTE)']
 		]);
 		$rows[] = ['label' => $this->lang('Connectés (5 min)'), 'value' => (string)$online];
+
+		// Extensions PHP critiques : GD (redimensionnement/ré-encodage des images uploadées), Zip
+		// (marketplace), Fileinfo (détection MIME magic-bytes à l'upload), cURL (appels réseau).
+		foreach ([
+			'gd'       => $this->lang('GD (images)'),
+			'zip'      => $this->lang('Zip (marketplace)'),
+			'fileinfo' => $this->lang('Fileinfo (upload)'),
+			'curl'     => $this->lang('cURL (réseau)')
+		] as $ext => $label)
+		{
+			$loaded = extension_loaded($ext);
+			$rows[] = [
+				'label'       => $label,
+				'badge'       => $loaded ? $this->lang('Présente') : $this->lang('Absente'),
+				'badge_class' => $loaded ? 'text-bg-success' : 'text-bg-danger'
+			];
+		}
 
 		return $rows;
 	}

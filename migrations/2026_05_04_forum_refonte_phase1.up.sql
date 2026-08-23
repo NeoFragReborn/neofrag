@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS nf_forum_attachments (
   CONSTRAINT nf_forum_attachments_user_fk
     FOREIGN KEY (uploaded_by) REFERENCES nf_user(id)
     ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 -- ---------------------------------------------------------------------
 -- 9) Table mentions (Phase 4)
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS nf_forum_mentions (
   CONSTRAINT nf_forum_mentions_mentioner_fk
     FOREIGN KEY (mentioner_user_id) REFERENCES nf_user(id)
     ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 -- =====================================================================
 -- Fin de la migration UP

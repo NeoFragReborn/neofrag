@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS nf_talks_participants (
   CONSTRAINT nf_talks_part_user_fk
     FOREIGN KEY (user_id) REFERENCES nf_user(id)
     ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 -- ---------------------------------------------------------------------
 -- 4) Table attachments — pièces jointes par message
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS nf_talks_attachments (
   CONSTRAINT nf_talks_att_file_fk
     FOREIGN KEY (file_id) REFERENCES nf_file(id)
     ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_uca1400_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 -- ---------------------------------------------------------------------
 -- 5) Backfill : marquer les talks existants comme publics + créateur admin

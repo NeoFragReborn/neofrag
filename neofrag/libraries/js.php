@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -12,7 +13,7 @@ class Js extends Library
 {
 	protected $_file;
 
-	public function __invoke($file)
+	public function __invoke($file): static
 	{
 		$this->_file = $file;
 
@@ -21,12 +22,12 @@ class Js extends Library
 		return $this;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return '<script type="text/javascript" src="'.$this->path().'"></script>';
 	}
 
-	public function path()
+	public function path(): string
 	{
 		if (is_valid_url($this->_file))
 		{
@@ -36,7 +37,8 @@ class Js extends Library
 		{
 			$path = path($this->_file.'.js', 'js', $this->__caller);
 
-			if ($v = (int)$this->config->nf_version_css)
+			// ?v= = mtime du fichier (auto-invalidation à chaque modif/upload) ; repli sur nf_version_css.
+			if ($v = asset_version($this->_file.'.js', 'js', $this->__caller) ?: (int)$this->config->nf_version_css)
 			{
 				$path .= '?v='.$v;
 			}

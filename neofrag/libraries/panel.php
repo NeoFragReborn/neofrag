@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -23,7 +24,7 @@ class Panel extends Library
 		return $this;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		$output = '';
 

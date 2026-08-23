@@ -41,6 +41,7 @@ class Comments extends Module
 			// (forward_static_call → get_called_class = la classe appelante). On force le static = Module.
 			$notifications = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['notifications']);
 			$gamification  = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['gamification']);
+			$webhooks      = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['webhooks']);
 
 			$new = $this->view('new', [
 				'form' => $this	->form2()
@@ -50,7 +51,7 @@ class Comments extends Module
 											->required()
 											->editor()
 								)
-								->success(function($data, $form) use ($module, $module_id, $notifications, $gamification){
+								->success(function($data, $form) use ($module, $module_id, $notifications, $gamification, $webhooks){
 									// R2.0 — Rate limit anti-spam : 8 commentaires par user / 5 min
 									$rateLimit = new \NF\NeoFrag\Libraries\Rate_Limit($this);
 									$rl_key    = 'comment:user:'.(int)$this->user->id;
@@ -67,6 +68,16 @@ class Comments extends Module
 											->set('module_id', $module_id)
 											->set('content',   $data['comment'])
 											->create();
+
+									if ($webhooks)
+									{
+										$webhooks->trigger('comment.created', [
+											'module'    => $module,
+											'module_id' => (int)$module_id,
+											'user_id'   => (int)$this->user->id,
+											'username'  => $this->user->username
+										]);
+									}
 
 									if ($gamification)
 									{

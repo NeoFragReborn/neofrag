@@ -16,5 +16,8 @@ return [
 	'cbea6d24' => '%dst / %d teams',
 	'd40929a6' => '%dth',
 	'ddaee116' => 'With %d trophy|With %d trophies',
-	'f90fb52e' => 'All our awards'
+	'f90fb52e' => 'All our awards',
+	// i18n 2026-06-11 (code strings)
+	'd0e2fd31' => 'Number of awards',
+	'042e2c3d' => 'Display in a panel',
 ];

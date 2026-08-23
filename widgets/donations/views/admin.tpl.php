@@ -1,5 +1,5 @@
 <ul class="nav nav-pills" id="don-tabs" role="tablist">
-	<li class="nav-item"><a class="nav-link active" data-toggle="pill" href="#don-options" role="tab"><?php echo icon('fas fa-cogs').' '.$this->lang('Options') ?></a></li>
+	<li class="nav-item"><a class="nav-link active" data-bs-toggle="pill" href="#don-options" role="tab"><?php echo icon('fas fa-cogs').' '.$this->lang('Options') ?></a></li>
 </ul>
 <div class="tab-content border-light">
 	<div class="tab-pane fade show active" id="don-options" role="tabpanel">

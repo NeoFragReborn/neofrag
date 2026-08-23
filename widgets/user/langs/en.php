@@ -30,4 +30,9 @@ return [
 	'50d4ccb8' => 'Logout',
 	'0f9d628a' => 'Member area: login, link to profile or registration.',
 	'eb68e801' => 'Welcome <a href="',
+	// i18n 2026-06-11 (code strings)
+	'4a253c1f' => 'Exit preview',
+	'0552e076' => 'Preview mode',
+	'1648d731' => 'Links to personal data are hidden to respect the target account\'s privacy.',
+	'78aeb25c' => 'Moderation',
 ];

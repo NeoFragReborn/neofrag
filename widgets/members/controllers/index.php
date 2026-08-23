@@ -105,7 +105,7 @@ class Index extends Controller_Widget
 	{
 		return $this->view('online_mini', [
 			'members' => $this->session->current_sessions()->count(),
-			'align'   => !empty($config['align']) ? $config['align'] : 'float-right'
+			'align'   => !empty($config['align']) ? $config['align'] : 'float-end'
 		]);
 	}
 }

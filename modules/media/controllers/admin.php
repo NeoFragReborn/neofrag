@@ -34,6 +34,7 @@ class Admin extends Controller_Module
 				$toolbar .= '<option value="'.$val.'"'.($filters['type'] === $val ? ' selected' : '').'>'.htmlspecialchars($label).'</option>';
 			}
 			$toolbar .= '</select>';
+			$toolbar .= $this->sort_select($filters['sort_cols'], $filters['sort']);
 			$toolbar .= '<button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-filter"></i> '.$this->lang('Filtrer').'</button>';
 			if (!empty($filters['active']))
 			{
@@ -72,9 +73,9 @@ class Admin extends Controller_Module
 				$body .= '<div style="font-size:11px;color:var(--nf-text-muted);font-feature-settings:\'tnum\';margin-top:2px;">'.Media::format_size($m['size_bytes']);
 				if ($m['width'] && $m['height']) $body .= ' · '.(int)$m['width'].'×'.(int)$m['height'];
 				$body .= '</div>';
-				$body .= '<input class="form-control form-control-sm" type="text" readonly value="'.$url_file.'" onclick="this.select()" style="margin-top:6px;font-size:11px;">';
+				$body .= '<input class="form-control form-control-sm" type="text" readonly value="'.$url_file.'" data-nf-select-on-click style="margin-top:6px;font-size:11px;">';
 				$body .= '<a class="btn btn-sm btn-outline-secondary btn-block" href="'.url('admin/media/edit/'.$m['id']).'" style="margin-top:6px;"><i class="far fa-edit"></i> '.$this->lang('Éditer').'</a>';
-				$body .= '<a class="btn btn-sm btn-outline-danger btn-block" href="'.url('admin/media/delete/'.$m['id']).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ?'), ENT_QUOTES).'" style="margin-top:6px;"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer').'</a>';
+				$body .= '<a class="btn btn-sm btn-outline-danger btn-block" href="'.$this->csrf_url('admin/media/delete/'.$m['id']).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ?'), ENT_QUOTES).'" style="margin-top:6px;"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer').'</a>';
 				$body .= '</div>';
 				$body .= '</div></div>';
 			}
@@ -100,6 +101,8 @@ class Admin extends Controller_Module
 
 		if (!empty($_FILES['files']) && is_array($_FILES['files']['name']))
 		{
+			$this->check_csrf('admin/media/upload');
+
 			$files = $_FILES['files'];
 			$count = count($files['name']);
 
@@ -132,6 +135,14 @@ class Admin extends Controller_Module
 				// Génère nom unique
 				$ext = pathinfo($orig_name, PATHINFO_EXTENSION);
 				$ext = preg_replace('/[^a-z0-9]/i', '', $ext);
+
+				// Le MIME (magic bytes) ne suffit pas : un polyglotte image/PHP passerait.
+				// Garde centrale sur l'extension réellement écrite sur le disque.
+				if ($ext === '' || is_dangerous_upload('f.'.$ext))
+				{
+					$errors[] = $this->lang('%s : extension non autorisée (.%s)', $orig_name, $ext);
+					continue;
+				}
 				$filename = bin2hex(random_bytes(8)).'-'.preg_replace('/[^a-z0-9._-]/i', '_', pathinfo($orig_name, PATHINFO_FILENAME));
 				$filename = substr($filename, 0, 100).'.'.$ext;
 
@@ -183,7 +194,7 @@ class Admin extends Controller_Module
 		}
 
 		$body = $message;
-		$body .= '<form method="post" enctype="multipart/form-data" action="'.url('admin/media/upload').'">';
+		$body .= '<form method="post" enctype="multipart/form-data" action="'.url('admin/media/upload').'"><input type="hidden" name="_" value="'.$this->csrf_token().'">';
 		$body .= '<div class="form-group">';
 		$body .= '<label>'.$this->lang('Sélectionne un ou plusieurs fichiers').'</label>';
 		$body .= '<input type="file" name="files[]" class="form-control-file" multiple required>';
@@ -243,6 +254,8 @@ class Admin extends Controller_Module
 
 	public function _delete($m)
 	{
+		$this->check_csrf('admin/media');
+
 		$path = 'upload/media/'.$m['filename'];
 		if (file_exists($path)) @unlink($path);
 		NeoFrag()->db->where('id', $m['id'])->delete('nf_media');

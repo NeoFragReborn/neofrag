@@ -1,5 +1,5 @@
-form.find('[data-bind]', function($form){
-	$(this).change(function(){
-		form.submit($form);
+form.find('[data-bind]', function(formEl){
+	this.addEventListener('change', function(){
+		form.submit(formEl);
 	});
 });

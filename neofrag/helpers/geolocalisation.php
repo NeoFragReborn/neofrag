@@ -5,12 +5,12 @@ declare(strict_types=1);
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
  */
 
-function geolocalisation($address_ip)
+function geolocalisation($address_ip): string
 {
 	if (!is_empty($address_ip))
 	{
 		NeoFrag()->js('geolocalisation');
-		return '<img src="'.image('ajax-loader.gif').'" style="margin-right: 10px;" data-geolocalisation="'.$address_ip.'" alt="" />';
+		return '<img src="'.image('ajax-loader.gif').'" style="margin-right: 10px;" data-geolocalisation="'.htmlspecialchars((string)$address_ip, ENT_QUOTES).'" alt="" />';
 	}
 	else
 	{

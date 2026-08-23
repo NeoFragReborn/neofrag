@@ -27,7 +27,7 @@
 							<?php if (!$is_starter): ?>
 								<input type="checkbox" name="split_messages[]" value="<?php echo (int)$message['message_id'] ?>" />
 							<?php else: ?>
-								<i class="fas fa-flag" data-toggle="tooltip" title="<?php echo $this->lang('Starter (non déplaçable)') ?>"></i>
+								<i class="fas fa-flag" data-bs-toggle="tooltip" title="<?php echo $this->lang('Starter (non déplaçable)') ?>"></i>
 							<?php endif ?>
 						</td>
 						<td><?php echo htmlspecialchars($users[(int)$message['user_id']] ?? '?') ?></td>

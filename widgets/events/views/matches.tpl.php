@@ -11,15 +11,15 @@
 				<img src="<?php echo NeoFrag()->model2('file', $match['match']['opponent']['image_id'])->path() ?>" class="img-fluid" alt="" />
 			</div>
 			<?php endif ?>
-			<div class="text-left col-<?php echo $match['match']['opponent']['image_id'] ? 10 : 11 ?>">
-				<span class="float-right <?php echo $color ?>"><?php echo $match['match']['scores'][0] ?>:<?php echo $match['match']['scores'][1] ?></span>
+			<div class="text-start col-<?php echo $match['match']['opponent']['image_id'] ? 10 : 11 ?>">
+				<span class="float-end <?php echo $color ?>"><?php echo $match['match']['scores'][0] ?>:<?php echo $match['match']['scores'][1] ?></span>
 				<a href="<?php echo url('events/'.$match['event_id'].'/'.url_title($match['title'])) ?>">
 				<?php
 					$opponent = $match['match']['opponent']['title'];
 
 					if ($match['match']['opponent']['country'])
 					{
-						$opponent .= '<img src="'.url('images/flags/'.$match['match']['opponent']['country'].'.png').'" data-toggle="tooltip" title="'.get_countries()[$match['match']['opponent']['country']].'" style="margin-left: 10px;" alt="" />';
+						$opponent .= '<img src="'.url('images/flags/'.$match['match']['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.get_countries()[$match['match']['opponent']['country']].'" style="margin-left: 10px;" alt="" />';
 					}
 
 					echo $opponent;

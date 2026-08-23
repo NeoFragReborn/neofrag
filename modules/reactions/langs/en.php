@@ -8,5 +8,7 @@ return [
 	'f207d3b8' => 'Reactions',
 	'6157ce46' => 'Log in to like',
 	'1c325176' => '%s liked your comment',
-	'd4fe5eb3' => '%s liked your post'
+	'd4fe5eb3' => '%s liked your post',
+	// i18n 2026-06-11 (code strings)
+	'f2be8bce' => 'Reusable "like" system (comments, forum, articles…).',
 ];

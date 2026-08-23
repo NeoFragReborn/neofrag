@@ -2,7 +2,7 @@
 
 Pile **engagement → monnaie → boutique → VIP → argent réel**, construite le 2026-06-03. Toute la boucle
 fonctionne **en points internes** ; l'argent réel (Stripe) est branché mais reste à activer (clés + revue
-sécu). Vérifié par le [harness de tests d'intégration](#tests-dintégration) (90 tests / 366 assertions).
+sécu). Vérifié par le [harness de tests d'intégration](#tests-dintégration) (102 tests / 407 assertions).
 
 ## Vue d'ensemble
 
@@ -132,7 +132,7 @@ docker compose exec web composer test                # tout (unit + intégration
 
 Couvre la logique money-critique : math du solde de points, fenêtre du plafond quotidien, expiration VIP,
 ownership boutique, perk `no_ads`, accès zone forum VIP, **idempotence du webhook**, et **cascades FK**
-(suppression d'un membre → karma/points/log/vip/achats supprimés). **90 tests / 366 assertions au vert.**
+(suppression d'un membre → karma/points/log/vip/achats supprimés). **102 tests / 407 assertions au vert.**
 
 ## Thèmes publics
 

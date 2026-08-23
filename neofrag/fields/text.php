@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -15,12 +16,12 @@ class Text
 		$this->_size = $size;
 	}
 
-	public function init($field)
+	public function init($field): void
 	{
 		$field->default('');
 	}
 
-	public function value($value)
+	public function value($value): string
 	{
 		return (string)$value;
 	}

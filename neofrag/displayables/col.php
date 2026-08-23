@@ -17,10 +17,15 @@ class Col extends Displayable
 		return array_merge(parent::__sleep(), ['_size']);
 	}
 
-	public function size($size)
+	public function size($size = NULL)
 	{
-		$this->_size = $size;
-		return $this;
+		if (func_num_args())
+		{
+			$this->_size = $size;
+			return $this;
+		}
+
+		return $this->_size;
 	}
 
 	public function __toString()

@@ -118,7 +118,7 @@ if (!$is_dashboard) {
 			<div class="nf-topbar-actions">
 				<?php
 				$actions = $this->array($this->output->data->get('module', 'actions'))
-								->append_if($module_method == 'index' && $module->get_permissions('default') && $this->module('access')->is_authorized(), $this->button($this->lang('Permissions'), 'fas fa-unlock-alt', 'secondary', 'admin/access/matrix/'.$module_name)->outline())
+								->append_if($module_method == 'index' && $module->get_permissions('default') && $this->module('access')->is_authorized(), $this->button($this->lang('Permissions'), 'fas fa-unlock-alt', 'secondary')->outline()->modal_ajax('admin/ajax/access/matrix-modal/'.$module_name)->url('admin/access/matrix/'.$module_name))
 								->append_if(isset($module->info()->settings) && $this->module('addons')->is_authorized(), $this->button($this->lang('Configuration'), 'fas fa-wrench', 'secondary')->outline()->modal_ajax('admin/addons/settings/'.$module->__addon->id.'/'.$module_name))
 								->append_if(($help_controller = @$module->controller('admin_help')) && $help_controller->has_method($module_method), $this->button($this->lang('Aide'), 'far fa-life-ring', 'secondary')->outline()->modal_ajax('admin/addons/help/'.$module->__addon->id.'/'.$module_name.'/'.$module_method));
 				if (!$actions->empty()):

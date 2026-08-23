@@ -1,5 +1,13 @@
 <?php
 declare(strict_types=1);
+// Outil d'administration : jamais servi en HTTP (sinon maintenance/migrations/dumps
+// seraient executables par n'importe qui si tools/ etait expose par erreur).
+if (PHP_SAPI !== 'cli')
+{
+	http_response_code(404);
+	exit;
+}
+
 
 /**
  * NeoFrag Reborn — génère le SQL d'install/désinstall embarqué de chaque module.
@@ -78,6 +86,7 @@ function build_install(mysqli $db, string $module, array $tables): string
         // Idempotent (rejoué à chaque reset/scan sans détruire les données) + pas d'id de départ figé.
         $create = preg_replace('/^CREATE TABLE `/', 'CREATE TABLE IF NOT EXISTS `', $create, 1);
         $create = preg_replace('/ AUTO_INCREMENT=\d+/', '', $create);
+        $create = portable_collation($create);
         $out .= "{$create};\n\n";
     }
 
@@ -164,6 +173,18 @@ function show_create(mysqli $db, string $table): string
     $res = $db->query("SHOW CREATE TABLE `{$table}`");
     $row = $res->fetch_row();
     return $row[1];
+}
+
+/**
+ * Normalise les collations MariaDB-11-only (uca1400) vers une collation UNIVERSELLE
+ * (utf8mb*_unicode_ci, supportée par MySQL 5.7+/8 ET MariaDB 10+/11). La base de dev tourne
+ * sous MariaDB 11 → SHOW CREATE TABLE émet uca1400 ; sans normalisation le paquet est
+ * ININSTALLABLE sur la plupart des hébergements (MySQL 8, MariaDB 10.6 LTS Plesk) — chaque
+ * CREATE TABLE échoue en « Unknown collation » et les tables manquent.
+ */
+function portable_collation(string $sql): string
+{
+    return preg_replace('/(utf8mb[34])_uca1400_ai_ci/', '$1_unicode_ci', $sql);
 }
 
 function header_block(string $what): string

@@ -18,4 +18,23 @@ return [
 	'c90a715a' => 'Diese Seite löschen? Revisionen gehen ebenfalls verloren.',
 	'8d9ef7a4' => 'Löschen',
 	'6bd5ed80' => 'Kollaborative Seiten mit automatischer Revisionshistorie.',
+	// i18n 2026-06-11
+	'd3a89139' => 'Keine Seite entspricht diesen Kriterien.',
+	'524a4abe' => 'Titel oder Slug suchen…',
+	'17a7d347' => 'Alle Status',
+	'e401d59e' => 'Veröffentlicht',
+	'633b7ff4' => 'Entwürfe',
+	'dc275fe4' => 'Filtern',
+	'599dba10' => 'Zurücksetzen',
+	'8a7e7178' => '%d Ergebnis|%d Ergebnisse',
+	// i18n 2026-06-11 (code strings)
+	'f7c592f8' => 'Derzeit keine Wiki-Seite.',
+	'5dd8e248' => 'Wiki-Seiten',
+	'86c84bca' => 'Seite gelöscht. Eventuelle Unterseiten wurden auf die Wurzel verschoben.',
+	'8fc6a624' => 'Aktuelle Version',
+	'a30d943d' => 'Revision',
+	'3a682dba' => 'Kein inhaltlicher Unterschied zwischen diesen beiden Versionen.',
+	'cc71a928' => 'Zurück zum Verlauf',
+	'd8165bb3' => 'Aktuelle Version ansehen',
+	'f3d55b7e' => 'Versionsvergleich',
 ];

@@ -26,7 +26,8 @@ $is_admin = $logged && $this->access->effective_admin();
 				<a class="nb-btn nb-btn-ghost" href="<?php echo url('user') ?>"><i class="fas fa-user-astronaut"></i> <span><?php echo htmlspecialchars($this->user->username) ?></span></a>
 				<?php if ($is_admin): ?><a class="nb-btn nb-btn-primary" href="<?php echo url('admin') ?>"><i class="fas fa-gauge-high"></i> <?php echo $this->lang('Admin') ?></a><?php endif ?>
 			<?php else: ?>
-				<a class="nb-btn nb-btn-ghost" href="<?php echo url('user/registration') ?>"><?php echo $this->lang('Inscription') ?></a>
+				<?php /* Masqué quand les inscriptions sont fermées : la route répond 404 par conception. */ ?>
+				<?php if ($this->config->nf_registration_status): ?><a class="nb-btn nb-btn-ghost" href="<?php echo url('user/registration') ?>"><?php echo $this->lang('Inscription') ?></a><?php endif ?>
 				<a class="nb-btn nb-btn-primary" href="<?php echo url('user/login') ?>"><?php echo $this->lang('Connexion') ?></a>
 			<?php endif ?>
 		</div>
@@ -84,8 +85,8 @@ $is_admin = $logged && $this->access->effective_admin();
 					if (!empty($_COOKIE['nf_theme']) && in_array($nf_c = preg_replace('/[^a-z0-9_]/i', '', (string) $_COOKIE['nf_theme']), $nf_themes, TRUE)) { $nf_cur = $nf_c; }
 				?>
 				<div class="nf-theme-switch dropup">
-					<button class="btn btn-sm btn-light dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo icon('fas fa-palette') ?> <?php echo htmlspecialchars(ucfirst($nf_cur)) ?></button>
-					<div class="dropdown-menu dropdown-menu-right">
+					<button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo icon('fas fa-palette') ?> <?php echo htmlspecialchars(ucfirst($nf_cur)) ?></button>
+					<div class="dropdown-menu dropdown-menu-end">
 						<?php foreach ($nf_themes as $nf_t): ?>
 						<button type="button" class="dropdown-item<?php echo $nf_t === $nf_cur ? ' active' : '' ?>" data-theme-pick="<?php echo htmlspecialchars($nf_t, ENT_QUOTES) ?>"><?php echo icon('fas fa-palette') ?> <?php echo htmlspecialchars(ucfirst($nf_t)) ?></button>
 						<?php endforeach ?>
@@ -95,8 +96,8 @@ $is_admin = $logged && $this->access->effective_admin();
 				<?php if (count($this->config->langs) > 1): $cur = $this->config->lang->info(); ?>
 				<form method="post" action="<?php echo url('ajax/settings/languages') ?>" class="fg-lang dropup">
 					<input type="hidden" name="url" value="<?php echo htmlspecialchars($this->url->base.implode('/', array_merge([$cur->name], $this->url->segments)).$this->url->query) ?>" />
-					<button class="btn btn-sm btn-light dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $cur->icon ?> <?php echo strtoupper($cur->name) ?></button>
-					<div class="dropdown-menu dropdown-menu-right">
+					<button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $cur->icon ?> <?php echo strtoupper($cur->name) ?></button>
+					<div class="dropdown-menu dropdown-menu-end">
 						<?php foreach ($this->config->langs as $l): $i = $l->info(); ?>
 						<button type="submit" name="language" value="<?php echo $i->name ?>" class="dropdown-item<?php echo $i->name === $cur->name ? ' active' : '' ?>"><?php echo $i->icon ?> <?php echo htmlspecialchars((string)$i->title) ?></button>
 						<?php endforeach ?>

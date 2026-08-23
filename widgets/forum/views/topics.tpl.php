@@ -1,6 +1,6 @@
 <?php foreach ($topics as $topic): ?>
 <div class="media">
-	<div class="mr-3">
+	<div class="me-3">
 		<?php echo $this->module('user')->model2('user', $topic['user_id'])->avatar() ?>
 	</div>
 	<div class="media-body">

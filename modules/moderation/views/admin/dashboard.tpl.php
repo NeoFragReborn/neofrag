@@ -47,17 +47,17 @@
 							<th><?php echo $this->lang('Type') ?></th>
 							<th><?php echo $this->lang('Cible') ?></th>
 							<th><?php echo $this->lang('Raison') ?></th>
-							<th class="text-right"><?php echo $this->lang('Action') ?></th>
+							<th class="text-end"><?php echo $this->lang('Action') ?></th>
 						</tr>
 					</thead>
 					<tbody>
 					<?php foreach ($recent_reports as $r): ?>
 						<tr>
 							<td><small class="text-muted"><?php echo time_span(strtotime($r['created_at'])) ?></small></td>
-							<td><span class="badge badge-secondary"><?php echo htmlspecialchars($r['target_type']) ?></span></td>
+							<td><span class="badge text-bg-secondary"><?php echo htmlspecialchars($r['target_type']) ?></span></td>
 							<td><?php echo $r['target_username'] ? '<a href="'.url($_modbase.'/users/'.(int)$r['target_user_id']).'">@'.htmlspecialchars($r['target_username']).'</a>' : '<i class="text-muted">'.$this->lang('inconnu').'</i>' ?></td>
 							<td><?php echo htmlspecialchars($r['reason']) ?></td>
-							<td class="text-right">
+							<td class="text-end">
 								<a class="btn btn-sm btn-outline-primary" href="<?php echo url($_modbase.'/reports/'.(int)$r['id']) ?>"><i class="fas fa-eye"></i></a>
 							</td>
 						</tr>
@@ -82,7 +82,7 @@
 					<?php foreach ($top_reported as $u): ?>
 						<tr>
 							<td><a href="<?php echo url($_modbase.'/users/'.(int)$u['target_user_id']) ?>">@<?php echo htmlspecialchars($u['username']) ?></a></td>
-							<td class="text-right"><span class="badge badge-warning"><?php echo (int)$u['report_count'] ?></span></td>
+							<td class="text-end"><span class="badge text-bg-warning"><?php echo (int)$u['report_count'] ?></span></td>
 						</tr>
 					<?php endforeach ?>
 					</tbody>
@@ -98,7 +98,7 @@
 			<?php else: ?>
 				<table class="table m-0">
 					<thead>
-						<tr><th><?php echo $this->lang('Reporter') ?></th><th class="text-right"><?php echo $this->lang('Total') ?></th><th class="text-right"><?php echo $this->lang('Actionné') ?></th><th class="text-right"><?php echo $this->lang('Rejeté') ?></th></tr>
+						<tr><th><?php echo $this->lang('Reporter') ?></th><th class="text-end"><?php echo $this->lang('Total') ?></th><th class="text-end"><?php echo $this->lang('Actionné') ?></th><th class="text-end"><?php echo $this->lang('Rejeté') ?></th></tr>
 					</thead>
 					<tbody>
 					<?php foreach ($top_reporters as $u):
@@ -106,9 +106,9 @@
 					?>
 						<tr<?php echo (int)$u['report_count'] >= 5 && $score < 0 ? ' class="text-danger" title="'.$this->lang('Reporter suspect (faux signalements)').'"' : '' ?>>
 							<td><a href="<?php echo url($_modbase.'/users/'.(int)$u['reporter_id']) ?>">@<?php echo htmlspecialchars($u['username']) ?></a></td>
-							<td class="text-right"><?php echo (int)$u['report_count'] ?></td>
-							<td class="text-right text-success"><?php echo (int)$u['actioned'] ?></td>
-							<td class="text-right text-danger"><?php echo (int)$u['dismissed'] ?></td>
+							<td class="text-end"><?php echo (int)$u['report_count'] ?></td>
+							<td class="text-end text-success"><?php echo (int)$u['actioned'] ?></td>
+							<td class="text-end text-danger"><?php echo (int)$u['dismissed'] ?></td>
 						</tr>
 					<?php endforeach ?>
 					</tbody>
@@ -119,7 +119,7 @@
 </div>
 
 <div class="row mt-3">
-	<div class="col-12 text-right">
+	<div class="col-12 text-end">
 		<a class="btn btn-secondary" href="<?php echo url($_modbase.'/sanctions') ?>"><i class="fas fa-gavel"></i> <?php echo $this->lang('Sanctions') ?></a>
 		<?php if ($this->access('moderation', 'manage_settings')): ?>
 		<a class="btn btn-outline-secondary" href="<?php echo url($_modbase.'/settings') ?>"><i class="fas fa-cogs"></i> <?php echo $this->lang('Réglages') ?></a>

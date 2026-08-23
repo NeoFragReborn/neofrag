@@ -53,5 +53,7 @@ return [
 	'633b7ff4' => 'Drafts',
 	'dc275fe4' => 'Filter',
 	'599dba10' => 'Reset',
-	'8a7e7178' => '%d result|%d results'
+	'8a7e7178' => '%d result|%d results',
+	// i18n 2026-06-11 (code strings)
+	'50d3b0b0' => 'Answer',
 ];
