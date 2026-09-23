@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -126,4 +127,35 @@ return [
 	'fab41cdd' => 'Recurrencia: número total de repeticiones (máx. %d).',
 	'ef1ccb4f' => 'Serie de %d eventos creada',
 	'e3ad390b' => 'Repetición de una serie recurrente',
+	'62c86d0f' => 'Eliminar toda la serie',
+	'7ba70fe8' => 'Aplicar a todas las repeticiones de la serie (%d)',
+	'236bba4c' => 'El título, el tipo, las descripciones, el lugar, la imagen y la publicación se copian en cada repetición. Las FECHAS no: son ellas las que distinguen una repetición de la siguiente.',
+	'eb67ff64' => 'Serie actualizada: %d repeticiones. Cada una conserva sus fechas.',
+	'5f5c0a0f' => 'Eliminación de la serie',
+	'7a113c7e' => '¿Eliminar <b>la única repetición</b> de la serie a la que pertenece <b>%2$s</b>?|¿Eliminar <b>las %1$d repeticiones</b> de la serie a la que pertenece <b>%2$s</b>? Se borrarán todas, junto con sus comentarios y sus participaciones.',
+	'a5bb9f79' => 'Invitaciones',
+	'9bd148d6' => 'Programado para el %s',
+	'f0b7b5b5' => 'Fecha de publicación',
+	'94949a27' => 'Equipo',
+	'3c19f7aa' => 'Rival',
+	'37f8e895' => 'Modo',
+	'2687aad0' => 'Indica un sitio que hable del evento',
+	'7b15d0f9' => 'Mapa',
+	'a6f67ef4' => 'Nuestra puntuación',
+	'909b29bc' => 'Puntuación del adversario',
+	'f5655ff7' => 'Invitar miembros',
+	'1f3ae63f' => '¡Recordatorio!',
+	'3cfda0fd' => '¡No olvides enviar tus solicitudes de participación a tus miembros!',
+	'15fc3f17' => 'No se ha indicado ninguna ronda',
+	'5f0de8cd' => 'Mensaje automático.',
+	'35ceefe3' => 'Estás invitado a participar en el evento <b>%s</b>.',
+	'1d83ca5f' => 'Para indicar tu disponibilidad, <a href="%s">haz clic aquí</a>.',
+	'c3890ba2' => 'Invitación al evento: %s',
+	'a03a35b6' => 'Modo: %s',
+	'7d714567' => 'Detalle de las rondas',
+	'bfa7126c' => 'Ronda %d',
+	'9111f8c2' => 'Retransmisión en Twitch',
+	'64eda44a' => 'Se habla de ello aquí',
+	'04fb541f' => 'Duración',
+	'bbc46366' => 'Invitar',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -52,9 +53,9 @@ class Db extends Core
 			foreach (self::$_requests as $i => $request)
 			{
 				$result .= '	<tr>
-									<td class="col-1"><b>'.($i + 1).'</b><div class="float-end"><span class="badge badge-'.(!empty($request->error) ? 'danger' : 'success').'">'.round($request->time * 1000, 3).' ms</span></div></td>
-									<td class="col-8">'.$request->debug().'</td>
-									<td class="col-3 text-end">'.(isset($request->file) ? $request->file.' <code>'.$request->line : '').'</code></td>
+									<td><b>'.($i + 1).'</b><div class="float-end"><span class="badge '.badge_class(!empty($request->error) ? 'danger' : 'success').'">'.round($request->time * 1000, 3).' ms</span></div></td>
+									<td>'.$request->debug().'</td>
+									<td class="text-end">'.(isset($request->file) ? $request->file.' <code>'.$request->line : '').'</code></td>
 								</tr>';
 
 				$total_time   += $request->time;
@@ -71,7 +72,7 @@ class Db extends Core
 
 			$result .= '</table>';
 
-			$label = '<span class="badge badge-'.($total_errors > 0 ? 'danger' : 'success').'">'.($total_errors ?: $i + 1).'</span>';
+			$label = '<span class="badge '.badge_class($total_errors > 0 ? 'danger' : 'success').'">'.($total_errors ?: $i + 1).'</span>';
 
 			return $result;
 		});
@@ -381,21 +382,36 @@ class Db extends Core
 
 	// Via l'API du driver, jamais via le pipeline prepared-statement :
 	// MySQL 8 refuse PREPARE 'START TRANSACTION' (erreur 1295).
+	// Un BEGIN, un COMMIT ou un ROLLBACK que le pilote refuse ne doit jamais passer en silence : la suite
+	// s'exécuterait hors transaction en croyant être protégée. Repéré en comparant avec HiddenCMS
+	// (2026-09-17), dont les variantes lèvent ; rare avec MariaDB, mais un silence ici est un mensonge.
 	public function transaction()
 	{
-		$this->_driver('transaction');
+		if ($this->_driver('transaction') === FALSE)
+		{
+			throw new \RuntimeException('Impossible d\'ouvrir la transaction SQL.');
+		}
+
 		return $this;
 	}
 
 	public function commit()
 	{
-		$this->_driver('commit');
+		if ($this->_driver('commit') === FALSE)
+		{
+			throw new \RuntimeException('Impossible de valider la transaction SQL.');
+		}
+
 		return $this;
 	}
 
 	public function rollback()
 	{
-		$this->_driver('rollback');
+		if ($this->_driver('rollback') === FALSE)
+		{
+			throw new \RuntimeException('Impossible d\'annuler la transaction SQL.');
+		}
+
 		return $this;
 	}
 
@@ -463,7 +479,7 @@ class Db extends Core
 			if (!isset(self::$_drivers[$type]) && isset(self::$_config[$type]))
 			{
 				array_walk(self::$_config[$type], $connect = function($config) use (&$connect){
-					if ($driver = NeoFrag()->___load('drivers', $config['driver'], [$config['hostname'], $config['username'], $config['password'], $config['database']]))
+					if ($driver = NeoFrag()->___load('drivers', $config['driver'], [$config['hostname'], $config['username'], $config['password'], $config['database'], $config['port'] ?? 3306]))
 					{
 						if ($connection = $driver->connect())
 						{
@@ -504,6 +520,37 @@ class Db extends Core
 		}
 
 		return call_user_func_array([$this->driver(), array_shift($args)], $args);
+	}
+
+	/**
+	 * Exécute une requête SANS abîmer celle qu'on est peut-être en train de construire.
+	 *
+	 * Ce constructeur est PARTAGÉ et il accumule : `select()`, `from()`, `where()` empilent dans le
+	 * même panier, que `get()` vide en l'exécutant. Une méthode qui interroge la base au milieu
+	 * d'une chaîne détruit donc silencieusement la chaîne de son appelant — la requête part avec les
+	 * morceaux des deux, et le résultat est vide. Mesuré le 2026-09-21 : une page d'équipe et une
+	 * page d'article rendaient 404 dans leur propre langue, pour cette seule raison.
+	 *
+	 * On met le panier de côté, on laisse la requête se faire dans un panier neuf, et on rend
+	 * l'ancien — quoi qu'il arrive, `finally` compris.
+	 *
+	 *   $langues = $this->db->standalone(function($db) use ($table, $id){
+	 *       return $db->select('lang')->from($table)->where('id', $id)->get();
+	 *   });
+	 */
+	public function standalone(callable $query)
+	{
+		$pending        = $this->_request;
+		$this->_request = [];
+
+		try
+		{
+			return $query($this);
+		}
+		finally
+		{
+			$this->_request = $pending;
+		}
 	}
 
 	protected function _exec($callback = NULL)

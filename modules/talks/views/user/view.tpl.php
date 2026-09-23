@@ -128,16 +128,12 @@
 				<?php else: ?>
 					<form method="post" action="<?php echo url('talks/'.(int)$talk_id.'/'.\url_title($title)) ?>" enctype="multipart/form-data">
 						<div class="input-group">
-							<div class="input-group-prepend">
-								<label class="btn btn-light mb-0" style="cursor:pointer;" data-bs-toggle="tooltip" title="<?php echo $this->lang('Joindre un fichier') ?>">
-									<?php echo \icon('fas fa-paperclip') ?>
-									<input type="file" name="talk_attachment" style="display:none;" data-nf-file-name="talk-attached-name" />
-								</label>
-							</div>
+							<label class="btn btn-light mb-0" style="cursor:pointer;" data-bs-toggle="tooltip" title="<?php echo $this->lang('Joindre un fichier') ?>">
+								<?php echo \icon('fas fa-paperclip') ?>
+								<input type="file" name="talk_attachment" style="display:none;" data-nf-file-name="talk-attached-name" />
+							</label>
 							<input type="text" name="talk_message" class="form-control" placeholder="<?php echo $this->lang('Ton message...') ?>" autocomplete="off" maxlength="2000" />
-							<div class="input-group-append">
-								<button type="submit" class="btn btn-primary"><?php echo \icon('fas fa-paper-plane').' '.$this->lang('Envoyer') ?></button>
-							</div>
+							<button type="submit" class="btn btn-primary"><?php echo \icon('fas fa-paper-plane').' '.$this->lang('Envoyer') ?></button>
 						</div>
 						<small class="form-text text-muted">
 							<span><?php echo $this->lang('Max 2000 caractères.') ?></span>

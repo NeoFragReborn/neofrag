@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'b3b427cb' => 'Menús',
@@ -30,4 +31,9 @@ return [
 	'b2341c75' => 'Editar el elemento',
 	'96d5c170' => 'Constructor de menús con nombre reutilizables (elementos jerárquicos) para la navegación.',
 	'85111a17' => 'Gestionar menús',
+	'881485c2' => 'Editar: %s',
+	'afccc23b' => 'Crear',
+	'8fd9c7ef' => 'Guardar',
+	'4a818505' => 'artículo|artículos',
+	'4678bb10' => 'Nuevo artículo',
 ];

@@ -16,12 +16,18 @@ class Admin extends Theme
 	{
 		return [
 			'title'       => 'Administration',
-			'description' => $this->lang('Administration panel'),
-			'language'    => 'en',
+			'description' => $this->lang('Panneau d\'administration'),
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
-			'zones'       => [$this->lang('Content'), $this->lang('pre_content'), $this->lang('post_content'), $this->lang('header'), $this->lang('Top'), $this->lang('footer')]
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			// Infrastructure : le site ne tourne pas sans lui, l'administration ne propose donc
+			// pas de l'eteindre. Reprend a l'identique l'ancien Module/Widget/Theme::$core.
+			'deactivatable' => FALSE,
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
+			'zones'       => [$this->lang('Contenu'), $this->lang('Avant le contenu'), $this->lang('Après le contenu'), $this->lang('En-tête'), $this->lang('Haut'), $this->lang('Pied de page')]
 		];
 	}
 
@@ -50,6 +56,10 @@ class Admin extends Theme
 				->css('icons/Pe-icon-7-stroke')
 				->css('icons/fontawesome.min')
 				->css('style')
+				// APRES la feuille du theme, et jamais avant : elle retablit ce que le theme
+				// ecrase sans le vouloir — cadre des boutons « contour », coins des cartes.
+				// Voir css/nf-apres-theme.css.
+				->css('nf-apres-theme')
 				->js('bootstrap.bundle.min')
 				->js('modal')
 				->js('notify')
@@ -143,7 +153,7 @@ class Admin extends Theme
 
 		if (@$theme->addon()->controller('admin'))
 		{
-			$customize	->set('title',  $this->lang('Appearance'))
+			$customize	->set('title',  $this->lang('Apparence'))
 						->set('icon',   'fas fa-paint-brush')
 						->set('access', $this->access->effective_admin())
 						->set('url',   'admin/addons/customize/'.$theme->url());
@@ -156,22 +166,22 @@ class Admin extends Theme
 		$sections[] = [
 			'id'    => 'pinned',
 			'icon'  => 'fas fa-th-large',
-			'title' => $this->lang('Pinned'),
+			'title' => $this->lang('Épinglé'),
 			'items' => array_values(array_filter([
-				['title' => $this->lang('Dashboard'), 'icon' => 'fas fa-th-large', 'url' => 'admin', 'name' => 'dashboard']
+				['title' => $this->lang('Tableau de bord'), 'icon' => 'fas fa-th-large', 'url' => 'admin', 'name' => 'dashboard']
 			]))
 		];
 
 		// Catégories de contenu (chacune masquée si vide — utile après le découplage
 		// marketplace). Ordre = ordre d'affichage dans la sidebar.
 		$labels = [
-			'contenu'      => ['title' => $this->lang('Content'),       'icon' => 'fas fa-bullhorn'],
-			'communaute'   => ['title' => $this->lang('Community'),     'icon' => 'fas fa-users'],
-			'connaissance' => ['title' => $this->lang('Knowledge'),     'icon' => 'fas fa-book'],
-			'medias'       => ['title' => $this->lang('Media'),         'icon' => 'fas fa-photo-video'],
+			'contenu'      => ['title' => $this->lang('Contenu'),       'icon' => 'fas fa-bullhorn'],
+			'communaute'   => ['title' => $this->lang('Communauté'),     'icon' => 'fas fa-users'],
+			'connaissance' => ['title' => $this->lang('Connaissance'),     'icon' => 'fas fa-book'],
+			'medias'       => ['title' => $this->lang('Média'),         'icon' => 'fas fa-photo-video'],
 			'gaming'       => ['title' => $this->lang('Gaming'),        'icon' => 'fas fa-gamepad'],
-			'monetisation' => ['title' => $this->lang('Monetization'),  'icon' => 'fas fa-coins'],
-			'autres'       => ['title' => $this->lang('Other modules'), 'icon' => 'fas fa-ellipsis-h'],
+			'monetisation' => ['title' => $this->lang('Monétisation'),  'icon' => 'fas fa-coins'],
+			'autres'       => ['title' => $this->lang('Autres modules'), 'icon' => 'fas fa-ellipsis-h'],
 		];
 		foreach ($labels as $key => $meta)
 		{
@@ -188,16 +198,16 @@ class Admin extends Theme
 
 		// Système (admin technique)
 		$systeme_items = array_values(array_filter([
-			['title' => $this->lang('Settings'),        'icon' => 'fas fa-cogs',         'url' => 'admin/settings',      'access' => $this->access->effective_admin(), 'name' => 'settings'],
-			['title' => $this->lang('Users'),           'icon' => 'fas fa-user',         'url' => 'admin/user',          'access' => $this->access->effective_admin(), 'name' => 'user'],
+			['title' => $this->lang('Paramètres'),        'icon' => 'fas fa-cogs',         'url' => 'admin/settings',      'access' => $this->access->effective_admin(), 'name' => 'settings'],
+			['title' => $this->lang('Utilisateurs'),           'icon' => 'fas fa-user',         'url' => 'admin/user',          'access' => $this->access->effective_admin(), 'name' => 'user'],
 			['title' => $this->lang('Permissions (matrice)'), 'icon' => 'fas fa-th',          'url' => 'admin/access/matrix',       'access' => $this->access->effective_admin(), 'name' => 'access-matrix'],
 			['title' => $this->lang('Rôles'),                 'icon' => 'fas fa-user-shield', 'url' => 'admin/access/roles',        'access' => $this->access->effective_admin(), 'name' => 'access-roles'],
 			['title' => $this->lang('Assigner aux users'),    'icon' => 'fas fa-users-cog',   'url' => 'admin/access/users-roles',  'access' => $this->access->effective_admin(), 'name' => 'access-users-roles'],
 			['title' => $this->lang('Assigner aux groupes'),  'icon' => 'fas fa-layer-group', 'url' => 'admin/access/groups-roles', 'access' => $this->access->effective_admin(), 'name' => 'access-groups-roles'],
 			$customize->__toArray() ?: NULL,
-			['title' => $this->lang('Themes & addons'), 'icon' => 'fas fa-puzzle-piece', 'url' => 'admin/addons',        'access' => $this->access->effective_admin(), 'name' => 'addons'],
-			['title' => $this->lang('Live Editor'),     'icon' => 'fas fa-desktop',      'url' => 'admin/live-editor',   'access' => $this->access->effective_admin(), 'name' => 'live-editor'],
-			['title' => $this->lang('Statistics'),      'icon' => 'far fa-chart-bar',    'url' => 'admin/statistics',    'access' => $this->access->effective_admin(), 'name' => 'statistics'],
+			['title' => $this->lang('Thèmes & addons'), 'icon' => 'fas fa-puzzle-piece', 'url' => 'admin/addons',        'access' => $this->access->effective_admin(), 'name' => 'addons'],
+			['title' => $this->lang('Éditeur en direct'),     'icon' => 'fas fa-desktop',      'url' => 'admin/live-editor',   'access' => $this->access->effective_admin(), 'name' => 'live-editor'],
+			['title' => $this->lang('Statistiques'),      'icon' => 'far fa-chart-bar',    'url' => 'admin/statistics',    'access' => $this->access->effective_admin(), 'name' => 'statistics'],
 			['title' => (string)$this->lang('Corbeille'), 'icon' => 'fas fa-trash-restore', 'url' => 'admin/trash',       'access' => $this->access->effective_admin(), 'name' => 'trash'],
 			['title' => $this->lang('Monitoring'), 'icon' => 'fas fa-heartbeat', 'url' => 'admin/monitoring', 'access' => $this->access->effective_admin(), 'name' => 'monitoring']
 		]));
@@ -208,7 +218,7 @@ class Admin extends Theme
 		$sections[] = [
 			'id'    => 'systeme',
 			'icon'  => 'fas fa-cogs',
-			'title' => $this->lang('System'),
+			'title' => $this->lang('Système'),
 			'items' => $systeme_items
 		];
 
@@ -227,16 +237,30 @@ class Admin extends Theme
 		//Nothing to do
 	}
 
+	/**
+	 * Version publiee, si elle est plus recente que celle installee. NULL sinon.
+	 *
+	 * Le cache peut contenir n'importe quoi : un manifeste d'une version anterieure du format, ou
+	 * le corps qu'un routeur a rendu a la place du fichier. On verifie donc la forme avant de lire
+	 * — sans quoi ->neofrag sur un objet absent fait tomber TOUTE l'administration, pas seulement
+	 * le bouton de mise a jour.
+	 */
 	public function update()
 	{
-		if (file_exists($file = 'cache/monitoring/version.json'))
+		if (!file_exists($file = 'cache/monitoring/version.json'))
 		{
-			$version = json_decode(file_get_contents($file))->neofrag;
-
-			if (version_compare(version_format($version->version), version_format(NEOFRAG_VERSION), '>'))
-			{
-				return $version;
-			}
+			return NULL;
 		}
+
+		$manifeste = json_decode((string)@file_get_contents($file));
+
+		if (!is_object($manifeste) || !isset($manifeste->neofrag->version) || !is_string($manifeste->neofrag->version))
+		{
+			return NULL;
+		}
+
+		$version = $manifeste->neofrag;
+
+		return version_compare(version_format($version->version), version_format(NEOFRAG_VERSION), '>') ? $version : NULL;
 	}
 }

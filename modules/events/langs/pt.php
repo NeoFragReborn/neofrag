@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -126,4 +127,35 @@ return [
 	'fab41cdd' => 'Recorrência: número total de ocorrências (máx. %d).',
 	'ef1ccb4f' => 'Série de %d eventos criada',
 	'e3ad390b' => 'Ocorrência de uma série recorrente',
+	'62c86d0f' => 'Eliminar toda a série',
+	'7ba70fe8' => 'Aplicar a todas as ocorrências da série (%d)',
+	'236bba4c' => 'O título, o tipo, as descrições, o local, a imagem e a publicação são copiados para cada ocorrência. As DATAS não: são elas que distinguem uma ocorrência da seguinte.',
+	'eb67ff64' => 'Série atualizada: %d ocorrências. Cada uma conserva as suas datas.',
+	'5f5c0a0f' => 'Eliminação da série',
+	'7a113c7e' => 'Eliminar <b>a única ocorrência</b> da série a que pertence <b>%2$s</b>?|Eliminar <b>as %1$d ocorrências</b> da série a que pertence <b>%2$s</b>? Serão todas apagadas, com os seus comentários e as suas participações.',
+	'a5bb9f79' => 'Convites',
+	'9bd148d6' => 'Agendado para %s',
+	'f0b7b5b5' => 'Data de publicação',
+	'94949a27' => 'Equipe',
+	'3c19f7aa' => 'Adversário',
+	'37f8e895' => 'Modo',
+	'2687aad0' => 'Indica um site que fale do evento',
+	'7b15d0f9' => 'Mapa',
+	'a6f67ef4' => 'A nossa pontuação',
+	'909b29bc' => 'Pontuação do adversário',
+	'f5655ff7' => 'Convidar membros',
+	'1f3ae63f' => 'Lembrete!',
+	'3cfda0fd' => 'Não te esqueças de enviar os pedidos de participação aos teus membros!',
+	'15fc3f17' => 'Nenhuma ronda indicada',
+	'5f0de8cd' => 'Mensagem automática.',
+	'35ceefe3' => 'Estás convidado a participar no evento <b>%s</b>.',
+	'1d83ca5f' => 'Para indicares a tua disponibilidade, <a href="%s">clica aqui</a>.',
+	'c3890ba2' => 'Convite para o evento: %s',
+	'a03a35b6' => 'Modo: %s',
+	'7d714567' => 'Detalhe das rondas',
+	'bfa7126c' => 'Ronda %d',
+	'9111f8c2' => 'Transmissão na Twitch',
+	'64eda44a' => 'Fala-se disso aqui',
+	'04fb541f' => 'Duração',
+	'bbc46366' => 'Convidar',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Endpoints AJAX : marquer une notification / toutes comme lues.

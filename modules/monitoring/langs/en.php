@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -144,4 +145,29 @@ return [
 	'1a3e614b' => 'Permanently delete?',
 	'81d7f96a' => 'Saved.',
 	'42888b00' => 'Done.',
+	'b8f68c38' => 'The update manifest is incomplete: package name or SHA-256 hash missing or invalid.',
+	'd7899acc' => 'Update aborted: %s',
+	'3750c510' => 'The ship is sinking!',
+	'd6760697' => 'Iceberg ahead!',
+	'461c4f0b' => 'All is well, captain!',
+	'f3dba025' => 'Backup in progress...',
+	'1e22cbbf' => 'The site has been put back into the state it was in before the update.',
+	'13648960' => 'The rollback failed as well (%s). The backup %s is intact: it can be restored from the monitoring panel, or downloaded.',
+	'135a26db' => 'Backup restored: %d files put back in place, %d leftovers removed, database re-imported.',
+	'b63665a3' => 'Restore failed: %s',
+	'66d26b7f' => 'Restore',
+	'8335d9bb' => 'Put the site back into its state of %s? Files and database will be replaced by those of this backup; everything published since will be lost. Configuration, logs and cache are left untouched.',
+	'500cc9c4' => 'Confirmation',
+	'0aac9844' => 'Date',
+	'54cb6c83' => 'File',
+	'71fc8e0e' => 'Size',
+	'caf5c873' => 'Actions',
+	'445a0d6e' => 'Download',
+	'8fd9c7ef' => 'Save',
+	'0f0f9344' => 'B',
+	'4cbee36c' => 'Used',
+	'882cc3ca' => 'Warning',
+	'f0823f1d' => 'Tip',
+	'4ab31b94' => 'Backup saved in the <b>backups</b> folder of your FTP',
+	'f512948d' => 'Monitoring',
 ];

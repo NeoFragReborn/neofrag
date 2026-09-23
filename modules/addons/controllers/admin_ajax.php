@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -85,6 +86,10 @@ class Admin_Ajax extends Controller_Module
 										{
 											$type = strtolower($match2[1]);
 
+											// Le nom du type, traduit : il entre dans des phrases ENTIÈRES (« Le module Forum a été installé »).
+											// Les phrases étaient coupées autour des variables (« a été » + « installé »), intraduisibles.
+											$nom_type = ['module' => $this->lang('module'), 'widget' => $this->lang('widget'), 'theme' => $this->lang('thème')][$type] ?? $type;
+
 											$addon = NeoFrag()->$type($name = strtolower($match[1]));
 
 											if ($addon)
@@ -94,13 +99,13 @@ class Admin_Ajax extends Controller_Module
 												if (($cmp = version_compare($version, version_format($addon->info()->version))) === 0)
 												{
 													return [
-														'warning' => 'Le '.$type.' '.$addon->info()->title.' est déjà installé en version '.$version
+														'warning' => (string) $this->lang('Le %s %s est déjà installé en version %s', $nom_type, $addon->info()->title, $version)
 													];
 												}
 												else if ($cmp === -1)
 												{
 													return [
-														'danger' => 'Le '.$type.' '.$addon->info()->title.' est déjà installé avec une version supérieure'
+														'danger' => (string) $this->lang('Le %s %s est déjà installé avec une version supérieure', $nom_type, $addon->info()->title)
 													];
 												}
 											}
@@ -126,28 +131,32 @@ class Admin_Ajax extends Controller_Module
 													$addon->reset();
 
 													return [
-														'success' => 'Le '.$type.' '.$addon->info()->title.' a été '.(empty($update) ? 'installé' : 'mis-à-jour')
+														'success' => (string) (empty($update)
+															? $this->lang('Le %s %s a été installé', $nom_type, $addon->info()->title)
+															: $this->lang('Le %s %s a été mis à jour', $nom_type, $addon->info()->title))
 													];
 												}
 
 												return [
-													'danger' => 'Le '.$type.' '.($addon ? $addon->info()->title : $name).' n\'a pas pu être '.(empty($update) ? 'installé' : 'mis-à-jour')
+													'danger' => (string) (empty($update)
+														? $this->lang('Le %s %s n\'a pas pu être installé', $nom_type, $addon ? $addon->info()->title : $name)
+														: $this->lang('Le %s %s n\'a pas pu être mis à jour', $nom_type, $addon ? $addon->info()->title : $name))
 												];
 											}
 
 											return [
-												'danger' => 'Le '.$type.' '.($addon ? $addon->info()->title : $name).' nécessite la version '.$nf_version.' de NeoFrag, veuillez mettre jour votre site'
+												'danger' => (string) $this->lang('Le %s %s nécessite la version %s de NeoFrag, veuillez mettre à jour votre site', $nom_type, $addon ? $addon->info()->title : $name, $nf_version)
 											];
 										}
 
 										return [
-											'danger' => 'Le composant ne peut pas être installé, veuillez vérifier la présence des numéros de version'
+											'danger' => (string) $this->lang('Le composant ne peut pas être installé, veuillez vérifier la présence des numéros de version')
 										];
 									}
 								}
 
 								return [
-									'danger' => 'Le composant ne peut pas être installé, veuillez vérifier son contenu'
+									'danger' => (string) $this->lang('Le composant ne peut pas être installé, veuillez vérifier son contenu')
 								];
 							};
 
@@ -200,7 +209,7 @@ class Admin_Ajax extends Controller_Module
 							$this->modal->dispose();
 						}
 					})
-					->submit('Ajouter')
+					->submit($this->lang('Ajouter'))
 					->modal('Ajouter', 'fas fa-plus')
 					->cancel();
 	}
@@ -263,9 +272,11 @@ class Admin_Ajax extends Controller_Module
 		}
 
 		$options = [];
+		// Le type, traduit : `lang(ucfirst($type))` demandait « Theme », qui n'est pas un texte français.
+		$types_catalogue = ['module' => $this->lang('Module'), 'theme' => $this->lang('Thème')];
 		foreach ($available as $key => $a)
 		{
-			$options[$key] = ($a['title'] ?: $a['name']).' — '.$this->lang(ucfirst($a['type'])).' · '.(int) round(($a['size'] ?? 0) / 1024).' Ko';
+			$options[$key] = (\NF\Install\Lib\Installer::texte_catalogue($a, 'title') ?: $a['name']).' — '.($types_catalogue[$a['type']] ?? $a['type']).' · '.$this->lang('%d Ko', (int) round(($a['size'] ?? 0) / 1024));
 		}
 
 		return $this->form2()
@@ -281,6 +292,27 @@ class Admin_Ajax extends Controller_Module
 								continue;
 							}
 							$meta = $available[$key];
+
+							/**
+							 * Les addons dont celui-ci dépend doivent être présents AVANT.
+							 *
+							 * Seule la version du cœur (`requires.base`) était vérifiée, jamais les
+							 * addons requis. Or `events` déclare `games` et `teams`, et son
+							 * `install.sql` porte des clés étrangères vers `nf_games_modes` et
+							 * `nf_games_maps` : l'installer sur un site sans `games` échouait à
+							 * l'import SQL, sans un mot en amont. L'installeur web, lui, fermait
+							 * déjà les dépendances (`Installer::close_requires`) — c'était la voie
+							 * marketplace qui les ignorait.
+							 */
+							if ($manquants = $this->_dependances_manquantes($meta))
+							{
+								notify($this->lang(
+									'<b>%s</b> a besoin de : %s. Installe-les d\'abord.',
+									$meta['title'] ?: $meta['name'],
+									implode(', ', $manquants)
+								), 'warning');
+								continue;
+							}
 
 							try
 							{
@@ -320,7 +352,7 @@ class Admin_Ajax extends Controller_Module
 
 						$this->modal->dispose();
 					})
-					->submit('Installer')
+					->submit($this->lang('Installer'))
 					->modal('Marketplace', 'fas fa-store')
 					->cancel();
 	}
@@ -471,9 +503,40 @@ class Admin_Ajax extends Controller_Module
 
 						$this->modal->dispose();
 					})
-					->submit('Mettre à jour')
+					->submit($this->lang('Mettre à jour'))
 					->modal('Mises à jour', 'fas fa-arrow-up')
 					->cancel();
+	}
+
+	/**
+	 * Addons déclarés par `requires.addons` qui ne sont pas installés sur ce site.
+	 *
+	 * Rend la liste des noms manquants, vide si tout est là. Un catalogue ancien, qui ne porte pas
+	 * encore le champ, rend donc toujours une liste vide : la vérification s'ajoute sans casser les
+	 * installations existantes.
+	 */
+	private function _dependances_manquantes($meta): array
+	{
+		$requis = (array) ($meta['requires']['addons'] ?? []);
+
+		if (!$requis)
+		{
+			return [];
+		}
+
+		$installes = [];
+
+		foreach (NeoFrag()->model2('addon')->get('module') as $addon)
+		{
+			// `$addon->name` vaut FALSE sur un addon chargé : le nom est dans `info()`. La liste ne
+			// contenait donc qu'une seule entrée, vide, et TOUTE dépendance déclarée était annoncée
+			// comme manquante — y compris quand le module était bel et bien installé.
+			$installes[(string) $addon->info()->name] = TRUE;
+		}
+
+		return array_values(array_filter($requis, static function($nom) use ($installes){
+			return is_string($nom) && $nom !== '' && !isset($installes[$nom]);
+		}));
 	}
 
 	/** Vrai si la contrainte catalogue requires.base (ex. « >=1.0.0 ») est satisfaite par NEOFRAG_VERSION. */
@@ -534,10 +597,10 @@ class Admin_Ajax extends Controller_Module
 	public function scan()
 	{
 		$type_labels = [
-			'theme'         => 'thème',
-			'widget'        => 'widget',
-			'module'        => 'module',
-			'authenticator' => 'authentificateur'
+			'theme'         => $this->lang('thème'),
+			'widget'        => $this->lang('widget'),
+			'module'        => $this->lang('module'),
+			'authenticator' => $this->lang('authentificateur')
 		];
 
 		// type => [dossier, classe de base attendue, préfixe de dossier]
@@ -586,7 +649,7 @@ class Admin_Ajax extends Controller_Module
 				$found[$type.':'.$name] = [
 					'type'  => $type,
 					'name'  => $name,
-					'label' => $name.' ('.$this->lang($type_labels[$type]).')'
+					'label' => $name.' ('.$type_labels[$type].')'
 				];
 			}
 		}
@@ -674,7 +737,7 @@ class Admin_Ajax extends Controller_Module
 
 						refresh();
 					})
-					->submit('Installer la sélection')
+					->submit($this->lang('Installer la sélection'))
 					->modal('Scanner le disque', 'fas fa-sync')
 					->cancel();
 	}

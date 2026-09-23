@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Monitoring admin v0.4 — modernized layout, raw card HTML for full control.
@@ -72,7 +73,7 @@ class Admin extends Controller_Module
 		$right .= '<div class="card">'
 			.'<div class="nf-card-header">'
 			.'<span><i class="fas fa-heartbeat"></i> '.$this->lang('Votre installation NeoFrag').'</span>'
-			.'<a class="btn btn-secondary btn-sm" href="'.url('admin/monitoring/files').'" title="'.htmlspecialchars($this->lang('Gérer / éditer les fichiers'), ENT_QUOTES).'"><i class="fas fa-folder-tree"></i> '.$this->lang('Gérer les fichiers').'</a>'
+			.'<a class="btn btn-secondary btn-sm" href="'.url('admin/monitoring/files').'" title="'.htmlspecialchars((string) ($this->lang('Gérer / éditer les fichiers')), ENT_QUOTES).'"><i class="fas fa-folder-tree"></i> '.$this->lang('Gérer les fichiers').'</a>'
 			.'</div>'
 			.'<div class="card-body" style="max-height:520px;overflow-y:auto;"><div id="tree"></div></div>'
 			.'</div>';
@@ -141,7 +142,7 @@ class Admin extends Controller_Module
 	private function _cron_section()
 	{
 		$key   = (string)$this->config->nf_cron_key;
-		$reset = '<a class="btn btn-secondary btn-sm" href="'.url('admin/monitoring/cron/reset').'?_='.$this->_csrf_token().'" data-confirm="'.htmlspecialchars($this->lang('Générer une nouvelle clé ? L\'ancienne URL de cron cessera de fonctionner.'), ENT_QUOTES).'"><i class="fas fa-key"></i> '.$this->lang('Régénérer la clé').'</a>';
+		$reset = '<a class="btn btn-secondary btn-sm" href="'.url('admin/monitoring/cron/reset').'?_='.$this->_csrf_token().'" data-confirm="'.htmlspecialchars((string) ($this->lang('Générer une nouvelle clé ? L\'ancienne URL de cron cessera de fonctionner.')), ENT_QUOTES).'"><i class="fas fa-key"></i> '.$this->lang('Régénérer la clé').'</a>';
 
 		$header = '<div class="nf-card-header"><span><i class="far fa-clock"></i> '.$this->lang('Parution programmée (cron)').'</span>'.$reset.'</div>';
 
@@ -155,7 +156,7 @@ class Admin extends Controller_Module
 
 		$origin = ($this->url->https ? 'https' : 'http').'://'.($_SERVER['HTTP_HOST'] ?? '');
 		$url    = $origin.url('monitoring/cron').'?key='.rawurlencode($key);
-		$esc    = htmlspecialchars($url, ENT_QUOTES);
+		$esc    = htmlspecialchars((string) ($url), ENT_QUOTES);
 
 		$body = '<div class="card-body">'
 			.'<p class="text-muted mb-2">'.$this->lang('NeoFrag n\'a pas d\'ordonnanceur : un cron externe doit appeler cette URL régulièrement (toutes les 5 min) pour publier news et articles programmés à l\'heure réelle — notifications, webhooks et gamification compris.').'</p>'
@@ -302,7 +303,7 @@ class Admin extends Controller_Module
 	{
 		$wm         = new \NF\NeoFrag\Libraries\Webmaster($this);
 		$configured = $wm->is_configured();
-		$csrf       = htmlspecialchars($this->_csrf_token(), ENT_QUOTES);
+		$csrf       = htmlspecialchars((string) ($this->_csrf_token()), ENT_QUOTES);
 
 		$status = $configured
 			? '<span class="badge text-bg-success">'.$this->lang('Défini').'</span>'
@@ -313,7 +314,7 @@ class Admin extends Controller_Module
 			: '<div class="alert alert-warning mb-2"><i class="fas fa-exclamation-triangle"></i> '.$this->lang('Aucun mot de passe webmaster. Définis-en un pour débloquer les actions sensibles.').'</div>';
 
 		$current = $configured
-			? '<input type="password" name="current" class="form-control form-control-sm mb-2" autocomplete="off" placeholder="'.htmlspecialchars($this->lang('Mot de passe webmaster actuel'), ENT_QUOTES).'" required>'
+			? '<input type="password" name="current" class="form-control form-control-sm mb-2" autocomplete="off" placeholder="'.htmlspecialchars((string) ($this->lang('Mot de passe webmaster actuel')), ENT_QUOTES).'" required>'
 			: '';
 
 		$sudo_line = '';
@@ -329,8 +330,8 @@ class Admin extends Controller_Module
 			.'<form method="post" action="'.url('admin/monitoring/webmaster').'" autocomplete="off">'
 			.'<input type="hidden" name="csrf" value="'.$csrf.'">'
 			.$current
-			.'<input type="password" name="password" class="form-control form-control-sm mb-2" autocomplete="new-password" placeholder="'.htmlspecialchars($this->lang('Nouveau mot de passe (8 car. min., distinct du login)'), ENT_QUOTES).'" required>'
-			.'<input type="password" name="password2" class="form-control form-control-sm mb-2" autocomplete="new-password" placeholder="'.htmlspecialchars($this->lang('Confirmation'), ENT_QUOTES).'" required>'
+			.'<input type="password" name="password" class="form-control form-control-sm mb-2" autocomplete="new-password" placeholder="'.htmlspecialchars((string) ($this->lang('Nouveau mot de passe (8 car. min., distinct du login)')), ENT_QUOTES).'" required>'
+			.'<input type="password" name="password2" class="form-control form-control-sm mb-2" autocomplete="new-password" placeholder="'.htmlspecialchars((string) ($this->lang('Confirmation')), ENT_QUOTES).'" required>'
 			.'<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-key"></i> '.($configured ? $this->lang('Changer') : $this->lang('Définir')).'</button>'
 			.'</form></div>';
 
@@ -387,6 +388,63 @@ class Admin extends Controller_Module
 		redirect('admin/monitoring');
 	}
 
+	/**
+	 * Remet le site dans l'état d'une sauvegarde choisie dans la liste.
+	 *
+	 * Le pendant manuel du retour arrière automatique d'une mise à jour ratée : même code, même
+	 * contrat (cf. Monitoring\Models\Monitoring::restaurer). Il sert quand l'échec n'est pas venu
+	 * d'une mise à jour — un module tiers qui casse tout, une manipulation regrettée.
+	 *
+	 * Gardes identiques à la suppression : super-admin, fenêtre sudo ouverte, jeton CSRF. Une
+	 * restauration est au moins aussi destructrice qu'une suppression.
+	 */
+	public function _backup_restore($filename)
+	{
+		$this->_check_csrf();
+		$this->_require_sudo();
+
+		if (nf_demo())
+		{
+			notify($this->lang('Action désactivée sur le site de démonstration.'), 'warning');
+			redirect('admin/monitoring');
+		}
+
+		$slug = basename((string)$filename);
+		$file = rtrim(NEOFRAG_CMS, '/').'/backups/'.$slug.'.zip';
+
+		if (!preg_match('/^\d{14}(-[a-f0-9]{16})?$/', $slug) || !file_exists($file))
+		{
+			notify($this->lang('Sauvegarde introuvable.'), 'danger');
+			redirect('admin/monitoring');
+		}
+
+		// Une restauration réécrit des milliers de fichiers puis réimporte la base : elle dépasse
+		// sans peine le temps d'exécution par défaut.
+		@set_time_limit(0);
+
+		try
+		{
+			$resultat = $this->model()->restaurer($file);
+
+			// Pas de forme singulière : une archive de site porte des milliers de fichiers. Une
+			// alternance « fichier|fichiers » n'aurait ici qu'un cas, et il serait faux pour l'autre
+			// nombre de la même phrase.
+			notify($this->lang(
+				'Sauvegarde restaurée : %d fichiers remis en place, %d vestiges retirés, base réimportée.',
+				$resultat['restored'],
+				$resultat['removed']
+			));
+		}
+		catch (\Throwable $e)
+		{
+			error_log('[restore] '.$e->getMessage().' @ '.$e->getFile().':'.$e->getLine());
+
+			notify($this->lang('La restauration a échoué : %s', $e->getMessage()), 'danger');
+		}
+
+		redirect('admin/monitoring');
+	}
+
 	public function _backups_purge()
 	{
 		$this->_check_csrf();
@@ -426,9 +484,9 @@ class Admin extends Controller_Module
 	private function _stat_card($label, $value, $icon, $trend = '')
 	{
 		$h  = '<div class="nf-stat-card">';
-		$h .= '<div class="nf-stat-label"><i class="'.$icon.'"></i> '.htmlspecialchars($label).'</div>';
-		$h .= '<div class="nf-stat-value" style="font-size:18px;font-family:\'JetBrains Mono\',monospace;letter-spacing:0;">'.htmlspecialchars($value).'</div>';
-		if ($trend) $h .= '<div class="nf-stat-trend">'.htmlspecialchars($trend).'</div>';
+		$h .= '<div class="nf-stat-label"><i class="'.$icon.'"></i> '.htmlspecialchars((string) ($label)).'</div>';
+		$h .= '<div class="nf-stat-value" style="font-size:18px;font-family:\'JetBrains Mono\',monospace;letter-spacing:0;">'.htmlspecialchars((string) ($value)).'</div>';
+		if ($trend) $h .= '<div class="nf-stat-trend">'.htmlspecialchars((string) ($trend)).'</div>';
 		$h .= '</div>';
 		return $h;
 	}

@@ -5,7 +5,7 @@
 .wiki-cat { background: var(--nf-surface, rgba(255, 255, 255, .025)); border: 1px solid var(--nf-border, rgba(255, 255, 255, .09)); border-radius: 14px; overflow: hidden; }
 .wiki-cat-head { display: flex; align-items: center; gap: 12px; padding: 15px 18px; border-bottom: 1px solid var(--nf-border, rgba(255, 255, 255, .09)); text-decoration: none; color: var(--nf-text, #e7eef6); transition: background .15s; }
 .wiki-cat-head:hover { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 8%, transparent); text-decoration: none; color: var(--nf-text, #e7eef6); }
-.wiki-cat-ico { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; font-size: 16px; background: linear-gradient(135deg, color-mix(in srgb, var(--nf-accent, #2dd4bf) 22%, transparent), color-mix(in srgb, var(--nf-accent, #2dd4bf) 8%, transparent)); color: var(--nf-accent, #2dd4bf); border: 1px solid color-mix(in srgb, var(--nf-accent, #2dd4bf) 25%, transparent); flex-shrink: 0; }
+.wiki-cat-ico { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; font-size: 16px; background: linear-gradient(135deg, color-mix(in srgb, var(--nf-accent, #2dd4bf) 22%, transparent), color-mix(in srgb, var(--nf-accent, #2dd4bf) 8%, transparent)); color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); border: 1px solid color-mix(in srgb, var(--nf-accent, #2dd4bf) 25%, transparent); flex-shrink: 0; }
 .wiki-cat-title { flex: 1; font-family: "Space Grotesk", inherit; font-size: 17px; font-weight: 700; }
 .wiki-cat-count { font-size: 12px; font-weight: 600; color: var(--nf-muted, #8593a6); background: var(--nf-surface-2, rgba(255, 255, 255, .05)); border-radius: 20px; padding: 2px 10px; }
 .wiki-cat-list { list-style: none; margin: 0; padding: 8px; }
@@ -14,8 +14,8 @@
 .wiki-cat-list a > span { flex: 1; }
 .wiki-cat-list a > i:first-child { color: var(--nf-muted, #8593a6); width: 16px; text-align: center; }
 .wiki-cat-list a .wiki-go { font-size: 11px; color: var(--nf-muted, #8593a6); opacity: 0; transition: opacity .12s, transform .12s; }
-.wiki-cat-list a:hover { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 10%, transparent); color: var(--nf-accent, #2dd4bf); text-decoration: none; }
-.wiki-cat-list a:hover > i:first-child, .wiki-cat-list a:hover .wiki-go { color: var(--nf-accent, #2dd4bf); }
+.wiki-cat-list a:hover { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 10%, transparent); color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); text-decoration: none; }
+.wiki-cat-list a:hover > i:first-child, .wiki-cat-list a:hover .wiki-go { color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); }
 .wiki-cat-list a:hover .wiki-go { opacity: 1; transform: translateX(2px); }
 
 /* ---- Contenu (prose) ---- */
@@ -26,14 +26,17 @@
 .wiki-content h2 { font-size: 23px; padding-bottom: .3em; border-bottom: 1px solid var(--nf-border, rgba(255, 255, 255, .09)); }
 .wiki-content h3 { font-size: 18px; }
 .wiki-content p { margin: 0 0 1em; }
-.wiki-content a { color: var(--nf-accent, #2dd4bf); }
+.wiki-content a { color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); }
 .wiki-content ul, .wiki-content ol { margin: 0 0 1em; padding-left: 1.4em; }
 .wiki-content li { margin: .3em 0; }
 .wiki-content code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: .88em; background: var(--nf-surface-2, rgba(255, 255, 255, .06)); border: 1px solid var(--nf-border, rgba(255, 255, 255, .09)); border-radius: 5px; padding: .12em .4em; }
-.wiki-content pre { background: var(--nf-bg-deep, #0a0e15); border: 1px solid var(--nf-border, rgba(255, 255, 255, .09)); border-radius: 12px; padding: 16px 18px; overflow-x: auto; margin: 0 0 1.2em; }
+.wiki-content pre { background: var(--nf-bg, #0a0e15); border: 1px solid var(--nf-border, rgba(255, 255, 255, .09)); border-radius: 12px; padding: 16px 18px; overflow-x: auto; margin: 0 0 1.2em; }
 .wiki-content pre code { background: none; border: 0; padding: 0; font-size: 13px; line-height: 1.6; }
 .wiki-content blockquote { border-left: 3px solid var(--nf-accent, #2dd4bf); margin: 0 0 1em; padding: .3em 1em; color: var(--nf-muted, #8593a6); background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 5%, transparent); border-radius: 0 8px 8px 0; }
-.wiki-content table { width: 100%; border-collapse: collapse; margin: 0 0 1.2em; font-size: 14.5px; }
+/* Un tableau du wiki vient d'un guide Markdown : pas d'enveloppe possible dans le balisage. Il est
+   donc son propre cadre défilant — trop large pour un téléphone, il élargissait toute la page
+   (« Créer un module » : 210 px de trop à 360 px, check-mise-en-page, 2026-09-23). */
+.wiki-content table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; margin: 0 0 1.2em; font-size: 14.5px; }
 .wiki-content th, .wiki-content td { padding: 9px 13px; border: 1px solid var(--nf-border, rgba(255, 255, 255, .09)); text-align: left; }
 .wiki-content th { background: var(--nf-surface-2, rgba(255, 255, 255, .04)); font-weight: 600; }
 .wiki-content img { max-width: 100%; border-radius: 10px; }
@@ -46,12 +49,12 @@
 .wiki-layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 34px; max-width: 1200px; margin: 0 auto; }
 .wiki-nav { position: sticky; top: 84px; align-self: start; font-size: 14.5px; }
 .wiki-nav-head { display: flex; align-items: center; gap: 8px; font-family: "Space Grotesk", inherit; font-weight: 700; font-size: 16px; color: var(--nf-text, #e7eef6); text-decoration: none; padding-bottom: 12px; margin-bottom: 4px; border-bottom: 1px solid var(--nf-border, rgba(255, 255, 255, .09)); }
-.wiki-nav-head i { color: var(--nf-accent, #2dd4bf); }
+.wiki-nav-head i { color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); }
 .wiki-nav-cat { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--nf-muted, #8593a6); margin: 16px 0 6px; }
 .wiki-nav ul { list-style: none; margin: 0 0 6px; padding: 0; }
 .wiki-nav li a { display: block; padding: 7px 12px; border-radius: 8px; color: var(--nf-text, #e7eef6); text-decoration: none; transition: background .12s, color .12s; border-left: 2px solid transparent; }
-.wiki-nav li a:hover { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 8%, transparent); color: var(--nf-accent, #2dd4bf); }
-.wiki-nav li a.active { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 12%, transparent); color: var(--nf-accent, #2dd4bf); font-weight: 600; border-left-color: var(--nf-accent, #2dd4bf); }
+.wiki-nav li a:hover { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 8%, transparent); color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); }
+.wiki-nav li a.active { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 12%, transparent); color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); font-weight: 600; border-left-color: var(--nf-accent, #2dd4bf); }
 .wiki-main { min-width: 0; }
 .wiki-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--nf-border, rgba(255, 255, 255, .09)); color: var(--nf-muted, #8593a6); }
 
@@ -76,8 +79,8 @@
 .wiki-diff-line { display: flex; gap: 10px; padding: 2px 14px; white-space: pre-wrap; word-break: break-word; }
 .wiki-diff-sym { flex: 0 0 14px; text-align: center; color: var(--nf-muted, #8593a6); user-select: none; }
 .wiki-diff-txt { min-width: 0; }
-.wiki-diff-line.add { background: color-mix(in srgb, #2faa6a 12%, transparent); }
-.wiki-diff-line.add .wiki-diff-sym { color: #2faa6a; }
-.wiki-diff-line.del { background: color-mix(in srgb, #e0556b 12%, transparent); }
-.wiki-diff-line.del .wiki-diff-sym { color: #e0556b; }
+.wiki-diff-line.add { background: color-mix(in srgb, var(--nf-success, #2faa6a) 12%, transparent); }
+.wiki-diff-line.add .wiki-diff-sym { color: var(--bs-success-text-emphasis, var(--nf-success, #2faa6a)); }
+.wiki-diff-line.del { background: color-mix(in srgb, var(--nf-danger, #e0556b) 12%, transparent); }
+.wiki-diff-line.del .wiki-diff-sym { color: var(--bs-danger-text-emphasis, var(--nf-danger, #e0556b)); }
 .wiki-diff-line.ctx { color: var(--nf-muted, #8593a6); }

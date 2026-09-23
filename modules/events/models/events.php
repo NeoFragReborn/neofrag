@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,9 +11,21 @@ use NF\NeoFrag\Loadables\Model;
 
 class Events extends Model
 {
+	/**
+	 * Les seules colonnes qu'une édition « toute la série » recopie sur chaque occurrence.
+	 *
+	 * Constante, et non liste locale, pour qu'un test puisse l'inspecter : la propriété qui compte
+	 * ici — *aucune colonne de date n'y figure* — est de celles dont la violation ne se voit pas à
+	 * la relecture et ne se rattrape pas après coup. Propager `date` ferait tenir les douze séances
+	 * d'une série le même soir, en perdant définitivement les dates d'origine.
+	 *
+	 * @var list<string>
+	 */
+	const SERIES_FIELDS = ['title', 'type_id', 'description', 'private_description', 'location', 'image_id', 'published'];
+
 	public function check_event($event_id, $title)
 	{
-		$this->db	->select('e.event_id', 'e.title', 'e.type_id', 'e.date', 'e.date_end', 'e.description', 'e.private_description', 'e.location', 'e.image_id', 'e.published', 'e.publish_date', 't.type', 'm.mode_id', 'm.webtv', 'm.website', 'gm.title as mode_title')
+		$this->db	->select('e.event_id', 'e.title', 'e.type_id', 'e.date', 'e.date_end', 'e.description', 'e.private_description', 'e.location', 'e.image_id', 'e.published', 'e.publish_date', 'e.series_id', 't.type', 'm.mode_id', 'm.webtv', 'm.website', 'gm.title as mode_title')
 					->from('nf_events e')
 					->join('nf_events_types t',        'e.type_id = t.type_id')
 					->join('nf_events_participants p', 'e.event_id = p.event_id', 'LEFT')
@@ -157,6 +170,36 @@ class Events extends Model
 		{
 			$this->delete((int) $event_id);
 		}
+	}
+
+	/** Nombre d'occurrences d'une série. 0 si l'identifiant est vide — un événement isolé n'en a pas. */
+	public function count_series($series_id)
+	{
+		return $series_id ? (int) $this->db->from('nf_events')->where('series_id', (int) $series_id)->count() : 0;
+	}
+
+	/**
+	 * Applique à TOUTES les occurrences d'une série ce qui ne dépend pas de la date.
+	 *
+	 * Le filtrage des champs n'est pas une précaution de style : les DATES doivent rester propres à
+	 * chaque occurrence, puisque c'est la seule chose qui distingue une séance de la suivante. Les
+	 * propager ferait tenir les douze séances d'une série le même soir — et sans retour possible,
+	 * les dates d'origine étant alors perdues. `publish_date` suit la même règle, pour la même
+	 * raison.
+	 *
+	 * @param  array<string,mixed> $champs colonnes candidates ; celles hors liste sont ignorées
+	 * @return int nombre d'occurrences touchées
+	 */
+	public function edit_series($series_id, array $champs)
+	{
+		if (!($series_id && ($champs = array_intersect_key($champs, array_flip(self::SERIES_FIELDS)))))
+		{
+			return 0;
+		}
+
+		$this->db->where('series_id', (int) $series_id)->update('nf_events', $champs);
+
+		return $this->count_series($series_id);
 	}
 
 	/**

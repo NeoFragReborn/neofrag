@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Auth checker pour /ajax/notifications/* — nécessite d'être connecté.

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -194,7 +195,6 @@ class Network extends Library
 			}
 		}
 
-		curl_close($ch);
 
 		return $result;
 	}

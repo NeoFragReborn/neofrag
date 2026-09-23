@@ -4,7 +4,7 @@
 		<div class="col mb-4">
 			<div class="card card-member text-center<?php echo $this->user->id == $member->id ? ' border-primary' : '' ?>">
 				<div class="m-auto pt-3"><?php echo $member->avatar() ?></div>
-				<div class="card-body pt-0 px-0">
+				<div class="card-body pt-3 px-0">
 					<h6 class="card-title mb-0"><?php echo $member->username ?></h6>
 					<?php
 					$socials = $this->array([

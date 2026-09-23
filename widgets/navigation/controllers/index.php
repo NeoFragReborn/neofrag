@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -23,6 +24,7 @@ class Index extends Controller_Widget
 	protected function _display($settings, $type, $panel)
 	{
 		$this->js('navigation');
+		$this->css('navigation');
 
 		$nav = $this->html('ul')
 					->attr('class', 'nav')
@@ -117,7 +119,8 @@ class Index extends Controller_Widget
 										->attr('class', 'nav-item')
 										->content(
 											$nav_link($link, $active)
-												->attr('data-toggle', 'collapse')
+												->attr('data-nf-sous-menu', '')
+												->attr('aria-expanded', 'false')
 												->attr('href',        '#')
 												->content(icon($link['icon']).' <span class="d-none d-sm-inline">'.$this->lang($link['title']).'</span><span class="fas fa-angle-down"></span>').'<ul class="nav flex-column">'.$submenu.'</ul>'
 										)
@@ -128,6 +131,19 @@ class Index extends Controller_Widget
 			{
 				$nav->append($show_link($link));
 			}
+		}
+
+		// Le menu HORIZONTAL se replie derrière un bouton quand ses entrées ne tiennent plus sur une
+		// ligne : sur un téléphone, elles passaient sur deux ou trois rangées (signalé le
+		// 2026-09-23). C'est le script du widget qui mesure — un nombre d'entrées et une largeur que
+		// seule la page connaît ; sans script, le menu reste tel quel, entier.
+		if ($type == 'horizontal')
+		{
+			$id  = 'nf-nav-'.substr(md5(uniqid('', TRUE)), 0, 8);
+			$nav = '<div class="nf-nav-repliable">'.
+						'<button type="button" class="nf-nav-toggle" aria-expanded="false" aria-controls="'.$id.'">'.icon('fas fa-bars').' <span>'.$this->lang('Menu').'</span></button>'.
+						$nav->attr('id', $id).
+					'</div>';
 		}
 
 		if ($panel)

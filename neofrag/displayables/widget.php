@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -128,9 +129,17 @@ class Widget extends Displayable
 
 			if ($widget_data['widget'] == 'module')
 			{
-				$type   = 'module';
-				$module = NeoFrag()->output->module();
-				$name   = $module->info()->name;
+				// Le widget « contenu de la page » sans module à montrer : rien à afficher. Il lisait
+				// info() sur NULL — dix lignes au journal de la production le 2026-09-22, en deux rafales
+				// qui tombent pendant des déploiements, quand un module ne se charge pas le temps que ses
+				// fichiers soient remplacés.
+				if (!($module = NeoFrag()->output->module()))
+				{
+					return '';
+				}
+
+				$type = 'module';
+				$name = $module->info()->name;
 			}
 			else
 			{

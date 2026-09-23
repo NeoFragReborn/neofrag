@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module donations (pt)
@@ -83,4 +84,7 @@ return [
 	'b29b863e' => 'Nenhuma campanha ativa no momento.',
 	// i18n 2026-06-11 (code strings)
 	'4f180bc1' => 'Doações',
+	'bdf67320' => 'Nenhuma campanha.',
+	'65747968' => 'Crie uma para começar.',
+	'16150764' => 'Ver a página pública',
 ];

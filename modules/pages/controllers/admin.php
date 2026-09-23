@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -90,7 +91,7 @@ class Admin extends Controller_Module
 		$this	->subtitle($this->lang('Ajouter une page'))
 				->form()
 				->add_rules('pages')
-				->add_submit($this->lang('Ajouter'))
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus')
 				->add_back('admin/pages');
 
 		if ($this->form()->is_valid($post))
@@ -108,7 +109,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/pages');
 		}
 
-		return $this->admin_back('admin/pages', $this->lang('Pages')).$this->admin_card('fas fa-plus', $this->lang('Ajouter une page'), $this->form()->display()
+		return $this->admin_card('fas fa-plus', $this->lang('Ajouter une page'), $this->form()->display()
 			.'<div class="alert alert-info mt-3">'.icon('fas fa-cubes').' '.$this->lang('Enregistrez d\'abord la page : vous pourrez ensuite y composer des blocs de module en l\'éditant.').'</div>'
 			.$this->_blocks_help());
 	}
@@ -154,7 +155,7 @@ class Admin extends Controller_Module
 			'instances' => $this->model()->get_instances($page_id, FALSE)
 		]);
 
-		return $this->admin_back('admin/pages', $this->lang('Pages')).$this->admin_card('fas fa-edit', $this->lang('Édition de la page').' — '.$title, $this->form()->display().$composer.$this->_blocks_help());
+		return $this->admin_card('fas fa-edit', $this->lang('Édition de la page').' — '.$title, $this->form()->display().$composer.$this->_blocks_help());
 	}
 
 	/** Note d'aide listant les blocs de module injectables via [block:clé] dans le contenu. */
@@ -201,8 +202,8 @@ class Admin extends Controller_Module
 
 			$example .= ']';
 
-			$items .= '<li><code>'.htmlspecialchars($example).'</code> — '.htmlspecialchars($def['title'])
-				.($legend ? ' <small class="text-muted">— '.htmlspecialchars(implode(', ', $legend)).'</small>' : '').'</li>';
+			$items .= '<li><code>'.htmlspecialchars((string) ($example)).'</code> — '.htmlspecialchars((string) ($def['title']))
+				.($legend ? ' <small class="text-muted">— '.htmlspecialchars((string) (implode(', ', $legend))).'</small>' : '').'</li>';
 		}
 
 		return '<div class="alert alert-info mt-3"><i class="fas fa-puzzle-piece"></i> '

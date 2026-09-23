@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -118,4 +119,29 @@ return [
 	'1ce8c867' => 'Valor',
 	'f14f39cf' => 'Origem (papel)',
 	'e8058b83' => 'global',
+	'ad15a3b6' => 'Nenhuma permissão a configurar para este módulo.',
+	'cdeded7d' => 'Guardado',
+	'ce6fa2e6' => 'Erro ao guardar',
+	'5c6aceb9' => 'Funções',
+	'4d8362df' => 'Nenhum',
+	'afccc23b' => 'Criar',
+	'6ddb4279' => 'Editar função',
+	'8fd9c7ef' => 'Guardar',
+	'9b80ec64' => 'Utilizador',
+	'bde12464' => 'Ver permissões efetivas',
+	'03158917' => 'Grupo',
+	'd6cecdee' => 'Cargo',
+	'2cecf817' => 'Tipo',
+	'caf5c873' => 'Ações',
+	'eb78cff1' => 'Descrição',
+	'53576710' => 'Gestão de permissões por grupo de utilizadores e por módulo.',
+	'83122521' => 'Superadministrador',
+	'b7d3e5ee' => 'Visitante',
+	'd598edac' => 'Moderador',
+	'9409e26b' => 'Moderador sénior',
+	'45069517' => 'Acesso completo ao sistema. Equivale à flag nf_user.admin=1.',
+	'74e427de' => 'Utilizador com sessão iniciada, básico.',
+	'79263869' => 'Utilizador não autenticado (anónimo).',
+	'90130d8a' => 'Função migrada do grupo nf_groups id 1.',
+	'41b16ae1' => 'Função migrada do grupo nf_groups id 2. Herda de moderation_junior.',
 ];

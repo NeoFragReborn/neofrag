@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.1.0');
+define('NEOFRAG_VERSION', '1.2.0');
 
 error_reporting(E_ALL);
 
@@ -74,6 +74,10 @@ function NeoFrag()
 
 		$object = $class->newInstanceArgs(array_shift($args) ?: []);
 
+		// `__debug` est une propriété DYNAMIQUE, posée sur chaque objet en mode débogage seulement.
+		// Toute classe instanciée ici doit donc porter #[\AllowDynamicProperties] : PHP 8.2 déprécie
+		// le reste, et les champs de `neofrag/fields/` écrivaient ainsi plus de deux mille lignes au
+		// journal de l'atelier pour trois cents pages (2026-09-22).
 		if ($debug)
 		{
 			$object->__debug = (object)[
@@ -127,6 +131,7 @@ function check_file($dir, $force = FALSE)
 foreach ([
 			'array',
 			'assets',
+			'bootstrap',
 			'color',
 			'countries',
 			'debug',
@@ -137,10 +142,13 @@ foreach ([
 			'location',
 			'markdown',
 			'notify',
+			'fonts',
+			'remote',
 			'sanitize',
 			'statistics',
 			'string',
 			'system',
+			'theme',
 			'time',
 			'user_agent'
 		] as $helper
@@ -222,14 +230,25 @@ ob_start(function($html){
 
 	// Uniquement les réponses HTML : les réponses JSON (modales AJAX) peuvent contenir « <script »
 	// dans leur champ `content` — il ne faut SURTOUT pas y injecter de nonce (ça casserait le JSON).
-	$is_html = FALSE;
+	$content_type = '';
 	foreach (headers_list() as $h)
 	{
 		if (stripos($h, 'content-type:') === 0)
 		{
-			$is_html = stripos($h, 'text/html') !== FALSE;
+			$content_type = strtolower($h);
 			break;
 		}
+	}
+	$is_html = strpos($content_type, 'text/html') !== FALSE;
+
+	// Réponses DYNAMIQUES (HTML/JSON) : jamais mises en cache par le navigateur. Sans en-tête, le
+	// navigateur applique un cache heuristique et sert du périmé (ex. thème changé côté admin qui
+	// n'apparaît qu'au Ctrl+F5). Les assets statiques (CSS/JS/images) sont servis par le serveur web,
+	// PAS par index.php → non concernés, ils gardent leur cache (cache-bust par mtime).
+	$is_json = strpos($content_type, 'application/json') !== FALSE;
+	if (($is_html || $is_json) && !headers_sent())
+	{
+		header('Cache-Control: no-store, max-age=0');
 	}
 
 	if (!$is_html || stripos($html, '<script') === FALSE)
@@ -243,10 +262,34 @@ ob_start(function($html){
 		// 'self' couvre tout le JS NeoFrag + TinyMCE/CodeMirror auto-hébergés ; google/gstatic = reCAPTCHA.
 		// style-src garde 'unsafe-inline' (styles inline BS5/TinyMCE) + fonts.googleapis.com (@import des
 		// thèmes). img/font/connect gardent `https:` (avatars, fonts gstatic, widgets Steam/Twitch).
+		// googletagmanager.com n'entre dans l'allowlist QUE si un identifiant Analytics est configuré :
+		// un site sans Analytics ne déclare aucune origine tierce de plus. Sans cette ligne, le chargeur de
+		// Google était refusé par la politique — Analytics n'a jamais pu fonctionner sous la CSP stricte.
+		$analytics = '';
+		try { $analytics = (string) NeoFrag()->config->nf_analytics !== '' ? ' https://www.googletagmanager.com' : ''; } catch (\Throwable $e) {}
+
+		// media-src : la directive n'existait pas et héritait donc de `default-src 'self'`. Tant que
+		// tout l'audio et toute la vidéo venaient de `upload/`, cela suffisait — un flux de webradio,
+		// lui, est par nature distant et aurait été bloqué sans que rien ne l'explique à l'écran.
+		//
+		// On la déclare explicitement, et on n'y ajoute l'origine du flux QUE si un flux est
+		// configuré : un site sans webradio ne déclare aucune origine tierce de plus. Même traitement
+		// que googletagmanager.com juste au-dessus.
+		//
+		// `webradio_origin` est écrite par le module, réduite au schéma, à l'hôte et au port par
+		// `Schedule::origine()`. On revérifie sa forme ici : l'espace sépare les sources dans cet
+		// en-tête, et un réglage peut avoir été posé autrement que par le formulaire.
+		$media = '';
+		try {
+			$origine = (string) NeoFrag()->config->webradio_origin;
+			$media   = preg_match('#^https?://[a-z0-9.-]+(?::\d{1,5})?$#i', $origine) ? ' '.$origine : '';
+		} catch (\Throwable $e) {}
+
 		header("Content-Security-Policy: default-src 'self'; object-src 'none'; ".
-			"script-src 'self' 'nonce-$nonce' https://www.google.com https://www.gstatic.com; ".
+			"script-src 'self' 'nonce-$nonce' https://www.google.com https://www.gstatic.com$analytics; ".
 			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; ".
 			"img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https:; ".
+			"media-src 'self' data:$media; ".
 			"frame-src 'self' https://www.google.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
 	}
 

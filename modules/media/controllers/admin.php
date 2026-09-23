@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace NF\Modules\Media\Controllers;
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 use NF\Modules\Media\Media;
@@ -27,11 +28,11 @@ class Admin extends Controller_Module
 			$type_options = ['' => $this->lang('Tous les types'), 'image' => $this->lang('Images'), 'video' => $this->lang('Vidéos'), 'audio' => $this->lang('Audio'), 'pdf' => $this->lang('PDF')];
 
 			$toolbar  = '<form method="get" action="'.$form_action.'" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 16px;border-bottom:1px solid var(--nf-border);">';
-			$toolbar .= '<input type="text" name="q" value="'.htmlspecialchars($filters['q']).'" class="form-control form-control-sm" placeholder="'.htmlspecialchars($this->lang('Rechercher par nom ou titre…'), ENT_QUOTES).'" style="max-width:280px;">';
-			$toolbar .= '<select name="type" class="form-control form-control-sm" style="width:auto;">';
+			$toolbar .= '<input type="text" name="q" value="'.htmlspecialchars((string) ($filters['q'])).'" class="form-control form-control-sm" placeholder="'.htmlspecialchars((string) ($this->lang('Rechercher par nom ou titre…')), ENT_QUOTES).'" style="max-width:280px;">';
+			$toolbar .= '<select name="type" class="form-select form-select-sm" style="width:auto;">';
 			foreach ($type_options as $val => $label)
 			{
-				$toolbar .= '<option value="'.$val.'"'.($filters['type'] === $val ? ' selected' : '').'>'.htmlspecialchars($label).'</option>';
+				$toolbar .= '<option value="'.$val.'"'.($filters['type'] === $val ? ' selected' : '').'>'.htmlspecialchars((string) ($label)).'</option>';
 			}
 			$toolbar .= '</select>';
 			$toolbar .= $this->sort_select($filters['sort_cols'], $filters['sort']);
@@ -54,7 +55,7 @@ class Admin extends Controller_Module
 				$url_file = url('upload/media/'.$m['filename']);
 				$is_img = Media::is_image($m['mime_type']);
 
-				$body .= '<div class="col-6 col-md-3 col-lg-2 mb-3">';
+				$body .= '<div class="col-12 col-lg-6 col-md-3 col-lg-2 mb-3">';
 				$body .= '<div class="card" style="margin-bottom:0;">';
 
 				if ($is_img) {
@@ -68,14 +69,14 @@ class Admin extends Controller_Module
 				}
 
 				$body .= '<div style="padding:10px;">';
-				$body .= '<div style="font-size:12.5px;font-weight:500;color:var(--nf-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'.htmlspecialchars($m['original_name']).'">'.htmlspecialchars($m['original_name']).'</div>';
-				if (!empty($m['title'])) $body .= '<div style="font-size:11.5px;color:var(--nf-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;" title="'.htmlspecialchars($m['title']).'"><i class="fas fa-tag" style="font-size:9px;opacity:.6;"></i> '.htmlspecialchars($m['title']).'</div>';
+				$body .= '<div style="font-size:12.5px;font-weight:500;color:var(--nf-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="'.htmlspecialchars((string) ($m['original_name'])).'">'.htmlspecialchars((string) ($m['original_name'])).'</div>';
+				if (!empty($m['title'])) $body .= '<div style="font-size:11.5px;color:var(--nf-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px;" title="'.htmlspecialchars((string) ($m['title'])).'"><i class="fas fa-tag" style="font-size:9px;opacity:.6;"></i> '.htmlspecialchars((string) ($m['title'])).'</div>';
 				$body .= '<div style="font-size:11px;color:var(--nf-text-muted);font-feature-settings:\'tnum\';margin-top:2px;">'.Media::format_size($m['size_bytes']);
 				if ($m['width'] && $m['height']) $body .= ' · '.(int)$m['width'].'×'.(int)$m['height'];
 				$body .= '</div>';
 				$body .= '<input class="form-control form-control-sm" type="text" readonly value="'.$url_file.'" data-nf-select-on-click style="margin-top:6px;font-size:11px;">';
-				$body .= '<a class="btn btn-sm btn-outline-secondary btn-block" href="'.url('admin/media/edit/'.$m['id']).'" style="margin-top:6px;"><i class="far fa-edit"></i> '.$this->lang('Éditer').'</a>';
-				$body .= '<a class="btn btn-sm btn-outline-danger btn-block" href="'.$this->csrf_url('admin/media/delete/'.$m['id']).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ?'), ENT_QUOTES).'" style="margin-top:6px;"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer').'</a>';
+				$body .= '<a class="btn btn-sm btn-outline-secondary d-block w-100" href="'.url('admin/media/edit/'.$m['id']).'" style="margin-top:6px;"><i class="far fa-edit"></i> '.$this->lang('Éditer').'</a>';
+				$body .= '<a class="btn btn-sm btn-outline-danger d-block w-100" href="'.$this->csrf_url('admin/media/delete/'.$m['id']).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ?')), ENT_QUOTES).'" style="margin-top:6px;"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer').'</a>';
 				$body .= '</div>';
 				$body .= '</div></div>';
 			}
@@ -98,6 +99,15 @@ class Admin extends Controller_Module
 		$message = '';
 		$uploaded = [];
 		$errors = [];
+
+		// Site de démonstration : aucun dépôt de fichier. La remise à zéro recharge la BASE, jamais
+		// le disque — un fichier laissé par un visiteur y resterait indéfiniment. Ce contrôleur
+		// n'utilise pas les formulaires du cœur, il porte donc sa propre garde.
+		if (nf_demo())
+		{
+			$_FILES = [];
+			$errors[] = $this->lang('Le dépôt de fichiers est désactivé sur le site de démonstration.');
+		}
 
 		if (!empty($_FILES['files']) && is_array($_FILES['files']['name']))
 		{
@@ -182,7 +192,7 @@ class Admin extends Controller_Module
 				$message = '<div class="alert alert-warning"><strong>'.$this->lang('Erreurs :').'</strong><ul class="mb-0">';
 				foreach ($errors as $e)
 				{
-					$message .= '<li>'.htmlspecialchars($e).'</li>';
+					$message .= '<li>'.htmlspecialchars((string) ($e)).'</li>';
 				}
 				$message .= '</ul></div>';
 			}
@@ -195,9 +205,9 @@ class Admin extends Controller_Module
 
 		$body = $message;
 		$body .= '<form method="post" enctype="multipart/form-data" action="'.url('admin/media/upload').'"><input type="hidden" name="_" value="'.$this->csrf_token().'">';
-		$body .= '<div class="form-group">';
+		$body .= '<div class="nf-field">';
 		$body .= '<label>'.$this->lang('Sélectionne un ou plusieurs fichiers').'</label>';
-		$body .= '<input type="file" name="files[]" class="form-control-file" multiple required>';
+		$body .= '<input type="file" name="files[]" class="form-control" multiple required>';
 		$body .= '<small class="form-text text-muted">';
 		$body .= $this->lang('Taille max : %s par fichier. Types autorisés : images (JPG, PNG, GIF, WebP, SVG), PDF, vidéos (MP4, WebM), audio (MP3, OGG), ZIP, TXT, MD, JSON.', Media::format_size(Media::MAX_SIZE));
 		$body .= '</small>';
@@ -206,7 +216,7 @@ class Admin extends Controller_Module
 		$body .= ' <a class="btn btn-secondary" href="'.url('admin/media').'">'.$this->lang('Annuler').'</a>';
 		$body .= '</form>';
 
-		return $this->admin_back('admin/media', $this->lang('Médias')).$this->admin_card('fas fa-upload', $this->lang('Upload'), $body);
+		return $this->admin_card('fas fa-upload', $this->lang('Upload'), $body);
 	}
 
 	public function _edit($m)
@@ -240,11 +250,11 @@ class Admin extends Controller_Module
 		}
 		else
 		{
-			$preview = '<div style="margin-bottom:16px;"><a href="'.$url_file.'" target="_blank"><i class="far fa-file"></i> '.htmlspecialchars($m['original_name']).'</a></div>';
+			$preview = '<div style="margin-bottom:16px;"><a href="'.$url_file.'" target="_blank"><i class="far fa-file"></i> '.htmlspecialchars((string) ($m['original_name'])).'</a></div>';
 		}
 		$meta = '<p class="text-muted" style="font-size:12px;">'.Media::format_size($m['size_bytes']);
 		if ($m['width'] && $m['height']) $meta .= ' · '.(int)$m['width'].'×'.(int)$m['height'];
-		$meta .= ' · '.htmlspecialchars($m['mime_type']).'</p>';
+		$meta .= ' · '.htmlspecialchars((string) ($m['mime_type'])).'</p>';
 
 		return $this->panel()
 					->heading($this->lang('Éditer : %s', $m['original_name']), 'fas fa-edit')

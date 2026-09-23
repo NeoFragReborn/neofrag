@@ -48,7 +48,8 @@
 	function getCurrentMention(textarea){
 		var pos = textarea.selectionStart;
 		var text = textarea.value.substr(0, pos);
-		var match = text.match(/@([a-zA-Z0-9_\-]*)$/);
+		// `-` en fin de classe est déjà littéral : l'échapper n'ajoutait rien et brouillait la lecture.
+		var match = text.match(/@([a-zA-Z0-9_-]*)$/);
 		if (match){
 			return { prefix: match[1], start: pos - match[0].length };
 		}

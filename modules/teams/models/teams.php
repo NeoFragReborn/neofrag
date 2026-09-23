@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -15,8 +16,10 @@ class Teams extends Model
 		return $this->db->select('t.team_id', 't.name', 'tl.title', 't.image_id', 't.icon_id', 'COUNT(DISTINCT u.id) as users', 't.game_id', 'g.name as game', 'gl.title as game_title', 'g.icon_id as game_icon')
 						->from('nf_teams t')
 						->join('nf_teams_lang tl',  't.team_id  = tl.team_id')
-						->join('nf_teams_users tu', 't.team_id  = tu.team_id')
-						->join('nf_user u',         'tu.user_id = u.id AND u.deleted = "0"')
+						// LEFT : ces deux jointures ne servent qu'a COMPTER les joueurs. En stricte, une
+						// equipe sans joueur disparaissait de la liste des equipes.
+						->join('nf_teams_users tu', 't.team_id  = tu.team_id', 'LEFT')
+						->join('nf_user u',         'tu.user_id = u.id AND u.deleted = "0"', 'LEFT')
 						->join('nf_games g',        'g.game_id  = t.game_id')
 						->join('nf_games_lang gl',  'g.game_id  = gl.game_id')
 						->where('tl.lang', $this->config->lang->info()->name)
@@ -62,7 +65,9 @@ class Teams extends Model
 						->join('nf_user           u',  'tu.user_id = u.id AND u.deleted = "0"', 'INNER')
 						->join('nf_user_profile up', 'u.id         = up.id')
 						->join('nf_teams_roles    r',  'r.role_id  = tu.role_id')
-						->join('nf_session        s',  'u.id       = s.user_id')
+						// LEFT : voir news.php. En stricte, un joueur sans session ouverte
+						// disparaissait de l'effectif de son equipe.
+						->join('nf_session        s',  'u.id       = s.user_id', 'LEFT')
 						->where('tu.team_id', $team_id)
 						->group_by('u.username')
 						->order_by('r.order', 'r.role_id', 'u.username')
@@ -71,6 +76,10 @@ class Teams extends Model
 
 	public function check_team($team_id, $name)
 	{
+		// Résolu AVANT la requête : `$this->db` est un constructeur partagé, et l'interroger au
+		// milieu d'une chaîne écrase celle qu'on est en train de bâtir.
+		$lang = $this->langue_du_contenu('nf_teams_lang', 'team_id', $team_id);
+
 		return $this->db	->select('t.team_id', 't.name', 'tl.title', 't.image_id', 't.icon_id', 'tl.description', 't.game_id', 'gl.title as game', 'g.icon_id as game_icon')
 							->from('nf_teams t')
 							->join('nf_teams_lang tl', 't.team_id = tl.team_id')
@@ -78,7 +87,8 @@ class Teams extends Model
 							->join('nf_games_lang gl', 'g.game_id = gl.game_id')
 							->where('t.team_id', $team_id)
 							->where('t.name', $name)
-							->where('tl.lang', $this->config->lang->info()->name)
+							// Une équipe décrite dans une seule langue reste consultable dans les autres.
+							->where('tl.lang', $lang)
 							->row();
 	}
 

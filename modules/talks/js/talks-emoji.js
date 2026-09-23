@@ -47,7 +47,8 @@
 		// Aide GIF
 		var hint = document.createElement('div');
 		hint.style.cssText = 'border-top:1px solid #eee;margin-top:8px;padding-top:8px;font-size:11px;color:#666;line-height:1.4;';
-		hint.innerHTML = '💡 <b>GIF</b> : copie le lien d\'un GIF depuis <a href="https://giphy.com" target="_blank" rel="noopener">giphy.com</a> ou <a href="https://tenor.com" target="_blank" rel="noopener">tenor.com</a> et colle-le ici. Il sera affiché en image.';
+		// eslint-disable-next-line no-restricted-syntax -- texte traduit côté serveur par lang(), sans aucune donnée saisie
+		hint.innerHTML = '💡 ' + <?php echo json_encode((string) $this->lang('<b>GIF</b> : copie le lien d\'un GIF depuis %s ou %s et colle-le ici. Il sera affiché en image.', '<a href="https://giphy.com" target="_blank" rel="noopener">giphy.com</a>', '<a href="https://tenor.com" target="_blank" rel="noopener">tenor.com</a>')) ?>;
 		p.appendChild(hint);
 
 		document.body.appendChild(p);
@@ -63,11 +64,12 @@
 		btn.className = 'btn btn-light';
 		btn.title = 'Emoji / GIF';
 		btn.innerHTML = '😀';
-		btn.style.cssText = 'border:1px solid #ced4da;border-left:0;background:#fff;padding:0 12px;';
 
-		// Insertion du bouton après l'input dans son input-group
-		var prepend = input.closest('.input-group')?.querySelector('.input-group-prepend');
-		if (prepend) prepend.appendChild(btn);
+		// Le bouton se pose juste avant le champ, en enfant DIRECT du groupe : c'est ainsi que
+		// Bootstrap 5 soude les pièces d'un input-group. Il se glissait dans l'enveloppe
+		// `input-group-prepend` de Bootstrap 4, retirée du balisage (2026-09-23), et portait des
+		// couleurs écrites en dur — un carré blanc en mode sombre.
+		if (input.closest('.input-group')) input.before(btn);
 
 		var picker = buildPicker(input);
 

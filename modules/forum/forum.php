@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,6 +11,49 @@ use NF\NeoFrag\Addons\Module;
 
 class Forum extends Module
 {
+
+	/** Descripteurs de contenu — cf. Module::content_types(). */
+	public function declare_content_types()
+	{
+		return [
+			'forum-message' => [
+				'table' => 'nf_forum_messages', 'pk' => 'message_id', 'author' => 'user_id',
+				'reactable' => TRUE,
+			],
+		];
+	}
+
+	/** URL publique d'un message : ancre sur le message, dans le sujet qui le porte. */
+	public function content_url($type, $id)
+	{
+		if ($type !== 'forum-message')
+		{
+			return '';
+		}
+
+		$topic_id = $this->db->select('topic_id')->from('nf_forum_messages')->where('message_id', (int) $id)->row();
+
+		if (!$topic_id)
+		{
+			return '';
+		}
+
+		$title = $this->db->select('title')->from('nf_forum_topics')->where('topic_id', (int) $topic_id)->row();
+
+		return $title ? 'forum/topic/'.(int) $topic_id.'/'.url_title($title).'#'.(int) $id : '';
+	}
+
+	/** Corbeille : type restaurable declare par le module lui-meme (cf. Trash::types()). */
+	public function trash_types()
+	{
+		return [
+			'forum' => [
+				'label'   => 'Message forum', 'table' => 'nf_forum_messages',
+				'pk'      => 'message_id', 'content' => 'message',
+				'restore' => 'restore_message', 'purge' => 'hard_delete_message',
+			],
+		];
+	}
 	protected function __info()
 	{
 		return [
@@ -19,6 +63,10 @@ class Forum extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => ['communaute', 'gaming'],
+			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => [
@@ -199,7 +247,7 @@ class Forum extends Module
 								'icon'  => 'fas fa-lock'
 							],
 							'category_move' => [
-								'title' => 'Déplacer un sujet',
+								'title' => $this->lang('Déplacer un sujet'),
 								'icon'  => 'fas fa-reply fa-flip-horizontal'
 							]
 						]
@@ -486,7 +534,7 @@ class Forum extends Module
 					return $match[0]; // Pas un user valide → laissé brut
 				}
 
-				return $prefix.'<a class="forum-mention" href="'.\url('user/'.(int)$resolved[$username].'/'.\url_title($username)).'" data-bs-toggle="tooltip" title="'.htmlspecialchars($username).'">@'.htmlspecialchars($username).'</a>';
+				return $prefix.'<a class="forum-mention" href="'.\url('user/'.(int)$resolved[$username].'/'.\url_title($username)).'" data-bs-toggle="tooltip" title="'.htmlspecialchars((string) ($username)).'">@'.htmlspecialchars((string) ($username)).'</a>';
 			},
 			$content
 		);
@@ -520,7 +568,7 @@ class Forum extends Module
 		{
 			$is_image = strpos((string)$att['mime_type'], 'image/') === 0;
 			$file_url = \url($att['path']);
-			$name_esc = htmlspecialchars($att['name']);
+			$name_esc = htmlspecialchars((string) ($att['name']));
 			$size_str = \human_size((int)$att['file_size']);
 
 			if ($is_image)
@@ -553,7 +601,9 @@ class Forum extends Module
 			$profiles[$user_id] = $this->db	->select('u.id as user_id', 'u.username', 'up.avatar', 'up.signature', 'up.sex', 'u.admin', 'MAX(s.last_activity) > DATE_SUB(NOW(), INTERVAL 5 MINUTE) as online')
 											->from('nf_user u')
 											->join('nf_user_profile up', 'u.id = up.id')
-											->join('nf_session      s',  'u.id = s.user_id')
+											// LEFT : voir news.php. En stricte, le profil d'un auteur sans session
+											// ouverte etait vide sous chacun de ses messages.
+											->join('nf_session      s',  'u.id = s.user_id', 'LEFT')
 											->where('u.id', $user_id)
 											->where('u.deleted', FALSE)
 											->group_by('u.id')

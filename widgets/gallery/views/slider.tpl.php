@@ -6,12 +6,12 @@
 		</div>
 		<?php endforeach ?>
 	</div>
-	<a class="carousel-control-prev" href="#gallery_Carousel<?php echo $id ?>" role="button" data-bs-slide="prev">
+	<button class="carousel-control-prev" type="button" data-bs-target="#gallery_Carousel<?php echo $id ?>" data-bs-slide="prev">
 		<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 		<span class="visually-hidden"><?php echo $this->lang('Précédent') ?></span>
-	</a>
-	<a class="carousel-control-next" href="#gallery_Carousel<?php echo $id ?>" role="button" data-bs-slide="next">
+	</button>
+	<button class="carousel-control-next" type="button" data-bs-target="#gallery_Carousel<?php echo $id ?>" data-bs-slide="next">
 		<span class="carousel-control-next-icon" aria-hidden="true"></span>
 		<span class="visually-hidden"><?php echo $this->lang('Suivant') ?></span>
-	</a>
+	</button>
 </div>

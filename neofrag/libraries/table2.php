@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -217,7 +218,10 @@ class Table2 extends Library
 			}
 			else
 			{
-				$panel->body($table, FALSE);
+				// Le tableau défile DANS sa carte quand il est plus large que l'écran : posé nu, il
+				// élargissait la page entière sur un téléphone — l'historique des sessions débordait
+				// de 43 px à 360 px (check-mise-en-page, 2026-09-23).
+				$panel->body('<div class="table-responsive">'.$table.'</div>', FALSE);
 			}
 		}
 

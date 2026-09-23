@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -6,6 +7,7 @@
 
 namespace NF\NeoFrag;
 
+#[\AllowDynamicProperties]
 class Exception extends \Exception
 {
 	protected $_callback;

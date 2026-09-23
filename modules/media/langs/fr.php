@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module media (fr)
@@ -46,5 +47,12 @@ return [
 	'dc275fe4' => 'Filtrer',
 	'599dba10' => 'Réinitialiser',
 	'a0dbcbc7' => 'Aucun fichier ne correspond à ces critères.',
-	'8a7e7178' => '%d résultat|%d résultats'
+	'8a7e7178' => '%d résultat|%d résultats',
+	'f494deec' => '%s : extension non autorisée (.%s)',
+	'8fd9c7ef' => 'Enregistrer',
+	'0aac9844' => 'Date',
+	'71fc8e0e' => 'Taille',
+	'd0fb83aa' => 'Bibliothèque média : upload d\'images, vidéos, PDF, audio avec validation MIME.',
+	'4e26ca0a' => 'Le dépôt de fichiers est désactivé sur le site de démonstration.',
+	'61b64006' => 'Gérer les médias',
 ];

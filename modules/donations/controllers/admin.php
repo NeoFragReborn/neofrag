@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -26,7 +27,16 @@ class Admin extends Controller_Module
 		}
 		unset($c);
 
-		return $this->view('admin/index', ['campaigns' => $campaigns, 'csrf' => $this->csrf_token()]);
+		// Enveloppe partagee : meme carte, meme en-tete, meme etat vide que les 34 autres ecrans
+		// d'administration. La vue ne rend plus que le tableau.
+		$corps = $this->view('admin/index', [
+			'campaigns' => $campaigns,
+			'csrf'      => $this->csrf_token(),
+			'vide'      => $this->admin_empty('fas fa-bullseye', $this->lang('Aucune campagne.'), $this->lang('Créez-en une pour commencer.')),
+		]);
+
+		return $this->admin_card('fas fa-bullseye', $this->lang('Campagnes de dons'), $corps,
+			$campaigns ? count($campaigns).' '.$this->lang(count($campaigns) > 1 ? 'campagnes' : 'campagne') : '');
 	}
 
 	public function _new()
@@ -123,11 +133,9 @@ class Admin extends Controller_Module
 			redirect('admin/donations');
 		}
 
-		return $this->view('admin/edit', [
-			'form' => $form,
-			'id'   => $id,
-			'campaign' => $campaign
-		]);
+		return $this->admin_card('fas fa-pen',
+			$id ? $this->lang('Modifier la campagne') : $this->lang('Nouvelle campagne'),
+			$form->display());
 	}
 
 	public function _delete($id)
@@ -158,12 +166,17 @@ class Admin extends Controller_Module
 		$donations = $this->model()->get_donations((int)$id, FALSE, FALSE);
 		$totals    = $this->model()->get_total((int)$id);
 
-		return $this->view('admin/donations', [
+		$corps = $this->view('admin/donations', [
 			'campaign'  => $campaign,
 			'donations' => $donations,
 			'csrf'      => $this->csrf_token(),
-			'totals'    => $totals
+			'totals'    => $totals,
+			'vide'      => $this->admin_empty('fas fa-list', $this->lang('Aucun don pour le moment.')),
 		]);
+
+		return $this->admin_card('fas fa-list', $campaign['title'], $corps,
+			(int) $totals['count'].' '.$this->lang($totals['count'] > 1 ? 'dons' : 'don')
+			.' · '.number_format($totals['total'], 2, ',', ' ').' '.utf8_htmlentities($campaign['currency']));
 	}
 
 	public function _donation_add($id)

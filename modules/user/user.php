@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -13,14 +14,21 @@ class User extends Module
 	protected function __info()
 	{
 		return [
-			'title'       => 'Utilisateur',
+			'title'       => $this->lang('Utilisateur'),
 			'description' => $this->lang('Gestion des utilisateurs : inscription, profil, sécurité, 2FA, RGPD.'),
 			'icon'        => 'fas fa-user',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			// Infrastructure : le site ne tourne pas sans lui, l'administration ne propose donc
+			// pas de l'eteindre. Reprend a l'identique l'ancien Module/Widget/Theme::$core.
+			'deactivatable' => FALSE,
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '1.0',
-			'admin'       => FALSE,
+			'admin'       => TRUE,
 			'routes'      => [
 				//Index
 				'sessions{pages}'                            => 'sessions',
@@ -46,6 +54,11 @@ class User extends Module
 				'admin/groups/edit/{id}/{url_title}'             => '_groups_edit',
 				'admin/groups/delete/{id}/{url_title}'           => '_groups_delete',
 				'admin/ajax/groups/sort'                         => '_groups_sort',
+				'admin/fields'                                   => '_fields',
+				'admin/fields/add'                               => '_fields_add',
+				'admin/fields/edit/{id}/{url_title}'             => '_fields_edit',
+				'admin/fields/delete/{id}/{url_title}'           => '_fields_delete',
+				'admin/ajax/fields/sort'                         => '_fields_sort',
 				'admin/sessions{pages}'                          => '_sessions',
 				'admin/sessions/delete/{url_title}'              => '_sessions_delete',
 				'admin/totp-reset/{id}/{url_title}'              => '_totp_reset',

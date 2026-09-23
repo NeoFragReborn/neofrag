@@ -17,7 +17,7 @@
 					<?php foreach ($roles as $role): ?>
 						<th class="text-center matrix-role-col" data-role-id="<?php echo (int)$role['role_id'] ?>">
 							<i class="<?php echo htmlspecialchars($role['icon']) ?>"></i>
-							<div class="role-name"><?php echo htmlspecialchars($role['title']) ?></div>
+							<div class="role-name"><?php echo htmlspecialchars((string) $this->lang($role['title'])) ?></div>
 							<?php if ($role['built_in']): ?>
 								<small class="text-muted"><i class="fas fa-lock"></i></small>
 							<?php endif ?>

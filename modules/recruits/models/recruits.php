@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -16,7 +17,9 @@ class Recruits extends Model
 					->from('nf_recruits r')
 					->join('nf_user u',                  'r.user_id     = u.id')
 					->join('nf_user_profile up',         'up.id         = u.id')
-					->join('nf_recruits_candidacies rc', 'rc.recruit_id = r.recruit_id')
+					// LEFT : ne sert qu'a COMPTER les candidatures. En stricte, un recrutement SANS
+					// candidature disparaissait — c'est-a-dire tout recrutement qui vient d'etre ouvert.
+					->join('nf_recruits_candidacies rc', 'rc.recruit_id = r.recruit_id', 'LEFT')
 					->join('nf_teams_lang tl',           'r.team_id     = tl.team_id')
 					->group_by('r.recruit_id')
 					->order_by('r.date DESC');
@@ -35,7 +38,9 @@ class Recruits extends Model
 					->from('nf_recruits r')
 					->join('nf_user u',                  'r.user_id     = u.id')
 					->join('nf_user_profile up',         'up.id         = u.id')
-					->join('nf_recruits_candidacies rc', 'rc.recruit_id = r.recruit_id')
+					// LEFT : ne sert qu'a COMPTER les candidatures. En stricte, un recrutement SANS
+					// candidature disparaissait — c'est-a-dire tout recrutement qui vient d'etre ouvert.
+					->join('nf_recruits_candidacies rc', 'rc.recruit_id = r.recruit_id', 'LEFT')
 					->join('nf_teams_lang tl',           'r.team_id     = tl.team_id')
 					->group_by('r.recruit_id')
 					->where('r.recruit_id', $recruit_id);
@@ -205,10 +210,30 @@ class Recruits extends Model
 
 	public function get_candidacy_custom($candidacy_id)
 	{
-		$row  = $this->db->select('custom')->from('nf_recruits_candidacies')->where('candidacy_id', (int)$candidacy_id)->row();
-		$data = ($row && !empty($row['custom'])) ? json_decode($row['custom'], TRUE) : NULL;
+		// Une requête à UNE colonne rend la valeur, pas la ligne (`Db::row()`) : lire `['custom']` sur le
+		// JSON lui-même levait une TypeError sous PHP 8 dès qu'une candidature portait des champs
+		// personnalisés.
+		$custom = $this->db->select('custom')->from('nf_recruits_candidacies')->where('candidacy_id', (int)$candidacy_id)->row();
+		$data   = is_string($custom) && $custom !== '' ? json_decode($custom, TRUE) : NULL;
 
-		return is_array($data) ? $data : [];
+		// La vue attend une liste `['label' => …, 'value' => …]` — la forme qu'écrit le formulaire de
+		// candidature. Une réponse enregistrée autrement (le semoir de démonstration écrivait
+		// `libellé => valeur`) est ramenée à cette forme au lieu de faire planter la page.
+		$reponses = [];
+
+		foreach (is_array($data) ? $data : [] as $cle => $valeur)
+		{
+			if (is_array($valeur) && isset($valeur['label']))
+			{
+				$reponses[] = ['label' => (string)$valeur['label'], 'value' => (string)($valeur['value'] ?? '')];
+			}
+			else if (is_string($cle) && is_scalar($valeur))
+			{
+				$reponses[] = ['label' => $cle, 'value' => (string)$valeur];
+			}
+		}
+
+		return $reponses;
 	}
 
 	public function check_candidacy($candidacy_id, $title)

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Module Réactions — "j'aime" générique sur n'importe quel contenu (content_type + content_id).
@@ -11,9 +12,10 @@ use NF\NeoFrag\Addons\Module;
 
 class Reactions extends Module
 {
-	// Types de contenu autorisés (anti-injection : on ne réagit que sur des cibles connues).
-	// Tokens en forme URL-safe (a-z0-9-) car routés via le placeholder {url_title}.
-	const ALLOWED_TYPES = ['comment', 'forum-message', 'article', 'news'];
+	// Les types autorises viennent des descripteurs declares par les modules (Module::content_types(),
+	// drapeau `reactable`) : c'est toujours une liste blanche — donc la garde anti-injection tient —
+	// mais ce module ne nomme plus news, articles, forum ni comments. Les cles restent URL-safe
+	// (a-z0-9-) car routees via le placeholder {url_title}.
 
 	// Jeu de réactions (clé URL-safe → emoji), façon Discord/Facebook. Une réaction par
 	// utilisateur et par contenu (le `reaction` de la ligne dit laquelle). 'love' = le cœur historique.
@@ -35,6 +37,10 @@ class Reactions extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '1.0',
 			'depends'     => ['neofrag' => '1.0.0'],
 			'routes'      => [
@@ -46,7 +52,9 @@ class Reactions extends Module
 
 	public static function is_allowed($type)
 	{
-		return in_array($type, self::ALLOWED_TYPES, TRUE);
+		$types = self::content_types();
+
+		return !empty($types[$type]['reactable']);
 	}
 
 	/** Nombre TOTAL de réactions sur un contenu (tous emojis confondus). */
@@ -140,10 +148,10 @@ class Reactions extends Module
 		}
 
 		$main_emoji = ($mine !== NULL) ? self::REACTIONS[$mine] : '🙂';
-		$attrs      = ' data-reaction-type="'.htmlspecialchars($content_type).'" data-reaction-id="'.$content_id.'"';
+		$attrs      = ' data-reaction-type="'.htmlspecialchars((string) ($content_type)).'" data-reaction-id="'.$content_id.'"';
 
 		return '<span class="nf-reactions'.($mine !== NULL ? ' has-mine' : '').($logged ? '' : ' is-guest').'"'.$attrs
-				.($logged ? '' : ' title="'.htmlspecialchars($this->lang('Connecte-toi pour aimer'), ENT_QUOTES).'"').'>'
+				.($logged ? '' : ' title="'.htmlspecialchars((string) ($this->lang('Connecte-toi pour aimer')), ENT_QUOTES).'"').'>'
 			.'<span class="nf-reaction-control">'
 				.'<button type="button" class="nf-reaction-main'.($mine !== NULL ? ' reacted' : '').'"'.($logged ? '' : ' disabled').'>'
 					.'<span class="nf-reaction-emoji">'.$main_emoji.'</span>'

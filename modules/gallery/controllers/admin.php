@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -48,7 +49,7 @@ class Admin extends Controller_Module
 							[
 								'title'   => $this->lang('Catégorie'),
 								'content' => function($data){
-									return '<a href="'.url('admin/gallery/categories/'.$data['category_id'].'/'.$data['category_name']).'"><img src="'.NeoFrag()->model2('file', $data['category_icon'])->path().'" class="img-icon" alt="" /> '.$data['category_title'].'</a>';
+									return '<a href="'.url('admin/gallery/categories/'.$data['category_id'].'/'.$data['category_name']).'">'.NeoFrag()->model2('file', $data['category_icon'])->img('class="img-icon" alt=""').' '.$data['category_title'].'</a>';
 								},
 								'sort'    => function($data){
 									return $data['category_title'];
@@ -95,7 +96,7 @@ class Admin extends Controller_Module
 							->add_columns([
 								[
 									'content' => function($data){
-										return '<img src="'.NeoFrag()->model2('file', $data['icon_id'])->path().'" class="img-icon" alt="" />';
+										return NeoFrag()->model2('file', $data['icon_id'])->img('class="img-icon" alt=""');
 									},
 									'size'    => TRUE
 								],
@@ -145,7 +146,7 @@ class Admin extends Controller_Module
 					'categories' => $this->model()->get_categories_list()
 				])
 				->add_back('admin/gallery')
-				->add_submit($this->lang('Créer l\'album'));
+				->add_submit($this->lang('Créer l\'album'), 'fas fa-plus');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -161,7 +162,7 @@ class Admin extends Controller_Module
 			redirect('admin/gallery/'.$gallery_id.'/'.url_title($post['title']));
 		}
 
-		return $this->admin_back('admin/gallery', $this->lang('Galerie')).$this->admin_card('far fa-file-image', $this->lang('Nouvel album photo'), $this->form()->display());
+		return $this->admin_card('far fa-file-image', $this->lang('Nouvel album photo'), $this->form()->display());
 	}
 
 	public function _edit($gallery_id, $category_id, $image_id, $name, $published, $title, $description, $category_name, $category_title, $category_image, $category_icon, $date = '')
@@ -169,8 +170,7 @@ class Admin extends Controller_Module
 		$this	->css('dropzone.min')
 				->css('admin')
 				->js('dropzone')
-				->js('admin')
-				->js('preview');
+				->js('admin');
 
 		$form_album = $this	->subtitle($title)
 							->form()
@@ -212,7 +212,7 @@ class Admin extends Controller_Module
 									'type'  => 'textarea'
 								]
 							])
-							->add_submit($this->lang('Ajouter l\'image'))
+							->add_submit($this->lang('Ajouter l\'image'), 'fas fa-plus')
 							->save();
 
 		$gallery_table = $this	->table()
@@ -297,8 +297,7 @@ class Admin extends Controller_Module
 		]);
 		$upload_card = $this->admin_card('far fa-image', $this->lang('Ajouter des images'), $upload_body);
 
-		return $this->admin_back('admin/gallery', $this->lang('Galerie'))
-			.'<div class="settings-section-row">'
+		return '<div class="settings-section-row">'
 				.'<div class="settings-section-main">'.$album_card.'</div>'
 				.'<div class="settings-section-aside">'.$upload_card.'</div>'
 			.'</div>';
@@ -327,7 +326,7 @@ class Admin extends Controller_Module
 				->form()
 				->add_rules('categories')
 				->add_back('admin/gallery')
-				->add_submit($this->lang('Ajouter'));
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -340,7 +339,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/gallery');
 		}
 
-		return $this->admin_back('admin/gallery', $this->lang('Galerie')).$this->admin_card('fas fa-folder-plus', $this->lang('Ajouter une catégorie'), $this->form()->display());
+		return $this->admin_card('fas fa-folder-plus', $this->lang('Ajouter une catégorie'), $this->form()->display());
 	}
 
 	public function _categories_edit($category_id, $name, $title, $image_id, $icon_id)
@@ -367,7 +366,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/gallery');
 		}
 
-		return $this->admin_back('admin/gallery', $this->lang('Galerie')).$this->admin_card('fas fa-folder-open', $this->lang('Éditer la catégorie').' — '.$title, $this->form()->display());
+		return $this->admin_card('fas fa-folder-open', $this->lang('Éditer la catégorie').' — '.$title, $this->form()->display());
 	}
 
 	public function _categories_delete($category_id, $title)
@@ -402,7 +401,9 @@ class Admin extends Controller_Module
 					'description' => $description
 				])
 				->add_submit($this->lang('Éditer'))
-				->add_back('gallery/'.$gallery_id.'/'.url_title($gallery_title));
+				// Retour à l'ALBUM dans l'administration, là où mène aussi l'enregistrement : `gallery/<id>`
+				// est la route publique d'une CATÉGORIE, et l'identifiant d'un album y rendait 404.
+				->add_back('admin/gallery/'.$gallery_id.'/'.url_title($gallery_name));
 
 		if ($this->form()->is_valid($post))
 		{

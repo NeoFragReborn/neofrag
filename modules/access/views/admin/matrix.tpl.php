@@ -1,3 +1,7 @@
+<?php /* Les icônes sont FACULTATIVES : un rôle ou une catégorie de permissions peut ne pas en
+         déclarer. Sans le repli, chaque affichage de la matrice posait deux avertissements PHP
+         par ligne — « Undefined array key "icon" » puis « htmlspecialchars(): Passing null » —
+         soit 24 lignes de journal pour une seule visite. */ ?>
 <?php
 // R1.3 — Vue matricielle : Permissions × Roles d'un module sur 1 écran.
 //
@@ -27,10 +31,10 @@
 				<th class="matrix-perm-col"><?php echo $this->lang('Permission') ?></th>
 				<?php foreach ($roles as $role): ?>
 					<th class="text-center matrix-role-col" data-role-id="<?php echo (int)$role['role_id'] ?>">
-						<i class="<?php echo htmlspecialchars($role['icon']) ?>"></i>
-						<div class="role-name"><?php echo htmlspecialchars($role['title']) ?></div>
+						<i class="<?php echo htmlspecialchars((string) ($role['icon'] ?? '')) ?>"></i>
+						<div class="role-name"><?php echo htmlspecialchars((string) $this->lang($role['title'])) ?></div>
 						<?php if ($role['parent_role_id']): ?>
-							<small class="text-muted">↓ <?php echo htmlspecialchars($roles[$role['parent_role_id']]['title'] ?? '') ?></small>
+							<small class="text-muted">↓ <?php echo htmlspecialchars(isset($roles[$role['parent_role_id']]['title']) ? (string) $this->lang($roles[$role['parent_role_id']]['title']) : '') ?></small>
 						<?php endif ?>
 					</th>
 				<?php endforeach ?>
@@ -40,14 +44,14 @@
 			<?php foreach ($access['access'] as $cat_idx => $category): ?>
 				<tr class="matrix-category-row">
 					<td colspan="<?php echo count($roles) + 1 ?>" class="bg-light">
-						<strong><i class="<?php echo htmlspecialchars($category['icon']) ?>"></i> <?php echo htmlspecialchars($category['title']) ?></strong>
+						<strong><i class="<?php echo htmlspecialchars((string) ($category['icon'] ?? '')) ?>"></i> <?php echo htmlspecialchars($category['title']) ?></strong>
 					</td>
 				</tr>
 				<?php foreach ($category['access'] as $action => $info): ?>
 					<?php $perm = $module_name.'.'.$action ?>
 					<tr data-permission="<?php echo htmlspecialchars($perm) ?>">
 						<td class="matrix-perm-cell">
-							<i class="<?php echo htmlspecialchars($info['icon']) ?> text-primary"></i>
+							<i class="<?php echo htmlspecialchars((string) ($info['icon'] ?? '')) ?> text-primary"></i>
 							<?php echo htmlspecialchars($info['title']) ?>
 							<small class="d-block text-muted"><?php echo htmlspecialchars($action) ?></small>
 						</td>

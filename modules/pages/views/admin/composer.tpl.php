@@ -13,7 +13,7 @@ $instances = $instances ?? [];
 		<p class="text-muted small mb-3"><?php echo $this->lang('Ajoutez des blocs de module sous le contenu, réordonnez-les par glisser-déposer et configurez leurs options. Équivalent visuel des shortcodes [block:…].') ?></p>
 		<div data-composer-list></div>
 		<div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
-			<select class="form-control" style="max-width:340px" data-composer-select>
+			<select class="form-select" style="max-width:340px" data-composer-select>
 				<?php foreach ($blocks as $key => $b): ?>
 				<option value="<?php echo htmlspecialchars($key, ENT_QUOTES) ?>"><?php echo htmlspecialchars($b['title']) ?> — <?php echo htmlspecialchars($key) ?></option>
 				<?php endforeach ?>

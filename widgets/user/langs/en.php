@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: FoxLey
@@ -35,4 +36,6 @@ return [
 	'0552e076' => 'Preview mode',
 	'1648d731' => 'Links to personal data are hidden to respect the target account\'s privacy.',
 	'78aeb25c' => 'Moderation',
+	'1f88c31b' => 'Options',
+	'8a4c99cf' => 'Welcome %s',
 ];

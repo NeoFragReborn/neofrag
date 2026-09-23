@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -41,4 +42,16 @@ return [
 	'f2100516' => 'Página desnuda (ancho completo)',
 	'78b7cadc' => '«Página desnuda» muestra el contenido sin marco ni título, ideal para una página compuesta de bloques.',
 	'42bd0172' => 'Una fecha futura programa la publicación: la página permanece oculta públicamente hasta esa fecha (si está publicada). Vacío = inmediato.',
+	'0adc6e30' => 'Guarde primero la página: después podrá componer bloques de módulo editándola.',
+	'b2299bb6' => 'Bloques de la página',
+	'92a243f3' => 'Añada bloques de módulo debajo del contenido, reordénelos arrastrando y suelte, y configure sus opciones. Equivalente visual de los shortcodes [block:…].',
+	'7fb14f71' => 'Guardar los bloques',
+	'517c0b2c' => 'Programada para el %s',
+	'afccc23b' => 'Crear',
+	'f0b7b5b5' => 'Fecha de publicación',
+	'08ce3a09' => 'Bloques guardados',
+	'ce6fa2e6' => 'Error al guardar',
+	'9cdcd1f0' => 'Páginas CMS estáticas: acerca de, aviso legal, condiciones, etc.',
+	'4349f0db' => 'Página %s',
+	'1bf841b2' => 'Acceso al contenido',
 ];

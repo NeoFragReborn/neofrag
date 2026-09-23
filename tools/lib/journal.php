@@ -1,0 +1,267 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * journal — lire le journal PHP d'une installation, classer ses lignes, et les montrer regroupées.
+ *
+ * Pourquoi
+ * --------
+ * Le 2026-09-22 au soir, la lecture du journal de la DÉMONSTRATION a trouvé en dix minutes six
+ * défauts que rien d'autre n'avait vus : la page des événements qui rendait 404, les votes des
+ * sondages perdus, le widget du forum toujours vide, une traduction absente dans cinq langues… Tous
+ * étaient écrits là depuis des heures. Personne ne lisait ce journal, et le seul outil qui en lisait
+ * un, `check-journal`, ne regardait que ce qui s'écrivait pendant qu'il servait seize pages.
+ *
+ * Ce fichier est l'unique endroit où l'on sait ce qu'est une ligne FAUTIVE — erreur PHP, ou ligne
+ * écrite par le produit lui-même — et comment la montrer : regroupée par message, avec son nombre
+ * d'occurrences et la dernière, parce que 225 Ko de lignes brutes ne se lisent pas.
+ *
+ * Usage
+ * -----
+ *   $taille   = nf_journal_taille($journal);                 // avant d'agir
+ *   $entrees  = nf_journal_depuis_octet($journal, $taille);  // après
+ *   $entrees  = nf_journal_depuis_date($journal, time() - 86400);
+ *   $classe   = nf_journal_classer($entrees);                // ['php' => …, 'produit' => …, 'autres' => …]
+ *   nf_journal_montrer($classe, dirname($journal, 2));       // rapport regroupé
+ */
+
+require_once __DIR__.'/outil.php';
+
+/** Ce qui trahit une erreur de PHP dans une ligne du journal. */
+const NF_JOURNAL_MOTIFS_PHP = ['Fatal error', 'Uncaught', 'Parse error', 'Warning:', 'Notice:', 'Deprecated:', 'Recoverable fatal'];
+
+/**
+ * Une ligne écrite par le PRODUIT porte une étiquette entre crochets : `[checker]`, `[output]`,
+ * `[widget]`, `[update]`… Le journal de production est le premier instrument de diagnostic : ce
+ * qui n'est pas une anomalie n'a rien à y faire. La reconnaître à sa FORME plutôt que par une
+ * liste évite qu'une étiquette neuve passe inaperçue.
+ */
+const NF_JOURNAL_ETIQUETTE = '/^\[[a-z][a-z0-9_-]*\] /';
+
+/**
+ * Le journal d'une installation que l'outil sert LUI-MÊME, prêt à être mesuré.
+ *
+ * Sur une installation neuve, `logs/php.log` n'existe pas : PHP ne le crée qu'à sa première ligne.
+ * Le 2026-09-22, la CI — qui installe un site neuf — a vu `check-widget-contract` refuser de conclure
+ * sur un « journal introuvable » qui n'était que VIDE. Quand l'outil sert le site avec son propre
+ * serveur, il crée le fichier d'avance : c'est aussi la preuve qu'on peut y écrire. FALSE si le
+ * dossier ne le permet pas — là, le contrôle est vraiment aveugle, et doit le dire.
+ *
+ * Ne s'emploie PAS pour lire une installation servie par quelqu'un d'autre (`check-journal
+ * --depuis`) : un journal absent y est ambigu — rien d'écrit, ou journal mal configuré.
+ */
+function nf_journal_preparer(string $journal): bool
+{
+    if (is_file($journal))
+    {
+        return is_writable($journal);
+    }
+
+    if (!is_dir($dossier = dirname($journal)) || !is_writable($dossier) || @file_put_contents($journal, '') === FALSE)
+    {
+        return FALSE;
+    }
+
+    @chmod($journal, 0666);
+
+    return TRUE;
+}
+
+function nf_journal_taille(string $journal): int
+{
+    clearstatcache(TRUE, $journal);
+
+    return is_file($journal) ? (int) filesize($journal) : 0;
+}
+
+/**
+ * Les ENTRÉES écrites après l'octet donné. Une entrée commence par un horodatage `[22-Sep-2026 …]` ;
+ * les lignes qui suivent sans horodatage (la pile d'une exception) lui sont rattachées.
+ *
+ * @return list<array{date: ?int, texte: string}>
+ */
+function nf_journal_depuis_octet(string $journal, int $octet): array
+{
+    // PHP-FPM écrit le journal en différé : lui laisser le temps de vider son tampon.
+    usleep(500000);
+
+    if (nf_journal_taille($journal) <= $octet)
+    {
+        return [];
+    }
+
+    return nf_journal_entrees((string) file_get_contents($journal, FALSE, NULL, $octet));
+}
+
+/**
+ * Les entrées datées d'au moins `$depuis` (horodatage Unix). Un journal dont AUCUNE ligne ne porte
+ * d'horodatage lisible n'est pas un journal vide : c'est un format inconnu, et l'appelant doit
+ * refuser de conclure — d'où `NULL`.
+ *
+ * @return list<array{date: ?int, texte: string}>|null
+ */
+function nf_journal_depuis_date(string $journal, int $depuis): ?array
+{
+    $entrees = nf_journal_entrees((string) file_get_contents($journal));
+
+    if ($entrees && !array_filter($entrees, fn(array $e): bool => $e['date'] !== NULL))
+    {
+        return NULL;
+    }
+
+    return array_values(array_filter($entrees, fn(array $e): bool => $e['date'] !== NULL && $e['date'] >= $depuis));
+}
+
+/** @return list<array{date: ?int, texte: string}> */
+function nf_journal_entrees(string $brut): array
+{
+    $entrees = [];
+
+    foreach (explode("\n", $brut) as $ligne)
+    {
+        if (trim($ligne) === '')
+        {
+            continue;
+        }
+
+        if (preg_match('/^\[(\d{2}-[A-Za-z]{3}-\d{4} \d{2}:\d{2}:\d{2})(?: ([A-Za-z_\/+-]+))?\] (.*)$/', $ligne, $m))
+        {
+            $date      = DateTimeImmutable::createFromFormat('d-M-Y H:i:s', $m[1], new DateTimeZone($m[2] !== '' ? $m[2] : 'UTC'));
+            $entrees[] = ['date' => $date ? $date->getTimestamp() : NULL, 'texte' => $m[3]];
+        }
+        else if ($entrees)
+        {
+            $entrees[count($entrees) - 1]['texte'] .= "\n".$ligne;
+        }
+        else
+        {
+            $entrees[] = ['date' => NULL, 'texte' => $ligne];
+        }
+    }
+
+    return $entrees;
+}
+
+/**
+ * Range chaque entrée : erreur de PHP, ligne du produit, ou autre chose (montrée, jamais jugée).
+ *
+ * @param  list<array{date: ?int, texte: string}> $entrees
+ * @return array{php: list<array{date: ?int, texte: string}>, produit: list<array{date: ?int, texte: string}>, autres: list<array{date: ?int, texte: string}>}
+ */
+function nf_journal_classer(array $entrees): array
+{
+    $classe = ['php' => [], 'produit' => [], 'autres' => []];
+
+    foreach ($entrees as $entree)
+    {
+        if (preg_match(NF_JOURNAL_ETIQUETTE, $entree['texte']))
+        {
+            $classe['produit'][] = $entree;
+            continue;
+        }
+
+        foreach (NF_JOURNAL_MOTIFS_PHP as $motif)
+        {
+            if (str_contains($entree['texte'], $motif))
+            {
+                $classe['php'][] = $entree;
+                continue 2;
+            }
+        }
+
+        $classe['autres'][] = $entree;
+    }
+
+    return $classe;
+}
+
+/**
+ * Regroupe des entrées par MESSAGE : sans horodatage, sans le chemin de l'installation, les numéros
+ * `#123` confondus — sinon chaque widget et chaque argument ferait sa propre ligne. Les plus
+ * récents d'abord.
+ *
+ * @param  list<array{date: ?int, texte: string}> $entrees
+ * @return list<array{message: string, nombre: int, dernier: ?int}>
+ */
+function nf_journal_regrouper(array $entrees, string $installation = ''): array
+{
+    $groupes = [];
+
+    foreach ($entrees as $entree)
+    {
+        // La première ligne suffit à nommer le défaut ; la pile d'appels le rendrait unique.
+        $message = strtok($entree['texte'], "\n") ?: '';
+
+        if ($installation !== '')
+        {
+            $message = str_replace(rtrim($installation, '/').'/', '', $message);
+        }
+
+        $message = (string) preg_replace('/#\d+/', '#N', $message);
+
+        $groupes[$message] ??= ['message' => $message, 'nombre' => 0, 'dernier' => NULL];
+        $groupes[$message]['nombre']++;
+        $groupes[$message]['dernier'] = max($groupes[$message]['dernier'] ?? 0, $entree['date'] ?? 0) ?: NULL;
+    }
+
+    usort($groupes, fn(array $a, array $b): int => ($b['dernier'] ?? 0) <=> ($a['dernier'] ?? 0));
+
+    return $groupes;
+}
+
+/**
+ * Le rapport, section par section. Rend le nombre de MESSAGES DISTINCTS fautifs (PHP + produit).
+ *
+ * @param array{php: list<array{date: ?int, texte: string}>, produit: list<array{date: ?int, texte: string}>, autres: list<array{date: ?int, texte: string}>} $classe
+ */
+function nf_journal_montrer(array $classe, string $installation = '', int $max = 25): int
+{
+    $sections = [
+        'php'     => 'ERREURS DE PHP',
+        'produit' => 'LIGNES ÉCRITES PAR LE PRODUIT (étiquette entre crochets)',
+        'autres'  => 'AUTRES LIGNES — montrées, non jugées',
+    ];
+
+    $fautifs = 0;
+
+    foreach ($sections as $cle => $titre)
+    {
+        if (!$classe[$cle])
+        {
+            continue;
+        }
+
+        $groupes = nf_journal_regrouper($classe[$cle], $installation);
+
+        if ($cle !== 'autres')
+        {
+            $fautifs += count($groupes);
+        }
+
+        nf_avertir(sprintf("\n%s — %d ligne(s), %d message(s) distinct(s) :\n", $titre, count($classe[$cle]), count($groupes)));
+
+        foreach (array_slice($groupes, 0, $max) as $g)
+        {
+            nf_avertir(sprintf('  %4d×  %s  %s',
+                $g['nombre'],
+                $g['dernier'] !== NULL ? gmdate('d/m H:i', $g['dernier']).' UTC' : '         ?      ',
+                mb_substr($g['message'], 0, 170)));
+        }
+
+        if (count($groupes) > $max)
+        {
+            nf_avertir('  … et '.(count($groupes) - $max).' autre(s) message(s).');
+        }
+    }
+
+    if ($classe['produit'])
+    {
+        nf_avertir("\nUne ligne du produit se lit de deux façons, et il faut trancher avant de la faire taire :\n"
+            ."  - c'est une VRAIE anomalie → corriger ce qui refuse, pas le journal ;\n"
+            ."  - c'est un refus ordinaire, du genre « cette adresse n'existe pas » → le checker\n"
+            ."    concerné rend TRUE depuis `refus_ordinaire()` ; son diagnostic reste rendu à l'écran\n"
+            ."    quand NEOFRAG_DEBUG_BAR est actif.");
+    }
+
+    return $fautifs;
+}

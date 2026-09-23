@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traductions FR (auto-générées 2026-05-03)
@@ -19,5 +20,6 @@ return [
 	'9e4dc5d0' => 'Membre|Membres',
 	'cef833c2' => 'Administrateurs en ligne',
 	'e17afcad' => 'Alignement',
-	'eaf3aad0' => 'Qui est en ligne ?'
+	'eaf3aad0' => 'Qui est en ligne ?',
+	'1f88c31b' => 'Options',
 ];

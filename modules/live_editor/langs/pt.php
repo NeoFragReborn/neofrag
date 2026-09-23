@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -37,4 +38,32 @@ return [
 	'eb2aa0ff' => 'Cols',
 	'ed7211c7' => 'Confirmar',
 	'f8875151' => 'Continuar',
+	'2b0eb9a0' => 'Este widget não tem variantes.',
+	'2f2c6b6e' => 'Este widget não tem nada para configurar.',
+	'3b542104' => 'Nenhum widget corresponde.',
+	'221f348b' => 'Filtrar widgets…',
+	'c1efcb54' => 'Filtrar widgets',
+	'9bc641af' => 'Deixe vazio para manter o título predefinido do widget.',
+	'd396a751' => 'Anterior',
+	'ebcb0841' => 'Seguinte',
+	'd9d7983f' => 'Página: %s',
+	'4e4fadfe' => 'Não foi possível separar a zona da disposição comum',
+	'7ea4d2eb' => 'Não foi possível adicionar a linha',
+	'ceca6766' => 'A deslocação da linha não foi guardada',
+	'79a7b4bb' => 'A aparência da linha não foi guardada',
+	'b9068b0f' => 'Não foi possível eliminar a linha',
+	'2dc09cba' => 'Não foi possível adicionar a coluna',
+	'33d97864' => 'A deslocação da coluna não foi guardada',
+	'27fea8b0' => 'A largura da coluna não foi guardada',
+	'8bc2d8e9' => 'Não foi possível eliminar a coluna',
+	'ceea4b71' => 'Não foi possível adicionar o widget',
+	'555f89b3' => 'A deslocação do widget não foi guardada',
+	'158c7404' => 'As definições do widget não foram guardadas',
+	'c1d9ee11' => 'A aparência do widget não foi guardada',
+	'04e895c2' => 'Não foi possível eliminar o widget',
+	'5aa02bd0' => 'A alteração não foi guardada',
+	'0980709a' => 'erro',
+	'9d433e55' => 'O que vês já não corresponde ao que está guardado: recarrega a página.',
+	'88a46340' => 'Editor visual de esquema: arrastar e largar widgets nas zonas do tema.',
+	'dd3795ad' => 'Menu',
 ];

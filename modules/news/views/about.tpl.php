@@ -2,9 +2,9 @@
 	<div class="card">
 		<div class="card-body">
 			<h5 class="card-title"><?php echo $this->lang('À propos de l\'auteur') ?></h5>
-			<div class="media">
+			<div class="d-flex align-items-start gap-3">
 				<?php echo $this->module('user')->model2('user', $user_id)->avatar() ?>
-				<div class="media-body">
+				<div class="flex-grow-1">
 					<h5 class="mb-0"><?php echo $this->user->link($user_id, $username) ?></h5>
 					<?php if (!empty($quote)): ?>
 						<blockquote><?php echo $quote ?></blockquote>

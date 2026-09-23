@@ -1,8 +1,14 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Endpoints AJAX user-side du module Modération.
  * Routes : /ajax/moderation/report-modal et /ajax/moderation/report
+ *
+ * couplage(forum): les requetes sur les tables du forum ne sont atteintes que depuis les branches
+ * `forum_message` / `forum_topic` du switch sur $target_type. Sans le module forum, aucun
+ * signalement de ce type ne peut exister en base, donc ces branches sont inatteignables.
+ * couplage(guestbook): meme raisonnement, branche `guestbook`.
  */
 
 namespace NF\Modules\Moderation\Controllers;
@@ -234,10 +240,11 @@ class Ajax extends Controller_Module
 				if (!is_array($row)) return NULL;
 				$parts = ['@'.($row['username'] ?? '?')];
 				if (!empty($row['first_name']) || !empty($row['last_name'])) $parts[] = trim(($row['first_name'] ?? '').' '.($row['last_name'] ?? ''));
-				if (!empty($row['quote']))     $parts[] = 'Quote: '.$row['quote'];
-				if (!empty($row['location']))  $parts[] = 'Location: '.$row['location'];
-				if (!empty($row['website']))   $parts[] = 'Website: '.$row['website'];
-				if (!empty($row['signature'])) $parts[] = "\n=== Signature ===\n".$row['signature'];
+				// Les intitulés sont figés dans le snapshot, dans la langue du site au moment du signalement.
+				if (!empty($row['quote']))     $parts[] = (string) $this->lang('Citation : %s', $row['quote']);
+				if (!empty($row['location']))  $parts[] = (string) $this->lang('Localisation : %s', $row['location']);
+				if (!empty($row['website']))   $parts[] = (string) $this->lang('Site web : %s', $row['website']);
+				if (!empty($row['signature'])) $parts[] = "\n=== ".$this->lang('Signature')." ===\n".$row['signature'];
 				return mb_substr(implode("\n", $parts), 0, 5000);
 		}
 		return NULL;
@@ -257,13 +264,13 @@ class Ajax extends Controller_Module
 			->where('a.message_id', $message_id)
 			->get();
 		if (empty($rows)) return '';
-		$out = "\n\n=== Pièces jointes au moment du report ===\n";
+		$out = "\n\n=== ".$this->lang('Pièces jointes au moment du signalement')." ===\n";
 		foreach ($rows as $r)
 		{
 			$size_kb = $r['file_size'] ? round($r['file_size'] / 1024, 1).' KB' : '?';
 			// Le nom de fichier vient du CLIENT (nf_file.name, stocké brut) : échappé ici car
 			// le snapshot est rendu en HTML dans le panneau de modération (XSS stocké sinon).
-			$out .= '- '.htmlspecialchars($r['name'] ?? 'unknown', ENT_QUOTES).' ('.$r['mime_type'].', '.$size_kb.', file_id='.$r['file_id'].', path='.htmlspecialchars($r['path'] ?? 'N/A', ENT_QUOTES).")\n";
+			$out .= '- '.htmlspecialchars((string) ($r['name'] ?? 'unknown'), ENT_QUOTES).' ('.$r['mime_type'].', '.$size_kb.', file_id='.$r['file_id'].', path='.htmlspecialchars((string) ($r['path'] ?? 'N/A'), ENT_QUOTES).")\n";
 		}
 		return $out;
 	}

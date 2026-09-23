@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,6 +11,9 @@ use NF\NeoFrag\Core;
 
 class Debug extends Core
 {
+	/** Au-delà, le journal bascule en `.1` et repart. 64 Mio : de quoi lire une séance, pas un mois. */
+	const JOURNAL_MAX = 67108864;
+
 
 	protected $_logs = [];
 	private $_timeline = [];
@@ -48,11 +52,22 @@ class Debug extends Core
 
 					$this->_logs[] = [[], $errstr, $error, relative_path($errfile), $errline, date_create(), memory_get_usage()];
 				}
-				else
-				{
-					return FALSE;
-				}
 			}
+
+			/*
+			 * Et l'erreur continue vers le journal PHP, TOUJOURS.
+			 *
+			 * La version précédente la gardait pour la barre de débogage et `logs/neofrag.log` dès que
+			 * NEOFRAG_LOGS ou NEOFRAG_DEBUG_BAR étaient actifs : `logs/php.log` ne recevait alors plus
+			 * AUCUNE alerte PHP. C'est la configuration de l'atelier — si bien que `check-journal` et
+			 * `check-liens`, qui lisent `php.log`, n'y voyaient rien, pendant que la production (réglages
+			 * éteints) les écrivait. Le 2026-09-22, le widget du forum y a perdu des mois.
+			 *
+			 * Rendre FALSE laisse PHP appliquer son traitement ordinaire, qui respecte `@` : les
+			 * sondages volontairement muets du chargeur (« Unfound libraries ») restent hors du journal,
+			 * exactement comme en production.
+			 */
+			return FALSE;
 		});
 
 		if (NEOFRAG_LOGS)
@@ -79,6 +94,8 @@ class Debug extends Core
 				}
 
 				dir_create('logs');
+
+				nf_log_rotate('logs/neofrag.log', self::JOURNAL_MAX);
 
 				if ($f = fopen('logs/neofrag.log', 'a'))
 				{
@@ -158,10 +175,10 @@ class Debug extends Core
 				}
 
 				$output .= '	<tr>
-									<td class="col-1">'.$time[0].'</td>
+									<td>'.$time[0].'</td>
 									<td>
-										<div class="float-start" style="height: 25px; width: '.str_replace(',', '.', floor(($time[1] - $this->_timeline[0][1]) * 100 / $total)).'%;"></div>
-										<div class="'.$class.'" style="height: 25px; display: block; padding: 0; width: '.str_replace(',', '.', max(1, floor(($time[2] - $time[1]) * 100 / $total))).'%;"></div>
+										<div class="float-start" style="height: 25px; width: '.str_replace(',', '.', (string) floor(($time[1] - $this->_timeline[0][1]) * 100 / $total)).'%;"></div>
+										<div class="'.$class.'" style="height: 25px; display: block; padding: 0; width: '.str_replace(',', '.', (string) max(1, floor(($time[2] - $time[1]) * 100 / $total))).'%;"></div>
 									</td>
 								</tr>';
 			}
@@ -277,9 +294,9 @@ class Debug extends Core
 									$result .= '	<tr class="row-'.$class_type.'">';
 								}
 								
-								$result .= '		<td class="col-3"><b>'.($i + 1).'</b><div class="float-end">'.$type.'</div></td>
-													<td class="col-6">'.utf8_htmlentities($text).'</td>
-													<td class="col-3 text-end">'.$file.' <code>'.$line.'</code></td>
+								$result .= '		<td><b>'.($i + 1).'</b><div class="float-end">'.$type.'</div></td>
+													<td>'.utf8_htmlentities($text).'</td>
+													<td class="text-end">'.$file.' <code>'.$line.'</code></td>
 												</tr>';	
 							
 							}

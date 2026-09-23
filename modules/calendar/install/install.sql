@@ -17,6 +17,9 @@ CREATE TABLE IF NOT EXISTS `nf_calendar_events` (
   `color` varchar(20) DEFAULT NULL,
   `published` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  -- Rappels : pose atomiquement avant l'envoi, ce qui rend le rappel idempotent
+  -- meme si deux passages du cron se chevauchent.
+  `reminder_sent_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_start` (`start_at`),
   KEY `idx_published` (`published`,`start_at`)

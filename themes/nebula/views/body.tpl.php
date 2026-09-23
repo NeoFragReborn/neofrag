@@ -14,17 +14,22 @@ $is_admin = $logged && $this->access->effective_admin();
 			<span class="nb-mark"><i class="fas fa-meteor"></i></span>
 			<span class="nb-logo-text"><?php echo htmlspecialchars($this->config->nf_name) ?></span>
 		</a>
-		<nav class="nb-links" aria-label="<?php echo $this->lang('Navigation') ?>">
-			<a href="<?php echo url('') ?>"><?php echo $this->lang('Accueil') ?></a>
-			<a href="<?php echo url('news') ?>"><?php echo $this->lang('Actualités') ?></a>
-			<a href="<?php echo url('forum') ?>"><?php echo $this->lang('Forum') ?></a>
-			<a href="<?php echo url('gallery') ?>"><?php echo $this->lang('Galerie') ?></a>
-			<a href="<?php echo url('members') ?>"><?php echo $this->lang('Membres') ?></a>
-		</nav>
+		<?php /* LE MENU vient de la zone « Navigation », rendue ICI, dans la barre. Il etait ecrit
+		        en dur jusqu'au 2026-09-22 : cinq liens que personne ne pouvait corriger depuis
+		        l'administration, qui restaient affiches meme module desactive, et qui faisaient
+		        DOUBLON avec le widget Navigation que l'installation placait sous l'en-tete. */ ?>
+		<?php if ($menu = $this->output->region('navigation')): ?>
+			<nav class="nb-links" id="nb-links" aria-label="<?php echo $this->lang('Navigation') ?>"><?php echo $menu ?></nav>
+		<?php endif ?>
 		<div class="nb-actions">
+			<?php /* Sur un téléphone, le menu se range dans un panneau que ce bouton déroule. Il était
+			        simplement MASQUÉ sous 860 px : aucun moyen de naviguer (signalé le 2026-09-23). */ ?>
+			<?php if ($menu): ?>
+				<button class="nb-burger" id="nb-burger" type="button" aria-label="<?php echo $this->lang('Menu') ?>" aria-expanded="false" aria-controls="nb-links"><i class="fas fa-bars"></i></button>
+			<?php endif ?>
 			<?php if ($logged): ?>
 				<a class="nb-btn nb-btn-ghost" href="<?php echo url('user') ?>"><i class="fas fa-user-astronaut"></i> <span><?php echo htmlspecialchars($this->user->username) ?></span></a>
-				<?php if ($is_admin): ?><a class="nb-btn nb-btn-primary" href="<?php echo url('admin') ?>"><i class="fas fa-gauge-high"></i> <?php echo $this->lang('Admin') ?></a><?php endif ?>
+				<?php if ($is_admin): ?><a class="nb-btn nb-btn-primary" href="<?php echo url('admin') ?>"><i class="fas fa-gauge-high"></i> <span><?php echo $this->lang('Admin') ?></span></a><?php endif ?>
 			<?php else: ?>
 				<?php /* Masqué quand les inscriptions sont fermées : la route répond 404 par conception. */ ?>
 				<?php if ($this->config->nf_registration_status): ?><a class="nb-btn nb-btn-ghost" href="<?php echo url('user/registration') ?>"><?php echo $this->lang('Inscription') ?></a><?php endif ?>
@@ -33,6 +38,12 @@ $is_admin = $logged && $this->access->effective_admin();
 		</div>
 	</div>
 </nav>
+
+<?php /* Zone « Header » du thème : déclarée dans __info(), elle doit être rendue — sinon un
+        widget qu'on y place disparaît sans rien dire. */ ?>
+<?php if ($zone = $this->output->region('header')): ?>
+	<div class="nb-shell container"><div class="nb-zone"><?php echo $zone ?></div></div>
+<?php endif ?>
 
 <main class="nb-main<?php echo $is_home ? ' nb-main-home' : '' ?>">
 	<?php if ($is_home): ?>
@@ -49,15 +60,15 @@ $is_admin = $logged && $this->access->effective_admin();
 	<?php endif ?>
 
 	<div class="nb-shell container">
-		<?php if (!$is_home && ($zone = $this->output->zone(1))): ?>
+		<?php if (!$is_home && ($zone = $this->output->region('before_content'))): ?>
 			<div class="nb-zone"><?php echo $zone ?></div>
 		<?php endif ?>
 
-		<?php if ($zone = $this->output->zone(2)): ?>
+		<?php if ($zone = $this->output->region('content')): ?>
 			<div class="nb-zone"><?php echo $zone ?></div>
 		<?php endif ?>
 
-		<?php if ($zone = $this->output->zone(3)): ?>
+		<?php if ($zone = $this->output->region('after_content')): ?>
 			<div class="nb-zone"><?php echo $zone ?></div>
 		<?php endif ?>
 	</div>
@@ -65,6 +76,9 @@ $is_admin = $logged && $this->access->effective_admin();
 
 <footer class="nb-foot">
 	<div class="nb-foot-in">
+		<?php if ($zone = $this->output->region('footer')): ?>
+			<div class="nb-zone"><?php echo $zone ?></div>
+		<?php endif ?>
 		<div class="nb-foot-top">
 			<a class="nb-logo nb-logo-foot" href="<?php echo url('') ?>">
 				<span class="nb-mark"><i class="fas fa-meteor"></i></span>
@@ -78,21 +92,7 @@ $is_admin = $logged && $this->access->effective_admin();
 				· <?php echo $this->lang('Propulsé par') ?> <a href="https://neofr.ag" target="_blank" rel="noopener">NeoFrag Reborn</a>
 			</div>
 			<div class="nb-foot-tools">
-				<?php
-				$nf_themes = array_map('strval', NeoFrag()->db->select('a.name')->from('nf_addon a')->join('nf_addon_type t', 't.id = a.type_id')->where('t.name', 'theme')->where('a.name !=', 'admin')->order_by('a.name')->get());
-				if (count($nf_themes) > 1):
-					$nf_cur = $this->config->nf_default_theme;
-					if (!empty($_COOKIE['nf_theme']) && in_array($nf_c = preg_replace('/[^a-z0-9_]/i', '', (string) $_COOKIE['nf_theme']), $nf_themes, TRUE)) { $nf_cur = $nf_c; }
-				?>
-				<div class="nf-theme-switch dropup">
-					<button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo icon('fas fa-palette') ?> <?php echo htmlspecialchars(ucfirst($nf_cur)) ?></button>
-					<div class="dropdown-menu dropdown-menu-end">
-						<?php foreach ($nf_themes as $nf_t): ?>
-						<button type="button" class="dropdown-item<?php echo $nf_t === $nf_cur ? ' active' : '' ?>" data-theme-pick="<?php echo htmlspecialchars($nf_t, ENT_QUOTES) ?>"><?php echo icon('fas fa-palette') ?> <?php echo htmlspecialchars(ucfirst($nf_t)) ?></button>
-						<?php endforeach ?>
-					</div>
-				</div>
-				<?php endif ?>
+				<?php echo nf_selecteur_theme() ?>
 				<?php if (count($this->config->langs) > 1): $cur = $this->config->lang->info(); ?>
 				<form method="post" action="<?php echo url('ajax/settings/languages') ?>" class="fg-lang dropup">
 					<input type="hidden" name="url" value="<?php echo htmlspecialchars($this->url->base.implode('/', array_merge([$cur->name], $this->url->segments)).$this->url->query) ?>" />

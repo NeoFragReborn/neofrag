@@ -1,0 +1,19 @@
+# La suite de tests : jamais servie en HTTP.
+#
+# Elle n'a rien à faire sur un site en service ; elle décrit le fonctionnement interne
+# du produit et, exécutée à contretemps, elle écrit dans une base de test qui pourrait ne pas
+# en être une.
+#
+# La production tourne sous Caddy, dont la configuration refuse déjà `/tests/`. Ce fichier est
+# l'équivalent pour Apache, c'est-à-dire pour les hébergements mutualisés que ce produit vise —
+# où il n'existait pas avant le 2026-09-21. Sur un hébergement où `AllowOverride None` est imposé,
+# il est ignoré : les tests ont besoin de PHPUnit pour tourner, et échouent sans lui.
+
+<IfModule mod_authz_core.c>
+	Require all denied
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+	Order allow,deny
+	Deny from all
+</IfModule>

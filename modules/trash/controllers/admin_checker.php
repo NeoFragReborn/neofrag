@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Accès corbeille : réservé à l'admin (gating effective_admin + is_authorized au niveau output).

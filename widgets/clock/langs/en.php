@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'505f8eba' => 'Clock & calendar',
@@ -13,4 +14,5 @@ return [
 	'9d74099b' => 'Today\'s birthdays',
 	'84261eaa' => 'years',
 	'dc30aca9' => 'No birthday today',
+	'11203c52' => '%d year|%d years',
 ];

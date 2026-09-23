@@ -15,7 +15,7 @@ $status_class = [
 		<!-- En-tête report -->
 		<div class="card mb-3">
 			<div class="nf-card-header">
-				<span><i class="fas fa-flag"></i> <?php echo $this->lang('Signalement #%d', (int)$report['id']) ?> <span class="badge badge-<?php echo $status_class ?>"><?php echo htmlspecialchars($report['status']) ?></span></span>
+				<span><i class="fas fa-flag"></i> <?php echo $this->lang('Signalement #%d', (int)$report['id']) ?> <span class="badge <?php echo badge_class($status_class) ?>"><?php echo htmlspecialchars($this->module('moderation')->libelle('statut', $report['status'])) ?></span></span>
 				<?php if (!empty($report['url'])): ?>
 				<a class="btn btn-sm btn-outline-secondary" href="<?php echo htmlspecialchars($report['url']) ?>" target="_blank"><i class="fas fa-external-link-alt"></i> <?php echo $this->lang('Voir le contenu en contexte') ?></a>
 				<?php else: ?>
@@ -28,10 +28,10 @@ $status_class = [
 					<dd class="col-sm-9"><?php echo htmlspecialchars($report['created_at']) ?> <small class="text-muted">(<?php echo time_span(strtotime($report['created_at'])) ?>)</small></dd>
 
 					<dt class="col-sm-3"><?php echo $this->lang('Type cible') ?></dt>
-					<dd class="col-sm-9"><span class="badge text-bg-light"><?php echo htmlspecialchars($report['target_type']) ?></span> <code><?php echo htmlspecialchars($report['target_id']) ?></code></dd>
+					<dd class="col-sm-9"><span class="badge text-bg-light"><?php echo htmlspecialchars($this->module('moderation')->libelle('cible', $report['target_type'])) ?></span> <code><?php echo htmlspecialchars($report['target_id']) ?></code></dd>
 
 					<dt class="col-sm-3"><?php echo $this->lang('Raison') ?></dt>
-					<dd class="col-sm-9"><span class="badge text-bg-secondary"><?php echo htmlspecialchars($report['reason']) ?></span></dd>
+					<dd class="col-sm-9"><span class="badge text-bg-secondary"><?php echo htmlspecialchars($this->module('moderation')->libelle('raison', $report['reason'])) ?></span></dd>
 
 					<?php if (!empty($report['comment'])): ?>
 					<dt class="col-sm-3"><?php echo $this->lang('Commentaire reporter') ?></dt>
@@ -116,7 +116,7 @@ $status_class = [
 					<div class="row">
 						<div class="col-md-6">
 							<label><?php echo $this->lang('Type de sanction') ?></label>
-							<select name="type" class="form-control" required>
+							<select name="type" class="form-select" required>
 								<option value=""><?php echo $this->lang('— Choisir —') ?></option>
 								<?php
 								$types = [
@@ -138,23 +138,23 @@ $status_class = [
 						</div>
 						<div class="col-md-3">
 							<label><?php echo $this->lang('Scope') ?></label>
-							<select name="scope" class="form-control">
+							<select name="scope" class="form-select">
 								<option value="global"><?php echo $this->lang('Global (tout le site)') ?></option>
-								<option value="forum">Forum</option>
-								<option value="talks">Talks</option>
+								<option value="forum"><?php echo $this->lang('Forum') ?></option>
+								<option value="talks"><?php echo $this->lang('Discussions') ?></option>
 								<option value="comments"><?php echo $this->lang('Commentaires') ?></option>
 								<option value="wiki">Wiki</option>
-								<option value="gallery">Galerie</option>
-								<option value="guestbook">Livre d'or</option>
+								<option value="gallery"><?php echo $this->lang('Galerie') ?></option>
+								<option value="guestbook"><?php echo $this->lang('Livre d\'or') ?></option>
 							</select>
 						</div>
 						<div class="col-md-3">
 							<label><?php echo $this->lang('Durée (heures)') ?></label>
-							<input type="number" class="form-control" name="duration_seconds_h" min="0" step="1" placeholder="0 = permanent" />
+							<input type="number" class="form-control" name="duration_seconds_h" min="0" step="1" placeholder="<?php echo $this->lang('0 = permanent') ?>" />
 							<small class="text-muted"><?php echo $this->lang('Vide ou 0 pour permanent (warning/restrict ignorent)') ?></small>
 						</div>
 					</div>
-					<div class="form-group mt-3">
+					<div class="nf-field mt-3">
 						<label id="reason_label"><?php echo $this->lang('Raison (visible par le user sanctionné)') ?></label>
 						<textarea name="reason" id="reason_textarea" class="form-control" rows="3" required maxlength="1000" placeholder="<?php echo $this->lang('Explique la sanction. Tu peux référencer le commentaire du reporter.') ?>"></textarea>
 					</div>
@@ -202,7 +202,7 @@ $status_class = [
 
 				<!-- Dismiss form (sans sanction) -->
 				<form method="post" action="<?php echo url($_modbase.'/reports/'.(int)$report['id'].'/dismiss') ?>" class="mt-2"><input type="hidden" name="_" value="<?php echo $csrf ?>">
-					<div class="form-group">
+					<div class="nf-field">
 						<label><?php echo $this->lang('Ignorer ce signalement (note interne)') ?></label>
 						<input type="text" name="note" class="form-control" maxlength="500" placeholder="<?php echo $this->lang('Pourquoi ce signalement est rejeté ? (optionnel, interne)') ?>" />
 					</div>
@@ -212,7 +212,7 @@ $status_class = [
 		</div>
 		<?php else: ?>
 		<div class="alert alert-info">
-			<?php echo $this->lang('Ce signalement a déjà été traité (statut : <strong>%s</strong>).', htmlspecialchars($report['status'])) ?>
+			<?php echo $this->lang('Ce signalement a déjà été traité (statut : <strong>%s</strong>).', htmlspecialchars($this->module('moderation')->libelle('statut', $report['status']))) ?>
 			<?php if ($report['handled_by']): ?>
 				<br><small><?php echo $this->lang('Traité le %s', htmlspecialchars((string)$report['handled_at'])) ?></small>
 			<?php endif ?>
@@ -274,7 +274,7 @@ $status_class = [
 				<small class="d-block text-muted mb-1"><?php echo $this->lang('Sanctions actives') ?></small>
 				<?php foreach ($target_history['active_sanctions'] as $s): ?>
 				<div class="badge text-bg-danger d-block mb-1 text-start p-2">
-					<?php echo htmlspecialchars($s['type']) ?> · <?php echo htmlspecialchars($s['scope']) ?>
+					<?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $s['type'])) ?> · <?php echo htmlspecialchars($this->module('moderation')->libelle('portee', $s['scope'])) ?>
 					<?php if (!empty($s['expires_at'])): ?> · <?php echo $this->lang('jusqu\'au %s', htmlspecialchars($s['expires_at'])) ?><?php endif ?>
 				</div>
 				<?php endforeach ?>

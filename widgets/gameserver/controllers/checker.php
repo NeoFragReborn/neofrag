@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -12,7 +13,7 @@ class Checker extends Controller
 	public function index($settings = [])
 	{
 		$engines = ['mc-java', 'mc-bedrock', 'source', 'goldsource'];
-		$engine  = in_array($settings['engine'] ?? '', $engines, TRUE) ? $settings['engine'] : 'mc-java';
+		$engine  = in_array($settings['engine'] ?? '', $engines, TRUE) ? ($settings['engine'] ?? '') : 'mc-java';
 
 		$host = trim($settings['host'] ?? '');
 		// Allow domain names, IPs, with optional dashes/dots/digits

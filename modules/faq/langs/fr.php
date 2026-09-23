@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module faq (fr)
@@ -53,5 +54,9 @@ return [
 	'633b7ff4' => 'Brouillons',
 	'dc275fe4' => 'Filtrer',
 	'599dba10' => 'Réinitialiser',
-	'8a7e7178' => '%d résultat|%d résultats'
+	'8a7e7178' => '%d résultat|%d résultats',
+	'ae4f5e0e' => 'catégorie|catégories',
+	'50d3b0b0' => 'Réponse',
+	'b2656c03' => 'Éditer catégorie : %s',
+	'fe1ca089' => 'Foire aux questions catégorisée affichée en accordéon Bootstrap.',
 ];

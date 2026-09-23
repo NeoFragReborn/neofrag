@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -62,7 +63,7 @@ return [
 	'9d73409b' => '<i>Messaggio eliminato</i>',
 	'a026ae67' => 'Categoria',
 	'a47f60e2' => '%d risposta|%d risposte',
-	'a7320cf6' => '%d visualizzazione',
+	'a7320cf6' => '%d visualizzazione|%d visualizzazioni',
 	'a9368b0c' => 'argomento bloccato o no...',
 	'a939fb96' => 'Tutti i messaggi sono ora segnati come letti',
 	'ab2b6b9e' => 'Statistiche',
@@ -75,7 +76,7 @@ return [
 	'bac23b09' => '<b>%d</b> argomento|<b>%d</b> argomenti',
 	'c3773d94' => 'Modifica argomento / messaggio',
 	'c5db4c8a' => 'Conferma di eliminazione',
-	'c69b96e4' => '%d reindirizzamento',
+	'c69b96e4' => '%d reindirizzamento|%d reindirizzamenti',
 	'c78d2252' => 'Si prega di scegliere un forum diverso',
 	'cccdc6fa' => '<b>%d</b> visualizzazione|<b>%d</b> visualizzazioni',
 	'ce22e79a' => 'Nessuna risposta',
@@ -86,7 +87,7 @@ return [
 	'd6d935b8' => 'Modifica categoria',
 	'd7f78423' => 'Promuovi un argomento ad annuncio',
 	'e0b79a88' => 'Per favore inserisci un messaggio',
-	'e16d51e5' => '%d argomento',
+	'e16d51e5' => '%d argomento|%d argomenti',
 	'e1892b4c' => 'Seleziona un forum verso cui spostare',
 	'e1b27a21' => 'Nessuna categoria del forum.<br>Crea una categoria con il pulsante sopra per iniziare.',
 	'e7831cbd' => 'Elenco dei forum',
@@ -229,7 +230,7 @@ return [
 	'913bc47c' => 'Indici full-text ricostruiti',
 	// i18n 2026-06-11
 	'5628aaf6' => '%s ti ha menzionato in «%s»',
-	90203601 => '%s ha risposto a «%s»',
+	'90203601' => '%s ha risposto a «%s»',
 	// i18n 2026-06-11 (code strings)
 	'6b8d8fc3' => 'Torna alla discussione',
 	'dfbb200e' => '%d menzione/i contrassegnata/e come letta/e',
@@ -258,4 +259,18 @@ return [
 	'558ba8aa' => 'Allegato (opzionale)',
 	'9b317b7c' => 'Tipi consentiti: %s',
 	'4f90a869' => 'Dimensione max: %s',
+	'2d8f3501' => 'Nessuna categoria del forum.',
+	'b2f3db89' => 'Crea una categoria dalla barra degli strumenti per iniziare.',
+	'7e6a9dc0' => '%d forum|%d forum',
+	'ad5a03cb' => '%d messaggio|%d messaggi',
+	'93714304' => 'Seleziona tutto',
+	'7b076dac' => 'Sposta',
+	'596092e9' => 'Sposta un argomento',
+	'3387b5c7' => 'Messaggio del forum',
+	'8982eb68' => 'Nessun forum in questa categoria.',
+	'52442e0e' => 'Trascina e rilascia per riordinare',
+	'a52ad554' => 'Forum di reindirizzamento',
+	'50cb8cb5' => 'argomento|argomenti',
+	'695864e1' => 'messaggio|messaggi',
+	'13f1a5c1' => 'Trascina e rilascia',
 ];

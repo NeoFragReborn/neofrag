@@ -76,7 +76,7 @@ NF.ready(function(){
 						var refresh = document.querySelector('.module-monitoring .refresh');
 						if (refresh){ refresh.click(); }
 						bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-						notify('Mise à jour effectuée avec succès');
+						notify('<?php echo addslashes($this->lang('Mise à jour effectuée avec succès')) ?>');
 						setTimeout(function(){ window.location.reload(); }, 2000);
 						return;
 					}

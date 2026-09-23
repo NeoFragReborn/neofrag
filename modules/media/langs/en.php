@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module media (en)
@@ -50,4 +51,9 @@ return [
 	'8a7e7178' => '%d result|%d results',
 	// i18n 2026-06-11 (code strings)
 	'f494deec' => '%s: extension not allowed (.%s)',
+	'4e26ca0a' => 'File uploads are disabled on the demonstration site.',
+	'8fd9c7ef' => 'Save',
+	'0aac9844' => 'Date',
+	'71fc8e0e' => 'Size',
+	'61b64006' => 'Manage media',
 ];

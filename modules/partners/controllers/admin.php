@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -27,19 +28,19 @@ class Admin extends Controller_Module
 					}
 				}
 				$body .= '<div class="nf-content-card-head">';
-				$body .= '<div class="nf-content-card-title">'.htmlspecialchars($p['title']).'</div>';
+				$body .= '<div class="nf-content-card-title">'.htmlspecialchars((string) ($p['title'])).'</div>';
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-meta">';
 				if (!empty($p['website'])) {
 					$host = parse_url($p['website'], PHP_URL_HOST) ?: $p['website'];
-					$body .= '<span><i class="fas fa-globe"></i> <a href="'.htmlspecialchars($p['website']).'" target="_blank" rel="noopener">'.htmlspecialchars($host).'</a></span>';
+					$body .= '<span><i class="fas fa-globe"></i> <a href="'.htmlspecialchars((string) ($p['website'])).'" target="_blank" rel="noopener">'.htmlspecialchars((string) ($host)).'</a></span>';
 				}
 				$body .= '<span title="'.$this->lang('Visites').'"><i class="fas fa-chart-line"></i> '.(int)$p['count'].'</span>';
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-foot">';
 				$body .= '<span class="nf-content-card-spacer"></span>';
 				if ($this->is_authorized('modify_partners')) $body .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/partners/'.$p['partner_id'].'/'.$p['name']).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
-				if ($this->is_authorized('delete_partners')) $body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/partners/delete/'.$p['partner_id'].'/'.$p['name']).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				if ($this->is_authorized('delete_partners')) $body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/partners/delete/'.$p['partner_id'].'/'.$p['name']).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$body .= '</div>';
 				$body .= '</div>';
 			}
@@ -57,7 +58,7 @@ class Admin extends Controller_Module
 		$this	->subtitle($this->lang('Ajouter un partenaire'))
 				->form()
 				->add_rules('partners')
-				->add_submit($this->lang('Ajouter'))
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus')
 				->add_back('admin/partners');
 
 		if ($this->form()->is_valid($post))
@@ -76,7 +77,7 @@ class Admin extends Controller_Module
 			redirect('admin/partners');
 		}
 
-		return $this->admin_back('admin/partners', $this->lang('Partenaires')).$this->admin_card('far fa-handshake', $this->lang('Ajouter un partenaire'), $this->form()->display());
+		return $this->admin_card('far fa-handshake', $this->lang('Ajouter un partenaire'), $this->form()->display());
 	}
 
 	public function _edit($partner_id, $name, $logo_light, $logo_dark, $website, $facebook, $twitter, $count, $code, $title, $description)
@@ -113,7 +114,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/partners');
 		}
 
-		return $this->admin_back('admin/partners', $this->lang('Partenaires')).$this->admin_card('far fa-handshake', $this->lang('Éditer le partenaire').' — '.$title, $this->form()->display());
+		return $this->admin_card('far fa-handshake', $this->lang('Éditer le partenaire').' — '.$title, $this->form()->display());
 	}
 
 	public function _delete($partner_id, $title)

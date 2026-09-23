@@ -20,7 +20,7 @@
         "phpmailer/phpmailer": "^6.12",
         "planetteamspeak/ts3-php-framework": "^1.3",
         "pragmarx/google2fa": "^9.0",
-        "scssphp/scssphp": "^1.13",
+        "scssphp/scssphp": "^2.0",
         "socialconnect/auth": "^3.4",
         "xpaw/php-source-query-class": "^6.0"
     },
@@ -34,9 +34,13 @@
         "test:integration": "phpunit --testsuite integration",
         "test:headless": "phpunit --testsuite headless",
         "stan": "phpstan analyse --no-progress --memory-limit=2G",
-        "smoke": "php tools/smoke-test.php"
+        "stan:baseline": "php tools/stan-baseline.php",
+        "smoke": "php tools/check-smoke.php"
     },
     "config": {
+        "platform": {
+            "php": "8.2.0"
+        },
         "optimize-autoloader": true,
         "sort-packages": true,
         "allow-plugins": {}

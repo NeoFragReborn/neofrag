@@ -9,7 +9,7 @@
 </div>
 <?php endif ?>
 <?php if ($gallery): ?>
-<div class="card-columns">
+<div class="nf-card-grid">
 	<?php foreach ($gallery as $gallerie): ?>
 	<div class="card">
 		<?php if ($gallerie['image_id']): ?>

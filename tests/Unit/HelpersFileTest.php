@@ -26,6 +26,18 @@ final class HelpersFileTest extends TestCase
         $this->assertSame('css', extension('style.css?v=123'));
     }
 
+    public function test_extension_survives_an_address_parse_url_cannot_read(): void
+    {
+        // Ces formes viennent de vraies requêtes de robots : parse_url() rend FALSE (ou NULL sans chemin),
+        // et la production a rendu cinq erreurs 500 le 2026-09-16 à la place d'un 404.
+        $this->assertSame('', extension('/fr/a:80'));
+        $this->assertSame('', extension('/:80'));
+        $this->assertSame('', extension('///x'));
+        $this->assertSame('', extension('//x'));
+        $this->assertSame('', extension('http://'));
+        $this->assertSame('php', extension('/fr/a:80/x.php?y=1'));
+    }
+
     public function test_get_mime_by_extension_known_types(): void
     {
         $this->assertSame('image/png', get_mime_by_extension('png'));

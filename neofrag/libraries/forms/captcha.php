@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -35,7 +36,7 @@ class Captcha extends Labelable
 
 					if ($result === FALSE)
 					{
-						$this->_errors[] = 'Erreur serveur';
+						$this->_errors[] = $this->lang('Erreur serveur');
 					}
 					else if (!empty($result->success))
 					{

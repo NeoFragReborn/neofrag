@@ -1,7 +1,13 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
+ *
+ * couplage(forum): l'export RGPD liste les contributions forum de l'utilisateur, mais seulement
+ * si les tables existent (`table_exists` en amont). Sans le module forum, l'export rend deux
+ * listes vides — il ne doit jamais echouer, c'est l'exercice d'un droit legal (corrige le
+ * 2026-09-15 : il n'avait aucune garde).
  */
 
 namespace NF\Modules\User\Controllers;
@@ -20,22 +26,22 @@ class Index extends Controller_Module
 									->heading($this->lang('Mon profil'))
 									->body($this->user->view('profile')),
 							$this->_panel_navigation()
-						)->size('col-4'),
+						)->size('col-12 col-lg-4'),
 						$this->col(
 							$this->row($this->col($this->panel()->body($this->_panel_infos()))),
 							$this	->row()
 									->append($this	->col()
-													->size('col-6')
+													->size('col-12 col-lg-6')
 													->append($this	->panel()
 																	->heading($this->lang('Messagerie'))
 																	->body($this->view('index'))
 													)
 									)
 									->append($this	->col()
-													->size('col-6')
+													->size('col-12 col-lg-6')
 													->append($this->_panel_activities())
 									)
-						)->size('col-8')
+						)->size('col-12 col-lg-8')
 					]);
 	}
 
@@ -63,13 +69,19 @@ class Index extends Controller_Module
 									->body('<p>'.$this->lang('Conformément au RGPD, tu peux à tout moment :').'</p><ul><li>'.$this->lang('Récupérer une copie complète de tes données personnelles').'</li><li>'.$this->lang('Demander la suppression de ton compte (droit à l\'oubli)').'</li></ul><a class="btn btn-secondary" href="'.url('user/security/export').'"><i class="fas fa-download"></i> '.$this->lang('Exporter mes données (JSON)').'</a> <a class="btn btn-outline-danger" href="'.url('user/security/delete').'"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer mon compte').'</a>');
 
 		return $this->_layout(function($row) use ($totp_panel, $rgpd_panel){
-			$row->append($this->col($totp_panel, $rgpd_panel)->size('col-8 mx-auto'));
+			$row->append($this->col($totp_panel, $rgpd_panel)->size('col-12 col-lg-8 mx-auto'));
 		});
 	}
 
 	public function security_export()
 	{
 		$user = $this->user;
+
+		// Le forum est un module optionnel : sur une installation qui ne l'embarque pas, ses tables
+		// n'existent pas et la requete fataliserait — au beau milieu d'un export RGPD, donc sur
+		// l'exercice d'un droit legal de l'utilisateur. On ne liste ses contributions que si le
+		// module est effectivement installe.
+		$forum = $this->db->table_exists('nf_forum_topics') && $this->db->table_exists('nf_forum_messages');
 
 		$data = [
 			'export_meta' => [
@@ -89,18 +101,21 @@ class Index extends Controller_Module
 				'admin'              => (bool)$user->admin,
 				'totp_enabled'       => (bool)$user->totp_enabled
 			],
+			// Les champs definis par l'administrateur font partie des donnees personnelles : les
+			// omettre rendrait l'archive incomplete au sens de l'article 15.
+			'champs_personnalises' => $this->_champs_values((int) $user->id),
 			'sessions_actives' => $this->db	->select('id', 'UNIX_TIMESTAMP(last_activity) AS last_activity', 'data')
 											->from('nf_session')
 											->where('user_id', $user->id)
 											->get(),
-			'forum_topics' => $this->db	->select('topic_id', 'title', 'UNIX_TIMESTAMP(date) AS created_at')
-										->from('nf_forum_topics')
-										->where('user_id', $user->id)
-										->get(),
-			'forum_messages' => $this->db	->select('message_id', 'topic_id', 'message', 'UNIX_TIMESTAMP(date) AS created_at')
-											->from('nf_forum_messages')
-											->where('user_id', $user->id)
-											->get(),
+			'forum_topics' => !$forum ? [] : $this->db	->select('topic_id', 'title', 'UNIX_TIMESTAMP(date) AS created_at')
+														->from('nf_forum_topics')
+														->where('user_id', $user->id)
+														->get(),
+			'forum_messages' => !$forum ? [] : $this->db	->select('message_id', 'topic_id', 'message', 'UNIX_TIMESTAMP(date) AS created_at')
+														->from('nf_forum_messages')
+														->where('user_id', $user->id)
+														->get(),
 			'comments' => $this->db	->select('comment_id', 'module', 'object_id', 'content', 'UNIX_TIMESTAMP(date) AS created_at')
 									->from('nf_comment')
 									->where('user_id', $user->id)
@@ -129,13 +144,16 @@ class Index extends Controller_Module
 
 	public function security_delete()
 	{
+		// Le mot à recopier se traduit comme le reste : on ne demande pas « SUPPRIMER » à un Anglais.
+		$mot = (string) $this->lang('SUPPRIMER');
+
 		$this	->title($this->lang('Supprimer mon compte'))
 				->icon('fas fa-trash-alt')
 				->breadcrumb()
 				->form()
 				->add_rules([
 					'confirm_text' => [
-						'label' => $this->lang('Tape "SUPPRIMER" pour confirmer'),
+						'label' => $this->lang('Tape « %s » pour confirmer', $mot),
 						'type'  => 'text',
 						'rules' => 'required'
 					],
@@ -145,13 +163,13 @@ class Index extends Controller_Module
 						'rules' => 'required'
 					]
 				])
-				->add_submit($this->lang('Supprimer définitivement mon compte'));
+				->add_submit($this->lang('Supprimer définitivement mon compte'), 'fas fa-trash');
 
 		if ($this->form()->is_valid($post))
 		{
-			if ($post['confirm_text'] !== 'SUPPRIMER')
+			if ($post['confirm_text'] !== $mot)
 			{
-				$this->form()->error($this->lang('Tape exactement "SUPPRIMER" (en majuscules) pour confirmer.'));
+				$this->form()->error($this->lang('Tape exactement « %s » (en majuscules) pour confirmer.', $mot));
 			}
 			else if (!$this->user->password($post['password']))
 			{
@@ -188,7 +206,7 @@ class Index extends Controller_Module
 												->heading()
 												->body($intro.$this->form()->display())
 								)
-								->size('col-6 mx-auto')
+								->size('col-12 col-lg-6 mx-auto')
 			);
 		});
 	}
@@ -231,7 +249,7 @@ class Index extends Controller_Module
 						'rules' => 'required'
 					]
 				])
-				->add_submit($this->lang('Activer'));
+				->add_submit($this->lang('Activer'), 'fas fa-lock');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -267,7 +285,7 @@ class Index extends Controller_Module
 												->heading()
 												->body($this->form()->display())
 								)
-								->size('col-8 mx-auto')
+								->size('col-12 col-lg-8 mx-auto')
 			);
 		});
 	}
@@ -295,7 +313,7 @@ class Index extends Controller_Module
 		$body .= '<a class="btn btn-primary" href="'.url('user/security').'">'.$this->lang('J\'ai sauvegardé mes codes').'</a>';
 
 		return $this->_layout(function($row) use ($body){
-			$row->append($this->col($this->panel()->title($this->lang('Codes de récupération 2FA'), 'fas fa-key')->body($body))->size('col-8 mx-auto'));
+			$row->append($this->col($this->panel()->title($this->lang('Codes de récupération 2FA'), 'fas fa-key')->body($body))->size('col-12 col-lg-8 mx-auto'));
 		});
 	}
 
@@ -317,7 +335,7 @@ class Index extends Controller_Module
 						'rules' => 'required'
 					]
 				])
-				->add_submit($this->lang('Désactiver le 2FA'));
+				->add_submit($this->lang('Désactiver le 2FA'), 'fas fa-unlock');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -348,7 +366,7 @@ class Index extends Controller_Module
 												->heading()
 												->body($this->form()->display())
 								)
-								->size('col-6 mx-auto')
+								->size('col-12 col-lg-6 mx-auto')
 			);
 		});
 	}
@@ -361,7 +379,7 @@ class Index extends Controller_Module
 									->heading($this->lang('Mon profil'))
 									->body($this->user->view('profile')),
 							$this->_panel_navigation()
-						)->size('col-4'),
+						)->size('col-12 col-lg-4'),
 						$this->col(
 							$this->title($this->lang('Connexion'))
 								->icon('fas fa-sign-in-alt')
@@ -391,27 +409,27 @@ class Index extends Controller_Module
 								->submit($this->lang('Modifier'))
 								->panel()
 								->title($this->lang('Info de connexion'))
-						)->size('col-8')
+						)->size('col-12 col-lg-8')
 					]);
 
 					/* TODO
 					->row()
 					->append(
 						$this	->col()
-								->size('col-6')
+								->size('col-12 col-lg-6')
 								->append(
 									$this
 								)
 					)
 					->append(
 						$this	->col()
-								->size('col-6')
+								->size('col-12 col-lg-6')
 								->append(
 									$this	->table2($sessions)
 											->col(function($session){
 												return user_agent($session->data->session->user_agent);
 											})
-											->col('Adresse IP', function($session){
+											->col($this->lang('Adresse IP'), function($session){
 												// host_name = reverse DNS, contrôlé par le propriétaire de l'IP → échappé.
 												$ip_address = $session->data->session->ip_address;
 												return geolocalisation($ip_address).'<span data-bs-toggle="tooltip" data-original-title="'.htmlspecialchars((string)$session->data->session->host_name, ENT_QUOTES).'">'.htmlspecialchars((string)$ip_address, ENT_QUOTES).'</span>';
@@ -419,10 +437,10 @@ class Index extends Controller_Module
 											->col($this->lang('Site référent'), function($session){
 												return $session->data->session->referer ? urltolink($session->data->session->referer) : $this->lang('Aucun');
 											})
-											->col('Date', function($session){
+											->col($this->lang('Date'), function($session){
 												return $session->data->session->date;
 											})
-											->col('Compte tiers', function($session){
+											->col($this->lang('Compte tiers'), function($session){
 												return $session->auth ? $session->auth : '';
 											})
 											->delete()
@@ -460,11 +478,145 @@ class Index extends Controller_Module
 													redirect();
 												}
 											})
-											->submit('Supprimer', 'danger')
+											->submit($this->lang('Supprimer'), 'danger')
 											->panel()
 											->title('Supprimer mon compte', 'fas fa-times')
 								)
 					);*/
+	}
+
+	/**
+	 * Les champs de profil définis par l'administrateur, rendus dans un panneau à part.
+	 *
+	 * À part, et non mêlés au formulaire de profil livré, pour une raison simple : celui-ci est lié
+	 * au modèle `Profile`, dont les seize colonnes sont fixes. Un champ ajouté par un administrateur
+	 * n'est pas une colonne ; le mêler au formulaire du modèle demanderait à ce dernier d'accepter
+	 * des clés qu'il ne connaît pas.
+	 *
+	 * Rend une chaîne vide quand aucun champ n'est défini : le panneau ne doit pas apparaître pour
+	 * rien sur un site qui n'en a pas.
+	 */
+	/**
+	 * Les valeurs des champs définis par l'administrateur, pour un membre.
+	 *
+	 * Passe par une variable annotée : `model()` rend un `Loadables\\Model` aux yeux de l'analyse
+	 * statique, qui ne connaît donc aucune de ses méthodes.
+	 *
+	 * @return array<string, string>
+	 */
+	private function _champs_values(int $user_id): array
+	{
+		/** @var \NF\Modules\User\Models\Fields $fields */
+		$fields = $this->model('fields');
+
+		return $fields->get_values($user_id);
+	}
+
+	private function _champs_personnalises()
+	{
+		/** @var \NF\Modules\User\Models\Fields $fields */
+		$fields = $this->model('fields');
+		$champs = $fields->get_fields();
+
+		if (!$champs)
+		{
+			return '';
+		}
+
+		$valeurs = $this->_champs_values((int) $this->user->id);
+		$regles  = [];
+
+		foreach ($champs as $champ)
+		{
+			$regle = [
+				'label'       => $champ['label'],
+				'description' => $champ['description'],
+				'value'       => $valeurs[$champ['name']] ?? '',
+			];
+
+			if ($champ['required'])
+			{
+				$regle['rules'] = 'required';
+			}
+
+			$choix = \NF\Modules\User\Models\Fields::options_en_tableau($champ['options']);
+
+			switch ($champ['type'])
+			{
+				case 'textarea':
+					$regle['type'] = 'textarea';
+					$regle['rows'] = 4;
+					break;
+
+				case 'select':
+					$regle['type']   = 'select';
+					$regle['values'] = ['' => ''] + array_combine($choix, $choix);
+					break;
+
+				case 'radio':
+					$regle['type']   = 'radio';
+					$regle['values'] = array_combine($choix, $choix);
+					break;
+
+				case 'checkbox':
+					// Une case cochee vaut « on » ; decochee, rien n'est poste et la valeur s'efface.
+					$regle['type']    = 'checkbox';
+					$regle['values']  = ['on' => $champ['label']];
+					$regle['checked'] = ['on' => ($valeurs[$champ['name']] ?? '') !== ''];
+					unset($regle['label']);
+					break;
+
+				case 'number':
+					$regle['type'] = 'number';
+					break;
+
+				case 'date':
+					$regle['type'] = 'date';
+					break;
+
+				case 'url':
+					$regle['check'] = function($valeur){
+						if (!is_empty($valeur) && !filter_var($valeur, FILTER_VALIDATE_URL))
+						{
+							return $this->lang('Cette adresse est invalide');
+						}
+					};
+					break;
+			}
+
+			$regles[$champ['name']] = $regle;
+		}
+
+		$this	->form()
+				->add_rules($regles)
+				->add_submit($this->lang('Valider'));
+
+		if ($this->form()->is_valid($post))
+		{
+			$saisies = [];
+
+			foreach ($champs as $champ)
+			{
+				$brut = $post[$champ['name']] ?? '';
+
+				// Une case a cocher poste un tableau : on la ramene a « on » ou a rien.
+				$saisies[$champ['name']] = $champ['type'] === 'checkbox'
+					? (in_array('on', (array) $brut, TRUE) ? 'on' : '')
+					: (is_array($brut) ? '' : (string) $brut);
+			}
+
+			/** @var \NF\Modules\User\Models\Fields $fields */
+			$fields = $this->model('fields');
+			$fields->set_values((int) $this->user->id, $saisies);
+
+			notify($this->lang('Profil modifié'));
+
+			refresh();
+		}
+
+		return $this->panel()
+					->heading($this->lang('Informations complémentaires'), 'fas fa-list-ul')
+					->body($this->form()->display());
 	}
 
 	public function profile()
@@ -483,6 +635,7 @@ class Index extends Controller_Module
 												->panel()
 												->title($this->lang('Liens'), 'fas fa-globe')
 								)
+								->append_if(($champs = $this->_champs_personnalises()) !== '', $champs)
 				)
 				->append($this	->col()
 								->size('col-12 col-lg-5')
@@ -506,14 +659,14 @@ class Index extends Controller_Module
 									->heading($this->lang('Mon profil'))
 									->body($this->user->view('profile')),
 							$this->_panel_navigation()
-						)->size('col-4'),
+						)->size('col-12 col-lg-4'),
 						$this->col(
 							$this	->title($this->lang('Historique des sessions'))
 									->icon('fas fa-history')
 									->breadcrumb()
 									->table2('session_history', $sessions, $this->lang('Aucun historique'))
 									->panel()
-						)->size('col-8')
+						)->size('col-12 col-lg-8')
 					]);
 	}
 
@@ -645,17 +798,17 @@ class Index extends Controller_Module
 	public function _member($user)
 	{
 		return $this->title($user->username)
-					->breadcrumb('Profil')
+					->breadcrumb($this->lang('Profil'))
 					->breadcrumb($user->username)
 					->row()
 					->append($this	->col()
-									->size('col-4 user-col')
+									->size('col-12 col-lg-4 user-col')
 									->append($this	->panel()
 													->body($user->view('profile'))
 									)
 					)
 					->append($this	->col()
-									->size('col-8')
+									->size('col-12 col-lg-8')
 									->append($this	->panel()
 													->body($this->_panel_infos($user))
 									)
@@ -671,11 +824,15 @@ class Index extends Controller_Module
 		return $this->panel()
 					->heading('Mon profil', 'fas fa-user')
 					->body($this->view('profile', $user_profile = $this->model()->get_user_profile($this->user->id)))
-					->size('col-4 col-lg-3');
+					->size('col-12 col-md-4 col-lg-3');
 	}
 
 	public function _panel_navigation($output = 'vertical')
 	{
+		// Le menu est présent sur toutes les pages de l'espace membre : le charger ici suffit à
+		// couvrir l'ensemble de l'espace, sur les sept thèmes.
+		$this->css('user-space');
+
 		$navigation_links = [
 			['title' => $this->lang('Mon espace'),         'icon' => 'fas fa-user',         'url' => 'user'],
 			['title' => $this->lang('Info de connexion'),  'icon' => 'fas fa-sign-in-alt',  'url' => 'user/account'],

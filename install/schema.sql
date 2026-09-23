@@ -748,6 +748,35 @@ CREATE TABLE `nf_log_i18n` (
   UNIQUE KEY `language` (`language`,`key`,`file`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS `nf_user_fields_values`;
+DROP TABLE IF EXISTS `nf_user_fields`;
+-- Champs de profil definis par l'administrateur. Le profil fixe de nf_user_profile
+-- couvre l'etat civil et les reseaux ; ces deux tables laissent une communaute ajouter ce qui lui
+-- est propre — pseudo en jeu, plateforme, rang — sans livrer une migration a chaque fois.
+CREATE TABLE `nf_user_fields` (
+  `field_id`    int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name`        varchar(64) NOT NULL,
+  `label`       varchar(200) NOT NULL,
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `type`        enum('text','textarea','select','radio','checkbox','url','number','date') NOT NULL DEFAULT 'text',
+  `options`     mediumtext DEFAULT NULL,
+  `required`    tinyint(1) NOT NULL DEFAULT 0,
+  `public`      tinyint(1) NOT NULL DEFAULT 0,
+  `sort_order`  smallint(5) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`field_id`),
+  UNIQUE KEY `uniq_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `nf_user_fields_values` (
+  `field_id` int(11) unsigned NOT NULL,
+  `user_id`  int(11) unsigned NOT NULL,
+  `value`    mediumtext NOT NULL,
+  PRIMARY KEY (`field_id`, `user_id`),
+  KEY `idx_user` (`user_id`),
+  CONSTRAINT `fk_user_fields_values_field` FOREIGN KEY (`field_id`) REFERENCES `nf_user_fields` (`field_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_user_fields_values_user`  FOREIGN KEY (`user_id`)  REFERENCES `nf_user` (`id`)             ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `nf_migrations`;
 CREATE TABLE `nf_migrations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -815,7 +844,46 @@ INSERT INTO `nf_migrations` (`id`, `name`, `batch`, `applied_at`) VALUES
 ('42', '2026_06_13_pages_instances', '30', '2026-06-13 10:17:10'),
 -- nf_pages.date passée de TIMESTAMP à DATETIME (limite 2038). schema.sql porte déjà le type corrigé →
 -- migration marquée comme déjà-appliquée pour un install neuf (baseline). Cf. migrations/2026_08_23_pages_date_datetime.
-('43', '2026_08_23_pages_date_datetime', '31', '2026-08-23 00:00:00');
+('43', '2026_08_23_pages_date_datetime', '31', '2026-08-23 00:00:00'),
+-- Duree de conservation de l'historique des connexions. Le reglage est pose par
+-- seed.sql pour une installation neuve -> la migration n'a rien a y faire, elle est marquee
+-- comme deja-appliquee. Cf. migrations/2026_09_20_session_history_retention.
+('44', '2026_09_20_session_history_retention', '32', '2026-09-20 00:00:00'),
+-- Champs de profil definis par l'administrateur. Les deux tables sont ci-dessus ->
+-- migration marquee comme deja-appliquee pour une installation neuve.
+('45', '2026_09_20_user_custom_fields', '33', '2026-09-20 00:00:00'),
+-- Classes directionnelles de Bootstrap 4 restees dans les reglages. Le copyright livre par
+-- seed.sql porte desormais `float-end` -> la migration n'a rien a corriger sur une
+-- installation neuve, elle est marquee comme deja appliquee.
+-- Cf. migrations/2026_09_20_bootstrap5_float.
+('46', '2026_09_20_bootstrap5_float', '34', '2026-09-20 00:00:00'),
+-- Interrupteur du service worker (PWA). seed.sql pose deja `nf_pwa` a 0 sur une installation
+-- neuve : la migration n'a rien a y faire, elle est marquee comme deja appliquee.
+-- Cf. migrations/2026_09_22_pwa_service_worker.
+('47', '2026_09_22_pwa_service_worker', '35', '2026-09-22 00:00:00'),
+
+-- Nebula rend son menu DANS sa barre, et non plus une seconde fois sous l'en-tete. La
+-- configuration livree porte deja le resultat : la migration n'a rien a rejouer ici.
+-- Cf. migrations/2026_09_22_nebula_menu_unique.
+('48', '2026_09_22_nebula_menu_unique', '36', '2026-09-22 00:00:00'),
+
+-- Couleurs des groupes et roles de moderation : seed.sql les livre deja en `warning` et
+-- `danger`, noms que Bootstrap connait. La migration n'a rien a corriger ici.
+-- Cf. migrations/2026_09_23_couleurs_des_groupes.
+('49', '2026_09_23_couleurs_des_groupes', '37', '2026-09-23 00:00:00'),
+
+-- Bouton des modeles d'e-mails : seed.sql le livre deja dans la teinte lisible.
+-- Cf. migrations/2026_09_23_bouton_des_emails.
+('50', '2026_09_23_bouton_des_emails', '38', '2026-09-23 00:00:00'),
+
+-- Titres des groupes de moderation dans les six langues : seed.sql les livre deja.
+-- Cf. migrations/2026_09_23_groupes_six_langues.
+('51', '2026_09_23_groupes_six_langues', '39', '2026-09-23 00:00:00'),
+
+-- Choix du theme ferme sur le site vitrine : une installation neuve est en nebula, et
+-- install/vitrine.sql ferme lui-meme le choix quand il pose le theme vitrine.
+-- Cf. migrations/2026_09_23_choix_du_theme.
+('52', '2026_09_23_choix_du_theme', '40', '2026-09-23 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

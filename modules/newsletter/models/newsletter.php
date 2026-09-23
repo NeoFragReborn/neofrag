@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Modèle Newsletter — envoi programmé via file d'attente batchée.

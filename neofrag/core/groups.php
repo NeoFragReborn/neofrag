@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -46,11 +47,15 @@ class Groups extends Core
 			]
 		];
 
-		$groups = $this->db	->select('g.group_id', 'g.name', 'g.color', 'g.icon', 'g.hidden', 'IFNULL(gl.title, g.name) AS title', 'g.auto')
+		// Le titre dans la langue du site, sinon dans une autre (le français d'abord), sinon le nom.
+		// La jointure était INTERNE, filtrée sur la langue : un groupe créé en français n'a qu'une ligne
+		// de titre, et il DISPARAISSAIT de la liste — de ses droits d'accès compris — dès que le site
+		// s'affichait dans une autre langue (relevé le 2026-09-23).
+		$langue = preg_match('/^[a-z]{2}$/', $code = (string) $this->config->lang->info()->name) ? $code : 'fr';
+
+		$groups = $this->db	->select('g.group_id', 'g.name', 'g.color', 'g.icon', 'g.hidden', 'COALESCE(gl.title, (SELECT gx.title FROM nf_groups_lang gx WHERE gx.group_id = g.group_id ORDER BY gx.lang = "fr" DESC, gx.lang LIMIT 1), g.name) AS title', 'g.auto')
 							->from('nf_groups g')
-							->join('nf_groups_lang gl', 'gl.group_id = g.group_id')
-							->where('gl.lang', $this->config->lang->info()->name, 'OR')
-							->where('gl.lang', NULL)
+							->join('nf_groups_lang gl', 'gl.group_id = g.group_id AND gl.lang = "'.$langue.'"', 'LEFT')
 							->order_by('g.order')
 							->get();
 
@@ -125,7 +130,11 @@ class Groups extends Core
 		{
 			if (array_key_exists('users', $group))
 			{
-				$group['url'] = url_title($group_id).($group['auto'] != 'neofrag' ? '/'.$group['name'] : '');
+				// Le nom passe par `url_title()` : le motif de route `{url_title}` vaut
+				// `[a-z0-9-]+`, SANS tiret bas. Un groupe nomme « moderation_junior » produisait
+				// donc une adresse qu'aucune route ne reconnaissait, et son ecran d'edition —
+				// comme sa page de membres — rendait un 404.
+				$group['url'] = url_title($group_id).($group['auto'] != 'neofrag' ? '/'.url_title($group['name']) : '');
 			}
 			else
 			{
@@ -140,7 +149,8 @@ class Groups extends Core
 		$this->_groups['visitors']['order'] = $order;
 
 		uasort($this->_groups, function($a, $b){
-			return strnatcmp($a['order'], $b['order']);
+			// L'ordre d'un groupe est un entier ; `strnatcmp()` attend des chaines.
+			return strnatcmp((string) $a['order'], (string) $b['order']);
 		});
 	}
 
@@ -223,7 +233,9 @@ class Groups extends Core
 			list($group_id, $name) = $args;
 		}
 
-		if (isset($this->_groups[$group_id]) && $name == $this->_groups[$group_id]['name'])
+		// On compare au PERMALIEN du nom, pas au nom brut : c'est le permalien qui circule dans
+		// l'adresse (cf. la construction de `url` plus haut).
+		if (isset($this->_groups[$group_id]) && $name == url_title($this->_groups[$group_id]['name']))
 		{
 			return $this->_groups[$group_id] + ['unique_id' => $group_id];
 		}

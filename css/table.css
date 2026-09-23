@@ -3,6 +3,13 @@
 	width: 200px;
 }
 
+/* Un tableau plus large que l'écran défile dans son enveloppe au lieu d'élargir la page. L'admin le
+   faisait déjà (.table-area .table-content) ; les pages publiques, non : la liste des participants
+   d'un événement débordait de 30 px à 360 px (check-mise-en-page, 2026-09-23). */
+.table-content {
+	overflow-x: auto;
+}
+
 .table-content .pagination {
 	margin: 0;
 }
@@ -11,4 +18,19 @@
 	text-align: center;
 	width: 29px;
 	white-space: nowrap;
+}
+
+/*
+ * Message affiché quand la table est vide.
+ *
+ * Il sortait sans aucune enveloppe : posé dans une carte, il se retrouvait collé au bord, sans
+ * marge ni alignement — alors que la même table remplie produit un <table> qui a les siennes.
+ * Les valeurs reprennent celles de `.table-empty` de la seconde bibliothèque de tableaux, pour
+ * que les deux donnent le même résultat à l'écran.
+ */
+.table-empty {
+	padding: 28px 20px;
+	text-align: center;
+	font-size: 1.05em;
+	color: var(--nf-muted, var(--fg-muted, #6b7280));
 }

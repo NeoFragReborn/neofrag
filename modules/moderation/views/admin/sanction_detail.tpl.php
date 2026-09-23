@@ -17,7 +17,7 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 	<div class="card-body">
 		<dl class="row">
 			<dt class="col-sm-3"><?php echo $this->lang('Type') ?></dt>
-			<dd class="col-sm-9"><span class="badge text-bg-danger"><?php echo htmlspecialchars($sanction['type']) ?></span></dd>
+			<dd class="col-sm-9"><span class="badge text-bg-danger"><?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $sanction['type'])) ?></span></dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('Scope') ?></dt>
 			<dd class="col-sm-9"><?php echo htmlspecialchars($sanction['scope']) ?></dd>
@@ -104,16 +104,15 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 					<h5 class="modal-title" id="nf-revoke-modal-title">
 						<i class="fas fa-undo"></i> <?php echo $this->lang('Lever la sanction #%d', (int)$sanction['id']) ?>
 					</h5>
-					<button type="button" class="close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>">
-						<span aria-hidden="true">&times;</span>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>">
 					</button>
 				</div>
 				<div class="modal-body">
 					<div class="alert alert-info mb-3">
 						<i class="fas fa-info-circle"></i>
-						<?php echo $this->lang('Tu vas lever la sanction <strong>%s</strong> appliquée à <strong>@%s</strong>. Cette action est tracée dans l\'audit log.', htmlspecialchars($sanction['type']), htmlspecialchars((string)$sanction['user_username'])) ?>
+						<?php echo $this->lang('Tu vas lever la sanction <strong>%s</strong> appliquée à <strong>@%s</strong>. Cette action est tracée dans l\'audit log.', htmlspecialchars($this->module('moderation')->libelle('sanction', $sanction['type'])), htmlspecialchars((string)$sanction['user_username'])) ?>
 					</div>
-					<div class="form-group">
+					<div class="nf-field">
 						<label for="nf-revoke-reason" class="fw-bold">
 							<?php echo $this->lang('Raison de la levée') ?> <span class="text-danger">*</span>
 						</label>

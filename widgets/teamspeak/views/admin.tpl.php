@@ -4,31 +4,31 @@
 </ul>
 <div class="tab-content border-light" id="ts-tabContent">
 	<div class="tab-pane fade show active" id="ts-options" role="tabpanel">
-		<div class="form-group row">
-			<label for="settings-ts-mode" class="col-4 col-form-label"><?php echo $this->lang('Mode') ?></label>
-			<div class="col-7">
-				<select class="form-control" name="settings[mode]" id="settings-ts-mode">
+		<div class="nf-field row">
+			<label for="settings-ts-mode" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Mode') ?></label>
+			<div class="col-12 col-lg-7">
+				<select class="form-select" name="settings[mode]" id="settings-ts-mode">
 					<option value="simple"<?php if ($mode === 'simple') echo ' selected="selected"' ?>><?php echo $this->lang('Simple (carte + bouton rejoindre)') ?></option>
 					<option value="tree"<?php if ($mode === 'tree') echo ' selected="selected"' ?>><?php echo $this->lang('Arborescence (channels + clients en temps réel)') ?></option>
 				</select>
 			</div>
 		</div>
-		<div class="form-group row">
-			<label for="settings-ts-host" class="col-4 col-form-label"><i class="fas fa-server"></i> <?php echo $this->lang('Adresse du serveur') ?></label>
-			<div class="col-7">
+		<div class="nf-field row">
+			<label for="settings-ts-host" class="col-12 col-lg-4 col-form-label"><i class="fas fa-server"></i> <?php echo $this->lang('Adresse du serveur') ?></label>
+			<div class="col-12 col-lg-7">
 				<input type="text" class="form-control" name="settings[host]" id="settings-ts-host" value="<?php echo htmlspecialchars($host) ?>" placeholder="ex: ts.example.com" autocomplete="off" />
 			</div>
 		</div>
-		<div class="form-group row">
-			<label for="settings-ts-vport" class="col-4 col-form-label"><?php echo $this->lang('Port voix') ?></label>
-			<div class="col-3">
+		<div class="nf-field row">
+			<label for="settings-ts-vport" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Port voix') ?></label>
+			<div class="col-12 col-lg-3">
 				<input type="number" class="form-control" name="settings[voice_port]" id="settings-ts-vport" value="<?php echo (int)$voice_port ?>" min="1" max="65535" />
 				<small class="form-text text-muted"><?php echo $this->lang('Défaut : 9987') ?></small>
 			</div>
 		</div>
-		<div class="form-group row">
-			<label for="settings-ts-label" class="col-4 col-form-label"><?php echo $this->lang('Titre personnalisé') ?></label>
-			<div class="col-7">
+		<div class="nf-field row">
+			<label for="settings-ts-label" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Titre personnalisé') ?></label>
+			<div class="col-12 col-lg-7">
 				<input type="text" class="form-control" name="settings[label]" id="settings-ts-label" value="<?php echo htmlspecialchars($label) ?>" placeholder="<?php echo $this->lang('Optionnel : remplace le nom du serveur') ?>" maxlength="60" />
 			</div>
 		</div>
@@ -38,22 +38,22 @@
 			<p class="mb-0 mt-2 small"><?php echo $this->lang('Pour afficher channels & clients, le widget se connecte au ServerQuery (TCP, port 10011 par défaut). Vous devez créer un compte query dédié sur votre serveur TS3 (commande TSDNS : <code>serverqueryadd client_login_name=neofrag_viewer client_login_password=…</code>).') ?></p>
 		</div>
 
-		<div class="form-group row" data-show-when-mode="tree">
-			<label for="settings-ts-qport" class="col-4 col-form-label"><?php echo $this->lang('Port ServerQuery') ?></label>
-			<div class="col-3">
+		<div class="nf-field row" data-show-when-mode="tree">
+			<label for="settings-ts-qport" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Port ServerQuery') ?></label>
+			<div class="col-12 col-lg-3">
 				<input type="number" class="form-control" name="settings[query_port]" id="settings-ts-qport" value="<?php echo (int)$query_port ?>" min="1" max="65535" />
 				<small class="form-text text-muted"><?php echo $this->lang('Défaut : 10011') ?></small>
 			</div>
 		</div>
-		<div class="form-group row" data-show-when-mode="tree">
-			<label for="settings-ts-quser" class="col-4 col-form-label"><?php echo $this->lang('Utilisateur Query') ?></label>
-			<div class="col-7">
+		<div class="nf-field row" data-show-when-mode="tree">
+			<label for="settings-ts-quser" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Utilisateur Query') ?></label>
+			<div class="col-12 col-lg-7">
 				<input type="text" class="form-control" name="settings[query_user]" id="settings-ts-quser" value="<?php echo htmlspecialchars($query_user) ?>" autocomplete="off" />
 			</div>
 		</div>
-		<div class="form-group row" data-show-when-mode="tree">
-			<label for="settings-ts-qpass" class="col-4 col-form-label"><?php echo $this->lang('Mot de passe Query') ?></label>
-			<div class="col-7">
+		<div class="nf-field row" data-show-when-mode="tree">
+			<label for="settings-ts-qpass" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Mot de passe Query') ?></label>
+			<div class="col-12 col-lg-7">
 				<input type="password" class="form-control" name="settings[query_pass]" id="settings-ts-qpass" value="<?php echo htmlspecialchars($query_pass) ?>" autocomplete="new-password" />
 			</div>
 		</div>

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -91,4 +92,29 @@ return [
 	'fcc11f52' => 'Multiple',
 	'fe353392' => 'Catégorie modifiée avec succès',
 	'0e81c33b' => 'Tous les albums',
+	'ff1f8094' => 'Galerie photos avec albums, thumbnails et descriptions.',
+	'52c9bbab' => 'Modifier',
+	'ca4ae516' => 'Modifier une catégorie',
+	'af5fdbe3' => 'Supprimer une catégorie',
+	'b914f016' => 'Images galerie',
+	'517c0b2c' => 'Programmée le %s',
+	'398d8489' => 'Intégration <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Code à intégrer pour afficher cette galerie dans un contenu libre de type html/bbcode"></i>',
+	'f0b7b5b5' => 'Date de publication',
+	'7f1f539c' => 'Une date future programme la publication : l\'album reste masqué publiquement jusqu\'à cette date (si visible). Vide = immédiat.',
+	'b9b71e8e' => 'Titre de l\'image',
+	'afccc23b' => 'Créer',
+	'ff1485d1' => 'Déposez vos images dans cette zone, ou cliquez ici',
+	'017c90f5' => 'Votre navigateur ne permet pas de déposer des fichiers par glisser-déposer.',
+	'01081a31' => 'Utilisez le formulaire ci-dessous pour envoyer vos fichiers.',
+	'572556ef' => 'Fichier trop volumineux ({{filesize}} Mio). Taille maximale : {{maxFilesize}} Mio.',
+	'37bb0291' => 'Ce type de fichier n\'est pas accepté.',
+	'9e1bbb9b' => 'Le serveur a répondu avec le code {{statusCode}}.',
+	'de35108a' => 'Voulez-vous vraiment annuler cet envoi ?',
+	'ca977443' => 'Retirer',
+	'ebe0e1da' => 'Vous ne pouvez plus envoyer d\'autres fichiers.',
+	'f8291e95' => 'Téléchargement en cours...',
+	'1b08248b' => 'Encore un tout petit instant...',
+	'cb9a08b2' => 'Veuillez patienter...',
+	'd9035f7e' => 'Mo',
+	'73ae9de7' => 'Retour à l\'album %s',
 ];

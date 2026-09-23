@@ -1,1 +1,1 @@
-<h1>Accès non autorisé</h1>
+<h1><?php echo $this->lang('Accès non autorisé') ?></h1>

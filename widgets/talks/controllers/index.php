@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  *
@@ -55,7 +56,7 @@ class Index extends Controller_Widget
 
 		if ($total_unread > 0)
 		{
-			$body .= '<a href="'.url('talks').'" class="btn btn-primary btn-block">'
+			$body .= '<a href="'.url('talks').'" class="btn btn-primary d-block w-100">'
 				   . icon('fas fa-bell').' '
 				   . $this->lang('%d message non lu|%d messages non lus', $total_unread, $total_unread)
 				   . ' <span class="badge text-bg-light ms-2">'.$total_unread.'</span>'
@@ -63,14 +64,14 @@ class Index extends Controller_Widget
 		}
 		else if ($nb_conversations > 0)
 		{
-			$body .= '<a href="'.url('talks').'" class="btn btn-light btn-block">'
+			$body .= '<a href="'.url('talks').'" class="btn btn-light d-block w-100">'
 				   . icon('far fa-comments').' '
 				   . $this->lang('%d conversation|%d conversations', $nb_conversations, $nb_conversations)
 				   . '</a>';
 		}
 		else
 		{
-			$body .= '<a href="'.url('talks').'" class="btn btn-light btn-block">'
+			$body .= '<a href="'.url('talks').'" class="btn btn-light d-block w-100">'
 				   . icon('far fa-comment-dots').' '
 				   . $this->lang('Mes discussions')
 				   . '</a>';

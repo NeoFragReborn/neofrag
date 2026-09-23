@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -34,8 +35,8 @@ class Checker extends Controller
 
 		return [
 			'campaign_id' => (string)$cid,
-			'show_top'    => in_array($settings['show_top']    ?? '1', ['0', '1'], TRUE) ? $settings['show_top']    : '1',
-			'show_recent' => in_array($settings['show_recent'] ?? '1', ['0', '1'], TRUE) ? $settings['show_recent'] : '1',
+			'show_top'    => in_array($settings['show_top']    ?? '1', ['0', '1'], TRUE) ? ($settings['show_top'] ?? '1')    : '1',
+			'show_recent' => in_array($settings['show_recent'] ?? '1', ['0', '1'], TRUE) ? ($settings['show_recent'] ?? '1') : '1',
 			'limit'       => (string)$limit
 		];
 	}

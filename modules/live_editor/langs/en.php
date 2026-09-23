@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -37,4 +38,32 @@ return [
 	'eb2aa0ff' => 'Cols',
 	'ed7211c7' => 'Submit',
 	'f8875151' => 'Continue',
+	'2b0eb9a0' => 'This widget has no variants.',
+	'2f2c6b6e' => 'This widget has nothing to configure.',
+	'3b542104' => 'No widget matches.',
+	'221f348b' => 'Filter widgets…',
+	'c1efcb54' => 'Filter widgets',
+	'9bc641af' => 'Leave empty to keep the widget\'s default title.',
+	'd396a751' => 'Previous',
+	'ebcb0841' => 'Next',
+	'd9d7983f' => 'Page: %s',
+	'4e4fadfe' => 'The zone could not be detached from the shared layout',
+	'7ea4d2eb' => 'The row could not be added',
+	'ceca6766' => 'The row move was not saved',
+	'79a7b4bb' => 'The row appearance was not saved',
+	'b9068b0f' => 'The row could not be deleted',
+	'2dc09cba' => 'The column could not be added',
+	'33d97864' => 'The column move was not saved',
+	'27fea8b0' => 'The column width was not saved',
+	'8bc2d8e9' => 'The column could not be deleted',
+	'ceea4b71' => 'The widget could not be added',
+	'555f89b3' => 'The widget move was not saved',
+	'158c7404' => 'The widget settings were not saved',
+	'c1d9ee11' => 'The widget appearance was not saved',
+	'04e895c2' => 'The widget could not be deleted',
+	'5aa02bd0' => 'The change was not saved',
+	'0980709a' => 'error',
+	'9d433e55' => 'The display no longer matches what is saved: reload the page.',
+	'88a46340' => 'Visual layout editor: drag and drop widgets into the theme zones.',
+	'dd3795ad' => 'Menu',
 ];

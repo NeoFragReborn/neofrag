@@ -44,7 +44,7 @@
 .donation-amount {
 	font-size: 28px;
 	font-weight: 800;
-	color: var(--nf-success, #16a34a);
+	color: var(--bs-success-text-emphasis, var(--nf-success, #16a34a));
 	line-height: 1;
 	font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
@@ -57,7 +57,7 @@
 .donation-pct {
 	font-size: 26px;
 	font-weight: 800;
-	color: var(--nf-success, #16a34a);
+	color: var(--bs-success-text-emphasis, var(--nf-success, #16a34a));
 	font-family: 'JetBrains Mono', ui-monospace, monospace;
 }
 .donation-progress-stats {
@@ -109,7 +109,7 @@
 }
 .donation-donor-amount {
 	font-weight: 700;
-	color: var(--nf-success, #16a34a);
+	color: var(--bs-success-text-emphasis, var(--nf-success, #16a34a));
 	font-family: 'JetBrains Mono', monospace;
 	font-size: 13px;
 }

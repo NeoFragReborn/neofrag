@@ -24,22 +24,22 @@ foreach ($messages as $i => $message)
 		$media = 'left';
 	}
 ?>
-<div class="media" data-message-id="<?php echo $message['message_id'] ?>" data-position="<?php echo $media ?>">
+<div class="d-flex align-items-start gap-3" data-message-id="<?php echo $message['message_id'] ?>" data-position="<?php echo $media ?>">
 <?php
 	ob_start();
 ?>
-	<div class="media-<?php echo $media ?>">
+	<div class="flex-shrink-0">
 		<?php echo $this->module('user')->model2('user', $message['user_id'])->avatar() ?>
 	</div>
 <?php
 	$avatar = ob_get_clean();
 	ob_start();
 ?>
-	<div class="media-body<?php if ($media == 'right') echo ' text-end' ?>">
+	<div class="flex-grow-1<?php if ($media == 'right') echo ' text-end' ?>">
 		<?php
 			if (($this->user() && $this->user->id == $message['user_id']) || $this->access('talks', 'delete', $message['talk_id']))
 			{
-				echo '<div class="float-'.($media == 'right' ? 'left' : 'right').'">'.$this->button_delete('ajax/talks/delete/'.$message['message_id']).'</div>';
+				echo '<div class="float-'.($media == 'right' ? 'start' : 'end').'">'.$this->button_delete('ajax/talks/delete/'.$message['message_id']).'</div>';
 			}
 		?>
 		<h6>

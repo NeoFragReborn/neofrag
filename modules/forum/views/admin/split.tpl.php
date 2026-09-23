@@ -3,12 +3,12 @@
 		<?php echo icon('fas fa-info-circle').' '.$this->lang('Sélectionne les messages à déplacer vers un nouveau sujet. Le 1er message (starter) ne peut pas être déplacé.') ?>
 	</div>
 
-	<div class="form-group">
+	<div class="nf-field">
 		<label><?php echo $this->lang('Titre du nouveau sujet') ?></label>
 		<input type="text" class="form-control" name="<?php echo $form_id ?>[new_title]" value="<?php echo htmlspecialchars($this->lang('Re: %s', $title)) ?>" required />
 	</div>
 
-	<div class="form-group">
+	<div class="nf-field">
 		<label><?php echo $this->lang('Messages à déplacer') ?></label>
 		<table class="table table-hover table-sm">
 			<thead>
@@ -39,7 +39,7 @@
 		</table>
 	</div>
 
-	<div class="form-group">
+	<div class="nf-field">
 		<a href="<?php echo url('forum/topic/'.(int)$topic_id.'/'.url_title($title)) ?>" class="btn btn-secondary"><?php echo $this->lang('Annuler') ?></a>
 		<button type="submit" class="btn btn-primary"><?php echo icon('fas fa-cut').' '.$this->lang('Scinder') ?></button>
 	</div>

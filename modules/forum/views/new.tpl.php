@@ -3,35 +3,37 @@
 		<tbody class="forum-content">
 			<?php if (!empty($forum_id) || !empty($is_topic)): ?>
 			<tr>
-				<td class="col-12"><input type="text" class="form-control form-control-lg" name="<?php echo $form_id ?>[title]" value="<?php echo isset($post['title']) ? $post['title'] : (isset($title) && !empty($is_topic) ? $title : '') ?>" placeholder="<?php echo $this->lang('Titre du sujet') ?>" /></td>
+				<td><input type="text" class="form-control form-control-lg" name="<?php echo $form_id ?>[title]" value="<?php echo isset($post['title']) ? $post['title'] : (isset($title) && !empty($is_topic) ? $title : '') ?>" placeholder="<?php echo $this->lang('Titre du sujet') ?>" /></td>
 			</tr>
 			<?php endif ?>
 			<tr>
-				<td class="col-12">
-					<div class="form-group">
+				<td>
+					<div class="nf-field">
 						<textarea class="form-control editor" name="<?php echo $form_id ?>[message]" rows="12"><?php echo isset($post['message']) ? $post['message'] : (isset($message) ? $message : '') ?></textarea>
 					</div>
 					<?php // Pièce jointe (Phase 5) — pas affiché en mode édition pour ne pas recréer un attachment ?>
 					<?php if (empty($is_topic) && empty($message)): ?>
-					<div class="form-group">
+					<div class="nf-field">
 						<label class="d-block mb-1" for="forum_attachment">
 							<?php echo icon('fas fa-paperclip').' '.$this->lang('Pièce jointe (optionnel)') ?>
 						</label>
-						<input type="file" name="attachment" id="forum_attachment" class="form-control-file" />
+						<input type="file" name="attachment" id="forum_attachment" class="form-control" />
 						<?php
 							$mimes_setting = $this->config->forum_attachments_mimes ?: 'image/jpeg,image/png,image/gif,image/webp,application/pdf,text/plain,application/zip';
 							$size_kb = $this->config->forum_attachments_size_max_kb ?: 5120;
 						?>
 						<small class="form-text text-muted">
-							<?php echo $this->lang('Types autorisés : %s', htmlspecialchars($mimes_setting)) ?>
+							<?php // Une espace après chaque virgule : écrite d'un bloc, la liste formait un seul mot de 400 px que le navigateur ne pouvait pas couper, et le formulaire débordait d'un téléphone (2026-09-23). ?>
+							<?php echo $this->lang('Types autorisés : %s', htmlspecialchars(implode(', ', array_map('trim', explode(',', $mimes_setting))))) ?>
 							·
 							<?php echo $this->lang('Taille max : %s', human_size($size_kb * 1024)) ?>
 						</small>
 					</div>
 					<?php endif ?>
 					<?php if (!empty($forum_id) && $this->access('forum', 'category_announce', $category_id)): ?>
-					<div class="checkbox">
-						<label><input type="checkbox" name="<?php echo $form_id ?>[announce][]"<?php if (!empty($post['announce']) && in_array('on', $post['announce'])) echo ' checked="checked"' ?> /> <?php echo $this->lang('Mettre en annonce') ?></label>
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" id="forum-announce" name="<?php echo $form_id ?>[announce][]"<?php if (!empty($post['announce']) && in_array('on', $post['announce'])) echo ' checked="checked"' ?> />
+						<label class="form-check-label" for="forum-announce"><?php echo $this->lang('Mettre en annonce') ?></label>
 					</div>
 					<?php endif ?>
 					<?php if (!empty($forum_id)): ?>

@@ -1,12 +1,12 @@
+<?php
+/**
+ * Corps de la liste des slides — SANS carte : l'enveloppe est posée par le contrôleur via
+ * `admin_card()`. Cette vue avait une carte dans son état VIDE et aucune enveloppe dès qu'il y
+ * avait des slides : deux mises en page pour un même écran, selon son contenu.
+ */
+?>
 <?php if (empty($slides)): ?>
-	<div class="card">
-		<div class="card-body text-center text-muted py-5">
-			<?php echo icon('fas fa-images fa-3x text-muted mb-3') ?>
-			<h5><?php echo $this->lang('Aucune slide pour le moment.') ?></h5>
-			<p><?php echo $this->lang('Le widget slider affichera un placeholder par défaut tant qu\'aucune slide n\'est ajoutée.') ?></p>
-			<a class="btn btn-primary mt-2" href="<?php echo url('admin/slider/add') ?>"><?php echo icon('fas fa-plus').' '.$this->lang('Créer la première slide') ?></a>
-		</div>
-	</div>
+	<?php echo $vide ?>
 <?php else: ?>
 	<form action="<?php echo url('admin/slider/move') ?>" method="post" id="slider-reorder-form">
 		<table class="table table-hover">
@@ -29,8 +29,11 @@
 						</td>
 						<td>
 							<?php
+								// `url()` et non un `'/'` en dur : sur un site servi depuis un sous-dossier,
+								// `'/upload/…'` désigne la racine du DOMAINE et l'aperçu reste vide.
+								// Même défaut que dans le widget, cf. widgets/slider/views/index.tpl.php.
 								$src = $slide['image_url'];
-								$resolved = (strpos($src, 'http') === 0 || strpos($src, '//') === 0) ? $src : (empty($src) ? '' : '/'.ltrim($src, '/'));
+								$resolved = (strpos($src, 'http') === 0 || strpos($src, '//') === 0) ? $src : (empty($src) ? '' : url(ltrim($src, '/')));
 							?>
 							<?php if ($resolved): ?>
 								<img src="<?php echo htmlspecialchars($resolved) ?>" alt="" style="max-width: 160px; max-height: 80px; border-radius: 4px;" />

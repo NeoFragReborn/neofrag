@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  *
@@ -115,6 +116,7 @@ class Index extends Controller_Module
 		$users = $this->db	->select('id', 'username')
 							->from('nf_user')
 							->where('id !=', (int)$this->user->id)
+							->where('id !=', nf_compte_masque())
 							->where('deleted', '0')
 							->order_by('username')
 							->get();
@@ -159,7 +161,7 @@ class Index extends Controller_Module
 					'value'    => $prefill_user_id ? [$prefill_user_id] : []
 				]
 			])
-			->add_submit($this->lang('Créer'))
+			->add_submit($this->lang('Créer'), 'fas fa-plus')
 			->save();
 
 		if ($form->is_valid($post))
@@ -290,12 +292,12 @@ class Index extends Controller_Module
 		// "Quitter" = sortir du groupe/salon (hard, perd l'accès) — uniquement pour group/public
 		if (in_array($talk['type'], ['group', 'public'], TRUE))
 		{
-			$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/leave').'" class="btn btn-sm btn-outline-warning" data-confirm="'.htmlspecialchars($this->lang('Quitter cette conversation ? Tu ne pourras plus la voir ni y répondre.'), ENT_QUOTES).'" data-confirm-style="warning">'.\icon('fas fa-sign-out-alt').' '.$this->lang('Quitter').'</a>';
+			$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/leave').'" class="btn btn-sm btn-outline-warning" data-confirm="'.htmlspecialchars((string) ($this->lang('Quitter cette conversation ? Tu ne pourras plus la voir ni y répondre.')), ENT_QUOTES).'" data-confirm-style="warning">'.\icon('fas fa-sign-out-alt').' '.$this->lang('Quitter').'</a>';
 		}
 		// "Archiver" = soft hide, retrouvable dans /talks/archives, ne quitte pas
 		$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/archive').'" class="btn btn-sm btn-outline-secondary">'.\icon('fas fa-archive').' '.$this->lang('Archiver').'</a>';
 		// "Supprimer pour moi" = soft-delete user-side, conservé 14j dans /talks/trash, restaurable
-		$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/delete').'" class="btn btn-sm btn-outline-danger" data-confirm="'.htmlspecialchars($this->lang('Supprimer cette conversation pour toi ? Elle reste accessible aux autres participants. Tu peux la restaurer pendant 14 jours depuis la corbeille.'), ENT_QUOTES).'">'.\icon('far fa-trash-alt').' '.$this->lang('Supprimer').'</a>';
+		$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/delete').'" class="btn btn-sm btn-outline-danger" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer cette conversation pour toi ? Elle reste accessible aux autres participants. Tu peux la restaurer pendant 14 jours depuis la corbeille.')), ENT_QUOTES).'">'.\icon('far fa-trash-alt').' '.$this->lang('Supprimer').'</a>';
 
 		return $this->view('user/view', [
 			'talk'            => $talk,
@@ -313,7 +315,10 @@ class Index extends Controller_Module
 
 	public function _invite($talk_id, $title)
 	{
-		$talk = $this->model()->user_can_access($talk_id, $this->user->id);
+		// Le même droit de lecture que la page de la conversation (ligne ~189) : sans `effective_admin()`,
+		// un administrateur voyait une conversation réservée à l'équipe, son bouton, puis un refus (403,
+		// trouvé par check-liens le 2026-09-22).
+		$talk = $this->model()->user_can_access($talk_id, $this->user->id, (bool)$this->access->effective_admin());
 		if (!$talk || ($talk['creator_id'] != $this->user->id && !$this->access('default', 'admin_moderate')))
 		{
 			$this->error->unauthorized();
@@ -351,7 +356,7 @@ class Index extends Controller_Module
 					'rules'    => 'required'
 				]
 			])
-			->add_submit($this->lang('Inviter'))
+			->add_submit($this->lang('Inviter'), 'fas fa-user-plus')
 			->save();
 
 		if ($form->is_valid($post))
@@ -572,7 +577,10 @@ class Index extends Controller_Module
 
 	public function _report($talk_id, $title, $message_id)
 	{
-		$talk = $this->model()->user_can_access($talk_id, $this->user->id);
+		// Le même droit de lecture que la page de la conversation (ligne ~189) : sans `effective_admin()`,
+		// un administrateur voyait une conversation réservée à l'équipe, son bouton, puis un refus (403,
+		// trouvé par check-liens le 2026-09-22).
+		$talk = $this->model()->user_can_access($talk_id, $this->user->id, (bool)$this->access->effective_admin());
 		if (!$talk)
 		{
 			$this->error->unauthorized();

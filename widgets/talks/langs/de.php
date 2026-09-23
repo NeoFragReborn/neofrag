@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — deutsche Übersetzungen (auto-generiert 2026-05-03)
@@ -16,4 +17,5 @@ return [
 	'16a1faef' => 'Meine Unterhaltungen',
 	'f42a966e' => '%d öffentlicher Raum zu entdecken|%d öffentliche Räume zu entdecken',
 	'58a22494' => 'Neue Unterhaltung',
+	'1f88c31b' => 'Optionen',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -14,11 +15,30 @@ class Admin extends Controller_Module
 		$this	->subtitle($this->lang('Slides du widget slider'))
 				->icon('fas fa-images');
 
-		$this->add_action($this->button($this->lang('Ajouter une slide'), 'fas fa-plus', 'primary')->url('admin/slider/add'));
-
 		$slides = $this->model()->get_slides(FALSE);
 
-		return $this->view('admin/index', ['slides' => $slides, 'csrf' => $this->csrf_token()]);
+		// Une seule invitation à créer, jamais deux. Quand la liste est vide, c'est l'état vide qui
+		// la porte : c'étaient deux boutons pour exactement la même action. C'est la barre d'outils
+		// qui l'emporte, comme sur la régie publicitaire, les dons, les paiements et la boutique —
+		// quatre des six écrans concernés font déjà ainsi, et leur état vide se contente
+		// d'annoncer qu'il n'y a rien.
+		$this->add_action($this->button($this->lang('Ajouter une slide'), 'fas fa-plus', 'primary')->url('admin/slider/add'));
+
+		// Enveloppe partagée : même carte et même état vide que les autres écrans d'administration.
+		// L'écran d'édition du slider (plus bas) utilisait déjà admin_card() — la liste, elle, avait
+		// une carte quand elle était vide et aucune enveloppe dès qu'il y avait des slides.
+		$corps = $this->view('admin/index', [
+			'slides' => $slides,
+			'csrf'   => $this->csrf_token(),
+			'vide'   => $this->admin_empty(
+				'fas fa-images',
+				$this->lang('Aucune slide pour le moment.'),
+				$this->lang('Le widget slider affichera un placeholder par défaut tant qu\'aucune slide n\'est ajoutée.')
+			),
+		]);
+
+		return $this->admin_card('fas fa-images', $this->lang('Slider'), $corps,
+			$slides ? count($slides).' '.$this->lang(count($slides) > 1 ? 'slides' : 'slide') : '');
 	}
 
 	public function _add()
@@ -36,7 +56,7 @@ class Admin extends Controller_Module
 		$slide = $id ? $this->model()->get_slide($id) : NULL;
 		if ($id && !$slide)
 		{
-			$this->error->code(404);
+			$this->error();
 			return;
 		}
 
@@ -127,7 +147,7 @@ class Admin extends Controller_Module
 			redirect('admin/slider');
 		}
 
-		return $this->admin_back('admin/slider', $this->lang('Slider')).$this->admin_card('fas fa-image', $id ? $this->lang('Modifier la slide') : $this->lang('Nouvelle slide'), $form->display());
+		return $this->admin_card('fas fa-image', $id ? $this->lang('Modifier la slide') : $this->lang('Nouvelle slide'), $form->display());
 	}
 
 	public function _delete($id)
@@ -137,7 +157,7 @@ class Admin extends Controller_Module
 		$slide = $this->model()->get_slide((int)$id);
 		if (!$slide)
 		{
-			$this->error->code(404);
+			$this->error();
 			return;
 		}
 
@@ -153,7 +173,7 @@ class Admin extends Controller_Module
 		$slide = $this->model()->get_slide((int)$id);
 		if (!$slide)
 		{
-			$this->error->code(404);
+			$this->error();
 			return;
 		}
 

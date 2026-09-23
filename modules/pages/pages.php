@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -14,11 +15,15 @@ class Pages extends Module
 	{
 		return [
 			'title'       => $this->lang('Pages'),
-			'description' => 'Pages CMS statiques : à propos, mentions légales, conditions, etc.',
+			'description' => $this->lang('Pages CMS statiques : à propos, mentions légales, conditions, etc.'),
 			'icon'        => 'far fa-file',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '1.0',
 			'admin'       => TRUE,
 			'routes'      => [
@@ -41,7 +46,7 @@ class Pages extends Module
 			'default' => [
 				'access'  => [
 					[
-						'title'  => 'Pages',
+						'title'  => $this->lang('Pages'),
 						'icon'   => 'far fa-file',
 						'access' => [
 							'add_pages' => [
@@ -65,12 +70,16 @@ class Pages extends Module
 			],
 			'page' => [
 				'get_all' => function(){
-					return NeoFrag()->db->select('p.page_id', 'CONCAT_WS(" ", "Page", pl.title)')->from('nf_pages p')->join('nf_pages_lang pl', 'p.page_id = pl.page_id')->where('pl.lang', $this->config->lang->info()->name)->get();
+					// Le libellé se compose en PHP, après la requête (même règle que modules/files/files.php).
+					return array_map(fn($ligne) => [
+						'page_id' => $ligne['page_id'],
+						'title'   => (string) $this->lang('Page %s', $ligne['title'])
+					], NeoFrag()->db->select('p.page_id', 'pl.title')->from('nf_pages p')->join('nf_pages_lang pl', 'p.page_id = pl.page_id')->where('pl.lang', $this->config->lang->info()->name)->get());
 				},
 				'check'   => function($page_id){
 					if (($page = NeoFrag()->db->select('title')->from('nf_pages_lang')->where('page_id', $page_id)->where('lang', $this->config->lang->info()->name)->row()) !== [])
 					{
-						return 'Page '.$page;
+						return $this->lang('Page %s', $page);
 					}
 				},
 				'init'    => [
@@ -78,11 +87,11 @@ class Pages extends Module
 				],
 				'access'  => [
 					[
-						'title'  => 'Pages',
+						'title'  => $this->lang('Pages'),
 						'icon'   => 'far fa-file',
 						'access' => [
 							'access_page' => [
-								'title' => 'Accès au contenu',
+								'title' => $this->lang('Accès au contenu'),
 								'icon'  => 'far fa-eye'
 							]
 						]

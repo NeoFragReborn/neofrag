@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'9f6837b7' => 'Servidor TeamSpeak 3',

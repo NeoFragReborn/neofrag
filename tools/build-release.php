@@ -1,19 +1,21 @@
 <?php
 declare(strict_types=1);
-// Outil d'administration : jamais servi en HTTP (sinon maintenance/migrations/dumps
-// seraient executables par n'importe qui si tools/ etait expose par erreur).
-if (PHP_SAPI !== 'cli')
-{
-	http_response_code(404);
-	exit;
-}
-
 
 /**
- * NeoFrag Reborn — produit les paquets prêts à uploader par FTP (hébergement mutualisé).
+ * build-release — produit les paquets prêts à uploader par FTP (hébergement mutualisé).
+ *
+ * Famille : outil
  *
  *   - dist/neofrag-reborn-<v>.zip        : site PRINCIPAL (vitrine). config/neofrag.php standard.
  *   - dist/neofrag-reborn-demo-<v>.zip   : site DÉMO. + install/demo.sql + NEOFRAG_DEMO=TRUE.
+ *   - dist/neofrag-reborn-public-<v>.zip : DISTRIBUTION générique FTP-ready (sans la vitrine).
+ *   - dist/neofrag-reborn-update-<v>.zip : paquet de MISE À JOUR, à PLAT (aucun dossier racine).
+ *   - dist/version.json, dist/checksum.json : manifestes servis avec le paquet de mise à jour.
+ *
+ * Le paquet de mise à jour est PLAT, et c'est la différence qui compte : l'auto-updater écrit chaque
+ * entrée à son propre chemin. Un paquet d'installation, qui range tout sous `neofrag-reborn/`, aurait
+ * donc créé un sous-dossier de ce nom au lieu de remplacer quoi que ce soit — la mise à jour aurait
+ * « réussi » sans rien mettre à jour.
  *
  * Inclut vendor/ (pas de composer sur mutualisé) et .htaccess (mod_rewrite). Exclut les secrets
  * (config/db.php|crypt.php|password.php — générés par l'installeur web), le runtime (cache/logs/
@@ -22,10 +24,17 @@ if (PHP_SAPI !== 'cli')
  * Le user upload le contenu du zip, visite /install/ (DB + admin), met les dossiers writable,
  * et (démo) ajoute le cron de reset. Cf. docs/deploy-ftp.md.
  *
- * Usage : docker compose exec -T web php tools/build-release.php   (ou: php tools/build-release.php)
+ * Usage
+ * -----
+ *   php tools/build-release.php
  */
 
-$root    = dirname(__DIR__);
+require __DIR__.'/lib/outil.php';
+require __DIR__.'/lib/depot.php';
+
+nf_options([]);
+
+$root    = nf_racine();
 $version = nf_version($root);
 $dist    = $root . '/dist';
 
@@ -40,28 +49,37 @@ if (has_composer()) {
     });
     echo "  vendor de production (composer install --no-dev)…\n";
     if (!run_composer($root, ['install', '--no-dev', '--optimize-autoloader', '--no-interaction', '-q'])) {
-        fwrite(STDERR, "composer install --no-dev a échoué — abandon (vendor de dev restauré).\n");
-        exit(1);
+        nf_refus('composer install --no-dev a échoué — abandon (vendor de dev restauré)');
     }
-} else {
-    fwrite(STDERR, "AVERTISSEMENT : composer introuvable → le vendor inclura les dépendances dev.\n");
+} elseif (is_dir($root.'/vendor/phpunit') || is_dir($root.'/vendor/phpstan')) {
+    // Sans composer, on ne peut pas régénérer le vendor : on vérifie qu'il est DÉJÀ celui de la
+    // production. L'ancien avertissement passait inaperçu dans le journal de la CI, et le paquet de
+    // mise à jour partait avec PHPUnit et PHPStan (76 Mo au lieu de 17, 2026-09-23).
+    nf_refus("composer est introuvable et vendor/ contient les outils de développement (PHPUnit, PHPStan) :\n"
+        ."  le paquet les embarquerait. Lancer d'abord `composer install --no-dev --optimize-autoloader`.");
 }
 
 // Garde-fou (#5 audit) : le table-map doit recouvrir EXACTEMENT les tables vives, sinon un module
 // serait packagé avec un install.sql incomplet (tables manquantes → module cassé chez l'utilisateur).
 // On valide la partition avant de packager ; échec = abandon (relancer extract-module-sql + package-addons).
 echo "  validation du table-map (extract-module-sql --check)…\n";
-exec('php ' . escapeshellarg($root . '/tools/extract-module-sql.php') . ' --check 2>&1', $vout, $vcode);
+exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__DIR__ . '/extract-module-sql.php') . ' --check 2>&1', $vout, $vcode);
 if ($vcode !== 0) {
-    fwrite(STDERR, implode("\n", $vout) . "\nABANDON : table-map périmé ou base injoignable — corrige puis relance.\n");
-    exit(1);
+    nf_refus(implode("\n", $vout) . "\nABANDON : table-map périmé ou base injoignable — corrige puis relance.");
 }
 
 build($root, $dist, $version, 'principal'); // site vitrine (avec thème vitrine)
 build($root, $dist, $version, 'demo');      // site démo (+ demo.sql)
 build($root, $dist, $version, 'public');    // DISTRIBUTION générique FTP-ready (sans vitrine, vendor inclus)
 
+// Paquet de mise à jour + ses deux manifestes. Les trois forment un JEU COHÉRENT : version.json
+// porte le SHA-256 du zip, checksum.json l'empreinte MD5 de chaque fichier livré. Publier l'un sans
+// les autres fait échouer la vérification d'intégrité côté site — publier les trois ensemble.
+$entries = build($root, $dist, $version, 'update');
+manifests($dist, $version, $entries);
+
 echo "\n✓ Paquets dans dist/ (v{$version}).\n";
+echo "  à publier ensemble sur l'origine de mise à jour : neofrag-reborn-update-{$version}.zip, version.json, checksum.json\n";
 
 function has_composer(): bool
 {
@@ -84,47 +102,171 @@ function run_composer(string $root, array $args): bool
     return $code === 0;
 }
 
-function build(string $root, string $dist, string $version, string $variant): void
+/**
+ * Construit une variante. Renvoie la table « chemin dans le zip => chemin sur le disque », dont
+ * manifests() se sert pour calculer les empreintes du paquet de mise à jour.
+ *
+ * @return array<string,string>
+ */
+function build(string $root, string $dist, string $version, string $variant): array
 {
-    $suffix   = ['principal' => '', 'demo' => '-demo', 'public' => '-public'][$variant] ?? '';
+    $suffix   = ['principal' => '', 'demo' => '-demo', 'public' => '-public', 'update' => '-update'][$variant] ?? '';
     $demo     = $variant === 'demo';
     $name     = "neofrag-reborn{$suffix}-{$version}";
-    $top      = 'neofrag-reborn'; // dossier racine dans le zip
+    // Paquet de mise à jour : AUCUN dossier racine (cf. en-tête). Les autres en gardent un, pour que
+    // l'utilisateur qui décompresse obtienne un dossier propre plutôt que 1400 fichiers en vrac.
+    $top      = $variant === 'update' ? '' : 'neofrag-reborn';
+    $prefix   = $top === '' ? '' : $top.'/';
     $zip_path = "{$dist}/{$name}.zip";
     @unlink($zip_path);
 
     $zip = new ZipArchive();
     if ($zip->open($zip_path, ZipArchive::CREATE) !== true) {
-        fwrite(STDERR, "Impossible de créer {$zip_path}\n");
-        exit(1);
+        nf_refus("impossible de créer {$zip_path}");
     }
 
-    $count = 0;
-    $it = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS),
-        RecursiveIteratorIterator::SELF_FIRST
-    );
-    foreach ($it as $file) {
-        $rel = str_replace('\\', '/', substr($file->getPathname(), strlen($root) + 1));
+    $entries = [];
+    $count   = 0;
 
+    // `.git`, `node_modules` et `dist` ne sont jamais descendus : excluded() les refuserait fichier
+    // par fichier, mais les parcourir coûte des dizaines de milliers d'entrées pour rien.
+    foreach (nf_parcourir($root, ['.git', 'node_modules', 'dist']) as $rel => $file) {
         if (excluded($rel, $variant)) {
             continue;
         }
-        if ($file->isDir()) {
-            continue; // les dossiers sont créés implicitement par addFile
-        }
-        $zip->addFile($file->getPathname(), "{$top}/{$rel}");
+        $zip->addFile($file->getPathname(), $prefix.$rel);
+        $entries[$prefix.$rel] = $file->getPathname();
+        $count++;
+    }
+
+    // Manifeste du paquet de mise à jour : ce qu'il PROTÈGE et ce qu'il SUPPRIME.
+    //
+    // Déclaré, et non déduit. Jusqu'ici, `apply_update_package()` retirait de `neofrag/` tout ce que
+    // le paquet ne livrait pas — un raisonnement juste tant que le paquet est complet, et dévastateur
+    // dès qu'il ne l'est pas : il a failli effacer le framework entier sur un paquet d'une autre
+    // nature. Une liste écrite ne se trompe pas de la même façon.
+    //
+    // Seul le paquet de mise à jour en porte un : les autres variantes servent à une installation
+    // neuve, où il n'y a rien à protéger ni à retirer.
+    if ($variant === 'update') {
+        $zip->addFromString($prefix.'nf-manifest.json', update_manifest($root, $version));
         $count++;
     }
 
     // config/neofrag.php généré (non versionné). Démo : NEOFRAG_DEMO=TRUE.
-    $zip->addFromString("{$top}/config/neofrag.php", neofrag_config($demo));
+    $zip->addFromString($prefix.'config/neofrag.php', neofrag_config($demo));
     // NB : config/email.php n'est PAS embarqué — l'installeur le génère (host vide => mail()). Ainsi
     // un redéploiement ne réécrase pas un SMTP configuré. La config dev (mailpit) reste exclue.
     $count++;
 
     $zip->close();
     printf("  %-32s %5d fichiers  %6.1f Mo\n", $name . '.zip', $count, filesize($zip_path) / 1048576);
+
+    return $entries;
+}
+
+/**
+ * Le manifeste embarqué dans le paquet de mise à jour.
+ *
+ * `protected` : ce que la mise à jour ne doit JAMAIS écrire, même si le paquet en porte une version.
+ * Ce sont les données et la configuration du site qui reçoit la mise à jour — sa base, ses fichiers
+ * envoyés, ses journaux, ses sauvegardes. `apply_update_package()` protégeait déjà `config/` et
+ * `install/` en dur ; les déclarer ici les rend lisibles, et permet d'en ajouter sans toucher au code
+ * de l'installeur.
+ *
+ * `remove` : les fichiers que CETTE version retire. La liste se calcule en comparant l'inventaire
+ * précédent — `dist/checksum.json` de la version publiée — à ce que le paquet livre aujourd'hui. Sans
+ * inventaire précédent sous la main, elle reste vide : mieux vaut ne rien supprimer que supprimer au
+ * jugé, et le site gardera quelques fichiers morts jusqu'à la version suivante.
+ */
+function update_manifest(string $root, string $version): string
+{
+    $proteges = [
+        'config/',      // identifiants de base, clés, réglages du site
+        'install/',     // db.txt et compagnie : l'état d'installation appartient au site
+        'upload/',      // ce que les membres ont envoyé
+        'logs/',        // le journal, qui sert justement à comprendre une mise à jour ratée
+        'backups/',     // les sauvegardes, dont celle prise juste avant d'écrire
+        'cache/',       // reconstruit seul, et jamais livré
+    ];
+
+    $retires = [];
+    $ancien  = $root.'/dist/checksum.json';   // `dist/` vit DANS la racine du projet, pas a cote
+
+    if (is_file($ancien) && is_array($avant = json_decode((string) file_get_contents($ancien), TRUE))) {
+        $aujourdhui = [];
+
+        foreach (nf_parcourir($root, ['.git', 'node_modules', 'dist']) as $rel => $file) {
+            $aujourdhui[$rel] = TRUE;
+        }
+
+        foreach (array_keys($avant) as $rel) {
+            if (!isset($aujourdhui[$rel])) {
+                $retires[] = $rel;
+            }
+        }
+
+        sort($retires);
+    }
+
+    return (string) json_encode([
+        'format'       => 1,
+        'version'      => $version,
+        'generated_at' => date('c'),
+        'protected'    => $proteges,
+        'remove'       => $retires,
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+}
+
+/**
+ * Écrit dist/version.json et dist/checksum.json, les deux manifestes que le Monitoring télécharge.
+ *
+ *   - version.json  : ce que le site compare à SA version, et de quoi télécharger le paquet en
+ *                     toute sûreté. Il ne porte qu'un NOM DE FICHIER, jamais une URL : l'origine
+ *                     vient de l'allow-list côté site, et compromettre ce manifeste ne la déplace pas.
+ *   - checksum.json : une empreinte MD5 par fichier livré, restreinte aux dossiers que le Monitoring
+ *                     parcourt réellement (cf. $folders du modèle, moins le runtime) plus index.php.
+ *                     Un fichier absent de cette liste serait signalé « ne devrait pas se trouver là ».
+ *
+ * @param array<string,string> $entries chemin dans le zip => chemin sur le disque
+ */
+function manifests(string $dist, string $version, array $entries): void
+{
+    $zip_name = "neofrag-reborn-update-{$version}.zip";
+    $zip_path = "{$dist}/{$zip_name}";
+
+    // Dossiers réellement parcourus par le Monitoring : $folders moins backups/cache/config/logs/
+    // overrides/upload (runtime, propre à chaque site — jamais comparé à une empreinte).
+    $scanned = ['addons/', 'css/', 'fonts/', 'images/', 'js/', 'lib/', 'modules/', 'neofrag/', 'themes/', 'widgets/'];
+
+    $checksum = [];
+    foreach ($entries as $rel => $path) {
+        if ($rel === 'index.php') {
+            $checksum[$rel] = md5_file($path);
+            continue;
+        }
+        foreach ($scanned as $d) {
+            if (str_starts_with($rel, $d)) {
+                $checksum[$rel] = md5_file($path);
+                break;
+            }
+        }
+    }
+    ksort($checksum);
+
+    $manifest = ['neofrag' => [
+        'version' => $version,
+        'file'    => $zip_name,
+        'sha256'  => hash_file('sha256', $zip_path),
+        'size'    => filesize($zip_path),
+        'date'    => gmdate('Y-m-d\TH:i:s\Z'),
+    ]];
+
+    file_put_contents("{$dist}/version.json",  json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    file_put_contents("{$dist}/checksum.json", json_encode($checksum, JSON_UNESCAPED_SLASHES));
+
+    printf("  %-32s %5d empreintes\n", 'checksum.json', count($checksum));
+    printf("  %-32s sha256 %s\n",      'version.json',  substr($manifest['neofrag']['sha256'], 0, 16).'…');
 }
 
 /** Exclusions communes + spécifiques au paquet (variant : principal | demo | public). */
@@ -176,10 +318,12 @@ function excluded(string $rel, string $variant): bool
         'install/db.txt', '_landing-preview.html', '.gitignore', '.gitattributes', '.dockerignore',
         '.env', 'phpunit.xml', '.phpunit.result.cache', 'settings.md', 'scan-modal.md',
         // Fichiers repo/dev inutiles sur l'hébergement FTP :
-        'README.md', 'CHANGELOG.md', 'docker-compose.yml', 'compose.yml', 'Dockerfile', 'nginx.conf',
+        'README.md', 'CHANGELOG.md', 'docker-compose.yml', 'compose.yml', 'Dockerfile', 'nginx.conf', 'Caddyfile',
         'composer.json', 'composer.lock',
         // Outillage d'analyse statique (dev/CI uniquement, pas de runtime) :
-        'phpstan.neon', 'phpstan-baseline.neon', 'phpstan-bootstrap.php'];
+        'phpstan.neon', 'phpstan-base.neon', 'phpstan-baseline.neon', 'phpstan-bootstrap.php',
+        // Outillage front : le site servi ne depend d'aucun paquet npm.
+        'package.json', 'package-lock.json', 'eslint.config.js', 'playwright.config.js'];
     if (in_array($rel, $files, true)) {
         return true;
     }

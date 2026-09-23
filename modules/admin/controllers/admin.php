@@ -1,7 +1,13 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Modern dashboard v0.4 — sober stat-cards + activity + system state.
+ *
+ * couplage(articles): le flux d'activite du tableau de bord agrege le contenu recent de TOUS les
+ * modules presents. Chaque requete est dans son propre try/catch : un module absent fait
+ * simplement disparaitre sa ligne du flux, il n'interrompt pas le tableau de bord.
+ * couplage(bugtracker): idem — meme flux, meme try/catch.
  */
 
 namespace NF\Modules\Admin\Controllers;
@@ -31,7 +37,8 @@ class Admin extends Controller_Module
 		foreach ($stats as $s)
 		{
 			$html .= '<div class="nf-stat-card">';
-			$html .= '<div class="nf-stat-label"><i class="'.$s['icon'].'"></i> '.htmlspecialchars($s['label']).'</div>';
+			// `label` porte un objet de traduction differee, que `htmlspecialchars((string) ())` refuse.
+			$html .= '<div class="nf-stat-label"><i class="'.$s['icon'].'"></i> '.htmlspecialchars((string) $s['label']).'</div>';
 			$html .= '<div class="nf-stat-value">'.$s['value'].'</div>';
 			if (!empty($s['trend']))
 			{
@@ -39,7 +46,7 @@ class Admin extends Controller_Module
 				$ic  = $s['trend_icon'] ?? '';
 				$html .= '<div class="nf-stat-trend '.$cls.'">';
 				if ($ic) $html .= '<i class="'.$ic.'"></i> ';
-				$html .= htmlspecialchars($s['trend']);
+				$html .= htmlspecialchars((string) ($s['trend']));
 				$html .= '</div>';
 			}
 			$html .= '</div>';
@@ -56,8 +63,8 @@ class Admin extends Controller_Module
 				$html .= '<a class="nf-quick-action" href="'.url($a['url']).'">';
 				$html .= '<div class="nf-quick-action-icon"><i class="'.$a['icon'].'"></i></div>';
 				$html .= '<div>';
-				$html .= '<div class="nf-quick-action-title">'.htmlspecialchars($a['title']).'</div>';
-				$html .= '<div class="nf-quick-action-desc">'.htmlspecialchars($a['desc']).'</div>';
+				$html .= '<div class="nf-quick-action-title">'.htmlspecialchars((string) ($a['title'])).'</div>';
+				$html .= '<div class="nf-quick-action-desc">'.htmlspecialchars((string) ($a['desc'])).'</div>';
 				$html .= '</div></a>';
 			}
 			$html .= '</div>';
@@ -70,7 +77,7 @@ class Admin extends Controller_Module
 		$html .= '<div class="card"><div class="card-header"><span><i class="far fa-clock"></i> '.$this->lang('Activité récente').'</span></div>';
 		if (empty($activity))
 		{
-			$html .= '<div class="nf-empty"><i class="far fa-clock"></i>'.htmlspecialchars($this->lang('Aucune activité enregistrée pour le moment.')).'</div>';
+			$html .= '<div class="nf-empty"><i class="far fa-clock"></i>'.htmlspecialchars((string) ($this->lang('Aucune activité enregistrée pour le moment.'))).'</div>';
 		}
 		else
 		{
@@ -96,15 +103,15 @@ class Admin extends Controller_Module
 		foreach ($system as $row)
 		{
 			$html .= '<div class="nf-system-row">';
-			$html .= '<span class="nf-system-label">'.htmlspecialchars($row['label']).'</span>';
+			$html .= '<span class="nf-system-label">'.htmlspecialchars((string) ($row['label'])).'</span>';
 			if (!empty($row['badge']))
 			{
-				$html .= '<span class="badge '.$row['badge_class'].'">'.htmlspecialchars($row['badge']).'</span>';
+				$html .= '<span class="badge '.$row['badge_class'].'">'.htmlspecialchars((string) ($row['badge'])).'</span>';
 			}
 			else
 			{
 				$cls = !empty($row['mono']) ? 'nf-system-value mono' : 'nf-system-value';
-				$html .= '<span class="'.$cls.'">'.htmlspecialchars($row['value']).'</span>';
+				$html .= '<span class="'.$cls.'">'.htmlspecialchars((string) ($row['value'])).'</span>';
 			}
 			$html .= '</div>';
 		}
@@ -117,8 +124,8 @@ class Admin extends Controller_Module
 			foreach ($notifs as $n)
 			{
 				$html .= '<div style="padding:12px 18px;border-bottom:1px solid var(--nf-border);">';
-				$html .= '<div style="font-size:13px;font-weight:500;margin-bottom:2px;">'.htmlspecialchars($n['title']).'</div>';
-				$html .= '<a href="'.url($n['url']).'" style="font-size:12px;">'.htmlspecialchars($n['action']).' →</a>';
+				$html .= '<div style="font-size:13px;font-weight:500;margin-bottom:2px;">'.htmlspecialchars((string) ($n['title'])).'</div>';
+				$html .= '<a href="'.url($n['url']).'" style="font-size:12px;">'.htmlspecialchars((string) ($n['action'])).' →</a>';
 				$html .= '</div>';
 			}
 			$html .= '</div></div>';
@@ -185,13 +192,13 @@ class Admin extends Controller_Module
 		// fullscreen, insertdatetime, code, help, preview).
 
 		$html  = '<div class="card mt-3"><div class="card-header d-flex justify-content-between align-items-center">';
-		$html .= '<span><i class="fas fa-user-shield"></i> '.htmlspecialchars($this->lang('Chatbox staff')).' <small class="text-muted">— '.htmlspecialchars($name).'</small></span>';
-		$html .= '<a href="'.$conv_url.'" class="btn btn-sm btn-outline-primary"><i class="far fa-comment-dots"></i> '.htmlspecialchars($this->lang('Ouvrir la conversation')).'</a>';
+		$html .= '<span><i class="fas fa-user-shield"></i> '.htmlspecialchars((string) ($this->lang('Chatbox staff'))).' <small class="text-muted">— '.htmlspecialchars((string) ($name)).'</small></span>';
+		$html .= '<a href="'.$conv_url.'" class="btn btn-sm btn-outline-primary"><i class="far fa-comment-dots"></i> '.htmlspecialchars((string) ($this->lang('Ouvrir la conversation'))).'</a>';
 		$html .= '</div>';
 		$html .= '<div id="nf-staff-chat-messages" style="padding:14px 18px; max-height:300px; overflow-y:auto;">';
 		if (empty($messages))
 		{
-			$html .= '<div class="text-muted text-center" style="padding:20px;"><i class="far fa-comment fa-2x"></i><br>'.htmlspecialchars($this->lang('Aucun message pour l\'instant. Soyez le premier à écrire dans la chatbox staff.')).'</div>';
+			$html .= '<div class="text-muted text-center" style="padding:20px;"><i class="far fa-comment fa-2x"></i><br>'.htmlspecialchars((string) ($this->lang('Aucun message pour l\'instant. Soyez le premier à écrire dans la chatbox staff.'))).'</div>';
 		}
 		else
 		{
@@ -199,7 +206,7 @@ class Admin extends Controller_Module
 			{
 				$is_me = (int)$m['user_id'] === (int)$this->user->id;
 				$html .= '<div style="margin-bottom:10px;text-align:'.($is_me ? 'right' : 'left').';">';
-				$html .= '<small class="text-muted">'.htmlspecialchars($m['username'] ?? '?').' · '.time_span(strtotime($m['date'])).'</small>';
+				$html .= '<small class="text-muted">'.htmlspecialchars((string) ($m['username'] ?? '?')).' · '.time_span(strtotime($m['date'])).'</small>';
 				$html .= '<div style="display:inline-block;max-width:85%;padding:10px 14px;background:'.($is_me ? 'rgba(13,110,253,0.10)' : 'rgba(0,0,0,0.04)').';border-radius:12px;text-align:left;">';
 				$html .= \NF\Modules\Talks\Security::render_staff_message((string)$m['message']);
 				$html .= '</div></div>';
@@ -209,8 +216,8 @@ class Admin extends Controller_Module
 
 		// Form TinyMCE : textarea native + tinymce.init pour la richesse
 		$html .= '<form method="post" action="'.$send_url.'" style="padding:12px 18px;border-top:1px solid var(--nf-border);" id="nf-staff-chat-form">';
-		$html .= '<textarea name="talk_message" id="nf-staff-chat-editor" placeholder="'.htmlspecialchars($this->lang('Écrire un message au staff…')).'"></textarea>';
-		$html .= '<div class="text-end mt-2"><button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i> '.htmlspecialchars($this->lang('Envoyer')).'</button></div>';
+		$html .= '<textarea name="talk_message" id="nf-staff-chat-editor" placeholder="'.htmlspecialchars((string) ($this->lang('Écrire un message au staff…'))).'"></textarea>';
+		$html .= '<div class="text-end mt-2"><button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i> '.htmlspecialchars((string) ($this->lang('Envoyer'))).'</button></div>';
 		$html .= '</form>';
 		$html .= '</div>';
 
@@ -307,7 +314,7 @@ class Admin extends Controller_Module
 			'label' => $this->lang('Bugs ouverts'),
 			'icon'  => 'fas fa-bug',
 			'value' => number_format($bugs, 0, ',', ' '),
-			'trend' => $critical > 0 ? $critical.' '.$this->lang('critique|critiques', $critical) : ($bugs === 0 ? $this->lang('Aucun bug en cours') : $this->lang('Aucun critique')),
+			'trend' => $critical > 0 ? $this->lang('%d critique|%d critiques', $critical, $critical) : ($bugs === 0 ? $this->lang('Aucun bug en cours') : $this->lang('Aucun critique')),
 			'trend_class' => $critical > 0 ? 'down' : ($bugs === 0 ? 'up' : ''),
 			'trend_icon'  => $critical > 0 ? 'fas fa-exclamation-triangle' : ($bugs === 0 ? 'fas fa-check' : 'fas fa-clipboard-check')
 		];
@@ -320,10 +327,10 @@ class Admin extends Controller_Module
 		$out = [];
 
 		$candidates = [
-			['articles', 'fas fa-plus',     'Nouvel article',     'Publier du contenu long', 'admin/articles'],
-			['pages',    'far fa-file',     'Nouvelle page',      'Page statique',           'admin/pages'],
-			['media',    'fas fa-upload',   'Uploader média',     'Image, fichier, vidéo',   'admin/media'],
-			['surveys',  'far fa-chart-bar','Lancer un sondage',  'Demander l\'avis',        'admin/surveys']
+			['articles', 'fas fa-plus',      $this->lang('Nouvel article'),    $this->lang('Publier du contenu long'), 'admin/articles'],
+			['pages',    'far fa-file',      $this->lang('Nouvelle page'),     $this->lang('Page statique'),           'admin/pages'],
+			['media',    'fas fa-upload',    $this->lang('Uploader média'),    $this->lang('Image, fichier, vidéo'),   'admin/media'],
+			['surveys',  'far fa-chart-bar', $this->lang('Lancer un sondage'), $this->lang('Demander l\'avis'),        'admin/surveys']
 		];
 
 		foreach ($candidates as $c)
@@ -334,8 +341,8 @@ class Admin extends Controller_Module
 				{
 					$out[] = [
 						'icon'  => $c[1],
-						'title' => $this->lang($c[2]),
-						'desc'  => $this->lang($c[3]),
+						'title' => $c[2],
+						'desc'  => $c[3],
 						'url'   => $c[4]
 					];
 				}
@@ -349,9 +356,20 @@ class Admin extends Controller_Module
 	{
 		$out = [];
 
-		// Audit log if available
+		/**
+		 * Journal d'audit.
+		 *
+		 * La colonne `a.target` n'existe PAS : la table porte `target_type` et `target_id`, comme
+		 * celle de la moderation. La requete echouait donc a chaque chargement du tableau de bord,
+		 * `$rows` valait NULL, et le `foreach` qui suit levait un avertissement — apres quoi le
+		 * `catch` renvoyait vers le repli. Resultat : le journal d'audit n'affichait JAMAIS rien,
+		 * et le tableau de bord montrait a la place la liste de repli, sans que rien ne le dise.
+		 *
+		 * Le `catch (\Throwable)` en fin de bloc, pose pour le cas ou la table serait absente,
+		 * masquait ainsi une erreur de requete permanente.
+		 */
 		try {
-			$rows = $this->db->select('a.id', 'a.user_id', 'a.action', 'a.target', 'a.created_at', 'u.username')
+			$rows = $this->db->select('a.id', 'a.user_id', 'a.action', 'a.target_type', 'a.target_id', 'a.created_at', 'u.username')
 				->from('nf_audit_log a')
 				->join('nf_user u', 'u.id = a.user_id', 'LEFT')
 				->order_by('a.id DESC')->limit(8)->get();
@@ -364,15 +382,18 @@ class Admin extends Controller_Module
 				elseif (strpos($action, 'login') !== FALSE) { $kind = 'login'; $icon = 'fas fa-sign-in-alt'; }
 
 				$author = $r['username']
-					? '<strong>'.htmlspecialchars($r['username']).'</strong>'
-					: '<em>'.htmlspecialchars($this->lang('Anonyme')).'</em>';
+					? '<strong>'.htmlspecialchars((string) ($r['username'])).'</strong>'
+					: '<em>'.htmlspecialchars((string) ($this->lang('Anonyme'))).'</em>';
 
 				$ts = !empty($r['created_at']) ? strtotime($r['created_at']) : time();
+
+				// La cible se lit en deux morceaux : « theme » + « vitrine » -> « theme vitrine ».
+				$cible = trim(($r['target_type'] ?? '').' '.($r['target_id'] ?? ''));
 
 				$out[] = [
 					'kind'  => $kind,
 					'icon'  => $icon,
-					'title' => $author.' — '.htmlspecialchars($r['action']).(!empty($r['target']) ? ' <span style="color:var(--nf-text-muted)">'.htmlspecialchars($r['target']).'</span>' : ''),
+					'title' => $author.' — '.htmlspecialchars((string) ($r['action'])).($cible !== '' ? ' <span style="color:var(--nf-text-muted)">'.htmlspecialchars((string) ($cible)).'</span>' : ''),
 					'meta'  => time_span($ts)
 				];
 			}
@@ -390,7 +411,7 @@ class Admin extends Controller_Module
 				if (!$ts) continue;
 				$out[] = [
 					'kind' => 'login', 'icon' => 'fas fa-user-plus',
-					'title' => '<strong>'.htmlspecialchars($u['username']).'</strong> — '.htmlspecialchars($this->lang('Inscription')),
+					'title' => '<strong>'.htmlspecialchars((string) ($u['username'])).'</strong> — '.htmlspecialchars((string) ($this->lang('Inscription'))),
 					'meta'  => $this->lang('Utilisateurs').' · '.time_span($ts),
 					'_ts'   => $ts
 				];
@@ -409,7 +430,7 @@ class Admin extends Controller_Module
 				$ts = !empty($r['date']) ? strtotime($r['date']) : time();
 				$out[] = [
 					'kind' => 'create', 'icon' => 'far fa-newspaper',
-					'title' => '<strong>'.htmlspecialchars($r['username'] ?: $this->lang('Anonyme')).'</strong> — '.htmlspecialchars($this->lang('Article publié')).' : <em>'.htmlspecialchars($r['title']).'</em>',
+					'title' => '<strong>'.htmlspecialchars((string) ($r['username'] ?: $this->lang('Anonyme'))).'</strong> — '.htmlspecialchars((string) ($this->lang('Article publié'))).' : <em>'.htmlspecialchars((string) ($r['title'])).'</em>',
 					'meta'  => $this->lang('Articles').' · '.time_span($ts),
 					'_ts'   => $ts
 				];

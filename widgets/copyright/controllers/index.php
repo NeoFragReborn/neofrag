@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -19,7 +20,17 @@ class Index extends Controller_Widget
 			'copyright' => icon('far fa-copyright')
 		];
 
-		if (!in_string('{neofrag}', $copyright = utf8_html_entity_decode($this->config->nf_copyright)))
+		$copyright = utf8_html_entity_decode($this->config->nf_copyright);
+
+		// Le texte LIVRÉ (install/seed.sql) est écrit en français : tant que l'administrateur ne l'a pas
+		// changé, il se traduit. Il s'affichait « tous droits réservés » au pied de chaque page, dans
+		// les six langues (2026-09-23). Un texte personnalisé reste le sien.
+		if ($copyright === 'Copyright {copyright} {year} {name}, tous droits réservés <div class="float-end">Propulsé par {neofrag}</div>')
+		{
+			$copyright = $this->lang('Copyright %s %s %s, tous droits réservés', '{copyright}', '{year}', '{name}').' <div class="float-end">'.$this->lang('Propulsé par %s', '{neofrag}').'</div>';
+		}
+
+		if (!in_string('{neofrag}', $copyright))
 		{
 			$copyright .= '<div class="float-end">'.$this->lang('Propulsé par %s', '{neofrag}').'</div>';
 		}

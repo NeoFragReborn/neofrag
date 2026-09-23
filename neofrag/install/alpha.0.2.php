@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -411,7 +412,7 @@ class i_0_2 extends NeoFrag
 		}
 
 		//Copyright
-		$this->config('nf_copyright', utf8_htmlentities('Copyright {copyright} {year} {name}, tous droits réservés <div class="pull-right">Propulsé par {neofrag}</div>'));
+		$this->config('nf_copyright', utf8_htmlentities('Copyright {copyright} {year} {name}, tous droits réservés <div class="float-end">Propulsé par {neofrag}</div>'));
 		$this->db->insert('nf_addon', [
 			'type_id' => 3,
 			'name'    => 'copyright',

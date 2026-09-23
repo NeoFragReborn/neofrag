@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -13,12 +14,13 @@ class Authenticator_Github extends Authenticator
 	protected function __info()
 	{
 		return [
-			'title'   => 'GitHub',
-			'icon'    => 'fab fa-github',
-			'color'   => '#24292e',
-			'help'    => 'https://github.com/settings/applications/new',
-			'version' => '1.0',
-			'depends' => [
+			'title'       => 'GitHub',
+			'description' => $this->lang('Connexion par un compte GitHub. Demande une application OAuth déclarée chez GitHub.'),
+			'icon'        => 'fab fa-github',
+			'color'       => '#24292e',
+			'help'        => 'https://github.com/settings/applications/new',
+			'version'     => '1.0',
+			'depends'     => [
 				'addon/authenticator' => '1.0'
 			]
 		];

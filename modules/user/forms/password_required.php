@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -14,7 +15,7 @@ $this	->rule($this->form_password('password')
 					->check(function($data){
 						if ($data['password'] && $data['password'] !== $data['password_confirm'])
 						{
-							return 'Les mots de passe de correspondent pas';
+							return $this->lang('Les mots de passe ne correspondent pas');
 						}
 					})
 		);

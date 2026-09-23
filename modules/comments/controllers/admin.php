@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -44,20 +45,20 @@ class Admin extends Controller_Module
 			$count++;
 			$module_name = preg_replace('/_.*$/', '', $comment->module);
 			$module_info = $this->module($module_name) ? $this->module($module_name)->info() : NULL;
-			$module_label = $module_info ? '<i class="'.$module_info->icon.'"></i> '.htmlspecialchars($module_info->title) : htmlspecialchars($module_name);
+			$module_label = $module_info ? '<i class="'.$module_info->icon.'"></i> '.htmlspecialchars((string) ($module_info->title)) : htmlspecialchars((string) ($module_name));
 
 			$body .= '<div class="nf-content-card">';
 			$body .= '<div class="nf-content-card-head">';
 			$body .= '<div class="nf-content-card-title"><input type="checkbox" name="selected[]" value="'.(int)$comment->id.'" class="nf-bulk-cb" style="margin-right:6px;vertical-align:middle;">'.$comment->user->link().'</div>';
 			$body .= '<span class="nf-content-card-status published"><i class="far fa-comments"></i> '.$module_label.'</span>';
 			$body .= '</div>';
-			$body .= '<div class="nf-content-card-desc">'.htmlspecialchars(strip_tags((string)$comment->content)).'</div>';
+			$body .= '<div class="nf-content-card-desc">'.htmlspecialchars((string) (strip_tags((string)$comment->content))).'</div>';
 			$body .= '<div class="nf-content-card-meta">';
 			$body .= '<span><i class="far fa-clock"></i> '.htmlspecialchars((string)$comment->date).'</span>';
 			$body .= '</div>';
 			$body .= '<div class="nf-content-card-foot">';
 			$body .= '<span class="nf-content-card-spacer"></span>';
-			$body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('ajax/comments/delete/'.$comment->id).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ce commentaire ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+			$body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('ajax/comments/delete/'.$comment->id).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce commentaire ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 			$body .= '</div>';
 			$body .= '</div>';
 		}
@@ -71,13 +72,32 @@ class Admin extends Controller_Module
 		{
 			$bulk_bar = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">'
 				.'<label style="display:flex;align-items:center;gap:6px;font-size:13px;margin:0;cursor:pointer;"><input type="checkbox" id="nf-bulk-all"> '.$this->lang('Tout sélectionner').'</label>'
-				.'<button type="submit" name="bulk_delete" value="1" class="btn btn-sm btn-outline-danger" data-confirm="'.htmlspecialchars($this->lang('Supprimer les commentaires sélectionnés ?'), ENT_QUOTES).'"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer la sélection').'</button>'
+				.'<button type="submit" name="bulk_delete" value="1" class="btn btn-sm btn-outline-danger" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer les commentaires sélectionnés ?')), ENT_QUOTES).'"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer la sélection').'</button>'
 				.'</div>';
 
-			$body = '<form method="post" action="'.htmlspecialchars(url($this->url->request), ENT_QUOTES).'"><input type="hidden" name="_" value="'.$this->csrf_token().'">'.$bulk_bar.$body.'</form>'
+			$body = '<form method="post" action="'.htmlspecialchars((string) (url($this->url->request)), ENT_QUOTES).'"><input type="hidden" name="_" value="'.$this->csrf_token().'">'.$bulk_bar.$body.'</form>'
 				.'<script>(function(){var a=document.getElementById("nf-bulk-all");if(a){a.addEventListener("change",function(){document.querySelectorAll(".nf-bulk-cb").forEach(function(c){c.checked=a.checked;});});}})();</script>';
 		}
 
 		return $this->admin_card('far fa-comments', $this->lang('Commentaires'), $body, $count.' '.$this->lang('commentaire|commentaires', $count));
+	}
+
+	/**
+	 * Les commentaires d'un contenu précis.
+	 *
+	 * Même écran que la liste complète, restreint à un module et à un identifiant. Le rendu est
+	 * délégué à `index()` : dupliquer la vue aurait garanti qu'elles divergent.
+	 */
+	public function _module($comments, $module, $module_id)
+	{
+		$retour = $this->admin_back('admin/comments', $this->lang('Tous les commentaires'));
+
+		$corps = $this->index($comments);
+
+		// `index()` a posé son propre titre : on le précise, pour qu'on sache de quoi on lit les
+		// commentaires plutôt que de croire les voir tous.
+		$this->subtitle($this->lang('%s n°%d', ucfirst($module), $module_id));
+
+		return $retour.$corps;
 	}
 }

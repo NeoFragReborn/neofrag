@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Provider Twitch — token app (client_credentials) + Helix users/streams, normalisé.

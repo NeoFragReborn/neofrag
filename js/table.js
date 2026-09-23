@@ -1,5 +1,7 @@
 NF.ready(function(){
 	var request = {};
+	var TOUT_DESELECTIONNER = '<?php echo addslashes($this->lang('Désélectionner tout')) ?>';
+	var TOUT_SELECTIONNER   = '<?php echo addslashes($this->lang('Sélectionner toutes les lignes')) ?>';
 
 	function ajaxTable(table, params){
 		var tableId = NF.data(table, 'table-id');
@@ -31,7 +33,7 @@ NF.ready(function(){
 			document.querySelectorAll('td > input[type="checkbox"].table-checkbox').forEach(function(cb){
 				cb.checked = head.checked;
 			});
-			var label = head.checked ? 'Désélectionner tout' : 'Sélectionner toutes les lignes';
+			var label = head.checked ? TOUT_DESELECTIONNER : TOUT_SELECTIONNER;
 			head.setAttribute('data-bs-original-title', label);
 			bootstrap.Tooltip.getOrCreateInstance(head).show();
 			return;
@@ -41,7 +43,7 @@ NF.ready(function(){
 		if (cell){
 			var all     = document.querySelectorAll('td > input[type="checkbox"].table-checkbox');
 			var checked = document.querySelectorAll('td > input[type="checkbox"].table-checkbox:checked');
-			var label2  = cell.checked ? 'Désélectionner tout' : 'Sélectionner toutes les lignes';
+			var label2  = cell.checked ? TOUT_DESELECTIONNER : TOUT_SELECTIONNER;
 			document.querySelectorAll('th > input[type="checkbox"].table-checkbox').forEach(function(h){
 				h.checked = all.length === checked.length;
 				h.setAttribute('data-bs-original-title', label2);
@@ -67,8 +69,11 @@ NF.ready(function(){
 		var table = input.closest('.table-area');
 
 		var feedback = input.nextElementSibling;
-		if (!feedback || !feedback.classList.contains('form-control-feedback')){
-			input.insertAdjacentHTML('afterend', '<span class="form-control-feedback" style="background: url(<?php echo image('ajax-loader.gif') ?>) 50% 50% no-repeat;"></span>');
+		// L'indicateur de chargement : un `spinner-border` de Bootstrap 5, posé dans le champ. Il
+		// remplace le `form-control-feedback` de Bootstrap 3 : Bootstrap 5 ne le dimensionne ni ne le
+		// place plus, et l'image de chargement n'apparaissait nulle part.
+		if (!feedback || !feedback.classList.contains('nf-table-search-spinner')){
+			input.insertAdjacentHTML('afterend', '<span class="nf-table-search-spinner spinner-border spinner-border-sm position-absolute top-50 end-0 translate-middle-y me-2" role="status"></span>');
 		}
 
 		var params = new URLSearchParams(NF.data(table, 'ajax-post') || '');
@@ -76,7 +81,7 @@ NF.ready(function(){
 
 		ajaxTable(table, params).then(function(){
 			var fb = input.nextElementSibling;
-			if (fb && fb.classList.contains('form-control-feedback')){ fb.remove(); }
+			if (fb && fb.classList.contains('nf-table-search-spinner')){ fb.remove(); }
 		});
 	});
 });

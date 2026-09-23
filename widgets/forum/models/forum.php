@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -45,11 +46,14 @@ class Forum extends Model
 	{
 		$categories = [];
 
-		foreach ($this->db->select('category_id')->from('nf_forum_categories')->get() as $category)
+		// Une requête à UNE colonne rend des scalaires, pas des lignes (`Db::get()`). La version
+		// précédente lisait `$category['category_id']` sur un entier : aucune catégorie n'était
+		// retenue, et le widget n'affichait jamais aucun sujet.
+		foreach ($this->db->select('category_id')->from('nf_forum_categories')->get() as $category_id)
 		{
-			if ($this->access('forum', 'category_read', $category['category_id']))
+			if ($this->access('forum', 'category_read', $category_id))
 			{
-				$categories[] = $category['category_id'];
+				$categories[] = $category_id;
 			}
 		}
 

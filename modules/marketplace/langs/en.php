@@ -1,6 +1,12 @@
 <?php
+declare(strict_types=1);
 
 return [
+	'048bb149' => 'Installation',
+	'22855b03' => 'Archive to upload from the administration',
+	'4f98863b' => 'Identifier',
+	'656d000a' => 'SHA-256 checksum',
+	'd217dfd4' => 'License',
 	'e0a855b1' => 'Marketplace',
 	'd1871ac3' => 'Theme',
 	'847ab781' => 'Connectors',
@@ -14,4 +20,16 @@ return [
 	'8aea98fb' => 'View details',
 	'6155f804' => 'NeoFrag Reborn addon.',
 	'99ceec93' => 'Installation: download the .zip then go to <b>Admin → Themes &amp; Addons → Add</b> and upload the archive.',
+	'f719f98e' => 'Put it on the disk, then use « Scan the disk »',
+	'e10a7a4b' => 'Modules',
+	'52e5dd5d' => 'Widgets',
+	'82551be6' => 'Widget',
+	'5110bd54' => 'By',
+	'a026ae67' => 'Category',
+	'71fc8e0e' => 'Size',
+	'445a0d6e' => 'Download',
+	'c399f4a5' => 'Details',
+	'27ddca37' => 'Public catalogue of downloadable modules, widgets and themes.',
+	'161e537a' => '%s MB',
+	'4044f4fc' => '%s KB',
 ];

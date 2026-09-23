@@ -1,15 +1,20 @@
-# Composants — NeoFrag Reborn 1.0.0
+# Composants — NeoFrag Reborn 1.1.0
 
-Inventaire des **54 modules · 39 widgets · 7 thèmes**. L'état/bugs de chaque composant
-est dans [historique.md](internal/historique.md) ; l'architecture du framework dans [architecture.md](architecture.md).
+Inventaire des **60 modules · 40 widgets · 7 thèmes**. L'état/bugs de chaque composant
+est dans [historique.md](internal/archive/historique.md) ; l'architecture du framework dans [architecture.md](architecture.md).
 La pile gamification/boutique/monétisation a sa doc dédiée : [gamification.md](gamification.md).
 
 ## Anatomie d'un module
 
 Un module = un dossier `modules/{x}/` avec un manifeste `{x}.php` (`namespace NF\Modules\{X}`,
 étend `NF\NeoFrag\Addons\Module`) qui déclare :
-- **`__info()`** : titre, icône, dépendances, et le tableau **`routes`** (URL → méthode) ; parfois un
-  callback **`settings`** (form de config) ;
+- **`__info()`** : titre, icône (qui doit exister dans le FontAwesome embarqué), les trois **déclarations de
+  découplage** `core` / `presets` / `requires` (obligatoires — la CI refuse un addon muet), le tableau
+  **`routes`** (URL → méthode), `'admin' => TRUE` s'il a une administration ; parfois `settings` ;
+- **`declare_content_types()`** (modules de contenu) : les tables que réactions, abonnements, révisions,
+  corbeille et gamification collectent ;
+- **`controllers/statistics|activity|dashboard|block|search.php`** (optionnels) : les **carrefours**, dont
+  les méthodes sont figées par `tools/check-addon-contracts.php` ;
 - **`permissions()`** (optionnel) : arbre de permissions RBAC ;
 - **`__init()`** (optionnel) : listeners sur l'event bus v0.4.
 - **controllers/** : variantes `index` / `admin` / `ajax` / `admin_ajax` / `api` + `*_checker.php`
@@ -23,11 +28,14 @@ dans `nf_addon_migrations`).
 
 ## Anatomie d'un widget
 
-`widgets/{x}/{x}.php` (`namespace NF\Widgets\{X}`, étend `…Addons\Widget`) avec `__info()` (+ souvent
-un tableau `types` de variantes de rendu), `controllers/` (`index`=rendu, `admin`=config,
-`checker`=validation), `views/*.tpl.php`, `langs/`.
+`widgets/{x}/{x}.php` (`namespace NF\Widgets\{X}`, étend `…Addons\Widget`) avec `__info()` (icône
+obligatoire, `core` / `presets` / `requires`, + souvent un tableau `types` de variantes de rendu),
+`controllers/` (`index` = rendu, `admin` = formulaire de réglages — son absence fait sauter l'étape
+« Configuration » de l'assistant, `checker` = validation **avec valeurs de repli** pour un widget posé sans
+réglages, cf. `tools/check-widget-reglages.php`), `views/*.tpl.php`, `langs/`. Les feuilles n'emploient
+que le vocabulaire `--nf-*` que tous les thèmes définissent (`tools/check-css-variables.php`).
 
-## 54 modules (par domaine)
+## 60 modules (par domaine)
 
 **Système & core (19)** — `access` (RBAC : rôles/permissions, audit log) · `addons` (install/activation) ·
 `admin` (dashboard back-office) · `user` (inscription, login 2FA, profil, RGPD, export membres CSV/JSON) ·
@@ -42,9 +50,19 @@ générique, news/articles) · `trash` (corbeille soft-delete cross-module : new
 `webhooks` (webhooks sortants signés HMAC déclenchés par les événements) · `marketplace` (catalogue public
 d'addons + téléchargement, miroir de la vitrine).
 
-**Contenu (12)** — `news` · `articles` (blog) · `wiki` (+ révisions) · `faq` · `downloads` · `links` ·
+**Contenu (15)** — `news` · `articles` (blog) · `wiki` (+ révisions) · `faq` · `downloads` · `links` ·
 `gallery` · `media` (bibliothèque d'uploads) · `slider` · `guestbook` · `calendar` (+ export iCal) ·
-`feeds` (flux RSS 2.0 des news et articles).
+`feeds` (flux RSS 2.0 des news et articles) · `quotes` (citations classées, avec auteur et source) ·
+`recipes` (recettes : ingrédients et étapes une par ligne, durées, balisage `schema.org/Recipe`) ·
+`glossary` (lexique rangé par lettre, accents et ligatures ramenés à leur lettre, synonymes) ·
+`places` (carte OpenStreetMap, Leaflet auto-hébergé, aucune image de la bibliothèque embarquée,
+page utilisable sans JavaScript) · `webradio` (lecteur `<audio>` d'un flux distant et grille
+hebdomadaire ; **le seul module qui ouvre la politique de sécurité** — `media-src` reçoit
+l'origine du flux configuré, et rien si aucun flux ne l'est) · `sandbox` (bac à sable de mise
+en forme réservé aux membres : le rendu passe par la MÊME fonction que le forum, et le module
+affiche ce que l'assainissement a retiré — la seule page du produit qui l'explique).
+Les trois derniers partagent le moule de `faq` : catégories d'un côté, entrées de l'autre, page
+publique et écran d'administration avec recherche, filtre et tri.
 
 **Gaming (6)** — `teams` · `games` (jeux/maps/modes) · `events` (tournois/matchs/rounds) · `recruits`
 (recrutement + formulaire personnalisable) · `awards` · `partners`.
@@ -62,18 +80,22 @@ contenu/catégorie) · `reactions` (likes polymorphes : commentaires/articles/ne
 publicitaire, masquée pour les membres no_ads/VIP) · `payments` (Stripe : recharge de points + packs VIP,
 webhook signé). Détail : [gamification.md](gamification.md).
 
-## 39 widgets
+## 40 widgets
+
+> L'accueil du thème **vitrine** (hero, features, roadmap) n'est plus un widget : il est **ancré dans
+> le thème** (`themes/vitrine/views/landing.tpl.php`, rendu par `body.tpl.php` sur la home).
 
 - **Contenu** : `news`, `articles`, `awards`, `calendar`, `donations`, `downloads`, `events`, `forum`,
   `gallery`, `guestbook`, `links`, `members`, `newsletter`, `partners`, `recruits`, `slider`,
   `surveys`, `talks`, `teams`, `user`, `video` (player HTML5 + playlist depuis la médiathèque),
   `latest_comments` (derniers commentaires cross-module) — présentateurs sur leur module.
-- **Landing / vitrine** : `landing` (page d'accueil vitrine : hero, features, roadmap publique).
 - **Services externes** : `discord`, `steam`, `twitch`, `teamspeak`, `gameserver` (utilisent les libs
   vendor planetteamspeak/ts3 + xpaw/php-source-query), `socials`.
 - **Structure / divers** : `navigation`, `breadcrumb`, `header`, `about`, `clock`, `copyright`,
   `html` (saisie de code HTML), `search`, `module` (méta-widget d'insertion), `ads` (annonce de la régie
-  par emplacement, masquée pour no_ads/VIP).
+  par emplacement, masquée pour no_ads/VIP), `rss` (lecteur d'un flux RSS/Atom extérieur, en cache, rafraîchi par le cron —
+  à ne pas confondre avec le module `feeds`, qui PUBLIE nos propres flux), `seasonal` (neige, confettis ou feuilles sur une plage de
+  dates `MM-JJ` pouvant enjamber le Nouvel An ; rendu côté serveur, rien du tout hors saison).
 
 ## 10 addons
 

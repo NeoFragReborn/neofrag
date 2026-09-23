@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 return [
 	// i18n 2026-06-11 (code strings)
 	'7cbecb62' => 'Diapositivas del widget slider',
@@ -35,4 +36,13 @@ return [
 	'aa7a6e6a' => '¿Confirmar la eliminación de esta diapositiva?',
 	'3ff2b02c' => 'Arrastra las filas para reordenar, luego haz clic en «Guardar orden».',
 	'a3d90926' => 'Guardar orden',
+	'c86b1531' => 'Slider',
+	'ae6af5c0' => 'Enlace (opcional)',
+	'8fd9c7ef' => 'Guardar',
+	'04fc2b5b' => 'Imagen',
+	'c9340a06' => 'Activo',
+	'caf5c873' => 'Acciones',
+	'b0d653e1' => 'Inactivo',
+	'eb6693d4' => 'Desactivar',
+	'52c9bbab' => 'Modificar',
 ];

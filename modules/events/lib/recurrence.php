@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Calcul PUR (locator-free) des dates d'une série récurrente. Sortie consommée par le contrôleur

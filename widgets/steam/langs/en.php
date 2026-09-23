@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'ebdd91b9' => 'Steam group',

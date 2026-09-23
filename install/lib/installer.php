@@ -19,6 +19,10 @@ namespace NF\Install\Lib;
 use mysqli;
 use RuntimeException;
 
+// Les messages d'erreur de l'installeur remontent jusqu'à l'écran — de l'assistant, ou de l'administration
+// quand elle met à jour le CMS, restaure une sauvegarde ou installe un addon : ils passent par lang().
+require_once __DIR__.'/langue.php';
+
 final class Installer
 {
 	const MIGRATIONS_TABLE = 'nf_migrations';
@@ -95,7 +99,7 @@ final class Installer
 
 		if ($db->connect_errno)
 		{
-			throw new RuntimeException('Connexion BDD impossible : '.$db->connect_error);
+			throw new RuntimeException(lang('Connexion à la base impossible : %s', $db->connect_error));
 		}
 
 		$db->set_charset('utf8mb4');
@@ -130,12 +134,12 @@ final class Installer
 
 		if (!$server->query("CREATE DATABASE IF NOT EXISTS `{$name}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"))
 		{
-			throw new RuntimeException('Création de la base impossible : '.$server->error);
+			throw new RuntimeException(lang('Création de la base impossible : %s', $server->error));
 		}
 
 		if (!$server->select_db($name))
 		{
-			throw new RuntimeException('Sélection de la base impossible : '.$server->error);
+			throw new RuntimeException(lang('Sélection de la base impossible : %s', $server->error));
 		}
 	}
 
@@ -151,7 +155,7 @@ final class Installer
 		$dir = rtrim($config_dir, '/\\');
 		if (!is_dir($dir) && !@mkdir($dir, 0775, TRUE) && !is_dir($dir))
 		{
-			throw new RuntimeException("Dossier de config non inscriptible : {$dir}");
+			throw new RuntimeException(lang('Dossier de configuration non inscriptible : %s', $dir));
 		}
 
 		$db = [
@@ -159,8 +163,16 @@ final class Installer
 			'username' => (string) ($cfg['username'] ?? 'root'),
 			'password' => (string) ($cfg['password'] ?? ''),
 			'database' => (string) ($cfg['database'] ?? 'neofrag'),
-			'driver'   => 'mysqli',
 		];
+
+		// Port : persisté UNIQUEMENT s'il diffère du défaut MySQL (3306), pour garder les config
+		// standards propres. Le runtime (neofrag/drivers/mysqli.php) le lit et le passe à mysqli().
+		if (!empty($cfg['port']) && (int) $cfg['port'] !== 3306)
+		{
+			$db['port'] = (int) $cfg['port'];
+		}
+
+		$db['driver'] = 'mysqli';
 
 		$db_php = "<?php\n\n\$db[] = [\n";
 		foreach ($db as $key => $value)
@@ -283,7 +295,7 @@ final class Installer
 		$sql = @file_get_contents($path);
 		if ($sql === FALSE || trim($sql) === '')
 		{
-			throw new RuntimeException("Fichier SQL vide ou illisible : {$path}");
+			throw new RuntimeException(lang('Fichier SQL vide ou illisible : %s', $path));
 		}
 
 		$file = basename($path);
@@ -328,10 +340,10 @@ final class Installer
 	{
 		error_log("[install] import {$file} : {$raw}");
 
-		throw new RuntimeException(
-			"L'import de la base a échoué ({$file}). Vérifiez que la base est vide et que l'utilisateur "
-			."MySQL dispose des droits nécessaires. Détails techniques dans logs/php.log."
-		);
+		throw new RuntimeException(lang(
+			'L\'import de la base a échoué (%s). Vérifiez que la base est vide et que l\'utilisateur MySQL dispose des droits nécessaires. Détails techniques dans logs/php.log.',
+			$file
+		));
 	}
 
 	// === Migrations (miroir silencieux de tools/migrate.php) ===================
@@ -398,7 +410,7 @@ final class Installer
 				PRIMARY KEY (id),
 				UNIQUE KEY uniq_name (name)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
-		) || self::throw_db('Création table '.self::MIGRATIONS_TABLE, $db);
+		) || self::throw_db(lang('Création de la table %s', self::MIGRATIONS_TABLE), $db);
 	}
 
 	/** @return string[] noms (sans .up.sql), triés chronologiquement (préfixe daté). */
@@ -477,7 +489,7 @@ final class Installer
 			 VALUES (?, ?, '', ?, NOW(), NOW(), '1', NULL, '', '0')"
 		);
 		$stmt->bind_param('sss', $username, $hash, $email);
-		$stmt->execute() || self::throw_db('Création du compte admin', $db);
+		$stmt->execute() || self::throw_db(lang('Création du compte administrateur'), $db);
 
 		$id = (int) $db->insert_id;
 
@@ -490,7 +502,7 @@ final class Installer
 			 VALUES (?, ?, ?, '', '', '', '', '', '', '', '', '')"
 		);
 		$stmt->bind_param('iss', $id, $first, $last);
-		$stmt->execute() || self::throw_db('Création du profil admin', $db);
+		$stmt->execute() || self::throw_db(lang('Création du profil administrateur'), $db);
 
 		return $id;
 	}
@@ -530,8 +542,189 @@ final class Installer
 	 * marketplace. Per-module try/catch : un module fautif n'abandonne pas l'install. FK désactivées le
 	 * temps de l'import massif (ordre des install.sql non garanti vs FKs croisées).
 	 */
-	public static function install_complete(mysqli $db, string $root): array
+	/**
+	 * Déclarations des addons, lues STATIQUEMENT dans leur `__info()`.
+	 *
+	 * Chaque addon déclare `core` (livré toujours, non désinstallable), `presets` (les profils
+	 * d'installation qui le pré-cochent) et `requires` (les modules sans lesquels il casse).
+	 * Cf. tools/check-addon-declarations.php, qui refuse un addon muet ou incohérent.
+	 *
+	 * Lecture par expression régulière et non par instanciation : l'installeur tourne AVANT que le
+	 * framework ne soit amorçable (pas de base, pas d'autoloader d'addons).
+	 *
+	 * @return array<string,array{type:string,name:string,core:bool,presets:string[],requires:string[],title:string}>
+	 */
+	public static function addon_declarations(string $root): array
 	{
+		static $cache = [];
+
+		if (isset($cache[$root]))
+		{
+			return $cache[$root];
+		}
+
+		$out = [];
+
+		foreach (['module' => 'modules', 'widget' => 'widgets', 'theme' => 'themes'] as $type => $dossier)
+		{
+			foreach (glob($root.'/'.$dossier.'/*', GLOB_ONLYDIR) ?: [] as $dir)
+			{
+				$name = basename($dir);
+
+				if (!is_file($fichier = $dir.'/'.$name.'.php'))
+				{
+					continue;
+				}
+
+				$src = (string) file_get_contents($fichier);
+
+				// Le titre se cherche DANS le bloc __info(), pas dans tout le fichier : ailleurs,
+				// des littéraux comme ->select('title') ou 'order_by' => 'title' arrivaient avant
+				// et le module s'appelait « title ».
+				$bloc = ($pos = strpos($src, '__info()')) !== FALSE ? substr($src, $pos, 2000) : $src;
+
+				$liste = static function (string $cle) use ($src): array {
+					if (!preg_match("/'".$cle."'\s*=>\s*\[([^\]]*)\]/", $src, $m))
+					{
+						return [];
+					}
+					preg_match_all("/'([^']+)'/", $m[1], $v);
+					return $v[1];
+				};
+
+				$out[$type.':'.$name] = [
+					'type'     => $type,
+					'name'     => $name,
+					'core'     => (bool) preg_match("/'core'\s*=>\s*TRUE/", $src),
+					// 'distributed' => FALSE : l'addon n'est pas une offre (cas du theme `vitrine`, qui
+					// est notre propre site). Il ne doit figurer dans aucun profil d'installation.
+					'distributed' => !preg_match("/'distributed'\s*=>\s*FALSE/", $src),
+					'presets'  => $liste('presets'),
+					'requires' => $liste('requires'),
+					// Le titre est soit un litteral, soit $this->lang('...') : on prend le premier
+					// litteral qui suit la cle, sans chercher a interpreter l'appel.
+					'title'    => preg_match("/'title'\s*=>[^']*'([^']+)'/", $bloc, $m) ? $m[1] : ucfirst($name),
+				];
+			}
+		}
+
+		return $cache[$root] = $out;
+	}
+
+	/**
+	 * Profils d'installation : la présentation vient de install/lib/presets.php, la COMPOSITION
+	 * des déclarations de chaque addon (`'presets' => [...]`). Aucune liste d'addons n'est écrite
+	 * à la main — c'est ce qui faisait diverger la version de juin 2026.
+	 *
+	 * @return array<string,array{title:string,tagline:string,icon:string,module:string[],widget:string[],theme:string[]}>
+	 */
+	public static function presets(string $root): array
+	{
+		$meta = require $root.'/install/lib/presets.php';
+		$decl = self::addon_declarations($root);
+		$out  = [];
+
+		foreach ($meta as $cle => $p)
+		{
+			$membres = ['module' => [], 'widget' => [], 'theme' => []];
+
+			foreach ($decl as $a)
+			{
+				if ($a['core'])
+				{
+					continue; // le cœur n'est jamais un choix : le seed l'installe toujours
+				}
+
+				if (empty($a['distributed']))
+				{
+					continue; // non diffusable : jamais proposé ni installé par un profil
+				}
+
+				$retenu = $cle === 'complete'
+					? TRUE
+					: ($cle === 'core' ? FALSE : in_array($p['tag'], $a['presets'], TRUE));
+
+				if ($retenu)
+				{
+					$membres[$a['type']][] = $a['name'];
+				}
+			}
+
+			$out[$cle] = $p + $membres;
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Ferme une sélection de modules sur ses dépendances déclarées.
+	 *
+	 * Sans cela, cocher « Palmarès » sans « Équipes » produirait un module qui interroge au premier
+	 * affichage une table absente — exactement le 500 qui a fait abandonner le paquet allégé en
+	 * juin 2026. On ajoute donc silencieusement ce qui manque, et on dit lesquels.
+	 *
+	 * @param  string[] $modules  noms de modules choisis
+	 * @return array{0:string[],1:string[]} [sélection fermée, modules ajoutés d'office]
+	 */
+	public static function close_requires(array $modules, string $root): array
+	{
+		$decl    = self::addon_declarations($root);
+		$retenus = array_fill_keys($modules, TRUE);
+		$ajoutes = [];
+
+		// Point fixe : une dépendance peut elle-même en avoir. Borné par le nombre de modules.
+		for ($tour = 0; $tour < 20; $tour++)
+		{
+			$avant = count($retenus);
+
+			foreach (array_keys($retenus) as $nom)
+			{
+				foreach ($decl['module:'.$nom]['requires'] ?? [] as $dep)
+				{
+					if (!isset($retenus[$dep]) && isset($decl['module:'.$dep]) && !$decl['module:'.$dep]['core'])
+					{
+						$retenus[$dep] = TRUE;
+						$ajoutes[]     = $dep;
+					}
+				}
+			}
+
+			if (count($retenus) === $avant)
+			{
+				break;
+			}
+		}
+
+		return [array_keys($retenus), array_values(array_unique($ajoutes))];
+	}
+
+	/**
+	 * Installe les addons livrés dans le paquet.
+	 *
+	 * @param array<string,string[]>|null $selection  null = TOUT (modèle « tout bundlé », comportement
+	 *   historique). Sinon ['module'=>[…], 'widget'=>[…], 'theme'=>[…]] : seuls ces addons-là sont
+	 *   installés en plus du cœur, que install/seed.sql a déjà enregistré. Les addons `core` sont
+	 *   TOUJOURS installés, quelle que soit la sélection — ils ne sont pas un choix.
+	 */
+	public static function install_complete(mysqli $db, string $root, ?array $selection = NULL): array
+	{
+		$decl = self::addon_declarations($root);
+
+		/** Un addon est-il retenu ? Le cœur l'est toujours ; hors cœur, seulement s'il est coché. */
+		$retenu = static function (string $type, string $name) use ($selection, $decl): bool {
+			if ($selection === NULL)
+			{
+				return TRUE;
+			}
+
+			if (!empty($decl[$type.':'.$name]['core']))
+			{
+				return TRUE;
+			}
+
+			return in_array($name, $selection[$type] ?? [], TRUE);
+		};
+
 		$type_ids = self::addon_type_ids($db);
 		$errors   = [];
 		$modules  = $widgets = $themes = [];
@@ -541,6 +734,12 @@ final class Installer
 		foreach (glob($root.'/modules/*', GLOB_ONLYDIR) ?: [] as $dir)
 		{
 			$name = basename($dir);
+
+			if (!$retenu('module', $name))
+			{
+				continue;
+			}
+
 			try
 			{
 				$sql = $dir.'/install/install.sql';
@@ -562,6 +761,11 @@ final class Installer
 		// Widgets : pas de SQL ; tous les modules étant présents, aucun widget n'est orphelin.
 		foreach (glob($root.'/widgets/*', GLOB_ONLYDIR) ?: [] as $dir)
 		{
+			if (!$retenu('widget', basename($dir)))
+			{
+				continue;
+			}
+
 			self::register_addon($db, $type_ids['widget'], basename($dir));
 			self::baseline_addon_migrations($db, 'widget', basename($dir), $root);
 			$widgets[] = basename($dir);
@@ -571,6 +775,11 @@ final class Installer
 		{
 			foreach (glob($root.'/themes/*', GLOB_ONLYDIR) ?: [] as $dir)
 			{
+				if (!$retenu('theme', basename($dir)))
+				{
+					continue;
+				}
+
 				self::register_addon($db, $type_ids['theme'], basename($dir));
 				self::baseline_addon_migrations($db, 'theme', basename($dir), $root);
 				$themes[] = basename($dir);
@@ -650,7 +859,7 @@ final class Installer
 				PRIMARY KEY (`id`),
 				UNIQUE KEY `uniq_addon_migration` (`type`,`name`,`migration`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci'
-		) || self::throw_db('Création table nf_addon_migrations', $db);
+		) || self::throw_db(lang('Création de la table %s', 'nf_addon_migrations'), $db);
 	}
 
 	private static function scalar(mysqli $db, string $sql)
@@ -673,6 +882,23 @@ final class Installer
 	const MARKETPLACE_MAX_CATALOG = 2097152;  // 2 Mo pour le catalogue
 	const MARKETPLACE_TIMEOUT     = 15;       // secondes (connexion + transfert)
 
+	// Mise a jour du coeur : MEME origine et MEME allow-list que le marketplace. C'est deliberement
+	// un seul jeu d'hotes autorises — une seconde allow-list serait une seconde chose a garder a jour,
+	// donc une seconde occasion de laisser passer une origine que l'on ne controle pas.
+	const UPDATE_URL_DEFAULT = 'https://neofrag-reborn.xyz/update';
+
+	/**
+	 * Nom sous lequel la copie de la base voyage DANS l'archive de sauvegarde.
+	 *
+	 * Les deux moitiés du dispositif — celle qui fabrique l'archive et celle qui la remet en place —
+	 * vivent dans deux fichiers differents. Une constante partagee est ce qui les empeche de deriver
+	 * en silence : une archive dont le dump s'appellerait autrement se restaurerait « avec succes »
+	 * en laissant la base intacte, c'est-a-dire en ne restaurant rien du tout.
+	 */
+	const BACKUP_SQL_ENTRY = 'DATABASE.sql';
+	const UPDATE_MAX_MANIFEST = 4194304;   // 4 Mo : checksum.json porte une empreinte par fichier livre
+	const UPDATE_MAX_PACKAGE  = 41943040;  // 40 Mo : le paquet de mise a jour, vendor/ inclus
+
 	/**
 	 * URL de base du marketplace (origine FIXE — anti-SSRF). nf_marketplace_url peut surcharger le défaut
 	 * MAIS uniquement vers un hôte AUTORISÉ, en HTTPS, port 443, sans userinfo : une valeur injectée en
@@ -687,12 +913,634 @@ final class Installer
 	}
 
 	/**
+	 * URL de base des paquets de mise a jour du coeur (version.json, checksum.json, le zip). Meme
+	 * garantie que marketplace_url() : `nf_monitoring_check_url` ne peut surcharger le defaut que vers
+	 * un hote de l'allow-list, en HTTPS/443, sans userinfo.
+	 *
+	 * Ce reglage existait deja mais etait VIDE par defaut et declare nulle part — ni schema, ni seed,
+	 * ni champ d'administration. Consequence : version.json n'etait jamais telecharge, donc
+	 * Theme\Admin::update() ne rendait jamais rien, donc le bouton de mise a jour ne s'affichait
+	 * jamais. Lui donner un defaut valide est ce qui remet la chaine entiere en marche.
+	 */
+	public static function sanitize_update_url(?string $value): string
+	{
+		return self::sanitize_origin($value, self::UPDATE_URL_DEFAULT);
+	}
+
+	/**
+	 * Manifeste de version : quelle version est publiee, quel paquet la porte, et son empreinte.
+	 * NULL si injoignable ou mal forme — le Monitoring continue alors sans proposer de mise a jour.
+	 */
+	public static function fetch_version_manifest(string $base_url): ?array
+	{
+		return self::fetch_update_manifest($base_url, 'version.json', [self::class, 'is_version_manifest']);
+	}
+
+	/** Forme attendue de version.json : un bloc `neofrag` portant au moins une version non vide. */
+	public static function is_version_manifest(array $d): bool
+	{
+		return isset($d['neofrag']['version'])
+			&& is_string($d['neofrag']['version'])
+			&& $d['neofrag']['version'] !== '';
+	}
+
+	/**
+	 * Manifeste d'integrite : une empreinte MD5 par fichier livre. NULL si injoignable ou mal forme
+	 * — le Monitoring bascule alors en MODE DEGRADE (arbre local seul, aucune fausse alerte).
+	 */
+	public static function fetch_checksum_manifest(string $base_url): ?array
+	{
+		return self::fetch_update_manifest($base_url, 'checksum.json', [self::class, 'is_checksum_manifest']);
+	}
+
+	/** Forme attendue de checksum.json : une table non vide de `chemin => empreinte MD5`. */
+	public static function is_checksum_manifest(array $d): bool
+	{
+		if (!$d)
+		{
+			return FALSE;
+		}
+
+		foreach ($d as $chemin => $md5)
+		{
+			if (!is_string($chemin) || !is_string($md5) || !preg_match('/^[a-f0-9]{32}$/i', $md5))
+			{
+				return FALSE;
+			}
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Recupere et VALIDE LA FORME d'un manifeste. La validation n'est pas un luxe : le site de
+	 * distribution repond 200 avec {"redirect":"/fr/..."} sur un chemin que son routeur intercepte.
+	 * Un simple is_array() aurait pris ce corps pour un manifeste, l'aurait mis en cache, et le
+	 * theme d'administration aurait ensuite lu ->neofrag->version sur un objet qui n'existe pas.
+	 *
+	 * @param callable(array):bool $valide forme attendue
+	 */
+	private static function fetch_update_manifest(string $base_url, string $name, callable $valide): ?array
+	{
+		try
+		{
+			$json = self::http_get(rtrim($base_url, '/').'/'.$name, self::UPDATE_MAX_MANIFEST);
+		}
+		catch (\Throwable $e)
+		{
+			// Une origine qui répond 404, 410 ou par une redirection n'a RIEN PUBLIÉ : c'est l'état
+			// normal tant qu'aucune version n'est sortie, et le site conclut « à jour ».
+			// Le journaliser écrivait deux lignes à chaque passage du Monitoring, en production comme
+			// sur toute installation neuve (check-mise-en-page, 2026-09-23). Seule une vraie panne —
+			// réseau, TLS, erreur 5xx — reste écrite.
+			$code = (int) $e->getCode();
+
+			if (!(($code >= 300 && $code < 400) || $code === 404 || $code === 410))
+			{
+				error_log('[update] '.$name.' injoignable : '.$e->getMessage());
+			}
+
+			return NULL;
+		}
+
+		$data = json_decode($json, TRUE);
+
+		if (!is_array($data) || !$valide($data))
+		{
+			error_log('[update] '.$name.' ignore : contenu inattendu a cette origine');
+			return NULL;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Telecharge le paquet de mise a jour vers $dest et verifie son empreinte SHA-256 AVANT que le
+	 * moindre fichier du site ne soit touche. C'est la seule barriere qui reste une fois l'origine
+	 * validee : $this->network()->stream() suit les redirections, ne regarde pas le code HTTP et
+	 * ecrirait une page d'erreur 404 dans le fichier .zip sans rien signaler.
+	 *
+	 * $progress recoit (octets recus, total attendu) pour alimenter la barre de progression.
+	 *
+	 * @throws RuntimeException reseau, taille, ecriture, ou empreinte non conforme.
+	 */
+	public static function download_update(string $url, string $dest, string $sha256, ?callable $progress = NULL): void
+	{
+		if (($fh = @fopen($dest, 'w+b')) === FALSE)
+		{
+			throw new RuntimeException(lang('Impossible d\'écrire %s', $dest));
+		}
+
+		try
+		{
+			self::http_get($url, self::UPDATE_MAX_PACKAGE, static function (string $chunk) use ($fh): void {
+				if (@fwrite($fh, $chunk) === FALSE)
+				{
+					throw new RuntimeException(lang('Écriture interrompue (disque plein ?).'));
+				}
+			}, $progress);
+		}
+		catch (\Throwable $e)
+		{
+			// Ne jamais laisser un telechargement partiel derriere soi : un .zip tronque sur le
+			// disque serait pris pour un paquet valide par le prochain passage. Constate en test :
+			// une origine qui repond 302 laissait un fichier de zero octet en place.
+			fclose($fh);
+			@unlink($dest);
+
+			throw $e;
+		}
+
+		fclose($fh);
+
+		if (!hash_equals(strtolower($sha256), hash_file('sha256', $dest)))
+		{
+			@unlink($dest);
+			throw new RuntimeException(lang('Empreinte SHA-256 invalide : paquet de mise à jour rejeté.'));
+		}
+	}
+
+	/**
+	 * Applique un paquet de mise a jour deja telecharge et verifie, sous $root.
+	 *
+	 * Le paquet est PLAT : chaque entree se pose a son propre chemin. C'est ce qui distingue
+	 * `neofrag-reborn-update-<v>.zip` des paquets d'installation, qui rangent tout sous un dossier
+	 * `neofrag-reborn/` — appliquer l'un a la place de l'autre creerait un sous-dossier de ce nom au
+	 * lieu de remplacer quoi que ce soit, et la mise a jour « reussirait » sans rien mettre a jour.
+	 *
+	 * Trois regles d'application :
+	 *
+	 *   - un fichier a la RACINE n'est jamais superpose, sauf index.php. Le paquet embarque des
+	 *     fichiers de depot (.editorconfig, COPYING...) qui n'ont rien a faire dans la mise a jour
+	 *     d'un site en service ;
+	 *   - config/ et install/ ne sont poses que s'ils n'existent pas deja. La configuration d'un
+	 *     site en service n'est jamais reecrite ; un fichier d'installation NOUVEAU, lui, arrive ;
+	 *   - les fichiers de neofrag/ absents du paquet sont des vestiges d'une version anterieure et
+	 *     sont retires — MAIS seulement si le paquet en livrait au moins un. Sans cette garde, un
+	 *     paquet tronque effacerait le framework entier.
+	 *
+	 * @return array{written:int,removed:int}
+	 * @throws RuntimeException archive illisible, entree non sure, ou paquet sans fichier applicable.
+	 */
+	public static function apply_update_package(string $zip_path, string $root, ?callable $progress = NULL): array
+	{
+		$root = rtrim(str_replace('\\', '/', $root), '/');
+		$zip  = new \ZipArchive();
+
+		if ($zip->open($zip_path) !== TRUE)
+		{
+			throw new RuntimeException(lang('Le paquet de mise à jour est illisible.'));
+		}
+
+		try
+		{
+			// Anti-zip-slip : chemin absolu, « .. », antislash, symlink -> rejet GLOBAL de l'archive.
+			if (!self::zip_entries_safe($zip))
+			{
+				throw new RuntimeException(lang('Le paquet contient une entrée non sûre : il est rejeté.'));
+			}
+
+			// Le manifeste du paquet, s'il en porte un.
+			//
+			// Il DECLARE ce que la mise a jour protege et ce qu'elle supprime, la ou le balayage
+			// historique le DEDUIT de ce que le paquet livre. La difference compte : un paquet
+			// tronque, ou d'une autre nature, faisait deduire « tout le reste est un vestige » — il
+			// a failli effacer le framework entier, et ne porte une garde que depuis.
+			//
+			// Facultatif, et c'est voulu : un paquet construit avant cette version n'en a pas, et
+			// doit continuer de s'appliquer. Sans manifeste, on retombe sur le balayage deduit.
+			$manifeste = self::read_package_manifest($zip);
+
+			$entries = [];
+
+			for ($i = 0; $i < $zip->numFiles; $i++)
+			{
+				$entry = $zip->getNameIndex($i);
+
+				if ($entry === FALSE || substr($entry, -1) === '/')
+				{
+					continue; // dossier : cree implicitement a l'ecriture
+				}
+				if ($entry === self::UPDATE_MANIFEST)
+				{
+					continue; // le manifeste decrit le paquet, il ne s'installe pas
+				}
+				if (!preg_match('#/|^index\.php$#', $entry))
+				{
+					continue; // fichier de racine autre qu'index.php
+				}
+				if (preg_match('#^(config|install)/#', $entry) && file_exists($root.'/'.$entry))
+				{
+					continue; // deja en place : on ne reecrit pas la configuration d'un site vivant
+				}
+				if (self::path_is_protected($entry, $manifeste))
+				{
+					continue; // declare protege par le paquet lui-meme
+				}
+
+				$entries[$entry] = $i;
+			}
+
+			if (!($total = count($entries)))
+			{
+				throw new RuntimeException(lang('Le paquet ne contient aucun fichier applicable.'));
+			}
+
+			$n = 0;
+
+			foreach ($entries as $entry => $i)
+			{
+				$dir = $root.'/'.dirname($entry);
+
+				if (!is_dir($dir) && !@mkdir($dir, 0755, TRUE) && !is_dir($dir))
+				{
+					throw new RuntimeException(lang('Impossible de créer %s', $dir));
+				}
+
+				if (@file_put_contents($root.'/'.$entry, $zip->getFromIndex($i)) === FALSE)
+				{
+					throw new RuntimeException(lang('Impossible d\'écrire %s', $entry));
+				}
+
+				$n++;
+
+				if ($progress !== NULL)
+				{
+					$progress($n, $total);
+				}
+			}
+		}
+		finally
+		{
+			$zip->close();
+		}
+
+		// Une liste DECLAREE ne peut pas se tromper comme un balayage deduit : quand le paquet en
+		// porte une, elle fait foi, et le balayage ne s'execute pas.
+		$removed = $manifeste !== NULL
+			? self::remove_declared($manifeste, $root)
+			: self::sweep_stale_core($entries, $root);
+
+		return ['written' => $total, 'removed' => $removed];
+	}
+
+	/** Nom du manifeste, a la racine de l'archive de mise a jour. */
+	public const UPDATE_MANIFEST = 'nf-manifest.json';
+
+	/**
+	 * Lit le manifeste du paquet, ou NULL s'il n'en porte pas.
+	 *
+	 * Un manifeste illisible est traite comme absent, et non comme une erreur : mieux vaut appliquer
+	 * la mise a jour a l'ancienne que la refuser pour un fichier annexe. En revanche il doit avoir la
+	 * forme attendue, sans quoi on ne saurait pas ce qu'on protege ni ce qu'on efface.
+	 *
+	 * @return array{protected: list<string>, remove: list<string>}|null
+	 */
+	private static function read_package_manifest(\ZipArchive $zip): ?array
+	{
+		$brut = $zip->getFromName(self::UPDATE_MANIFEST);
+
+		if ($brut === FALSE)
+		{
+			return NULL;
+		}
+
+		$data = json_decode((string) $brut, TRUE);
+
+		if (!is_array($data))
+		{
+			return NULL;
+		}
+
+		$liste = static function ($valeur): array {
+			if (!is_array($valeur))
+			{
+				return [];
+			}
+
+			$propre = [];
+
+			foreach ($valeur as $chemin)
+			{
+				if (!is_string($chemin))
+				{
+					continue;
+				}
+
+				$chemin = ltrim(str_replace('\\', '/', trim($chemin)), '/');
+
+				// Un chemin qui remonte, absolu, ou vide, n'a rien a faire dans un manifeste : le
+				// paquet decrirait alors des fichiers hors du site.
+				if ($chemin === '' || strpos($chemin, '../') !== FALSE || $chemin === '..' || preg_match('#^[A-Za-z]:|^/#', $chemin))
+				{
+					continue;
+				}
+
+				$propre[] = $chemin;
+			}
+
+			return $propre;
+		};
+
+		return [
+			'protected' => $liste($data['protected'] ?? []),
+			'remove'    => $liste($data['remove'] ?? []),
+		];
+	}
+
+	/**
+	 * Le paquet declare-t-il ce chemin comme protege ?
+	 *
+	 * Une entree finissant par `/` protege tout un dossier ; sinon c'est un fichier exact.
+	 *
+	 * @param array{protected: list<string>, remove: list<string>}|null $manifeste
+	 */
+	private static function path_is_protected(string $entry, ?array $manifeste): bool
+	{
+		if ($manifeste === NULL)
+		{
+			return FALSE;
+		}
+
+		foreach ($manifeste['protected'] as $motif)
+		{
+			if (substr($motif, -1) === '/')
+			{
+				if (strpos($entry, $motif) === 0)
+				{
+					return TRUE;
+				}
+			}
+			else if ($entry === $motif)
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
+	/**
+	 * Supprime les fichiers que le paquet declare retires, et RIEN d'autre.
+	 *
+	 * Deux refus deliberes : on ne supprime jamais un dossier (un manifeste errone effacerait une
+	 * arborescence entiere), et on ne sort jamais de la racine (verifie apres resolution, parce
+	 * qu'un lien symbolique pointe ou il veut).
+	 *
+	 * @param array{protected: list<string>, remove: list<string>} $manifeste
+	 */
+	private static function remove_declared(array $manifeste, string $root): int
+	{
+		$removed = 0;
+		$reel    = realpath($root);
+
+		if ($reel === FALSE)
+		{
+			return 0;
+		}
+
+		$reel = rtrim(str_replace('\\', '/', $reel), '/').'/';
+
+		foreach ($manifeste['remove'] as $chemin)
+		{
+			$cible = $root.'/'.$chemin;
+
+			if (!is_file($cible))
+			{
+				continue;
+			}
+
+			$resolu = realpath($cible);
+
+			if ($resolu === FALSE || strpos(str_replace('\\', '/', $resolu), $reel) !== 0)
+			{
+				continue;
+			}
+
+			if (@unlink($cible))
+			{
+				$removed++;
+			}
+		}
+
+		return $removed;
+	}
+
+	/**
+	 * Retire de $root/neofrag les fichiers que le paquet ne livre pas (vestiges d'une version
+	 * anterieure). Ne fait RIEN si le paquet n'a livre aucun fichier de neofrag/ : un paquet
+	 * tronque ou d'une autre nature effacerait sinon le framework entier.
+	 *
+	 * @param array<string,int> $entries entrees appliquees (chemin => index dans l'archive)
+	 */
+	private static function sweep_stale_core(array $entries, string $root): int
+	{
+		$livres = [];
+
+		foreach (array_keys($entries) as $entry)
+		{
+			if (strpos($entry, 'neofrag/') === 0)
+			{
+				$livres[$entry] = TRUE;
+			}
+		}
+
+		if (!$livres || !is_dir($dir = $root.'/neofrag'))
+		{
+			return 0;
+		}
+
+		$removed = 0;
+		$it      = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS)
+		);
+
+		foreach ($it as $file)
+		{
+			if (!$file->isFile())
+			{
+				continue;
+			}
+
+			$rel = str_replace('\\', '/', substr($file->getPathname(), strlen($root) + 1));
+
+			if (!isset($livres[$rel]) && @unlink($file->getPathname()))
+			{
+				$removed++;
+			}
+		}
+
+		return $removed;
+	}
+
+	/**
+	 * Remet en place une sauvegarde produite par le panneau de surveillance.
+	 *
+	 * C'est la moitie qui manquait. Le CMS savait prendre une archive complete avant d'ecrire — il ne
+	 * savait pas s'en reservir. Une mise a jour qui echouait a mi-parcours laissait donc un site
+	 * mi-ancien mi-neuf, et l'archive posee a cote, inerte.
+	 *
+	 * L'archive est celle de `Monitoring_admin_ajax::_backup()` : les fichiers y sont a plat, chacun
+	 * a son chemin relatif, plus un `DATABASE.sql` a la racine de l'archive.
+	 *
+	 * Quatre ecarts VOLONTAIRES avec une restauration « a l'identique ». Chacun repare un degat que
+	 * la restauration naive causerait :
+	 *
+	 *   - `DATABASE.sql` n'est JAMAIS ecrit dans l'arborescence du site. Il part vers $sql_dest, que
+	 *     l'appelant choisit et protege, parce qu'il porte toute la base en clair ;
+	 *   - `config/` n'est pas restaure. Une mise a jour ne reecrit jamais la configuration d'un site
+	 *     en service (cf. apply_update_package), il n'y a donc rien a y annuler — tandis que rendre
+	 *     a un site les identifiants de base d'il y a trois semaines le couperait de sa propre base ;
+	 *   - `logs/` n'est pas restaure. Les journaux de l'incident qu'on est en train de reparer sont
+	 *     la seule trace de ce qui a echoue ; les ecraser par ceux d'avant efface le constat ;
+	 *   - `cache/` n'est pas restaure. Un cache se reconstruit, et melanger des artefacts compiles
+	 *     par deux versions differentes est pire que de repartir de zero.
+	 *
+	 * Comme pour une mise a jour, les fichiers de `neofrag/` que l'archive ne contient PAS sont des
+	 * vestiges de la version qu'on annule, et sont retires — sous la meme garde : rien n'est balaye
+	 * si l'archive ne livrait aucun fichier du coeur.
+	 *
+	 * Deux limites connues, assumees, de meme nature — on remet ce que l'archive contient, on ne
+	 * devine pas ce qu'elle ignore :
+	 *
+	 *   - une table CREEE par la version annulee survit a la restauration. Le dump reconstruit ce
+	 *     qu'il porte ; une table inconnue de l'ancien code lui est inerte, tandis que supprimer des
+	 *     tables dont on ne sait rien serait, lui, un risque reel de perte de donnees ;
+	 *   - hors de `neofrag/`, un FICHIER ajoute par la version annulee survit lui aussi — une
+	 *     dependance apparue sous `vendor/`, par exemple. L'autoloader restaure etant l'ancien, ces
+	 *     fichiers ne sont charges par rien. Le balayage ne vise que le coeur, ou l'inventaire est
+	 *     connu et complet.
+	 *
+	 * @return array{restored:int,removed:int,sql:bool}
+	 * @throws RuntimeException archive illisible, entree non sure, ou archive sans fichier restaurable.
+	 */
+	public static function restore_backup_package(string $zip_path, string $root, ?string $sql_dest = NULL, ?callable $progress = NULL): array
+	{
+		$root = rtrim(str_replace('\\', '/', $root), '/');
+		$zip  = new \ZipArchive();
+
+		if ($zip->open($zip_path) !== TRUE)
+		{
+			throw new RuntimeException(lang('La sauvegarde est illisible.'));
+		}
+
+		try
+		{
+			// Meme garde que pour un paquet de mise a jour : chemin absolu, « .. », antislash ou
+			// symlink -> rejet GLOBAL. Une sauvegarde arrive de backups/, mais rien n'interdit a un
+			// administrateur d'y deposer un fichier a lui.
+			if (!self::zip_entries_safe($zip))
+			{
+				throw new RuntimeException(lang('La sauvegarde contient une entrée non sûre : elle est rejetée.'));
+			}
+
+			$entries = [];
+			$sql     = FALSE;
+
+			for ($i = 0; $i < $zip->numFiles; $i++)
+			{
+				$entry = $zip->getNameIndex($i);
+
+				if ($entry === FALSE || substr($entry, -1) === '/')
+				{
+					continue; // dossier : cree implicitement a l'ecriture
+				}
+				if ($entry === self::BACKUP_SQL_ENTRY)
+				{
+					$sql = $i;
+					continue; // la base ne se restaure pas en posant un fichier
+				}
+				if (preg_match('#^(cache|config|logs|backups)/#', $entry))
+				{
+					continue; // les quatre exceptions documentees ci-dessus
+				}
+
+				$entries[$entry] = $i;
+			}
+
+			if (!$entries)
+			{
+				throw new RuntimeException(lang('La sauvegarde ne contient aucun fichier restaurable.'));
+			}
+
+			// Refuser MAINTENANT, avant d'avoir touche un seul fichier : une restauration de fichiers
+			// sans la base derriere laisserait un site plus incoherent qu'il ne l'etait.
+			if ($sql_dest !== NULL && $sql === FALSE)
+			{
+				throw new RuntimeException(lang('La sauvegarde ne contient pas de copie de la base (%s).', self::BACKUP_SQL_ENTRY));
+			}
+
+			$total = count($entries) + ($sql_dest !== NULL ? 1 : 0);
+			$n     = 0;
+
+			foreach ($entries as $entry => $i)
+			{
+				$dir = $root.'/'.dirname($entry);
+
+				if (!is_dir($dir) && !@mkdir($dir, 0755, TRUE) && !is_dir($dir))
+				{
+					throw new RuntimeException(lang('Impossible de créer %s', $dir));
+				}
+
+				if (@file_put_contents($root.'/'.$entry, $zip->getFromIndex($i)) === FALSE)
+				{
+					throw new RuntimeException(lang('Impossible de restaurer %s', $entry));
+				}
+
+				$n++;
+
+				if ($progress !== NULL)
+				{
+					$progress($n, $total);
+				}
+			}
+
+			if ($sql_dest !== NULL && $sql !== FALSE)
+			{
+				if (@file_put_contents($sql_dest, $zip->getFromIndex($sql)) === FALSE)
+				{
+					throw new RuntimeException(lang('Impossible d\'extraire %s vers %s', self::BACKUP_SQL_ENTRY, $sql_dest));
+				}
+
+				// Le dump porte toute la base en clair, mots de passe hashes et jetons compris.
+				@chmod($sql_dest, 0600);
+
+				if ($progress !== NULL)
+				{
+					$progress(++$n, $total);
+				}
+			}
+		}
+		finally
+		{
+			$zip->close();
+		}
+
+		return [
+			'restored' => count($entries),
+			'removed'  => self::sweep_stale_core($entries, $root),
+			'sql'      => $sql_dest !== NULL
+		];
+	}
+
+	/**
 	 * Valide un override d'URL marketplace (depuis nf_settings) contre l'allow-list — fonction pure,
 	 * réutilisable au runtime (le framework lit la config via le service-locator, pas un mysqli brut).
 	 * Toute valeur vide/invalide retombe sur le défaut codé : une valeur injectée en base (DB compromise)
 	 * ne peut pas rediriger les fetchs vers un hôte interne/arbitraire (anti-SSRF).
 	 */
 	public static function sanitize_marketplace_url(?string $value): string
+	{
+		return self::sanitize_origin($value, self::MARKETPLACE_URL_DEFAULT);
+	}
+
+	/**
+	 * Coeur commun des deux precedentes : rend $value si elle vise un hote autorise en HTTPS/443 sans
+	 * userinfo, et $defaut dans TOUS les autres cas — valeur vide, schema autre, hote inconnu, port
+	 * detourne, identifiants dans l'URL. Aucun cas ne leve : une base compromise doit degrader vers
+	 * l'origine codee en dur, jamais interrompre le site.
+	 */
+	private static function sanitize_origin(?string $value, string $defaut): string
 	{
 		if ($value !== NULL && $value !== '')
 		{
@@ -709,7 +1557,21 @@ final class Installer
 			}
 		}
 
-		return self::MARKETPLACE_URL_DEFAULT;
+		return $defaut;
+	}
+
+	/**
+	 * Le titre ou la description d'un addon du catalogue, dans la langue courante.
+	 *
+	 * Le catalogue porte le texte français (`title`, `description`) et ses traductions, relevées au
+	 * packaging dans les fichiers de langue de l'addon (`i18n.<code>.<champ>`, tools/package-addons.php).
+	 * Un catalogue plus ancien, sans `i18n`, rend le français : rien ne casse, rien ne manque.
+	 */
+	public static function texte_catalogue(array $addon, string $champ): string
+	{
+		$code = nf_install_langue();
+
+		return (string) ($addon['i18n'][$code][$champ] ?? $addon[$champ] ?? '');
 	}
 
 	/**
@@ -747,13 +1609,13 @@ final class Installer
 		// Intégrité : empreinte SHA-256 du zip == celle annoncée par le catalogue (rejet sinon).
 		if (!hash_equals(strtolower((string) $meta['sha256']), hash('sha256', $zip_data)))
 		{
-			throw new RuntimeException('Empreinte SHA-256 invalide (zip rejeté).');
+			throw new RuntimeException(lang('Empreinte SHA-256 invalide (zip rejeté).'));
 		}
 
 		$tmp_zip = tempnam(sys_get_temp_dir(), 'nfdl');
 		if (@file_put_contents($tmp_zip, $zip_data) === FALSE)
 		{
-			throw new RuntimeException('Écriture temporaire impossible.');
+			throw new RuntimeException(lang('Écriture temporaire impossible.'));
 		}
 
 		try
@@ -784,7 +1646,7 @@ final class Installer
 		{
 			if (empty($meta[$k]) || !is_string($meta[$k]))
 			{
-				throw new RuntimeException('Métadonnées d\'addon incomplètes.');
+				throw new RuntimeException(lang('Métadonnées d\'addon incomplètes.'));
 			}
 		}
 
@@ -793,31 +1655,33 @@ final class Installer
 
 		if (!in_array($type, ['module', 'widget', 'theme'], TRUE) || !preg_match('/^[a-z0-9_]+$/', $name))
 		{
-			throw new RuntimeException('Addon refusé (type/nom invalide).');
+			throw new RuntimeException(lang('Addon refusé (type/nom invalide).'));
 		}
 
 		// Chemin de fichier RELATIF sûr : <type>s/<name>.zip. Bloque host/chemin injectés via le catalogue.
 		if (!preg_match('#^(modules|widgets|themes|addons)/[a-z0-9_]+\.zip$#', $meta['file']) || strpos($meta['file'], '..') !== FALSE)
 		{
-			throw new RuntimeException('Chemin de fichier d\'addon refusé.');
+			throw new RuntimeException(lang('Chemin de fichier d\'addon refusé.'));
 		}
 
 		return [$type, $name];
 	}
 
 	/** GET HTTPS strict : TLS vérifié, pas de redirection (anti-SSRF), timeout + taille bornés. */
-	private static function http_get(string $url, int $max_bytes): string
+	private static function http_get(string $url, int $max_bytes, ?callable $sink = NULL, ?callable $progress = NULL): string
 	{
 		if (stripos($url, 'https://') !== 0)
 		{
-			throw new RuntimeException('URL non-HTTPS refusée.');
+			throw new RuntimeException(lang('URL non-HTTPS refusée.'));
 		}
 		if (!function_exists('curl_init'))
 		{
-			throw new RuntimeException('Extension curl absente.');
+			throw new RuntimeException(lang('Extension curl absente.'));
 		}
 
 		$buf     = '';
+		$written = 0;
+		$total   = 0;
 		$too_big = FALSE;
 		$ch      = curl_init($url);
 		curl_setopt_array($ch, [
@@ -828,14 +1692,37 @@ final class Installer
 			CURLOPT_SSL_VERIFYHOST  => 2,
 			CURLOPT_PROTOCOLS       => CURLPROTO_HTTPS,
 			CURLOPT_USERAGENT       => 'NeoFrag-Reborn-Installer/'.(defined('NEOFRAG_VERSION') ? NEOFRAG_VERSION : '1.0'),
-			// Cap de taille : on vérifie AVANT d'accumuler → le buffer ne dépasse jamais max_bytes.
-			CURLOPT_WRITEFUNCTION   => function ($ch, string $chunk) use (&$buf, &$too_big, $max_bytes): int {
-				if (strlen($buf) + strlen($chunk) > $max_bytes)
+			// Cap de taille : on vérifie AVANT d'accumuler → rien ne dépasse jamais max_bytes. Avec un
+			// $sink, les octets vont au fichier au lieu du buffer : le paquet de mise à jour fait des
+			// dizaines de Mo, qu'il serait absurde de tenir en mémoire pour les réécrire ensuite.
+			CURLOPT_WRITEFUNCTION   => function ($ch, string $chunk) use (&$buf, &$written, &$total, &$too_big, $max_bytes, $sink, $progress): int {
+				if ($written + strlen($chunk) > $max_bytes)
 				{
 					$too_big = TRUE;
 					return 0; // abort
 				}
-				$buf .= $chunk;
+
+				if ($sink !== NULL)
+				{
+					$sink($chunk);
+				}
+				else
+				{
+					$buf .= $chunk;
+				}
+
+				$written += strlen($chunk);
+
+				if ($progress !== NULL)
+				{
+					if ($total === 0)
+					{
+						$total = (int) curl_getinfo($ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+					}
+
+					$progress($written, $total > 0 ? $total : $max_bytes);
+				}
+
 				return strlen($chunk);
 			},
 		]);
@@ -843,19 +1730,20 @@ final class Installer
 		$ok   = curl_exec($ch);
 		$code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		$err  = curl_error($ch);
-		curl_close($ch);
 
 		if ($too_big)
 		{
-			throw new RuntimeException('Réponse trop volumineuse (> '.$max_bytes.' octets).');
+			throw new RuntimeException(lang('Réponse trop volumineuse (> %d octets).', $max_bytes));
 		}
 		if ($ok === FALSE)
 		{
-			throw new RuntimeException('curl : '.($err ?: 'échec réseau'));
+			throw new RuntimeException('curl : '.($err ?: lang('échec réseau')));
 		}
 		if ($code !== 200)
 		{
-			throw new RuntimeException('HTTP '.$code);
+			// Le code HTTP est aussi le code de l'exception : l'appelant distingue ainsi « rien n'est
+			// publié ici » (404, redirection) d'une vraie panne.
+			throw new RuntimeException('HTTP '.$code, $code);
 		}
 
 		return $buf;
@@ -870,7 +1758,7 @@ final class Installer
 		$zip = new \ZipArchive();
 		if ($zip->open($zip_path) !== TRUE)
 		{
-			throw new RuntimeException('Archive illisible.');
+			throw new RuntimeException(lang('Archive illisible.'));
 		}
 
 		try
@@ -882,24 +1770,24 @@ final class Installer
 				if ($entry === FALSE || $entry === '' || $entry[0] === '/'
 					|| strpos($entry, '..') !== FALSE || strpos($entry, '\\') !== FALSE)
 				{
-					throw new RuntimeException('Entrée d\'archive non sûre : '.$entry);
+					throw new RuntimeException(lang('Entrée d\'archive non sûre : %s', $entry));
 				}
 				// Structure attendue (package-addons) : tout sous <name>/.
 				if ($entry !== $name && strpos($entry, $name.'/') !== 0)
 				{
-					throw new RuntimeException('Entrée hors de l\'addon : '.$entry);
+					throw new RuntimeException(lang('Entrée hors de l\'addon : %s', $entry));
 				}
 				// Symlink (Unix) : pointerait hors de l'addon malgré un nom valide → rejet.
 				if (self::entry_is_symlink($zip, $i))
 				{
-					throw new RuntimeException('Entrée symlink interdite : '.$entry);
+					throw new RuntimeException(lang('Entrée symlink interdite : %s', $entry));
 				}
 			}
 
 			$parent = $root.'/'.$type.'s';
 			if (!$zip->extractTo($parent))
 			{
-				throw new RuntimeException('Extraction impossible.');
+				throw new RuntimeException(lang('Extraction impossible.'));
 			}
 		}
 		finally
@@ -909,7 +1797,7 @@ final class Installer
 
 		if (!is_dir($root.'/'.$type.'s/'.$name))
 		{
-			throw new RuntimeException('Addon absent après extraction.');
+			throw new RuntimeException(lang('Addon absent après extraction.'));
 		}
 	}
 
@@ -956,7 +1844,7 @@ final class Installer
 	{
 		if (@file_put_contents($path, $contents) === FALSE)
 		{
-			throw new RuntimeException("Écriture impossible : {$path}");
+			throw new RuntimeException(lang('Écriture impossible : %s', $path));
 		}
 	}
 

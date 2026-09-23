@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'2e5318de' => '%d file(s) added',
@@ -38,4 +39,15 @@ return [
 	'7a650382' => 'This action is permanent.',
 	'f6e75d04' => 'File manager',
 	'9ec37f2b' => 'File manager: tree, upload, folders and read permissions per file/folder.',
+	'71fc8e0e' => 'Size',
+	'0aac9844' => 'Date',
+	'0eda40d4' => 'Play',
+	'c38e261e' => 'Path',
+	'6febd6fd' => 'Files',
+	'52c9bbab' => 'Edit',
+	'aef3a525' => 'Folder %s',
+	'c07ef58d' => 'File %s',
+	'a4e674f4' => 'No item selected',
+	'6ddd7401' => '%s item selected|%s items selected',
+	'ca977443' => 'Remove',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traductions FR (auto-générées 2026-05-03)
@@ -12,5 +13,8 @@ return [
 	'b8e8afdd' => 'Titre par défaut',
 	'e17afcad' => 'Alignement',
 	'eb78cff1' => 'Description',
-	'f38ec1ed' => 'Description par défaut'
+	'f38ec1ed' => 'Description par défaut',
+	'8088964a' => 'Affichage',
+	'44bc352d' => 'Logo',
+	'f549697b' => 'Titre et slogan',
 ];

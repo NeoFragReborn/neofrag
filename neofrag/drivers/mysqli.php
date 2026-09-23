@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -20,7 +21,7 @@ class Mysqli extends Driver
 		// ($request->error, page 503 lisible). On restaure le mode dégradé conçu.
 		mysqli_report(MYSQLI_REPORT_OFF);
 
-		$this->db = @new \mysqli($this->info->hostname, $this->info->username, $this->info->password, $this->info->database);
+		$this->db = @new \mysqli($this->info->hostname, $this->info->username, $this->info->password, $this->info->database, (int) ($this->info->port ?? 3306));
 
 		if (!$this->db->connect_error)
 		{
@@ -112,17 +113,17 @@ class Mysqli extends Driver
 	// router ces ordres vers prepare() cassait toutes les transactions sur MySQL 8.
 	public function transaction()
 	{
-		$this->db->begin_transaction();
+		return $this->db->begin_transaction();
 	}
 
 	public function commit()
 	{
-		$this->db->commit();
+		return $this->db->commit();
 	}
 
 	public function rollback()
 	{
-		$this->db->rollback();
+		return $this->db->rollback();
 	}
 
 	public function lock($tables)

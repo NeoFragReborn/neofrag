@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -40,4 +41,17 @@ return [
 	'3b7c3ac5' => 'Edit a map',
 	'f0b91828' => 'Delete a map',
 	'52c9bbab' => 'Edit',
+	'9b5c5028' => 'Modes',
+	'706ddc6d' => 'New map',
+	'344f7b7d' => 'Edit map',
+	'1bbaf0c0' => 'Delete a map',
+	'6b18f6b3' => 'New mode',
+	'29307c20' => 'Edit mode',
+	'35cc8e91' => 'Delete a mode',
+	'8d43033f' => 'No mode',
+	'caa44e1a' => 'Add a mode',
+	'baa9cb55' => 'Game',
+	'ff116db6' => 'Map name',
+	'04fc2b5b' => 'Image',
+	'c8569b6a' => 'Mode name',
 ];

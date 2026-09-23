@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: FoxLey
@@ -45,4 +46,10 @@ return [
 	'6db60ef7' => 'Managed menu',
 	'26db591e' => '— Manual links (below) —',
 	'571ec895' => 'Displays a menu created in "Menus" (replaces the manual links below).',
+	'98420d15' => 'Configurable horizontal or vertical navigation menu.',
+	'1c5e079e' => 'Horizontal',
+	'510016ca' => 'Vertical',
+	'92df285e' => 'Link to a module',
+	'f2a3fffd' => 'Link to a page',
+	'dd3795ad' => 'Menu',
 ];

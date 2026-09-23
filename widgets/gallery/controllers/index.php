@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -36,18 +37,24 @@ class Index extends Controller_Widget
 		return $this->panel()
 					->heading($this->lang('Nos albums'))
 					->body($this->view('gallery', [
-						'gallery' => $this->model()->get_gallery($settings['category_id'])
+						// Sans catégorie choisie : tous les albums (FALSE, comme l'entend le modèle).
+						'gallery' => $this->model()->get_gallery($settings['category_id'] ?? FALSE)
 					]), FALSE)
 					->footer('<a href="'.url('gallery').'">'.icon('far fa-arrow-alt-circle-right').' '.$this->lang('Voir notre galerie').'</a>', 'right');
 	}
 
 	public function image($settings = [])
 	{
-		$image = $this->model()->get_random_image($settings['gallery_id']);
-		$href  = url('gallery/image/'.$image['image_id'].'/'.url_title($image['title']));
+		// Sans réglages — posé par un thème, ou d'une disposition ancienne —, le checker refuse de
+		// désigner un élément au hasard : c'est au rendu de s'en tirer (check-widget-contract).
+		$image = $this->model()->get_random_image($settings['gallery_id'] ?? FALSE);
 
 		if (!empty($image['file_id']))
 		{
+			// Le lien se fabrique APRÈS avoir trouvé une image : sur un site sans image, la version
+			// précédente lisait `image_id` et `title` sur un résultat vide (vu en CI, 2026-09-22).
+			$href = url('gallery/image/'.$image['image_id'].'/'.url_title($image['title']));
+
 			return $this->panel()
 						->heading($image['title'])
 						->body('<a href="'.$href.'"><img class="img-fluid" src="'.NeoFrag()->model2('file', $image['file_id'])->path().'" alt="" /></a>', FALSE)
@@ -63,13 +70,15 @@ class Index extends Controller_Widget
 
 	public function slider($settings = [])
 	{
-		$images = $this->model()->get_images($settings['gallery_id']);
+		// Sans réglages — posé par un thème, ou d'une disposition ancienne —, le checker refuse de
+		// désigner un élément au hasard : c'est au rendu de s'en tirer (check-widget-contract).
+		$images = $this->model()->get_images($settings['gallery_id'] ?? 0);
 
 		if (!empty($images))
 		{
 			return $this->panel()
 						->body($this->view('slider', [
-							'id'     => $settings['gallery_id'],
+							'id'     => $settings['gallery_id'] ?? 0,
 							'images' => $images
 						]), FALSE);
 		}

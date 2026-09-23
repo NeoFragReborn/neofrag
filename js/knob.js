@@ -19,16 +19,28 @@
 		if (input._nfKnob){ return; }
 		input._nfKnob = true;
 
-		var d        = input.dataset;
-		var min      = parseFloat(d.min || '0');
-		var max      = parseFloat(d.max || '100');
-		var arc      = parseFloat(d.angleArc || '360');
-		var offset   = parseFloat(d.angleOffset || '0');
-		var thick    = parseFloat(d.thickness || '0.3');
-		var w        = parseFloat(d.width || '100');
-		var h        = parseFloat(d.height || String(w));
-		var fg       = d.fgColor || '#29b6f6';
-		var display  = d.displayInput !== 'false';
+		// `dataset` met TOUTES les cles en minuscules : l'attribut `data-angleArc` s'y appelle
+		// `anglearc`, et `d.angleArc` vaut donc undefined. Trois options etaient lues ainsi —
+		// angleArc, angleOffset, displayInput — et retombaient silencieusement sur leur defaut :
+		// la jauge de la page de supervision se dessinait en cercle ENTIER, valeur affichee au
+		// centre, au lieu du demi-cercle voulu. Signale le 2026-09-22.
+		//
+		// `getAttribute` est insensible a la casse sur un element HTML : il lit les deux ecritures,
+		// `data-angleArc` comme `data-angle-arc`.
+		var lire = function(nom, defaut){
+			var v = input.getAttribute('data-' + nom);
+			return v === null || v === '' ? defaut : v;
+		};
+
+		var min      = parseFloat(lire('min', '0'));
+		var max      = parseFloat(lire('max', '100'));
+		var arc      = parseFloat(lire('angleArc', '360'));
+		var offset   = parseFloat(lire('angleOffset', '0'));
+		var thick    = parseFloat(lire('thickness', '0.3'));
+		var w        = parseFloat(lire('width', '100'));
+		var h        = parseFloat(lire('height', String(w)));
+		var fg       = lire('fgColor', '#29b6f6');
+		var display  = lire('displayInput', '') !== 'false';
 
 		var cx = w / 2, cy = h / 2;
 		var radius = Math.min(w, h) / 2 * 0.82;

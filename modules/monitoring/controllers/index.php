@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  *
@@ -47,6 +48,17 @@ class Index extends Controller_Module
 
 			$result = $this->db->import($sql);
 
+			if ($result !== TRUE)
+			{
+				// L'import s'arrête à la première instruction refusée, transaction ouverte : on l'annule
+				// explicitement plutôt que de compter sur la fermeture de la connexion. Et on l'écrit au
+				// journal : la tâche planifiée échoue sans bruit, et une clé en double dans l'instantané
+				// a ainsi bloqué toute remise à zéro pendant quatorze heures sans que rien le dise
+				// (2026-09-22 ; cf. tools/check-instantanes.php, qui refuse désormais ce défaut en CI).
+				$this->db->import('ROLLBACK;');
+				error_log('[demo.reset] ÉCHEC — install/demo.sql refusé : '.$result);
+			}
+
 			$this->_respond($result === TRUE ? 200 : 500, $result === TRUE ? "OK demo reset\n" : "ERREUR demo reset: ".$result."\n");
 		}
 
@@ -75,6 +87,27 @@ class Index extends Controller_Module
 			/** @var \NF\Modules\Events\Models\Events $emodel */
 			$emodel   = $events->model('events');
 			$report[] = 'events: '.(int)$emodel->send_due_reminders().' reminded';
+		}
+
+		// Calendrier : même chose pour les événements suivis.
+		if ($calendar = $this->module('calendar'))
+		{
+			/** @var \NF\Modules\Calendar\Models\Calendar $cmodel */
+			$cmodel   = $calendar->model('calendar');
+			$report[] = 'calendar: '.$cmodel->send_due_reminders().' reminded';
+		}
+
+		// Carrefour « cron » des WIDGETS. Un widget qui dépend d'un service extérieur — le lecteur de
+		// flux, par exemple — y rafraîchit son cache HORS du rendu d'une page. C'est ce qui garantit
+		// qu'un site tiers lent ne fasse jamais attendre un visiteur : la page lit un cache, elle
+		// n'attend jamais le réseau. Même forme que le carrefour `statistics` des modules
+		// (modules/statistics/models/statistics.php) : on n'appelle que les widgets qui l'offrent.
+		foreach (NeoFrag()->model2('addon')->get('widget') as $widget)
+		{
+			if ($controller = @$widget->controller('cron'))
+			{
+				$report[] = $widget->info()->name.': '.$controller->cron();
+			}
 		}
 
 		$this->_respond(200, "OK\n".implode("\n", $report)."\n");

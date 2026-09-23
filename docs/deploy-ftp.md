@@ -28,12 +28,15 @@ Les deux embarquent `vendor/` (aucun `composer install` requis) et le `.htaccess
 2. **Droits d'écriture** (chmod 755 dossiers / 644 fichiers, puis rendre **inscriptibles** par PHP) :
    `config/`, `cache/`, `logs/`, `upload/`, `backups/`. (Ces dossiers sont créés au besoin ; le seul
    indispensable en écriture au départ est `config/`.)
-3. Visiter **`https://<domaine>/install/`** → l'assistant en 4 étapes :
-   prérequis → base de données → compte admin → fin (l'étape « base de données » installe automatiquement
-   tous les modules/widgets/thèmes livrés, modèle « tout bundlé »). Il génère `config/db.php` + les secrets
-   (`crypt.php`, `password.php`) + `config/url.php` (origine canonique du site, figée pour les liens
-   d'e-mail), importe le schéma + le seed, applique les migrations, pose le verrou `install/db.txt`.
-4. Terminé : le site répond sur `https://<domaine>/` avec le thème **vitrine** par défaut.
+3. Visiter **`https://<domaine>/install/`** → l'assistant en **cinq étapes** : prérequis (valeurs constatées) →
+   **profil du site** (*Complet*, *Gaming / eSport*, *Communauté*, *Cœur seul* ; modules décochables un par un,
+   dépendances ajoutées d'office) → base de données → compte administrateur → fin. Il génère `config/db.php`
+   + les secrets (`crypt.php`, `password.php`) + `config/url.php` (origine canonique du site, figée pour les
+   liens d'e-mail), importe le schéma + le seed, installe les addons choisis, baseline leurs migrations, pose
+   le verrou `install/db.txt`. **Installe par le nom de domaine, pas par l'IP** : l'adresse de contact du site
+   en est dérivée (`noreply@<domaine>`), et une IP donnerait une adresse invalide.
+4. Terminé : le site répond sur `https://<domaine>/` avec le thème **Nebula** par défaut. Passer par
+   *Paramètres* pour vérifier l'adresse de contact et régler l'envoi d'e-mail (SMTP, ou agent local).
 5. **(optionnel) Parution programmée** : ajouter un cron 5 min qui appelle l'endpoint de publication.
    **Copie l'URL exacte affichée dans Admin → Monitoring** (elle inclut le bon préfixe de langue) ;
    `-L` suit la redirection de langue si tu omets le préfixe :
@@ -68,6 +71,36 @@ contient `NEOFRAG_DEMO=TRUE`) et les **données de démo**.
   (nettoyé au prochain reset).
 - Un **bandeau** « Démo — réinitialisée régulièrement · connexion : demo / demo » s'affiche partout.
   Compte de démonstration prêt à l'emploi : **`demo` / `demo`**.
+
+## Mettre à jour un site déjà en ligne
+
+Une mise à jour **code-only** (sans nouvelle table) est réversible et ne touche pas la base.
+Régénérer les paquets depuis le dépôt de dev :
+
+```bash
+docker compose exec -T web php tools/build-release.php
+```
+
+Les paquets atterrissent dans `dist/` : `neofrag-reborn-<version>.zip` (vitrine),
+`neofrag-reborn-demo-<version>.zip` (démo, `NEOFRAG_DEMO=TRUE` inclus) et
+`neofrag-reborn-public-<version>.zip` (distribution générique). Le `vendor/` de prod est inclus ;
+les **secrets et `config/email.php` sont exclus**, donc un redéploiement n'écrase pas le SMTP configuré.
+
+1. **Sauvegarde** l'ancien code (renomme le dossier ou fais un backup FTP).
+2. **Décompresse** le zip et uploade le contenu de `neofrag-reborn/` par-dessus le site (écrase le code).
+3. `config/{db,crypt,password,email}.php` ne sont pas dans le paquet → ils sont **conservés**.
+4. `cache/`, `logs/` et `upload/` doivent rester **inscriptibles**.
+5. Si une migration est nécessaire, lance `php tools/migrate.php` (cf. [development.md](development.md)).
+
+**Vérification post-déploiement :**
+
+- [ ] « Mot de passe oublié » → 200 et email reçu.
+- [ ] Maintenance activée puis reconnexion → login OK.
+- [ ] Une erreur quelconque → notification **rouge** (pas verte).
+- [ ] Une page front + une page admin dans chaque thème actif.
+
+> **SMTP** : sans hôte SMTP valide (Admin → Réglages → Email), l'envoi retombe sur `mail()` de PHP,
+> souvent bloqué en mutualisé. Teste un vrai « mot de passe oublié » après configuration.
 
 ## Notes
 

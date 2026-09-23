@@ -1,33 +1,50 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
 /* =========================================================================
-   NeoFrag Admin v0.4 — design system (Bootstrap 4 + custom layer)
-   Tokens light + dark via [data-theme]. Indigo accent. Inter + JetBrains.
+   NeoFrag Admin v0.4 — design system (Bootstrap 5 + couche du produit)
+   Tokens light + dark via [data-theme]. Accent sarcelle. Inter + JetBrains.
    ======================================================================== */
 
 :root,
 [data-theme="light"] {
 	--nf-bg:           #eef2f6;
 	--nf-surface:      #ffffff;
+	/* Alias attendus par les feuilles des MODULES, qui sont ecrites pour n'importe quel theme.
+	   `--nf-bg-elevated` n'etait definie que dans les six themes PUBLICS : sous l'administration,
+	   chaque `var(--nf-bg-elevated, #fff)` retombait donc sur son repli BLANC. C'est ce qui
+	   posait les blocs blancs de la matrice des permissions et du tableau des roles en theme
+	   sombre, signales. `--nf-text-muted` manquait pour la meme raison. */
+	--nf-bg-elevated:  var(--nf-surface);
+	--nf-text-muted:   var(--nf-muted);
+	--nf-hover:        rgba(11, 22, 32, 0.04);
+	--nf-border-strong: #c5d0da;
 	--nf-surface-2:    #f3f6f9;
 	--nf-surface-3:    #e7edf2;
 	--nf-border:       #dde4ea;
 	--nf-border-soft:  #eaeff3;
 	--nf-text:         #0b1620;
+	--nf-text-strong:  #0b1620;
 	--nf-text-soft:    #2a3744;
 	--nf-muted:        #5f6b78;
-	--nf-muted-2:      #93a0ad;
-	--nf-accent:       #0d9488;
-	--nf-accent-strong:#0f766e;
+	--nf-muted-2:      #677079; /* 4,6:1 sur blanc et sur --nf-surface-2 : #93a0ad n'en faisait que 2,7 */
+	/* Chaque couleur ci-dessous tient 4,5:1 dans les deux sens : écrite sur la surface blanche, et
+	   peinte sous un texte blanc (boutons pleins). #0d9488, #16a34a, #d97706 et #0284c7 échouaient
+	   dans l'un ou l'autre — liens et boutons « Envoyer » à 3,7:1, bouton d'alerte à 3,2:1
+	   (check-mise-en-page, 2026-09-23). */
+	--nf-accent:       #0f766e;
+	/* Couleur du texte pose SUR un fond d'accent. Elle doit suivre l'accent, pas rester
+	   blanche : en sombre l'accent s'eclaircit et le blanc devient illisible. */
+	--nf-on-accent:    #ffffff;
+	--nf-accent-strong:#115e59;
 	--nf-accent-soft:  #d4f4ee;
 	--nf-accent-text:  #0f766e;
-	--nf-success:      #16a34a;
+	--nf-success:      #15803d;
 	--nf-success-soft: #dcfce7;
 	--nf-danger:       #dc2626;
 	--nf-danger-soft:  #fee2e2;
-	--nf-warning:      #d97706;
+	--nf-warning:      #b45309;
 	--nf-warning-soft: #fef3c7;
-	--nf-info:         #0284c7;
+	--nf-info:         #0369a1;
 	--nf-info-soft:    #e0f2fe;
 	--nf-shadow-sm:    0 1px 2px rgba(15, 20, 25, 0.05);
 	--nf-shadow:       0 4px 14px -6px rgba(15, 20, 25, 0.10), 0 1px 3px rgba(15, 20, 25, 0.06);
@@ -37,6 +54,10 @@
 	--nf-radius-sm:    6px;
 	--nf-radius-xs:    4px;
 	--nf-font:         "Inter", "Segoe UI", system-ui, sans-serif;
+	/* Les thèmes publics distinguent titres et texte ; l'administration non. La variable
+	   existe quand même, pour que TOUS les thèmes définissent le même vocabulaire — c'est
+	   ce qu'exige `check-css-variables`, et ce qui a évité les blocs blancs de juin. */
+	--nf-font-display: var(--nf-font);
 	--nf-font-mono:    "JetBrains Mono", ui-monospace, "SF Mono", monospace;
 	--nf-sidebar-w:    264px;
 	--nf-topbar-h:     56px;
@@ -45,18 +66,29 @@
 [data-theme="dark"] {
 	--nf-bg:           #070a10;
 	--nf-surface:      #0d121b;
+	--nf-bg-elevated:  var(--nf-surface);
+	--nf-text-muted:   var(--nf-muted);
+	--nf-hover:        rgba(255, 255, 255, 0.05);
+	--nf-border-strong: rgba(255, 255, 255, 0.18);
 	--nf-surface-2:    #131a26;
 	--nf-surface-3:    #1b2433;
 	--nf-border:       rgba(255, 255, 255, 0.09);
 	--nf-border-soft:  rgba(255, 255, 255, 0.05);
 	--nf-text:         #e7eef6;
+	--nf-text-strong:  #ffffff;
 	--nf-text-soft:    #c4cdd9;
 	--nf-muted:        #8593a6;
-	--nf-muted-2:      #5b6678;
+	--nf-muted-2:      #77808f; /* 4,7:1 sur le fond sombre : #5b6678 n'en faisait que 3,4 */
 	--nf-accent:       #2dd4bf;
+	--nf-on-accent:    #04221e;
 	--nf-accent-strong:#5eead4;
 	--nf-accent-soft:  rgba(45, 212, 191, 0.14);
 	--nf-accent-text:  #5eead4;
+	--nf-success:      #4ade80;
+	--nf-danger:       #f87171;
+	--nf-warning:      #fbbf24;
+	--nf-info:         #38bdf8;
+	--nf-on-status:    #0b1620;
 	--nf-success-soft: #052e16;
 	--nf-danger-soft:  #2a0a0a;
 	--nf-warning-soft: #2c1e07;
@@ -123,6 +155,30 @@ code, pre, kbd, samp, .text-mono {
 	font-size: 0.92em;
 }
 
+/* Le theme ne fixait QUE la police : un <code> gardait donc le rose #d63384 de Bootstrap, une
+   couleur qui n'appartient a aucune palette du produit. Elle sautait aux yeux sur la liste des
+   roles, ou le nom technique est rendu en <code>. Les six autres themes traitaient deja le cas ;
+   seul l'administration ne le faisait pas. Signale le 2026-09-22. */
+code, kbd, samp {
+	background:    var(--nf-surface-2);
+	border:        1px solid var(--nf-border);
+	border-radius: var(--nf-radius-xs);
+	padding:       1px 5px;
+	color:         var(--nf-accent-text);
+}
+
+pre {
+	background:    var(--nf-surface-2);
+	border:        1px solid var(--nf-border);
+	border-radius: var(--nf-radius-sm);
+	padding:       12px 14px;
+	overflow-x:    auto;
+	color:         var(--nf-text);
+}
+
+/* Dans un bloc, le code ne porte pas un second cadre. */
+pre code { background: transparent; border: 0; padding: 0; }
+
 ::selection { background: var(--nf-accent-soft); color: var(--nf-accent-text); }
 
 hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
@@ -179,7 +235,7 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 	align-items: center;
 	justify-content: center;
 	background: var(--nf-accent);
-	color: #ffffff;
+	color: var(--nf-on-accent);
 	border-radius: 999px;
 	font-weight: 700;
 	font-size: 13px;
@@ -569,8 +625,10 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 
 .table-hover tbody tr:hover { background: var(--nf-surface-2); }
 
-.card > .table:first-child thead th { border-top: 0; }
-.card > .table { margin: 0; }
+.card > .table:first-child thead th,
+.card > .table-responsive:first-child > .table thead th { border-top: 0; }
+.card > .table,
+.card > .table-responsive > .table { margin: 0; }
 
 /* Buttons */
 
@@ -615,18 +673,18 @@ i.icon:only-child { margin: 0; }
 .btn-sm { padding: 4px 10px; font-size: 12px; border-radius: var(--nf-radius-xs); }
 .btn-lg { padding: 10px 18px; font-size: 14.5px; }
 
-.btn-primary { background: var(--nf-accent); border-color: var(--nf-accent); color: #ffffff; }
+.btn-primary { background: var(--nf-accent); border-color: var(--nf-accent); color: var(--nf-on-accent); }
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:not(:disabled):not(.disabled):active {
 	background: var(--nf-accent-strong); border-color: var(--nf-accent-strong); color: #ffffff;
 }
 
-.btn-secondary, .btn-default {
+.btn-secondary {
 	background: var(--nf-surface);
 	border-color: var(--nf-border);
 	color: var(--nf-text);
 }
 
-.btn-secondary:hover, .btn-default:hover {
+.btn-secondary:hover {
 	background: var(--nf-surface-2);
 	border-color: var(--nf-muted-2);
 	color: var(--nf-text);
@@ -638,18 +696,27 @@ i.icon:only-child { margin: 0; }
 .btn-link { background: transparent; border-color: transparent; color: var(--nf-accent); font-weight: 500; padding: 4px 8px; }
 .btn-link:hover { color: var(--nf-accent-strong); text-decoration: none; }
 
-.btn-success { background: var(--nf-success); border-color: var(--nf-success); color: #fff; }
-.btn-success:hover { background: #15803d; border-color: #15803d; color: #fff; }
-.btn-danger  { background: var(--nf-danger);  border-color: var(--nf-danger);  color: #fff; }
-.btn-danger:hover { background: #b91c1c; border-color: #b91c1c; color: #fff; }
-.btn-warning { background: var(--nf-warning); border-color: var(--nf-warning); color: #fff; }
-.btn-warning:hover { background: #b45309; border-color: #b45309; color: #fff; }
-.btn-info    { background: var(--nf-info); border-color: var(--nf-info); color: #fff; }
-.btn-info:hover { background: #0369a1; border-color: #0369a1; color: #fff; }
+/* Le texte d'un bouton plein : blanc en mode clair, sombre en mode sombre (--nf-on-status), où les
+   couleurs d'état sont claires. Le survol fonce la couleur de 15 % dans les deux modes. */
+.btn-success { background: var(--nf-success); border-color: var(--nf-success); color: var(--nf-on-status, #fff); }
+.btn-danger  { background: var(--nf-danger);  border-color: var(--nf-danger);  color: var(--nf-on-status, #fff); }
+.btn-warning { background: var(--nf-warning); border-color: var(--nf-warning); color: var(--nf-on-status, #fff); }
+.btn-info    { background: var(--nf-info);    border-color: var(--nf-info);    color: var(--nf-on-status, #fff); }
+.btn-success:hover { background: color-mix(in srgb, var(--nf-success) 85%, #000); border-color: color-mix(in srgb, var(--nf-success) 85%, #000); color: var(--nf-on-status, #fff); }
+.btn-danger:hover  { background: color-mix(in srgb, var(--nf-danger) 85%, #000);  border-color: color-mix(in srgb, var(--nf-danger) 85%, #000);  color: var(--nf-on-status, #fff); }
+.btn-warning:hover { background: color-mix(in srgb, var(--nf-warning) 85%, #000); border-color: color-mix(in srgb, var(--nf-warning) 85%, #000); color: var(--nf-on-status, #fff); }
+.btn-info:hover    { background: color-mix(in srgb, var(--nf-info) 85%, #000);    border-color: color-mix(in srgb, var(--nf-info) 85%, #000);    color: var(--nf-on-status, #fff); }
+/* L'état « actif » (`.active`, bouton coché d'un groupe) : Bootstrap 5 lui impose sa propre couleur de
+   texte, plus prioritaire que les règles ci-dessus — « Ouvert » s'écrivait en blanc sur le vert clair
+   du mode sombre, à 1,7:1 (check-mise-en-page, 2026-09-23). */
+.btn-success.active, .btn-check:checked + .btn-success { background: color-mix(in srgb, var(--nf-success) 85%, #000); border-color: color-mix(in srgb, var(--nf-success) 85%, #000); color: var(--nf-on-status, #fff); }
+.btn-danger.active,  .btn-check:checked + .btn-danger  { background: color-mix(in srgb, var(--nf-danger) 85%, #000);  border-color: color-mix(in srgb, var(--nf-danger) 85%, #000);  color: var(--nf-on-status, #fff); }
+.btn-warning.active, .btn-check:checked + .btn-warning { background: color-mix(in srgb, var(--nf-warning) 85%, #000); border-color: color-mix(in srgb, var(--nf-warning) 85%, #000); color: var(--nf-on-status, #fff); }
+.btn-info.active,    .btn-check:checked + .btn-info    { background: color-mix(in srgb, var(--nf-info) 85%, #000);    border-color: color-mix(in srgb, var(--nf-info) 85%, #000);    color: var(--nf-on-status, #fff); }
 .btn-dark    { background: #18181b; border-color: #18181b; color: #fff; }
 
 .btn-outline-primary { background: transparent; border-color: var(--nf-accent); color: var(--nf-accent); }
-.btn-outline-primary:hover { background: var(--nf-accent); color: #fff; }
+.btn-outline-primary:hover { background: var(--nf-accent); color: var(--nf-on-accent); }
 
 .btn-group .btn { box-shadow: none; border-radius: var(--nf-radius-xs); }
 .btn-group > .btn:not(:first-child) { margin-left: -1px; }
@@ -663,8 +730,8 @@ i.icon:only-child { margin: 0; }
 
 /* Forms */
 
-.form-control, .custom-select {
-	background: var(--nf-surface);
+.form-control, .form-select {
+	background-color: var(--nf-surface);
 	border: 1px solid var(--nf-border);
 	border-radius: var(--nf-radius-sm);
 	color: var(--nf-text);
@@ -677,8 +744,8 @@ i.icon:only-child { margin: 0; }
 
 .form-control::placeholder { color: var(--nf-muted-2); }
 
-.form-control:focus, .custom-select:focus {
-	background: var(--nf-surface);
+.form-control:focus, .form-select:focus {
+	background-color: var(--nf-surface);
 	border-color: var(--nf-accent);
 	box-shadow: 0 0 0 3px var(--nf-accent-soft);
 	color: var(--nf-text);
@@ -750,14 +817,6 @@ i.icon:only-child { margin: 0; }
 	white-space: nowrap;
 }
 
-.badge.badge-primary    { background: var(--nf-accent-soft); color: var(--nf-accent-text); }
-.badge.badge-secondary  { background: var(--nf-surface-2); color: var(--nf-muted); }
-.badge.badge-success    { background: var(--nf-success-soft); color: var(--nf-success); }
-.badge.badge-danger     { background: var(--nf-danger-soft); color: var(--nf-danger); }
-.badge.badge-warning    { background: var(--nf-warning-soft); color: var(--nf-warning); }
-.badge.badge-info       { background: var(--nf-info-soft); color: var(--nf-info); }
-.badge.badge-light      { background: var(--nf-surface-2); color: var(--nf-muted); }
-.badge.badge-dark       { background: var(--nf-text); color: var(--nf-surface); }
 
 /* Alerts */
 
@@ -769,10 +828,10 @@ i.icon:only-child { margin: 0; }
 }
 
 .alert-primary { background: var(--nf-accent-soft); color: var(--nf-accent-text); border-color: color-mix(in srgb, var(--nf-accent) 25%, transparent); }
-.alert-success { background: var(--nf-success-soft); color: var(--nf-success); border-color: color-mix(in srgb, var(--nf-success) 25%, transparent); }
-.alert-danger  { background: var(--nf-danger-soft); color: var(--nf-danger); border-color: color-mix(in srgb, var(--nf-danger) 25%, transparent); }
-.alert-warning { background: var(--nf-warning-soft); color: var(--nf-warning); border-color: color-mix(in srgb, var(--nf-warning) 25%, transparent); }
-.alert-info    { background: var(--nf-info-soft); color: var(--nf-info); border-color: color-mix(in srgb, var(--nf-info) 25%, transparent); }
+.alert-success { background: var(--nf-success-soft); color: var(--bs-success-text-emphasis); border-color: color-mix(in srgb, var(--nf-success) 25%, transparent); }
+.alert-danger  { background: var(--nf-danger-soft); color: var(--bs-danger-text-emphasis); border-color: color-mix(in srgb, var(--nf-danger) 25%, transparent); }
+.alert-warning { background: var(--nf-warning-soft); color: var(--bs-warning-text-emphasis); border-color: color-mix(in srgb, var(--nf-warning) 25%, transparent); }
+.alert-info    { background: var(--nf-info-soft); color: var(--bs-info-text-emphasis); border-color: color-mix(in srgb, var(--nf-info) 25%, transparent); }
 
 /* Modal */
 
@@ -788,8 +847,6 @@ i.icon:only-child { margin: 0; }
 
 .modal-header .modal-title { font-weight: 700; font-size: 15px; color: var(--nf-text); }
 
-.modal-header .close { color: var(--nf-muted); opacity: 1; font-weight: 400; font-size: 22px; }
-.modal-header .close:hover { color: var(--nf-text); }
 
 .modal-body { padding: 18px; }
 
@@ -842,7 +899,7 @@ i.icon:only-child { margin: 0; }
 	border-color: color-mix(in srgb, var(--nf-accent) 30%, var(--nf-border));
 }
 
-.pagination .page-item.active .page-link { background: var(--nf-accent); border-color: var(--nf-accent); color: #ffffff; }
+.pagination .page-item.active .page-link { background: var(--nf-accent); border-color: var(--nf-accent); color: var(--nf-on-accent); }
 .pagination .page-item.disabled .page-link { background: var(--nf-surface-2); color: var(--nf-muted-2); }
 
 /* Nav pills + tabs */
@@ -856,7 +913,7 @@ i.icon:only-child { margin: 0; }
 }
 
 .nav-pills .nav-link:hover { background: var(--nf-surface-2); color: var(--nf-text); }
-.nav-pills .nav-link.active { background: var(--nf-accent); color: #ffffff; }
+.nav-pills .nav-link.active { background: var(--nf-accent); color: var(--nf-on-accent); }
 
 .nav-tabs { border-bottom: 1px solid var(--nf-border); display: flex; flex-wrap: wrap; padding-left: 0; margin-bottom: 14px; list-style: none; }
 .nav-tabs > li { list-style: none; margin: 0; }
@@ -907,7 +964,7 @@ i.icon:only-child { margin: 0; }
 	font-size: 13.5px;
 }
 
-.list-group-item.active { background: var(--nf-accent); border-color: var(--nf-accent); color: #ffffff; }
+.list-group-item.active { background: var(--nf-accent); border-color: var(--nf-accent); color: var(--nf-on-accent); }
 
 /* Avatar */
 
@@ -1061,6 +1118,95 @@ i.icon:only-child { margin: 0; }
 
 .settings-form-footer-status { margin-right: auto; color: var(--nf-muted); font-size: 12px; }
 
+/* Barre de pied des pages de parametres a formulaire unique (themes/admin/js/settings.js).
+   Le script la construisait avec quatre classes qui n'etaient stylees NULLE PART : le message et
+   le bouton se retrouvaient poses bruts l'un au-dessus de l'autre, sans encadrement ni
+   alignement. Elle reprend ici la meme presentation que .settings-form-footer ci-dessus, pour
+   que les deux cas — formulaire unique ou multiple — se ressemblent. */
+.settings-save-bar {
+	position: sticky;
+	bottom: 0;
+	background: var(--nf-surface);
+	border-top: 1px solid var(--nf-border);
+	margin: 14px -16px -14px;
+	z-index: 50;
+}
+
+.settings-save-bar-inner {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 12px;
+	padding: 10px 16px;
+}
+
+/* Le message pousse les boutons a droite ; quand il est masque, ils y restent. */
+.settings-save-bar-info {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-right: auto;
+	color: var(--nf-warning);
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.settings-save-bar-info i { color: inherit; }
+
+.settings-save-bar-actions {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+}
+
+/* =========================================================================
+   Listes verticales interminables
+
+   Deux formes du meme defaut : un groupe de cases a cocher, et un formulaire
+   de champs courts, occupent chacun une pleine largeur par ligne. Vingt-deux
+   cases sur la page des statistiques, une trentaine de champs numeriques sur
+   celle de la gamification : on deroule sur huit cents pixels de haut pendant
+   que les trois quarts de la largeur restent vides.
+
+   Les deux regles ci-dessous remplissent la largeur disponible, en laissant
+   le nombre de colonnes s'adapter a la place : une seule colonne sur telephone,
+   deux ou trois sur un ecran large, sans point de rupture a maintenir.
+   ======================================================================== */
+
+.nf-check-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+	gap: 2px 18px;
+}
+
+/* Le libelle ne doit pas deborder sur la colonne voisine. */
+.nf-check-grid .form-check { margin: 0; min-width: 0; }
+.nf-check-grid .form-check-label { overflow-wrap: anywhere; }
+
+/* Formulaire dense : chaque rangee « libelle + champ court » devient une cellule.
+   A poser par le controleur autour de $form->display(). */
+.nf-form-grid > form > fieldset {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+	gap: 0 24px;
+}
+
+/* La rangee du bouton d'envoi et la mention des champs requis reprennent toute
+   la largeur : elles closent le formulaire, elles ne sont pas une cellule. */
+.nf-form-grid > form > fieldset > .nf-field.row:has(button[type="submit"]),
+.nf-form-grid > form > fieldset > .settings-save-bar,
+.nf-form-grid > form > fieldset > .settings-form-footer {
+	grid-column: 1 / -1;
+}
+
+/* Dans une cellule etroite, la colonne du libelle de Bootstrap est trop large :
+   le champ se retrouve ecrase. On empile libelle puis champ. */
+.nf-form-grid .nf-field.row { margin-bottom: 10px; }
+/* `flex: 0 0 100%` et non `auto` : en largeur automatique, un libelle court laisse la place au
+   champ de remonter a cote de lui, et la rangee ne ressemble plus aux autres de la grille. */
+.nf-form-grid .nf-field.row > .col-form-label { flex: 0 0 100%; width: 100%; max-width: 100%; padding-bottom: 2px; }
+.nf-form-grid .nf-field.row > [class*="col-"]:not(.col-form-label) { flex: 1 1 auto; width: auto; max-width: none; }
+
 /* =========================================================================
    Socials sub-page (grid de cards par réseau, icône brandée)
    ======================================================================== */
@@ -1204,8 +1350,8 @@ i.icon:only-child { margin: 0; }
 	color: var(--nf-muted);
 }
 
-.nf-status-toggle .btn.active.btn-success { background: var(--nf-success); color: #fff; }
-.nf-status-toggle .btn.active.btn-danger  { background: var(--nf-danger);  color: #fff; }
+.nf-status-toggle .btn.active.btn-success { background: var(--nf-success); color: var(--nf-on-status, #fff); }
+.nf-status-toggle .btn.active.btn-danger  { background: var(--nf-danger);  color: var(--nf-on-status, #fff); }
 
 /* =========================================================================
    Live preview helpers
@@ -1406,7 +1552,7 @@ i.icon:only-child { margin: 0; }
 	font-size: 13.5px;
 }
 
-.alert[data-notify].alert-primary { background: var(--nf-accent); border-color: var(--nf-accent); color: #fff; }
+.alert[data-notify].alert-primary { background: var(--nf-accent); border-color: var(--nf-accent); color: var(--nf-on-accent); }
 .alert[data-notify].alert-success { background: var(--nf-success); border-color: var(--nf-success); color: #fff; }
 .alert[data-notify].alert-info    { background: var(--nf-info);    border-color: var(--nf-info);    color: #fff; }
 .alert[data-notify].alert-warning { background: var(--nf-warning); border-color: var(--nf-warning); color: #fff; }
@@ -1437,7 +1583,9 @@ i.icon:only-child { margin: 0; }
 	overflow-x: auto;
 }
 
-.table-area .float-right { float: right !important; margin-left: 8px; }
+/* Bootstrap 5 pose deja le flottement sur `.float-end` : il ne reste que la gouttiere
+   entre deux boutons voisins du pied de tableau. */
+.table-area .float-end { margin-left: 8px; }
 
 .table-area .nodata,
 .table-area .empty {
@@ -1453,10 +1601,10 @@ i.icon:only-child { margin: 0; }
 
 .text-muted   { color: var(--nf-muted) !important; }
 .text-accent  { color: var(--nf-accent) !important; }
-.text-success { color: var(--nf-success) !important; }
-.text-danger  { color: var(--nf-danger) !important; }
-.text-warning { color: var(--nf-warning) !important; }
-.text-info    { color: var(--nf-info) !important; }
+.text-success { color: var(--bs-success-text-emphasis) !important; }
+.text-danger  { color: var(--bs-danger-text-emphasis) !important; }
+.text-warning { color: var(--bs-warning-text-emphasis) !important; }
+.text-info    { color: var(--bs-info-text-emphasis) !important; }
 
 .bg-accent-soft { background: var(--nf-accent-soft) !important; }
 
@@ -1532,17 +1680,6 @@ i.icon:only-child { margin: 0; }
 .stats-presets { display: inline-flex; gap: 6px; flex-wrap: wrap; }
 
 .stats-chart-body { padding: 10px 14px 14px; }
-
-/* Séries stats : grille fluide de cases à cocher (au lieu d'une longue liste verticale) */
-.stats-filter-card .checkbox {
-	display: inline-flex;
-	align-items: center;
-	width: auto;
-	min-width: 180px;
-	margin: 2px 14px 2px 0;
-	vertical-align: top;
-}
-.stats-filter-card .checkbox label { margin: 0; font-weight: 400; }
 
 /* Quick actions row */
 
@@ -1675,19 +1812,27 @@ i.icon:only-child { margin: 0; }
 	color: var(--nf-text);
 	font-size: 14px;
 	min-height: 52px;
-	flex-wrap: nowrap;
+	flex-wrap: wrap;
+	row-gap: 6px;
 	overflow: visible;
 }
 
+/* Le titre passe à la ligne plutôt que d'être tranché. `text-overflow: ellipsis` n'a jamais agi ici :
+   il ne s'applique pas à un conteneur `inline-flex`, et « Informations serveur » s'affichait
+   « Informations serveu », coupé net, dans la colonne étroite du monitoring (2026-09-22). */
+/* L'en-tête lui-même se replie (`flex-wrap: wrap`) : quand la colonne est trop étroite pour le titre
+   ET ses boutons, les boutons passent dessous, au lieu de rogner le titre de quelques pixels
+   (« Informations serveur » à 1024 px, le statut « pending » d'un signalement à 360 px —
+   check-mise-en-page, 2026-09-23). Le titre se replie aussi : sa pastille passe à la ligne. */
 .nf-card-header > span:first-child {
 	display: inline-flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 8px;
 	flex: 1 1 auto;
 	min-width: 0;
 	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	white-space: normal;
 }
 
 .nf-card-header > a,
@@ -1723,7 +1868,7 @@ i.icon:only-child { margin: 0; }
 	transition: background-color 120ms ease, color 120ms ease;
 }
 
-.nf-magic-words .nf-tag:hover { background: var(--nf-accent); color: #fff; }
+.nf-magic-words .nf-tag:hover { background: var(--nf-accent); color: var(--nf-on-accent); }
 
 /* =========================================================================
    Settings hub (modules/settings/controllers/admin.php)
@@ -1994,45 +2139,72 @@ i.icon:only-child { margin: 0; }
 
 /* Maintenance live preview */
 
+/* Le cadre est la FENÊTRE : il ne peint rien lui-même, il découpe. C'est le contenu qui porte la
+   couleur de fond choisie par l'administrateur, et il doit donc remplir le cadre — sinon la
+   couleur ne s'affiche que derrière le texte, en petit rectangle flottant au milieu de la carte,
+   avec la légende qui déborde sur les côtés. */
 .maintenance-preview-frame {
-	background: var(--nf-surface-2);
 	border: 1px solid var(--nf-border);
 	border-radius: var(--nf-radius);
-	padding: 22px 18px;
-	min-height: 220px;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	text-align: center;
+	overflow: hidden;
+	margin: 0 18px 18px;
 }
 
 .maintenance-preview-content {
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 	align-items: center;
-	gap: 10px;
+	gap: 12px;
+	min-height: 240px;
+	padding: 28px 22px;
+	text-align: center;
+	background-size: cover;
 }
 
+/* La ligne de réouverture porte une PHRASE (« Réouverture : lundi 15 septembre, 18:00 ») : c'est
+   une pastille de texte, pas la pastille ronde de 44 px qui était écrite ici et qui écrasait la
+   phrase dans un cercle. */
 .maintenance-preview-clock {
-	width: 44px;
-	height: 44px;
 	display: inline-flex;
 	align-items: center;
-	justify-content: center;
+	gap: 8px;
+	max-width: 100%;
+	padding: 6px 14px;
 	border-radius: 999px;
-	background: var(--nf-warning-soft);
-	color: var(--nf-warning);
-	font-size: 18px;
+	background: rgba(0, 0, 0, .28);
+	border: 1px solid rgba(255, 255, 255, .22);
+	font-size: 12px;
+	color: inherit;
 }
 
-.maintenance-preview-logo img {
-	max-width: 120px;
-	max-height: 60px;
+/* La classe est portée par l'<img> elle-même (cf. le contrôleur) : le sélecteur descendant
+   `.maintenance-preview-logo img` ne désignait rien, et un logo de 2000 px passait sans contrainte. */
+.maintenance-preview-logo {
+	max-width: 160px;
+	max-height: 70px;
+	object-fit: contain;
 }
 
-.maintenance-preview-title { font-size: 18px; font-weight: 700; color: var(--nf-text); margin: 0; }
-.maintenance-preview-text  { font-size: 13px; color: var(--nf-muted); margin: 0; }
+/* `color: inherit` : le titre et le texte prennent la couleur choisie par l'administrateur, portée
+   par le conteneur. Ils étaient forcés aux couleurs du thème d'administration — le texte restait
+   donc en gris clair sur le fond sombre de la page de maintenance, illisible. */
+.maintenance-preview-title {
+	font-size: 20px;
+	font-weight: 700;
+	color: inherit;
+	margin: 0;
+	text-wrap: balance;
+}
+
+.maintenance-preview-text {
+	font-size: 13px;
+	color: inherit;
+	opacity: .85;
+	margin: 0;
+	max-width: 34ch;
+	overflow-wrap: anywhere;
+}
 
 /* Status legend (under maintenance/registration toggle) */
 
@@ -2152,9 +2324,9 @@ i.icon:only-child { margin: 0; }
 }
 .fc .fc-button:hover { background: var(--nf-surface-2); border-color: var(--nf-muted-2); }
 .fc .fc-button-primary:not(:disabled).fc-button-active,
-.fc .fc-button-primary:not(:disabled):active { background: var(--nf-accent); border-color: var(--nf-accent); color: #fff; }
+.fc .fc-button-primary:not(:disabled):active { background: var(--nf-accent); border-color: var(--nf-accent); color: var(--nf-on-accent); }
 .fc .fc-day-today { background: var(--nf-accent-soft) !important; }
-.fc .fc-event { background: var(--nf-accent); border-color: var(--nf-accent); color: #fff; border-radius: var(--nf-radius-xs); padding: 1px 4px; font-size: 11.5px; }
+.fc .fc-event { background: var(--nf-accent); border-color: var(--nf-accent); color: var(--nf-on-accent); border-radius: var(--nf-radius-xs); padding: 1px 4px; font-size: 11.5px; }
 
 /* monitoring : gauge breathing room + status icon + legend */
 .panel-storage .card-body { padding-top: 24px !important; }
@@ -2253,7 +2425,7 @@ i.icon:only-child { margin: 0; }
 .addons-filter-btn.active,
 .addons-filter-btn.mixitup-control-active {
 	background: var(--nf-accent);
-	color: #ffffff;
+	color: var(--nf-on-accent);
 	border-color: var(--nf-accent);
 }
 
@@ -2322,6 +2494,16 @@ i.icon:only-child { margin: 0; }
 	border-radius: var(--nf-radius-sm);
 	background-color: var(--nf-surface-2);
 	margin: -2px 0 4px;
+	flex: 0 0 auto;
+}
+
+/* Sans image, la bande garde sa hauteur et porte l'icone en son centre : toutes les cartes de la
+   grille ont ainsi la meme forme, qu'un apercu existe ou non. */
+.addon-card-thumbnail-vide {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-image: none;
 }
 
 .addon-card-title-wrap {
@@ -2381,6 +2563,9 @@ i.icon:only-child { margin: 0; }
 	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
+	/* Trois lignes, toujours : coupees si le texte deborde, reservees s'il manque. C'est ce qui
+	   tient l'alignement du numero de version d'une carte a l'autre. */
+	min-height: calc(1.45em * 3);
 }
 
 .addon-card-actions {
@@ -2417,15 +2602,6 @@ i.icon:only-child { margin: 0; }
 /* =========================================================================
    Forum admin (modules/forum/views/admin.tpl.php)
    ======================================================================== */
-
-.forum-admin-actionbar {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	margin-bottom: 14px;
-}
-
-.forum-admin-actionbar .btn { font-size: 12.5px; }
 
 .forum-admin-card {
 	background: var(--nf-surface);
@@ -2542,73 +2718,38 @@ i.icon:only-child { margin: 0; }
 
 
 /* =========================================================================
-   Bootstrap-colorpicker — restauration des dimensions natives
-   Le picker a sa propre CSS (bootstrap-colorpicker.min.css). On force juste
-   la box-sizing + on neutralise nos rules .btn / inputs qui polluent.
+   Sélecteur de couleur (js/colorpicker.js)
+
+   Le bloc qui occupait cette place stylait `bootstrap-colorpicker`, le plugin jQuery retiré lors
+   du passage à Bootstrap 5. Le composant actuel est écrit en vanilla : il habille un
+   `<div class="input-group color">` et n'émet AUCUNE classe `colorpicker-*`. Les quinze règles
+   précédentes ne désignaient donc plus rien — et la pastille de couleur, un `<i>` vide en ligne
+   sans dimensions, restait invisible : on ne voyait qu'un petit rectangle blanc à gauche du champ.
    ======================================================================== */
 
-.colorpicker,
-.colorpicker * { box-sizing: content-box !important; }
-
-.colorpicker {
-	background:    #fff !important;
-	border:        1px solid #ccc !important;
-	border-radius: 4px !important;
-	z-index:       1056;
-	padding:       4px !important;
-	color:         #333 !important;
-}
-
-/* P1.7 fix : dark mode override pour le picker — sinon barre blanche illisible */
-[data-theme="dark"] .colorpicker {
-	background:   var(--nf-surface) !important;
-	border-color: var(--nf-border-strong) !important;
-	color:        var(--nf-text) !important;
-	box-shadow:   var(--nf-shadow-md);
-}
-
-[data-theme="dark"] .colorpicker:before {
-	border-bottom-color: var(--nf-border-strong) !important;
-}
-
-[data-theme="dark"] .colorpicker:after {
-	border-bottom-color: var(--nf-surface) !important;
-}
-
-.colorpicker-saturation { width: 100px !important; height: 100px !important; }
-.colorpicker-hue,
-.colorpicker-alpha      { width: 28px  !important; height: 100px !important; margin-left: 4px !important; }
-
-/* Preview "selected color" en barre full-width = redondant. Masqué. */
-.colorpicker-color,
-.colorpicker-color div  { display: none !important; }
-
-.colorpicker-selectors  { height: 13px !important; margin-top: 4px !important; padding: 0 !important; clear: both !important; display: block !important; }
-
-.colorpicker-selectors i {
-	float:         left !important;
-	width:         13px !important;
-	height:        13px !important;
-	padding:       0 !important;
-	margin:        0 !important;
-	border:        0 !important;
-	border-radius: 0 !important;
-	cursor:        pointer !important;
-	display:       block !important;
-}
-.colorpicker-selectors i + i { margin-left: 4px !important; }
-
-/* Color preview dans l'input-group addon */
-.colorpicker-element .input-group-addon i,
-.colorpicker-element .input-group-text i {
-	display:       inline-block;
-	width:         16px;
-	height:        16px;
-	border:        1px solid rgba(0, 0, 0, 0.15);
-	border-radius: 2px;
+/* La pastille : le JS lui pose la couleur courante en fond, encore faut-il qu'elle ait une taille. */
+.input-group.color .nf-color-swatch {
+	display:        inline-block;
+	width:          16px;
+	height:         16px;
+	border:         1px solid rgba(127, 127, 127, .45);
+	border-radius:  3px;
 	vertical-align: middle;
-	margin:        0 !important;
+	margin:         0 !important;
 }
+
+/* Le groupe ne doit JAMAIS se replier : `.input-group` de Bootstrap 5 autorise le retour à la
+   ligne, et dans une colonne étroite le bouton pipette passait sous le champ, détaché de lui. */
+.input-group.color { flex-wrap: nowrap; }
+.input-group.color .form-control { min-width: 0; font-variant-numeric: tabular-nums; }
+
+/* La palette déroulante : le JS la remplit de boutons carrés de 24 px. */
+.input-group.color .dropdown-menu { min-width: 0; }
+.input-group.color .dropdown-menu .btn { box-shadow: none; }
+
+/* Le bouton pipette est cliquable : il doit le montrer. */
+.input-group.color .nf-color-toggle { cursor: pointer; }
+.input-group.color .nf-color-toggle:hover { background: var(--nf-surface-3); }
 
 .iconpicker,
 .iconpicker-popover,
@@ -2623,7 +2764,7 @@ i.icon:only-child { margin: 0; }
 /* P3.5 — Form input padding réduit en mobile < 576px (évite scroll horizontal) */
 @media (max-width: 575.98px) {
 	.form-control,
-	.custom-select { padding: 6px 10px; font-size: 13px; }
+	.form-select { padding: 6px 10px; font-size: 13px; }
 }
 
 /* P3.7 — Breadcrumb truncation : max-width pour laisser place au .nf-topbar-actions */
@@ -2665,19 +2806,13 @@ i.icon:only-child { margin: 0; }
 }
 
 /* P4.10 — Modal close button : hitbox plus large pour mobile */
-.modal-header .close,
-.modal-header button.close {
+.modal-header .btn-close {
 	width: 36px;
 	height: 36px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 24px;
-	padding: 0;
 	margin: -8px -8px -8px auto;
 	border-radius: var(--nf-radius-xs);
 }
-.modal-header .close:hover { background: var(--nf-surface-2); }
+.modal-header .btn-close:hover { background-color: var(--nf-surface-2); }
 
 /* P4.11 — Badge dans tables étroites : word-break pour éviter overflow */
 @media (max-width: 767.98px) {
@@ -2694,7 +2829,7 @@ i.icon:only-child { margin: 0; }
    admin_empty, admin_stats. Voir neofrag/traits/admin_helpers.php
    ======================================================================== */
 
-/* Action bar générique en haut de page (alias de .forum-admin-actionbar pour usage cross-modules) */
+/* Barre d'actions générique en haut de page, posée par le composant partagé admin_bar(). */
 .nf-action-bar {
 	display: flex;
 	flex-wrap: wrap;
@@ -2752,6 +2887,19 @@ i.icon:only-child { margin: 0; }
 	word-break: break-word;
 	overflow-wrap: anywhere;
 	vertical-align: middle;
+}
+
+/* Sauf les colonnes d'ACTIONS, qui gardent leurs boutons sur une ligne. La règle ci-dessus est plus
+   spécifique que `.table-content .action { white-space: nowrap }` (css/table.css) : elle faisait
+   passer le second bouton à la ligne, et l'espace insécable restée accrochée au premier le décalait
+   — deux boutons en escalier. Signalé le 2026-09-22 sur les catégories des actualités. */
+.nf-list-aside .table td.action,
+.nf-list-main .table td.action,
+.nf-list-aside .table td.compact,
+.nf-list-main .table td.compact {
+	white-space: nowrap;
+	word-break: normal;
+	overflow-wrap: normal;
 }
 
 .nf-list-layout .badge,
@@ -3351,3 +3499,99 @@ i.icon:only-child { margin: 0; }
 	.nf-sidebar.is-open { transform: translateX(0); }
 }
 
+
+/* ======================================================================
+   ICÔNES DANS LES BOUTONS — toujours la couleur du bouton
+
+   Plusieurs règles colorent les icônes selon leur CONTEXTE, pour mettre en
+   valeur l'icône du titre d'une carte ou d'une tuile de statistique :
+
+       .card > .card-header i.fas { color: var(--nf-accent); }
+       .nf-card-header    i.fas   { color: var(--nf-accent); }
+
+   Or les boutons d'action sont posés dans ce même en-tête, à droite du titre.
+   Leurs icônes étaient donc repeintes en vert accent, quelle que soit la
+   couleur du bouton :
+     - bouton plein (btn-primary, vert)  -> icône verte sur fond vert, INVISIBLE ;
+     - bouton rouge (btn-danger)         -> icône verte sur fond rouge ;
+     - bouton outline au survol (le fond passe à l'accent, le texte au blanc)
+       -> l'icône restait verte sur vert, à peine lisible.
+
+   22 fichiers d'administration posent un bouton dans un en-tête de carte : la
+   correction est ici, une seule fois, et non dans chacun d'eux. `!important`
+   est justifié — une icône de bouton n'a jamais à prendre une couleur dictée
+   par ce qui l'entoure, et sans lui chaque nouvelle règle contextuelle
+   rouvrirait le même défaut.
+   ====================================================================== */
+
+.btn i,
+.btn i.icon,
+.btn i.fa, .btn i.fas, .btn i.far, .btn i.fab, .btn i.fal, .btn i.fad,
+.btn svg { color: inherit !important; }
+
+/* =========================================================================
+   La barre du haut sous 1200 px : le fil d'Ariane et les boutons d'action se
+   partageaient une seule ligne de 60 px. Les boutons ne rétrécissent pas, et le
+   fil était rogné net — « Liste des forums » coupé à mi-mot sur 168 pages
+   d'administration, et à 360 px les boutons passaient PAR-DESSUS le fil
+   (check-mise-en-page, 2026-09-23). La barre passe sur deux lignes : le fil
+   d'abord, qui revient à la ligne s'il le faut, puis les boutons, qui défilent
+   horizontalement s'ils ne tiennent pas.
+   ======================================================================== */
+@media (max-width: 1199.98px) {
+	.nf-topbar {
+		flex-wrap: wrap;
+		height: auto;
+		min-height: 60px;
+		row-gap: 8px;
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+
+	.nf-breadcrumb {
+		flex: 1 1 0;
+		max-width: none;
+		min-width: 0;
+		flex-wrap: wrap;
+		white-space: normal;
+		row-gap: 2px;
+	}
+
+	.nf-topbar-actions {
+		order: 3;
+		flex: 1 0 100%;
+		margin-left: 0;
+		overflow-x: auto;
+		scrollbar-width: thin;
+	}
+
+	.nf-topbar-actions > * { flex: 0 0 auto; }
+}
+
+/* =========================================================================
+   Cibles tactiles : 24 px au moins sous le doigt (WCAG 2.2, 2.5.8). L'icône
+   « accueil » du fil d'Ariane faisait 21 px, le compteur de commentaires d'une
+   actualité 7 × 14 px, une pastille-lien de tableau 19 px (check-mise-en-page,
+   2026-09-23). La zone grandit, le dessin ne change pas.
+   ======================================================================== */
+.nf-breadcrumb a,
+.nf-content-card-meta a,
+.table a.badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 24px;
+	min-height: 24px;
+}
+
+/* Les boutons d'action en fin de ligne d'un tableau restent sur une ligne : ils passaient à la ligne
+   entre 414 et 1024 px, le dernier seul sous les autres (dons, rôles, champs de profil —
+   check-mise-en-page, 2026-09-23). Le tableau défile dans son cadre s'il le faut. */
+.table td.text-end { white-space: nowrap; }
+.table td.action a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 24px;
+	min-height: 24px;
+}

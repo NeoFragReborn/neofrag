@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace NF\Modules\Calendar\Controllers;
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 use NF\Modules\Calendar\Calendar;
@@ -22,20 +23,20 @@ class Admin extends Controller_Module
 
 				$body .= '<div class="nf-content-card">';
 				$body .= '<div class="nf-content-card-head">';
-				$body .= '<div class="nf-content-card-title">'.htmlspecialchars($e['title']).'</div>';
+				$body .= '<div class="nf-content-card-title">'.htmlspecialchars((string) ($e['title'])).'</div>';
 				$body .= '<span class="nf-content-card-status '.($published ? 'published' : 'draft').'">';
 				$body .= '<i class="fas '.($published ? 'fa-check' : 'fa-clock').'"></i> '.($published ? $this->lang('Publié') : $this->lang('Brouillon'));
 				$body .= '</span>';
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-meta">';
 				$body .= '<span><i class="far fa-calendar-alt"></i> '.Calendar::format_dt($e['start_at'], (bool)$e['all_day'], $e['end_at']).'</span>';
-				if (!empty($e['location'])) $body .= '<span><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars($e['location']).'</span>';
-				if (!empty($e['username']))  $body .= '<span><i class="fas fa-user"></i> '.htmlspecialchars($e['username']).'</span>';
+				if (!empty($e['location'])) $body .= '<span><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars((string) ($e['location'])).'</span>';
+				if (!empty($e['username']))  $body .= '<span><i class="fas fa-user"></i> '.htmlspecialchars((string) ($e['username'])).'</span>';
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-foot">';
 				$body .= '<span class="nf-content-card-spacer"></span>';
 				$body .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/calendar/'.$e['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
-				$body .= '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/calendar/delete/'.$e['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				$body .= '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/calendar/delete/'.$e['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$body .= '</div>';
 				$body .= '</div>';
 			}
@@ -75,7 +76,7 @@ class Admin extends Controller_Module
 				'color'       => ['label' => $this->lang('Couleur (#hex, optionnel)'), 'type' => 'text', 'value' => $is_new ? '#03c1a2' : ($e['color'] ?? '')],
 				'published'   => ['label' => $this->lang('Publier'), 'type' => 'checkbox', 'value' => ['1'], 'values' => ['1' => $this->lang('Événement visible')], 'checked' => ['1' => ($is_new || !empty($e['published']))]]
 			 ])
-			 ->add_submit($is_new ? $this->lang('Créer') : $this->lang('Enregistrer'));
+			 ->add_submit($is_new ? $this->lang('Créer') : $this->lang('Enregistrer'), $is_new ? 'fas fa-plus' : 'fas fa-check');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -104,6 +105,6 @@ class Admin extends Controller_Module
 			redirect('admin/calendar');
 		}
 
-		return $this->admin_back('admin/calendar', $this->lang('Calendrier')).$this->admin_card($is_new ? 'fas fa-plus' : 'fas fa-edit', $is_new ? $this->lang('Nouvel événement') : $this->lang('Éditer : %s', $e['title']), $this->form()->display());
+		return $this->admin_card($is_new ? 'fas fa-plus' : 'fas fa-edit', $is_new ? $this->lang('Nouvel événement') : $this->lang('Éditer : %s', $e['title']), $this->form()->display());
 	}
 }

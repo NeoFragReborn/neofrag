@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Form 2FA — étape 2 du login. Demande le code TOTP (ou code de récupération).

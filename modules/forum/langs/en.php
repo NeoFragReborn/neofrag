@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -33,7 +34,7 @@ return [
 	'43e8e6b7' => 'Post topic',
 	'44ea91c9' => 'Forum',
 	'45be9f13' => 'Edit the message',
-	'4788f138' => '%d participant',
+	'4788f138' => '%d participant|%d participants',
 	'49cf2272' => 'Admin',
 	'4cd691cc' => 'No message',
 	'4f1e3d8b' => 'Unlock topic',
@@ -62,7 +63,7 @@ return [
 	'9d73409b' => '<i>Message deleted</i>',
 	'a026ae67' => 'Category',
 	'a47f60e2' => '%d reply| %d replies',
-	'a7320cf6' => '%d view',
+	'a7320cf6' => '%d view|%d views',
 	'a9368b0c' => 'topic locked or not...',
 	'a939fb96' => 'All messages are now marked as read',
 	'ab2b6b9e' => 'Statistics',
@@ -75,7 +76,7 @@ return [
 	'bac23b09' => '<b>%d</b> topic| <b>%d</b> topics',
 	'c3773d94' => 'Edit topic / message',
 	'c5db4c8a' => 'Delete confirmation',
-	'c69b96e4' => '%d redirect',
+	'c69b96e4' => '%d redirect|%d redirects',
 	'c78d2252' => 'Please choose a different forum',
 	'cccdc6fa' => '<b>%d</b> view| <b>%d</b> views',
 	'ce22e79a' => 'No reply',
@@ -86,7 +87,7 @@ return [
 	'd6d935b8' => 'Edit category',
 	'd7f78423' => 'Promote a topic to announce',
 	'e0b79a88' => 'Please fill in a message',
-	'e16d51e5' => '%d topic',
+	'e16d51e5' => '%d topic|%d topics',
 	'e1892b4c' => 'Select a forum to move',
 	'e1b27a21' => 'No forum category.<br>Create a category using the button above to get started.',
 	'e7831cbd' => 'Forums list',
@@ -258,4 +259,18 @@ return [
 	'558ba8aa' => 'Attachment (optional)',
 	'9b317b7c' => 'Allowed types: %s',
 	'4f90a869' => 'Max size: %s',
+	'2d8f3501' => 'No forum categories.',
+	'b2f3db89' => 'Create a category from the toolbar to get started.',
+	'7e6a9dc0' => '%d forum|%d forums',
+	'ad5a03cb' => '%d message|%d messages',
+	'93714304' => 'Select all',
+	'7b076dac' => 'Move',
+	'596092e9' => 'Move a topic',
+	'3387b5c7' => 'Forum post',
+	'8982eb68' => 'No forum in this category.',
+	'52442e0e' => 'Drag and drop to reorder',
+	'a52ad554' => 'Redirect forum',
+	'50cb8cb5' => 'topic|topics',
+	'695864e1' => 'message|messages',
+	'13f1a5c1' => 'Drag and drop',
 ];

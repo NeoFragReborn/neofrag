@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traduções PT (auto-geradas 2026-05-03)
@@ -34,4 +35,6 @@ return [
 	'0552e076' => 'Modo de pré-visualização',
 	'1648d731' => 'As ligações aos dados pessoais estão ocultas para respeitar a privacidade da conta-alvo.',
 	'78aeb25c' => 'Moderação',
+	'1f88c31b' => 'Opções',
+	'8a4c99cf' => 'Bem-vindo(a) %s',
 ];

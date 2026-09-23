@@ -4,10 +4,10 @@
 		<div class="row align-items-end">
 			<div class="col-md-3">
 				<label class="small text-muted"><?php echo $this->lang('Type') ?></label>
-				<select class="form-control form-control-sm" name="type">
+				<select class="form-select form-select-sm" name="type">
 					<option value=""><?php echo $this->lang('Tous') ?></option>
 					<?php foreach (['warning','mute','ban_temp','ban_perm','restrict_upload','restrict_links','restrict_avatar','restrict_signature','restrict_comment','shadow_ban'] as $t): ?>
-					<option value="<?php echo $t ?>"<?php echo ($filter['type'] === $t ? ' selected' : '') ?>><?php echo htmlspecialchars($t) ?></option>
+					<option value="<?php echo $t ?>"<?php echo ($filter['type'] === $t ? ' selected' : '') ?>><?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $t)) ?></option>
 					<?php endforeach ?>
 				</select>
 			</div>
@@ -36,7 +36,7 @@
 			<?php echo $this->lang('Aucune sanction avec ces critères.') ?>
 		</div>
 	<?php else: ?>
-		<table class="table table-hover m-0">
+		<div class="table-responsive"><table class="table table-hover m-0">
 			<thead>
 				<tr>
 					<th><?php echo $this->lang('Date') ?></th>
@@ -57,7 +57,7 @@
 			?>
 				<tr<?php echo $is_active ? '' : ' class="text-muted"' ?>>
 					<td><small title="<?php echo htmlspecialchars($s['created_at']) ?>"><?php echo time_span(strtotime($s['created_at'])) ?></small></td>
-					<td><span class="badge badge-<?php echo strpos($s['type'], 'ban') !== FALSE ? 'danger' : (strpos($s['type'], 'restrict') !== FALSE ? 'warning' : (strpos($s['type'], 'mute') !== FALSE ? 'orange' : 'info')) ?>"><?php echo htmlspecialchars($s['type']) ?></span><br><small class="text-muted"><?php echo htmlspecialchars($s['scope']) ?></small></td>
+					<td><span class="badge <?php echo badge_class(strpos($s['type'], 'ban') !== FALSE ? 'danger' : (strpos($s['type'], 'restrict') !== FALSE ? 'warning' : (strpos($s['type'], 'mute') !== FALSE ? 'secondary' : 'info'))) ?>"><?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $s['type'])) ?></span><br><small class="text-muted"><?php echo htmlspecialchars($this->module('moderation')->libelle('portee', $s['scope'])) ?></small></td>
 					<td><a href="<?php echo url($_modbase.'/users/'.(int)$s['user_id']) ?>">@<?php echo htmlspecialchars((string)$s['user_username']) ?></a></td>
 					<td><small><?php echo htmlspecialchars((string)$s['issuer_username']) ?></small></td>
 					<td>
@@ -84,7 +84,7 @@
 				</tr>
 			<?php endforeach ?>
 			</tbody>
-		</table>
+		</table></div>
 	<?php endif ?>
 </div>
 

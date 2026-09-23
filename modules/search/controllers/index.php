@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -142,9 +143,9 @@ class Index extends Controller_Module
 											'count'    => $count
 										]), FALSE)
 							)
-							->size('col-3'),
+							->size('col-12 col-lg-3'),
 					$this	->col($panels)
-							->size('col-9')
+							->size('col-12 col-lg-9')
 				));
 			}
 		}

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Module Marketplace — showcase public des addons téléchargeables (à la
@@ -17,11 +18,15 @@ class Marketplace extends Module
 	{
 		return [
 			'title'       => $this->lang('Marketplace'),
-			'description' => 'Catalogue public des modules, widgets et thèmes téléchargeables (showcase).',
+			'description' => $this->lang('Catalogue public des modules, widgets et thèmes téléchargeables.'),
 			'icon'        => 'fas fa-store',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'admin'       => FALSE,
 			'version'     => '1.0',
 			'depends'     => ['neofrag' => '0.2.0'],

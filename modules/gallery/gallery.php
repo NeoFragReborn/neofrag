@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,6 +11,18 @@ use NF\NeoFrag\Addons\Module;
 
 class Gallery extends Module
 {
+
+	/** Corbeille : type restaurable declare par le module lui-meme (cf. Trash::types()). */
+	public function trash_types()
+	{
+		return [
+			'gallery' => [
+				'label'   => 'Galerie', 'table' => 'nf_gallery',
+				'pk'      => 'gallery_id', 'lang' => 'nf_gallery_lang', 'title' => 'title',
+				'restore' => 'restore_gallery', 'purge' => 'purge_gallery', 'url' => 'gallery/album/%d/%s',
+			],
+		];
+	}
 	protected function __info()
 	{
 		return [
@@ -19,6 +32,10 @@ class Gallery extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => ['communaute', 'gaming'],
+			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => [
@@ -28,6 +45,11 @@ class Gallery extends Module
 				//Index
 				'{id}/{url_title}'                         => '_category',
 				'album/{id}/{url_title}{page}'             => '_gallery',
+				// La page d'une image. Le widget « Image aléatoire », le diaporama de la galerie et le
+				// lien d'un commentaire posé sur une image y renvoient ; la route manquait depuis
+				// l'origine du fork, et chacun de ces liens aboutissait à une page introuvable
+				// (trouvé le 2026-09-23 en cherchant l'adresse d'un album).
+				'image/{id}/{url_title}'                   => '_image',
 				//Admin
 				'admin{pages}'                             => 'index',
 				'admin/add' => 'add',
@@ -65,7 +87,7 @@ class Gallery extends Module
 						'icon'   => 'far fa-image',
 						'access' => [
 							'add_gallery' => [
-								'title' => 'Créer',
+								'title' => $this->lang('Créer'),
 								'icon'  => 'fas fa-plus',
 								'admin' => TRUE
 							],

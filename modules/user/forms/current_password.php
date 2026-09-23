@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,7 +11,7 @@ $this	->rule($this->form_password('password')
 					->check(function($data){
 						if ($data['password'] && !$this->_values->password($data['password']))
 						{
-							return 'Mot de passe incorrect';
+							return $this->lang('Mot de passe incorrect');
 						}
 					})
 					->required()

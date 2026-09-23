@@ -1,189 +1,115 @@
 <?php
 declare(strict_types=1);
-// Outil d'administration : jamais servi en HTTP (sinon maintenance/migrations/dumps
-// seraient executables par n'importe qui si tools/ etait expose par erreur).
-if (PHP_SAPI !== 'cli')
-{
-	http_response_code(404);
-	exit;
-}
-
 
 /**
- * NeoFrag — tâches de maintenance périodiques (à lancer par un cron externe ;
- * NeoFrag n'a pas d'ordonnanceur interne, les modules tournent en contexte HTTP).
+ * maintenance — tâches de maintenance périodiques, à lancer par un cron externe.
  *
- * Tâches :
+ * Famille : outil
+ *
+ * Ce qu'il fait
+ * -------------
+ * NeoFrag n'a pas d'ordonnanceur interne, les modules tournent en contexte HTTP. Deux tâches :
  *   - trash    : purge définitive du contenu soft-deleted (deleted_at) plus vieux que
- *                nf_trash_retention_days jours (défaut 30). Balaie TOUTES les tables
- *                ayant une colonne deleted_at ; les FK ON DELETE CASCADE nettoient les
- *                tables liées (langues, etc.).
- *   - accounts : purge des comptes jamais confirmés (last_activity_date IS NULL) inscrits
- *                il y a plus de nf_unconfirmed_retention_days jours (défaut 7). Ne tourne
- *                QUE si la validation d'inscription est active (nf_registration_validation),
- *                sinon last_activity_date NULL = simple compte jamais connecté (à garder).
- *                Les admins ne sont jamais purgés.
+ *                nf_trash_retention_days jours (défaut 30). Balaie TOUTES les tables ayant une
+ *                colonne deleted_at ; les FK ON DELETE CASCADE nettoient les tables liées ;
+ *   - accounts : purge des comptes jamais confirmés (last_activity_date IS NULL) inscrits il y a
+ *                plus de nf_unconfirmed_retention_days jours (défaut 7). Ne tourne QUE si la
+ *                validation d'inscription est active, sinon last_activity NULL = simple compte
+ *                jamais connecté, à garder. Les admins ne sont jamais purgés.
  *
- * Connexion : config/db.php ($db[0]) surchargé par NF_DB_* (cf. tools/migrate.php).
+ * La PARUTION du contenu programmé n'est PAS ici — elle nécessite le framework et passe par
+ * l'endpoint HTTP gardé par jeton : `curl -fsS "https://<site>/monitoring/cron?key=<nf_cron_key>"`.
+ * `tests/Integration/MaintenanceDbTest.php` fige le SQL exact de ces deux purges.
  *
- * Usage :
- *   docker compose exec web php tools/maintenance.php [trash|accounts|all] [--pretend]
- *   (cron) * /15 * * * *  php /var/www/html/tools/maintenance.php all >> /var/log/nf-maint.log 2>&1
- *
- * Voir aussi : la PARUTION du contenu programmé (news/articles à l'heure réelle) n'est PAS ici —
- * elle nécessite le framework (webhooks/gamification/notifications) → endpoint HTTP gardé par token
- *   (cron) * /5 * * * *  curl -fsS "https://<site>/monitoring/cron?key=<nf_cron_key>" >/dev/null 2>&1
- * (URL + clé affichées dans l'admin Monitoring).
+ * Usage
+ * -----
+ *   php tools/maintenance.php [trash|accounts|all] [--pretend]
+ *   (cron)  * /15 * * * *  php /var/www/html/tools/maintenance.php all >> /var/log/nf-maint.log 2>&1
  */
 
-const CONFIG_DB                = __DIR__ . '/../config/db.php';
+require __DIR__.'/lib/outil.php';
+require __DIR__.'/lib/site.php';
+
+[$o, $reste] = nf_options(['pretend' => FALSE]);
+
 const TRASH_DEFAULT_DAYS       = 30;
 const UNCONFIRMED_DEFAULT_DAYS = 7;
 
-main($argv);
+$task = $reste[0] ?? 'all';
 
-function main(array $argv): void
+if (!in_array($task, ['trash', 'accounts', 'all'], TRUE))
 {
-    $args    = array_slice($argv, 1);
-    $task    = '';
-    $pretend = false;
-
-    foreach ($args as $a) {
-        if ($a === '--pretend') {
-            $pretend = true;
-        } else if ($task === '') {
-            $task = $a;
-        }
-    }
-
-    if ($task === '') {
-        $task = 'all';
-    }
-
-    if (!in_array($task, ['trash', 'accounts', 'all'], true)) {
-        fwrite(STDERR, "Tâche inconnue : {$task}\nUsage : maintenance.php [trash|accounts|all] [--pretend]\n");
-        exit(2);
-    }
-
-    $db = connect();
-
-    if ($pretend) {
-        fwrite(STDOUT, "-- MODE --pretend : aucune suppression réelle.\n");
-    }
-
-    if ($task === 'trash' || $task === 'all') {
-        purge_trash($db, retention_days($db, 'nf_trash_retention_days', TRASH_DEFAULT_DAYS), $pretend);
-    }
-
-    if ($task === 'accounts' || $task === 'all') {
-        purge_unconfirmed($db, retention_days($db, 'nf_unconfirmed_retention_days', UNCONFIRMED_DEFAULT_DAYS), $pretend);
-    }
+    nf_refus("tâche inconnue : {$task} — trash, accounts ou all");
 }
 
-function purge_trash(mysqli $db, int $days, bool $pretend): void
+$db = nf_connexion();
+
+if ($o['pretend'])
 {
-    $tables = tables_with_column($db, 'deleted_at');
-
-    if (!$tables) {
-        fwrite(STDOUT, "trash : aucune table soft-delete.\n");
-        return;
-    }
-
-    $total = 0;
-
-    foreach ($tables as $table) {
-        $where = "`deleted_at` IS NOT NULL AND `deleted_at` < (NOW() - INTERVAL {$days} DAY)";
-        $count = (int) scalar($db, "SELECT COUNT(*) FROM `{$table}` WHERE {$where}");
-
-        if ($count > 0 && !$pretend) {
-            $db->query("DELETE FROM `{$table}` WHERE {$where}");
-        }
-
-        if ($count > 0) {
-            fwrite(STDOUT, "trash : {$table} — {$count} élément(s) " . ($pretend ? "à purger\n" : "purgé(s)\n"));
-            $total += $count;
-        }
-    }
-
-    fwrite(STDOUT, "trash : {$total} élément(s) au total (rétention {$days} j).\n");
-}
-
-function purge_unconfirmed(mysqli $db, int $days, bool $pretend): void
-{
-    if (!(int) scalar($db, "SELECT value FROM `nf_settings` WHERE name = 'nf_registration_validation'")) {
-        fwrite(STDOUT, "accounts : validation d'inscription désactivée — purge ignorée (last_activity NULL ≠ non confirmé).\n");
-        return;
-    }
-
-    $where = "`last_activity_date` IS NULL AND `admin` = '0' AND `registration_date` < (NOW() - INTERVAL {$days} DAY)";
-    $count = (int) scalar($db, "SELECT COUNT(*) FROM `nf_user` WHERE {$where}");
-
-    if ($count > 0 && !$pretend) {
-        $db->query("DELETE FROM `nf_user` WHERE {$where}");
-    }
-
-    fwrite(STDOUT, "accounts : {$count} compte(s) non confirmé(s) " . ($pretend ? "à purger" : "purgé(s)") . " (rétention {$days} j).\n");
+    echo "-- MODE --pretend : aucune suppression réelle.\n";
 }
 
 /** Rétention (jours) depuis un setting, bornée à >= 1, avec défaut. */
 function retention_days(mysqli $db, string $setting, int $default): int
 {
-    $value = scalar($db, "SELECT value FROM `nf_settings` WHERE name = '" . $db->real_escape_string($setting) . "'");
+    $value = nf_reglage($db, $setting);
 
-    return $value === null || (int) $value < 1 ? $default : (int) $value;
+    return $value === NULL || (int) $value < 1 ? $default : (int) $value;
 }
 
-function tables_with_column(mysqli $db, string $column): array
+if ($task === 'trash' || $task === 'all')
 {
-    $tables = [];
-    $res = $db->query(
-        "SELECT table_name FROM information_schema.columns
-         WHERE table_schema = DATABASE() AND column_name = '" . $db->real_escape_string($column) . "'
-         ORDER BY table_name"
-    );
+    $days   = retention_days($db, 'nf_trash_retention_days', TRASH_DEFAULT_DAYS);
+    $tables = nf_colonne($db, "SELECT table_name FROM information_schema.columns WHERE table_schema = DATABASE() AND column_name = 'deleted_at' ORDER BY table_name");
+    $total  = 0;
 
-    while ($row = $res->fetch_row()) {
-        $tables[] = $row[0];
+    if (!$tables)
+    {
+        echo "trash : aucune table soft-delete.\n";
     }
 
-    return $tables;
-}
+    foreach ($tables as $table)
+    {
+        $where = "`deleted_at` IS NOT NULL AND `deleted_at` < (NOW() - INTERVAL {$days} DAY)";
+        $count = (int) nf_scalar($db, "SELECT COUNT(*) FROM `{$table}` WHERE {$where}");
 
-function scalar(mysqli $db, string $sql)
-{
-    $res = $db->query($sql);
-    if (!$res) {
-        return null;
-    }
-    $row = $res->fetch_row();
-    return $row ? $row[0] : null;
-}
+        if ($count > 0 && !$o['pretend'])
+        {
+            $db->query("DELETE FROM `{$table}` WHERE {$where}");
+        }
 
-function connect(): mysqli
-{
-    $cfg = ['hostname' => '127.0.0.1', 'port' => 3306, 'username' => 'root', 'password' => '', 'database' => 'neofrag'];
-
-    if (is_file(CONFIG_DB)) {
-        $db = [];
-        require CONFIG_DB;
-        if (!empty($db[0]) && is_array($db[0])) {
-            $cfg = array_merge($cfg, $db[0]);
+        if ($count > 0)
+        {
+            echo "trash : {$table} — {$count} élément(s) ".($o['pretend'] ? 'à purger' : 'purgé(s)')."\n";
+            $total += $count;
         }
     }
 
-    foreach (['hostname' => 'NF_DB_HOST', 'port' => 'NF_DB_PORT', 'username' => 'NF_DB_USER', 'password' => 'NF_DB_PASS', 'database' => 'NF_DB_NAME'] as $key => $var) {
-        $val = getenv($var);
-        if ($val !== false && $val !== '') {
-            $cfg[$key] = $val;
-        }
+    if ($tables)
+    {
+        echo "trash : {$total} élément(s) au total (rétention {$days} j).\n";
     }
-
-    mysqli_report(MYSQLI_REPORT_OFF);
-    $conn = @new mysqli($cfg['hostname'], $cfg['username'], (string) $cfg['password'], $cfg['database'], (int) $cfg['port']);
-    if ($conn->connect_errno) {
-        fwrite(STDERR, "Connexion BDD impossible : {$conn->connect_error}\n");
-        exit(1);
-    }
-    $conn->set_charset('utf8mb4');
-    return $conn;
 }
+
+if ($task === 'accounts' || $task === 'all')
+{
+    if (!(int) nf_reglage($db, 'nf_registration_validation'))
+    {
+        echo "accounts : validation d'inscription désactivée — purge ignorée (last_activity NULL ≠ non confirmé).\n";
+    }
+    else
+    {
+        $days  = retention_days($db, 'nf_unconfirmed_retention_days', UNCONFIRMED_DEFAULT_DAYS);
+        $where = "`last_activity_date` IS NULL AND `admin` = '0' AND `registration_date` < (NOW() - INTERVAL {$days} DAY)";
+        $count = (int) nf_scalar($db, "SELECT COUNT(*) FROM `nf_user` WHERE {$where}");
+
+        if ($count > 0 && !$o['pretend'])
+        {
+            $db->query("DELETE FROM `nf_user` WHERE {$where}");
+        }
+
+        echo "accounts : {$count} compte(s) non confirmé(s) ".($o['pretend'] ? 'à purger' : 'purgé(s)')." (rétention {$days} j).\n";
+    }
+}
+
+exit(NF_OK);

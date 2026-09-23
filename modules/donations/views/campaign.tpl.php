@@ -28,7 +28,7 @@
 				</div>
 
 				<?php if ($donate_url): ?>
-				<a href="<?php echo htmlspecialchars($donate_url) ?>" target="_blank" rel="noopener" class="btn btn-paypal btn-block btn-lg">
+				<a href="<?php echo htmlspecialchars($donate_url) ?>" target="_blank" rel="noopener" class="btn btn-paypal d-block w-100 btn-lg">
 					<i class="fab fa-paypal"></i> <?php echo $this->lang('Faire un don via PayPal') ?>
 				</a>
 				<small class="text-muted d-block mt-2 text-center">

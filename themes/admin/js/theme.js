@@ -16,10 +16,10 @@
 		if (!icon) return;
 		if (t === 'dark') {
 			icon.className = 'fas fa-sun';
-			btn.setAttribute('title', 'Mode clair');
+			btn.setAttribute('title', '<?php echo addslashes($this->lang('Mode clair')) ?>');
 		} else {
 			icon.className = 'fas fa-moon';
-			btn.setAttribute('title', 'Mode sombre');
+			btn.setAttribute('title', '<?php echo addslashes($this->lang('Mode sombre')) ?>');
 		}
 	}
 	function toggleTheme() {
@@ -67,9 +67,10 @@
 			});
 		});
 		// Static actions
-		out.push({ kind: 'action', title: 'Basculer le thème (clair/sombre)', icon: 'fas fa-moon', section: 'Réglages', sectionIcon: 'fas fa-sliders-h', action: 'toggle-theme' });
-		out.push({ kind: 'action', title: 'Voir le site public', icon: 'fas fa-external-link-alt', section: 'Réglages', sectionIcon: 'fas fa-sliders-h', url: window.nfHomeUrl || '/' });
-		out.push({ kind: 'action', title: 'Se déconnecter', icon: 'fas fa-sign-out-alt', section: 'Réglages', sectionIcon: 'fas fa-sliders-h', url: window.nfLogoutUrl || '#' });
+		var reglages = '<?php echo addslashes($this->lang('Réglages')) ?>';
+		out.push({ kind: 'action', title: '<?php echo addslashes($this->lang('Basculer le thème (clair/sombre)')) ?>', icon: 'fas fa-moon', section: reglages, sectionIcon: 'fas fa-sliders-h', action: 'toggle-theme' });
+		out.push({ kind: 'action', title: '<?php echo addslashes($this->lang('Voir le site public')) ?>', icon: 'fas fa-external-link-alt', section: reglages, sectionIcon: 'fas fa-sliders-h', url: window.nfHomeUrl || '/' });
+		out.push({ kind: 'action', title: '<?php echo addslashes($this->lang('Se déconnecter')) ?>', icon: 'fas fa-sign-out-alt', section: reglages, sectionIcon: 'fas fa-sliders-h', url: window.nfLogoutUrl || '#' });
 		return out;
 	}
 
@@ -79,7 +80,7 @@
 		var all = getCommands();
 		var matched = all.filter(function(c) { return !q || c.title.toLowerCase().indexOf(q) !== -1; });
 		if (matched.length === 0) {
-			cmdResults.innerHTML = '<div class="nf-cmd-empty"><i class="fas fa-search"></i> Aucun résultat</div>';
+			cmdResults.innerHTML = '<div class="nf-cmd-empty"><i class="fas fa-search"></i> <?php echo addslashes($this->lang('Aucun résultat')) ?></div>';
 			return;
 		}
 		var grouped = {};

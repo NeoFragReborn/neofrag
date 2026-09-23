@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -28,7 +29,7 @@ class Checker extends Controller
 		$query_pass = trim($settings['query_pass'] ?? '');
 
 		return [
-			'mode'       => in_array($settings['mode'] ?? 'simple', ['simple', 'tree'], TRUE) ? $settings['mode'] : 'simple',
+			'mode'       => in_array($settings['mode'] ?? 'simple', ['simple', 'tree'], TRUE) ? ($settings['mode'] ?? 'simple') : 'simple',
 			'host'       => $host,
 			'voice_port' => (string)$voice_port,
 			'query_port' => (string)$query_port,

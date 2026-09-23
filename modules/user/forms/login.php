@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -17,7 +18,7 @@ $this	->compact()
 		->rule($this->form_checkbox('remember')
 					->value(['on'])
 					->data([
-						'on' => 'Se souvenir de moi'
+						'on' => $this->lang('Se souvenir de moi')
 					])
 		)
 		->success(function($data, $form){
@@ -85,7 +86,7 @@ $this	->compact()
 
 				$auditLog->log('login.failed', ['username' => $data['login'], 'success' => FALSE]);
 
-				$form->error('Identifiants invalides');
+				$form->error($this->lang('Identifiants invalides'));
 			}
 		})
-		->submit('Se connecter');
+		->submit($this->lang('Se connecter'));

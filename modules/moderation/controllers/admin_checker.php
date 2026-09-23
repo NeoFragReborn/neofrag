@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -172,7 +173,7 @@ class Admin_Checker extends Module_Checker
 
 		if (!$ban)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 

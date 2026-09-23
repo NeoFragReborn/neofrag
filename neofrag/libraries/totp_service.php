@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Service TOTP (Time-based One-Time Password) pour le 2FA.
@@ -34,7 +35,7 @@ class Totp_Service extends Library
 	 */
 	public function provisioning_uri($company, $account, $secret)
 	{
-		return $this->google2fa()->getQRCodeUrl($company, $account, $secret);
+		return $this->google2fa()->getQRCodeUrl((string) $company, (string) $account, (string) $secret);
 	}
 
 	/**
@@ -64,12 +65,14 @@ class Totp_Service extends Library
 	 */
 	public function verify($secret, $code)
 	{
-		if (!$secret || !preg_match('/^\d{6}$/', trim($code)))
+		$code = trim((string) $code);
+
+		if (!$secret || !preg_match('/^\d{6}$/', $code))
 		{
 			return FALSE;
 		}
 
-		return (bool) $this->google2fa()->verifyKey($secret, trim($code), 2);
+		return (bool) $this->google2fa()->verifyKey((string) $secret, $code, 2);
 	}
 
 	/**
@@ -83,7 +86,7 @@ class Totp_Service extends Library
 		$plain = [];
 		$hashed = [];
 
-		for ($i = 0; $i < $count; $i++)
+		for ($i = 0; $i < (int) $count; $i++)
 		{
 			$code = strtoupper(bin2hex(random_bytes(8)));
 			$code = substr($code, 0, 4).'-'.substr($code, 4, 4).'-'.substr($code, 8, 4).'-'.substr($code, 12, 4);
@@ -111,7 +114,7 @@ class Totp_Service extends Library
 
 		foreach ($rows as $row)
 		{
-			if (password_verify($code, $row['code_hash']))
+			if (password_verify((string) $code, (string) $row['code_hash']))
 			{
 				NeoFrag()->db->execute('UPDATE nf_user_totp_recovery SET used_at = NOW() WHERE id = '.(int)$row['id']);
 				return TRUE;
@@ -126,9 +129,10 @@ class Totp_Service extends Library
 	 */
 	public function store_recovery_codes($user_id, $hashed_codes)
 	{
-		NeoFrag()->db	->from('nf_user_totp_recovery')
-						->where('user_id', $user_id)
-						->delete();
+		// delete() prend la table en argument : l'appel sans argument levait une ArgumentCountError — le
+		// compte restait marqué « 2FA activée » sans aucun code de récupération (test : TotpServiceTest).
+		NeoFrag()->db	->where('user_id', $user_id)
+						->delete('nf_user_totp_recovery');
 
 		foreach ($hashed_codes as $hash)
 		{

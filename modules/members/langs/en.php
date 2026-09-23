@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: FoxLey
@@ -13,4 +14,6 @@ return [
 	'49cf2272' => 'Admin',
 	'f92bd0a9' => 'See all members',
 	'aa733a2d' => 'List of site members with public profiles.',
+	'34222b59' => 'Seen %s',
+	'3b5fa87a' => 'Contact',
 ];

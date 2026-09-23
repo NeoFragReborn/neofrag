@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 return [
 	// i18n 2026-06-11 (code strings)
 	'7cbecb62' => 'Slides do widget slider',
@@ -35,4 +36,13 @@ return [
 	'aa7a6e6a' => 'Confirmar a eliminação deste slide?',
 	'3ff2b02c' => 'Arrasta as linhas para reordenar, depois clica «Guardar ordem».',
 	'a3d90926' => 'Guardar ordem',
+	'c86b1531' => 'Slider',
+	'ae6af5c0' => 'Ligação (opcional)',
+	'8fd9c7ef' => 'Guardar',
+	'04fc2b5b' => 'Imagem',
+	'c9340a06' => 'Ativo',
+	'caf5c873' => 'Ações',
+	'b0d653e1' => 'Inativo',
+	'eb6693d4' => 'Desativar',
+	'52c9bbab' => 'Modificar',
 ];

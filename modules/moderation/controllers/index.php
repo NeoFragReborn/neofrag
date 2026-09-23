@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  *
@@ -72,7 +73,7 @@ class Index extends Controller_Module
 		$report = $this->moderation->get_report($id);
 		if (!$report)
 		{
-			$this->error->notfound();
+			$this->error();
 			return;
 		}
 
@@ -161,7 +162,7 @@ class Index extends Controller_Module
 		$sanction = $this->model()->get_sanction($id);
 		if (!$sanction)
 		{
-			$this->error->notfound();
+			$this->error();
 			return;
 		}
 
@@ -189,7 +190,7 @@ class Index extends Controller_Module
 						 ->row(FALSE);
 		if (!is_array($user) || empty($user))
 		{
-			$this->error->notfound();
+			$this->error();
 			return;
 		}
 
@@ -374,7 +375,7 @@ class Index extends Controller_Module
 
 		if (!is_array($snap) || empty($snap))
 		{
-			$controller->error->notfound();
+			$controller->error();
 			return;
 		}
 
@@ -410,7 +411,7 @@ class Index extends Controller_Module
 		$file_path = $docroot.'/backups/'.ltrim((string)$snap['backup_path'], '/');
 		if (!is_file($file_path) || !is_readable($file_path))
 		{
-			$controller->error->notfound();
+			$controller->error();
 			return;
 		}
 

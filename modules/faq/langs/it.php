@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module faq (it)
@@ -57,4 +58,7 @@ return [
 	'8a7e7178' => '%d risultato|%d risultati',
 	// i18n 2026-06-11 (code strings)
 	'50d3b0b0' => 'Risposta',
+	'ae4f5e0e' => 'categoria|categorie',
+	'b2656c03' => 'Modifica categoria: %s',
+	'fe1ca089' => 'Domande frequenti suddivise per categoria, mostrate come accordion Bootstrap.',
 ];

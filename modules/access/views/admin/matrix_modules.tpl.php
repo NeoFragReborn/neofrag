@@ -12,7 +12,7 @@
 	<div class="row matrix-modules">
 		<?php foreach ($modules as $m): ?>
 			<div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
-				<a class="btn btn-outline-primary btn-block matrix-module-btn" href="<?php echo url('admin/access/matrix/'.urlencode($m['name'])) ?>">
+				<a class="btn btn-outline-primary d-block w-100 matrix-module-btn" href="<?php echo url('admin/access/matrix/'.urlencode($m['name'])) ?>">
 					<i class="<?php echo htmlspecialchars($m['icon']) ?> me-2"></i>
 					<?php echo htmlspecialchars($m['title']) ?>
 					<small class="d-block text-muted mt-1"><?php echo htmlspecialchars($m['name']) ?></small>

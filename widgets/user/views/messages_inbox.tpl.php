@@ -2,8 +2,8 @@
 	<?php if ($messages): ?>
 		<?php foreach ($messages as $message): ?>
 			<li class="list-group-item">
-				<div class="media">
-					<div class="media-body">
+				<div class="d-flex align-items-start">
+					<div class="flex-grow-1">
 						<h6 class="mt-1 mb-0"><?php echo icon($message['unread'] ? 'fas fa-envelope text-primary' : 'far fa-envelope-open') ?> <a href="<?php echo url($message['_talk_url'] ?? ('user/messages/'.$message['message_id'].'/'.url_title($message['title']).((isset($box) && in_array($box, ['sent', 'archives'])) ? '/'.$box : ''))) ?>"><?php echo mb_strimwidth($message['title'], 0, 35, '...') ?></a></h6>
 						<small class="text-muted"><?php echo icon('far fa-user').'<b class="me-1">'.$message['username'].'</b> '.icon('far fa-clock').' '.time_span($message['date']) ?></small>
 					</div>

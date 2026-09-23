@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traduzioni IT (auto-generate 2026-05-03)
@@ -22,4 +23,5 @@ return [
 	'eaf3aad0' => 'Chi è online?',
 	'96f7da00' => 'Membri',
 	'1ea90f79' => 'Chiudi',
+	'1f88c31b' => 'Opzioni',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -17,6 +18,10 @@ class Donations extends Module
 			'icon'        => 'fas fa-hand-holding-heart',
 			'author'      => 'NeoFrag',
 			'license'     => 'LGPLv3',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => [],
+			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => ['neofrag' => '0.2.0'],
@@ -40,7 +45,7 @@ class Donations extends Module
 		return [
 			'default' => [
 				'access' => [[
-					'title'  => 'Campagnes',
+					'title'  => $this->lang('Campagnes'),
 					'icon'   => 'fas fa-bullseye',
 					'access' => [
 						'manage_campaigns' => ['title' => $this->lang('Gérer les campagnes'), 'admin' => TRUE],

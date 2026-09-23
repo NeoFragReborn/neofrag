@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -63,4 +64,11 @@ return [
 	'dc7fea54' => 'Rolle löschen',
 	// i18n 2026-06-11 (code strings)
 	'25e975ef' => 'Dieses Team rekrutiert — Bewerben',
+	'49a80df0' => 'Online',
+	'48b614a4' => 'Offline',
+	'0aac9844' => 'Datum',
+	'3c19f7aa' => 'Gegner',
+	'a415f66e' => 'Event',
+	'f3581855' => 'Ergebnis',
+	'f4cbbafe' => 'Teams und Clans — Gaming-Modul.',
 ];

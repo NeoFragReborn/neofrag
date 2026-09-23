@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -29,4 +30,7 @@ return [
 	'6714db33' => 'Delete this comment?',
 	'6bec17f1' => 'No comment',
 	'245e9606' => 'comment|comments',
+	'93ac18cc' => '%s no.%d',
+	'016d7125' => 'Comment system reusable by modules (news, articles, etc.).',
+	'e16ce76b' => 'Comment',
 ];

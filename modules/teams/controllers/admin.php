@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -23,13 +24,13 @@ class Admin extends Controller_Module
 							[
 								'title'   => $this->lang('Équipe'),
 								'content' => function($data){
-									return '<a href="'.url('teams/'.$data['team_id'].'/'.$data['name']).'"><img src="'.NeoFrag()->model2('file', $data['icon_id'])->path().'" class="img-icon" alt="" /> '.$data['title'].'</a>';
+									return '<a href="'.url('teams/'.$data['team_id'].'/'.$data['name']).'">'.NeoFrag()->model2('file', $data['icon_id'])->img('class="img-icon" alt=""').' '.$data['title'].'</a>';
 								}
 							],
 							[
 								'title'   => $this->lang('Jeux'),
 								'content' => function($data){
-									return '<a href="'.url('admin/games/'.$data['team_id'].'/'.$data['game']).'"><img src="'.NeoFrag()->model2('file', $data['game_icon'])->path().'" class="img-icon" alt="" /> '.$data['game_title'].'</a>';
+									return '<a href="'.url('admin/games/'.$data['team_id'].'/'.$data['game']).'">'.NeoFrag()->model2('file', $data['game_icon'])->img('class="img-icon" alt=""').' '.$data['game_title'].'</a>';
 								}
 							],
 							[
@@ -110,7 +111,7 @@ class Admin extends Controller_Module
 				->add_rules('teams', [
 					'games' => $this->model()->get_games_list()
 				])
-				->add_submit($this->lang('Ajouter'))
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus')
 				->add_back('admin/teams');
 
 		if ($this->form()->is_valid($post))
@@ -269,7 +270,7 @@ class Admin extends Controller_Module
 				->form()
 				->add_rules('roles')
 				->add_back('admin/teams')
-				->add_submit($this->lang('Ajouter'));
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus');
 
 		if ($this->form()->is_valid($post))
 		{

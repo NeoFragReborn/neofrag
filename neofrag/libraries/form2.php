@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -45,13 +46,15 @@ class Form2 extends Library
 
 	public function check($load_filters = FALSE)
 	{
-		// Site de démo : écritures de l'administration bloquées (front intact, auto-reset).
-		if ($this->_check === NULL && nf_demo() && $this->url->admin && strtolower($_SERVER['REQUEST_METHOD']) == 'post')
+		// Site de démo : seules les écritures que la remise à zéro horaire sait défaire sont
+		// permises (cf. nf_demo_ecriture_permise).
+		if ($this->_check === NULL && nf_demo() && $this->url->admin
+			&& strtolower($_SERVER['REQUEST_METHOD']) == 'post' && !nf_demo_ecriture_permise())
 		{
 			static $notified = FALSE;
 			if (!$notified)
 			{
-				notify(NeoFrag()->lang('Action désactivée sur le site de démonstration.'), 'warning');
+				notify(NeoFrag()->lang('Cette partie est en lecture seule sur le site de démonstration.'), 'warning');
 				$notified = TRUE;
 			}
 			return $this->_check = FALSE;
@@ -486,7 +489,13 @@ class Form2 extends Library
 
 		if ($has_upload)
 		{
-			$this->js('file');
+			// La feuille va AVEC le script : c'est elle qui habille la vitrine francophone que
+			// js/file.js pose par-dessus le champ natif. Chargée seulement par la première
+			// bibliothèque de formulaires, la vitrine sortait sans style sur tous les écrans qui
+			// passent par celle-ci — dont l'avatar et la photo de couverture de l'espace membre,
+			// où « Parcourir » et « Aucun fichier sélectionné » apparaissaient collés l'un à
+			// l'autre, en texte brut.
+			$this->js('file')->css('form-file');
 		}
 
 		$errors = [];
@@ -515,7 +524,7 @@ class Form2 extends Library
 
 				if (!is_a($last, 'NF\NeoFrag\Libraries\Html'))
 				{
-					$fields[] = $last = $this->html()->attr('class', 'form-row');
+					$fields[] = $last = $this->html()->attr('class', 'nf-field-row row gx-3');
 				}
 
 				$last->append($rule);
@@ -543,7 +552,7 @@ class Form2 extends Library
 		}
 
 		return $this->html('form')
-					->attr_if($this->_display & self::FORM_INLINE, 'class', 'form-inline')
+					->attr_if($this->_display & self::FORM_INLINE, 'class', 'nf-form-inline')
 					->attr('action', url($this->url->request))
 					->attr('method', 'post')
 					->attr_if($has_upload, 'enctype', 'multipart/form-data')

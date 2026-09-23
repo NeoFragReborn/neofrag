@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -15,10 +16,19 @@ class Awards extends Widget
 		return [
 			'title'       => $this->lang('Palmarès'),
 			'description' => $this->lang('Affiche les dernières récompenses attribuées — module gaming.'),
+			'icon'        => 'fas fa-trophy',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => ['gaming'],
+			'requires'    => [],
 			'version'     => '1.0',
+			// SANS cette ligne, l'installation par depot d'archive passait son chemin EN SILENCE :
+			// l'installeur exige une version ET une dependance au coeur pour reconnaitre l'addon.
+			// C'etait le seul des 61 addons distribuables a ne pas la declarer (2026-09-22).
+			'depends'     => ['neofrag' => '0.2.0'],
 			'types'       => [
 				'index'     => $this->lang('Derniers palmarès'),
 				'best_team' => $this->lang('Équipe la plus récompensée'),

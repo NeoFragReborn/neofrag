@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -57,7 +58,7 @@ class Admin_Ajax_Checker extends Module_Checker
 
 	public function widget_add()
 	{
-		if ($args = list(,,,,, $widget_name, $type) = $this->_check_disposition('disposition_id', 'row_id', 'col_id', 'title', 'widget', 'type', 'settings'))
+		if ($args = list(,,,,, $widget_name, $type) = $this->_check_disposition('disposition_id', 'row_id', 'col_id', 'title', 'widget', 'type', 'settings?'))
 		{
 			$this->model()->get_widgets($widgets, $types);
 
@@ -115,7 +116,7 @@ class Admin_Ajax_Checker extends Module_Checker
 
 	public function widget_update()
 	{
-		if ((list($disposition_id, $disposition, $row_id, $col_id, $widget_id, $title, $widget_name, $type, $settings) = $this->_check_disposition('disposition_id', 'row_id', 'col_id', 'widget_id', 'title', 'widget', 'type', 'settings')) &&
+		if ((list($disposition_id, $disposition, $row_id, $col_id, $widget_id, $title, $widget_name, $type, $settings) = $this->_check_disposition('disposition_id', 'row_id', 'col_id', 'widget_id', 'title', 'widget', 'type', 'settings?')) &&
 			($widget = $this->model()->check_widget($disposition->get($row_id, $col_id, $widget_id)->widget_id())))
 		{
 			$this->model()->get_widgets($widgets, $types);

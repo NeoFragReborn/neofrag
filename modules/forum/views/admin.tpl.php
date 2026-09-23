@@ -13,14 +13,16 @@ foreach ($forums as $f) {
 }
 ?>
 <div class="card-header" data-category-id="<?php echo $category_id ?>">
-	<span style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">
-		<i class="fas fa-folder" style="color:var(--nf-accent);"></i>
-		<strong><?php echo $title /* pre-encoded */ ?></strong>
-		<small class="text-muted" style="font-weight:400;font-size:12px;margin-left:6px;white-space:nowrap;">
-			<?php echo $forums_count ?> forum<?php echo $forums_count > 1 ? 's' : '' ?>
+	<?php /* Le compteur revient à la ligne sous le titre quand la place manque : interdit de
+	         couper (`nowrap`), il passait SOUS les boutons de la catégorie à 360 px. Et il passe
+	         par les traductions : il était écrit en français dans les six langues (2026-09-23). */ ?>
+	<span style="display:flex;align-items:center;flex-wrap:wrap;gap:2px 8px;flex:1;min-width:0;">
+		<strong><i class="fas fa-folder" style="color:var(--nf-accent);"></i> <?php echo $title /* pre-encoded */ ?></strong>
+		<small class="text-muted" style="font-weight:400;font-size:12px;">
+			<?php echo $this->lang('%d forum|%d forums', $forums_count, $forums_count) ?>
 			<?php if ($total_topics > 0): ?>
-				· <?php echo $total_topics ?> sujet<?php echo $total_topics > 1 ? 's' : '' ?>
-				· <?php echo $total_messages ?> message<?php echo $total_messages > 1 ? 's' : '' ?>
+				· <?php echo $this->lang('%d sujet|%d sujets', $total_topics, $total_topics) ?>
+				· <?php echo $this->lang('%d message|%d messages', $total_messages, $total_messages) ?>
 			<?php endif ?>
 		</small>
 	</span>
@@ -32,16 +34,16 @@ foreach ($forums as $f) {
 </div>
 
 <?php if (empty($forums)): ?>
-<div class="nf-empty"><i class="far fa-comments"></i>Aucun forum dans cette catégorie.</div>
+<div class="nf-empty"><i class="far fa-comments"></i><?php echo $this->lang('Aucun forum dans cette catégorie.') ?></div>
 <?php else: ?>
 <ul class="forum-admin-list" data-category-id="<?php echo $category_id ?>">
 	<?php foreach ($forums as $forum): ?>
 	<li class="forum-admin-item" data-forum-id="<?php echo $forum['forum_id'] ?>">
 		<div class="forum-admin-row">
-			<span class="forum-admin-handle" title="Glisser-déposer pour réorganiser"><i class="fas fa-grip-vertical"></i></span>
+			<span class="forum-admin-handle" title="<?php echo $this->lang('Glisser-déposer pour réorganiser') ?>"><i class="fas fa-grip-vertical"></i></span>
 			<div class="forum-admin-main">
 				<div class="forum-admin-title">
-					<?php if (!empty($forum['url'])): ?><i class="fas fa-external-link-alt forum-admin-redirect" title="Forum redirection"></i><?php endif ?>
+					<?php if (!empty($forum['url'])): ?><i class="fas fa-external-link-alt forum-admin-redirect" title="<?php echo $this->lang('Forum de redirection') ?>"></i><?php endif ?>
 					<a href="<?php echo url('forum/'.$forum['forum_id'].'/'.url_title($forum['title'])) ?>"><?php echo $forum['title'] /* pre-encoded */ ?></a>
 				</div>
 				<?php if (!empty($forum['description'])): ?>
@@ -52,8 +54,8 @@ foreach ($forums as $f) {
 				<?php if (!empty($forum['url'])): ?>
 					<span><strong><?php echo (int)$forum['redirects'] ?></strong> <?php echo $this->lang('redirection|redirections', $forum['redirects']) ?></span>
 				<?php else: ?>
-					<span><strong><?php echo (int)$forum['count_topics'] ?></strong> sujet<?php echo $forum['count_topics'] > 1 ? 's' : '' ?></span>
-					<span><strong><?php echo (int)$forum['count_messages'] ?></strong> message<?php echo $forum['count_messages'] > 1 ? 's' : '' ?></span>
+					<span><strong><?php echo (int)$forum['count_topics'] ?></strong> <?php echo $this->lang('sujet|sujets', (int)$forum['count_topics']) ?></span>
+					<span><strong><?php echo (int)$forum['count_messages'] ?></strong> <?php echo $this->lang('message|messages', (int)$forum['count_messages']) ?></span>
 				<?php endif ?>
 			</div>
 			<div class="forum-admin-last">
@@ -74,7 +76,7 @@ foreach ($forums as $f) {
 		<ul class="forum-admin-subforums">
 			<?php foreach ($forum['subforums'] as $subforum): ?>
 			<li class="forum-admin-subforum-item" data-forum-id="<?php echo $subforum['forum_id'] ?>">
-				<span class="forum-admin-handle" title="Glisser-déposer"><i class="fas fa-grip-vertical"></i></span>
+				<span class="forum-admin-handle" title="<?php echo $this->lang('Glisser-déposer') ?>"><i class="fas fa-grip-vertical"></i></span>
 				<i class="fas fa-arrow-right forum-admin-sub-arrow"></i>
 				<a href="<?php echo url('forum/'.$subforum['forum_id'].'/'.url_title($subforum['title'])) ?>" class="forum-admin-sub-title"><?php echo $subforum['title'] /* pre-encoded */ ?></a>
 				<?php if (!empty($subforum['description'])): ?>

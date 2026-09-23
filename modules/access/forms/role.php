@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * R1.4 — Form rules pour création/édition d'un rôle.

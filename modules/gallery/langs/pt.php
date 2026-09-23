@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -53,7 +54,7 @@ return [
 	'7a9e99e6' => 'Tem a certeza de que deseja eliminar a categoria <b>%s</b>? <br /> Todos os álbuns associados a esta categoria também serão eliminados.',
 	'7f9392da' => 'Clique no quadro para selecionar as suas imagens',
 	'86c33902' => 'Editar',
-	'86e02610' => '%d imagem',
+	'86e02610' => '%d imagem|%d imagens',
 	'87bf30f1' => 'Novo álbum de fotos',
 	'9caeb208' => 'O ícone deve ser quadrado',
 	'a026ae67' => 'Categoria',
@@ -100,4 +101,23 @@ return [
 	// i18n 2026-06-11 (code strings)
 	'b914f016' => 'Imagens da galeria',
 	'7f1f539c' => 'Uma data futura agenda a publicação: o álbum permanece oculto publicamente até essa data (se visível). Vazio = imediato.',
+	'398d8489' => 'Integração <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Código a integrar para mostrar esta galeria num conteúdo livre html/bbcode"></i>',
+	'b9b71e8e' => 'Título da imagem',
+	'517c0b2c' => 'Agendada para %s',
+	'f0b7b5b5' => 'Data de publicação',
+	'afccc23b' => 'Criar',
+	'ff1485d1' => 'Larga as tuas imagens nesta zona ou clica aqui',
+	'017c90f5' => 'O teu navegador não permite enviar ficheiros arrastando e largando.',
+	'01081a31' => 'Usa o formulário abaixo para enviar os teus ficheiros.',
+	'572556ef' => 'Ficheiro demasiado grande ({{filesize}} MiB). Tamanho máximo: {{maxFilesize}} MiB.',
+	'37bb0291' => 'Este tipo de ficheiro não é permitido.',
+	'9e1bbb9b' => 'O servidor respondeu com o código {{statusCode}}.',
+	'de35108a' => 'Queres mesmo cancelar este envio?',
+	'ca977443' => 'Remover',
+	'ebe0e1da' => 'Não podes enviar mais ficheiros.',
+	'f8291e95' => 'A enviar...',
+	'1b08248b' => 'Só mais um instante...',
+	'cb9a08b2' => 'Aguarda...',
+	'd9035f7e' => 'MB',
+	'73ae9de7' => 'Voltar ao álbum %s',
 ];

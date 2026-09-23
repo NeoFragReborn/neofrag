@@ -2,7 +2,7 @@
 	<input type="hidden" name="live_editor" value="<?php echo $live_editor = $this->session('live_editor') ?: $this->output->live_editor() ^ \NF\NeoFrag\Core\Output::WIDGETS ?>" />
 	<nav class="live-editor-navbar navbar navbar-expand-lg">
 		<a class="navbar-brand" href="<?php echo url('admin/live-editor') ?>"><?php echo icon('fas fa-bolt') ?><span><b>Live</b><span data-typer="Editor"></span></span></a>
-		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#modules-links-collapse" aria-controls="modules-links-collapse" aria-expanded="false" aria-label="Toggle navigation">
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#modules-links-collapse" aria-controls="modules-links-collapse" aria-expanded="false" aria-label="<?php echo $this->lang('Menu') ?>">
 			<span class="navbar-toggler-icon"></span>
 		</button>
 		<div class="collapse navbar-collapse" id="modules-links-collapse">
@@ -36,10 +36,10 @@
 					</a>
 					<div class="dropdown-menu screen dropdown-menu-end" aria-labelledby="navbarDropdownScreen">
 						<ul class="list-unstyled m-0">
-							<li><button type="button" class="btn live-editor-screen active" data-width="100%" data-bs-toggle="tooltip" data-placement="left" title="<?php echo $this->lang('Ordinateur') ?>"><?php echo icon('fas fa-desktop') ?></button></li>
-							<li><button type="button" class="btn live-editor-screen" data-width="992px" data-bs-toggle="tooltip" data-placement="left" title="<?php echo $this->lang('Tablette paysage') ?>"><?php echo icon('fas fa-tablet-alt fa-rotate-270') ?></button></li>
-							<li><button type="button" class="btn live-editor-screen" data-width="768px" data-bs-toggle="tooltip" data-placement="left" title="<?php echo $this->lang('Tablette portrait') ?>"><?php echo icon('fas fa-tablet-alt') ?></button></li>
-							<li><button type="button" class="btn live-editor-screen" data-width="400px" data-bs-toggle="tooltip" data-placement="left" title="<?php echo $this->lang('Smartphone') ?>"><?php echo icon('fas fa-mobile-alt') ?></button></li>
+							<li><button type="button" class="btn live-editor-screen active" data-width="100%" data-bs-toggle="tooltip" data-bs-placement="left" title="<?php echo $this->lang('Ordinateur') ?>"><?php echo icon('fas fa-desktop') ?></button></li>
+							<li><button type="button" class="btn live-editor-screen" data-width="992px" data-bs-toggle="tooltip" data-bs-placement="left" title="<?php echo $this->lang('Tablette paysage') ?>"><?php echo icon('fas fa-tablet-alt fa-rotate-270') ?></button></li>
+							<li><button type="button" class="btn live-editor-screen" data-width="768px" data-bs-toggle="tooltip" data-bs-placement="left" title="<?php echo $this->lang('Tablette portrait') ?>"><?php echo icon('fas fa-tablet-alt') ?></button></li>
+							<li><button type="button" class="btn live-editor-screen" data-width="400px" data-bs-toggle="tooltip" data-bs-placement="left" title="<?php echo $this->lang('Smartphone') ?>"><?php echo icon('fas fa-mobile-alt') ?></button></li>
 						</ul>
 					</div>
 				</li>
@@ -70,7 +70,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title"><?php echo icon('fas fa-paint-brush') ?> <span class="nf-le-modal-title-text"></span></h5>
-					<button type="button" class="close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"><span aria-hidden="true">&times;</span></button>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"></button>
 				</div>
 				<div class="modal-body"></div>
 				<div class="modal-footer">
@@ -88,12 +88,16 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title"><?php echo icon('fas fa-cogs') ?> <span class="nf-le-modal-title-text"></span></h5>
-					<button type="button" class="close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"><span aria-hidden="true">&times;</span></button>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"></button>
 				</div>
 				<div class="modal-body"></div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-dark"  data-bs-dismiss="modal"><?php echo $this->lang('Annuler') ?></button>
-					<button type="button" class="btn btn-info"  data-action="confirm"><?php echo $this->lang('Valider') ?></button>
+				<div class="modal-footer nf-le-wiz-footer">
+					<button type="button" class="btn btn-dark" data-bs-dismiss="modal"><?php echo $this->lang('Annuler') ?></button>
+					<span class="nf-le-wiz-nav">
+						<button type="button" class="btn btn-secondary" data-action="wiz-prev"><?php echo icon('fas fa-angle-left') ?> <?php echo $this->lang('Précédent') ?></button>
+						<button type="button" class="btn btn-secondary" data-action="wiz-next"><?php echo $this->lang('Suivant') ?> <?php echo icon('fas fa-angle-right') ?></button>
+					</span>
+					<button type="button" class="btn btn-info" data-action="confirm"><?php echo $this->lang('Valider') ?></button>
 				</div>
 			</div>
 		</div>
@@ -106,7 +110,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title"><?php echo icon('fas fa-code-branch') ?> <span class="nf-le-modal-title-text"><?php echo $this->lang('Revenir à la disposition commune') ?></span></h5>
-					<button type="button" class="close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"><span aria-hidden="true">&times;</span></button>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"></button>
 				</div>
 				<div class="modal-body"><?php echo $this->lang('Êtes-vous sûr(e) de vouloir revenir à la disposition commune ?<br />Toutes les <b>colonnes</b> et <b>widgets</b> associés à cette zone seront perdus.') ?></div>
 				<div class="modal-footer">
@@ -124,7 +128,7 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title"><?php echo icon('far fa-trash-alt') ?> <span class="nf-le-modal-title-text"><?php echo $this->lang('Confirmation de suppression') ?></span></h5>
-					<button type="button" class="close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"><span aria-hidden="true">&times;</span></button>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"></button>
 				</div>
 				<div class="modal-body"></div>
 				<div class="modal-footer">

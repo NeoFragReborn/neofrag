@@ -2,7 +2,8 @@ NF.ready(function(){
 	var printSize = function(bytes, decimals){
 		var sz = ('KMGTP').split('');
 		var factor = Math.floor((String(bytes).length - 1) / 3);
-		var unit = (typeof sz[factor - 1] !== 'undefined' ? sz[factor - 1] : '') + 'o';
+		// Le symbole de l'octet : « o » en français (Ko, Mo), « B » ailleurs (KB, MB).
+		var unit = (typeof sz[factor - 1] !== 'undefined' ? sz[factor - 1] : '') + '<?php echo addslashes($this->lang('o')) ?>';
 		return (bytes / Math.pow(1024, factor)).toFixed(typeof decimals !== 'undefined' ? decimals : 2) + '<small>' + unit + '</small>';
 	};
 
@@ -29,7 +30,7 @@ NF.ready(function(){
 			el.classList.remove('fa-check-square', 'text-success', 'fa-exclamation-triangle', 'text-danger');
 		});
 		document.querySelectorAll('.panel-infos [data-label]').forEach(function(el){ el.innerHTML = NF.data(el, 'label'); });
-		document.querySelectorAll('.panel-monitoring').forEach(function(el){ el.classList.add('bg-gray'); el.classList.remove('bg-red', 'bg-orange', 'bg-green'); });
+		document.querySelectorAll('.panel-monitoring').forEach(function(el){ el.classList.add('nf-sante-inconnue'); el.classList.remove('nf-sante-erreur', 'nf-sante-alerte', 'nf-sante-ok'); });
 		document.querySelectorAll('.monitoring-icon-status').forEach(function(el){ el.classList.remove('beat-fast', 'beat-medium', 'beat-slow'); });
 
 		NF.post('<?php echo url('admin/ajax/monitoring.json') ?>', { refresh: (typeof forceRefresh !== 'undefined' && forceRefresh) ? forceRefresh : 0 }).then(function(data){
@@ -47,15 +48,15 @@ NF.ready(function(){
 			var usedEl = document.getElementById('storage-used');
 			if (usedEl){ usedEl.innerHTML = printSize(used); }
 			var pctEl = document.getElementById('storage-pourcent');
-			if (pctEl){ pctEl.innerHTML = 'Utilisé (' + pourcent + ' %)'; }
+			if (pctEl){ pctEl.innerHTML = '<?php echo addslashes($this->lang('Utilisé')) ?> (' + pourcent + ' %)'; }
 
 			var notifications = '';
 			var count = { danger: 0, warning: 0, info: 0 };
 
 			data.notifications.forEach(function(notification){
 				notifications += '<tr>'
-					+ '<td class="col-2"><span class="badge badge-' + notification[1] + '">'
-					+ (notification[1] === 'danger' ? '<?php echo icon('fas fa-bug') ?> Erreur' : (notification[1] === 'warning' ? '<?php echo icon('fas fa-bolt') ?> Anomalie' : '<?php echo icon('fas fa-exclamation-circle') ?> Conseil'))
+					+ '<td class="text-nowrap"><span class="badge bg-' + notification[1] + '-subtle text-' + notification[1] + '-emphasis">'
+					+ (notification[1] === 'danger' ? '<?php echo icon('fas fa-bug') ?> <?php echo addslashes($this->lang('Erreur')) ?>' : (notification[1] === 'warning' ? '<?php echo icon('fas fa-bolt') ?> <?php echo addslashes($this->lang('Anomalie')) ?>' : '<?php echo icon('fas fa-exclamation-circle') ?> <?php echo addslashes($this->lang('Conseil')) ?>'))
 					+ '</span></td>'
 					+ '<td class="align-middle">' + notification[0] + '</td>'
 					+ '</tr>';
@@ -70,8 +71,8 @@ NF.ready(function(){
 			});
 
 			var textEl = document.getElementById('monitoring-text');
-			if (textEl){ textEl.innerHTML = count.danger ? '<?php echo $this->lang('Le navire coule !') ?>' : (count.warning ? '<?php echo $this->lang('Iceberg droit devant !') ?>' : '<?php echo $this->lang('Tout est en ordre, capitaine !') ?>'); }
-			document.querySelectorAll('.panel-monitoring').forEach(function(el){ el.classList.remove('bg-gray'); el.classList.add(count.danger ? 'bg-red' : (count.warning ? 'bg-orange' : 'bg-green')); });
+			if (textEl){ textEl.innerHTML = count.danger ? '<?php echo addslashes($this->lang('Le navire coule !')) ?>' : (count.warning ? '<?php echo addslashes($this->lang('Iceberg droit devant !')) ?>' : '<?php echo addslashes($this->lang('Tout est en ordre, capitaine !')) ?>'); }
+			document.querySelectorAll('.panel-monitoring').forEach(function(el){ el.classList.remove('nf-sante-inconnue'); el.classList.add(count.danger ? 'nf-sante-erreur' : (count.warning ? 'nf-sante-alerte' : 'nf-sante-ok')); });
 			document.querySelectorAll('.monitoring-icon-status').forEach(function(el){ el.classList.add(count.danger ? 'beat-fast' : (count.warning ? 'beat-medium' : 'beat-slow')); });
 
 			nfTreeview(document.getElementById('tree'), data.files, {
@@ -116,7 +117,7 @@ NF.ready(function(){
 			e.preventDefault();
 
 			var origHtml = backupBtn.innerHTML;
-			backupBtn.innerHTML = '<?php echo icon('fas fa-spinner fa-spin').' '.$this->lang('Sauvegarde en cours...') ?>';
+			backupBtn.innerHTML = '<?php echo icon('fas fa-spinner fa-spin').' '.addslashes($this->lang('Sauvegarde en cours...')) ?>';
 			backupBtn.classList.add('disabled');
 
 			var modalEl = document.getElementById('modal-backup');
@@ -169,7 +170,7 @@ NF.ready(function(){
 						if (result.done){
 							setTimeout(function(){
 								bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-								notify('Sauvegarde réalisée dans le dossier <b>backups</b> de votre FTP');
+								notify('<?php echo addslashes($this->lang('Sauvegarde réalisée dans le dossier <b>backups</b> de votre FTP')) ?>');
 							}, 1000);
 							return;
 						}

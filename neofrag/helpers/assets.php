@@ -84,6 +84,31 @@ function image($file, $caller = NULL): string
 	return path($file, 'images', $caller);
 }
 
+/**
+ * L'adresse du favicon du site : celui téléversé dans les réglages, sinon celui du cœur.
+ *
+ * La résolution était écrite deux fois — dans le gabarit principal et, depuis que `/favicon.ico` est
+ * servi à la racine, dans le contrôleur des réglages. Deux copies d'une même règle finissent par
+ * diverger ; et le modèle générique ne déclarant pas `path()`, chaque copie faisait trébucher
+ * l'analyse statique. Une seule fonction, typée, employée par les deux.
+ */
+function favicon_url(): string
+{
+	$config = NeoFrag()->config;
+
+	if ($config->nf_favicon)
+	{
+		$fichier = NeoFrag()->model2('file', $config->nf_favicon);
+
+		if (method_exists($fichier, 'path') && ($chemin = $fichier->path()))
+		{
+			return (string) $chemin;
+		}
+	}
+
+	return image('favicon.png');
+}
+
 function css($file, $caller = NULL): string
 {
 	return path($file, 'css', $caller);

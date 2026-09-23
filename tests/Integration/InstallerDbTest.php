@@ -30,24 +30,62 @@ final class InstallerDbTest extends TestCase
 	private static ?mysqli $root = null;
 	private static array $cfg = [];
 
+	/*
+	 * Pourquoi le saut n'est pas prononcé ici. Un markTestSkipped() dans setUpBeforeClass() saute la
+	 * classe entière, et PHPUnit 11 le compte comme une SUITE sautée, pas comme des tests sautés :
+	 * `--fail-on-skipped` n'y voit rien. La CI a affiché « OK, but some tests were skipped! Tests: 504,
+	 * Skipped: 127 » avec un code de sortie zéro, pendant des semaines. On mémorise donc la raison, et
+	 * c'est setUp() qui saute, test par test — ce que le drapeau transforme bien en échec.
+	 */
+	private static ?string $indisponible = null;
+
 	public static function setUpBeforeClass(): void
 	{
+		self::$indisponible = null;
+
 		if (!extension_loaded('mysqli'))
 		{
-			self::markTestSkipped('Extension mysqli non chargée (test d\'intégration DB ignoré).');
+			self::$indisponible = 'Extension mysqli non chargée (test d\'intégration DB ignoré).';
+
+			return;
 		}
 
 		mysqli_report(MYSQLI_REPORT_OFF);
 
-		$host = getenv('NF_TEST_DB_HOST') ?: 'db';
-		$user = getenv('NF_TEST_DB_ROOT_USER') ?: 'root';
-		$pass = getenv('NF_TEST_DB_ROOT_PASS') ?: 'rootpass';
-		$port = (int) (getenv('NF_TEST_DB_PORT') ?: 3306);
+		// Même défaut que IntegrationTestCase : « db » était le nom du service Docker de l'ancienne CI, et
+		// sur toute autre machine la classe se sautait en silence — quatre tests de moins, verdict « OK ».
+		/*
+		 * Trois sources, comme les autres suites d'intégration : l'environnement, puis
+		 * `config/db-test.php` qu'écrit `tools/prepare-test-db.php`, puis les valeurs par défaut.
+		 *
+		 * Ce test-ci est le seul à exiger un compte capable de CRÉER et de SUPPRIMER une base : il
+		 * déroule une installation complète dans une base éphémère. Il réclamait `root` avec le mot
+		 * de passe `rootpass` — ceux de l'ancienne pile Docker, disparue. Sur une MariaDB de
+		 * serveur, `root` s'authentifie par la socket Unix et refuse le TCP : ce test ne pouvait
+		 * donc réussir nulle part ailleurs que dans ce conteneur, et se sautait en silence.
+		 */
+		$local = [];
+
+		if (is_file($fichier = dirname(__DIR__, 2).'/config/db-test.php'))
+		{
+			$local = (array) (require $fichier);
+		}
+
+		$reglage = static function (string $cle, string $defaut) use ($local): string {
+			return (string) (getenv('NF_TEST_DB_'.strtoupper($cle)) ?: ($local[$cle] ?? $defaut));
+		};
+
+		$host = $reglage('host', '127.0.0.1');
+		$user = $reglage('root_user', 'root');
+		$pass = $reglage('root_pass', 'rootpass');
+		$port = (int) $reglage('port', '3306');
 
 		$root = @new mysqli($host, $user, $pass, '', $port);
 		if ($root->connect_errno)
 		{
-			self::markTestSkipped('Root MySQL injoignable (' . $host . ') : ' . $root->connect_error);
+			self::$indisponible = 'Root MySQL injoignable (' . $host . ') : ' . $root->connect_error;
+
+			return;
 		}
 		$root->set_charset('utf8mb4');
 		$root->query('DROP DATABASE IF EXISTS `' . self::DBNAME . '`');
@@ -60,6 +98,14 @@ final class InstallerDbTest extends TestCase
 			'database' => self::DBNAME,
 			'port'     => $port,
 		];
+	}
+
+	protected function setUp(): void
+	{
+		if (self::$indisponible !== null)
+		{
+			self::markTestSkipped(self::$indisponible);
+		}
 	}
 
 	public static function tearDownAfterClass(): void

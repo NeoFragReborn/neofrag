@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -30,6 +31,17 @@ class Date extends Library
 		}
 		else if (!is_a($datetime, '\DateTime'))
 		{
+			/*
+			 * `date_create_from_format()` attend une CHAINE. Un horodatage Unix arrive souvent ici
+			 * sous forme d'entier — c'est justement à quoi sert le format `'U'` essayé plus bas —
+			 * et PHP le convertissait en silence. En mode strict il refuse, et l'affichage d'une
+			 * date construite depuis un `time()` devient une erreur fatale.
+			 */
+			if (is_int($datetime) || is_float($datetime))
+			{
+				$datetime = (string) $datetime;
+			}
+
 			if ($format)
 			{
 				if ($datetime = date_create_from_format($format, $datetime, $timezone))

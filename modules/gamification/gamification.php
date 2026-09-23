@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Module Gamification — socle karma / points / VIP.
@@ -41,29 +42,10 @@ class Gamification extends Module
 		'login'             => ['gam_pt_login',             'gam_cap_login',             5,  5],
 	];
 
-	/* Résolution du propriétaire d'un contenu (aligné sur reactions::ALLOWED_TYPES). */
-	const OWNER_MAP = [
-		'comment'       => ['nf_comment',         'id'],
-		'forum-message' => ['nf_forum_messages',  'message_id'],
-		'article'       => ['nf_articles',        'article_id'],
-		'news'          => ['nf_news',            'news_id'],
-	];
-
-	/* Sources « réactions reçues » : [content_type, table propriétaire, clé primaire]. */
-	const REACTION_SOURCES = [
-		['comment',       'nf_comment',        'id'],
-		['forum-message', 'nf_forum_messages', 'message_id'],
-		['article',       'nf_articles',       'article_id'],
-		['news',          'nf_news',           'news_id'],
-	];
-
-	/* Sources « contenu publié » : [table, colonne auteur]. */
-	const CONTENT_SOURCES = [
-		['nf_comment',        'user_id'],
-		['nf_forum_messages', 'user_id'],
-		['nf_news',           'user_id'],
-		['nf_articles',       'user_id'],
-	];
+	/* Plus de registre en dur : proprietaire, sources de reactions et sources de contenu viennent
+	   des descripteurs declares par les modules (cf. Module::content_types(), 2026-09-15). Ce module
+	   ne nomme donc plus nf_news, nf_articles, nf_forum_messages ni nf_comment. La meme connaissance
+	   etait auparavant recopiee ici en TROIS exemplaires, plus deux fois dans Notifications. */
 
 	/* Paliers de réputation (du plus bas au plus haut). */
 	const TIERS = [
@@ -84,6 +66,10 @@ class Gamification extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => ['gaming'],
+			'requires'    => [],
 			'version'     => '1.0',
 			'admin'       => TRUE,
 			'depends'     => ['neofrag' => '1.0.0'],
@@ -103,8 +89,14 @@ class Gamification extends Module
 		}
 	}
 
-	/** Lecture d'une valeur de config entière avec défaut. */
-	private function cfg($key, $default)
+	/**
+	 * Lecture d'une valeur de config entière avec défaut.
+	 *
+	 * Publique parce que la page d'administration en a besoin AUSSI, et que la dupliquer a coûté
+	 * cher : son contrôleur avait réécrit le test en oubliant `=== FALSE`, si bien que les dix-sept
+	 * champs du barème s'affichaient VIDES et qu'un simple « Enregistrer » aurait écrit 0 partout.
+	 */
+	public function cfg($key, $default)
 	{
 		$v = $this->config->{$key};
 
@@ -150,8 +142,19 @@ class Gamification extends Module
 		}
 
 		$received = 0;
-		foreach (self::REACTION_SOURCES as list($type, $table, $pk))
+		// Tous les types reactables declares, alias compris (le content_type stocke peut
+		// employer l'une ou l'autre orthographe). Table absente = module non installe : on saute
+		// au lieu de fataliser — ce que l'ancienne boucle en dur ne faisait pas.
+		foreach (self::content_types() as $type => $desc)
 		{
+			if (empty($desc['reactable']) || empty($desc['table']) || !$this->db->table_exists($desc['table']))
+			{
+				continue;
+			}
+
+			$table = $desc['table'];
+			$pk    = $desc['pk'];
+
 			$received += (int)$this->db	->select('COUNT(*)')
 										->from('nf_reactions r')
 										->join($table.' t', 't.'.$pk.' = r.content_id')
@@ -161,8 +164,23 @@ class Gamification extends Module
 		}
 
 		$content = 0;
-		foreach (self::CONTENT_SOURCES as list($table, $col))
+		// Dedoublonnage par table : un alias designe le meme contenu, il ne doit pas compter deux fois.
+		$tables = [];
+		foreach (self::content_types() as $desc)
 		{
+			if (!empty($desc['table']) && !empty($desc['reactable']))
+			{
+				$tables[$desc['table']] = $desc['author'];
+			}
+		}
+
+		foreach ($tables as $table => $col)
+		{
+			if (!$this->db->table_exists($table))
+			{
+				continue;
+			}
+
 			$content += (int)$this->db	->select('COUNT(*)')
 										->from($table)
 										->where($col, $user_id)
@@ -220,8 +238,8 @@ class Gamification extends Module
 		$score = $this->get($user_id);
 		$tier  = $this->tier($score);
 
-		return '<span class="nf-karma-badge" title="'.$score.' karma" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;color:#fff;background:'.$tier['color'].';">'
-			.icon($tier['icon']).' '.htmlspecialchars($tier['name'])
+		return '<span class="nf-karma-badge" title="'.$score.' karma" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;color:'.couleur_lisible_sur($tier['color']).';background:'.$tier['color'].';">'
+			.icon($tier['icon']).' '.htmlspecialchars((string) ($tier['name']))
 			.'</span>';
 	}
 
@@ -419,12 +437,20 @@ class Gamification extends Module
 	/** Propriétaire d'un contenu (via OWNER_MAP). @return int|null */
 	public function content_owner($type, $id)
 	{
-		if (!isset(self::OWNER_MAP[$type]))
+		$types = self::content_types();
+
+		if (empty($types[$type]['table']) || empty($types[$type]['reactable']))
 		{
 			return NULL;
 		}
 
-		list($table, $pk) = self::OWNER_MAP[$type];
+		$table = $types[$type]['table'];
+		$pk    = $types[$type]['pk'];
+
+		if (!$this->db->table_exists($table))
+		{
+			return NULL;
+		}
 
 		$owner = $this->db	->select('user_id')
 							->from($table)

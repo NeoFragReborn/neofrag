@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Controller admin du module Modération.
@@ -22,6 +23,16 @@ class Admin extends Controller_Module
 		$recent_reports = $this->moderation->get_pending_reports([], 0, 10);
 
 		$this->title($this->lang('Modération'))->icon('fas fa-shield-alt');
+
+		// Les actions de la page vivent dans la BARRE D'OUTILS, comme sur tous les autres écrans
+		// d'administration. Elles etaient en bas a droite du contenu : meme type de bouton, place
+		// ailleurs d'une page a l'autre — c'est ce qui donne l'impression d'incoherence.
+		$this->add_action($this->button($this->lang('Sanctions'), 'fas fa-gavel', 'secondary')->url('admin/moderation/sanctions'));
+
+		if ($this->access('moderation', 'manage_settings'))
+		{
+			$this->add_action($this->button($this->lang('Réglages'), 'fas fa-cogs', 'secondary')->url('admin/moderation/settings'));
+		}
 
 		return $this->view('admin/dashboard', [
 			'stats'          => $stats,
@@ -62,7 +73,7 @@ class Admin extends Controller_Module
 		$report = $this->moderation->get_report($id);
 		if (!$report)
 		{
-			$this->error->notfound();
+			$this->error();
 			return;
 		}
 
@@ -158,7 +169,7 @@ class Admin extends Controller_Module
 		$sanction = $this->model()->get_sanction($id);
 		if (!$sanction)
 		{
-			$this->error->notfound();
+			$this->error();
 			return;
 		}
 
@@ -185,7 +196,7 @@ class Admin extends Controller_Module
 						 ->row();
 		if (!is_array($user) || empty($user))
 		{
-			$this->error->notfound();
+			$this->error();
 			return;
 		}
 
@@ -391,15 +402,15 @@ class Admin extends Controller_Module
 		{
 			foreach ($bans as $b)
 			{
-				$expires = empty($b['expires_at']) ? '<span class="badge text-bg-danger">'.$this->lang('Permanent').'</span>' : htmlspecialchars($b['expires_at']);
-				$by      = !empty($b['banned_by_username']) ? htmlspecialchars($b['banned_by_username']) : '<em class="text-muted">'.$this->lang('Système').'</em>';
+				$expires = empty($b['expires_at']) ? '<span class="badge text-bg-danger">'.$this->lang('Permanent').'</span>' : htmlspecialchars((string) ($b['expires_at']));
+				$by      = !empty($b['banned_by_username']) ? htmlspecialchars((string) ($b['banned_by_username'])) : '<em class="text-muted">'.$this->lang('Système').'</em>';
 
 				$body .= '<tr>';
-				$body .= '<td><code>'.htmlspecialchars($b['ip']).'</code></td>';
-				$body .= '<td>'.htmlspecialchars($b['reason'] ?? '').'</td>';
+				$body .= '<td><code>'.htmlspecialchars((string) ($b['ip'])).'</code></td>';
+				$body .= '<td>'.htmlspecialchars((string) ($b['reason'] ?? '')).'</td>';
 				$body .= '<td>'.$by.'</td>';
 				$body .= '<td>'.$expires.'</td>';
-				$body .= '<td>'.htmlspecialchars($b['created_at']).'</td>';
+				$body .= '<td>'.htmlspecialchars((string) ($b['created_at'])).'</td>';
 				$body .= '<td class="text-end">';
 				$body .= '<a class="btn btn-sm btn-danger" href="'.$this->csrf_url('admin/moderation/banlist/delete/'.(int)$b['ban_id']).'" data-confirm="'.$this->lang('Supprimer le ban de cette IP ?').'" title="'.$this->lang('Supprimer le ban').'">'.icon('fas fa-trash').'</a>';
 				$body .= '</td>';

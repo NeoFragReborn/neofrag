@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'94b735a4' => 'Papierkorb',
@@ -11,7 +12,7 @@ return [
 	'3eb668b0' => 'Titel',
 	'af954628' => 'Gelöscht am',
 	'5110bd54' => 'Von',
-	93714304 => 'Alle auswählen',
+	'93714304' => 'Alle auswählen',
 	'605a8679' => 'Auswahl endgültig löschen? Unwiderrufliche Aktion.',
 	'124b47ce' => '%d Element(e) wiederhergestellt.',
 	'58dca009' => '%d Element(e) endgültig gelöscht.',

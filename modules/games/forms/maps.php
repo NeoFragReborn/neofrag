@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -6,20 +7,20 @@
 
 $rules = [
 	'game_id' => [
-		'label'  => 'Jeu',
+		'label'  => $this->lang('Jeu'),
 		'value'  => $this->form()->value('game_id'),
 		'values' => $this->form()->value('games'),
 		'type'   => 'select',
 		'rules'  => 'required'
 	],
 	'title' => [
-		'label' => 'Nom de la carte',
+		'label' => $this->lang('Nom de la carte'),
 		'value' => $this->form()->value('title'),
 		'type'  => 'text',
 		'rules' => 'required'
 	],
 	'image' => [
-		'label' => 'Image',
+		'label' => $this->lang('Image'),
 		'value' => $this->form()->value('image_id'),
 		'upload'=> 'games/maps',
 		'type'  => 'file',

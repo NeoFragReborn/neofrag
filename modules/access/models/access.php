@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Model des permissions / rôles — adapté au nouveau schéma R1 (nf_roles + nf_role_permissions + nf_users_roles + nf_groups_roles).

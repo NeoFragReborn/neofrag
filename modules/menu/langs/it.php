@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'b3b427cb' => 'Menu',
@@ -30,4 +31,9 @@ return [
 	'b2341c75' => 'Modifica la voce',
 	'96d5c170' => 'Costruttore di menu denominati riutilizzabili (voci gerarchiche) per la navigazione.',
 	'85111a17' => 'Gestisci i menu',
+	'881485c2' => 'Modifica: %s',
+	'afccc23b' => 'Crea',
+	'8fd9c7ef' => 'Salva',
+	'4a818505' => 'articolo|articoli',
+	'4678bb10' => 'Nuovo articolo',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -41,4 +42,16 @@ return [
 	'f2100516' => 'Bare page (full width)',
 	'78b7cadc' => '"Bare page" renders the content without a frame or title — ideal for a page made of blocks.',
 	'42bd0172' => 'A future date schedules publication: the page stays publicly hidden until that date (if published). Empty = immediate.',
+	'0adc6e30' => 'Save the page first: you will then be able to compose module blocks by editing it.',
+	'b2299bb6' => 'Page blocks',
+	'92a243f3' => 'Add module blocks below the content, reorder them by drag and drop and configure their options. Visual equivalent of the [block:…] shortcodes.',
+	'7fb14f71' => 'Save blocks',
+	'517c0b2c' => 'Scheduled for %s',
+	'afccc23b' => 'Create',
+	'f0b7b5b5' => 'Publication date',
+	'08ce3a09' => 'Blocks saved',
+	'ce6fa2e6' => 'Save error',
+	'9cdcd1f0' => 'Static CMS pages: about, legal notice, terms, etc.',
+	'4349f0db' => 'Page %s',
+	'1bf841b2' => 'Content access',
 ];

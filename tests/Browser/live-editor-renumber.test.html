@@ -1,0 +1,138 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Renumérotage après mutation</title>
+
+<!--
+  Le defaut de fond du Live Editor, etabli le 2026-09-15 a partir des journaux de production :
+
+      [output] admin/ajax/live-editor/col-size   : Call to a member function size() on null
+      [output] admin/ajax/live-editor/col-delete : Call to a member function each() on null
+
+  Les identifiants de ligne, colonne et widget ne sont pas des cles stables : ce sont des
+  POSITIONS, que le serveur recalcule 0,1,2… a chaque rendu. Le client deplaçait et supprimait
+  dans le DOM sans jamais les rafraichir — donc la PREMIERE operation reussissait et les
+  suivantes visaient le mauvais element, ou aucun.
+
+  Symptomes rapportes, tous expliques par la : des alertes rouges, des colonnes atterries dans
+  la mauvaise ligne, et « ca finit par marcher a la troisieme tentative » — c'est-a-dire apres
+  un rechargement, qui rend des identifiants frais.
+
+  L'INVARIANT qu'on eprouve ici : dans l'ordre du document, les lignes d'une zone portent 0..n-1,
+  les colonnes d'une ligne portent 0..n-1, et les widgets d'une colonne portent 0..n-1. C'est
+  exactement ce que le serveur attend — et ce que `$child->id($i)` produit a chaque rendu.
+-->
+
+<script>window.__nfNonce = 'NONCE-TEST';</script>
+<script src="/harness.js"></script>
+<script src="/nf.js"></script>
+<script>NF.ready = function(){};</script>
+<script src="/src/modules/live_editor/js/live-editor.js"></script>
+
+<body>
+<div class="live-editor-iframe">
+	<iframe id="cadre" src="/live-editor-renumber-iframe.html" style="width:500px;height:120px"></iframe>
+</div>
+<pre id="nf-verdict"></pre>
+
+<script>
+document.getElementById('cadre').addEventListener('load', function () {
+	var doc = document.getElementById('cadre').contentDocument;
+
+	var enfants = function (parent, sel) {
+		return Array.prototype.filter.call(parent.children, function (e) { return e.matches(sel); });
+	};
+
+	/** L'invariant complet : chaque niveau numerote 0..n-1 dans l'ordre du document. */
+	var incoherences = function () {
+		var fautes = [];
+
+		doc.querySelectorAll('[data-disposition-id]').forEach(function (zone) {
+			Array.prototype.forEach.call(zone.querySelectorAll('[data-row-id]'), function (ligne, i) {
+				if (ligne.getAttribute('data-row-id') !== String(i)) {
+					fautes.push('ligne en position ' + i + ' porte ' + ligne.getAttribute('data-row-id'));
+				}
+
+				enfants(ligne, '[data-col-id]').forEach(function (col, j) {
+					if (col.getAttribute('data-col-id') !== String(j)) {
+						fautes.push('colonne en position ' + j + ' porte ' + col.getAttribute('data-col-id'));
+					}
+
+					var hote = col.querySelector('.live-editor-col') || col;
+
+					enfants(hote, '[data-widget-id]').forEach(function (w, k) {
+						if (w.getAttribute('data-widget-id') !== String(k)) {
+							fautes.push('widget en position ' + k + ' porte ' + w.getAttribute('data-widget-id'));
+						}
+					});
+				});
+			});
+		});
+
+		return fautes;
+	};
+
+	var lignes = function () {
+		return Array.prototype.map.call(doc.querySelectorAll('[data-row-id]'), function (e) {
+			return e.getAttribute('data-row-id');
+		}).join(',');
+	};
+
+	// ── Ce que le serveur vient de rendre est coherent ────────────────────────
+	NFTest.verifie('le rendu initial respecte l\'invariant', [], incoherences());
+
+	// ── Une ligne remonte : le DOM change, les identifiants deviennent faux ───
+	var zone = doc.getElementById('zone');
+	zone.appendChild(zone.querySelector('.live-editor-row'));
+
+	NFTest.verifie('apres deplacement, les lignes sont PERIMEES', '1,0', lignes());
+	NFTest.verifie('et l\'invariant est rompu', true, incoherences().length > 0);
+
+	nfLeRenumeroter();
+
+	NFTest.verifie('le renumerotage retablit l\'invariant', [], incoherences());
+	NFTest.verifie('les lignes suivent l\'ordre du document', '0,1', lignes());
+
+	// ── Une colonne supprimee dans la ligne qui en a deux ────────────────────
+	var aDeuxColonnes = Array.prototype.filter.call(doc.querySelectorAll('[data-row-id]'), function (l) {
+		return enfants(l, '[data-col-id]').length === 2;
+	})[0];
+
+	NFTest.verifie('une ligne a bien deux colonnes', true, !!aDeuxColonnes);
+
+	aDeuxColonnes.removeChild(enfants(aDeuxColonnes, '[data-col-id]')[0]);
+	nfLeRenumeroter();
+
+	NFTest.verifie('colonne supprimee : la restante reprend le numero 0',
+		'0', enfants(aDeuxColonnes, '[data-col-id]')[0].getAttribute('data-col-id'));
+	NFTest.verifie('et l\'invariant tient toujours', [], incoherences());
+
+	// ── Un widget ajoute avec un identifiant absurde, comme apres une insertion HTML ─
+	var hote = doc.querySelector('.live-editor-col');
+	var neuf = doc.createElement('div');
+	neuf.setAttribute('data-widget-id', '999');
+	hote.appendChild(neuf);
+
+	nfLeRenumeroter();
+
+	NFTest.verifie('un widget insere prend sa position reelle', [], incoherences());
+
+	// ── Les colonnes se numerotent PAR LIGNE, pas globalement ────────────────
+	var premieres = Array.prototype.map.call(doc.querySelectorAll('[data-row-id]'), function (l) {
+		var c = enfants(l, '[data-col-id]')[0];
+		return c ? c.getAttribute('data-col-id') : '-';
+	}).join(',');
+
+	NFTest.verifie('chaque ligne recommence a 0', '0,0', premieres);
+
+	// ── Sans iframe, la fonction ne doit pas lever ───────────────────────────
+	var garde = document.querySelector('.live-editor-iframe');
+	garde.classList.remove('live-editor-iframe');
+
+	try { nfLeRenumeroter(); NFTest.verifie('sans iframe, aucune erreur', true, true); }
+	catch (e) { NFTest.echec('sans iframe, la fonction a leve : ' + e.message); }
+
+	garde.classList.add('live-editor-iframe');
+
+	NFTest.fini();
+});
+</script>

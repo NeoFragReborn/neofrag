@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'f207d3b8' => 'Reaktionen',

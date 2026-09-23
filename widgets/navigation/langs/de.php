@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — deutsche Übersetzungen (auto-generiert 2026-05-03)
@@ -44,4 +45,10 @@ return [
 	'6db60ef7' => 'Verwaltetes Menü',
 	'26db591e' => '— Manuelle Links (unten) —',
 	'571ec895' => 'Zeigt ein in „Menüs" erstelltes Menü an (ersetzt die manuellen Links unten).',
+	'98420d15' => 'Konfigurierbares horizontales oder vertikales Navigationsmenü.',
+	'1c5e079e' => 'Horizontal',
+	'510016ca' => 'Vertikal',
+	'92df285e' => 'Link zu einem Modul',
+	'f2a3fffd' => 'Link zu einer Seite',
+	'dd3795ad' => 'Menü',
 ];

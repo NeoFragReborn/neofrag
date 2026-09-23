@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * NeoFrag — Module emails — Controller admin (R2.0, 2026-05-06)
@@ -26,10 +27,10 @@ class Admin extends Controller_Module
 		// Mapping module → icon + couleur (modifier BEM .settings-hub-card--<color>)
 		$module_meta = [
 			'user'        => ['icon' => 'fas fa-user',           'color' => 'accent',  'label' => $this->lang('Comptes utilisateurs')],
-			'forum'       => ['icon' => 'fas fa-comments',       'color' => 'info',    'label' => 'Forum'],
-			'talks'       => ['icon' => 'fas fa-envelope',       'color' => 'success', 'label' => 'Talks / Messagerie'],
+			'forum'       => ['icon' => 'fas fa-comments',       'color' => 'info',    'label' => $this->lang('Forum')],
+			'talks'       => ['icon' => 'fas fa-envelope',       'color' => 'success', 'label' => $this->lang('Talks / Messagerie')],
 			'moderation'  => ['icon' => 'fas fa-shield-alt',     'color' => 'warning', 'label' => $this->lang('Modération')],
-			'newsletter'  => ['icon' => 'fas fa-paper-plane',    'color' => 'danger',  'label' => 'Newsletter'],
+			'newsletter'  => ['icon' => 'fas fa-paper-plane',    'color' => 'danger',  'label' => $this->lang('Newsletter')],
 			'core'        => ['icon' => 'fas fa-cube',           'color' => 'accent',  'label' => $this->lang('Système')]
 		];
 
@@ -61,7 +62,7 @@ class Admin extends Controller_Module
 			$html .= '<div class="settings-section-header">';
 			$html .= '<div class="settings-section-icon"><i class="'.$meta['icon'].'"></i></div>';
 			$html .= '<div class="settings-section-meta">';
-			$html .= '<div class="settings-section-title">'.htmlspecialchars($meta['label']).'</div>';
+			$html .= '<div class="settings-section-title">'.htmlspecialchars((string) ($meta['label'])).'</div>';
 			$html .= '<div class="settings-section-subtitle">'.$count.' '.($count > 1 ? $this->lang('templates') : $this->lang('template')).'</div>';
 			$html .= '</div>';
 			$html .= '</div>';
@@ -82,17 +83,23 @@ class Admin extends Controller_Module
 
 				// Texte (titre + key + desc + sujet preview + statut + actions)
 				$html .= '<div class="settings-hub-text">';
-				$html .= '<div class="settings-hub-title">'.htmlspecialchars($t['title']).'</div>';
-				$html .= '<div class="settings-hub-desc"><code style="font-size:11px;">'.htmlspecialchars($t['key']).'</code></div>';
+				// Le titre et la description d'un modèle LIVRÉ sont en français dans la base : ils se
+				// traduisent à l'affichage (un modèle renommé par l'administrateur reste son texte).
+				$html .= '<div class="settings-hub-title">'.htmlspecialchars((string) $this->lang($t['title'])).'</div>';
+				$html .= '<div class="settings-hub-desc"><code style="font-size:11px;">'.htmlspecialchars((string) ($t['key'])).'</code></div>';
 
 				if (!empty($t['description']))
 				{
-					$html .= '<div class="settings-hub-desc" style="margin-top:6px;">'.htmlspecialchars($t['description']).'</div>';
+					$html .= '<div class="settings-hub-desc" style="margin-top:6px;">'.htmlspecialchars((string) $this->lang($t['description'])).'</div>';
 				}
 
 				if ($subject)
 				{
-					$html .= '<div class="settings-hub-desc" style="margin-top:8px;font-style:italic;">'.icon('fas fa-at').' '.htmlspecialchars($subject).'</div>';
+					// Le sujet tel que le membre le recevra, avec les valeurs d'exemple de l'aperçu :
+					// `{{site_name}}` ou `{{topic_title}}` affichés bruts ressemblaient à un gabarit
+					// cassé (check-mise-en-page, 2026-09-23).
+					$subject = \NF\Modules\Emails\Models\Emails::render_placeholders($subject, $exemples ??= $this->_exemples());
+					$html .= '<div class="settings-hub-desc" style="margin-top:8px;font-style:italic;">'.icon('fas fa-at').' '.htmlspecialchars((string) ($subject)).'</div>';
 				}
 
 				// Pied : badges + actions
@@ -129,7 +136,7 @@ class Admin extends Controller_Module
 
 	public function _edit($template)
 	{
-		$this->title($this->lang('Éditer le template').' — '.$template['title']);
+		$this->title($this->lang('Éditer le template').' — '.$this->lang($template['title']));
 		$this->icon('fas fa-edit');
 
 		$lang_default = 'fr';
@@ -221,12 +228,12 @@ class Admin extends Controller_Module
 		$meta .= '<div class="settings-section-header">';
 		$meta .= '<div class="settings-section-icon"><i class="fas fa-envelope-open-text"></i></div>';
 		$meta .= '<div class="settings-section-meta">';
-		$meta .= '<div class="settings-section-title">'.htmlspecialchars($template['title']).'</div>';
+		$meta .= '<div class="settings-section-title">'.htmlspecialchars((string) $this->lang($template['title'])).'</div>';
 		$meta .= '<div class="settings-section-subtitle">';
-		$meta .= '<code>'.htmlspecialchars($template['key']).'</code>';
+		$meta .= '<code>'.htmlspecialchars((string) ($template['key'])).'</code>';
 		if (!empty($template['module']))
 		{
-			$meta .= ' &mdash; '.icon('fas fa-cube').' '.htmlspecialchars($template['module']);
+			$meta .= ' &mdash; '.icon('fas fa-cube').' '.htmlspecialchars((string) ($template['module']));
 		}
 		$meta .= ' &mdash; '.icon('fas fa-language').' '.count($template['translations']).' / '.count($site_langs).' '.$this->lang('langues');
 		$meta .= '</div>';
@@ -241,7 +248,7 @@ class Admin extends Controller_Module
 		{
 			$active = ($l === $lang) ? ' active' : '';
 			$miss   = isset($template['translations'][$l]) ? '' : '<i class="fas fa-exclamation-circle miss"></i>';
-			$lang_tabs .= '<a class="emails-lang-tab'.$active.'" href="'.url('admin/emails/edit/'.$template['template_id'].'/'.$slug).'?lang='.urlencode($l).'">'.strtoupper(htmlspecialchars($l)).$miss.'</a>';
+			$lang_tabs .= '<a class="emails-lang-tab'.$active.'" href="'.url('admin/emails/edit/'.$template['template_id'].'/'.$slug).'?lang='.urlencode($l).'">'.strtoupper(htmlspecialchars((string) ($l))).$miss.'</a>';
 		}
 		$lang_tabs .= '</div>';
 
@@ -253,7 +260,7 @@ class Admin extends Controller_Module
 			$ph_bar .= '<span class="label">'.icon('fas fa-magic').' '.$this->lang('Placeholders').'</span>';
 			foreach ($placeholders as $ph)
 			{
-				$ph_bar .= '<code class="emails-ph" data-ph="'.htmlspecialchars($ph).'">'.htmlspecialchars($ph).'</code>';
+				$ph_bar .= '<code class="emails-ph" data-ph="'.htmlspecialchars((string) ($ph)).'">'.htmlspecialchars((string) ($ph)).'</code>';
 			}
 			$ph_bar .= '</div>';
 		}
@@ -263,7 +270,7 @@ class Admin extends Controller_Module
 		$form_card .= '<div class="settings-section-header">';
 		$form_card .= '<div class="settings-section-icon"><i class="fas fa-edit"></i></div>';
 		$form_card .= '<div class="settings-section-meta">';
-		$form_card .= '<div class="settings-section-title">'.$this->lang('Édition').' &mdash; '.strtoupper(htmlspecialchars($lang)).'</div>';
+		$form_card .= '<div class="settings-section-title">'.$this->lang('Édition').' &mdash; '.strtoupper(htmlspecialchars((string) ($lang))).'</div>';
 		$form_card .= '</div>';
 		$form_card .= '</div>';
 		$form_card .= '<div class="settings-section-body">';
@@ -328,26 +335,8 @@ class Admin extends Controller_Module
 			.$this->lang('Enregistre tes modifs pour rafraîchir cet aperçu.')
 			.'</div>';
 
-		// Valeurs d'exemple réalistes
-		$site_name = (string)$this->config->nf_name ?: 'Mon Site';
-		$site_url  = rtrim((isset($this->url->host) ? (($this->url->https ? 'https' : 'http').'://'.$this->url->host) : 'https://example.com'), '/');
-
-		$samples = [
-			'username'        => 'Jean Dupont',
-			'site_name'       => $site_name,
-			'validation_url'  => $site_url.'/user/validation/abc123def456',
-			'reset_url'       => $site_url.'/user/lost-password/abc123def456',
-			'topic_title'     => 'Question sur la dernière màj',
-			'topic_url'       => $site_url.'/forum/topic/42/question-sur-la-derniere-maj',
-			'mentioner'       => 'Alice',
-			'author'          => 'Bob',
-			'talk_name'       => 'Discussion privée',
-			'talk_url'        => $site_url.'/talks/17/discussion-privee',
-			'sanction_type'   => 'Avertissement',
-			'reason'          => 'Comportement non conforme à la charte',
-			'duration'        => '7 jours',
-			'confirm_url'     => $site_url.'/newsletter/confirm/abc123def456'
-		];
+		$samples   = $this->_exemples();
+		$site_name = $samples['site_name'];
 
 		$placeholders = [];
 		if (!empty($template['placeholders']))
@@ -371,9 +360,9 @@ class Admin extends Controller_Module
 		$card .= '<div class="emails-preview-frame">';
 		$card .= '<div class="emails-preview-mail">';
 		$card .= '<div class="emails-preview-mail-head">';
-		$card .= '<div class="emails-preview-mail-subject">'.htmlspecialchars($rendered_subject).'</div>';
+		$card .= '<div class="emails-preview-mail-subject">'.htmlspecialchars((string) ($rendered_subject)).'</div>';
 		$card .= '<div class="emails-preview-mail-meta">';
-		$card .= '<div><strong>'.$this->lang('De').' :</strong> '.htmlspecialchars($site_name).' &lt;'.htmlspecialchars($this->config->nf_contact ?: 'noreply@example.com').'&gt;</div>';
+		$card .= '<div><strong>'.$this->lang('De').' :</strong> '.htmlspecialchars((string) ($site_name)).' &lt;'.htmlspecialchars((string) ($this->config->nf_contact ?: 'noreply@example.com')).'&gt;</div>';
 		$card .= '<div><strong>'.$this->lang('À').' :</strong> jean.dupont@example.com</div>';
 		$card .= '</div>';
 		$card .= '</div>';
@@ -385,6 +374,36 @@ class Admin extends Controller_Module
 		$card .= '</div>'; // .settings-section-card
 
 		return $card;
+	}
+
+	/**
+	 * Valeurs d'exemple réalistes des variables d'un modèle : l'aperçu les emploie, et la liste des
+	 * modèles aussi, pour afficher chaque sujet tel qu'il sera reçu. Elles s'affichent à l'administrateur :
+	 * les textes passent par lang() (les noms propres d'exemple restent tels quels).
+	 *
+	 * @return array<string, string>
+	 */
+	private function _exemples(): array
+	{
+		$site_name = (string)$this->config->nf_name ?: (string) $this->lang('Mon site');
+		$site_url  = rtrim((isset($this->url->host) ? (($this->url->https ? 'https' : 'http').'://'.$this->url->host) : 'https://example.com'), '/');
+
+		return [
+			'username'        => 'Jean Dupont',
+			'site_name'       => $site_name,
+			'validation_url'  => $site_url.'/user/validation/abc123def456',
+			'reset_url'       => $site_url.'/user/lost-password/abc123def456',
+			'topic_title'     => (string) $this->lang('Question sur la dernière mise à jour'),
+			'topic_url'       => $site_url.'/forum/topic/42/question-sur-la-derniere-maj',
+			'mentioner'       => 'Alice',
+			'author'          => 'Bob',
+			'talk_name'       => (string) $this->lang('Discussion privée'),
+			'talk_url'        => $site_url.'/talks/17/discussion-privee',
+			'sanction_type'   => (string) $this->lang('Avertissement'),
+			'reason'          => (string) $this->lang('Comportement non conforme à la charte'),
+			'duration'        => (string) $this->lang('%d jour|%d jours', 7, 7),
+			'confirm_url'     => $site_url.'/newsletter/confirm/abc123def456'
+		];
 	}
 
 	/**
@@ -408,13 +427,13 @@ class Admin extends Controller_Module
 
 		$enable = empty($template['enabled']);
 		$this->model()->set_enabled($template['template_id'], $enable);
-		notify($this->lang($enable ? 'Template activé' : 'Template désactivé'));
+		notify($enable ? $this->lang('Template activé') : $this->lang('Template désactivé'));
 		redirect('admin/emails');
 	}
 
 	public function _test($template)
 	{
-		$this->title($this->lang('Envoi de test').' — '.$template['title']);
+		$this->title($this->lang('Envoi de test').' — '.$this->lang($template['title']));
 		$this->icon('fas fa-paper-plane');
 
 		$default_email = $this->user() ? $this->user->email : '';
@@ -452,7 +471,7 @@ class Admin extends Controller_Module
 				else
 				{
 					$err = $this->email->last_error();
-					notify($this->lang('Échec de l\'envoi').($err ? ' — '.htmlspecialchars($err) : ''), 'danger');
+					notify($this->lang('Échec de l\'envoi').($err ? ' — '.htmlspecialchars((string) ($err)) : ''), 'danger');
 				}
 
 				redirect('admin/emails');
@@ -469,11 +488,11 @@ class Admin extends Controller_Module
 		$info_card .= '<div class="settings-section-header">';
 		$info_card .= '<div class="settings-section-icon"><i class="fas fa-paper-plane"></i></div>';
 		$info_card .= '<div class="settings-section-meta">';
-		$info_card .= '<div class="settings-section-title">'.htmlspecialchars($template['title']).'</div>';
-		$info_card .= '<div class="settings-section-subtitle"><code>'.htmlspecialchars($template['key']).'</code>';
+		$info_card .= '<div class="settings-section-title">'.htmlspecialchars((string) $this->lang($template['title'])).'</div>';
+		$info_card .= '<div class="settings-section-subtitle"><code>'.htmlspecialchars((string) ($template['key'])).'</code>';
 		if (!empty($template['module']))
 		{
-			$info_card .= ' &mdash; '.htmlspecialchars($template['module']);
+			$info_card .= ' &mdash; '.htmlspecialchars((string) ($template['module']));
 		}
 		$info_card .= '</div>';
 		$info_card .= '</div>';

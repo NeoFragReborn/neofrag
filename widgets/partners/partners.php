@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -13,11 +14,16 @@ class Partners extends Widget
 	protected function __info()
 	{
 		return [
-			'title'       => 'Partenaires',
+			'title'       => $this->lang('Partenaires'),
 			'description' => $this->lang('Partenaires et sponsors avec logos — widget gaming.'),
+			'icon'        => 'far fa-handshake',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => ['gaming'],
+			'requires'    => [],
 			'version'     => '1.0',
 			'depends'     => [
 				'neofrag' => '0.2.0'

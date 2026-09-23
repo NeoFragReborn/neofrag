@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,19 +11,31 @@ use NF\NeoFrag\Loadables\Controller;
 
 class Authenticator extends Controller
 {
-	public $__label = ['Authentificateurs', 'Authentificateur', 'fas fa-lock', 'info'];
+	/**
+	 * Libellés du type (pluriel, singulier), icône et couleur : affichés sur les cartes de la page des
+	 * addons. Posés au constructeur, parce qu'une valeur par défaut de propriété ne peut pas appeler
+	 * lang() — écrits en dur, ils restaient en français sur un site dans une autre langue.
+	 */
+	public $__label;
+
+	public function __construct($caller)
+	{
+		parent::__construct($caller);
+
+		$this->__label = [$this->lang('Authentificateurs'), $this->lang('Authentificateur'), 'fas fa-lock', 'info'];
+	}
 
 	public function __actions()
 	{
 		return $this->array
-					->set('enable', ['Activer', 'fas fa-check', 'success', TRUE, function($addon){
+					->set('enable', [$this->lang('Activer'), 'fas fa-check', 'success', TRUE, function($addon){
 						return !$addon->is_enabled();
 					}])
-					->set('disable', ['Désactiver', 'fas fa-times', 'muted', TRUE, function($addon){
+					->set('disable', [$this->lang('Désactiver'), 'fas fa-times', 'muted', TRUE, function($addon){
 						return $addon->is_enabled();
 					}])
-					->set('order', ['Ordre', 'fas fa-sort', 'info', TRUE])
-					->set('settings', ['Configuration', 'fas fa-wrench', 'warning', TRUE]);
+					->set('order', [$this->lang('Ordre'), 'fas fa-sort', 'info', TRUE])
+					->set('settings', [$this->lang('Configuration'), 'fas fa-wrench', 'warning', TRUE]);
 	}
 
 	public function enable($addon)
@@ -56,7 +69,8 @@ class Authenticator extends Controller
 		}
 
 		uasort($authenticators, function($a, $b){
-			return strnatcmp($a->data->get('order'), $b->data->get('order'));
+			// L'ordre d'un authentificateur est un entier ; `strnatcmp()` attend des chaines.
+			return strnatcmp((string) $a->data->get('order'), (string) $b->data->get('order'));
 		});
 
 		$authenticators = $this->array($authenticators);
@@ -90,7 +104,7 @@ class Authenticator extends Controller
 					->info('<div class="alert alert-primary">
 								<h5 class="alert-heading">'.$this->label('Informations', 'fas fa-info-circle').'</h5>
 								<dl>
-									<dt>Enregistrez votre site via</dt>
+									<dt>'.$this->lang('Enregistrez votre site via').'</dt>
 										<dd><a href="'.$auth->info()->help.'" target="_blank">'.$auth->info()->help.'</a></dd>
 									'.$this	->array($auth->_params())
 											->each(function($a, $key){
@@ -99,7 +113,7 @@ class Authenticator extends Controller
 								</dl>
 							</div>')
 					->exec(function($form) use ($auth){
-						foreach (['dev' => 'Développement', 'prod' => 'Production'] as $type => $legend)
+						foreach (['dev' => $this->lang('Développement'), 'prod' => $this->lang('Production')] as $type => $legend)
 						{
 							$form	->legend($legend)
 									->exec(function($form) use ($type, $auth){

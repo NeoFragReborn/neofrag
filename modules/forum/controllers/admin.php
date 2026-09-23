@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -19,26 +20,52 @@ class Admin extends Controller_Module
 
 		$categories = $this->model()->get_categories();
 
-		// Top action bar (instead of add_action which crowds the topbar)
-		$action_bar = '<div class="forum-admin-actionbar">'
-			.'<a class="btn btn-primary" href="'.url('admin/forum/add').'"><i class="fas fa-plus"></i> '.$this->lang('Ajouter un forum').'</a>'
-			.'<a class="btn btn-secondary" href="'.url('admin/forum/categories/add').'"><i class="fas fa-folder-plus"></i> '.$this->lang('Ajouter une catégorie').'</a>'
-			.'<a class="btn btn-info" href="'.url('admin/forum/attachments').'"><i class="fas fa-paperclip"></i> '.$this->lang('Pièces jointes').'</a>'
-			.'<a class="btn btn-info" href="'.url('admin/forum/subscriptions').'"><i class="fas fa-bell"></i> '.$this->lang('Abonnements').'</a>'
-			.'<a class="btn btn-info" href="'.url('admin/forum/mentions').'"><i class="fas fa-at"></i> '.$this->lang('Mentions').'</a>'
-			.'<a class="btn btn-info" href="'.url('admin/forum/search-config').'"><i class="fas fa-search"></i> '.$this->lang('Recherche').'</a>'
-			.'<a class="btn btn-warning" href="'.url('admin/forum/trash').'"><i class="fas fa-trash-alt"></i> '.$this->lang('Corbeille').'</a>'
-			.'</div>';
+		/**
+		 * Les sept actions tenaient dans une barre maison posée dans le contenu, peintes en quatre
+		 * couleurs (vert, blanc, bleu, orange) sans règle : la couleur ne disait rien de l'action,
+		 * seulement qu'elle avait été choisie au coup par coup.
+		 *
+		 * Elles sont désormais réparties sur les DEUX composants partagés du projet, selon leur
+		 * nature — et non selon la place qu'il restait :
+		 *
+		 *   - ce pour quoi on vient sur la page (créer un forum, une catégorie) va dans la barre
+		 *     d'outils de la page, comme sur tous les autres écrans d'administration ;
+		 *   - les outils de la section (pièces jointes, abonnements, mentions, recherche,
+		 *     corbeille) vont dans `admin_action_bar()`, au-dessus de la liste qu'ils concernent.
+		 *
+		 * Les sept ensemble dans la barre du haut poussaient le fil d'Ariane hors de l'écran et
+		 * tronquaient le bouton « Voir le site » : c'est vérifié à l'écran, pas supposé.
+		 *
+		 * Une seule action principale en `primary`, tout le reste en `secondary`. La corbeille est
+		 * une navigation, pas une suppression : elle n'a rien à faire en couleur d'alerte.
+		 */
+		$this->add_action($this->button($this->lang('Ajouter un forum'), 'fas fa-plus', 'primary')->url('admin/forum/add'));
+		$this->add_action($this->button($this->lang('Ajouter une catégorie'), 'fas fa-folder-plus', 'secondary')->url('admin/forum/categories/add'));
+
+		$outils = $this->admin_action_bar([
+			$this->button($this->lang('Pièces jointes'), 'fas fa-paperclip', 'secondary')->url('admin/forum/attachments'),
+			$this->button($this->lang('Abonnements'),    'fas fa-bell',      'secondary')->url('admin/forum/subscriptions'),
+			$this->button($this->lang('Mentions'),       'fas fa-at',        'secondary')->url('admin/forum/mentions'),
+			$this->button($this->lang('Recherche'),      'fas fa-search',    'secondary')->url('admin/forum/search-config'),
+			$this->button($this->lang('Corbeille'),      'fas fa-trash-alt', 'secondary')->url('admin/forum/trash')
+		]);
 
 		if (empty($categories))
 		{
-			return $action_bar
-				.'<div class="card"><div class="card-header"><span><i class="fas fa-comments"></i> '.$this->lang('Forum').'</span></div>'
-				.'<div class="nf-empty"><i class="far fa-comments"></i>'.$this->lang('Aucune catégorie de forum.<br>Créez une catégorie via le bouton ci-dessus pour commencer.').'</div>'
-				.'</div>';
+			return $outils.$this->admin_card(
+				'fas fa-comments',
+				$this->lang('Forum'),
+				$this->admin_empty(
+					'far fa-comments',
+					$this->lang('Aucune catégorie de forum.'),
+					$this->lang('Crée une catégorie depuis la barre d\'outils pour commencer.')
+				)
+			);
 		}
 
-		$html = $action_bar.'<div id="forums-list" class="forum-admin">';
+		// Les adresses des deux points d'entrée du glisser-déposer sont portées par le conteneur : le script
+		// (js/forum.js) les lit en data-*, ce qui le libère de tout PHP interpolé et le rend éprouvable.
+		$html = $outils.'<div id="forums-list" class="forum-admin" data-url-categories="'.url('admin/ajax/forum/categories/move').'" data-url-forums="'.url('admin/ajax/forum/move').'">';
 		foreach ($categories as $category)
 		{
 			$html .= '<div class="card forum-admin-card">'.$this->view('admin', $category).'</div>';
@@ -55,7 +82,7 @@ class Admin extends Controller_Module
 				->add_rules('forum', [
 					'categories' => $this->model()->get_categories_list()
 				])
-				->add_submit($this->lang('Ajouter'))
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus')
 				->add_back('admin/forum');
 
 		if ($this->form()->is_valid($post))
@@ -70,8 +97,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/forum');
 		}
 
-		return $this->admin_back('admin/forum', $this->lang('Forum'))
-			.$this->admin_card('fas fa-comments', $this->lang('Ajouter un forum'), $this->form()->display());
+		return $this->admin_card('fas fa-comments', $this->lang('Ajouter un forum'), $this->form()->display());
 	}
 
 	public function _edit($forum_id, $title, $description, $parent_id, $is_subforum, $url)
@@ -127,8 +153,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/forum');
 		}
 
-		return $this->admin_back('admin/forum', $this->lang('Forum'))
-			.$this->admin_card('fas fa-comments', $this->lang('Édition du forum').' — '.$title, $this->form()->display());
+		return $this->admin_card('fas fa-comments', $this->lang('Édition du forum').' — '.$title, $this->form()->display());
 	}
 
 	public function delete($forum_id, $title)
@@ -154,7 +179,7 @@ class Admin extends Controller_Module
 				->form()
 				->add_rules('categories')
 				->add_back('admin/forum')
-				->add_submit($this->lang('Ajouter'));
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -165,8 +190,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/forum');
 		}
 
-		return $this->admin_back('admin/forum', $this->lang('Forum'))
-			.$this->admin_card('fas fa-folder-plus', $this->lang('Ajouter une catégorie'), $this->form()->display());
+		return $this->admin_card('fas fa-folder-plus', $this->lang('Ajouter une catégorie'), $this->form()->display());
 	}
 
 	public function _categories_edit($category_id, $title)
@@ -193,8 +217,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/forum');
 		}
 
-		return $this->admin_back('admin/forum', $this->lang('Forum'))
-			.$this->admin_card('fas fa-folder-open', $this->lang('Édition de la catégorie').' — '.$title, $this->form()->display());
+		return $this->admin_card('fas fa-folder-open', $this->lang('Édition de la catégorie').' — '.$title, $this->form()->display());
 	}
 
 	public function _categories_delete($category_id, $title)
@@ -350,8 +373,7 @@ class Admin extends Controller_Module
 			refresh();
 		}
 
-		return $this->admin_back('admin/forum', $this->lang('Forum'))
-			.$this->admin_card('fas fa-bell', $this->lang('Abonnements forum'), $this->view('admin/subscriptions', ['subs' => $subs]))
+		return $this->admin_card('fas fa-bell', $this->lang('Abonnements forum'), $this->view('admin/subscriptions', ['subs' => $subs]))
 			.(string)$this->module->pagination->get_pagination();
 	}
 
@@ -374,8 +396,7 @@ class Admin extends Controller_Module
 			refresh();
 		}
 
-		return $this->admin_back('admin/forum', $this->lang('Forum'))
-			.$this->admin_card('fas fa-at', $this->lang('Mentions @user'), $this->view('admin/mentions', [
+		return $this->admin_card('fas fa-at', $this->lang('Mentions @user'), $this->view('admin/mentions', [
 				'mentions' => $mentions,
 				'filters'  => $filters
 			]))
@@ -395,8 +416,13 @@ class Admin extends Controller_Module
 
 		$stats = $this->model()->get_search_stats();
 
-		return $this->admin_back('admin/forum', $this->lang('Forum'))
-			.$this->admin_card('fas fa-search', $this->lang('Configuration recherche'), $this->view('admin/search_config', ['stats' => $stats]));
+		return $this->admin_card('fas fa-search', $this->lang('Configuration recherche'), $this->view('admin/search_config', [
+				'stats'     => $stats,
+				'compteurs' => $this->admin_stats([
+					['label' => $this->lang('Messages indexés'), 'value' => number_format((int) $stats['indexed_messages'], 0, ',', ' '), 'icon' => 'far fa-comment'],
+					['label' => $this->lang('Sujets indexés'),   'value' => number_format((int) $stats['indexed_topics'],   0, ',', ' '), 'icon' => 'far fa-comments'],
+				]),
+			]));
 	}
 
 	public function _admin_attachments($attachments)
@@ -432,8 +458,7 @@ class Admin extends Controller_Module
 		$stats   = $this->model()->get_attachments_stats();
 		$orphans = $this->model()->find_orphan_files();
 
-		return $this->admin_back('admin/forum', $this->lang('Forum'))
-			.$this->admin_card('fas fa-paperclip', $this->lang('Pièces jointes du forum'), $this->view('admin/attachments', [
+		return $this->admin_card('fas fa-paperclip', $this->lang('Pièces jointes du forum'), $this->view('admin/attachments', [
 				'attachments' => $attachments,
 				'stats'       => $stats,
 				'orphans'     => $orphans
@@ -468,8 +493,7 @@ class Admin extends Controller_Module
 			refresh();
 		}
 
-		return $this->admin_back('admin/forum', $this->lang('Forum'))
-			.$this->admin_card('fas fa-trash-alt', $this->lang('Corbeille du forum'), $this->view('admin/trash', ['trashed' => $trashed]))
+		return $this->admin_card('fas fa-trash-alt', $this->lang('Corbeille du forum'), $this->view('admin/trash', ['trashed' => $trashed]))
 			.(string)$this->module->pagination->get_pagination();
 	}
 }

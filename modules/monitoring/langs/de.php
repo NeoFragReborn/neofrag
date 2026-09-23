@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -144,4 +145,29 @@ return [
 	'1a3e614b' => 'Endgültig löschen?',
 	'81d7f96a' => 'Gespeichert.',
 	'42888b00' => 'Fertig.',
+	'b8f68c38' => 'Das Update-Manifest ist unvollständig: Paketname oder SHA-256-Prüfsumme fehlt oder ist ungültig.',
+	'd7899acc' => 'Aktualisierung abgebrochen: %s',
+	'3750c510' => 'Das Schiff sinkt!',
+	'd6760697' => 'Eisberg voraus!',
+	'461c4f0b' => 'Alles in Ordnung, Kapitän!',
+	'f3dba025' => 'Sicherung läuft...',
+	'1e22cbbf' => 'Die Website wurde in den Zustand vor der Aktualisierung zurückversetzt.',
+	'13648960' => 'Auch die Rückabwicklung ist fehlgeschlagen (%s). Die Sicherung %s ist unversehrt: Sie lässt sich über das Überwachungspanel wiederherstellen oder herunterladen.',
+	'135a26db' => 'Sicherung wiederhergestellt: %d Dateien zurückgesetzt, %d Überreste entfernt, Datenbank neu eingelesen.',
+	'b63665a3' => 'Die Wiederherstellung ist fehlgeschlagen: %s',
+	'66d26b7f' => 'Wiederherstellen',
+	'8335d9bb' => 'Die Website auf den Stand vom %s zurücksetzen? Dateien und Datenbank werden durch die dieser Sicherung ersetzt; alles seither Veröffentlichte geht verloren. Konfiguration, Protokolle und Cache bleiben unberührt.',
+	'500cc9c4' => 'Bestätigung',
+	'0aac9844' => 'Datum',
+	'54cb6c83' => 'Datei',
+	'71fc8e0e' => 'Größe',
+	'caf5c873' => 'Aktionen',
+	'445a0d6e' => 'Herunterladen',
+	'8fd9c7ef' => 'Speichern',
+	'0f0f9344' => 'B',
+	'4cbee36c' => 'Belegt',
+	'882cc3ca' => 'Warnung',
+	'f0823f1d' => 'Tipp',
+	'4ab31b94' => 'Sicherung im Ordner <b>backups</b> Ihres FTP gespeichert',
+	'f512948d' => 'Monitoring',
 ];

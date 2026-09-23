@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -180,7 +181,9 @@ class Email extends Library
 		if (!$emails_module || !$emails_module->is_enabled())
 		{
 			// Module emails pas installé / désactivé → fallback silencieux : le caller pourra utiliser ->subject()/->message()
-			$this->_error = 'Le module Emails est désactivé.';
+			// Les messages d'erreur restent des objets de traduction (résolus à l'affichage) : un envoi
+			// peut partir d'un contexte où la langue n'est pas encore choisie.
+			$this->_error = $this->lang('Le module Emails est désactivé.');
 			return $this;
 		}
 
@@ -189,7 +192,7 @@ class Email extends Library
 		$template = $model->get_by_key($key);
 		if (!$template)
 		{
-			$this->_error = 'Template email introuvable : '.$key;
+			$this->_error = $this->lang('Modèle d\'e-mail introuvable : %s', $key);
 			return $this;
 		}
 
@@ -203,7 +206,7 @@ class Email extends Library
 		$translation = $model->get_translation($template['template_id'], $lang);
 		if (!$translation)
 		{
-			$this->_error = 'Traduction du template « '.$key.' » introuvable pour la langue « '.$lang.' ».';
+			$this->_error = $this->lang('Traduction du modèle d\'e-mail « %s » introuvable pour la langue « %s ».', $key, $lang);
 			return $this;
 		}
 
@@ -248,13 +251,24 @@ class Email extends Library
 
 	public function send()
 	{
+		// Site de démonstration : rien ne part. Une démo ouverte, où n'importe qui peut composer un
+		// message et choisir ses destinataires, est un relais de courrier offert au premier venu —
+		// avec le nom de domaine du projet en expéditeur. On rend TRUE pour que les écrans se
+		// comportent normalement (« message envoyé ») : c'est une démonstration, pas un envoi.
+		if (nf_demo())
+		{
+			error_log('[demo] envoi de courrier ignoré : '.$this->_subject);
+
+			return TRUE;
+		}
+
 		if (!$this->_to || !$this->_subject || !$this->_view)
 		{
 			$missing = [];
-			if (!$this->_to)      $missing[] = 'destinataire';
-			if (!$this->_subject) $missing[] = 'sujet';
-			if (!$this->_view)    $missing[] = 'corps';
-			$this->_error = $this->_error ?: 'Email incomplet ('.implode(', ', $missing).' manquant).';
+			if (!$this->_to)      $missing[] = $this->lang('destinataire');
+			if (!$this->_subject) $missing[] = $this->lang('sujet');
+			if (!$this->_view)    $missing[] = $this->lang('corps du message');
+			$this->_error = $this->_error ?: $this->lang('E-mail incomplet, il manque : %s.', implode(', ', $missing));
 
 			return FALSE;
 		}
@@ -407,7 +421,7 @@ class Email extends Library
 		{
 			if (time() - (int) substr($cached, 5) < 600)
 			{
-				$this->_error = 'Aucun transport email disponible sur cet hébergement (détection récente en échec).';
+				$this->_error = $this->lang('Aucun moyen d\'envoi d\'e-mail disponible sur cet hébergement (détection récente en échec).');
 				return FALSE;
 			}
 			$cached = '';
@@ -439,7 +453,7 @@ class Email extends Library
 				$PHPMailer->Timeout     = 5; // ne pas bloquer si le relais est absent
 			}
 
-			$this->_transport = $transport === 'mail' ? 'mail()' : 'SMTP local '.$transport;
+			$this->_transport = $transport === 'mail' ? 'mail()' : $this->lang('SMTP local %s', $transport);
 
 			if (@$PHPMailer->send())
 			{

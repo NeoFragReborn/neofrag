@@ -1,0 +1,24 @@
+<?php
+
+/*
+ * GABARIT — ce fichier n'est jamais lu. Le vrai `config/neofrag.php` est écrit par l'installateur,
+ * et c'est le SEUL fichier de ce dossier que `index.php` charge directement.
+ *
+ * Les six interrupteurs, tous à FALSE sur un site en service :
+ *
+ *   NEOFRAG_DEBUG_BAR   la barre de débogage en bas de page. À TRUE, elle affiche les requêtes,
+ *                       le temps et la mémoire — et elle RELANCE les exceptions au lieu de les
+ *                       avaler, ce qui rend visibles les modules qui tombent en silence.
+ *   NEOFRAG_SAFE_MODE   démarre sans les addons, pour rattraper une installation qui ne répond plus.
+ *   NEOFRAG_DEMO        mode démonstration : les modules sensibles refusent l'écriture.
+ *   NEOFRAG_LOGS        journalise les requêtes servies.
+ *   NEOFRAG_LOGS_DB     journalise les requêtes SQL. Volumineux.
+ *   NEOFRAG_LOGS_I18N   journalise les clés de traduction introuvables. Utile en traduisant.
+ */
+
+define('NEOFRAG_DEBUG_BAR', FALSE);
+define('NEOFRAG_SAFE_MODE', FALSE);
+define('NEOFRAG_DEMO',      FALSE);
+define('NEOFRAG_LOGS',      FALSE);
+define('NEOFRAG_LOGS_DB',   FALSE);
+define('NEOFRAG_LOGS_I18N', FALSE);

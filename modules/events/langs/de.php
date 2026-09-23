@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -126,4 +127,35 @@ return [
 	'fab41cdd' => 'Wiederholung: Gesamtzahl der Vorkommen (max. %d).',
 	'ef1ccb4f' => 'Serie von %d Veranstaltungen erstellt',
 	'e3ad390b' => 'Vorkommen einer wiederkehrenden Serie',
+	'62c86d0f' => 'Die ganze Serie löschen',
+	'7ba70fe8' => 'Auf alle Termine der Serie anwenden (%d)',
+	'236bba4c' => 'Titel, Typ, Beschreibungen, Ort, Bild und Veröffentlichung werden auf jeden Termin übertragen. Die DATEN nicht: Sie sind es, die einen Termin vom nächsten unterscheiden.',
+	'eb67ff64' => 'Serie aktualisiert: %d Termine. Jeder behält seine eigenen Daten.',
+	'5f5c0a0f' => 'Serie löschen',
+	'7a113c7e' => 'Den <b>einzigen Termin</b> der Serie löschen, zu der <b>%2$s</b> gehört?|Alle <b>%1$d Termine</b> der Serie löschen, zu der <b>%2$s</b> gehört? Sie werden samt ihren Kommentaren und Teilnahmen entfernt.',
+	'a5bb9f79' => 'Einladungen',
+	'9bd148d6' => 'Geplant für %s',
+	'f0b7b5b5' => 'Veröffentlichungsdatum',
+	'94949a27' => 'Team',
+	'3c19f7aa' => 'Gegner',
+	'37f8e895' => 'Modus',
+	'2687aad0' => 'Geben Sie eine Website an, die über das Event berichtet',
+	'7b15d0f9' => 'Karte',
+	'a6f67ef4' => 'Unser Ergebnis',
+	'909b29bc' => 'Ergebnis des Gegners',
+	'f5655ff7' => 'Mitglieder einladen',
+	'1f3ae63f' => 'Erinnerung!',
+	'3cfda0fd' => 'Vergessen Sie nicht, Ihren Mitgliedern die Teilnahmeanfragen zu senden!',
+	'15fc3f17' => 'Keine Runden eingetragen',
+	'5f0de8cd' => 'Automatische Nachricht.',
+	'35ceefe3' => 'Sie sind eingeladen, am Event <b>%s</b> teilzunehmen.',
+	'1d83ca5f' => 'Um Ihre Verfügbarkeit anzugeben, <a href="%s">klicken Sie hier</a>.',
+	'c3890ba2' => 'Einladung zum Event: %s',
+	'a03a35b6' => 'Modus: %s',
+	'7d714567' => 'Details der Runden',
+	'bfa7126c' => 'Runde %d',
+	'9111f8c2' => 'Übertragung auf Twitch',
+	'64eda44a' => 'Hier wird darüber berichtet',
+	'04fb541f' => 'Dauer',
+	'bbc46366' => 'Einladen',
 ];

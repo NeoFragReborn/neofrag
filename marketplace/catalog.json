@@ -1,9 +1,9 @@
 {
     "schema": 1,
     "project": "NeoFrag Reborn",
-    "base_version": "1.0.0",
-    "generated_at": "2026-06-17T15:39:48+00:00",
-    "count": 52,
+    "base_version": "1.1.0",
+    "generated_at": "2026-09-23T04:45:23+00:00",
+    "count": 61,
     "addons": [
         {
             "type": "module",
@@ -12,13 +12,37 @@
             "category": "monetisation",
             "title": "Régie publicitaire",
             "description": "Bannières et blocs HTML par emplacement, masqués pour les membres sans-pub / VIP.",
+            "i18n": {
+                "en": {
+                    "title": "Ad management",
+                    "description": "Banners and HTML blocks per placement, hidden for ad-free / VIP members."
+                },
+                "de": {
+                    "title": "Werbeverwaltung",
+                    "description": "Banner und HTML-Blöcke pro Platzierung, ausgeblendet für werbefreie / VIP-Mitglieder."
+                },
+                "es": {
+                    "title": "Gestión publicitaria",
+                    "description": "Banners y bloques HTML por emplazamiento, ocultos para los miembros sin publicidad / VIP."
+                },
+                "it": {
+                    "title": "Gestione pubblicitaria",
+                    "description": "Banner e blocchi HTML per posizione, nascosti per i membri senza pubblicità / VIP."
+                },
+                "pt": {
+                    "title": "Gestão publicitária",
+                    "description": "Banners e blocos HTML por local, ocultos para os membros sem publicidade / VIP."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/ads.zip",
-            "size": 8572,
-            "sha256": "89d71b9fed4e1bad17cec9ebbca1d57266eb200dddcbab5cef9cbb5f433dc940",
+            "preview": "modules/ads.jpg",
+            "size": 31185,
+            "sha256": "d37a8bcc14325cc52975002f3075cc9ef24317c7323a45a8ca09ccb5dbc36921",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -33,13 +57,37 @@
             "category": "contenu",
             "title": "Articles",
             "description": "Articles longs avec catégories, tags, sommaire automatique et temps de lecture.",
+            "i18n": {
+                "en": {
+                    "title": "Articles",
+                    "description": "Long-form articles with categories, tags, automatic summary and reading time."
+                },
+                "de": {
+                    "title": "Artikel",
+                    "description": "Lange Artikel mit Kategorien, Tags, automatischer Zusammenfassung und Lesezeit."
+                },
+                "es": {
+                    "title": "Artículos",
+                    "description": "Artículos largos con categorías, etiquetas, resumen automático y tiempo de lectura."
+                },
+                "it": {
+                    "title": "Articoli",
+                    "description": "Articoli lunghi con categorie, tag, sommario automatico e tempo di lettura."
+                },
+                "pt": {
+                    "title": "Artigos",
+                    "description": "Artigos longos com categorias, tags, resumo automático e tempo de leitura."
+                }
+            },
             "version": "1.0",
             "author": "user_id",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/articles.zip",
-            "size": 28883,
-            "sha256": "33195b90d7266ca6093382747e3797cd0f67118d5ec83869839f32a57cac19b9",
+            "preview": "modules/articles.jpg",
+            "size": 63535,
+            "sha256": "a45fdf8ca1bffa7f9e972f4dce626c22a34eb6ee6d5dedba61f618c693bc60ce",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -54,14 +102,41 @@
             "category": "identite",
             "title": "Palmarès",
             "description": "Récompenses (palmarès) attribuables aux membres ou équipes — module gaming.",
+            "i18n": {
+                "en": {
+                    "title": "Awards",
+                    "description": "Awards (palmares) assignable to members or teams — gaming module."
+                },
+                "de": {
+                    "title": "Auszeichnungen",
+                    "description": "Auszeichnungen (Palmarès), zuweisbar an Mitglieder oder Teams — Gaming-Modul."
+                },
+                "es": {
+                    "title": "Palmarés",
+                    "description": "Premios (palmarés) asignables a miembros o equipos — módulo gaming."
+                },
+                "it": {
+                    "title": "Palmares",
+                    "description": "Premi (palmares) assegnabili a membri o squadre — modulo gaming."
+                },
+                "pt": {
+                    "title": "Palmarés",
+                    "description": "Prêmios (palmares) atribuíveis a membros ou equipes — módulo gaming."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/awards.zip",
-            "size": 18855,
-            "sha256": "9ac42b2dbb17f4ef3564f6c57e73d6ebee259ff807eb6f6690fb089daa2cd349",
+            "preview": "modules/awards.jpg",
+            "size": 46529,
+            "sha256": "c5809577f12897e4d4804fce018bc5daa0ef8d510ef507d926e683df9a776415",
             "requires": {
-                "base": ">=1.0.0",
-                "addons": []
+                "base": ">=1.1.0",
+                "addons": [
+                    "teams",
+                    "games"
+                ]
             },
             "provides_widgets": [
                 "awards"
@@ -75,13 +150,37 @@
             "category": "contenu",
             "title": "Bugtracker",
             "description": "Suivi de bugs et tickets internes avec types, priorités et statuts configurables.",
+            "i18n": {
+                "en": {
+                    "title": "Bug tracker",
+                    "description": "Bug and internal ticket tracking with configurable types, priorities and statuses."
+                },
+                "de": {
+                    "title": "Bug-Tracker",
+                    "description": "Bug- und interne Ticket-Verfolgung mit konfigurierbaren Typen, Prioritäten und Status."
+                },
+                "es": {
+                    "title": "Gestor de errores",
+                    "description": "Seguimiento de errores y tickets internos con tipos, prioridades y estados configurables."
+                },
+                "it": {
+                    "title": "Bug tracker",
+                    "description": "Tracciamento di bug e ticket interni con tipi, priorità e stati configurabili."
+                },
+                "pt": {
+                    "title": "Gestor de bugs",
+                    "description": "Acompanhamento de bugs e tickets internos com tipos, prioridades e estados configuráveis."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/bugtracker.zip",
-            "size": 15731,
-            "sha256": "c79902c6709aed004ccd1209d840cab9ea9e4e7f7a8baa44f73d4f016439df60",
+            "preview": "modules/bugtracker.jpg",
+            "size": 47841,
+            "sha256": "0985e8501a39c3aa8f6b6a6be12bf7a80da42bd5c894717cb06dc80687baf8fc",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -94,13 +193,37 @@
             "category": "identite",
             "title": "Calendrier",
             "description": "Calendrier d'événements avec export iCal RFC 5545.",
+            "i18n": {
+                "en": {
+                    "title": "Calendar",
+                    "description": "Event calendar with iCal RFC 5545 export."
+                },
+                "de": {
+                    "title": "Kalender",
+                    "description": "Event-Kalender mit iCal-Export RFC 5545."
+                },
+                "es": {
+                    "title": "Calendario",
+                    "description": "Calendario de eventos con exportación iCal RFC 5545."
+                },
+                "it": {
+                    "title": "Calendario",
+                    "description": "Calendario eventi con esportazione iCal RFC 5545."
+                },
+                "pt": {
+                    "title": "Calendário",
+                    "description": "Calendário de eventos com exportação iCal RFC 5545."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/calendar.zip",
-            "size": 12468,
-            "sha256": "80b86ddce4403dff6aaf4fb56f21ea5827c840d553c05a28b6cee44ba549256b",
+            "preview": "modules/calendar.jpg",
+            "size": 35703,
+            "sha256": "998b3ec2625a276030f5ca11a54799534179c3f86dc34b56d7e2e73c4e1d1a17",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -115,13 +238,37 @@
             "category": "contenu",
             "title": "Petites annonces",
             "description": "Annonces entre membres (offres / demandes) classées par catégorie, avec contact vendeur.",
+            "i18n": {
+                "en": {
+                    "title": "Classifieds",
+                    "description": "Member-to-member ads (offers / wanted) sorted by category, with seller contact."
+                },
+                "de": {
+                    "title": "Kleinanzeigen",
+                    "description": "Anzeigen zwischen Mitgliedern (Angebote / Gesuche) nach Kategorie sortiert, mit Verkäuferkontakt."
+                },
+                "es": {
+                    "title": "Anuncios clasificados",
+                    "description": "Anuncios entre miembros (ofertas / demandas) clasificados por categoría, con contacto del vendedor."
+                },
+                "it": {
+                    "title": "Annunci",
+                    "description": "Annunci tra membri (offerte / richieste) ordinati per categoria, con contatto del venditore."
+                },
+                "pt": {
+                    "title": "Classificados",
+                    "description": "Anúncios entre membros (ofertas / procuras) organizados por categoria, com contacto do vendedor."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/classifieds.zip",
-            "size": 17567,
-            "sha256": "e5846165027d92b17f253cc5f2f994362f438ab8de84d5b47024eb9d7b6c1754",
+            "preview": "modules/classifieds.jpg",
+            "size": 45604,
+            "sha256": "17d104d264fbca2a9d4713042f9bacd58c50dc27e73a6d8368446697f0ca0f30",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -134,13 +281,37 @@
             "category": "monetisation",
             "title": "Dons",
             "description": "Système de campagnes de dons avec objectif, barre de progression, liste de donateurs et bouton PayPal.",
+            "i18n": {
+                "en": {
+                    "title": "Donations",
+                    "description": "Donation campaign system with goal, progress bar, donor list and PayPal button."
+                },
+                "de": {
+                    "title": "Spenden",
+                    "description": "Spendenkampagnen-System mit Ziel, Fortschrittsbalken, Spenderliste und PayPal-Button."
+                },
+                "es": {
+                    "title": "Donaciones",
+                    "description": "Sistema de campañas de donación con objetivo, barra de progreso, lista de donantes y botón de PayPal."
+                },
+                "it": {
+                    "title": "Donazioni",
+                    "description": "Sistema di campagne di donazione con obiettivo, barra di progresso, elenco di donatori e pulsante PayPal."
+                },
+                "pt": {
+                    "title": "Doações",
+                    "description": "Sistema de campanhas de doação com objetivo, barra de progresso, lista de doadores e botão PayPal."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "modules/donations.zip",
-            "size": 23769,
-            "sha256": "df7f4c88c6bbcd7f86a7b3cc255d5f417c95428f87b8303e35ac63e2266a51c4",
+            "preview": "modules/donations.jpg",
+            "size": 60466,
+            "sha256": "dc1943c83e335bf3e858e1717842957576120ecf2337e786f70f7fbceb7ed3eb",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -155,13 +326,37 @@
             "category": "contenu",
             "title": "Téléchargements",
             "description": "Bibliothèque de fichiers à télécharger avec catégories, version et compteur.",
+            "i18n": {
+                "en": {
+                    "title": "Downloads",
+                    "description": "Library of downloadable files with categories, version and counter."
+                },
+                "de": {
+                    "title": "Downloads",
+                    "description": "Bibliothek herunterladbarer Dateien mit Kategorien, Version und Zähler."
+                },
+                "es": {
+                    "title": "Descargas",
+                    "description": "Biblioteca de archivos descargables con categorías, versión y contador."
+                },
+                "it": {
+                    "title": "Download",
+                    "description": "Libreria di file scaricabili con categorie, versione e contatore."
+                },
+                "pt": {
+                    "title": "Transferências",
+                    "description": "Biblioteca de arquivos para download com categorias, versão e contador."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/downloads.zip",
-            "size": 16645,
-            "sha256": "a0c134503b506c4ce34c5122d92c0f695ba93f90242ad34148a3202ff0d0cf2d",
+            "preview": "modules/downloads.jpg",
+            "size": 48842,
+            "sha256": "1b9956eb2866c385e0b73ac8661f81e54796ca4e7bfc41d6a0785feb46c9fecd",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -171,19 +366,89 @@
         },
         {
             "type": "module",
+            "name": "emojis",
+            "tier": 2,
+            "category": "contenu",
+            "title": "Emojis",
+            "description": "Emojis personnalisés (`:nom:`) uploadés en admin, rendus dans tout le contenu.",
+            "i18n": {
+                "en": {
+                    "title": "Emojis",
+                    "description": "Custom emojis (`:name:`) uploaded in admin, rendered across all content."
+                },
+                "de": {
+                    "title": "Emojis",
+                    "description": "Benutzerdefinierte Emojis (`:name:`), im Admin hochgeladen, überall im Inhalt gerendert."
+                },
+                "es": {
+                    "title": "Emojis",
+                    "description": "Emojis personalizados (`:nombre:`) subidos en admin, renderizados en todo el contenido."
+                },
+                "it": {
+                    "title": "Emoji",
+                    "description": "Emoji personalizzati (`:nome:`) caricati in admin, resi in tutti i contenuti."
+                },
+                "pt": {
+                    "title": "Emojis",
+                    "description": "Emojis personalizados (`:nome:`) carregados no admin, renderizados em todo o conteúdo."
+                }
+            },
+            "version": "1.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
+            "file": "modules/emojis.zip",
+            "preview": "modules/emojis.jpg",
+            "size": 30528,
+            "sha256": "a55a664f6d550ceb9074bbd0621207b92b903a53f48fd4275b4fcc6e2799377d",
+            "requires": {
+                "base": ">=1.1.0",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "module",
             "name": "events",
             "tier": 1,
             "category": "identite",
             "title": "Événements gaming",
             "description": "Événements et tournois — planning, participants, types — module gaming.",
+            "i18n": {
+                "en": {
+                    "title": "Gaming events",
+                    "description": "Events and tournaments — schedule, participants, types — gaming module."
+                },
+                "de": {
+                    "title": "Gaming-Events",
+                    "description": "Events und Turniere — Zeitplan, Teilnehmer, Typen — Gaming-Modul."
+                },
+                "es": {
+                    "title": "Eventos de gaming",
+                    "description": "Eventos y torneos — planificación, participantes, tipos — módulo de gaming."
+                },
+                "it": {
+                    "title": "Eventi gaming",
+                    "description": "Eventi e tornei — programma, partecipanti, tipi — modulo gaming."
+                },
+                "pt": {
+                    "title": "Eventos de gaming",
+                    "description": "Eventos e torneios — programação, participantes, tipos — módulo de gaming."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/events.zip",
-            "size": 139089,
-            "sha256": "086769d1066c4b369b1eb153e0273e8c47cfc1a9f839b093534143d8e5c90d6e",
+            "preview": "modules/events.jpg",
+            "size": 192118,
+            "sha256": "bbf37a8af1e0eefe0bdbc3f75109af54e816d30b12b7171d3bdec76692da56ff",
             "requires": {
-                "base": ">=1.0.0",
-                "addons": []
+                "base": ">=1.1.0",
+                "addons": [
+                    "games",
+                    "teams"
+                ]
             },
             "provides_widgets": [
                 "events"
@@ -197,13 +462,37 @@
             "category": "contenu",
             "title": "FAQ",
             "description": "Foire aux questions catégorisée affichée en accordéon Bootstrap.",
+            "i18n": {
+                "en": {
+                    "title": "FAQ",
+                    "description": "Categorised frequently asked questions shown as a Bootstrap accordion."
+                },
+                "de": {
+                    "title": "FAQ",
+                    "description": "Nach Kategorien geordnete häufige Fragen, als Bootstrap-Akkordeon angezeigt."
+                },
+                "es": {
+                    "title": "Preguntas frecuentes",
+                    "description": "Preguntas frecuentes por categorías mostradas en acordeón de Bootstrap."
+                },
+                "it": {
+                    "title": "FAQ",
+                    "description": "Domande frequenti suddivise per categoria, mostrate come accordion Bootstrap."
+                },
+                "pt": {
+                    "title": "FAQ",
+                    "description": "Perguntas frequentes por categorias apresentadas em acordeão Bootstrap."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/faq.zip",
-            "size": 13239,
-            "sha256": "0bf7f8f65c4c089799400e028e9196efbf3a5edf4efae2e74ad8ab56242b7d28",
+            "preview": "modules/faq.jpg",
+            "size": 32381,
+            "sha256": "a2f885ea3c85033163ae2951bc216594472186df63b78e663d8ee5d3eb718aaf",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -216,14 +505,41 @@
             "category": "contenu",
             "title": "Flux RSS",
             "description": "Flux RSS 2.0 des actualités et articles.",
+            "i18n": {
+                "en": {
+                    "title": "RSS feed",
+                    "description": "RSS 2.0 feed of news and articles."
+                },
+                "de": {
+                    "title": "RSS-Feed",
+                    "description": "RSS-2.0-Feed der News und Artikel."
+                },
+                "es": {
+                    "title": "Fuente RSS",
+                    "description": "Fuente RSS 2.0 de noticias y artículos."
+                },
+                "it": {
+                    "title": "Feed RSS",
+                    "description": "Feed RSS 2.0 di notizie e articoli."
+                },
+                "pt": {
+                    "title": "Feed RSS",
+                    "description": "Feed RSS 2.0 de notícias e artigos."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/feeds.zip",
-            "size": 3679,
-            "sha256": "c6c79edc3b02d4ada28298e730ffe37c9e63b49b0732e3796358b6869d593194",
+            "preview": "modules/feeds.jpg",
+            "size": 28398,
+            "sha256": "22f63f60e0aeaaef03ab5b6084992b4509f988c6dd77445724f74e18c907cf48",
             "requires": {
-                "base": ">=1.0.0",
-                "addons": []
+                "base": ">=1.1.0",
+                "addons": [
+                    "news",
+                    "articles"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -235,13 +551,37 @@
             "category": "identite",
             "title": "Forum",
             "description": "Forum communautaire avec catégories, sous-forums, sujets épinglés et permissions.",
+            "i18n": {
+                "en": {
+                    "title": "Forum",
+                    "description": "Community forum with categories, subforums, pinned topics and permissions."
+                },
+                "de": {
+                    "title": "Forum",
+                    "description": "Community-Forum mit Kategorien, Unterforen, angehefteten Themen und Berechtigungen."
+                },
+                "es": {
+                    "title": "Foro",
+                    "description": "Foro comunitario con categorías, subforos, temas fijados y permisos."
+                },
+                "it": {
+                    "title": "Forum",
+                    "description": "Forum della comunità con categorie, sottoforum, argomenti fissati e permessi."
+                },
+                "pt": {
+                    "title": "Fórum",
+                    "description": "Fórum comunitário com categorias, subfóruns, tópicos fixados e permissões."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/forum.zip",
-            "size": 93353,
-            "sha256": "f342364c97febe5972e6557dec92452e224c47ce1688689c4b14c19f7030319a",
+            "preview": "modules/forum.jpg",
+            "size": 128868,
+            "sha256": "1bbf518e770f6313e61d9b59d2f7232530eb5648bc1ee87b1e1ddee84bff641b",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -256,13 +596,37 @@
             "category": "identite",
             "title": "Galeries",
             "description": "Galerie photos avec albums, thumbnails et descriptions.",
+            "i18n": {
+                "en": {
+                    "title": "Galleries",
+                    "description": "Photo gallery with albums, thumbnails and descriptions."
+                },
+                "de": {
+                    "title": "Galerien",
+                    "description": "Fotogalerie mit Alben, Vorschaubildern und Beschreibungen."
+                },
+                "es": {
+                    "title": "Galerías",
+                    "description": "Galería de fotos con álbumes, miniaturas y descripciones."
+                },
+                "it": {
+                    "title": "Gallerie",
+                    "description": "Galleria fotografica con album, miniature e descrizioni."
+                },
+                "pt": {
+                    "title": "Galerias",
+                    "description": "Galeria de fotos com álbuns, miniaturas e descrições."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/gallery.zip",
-            "size": 48004,
-            "sha256": "b9ee8058ecfafa60b0def87fabae27e08f1d9724dc254e7f197e4a5148ef0ee1",
+            "preview": "modules/gallery.jpg",
+            "size": 92378,
+            "sha256": "44a250f7b44b29145c16a00cafbd792be64c00068de68c6947e3f5899e0e885f",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -277,13 +641,37 @@
             "category": "identite",
             "title": "Jeux / Cartes",
             "description": "Catalogue de jeux pratiqués — module gaming.",
+            "i18n": {
+                "en": {
+                    "title": "Games / maps",
+                    "description": "Catalog of games played — gaming module."
+                },
+                "de": {
+                    "title": "Spiele / Karten",
+                    "description": "Katalog gespielter Spiele — Gaming-Modul."
+                },
+                "es": {
+                    "title": "Juegos / mapas",
+                    "description": "Catálogo de juegos practicados — módulo de gaming."
+                },
+                "it": {
+                    "title": "Giochi / mappe",
+                    "description": "Catalogo dei giochi praticati — modulo gaming."
+                },
+                "pt": {
+                    "title": "Jogos / mapas",
+                    "description": "Catálogo de jogos jogados — módulo de gaming."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/games.zip",
-            "size": 14790,
-            "sha256": "3d02d2c1ae2d9794131e375dc8b7a0361a65e218ac4679151862f8106e7d7f5a",
+            "preview": "modules/games.jpg",
+            "size": 62463,
+            "sha256": "7821bd7e6f9d342f3d12c84235f3b15b3f58698f2a9fb743ba0b90758ef3fab5",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -296,13 +684,80 @@
             "category": "identite",
             "title": "Gamification",
             "description": "Karma, points et VIP. Réputation et monnaie virtuelle dérivées de l'activité (barème réglable).",
+            "i18n": {
+                "en": {
+                    "title": "Gamification",
+                    "description": "Karma, points and VIP. Reputation and virtual currency derived from activity (adjustable scale)."
+                },
+                "de": {
+                    "title": "Gamification",
+                    "description": "Karma, Punkte und VIP. Reputation und virtuelle Währung abgeleitet aus der Aktivität (einstellbares Schema)."
+                },
+                "es": {
+                    "title": "Gamificación",
+                    "description": "Karma, puntos y VIP. Reputación y moneda virtual derivadas de la actividad (baremo ajustable)."
+                },
+                "it": {
+                    "title": "Gamification",
+                    "description": "Karma, punti e VIP. Reputazione e valuta virtuale derivate dall'attività (tabella regolabile)."
+                },
+                "pt": {
+                    "title": "Gamificação",
+                    "description": "Karma, pontos e VIP. Reputação e moeda virtual derivadas da atividade (tabela ajustável)."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/gamification.zip",
-            "size": 9093,
-            "sha256": "04597265cada1f1faf5e7ce6ffcb624914a6a727bf2c6ba3fc145aab844a7c6e",
+            "preview": "modules/gamification.jpg",
+            "size": 40732,
+            "sha256": "dec25c63c13cfe63ba049fb6be0c9c9399d7cc770cb336caf3b64f8f587c1b13",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "module",
+            "name": "glossary",
+            "tier": 2,
+            "category": "contenu",
+            "title": "Dictionnaire",
+            "description": "Lexique des termes de la communauté, rangé par lettre, avec ses synonymes.",
+            "i18n": {
+                "en": {
+                    "title": "Glossary",
+                    "description": "A glossary of the community's terms, ordered by letter, with their synonyms."
+                },
+                "de": {
+                    "title": "Wörterbuch",
+                    "description": "Lexikon der Begriffe der Gemeinschaft, nach Buchstaben geordnet, mit ihren Synonymen."
+                },
+                "es": {
+                    "title": "Diccionario",
+                    "description": "Léxico de los términos de la comunidad, ordenado por letra, con sus sinónimos."
+                },
+                "it": {
+                    "title": "Dizionario",
+                    "description": "Lessico dei termini della comunità, ordinato per lettera, con i suoi sinonimi."
+                },
+                "pt": {
+                    "title": "Dicionário",
+                    "description": "Léxico dos termos da comunidade, ordenado por letra, com os seus sinónimos."
+                }
+            },
+            "version": "1.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
+            "file": "modules/glossary.zip",
+            "preview": "modules/glossary.jpg",
+            "size": 55504,
+            "sha256": "2a56cd9d24cd23188c687ac79e39223de285f03b9a29586c6e3897e2567480dd",
+            "requires": {
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -315,13 +770,37 @@
             "category": "contenu",
             "title": "Livre d'or",
             "description": "Livre d'or avec modération admin et rate-limit anti-spam.",
+            "i18n": {
+                "en": {
+                    "title": "Guestbook",
+                    "description": "Guestbook with admin moderation and anti-spam rate-limit."
+                },
+                "de": {
+                    "title": "Gästebuch",
+                    "description": "Gästebuch mit Admin-Moderation und Anti-Spam-Rate-Limit."
+                },
+                "es": {
+                    "title": "Libro de visitas",
+                    "description": "Libro de visitas con moderación admin y rate-limit antispam."
+                },
+                "it": {
+                    "title": "Libro degli ospiti",
+                    "description": "Guestbook con moderazione admin e rate-limit anti-spam."
+                },
+                "pt": {
+                    "title": "Livro de visitas",
+                    "description": "Livro de visitas com moderação admin e rate-limit anti-spam."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/guestbook.zip",
-            "size": 13671,
-            "sha256": "53295e16fb51f9f6f35cfaed673292e40de288782f7fa50089436e200cdfd7b4",
+            "preview": "modules/guestbook.jpg",
+            "size": 26516,
+            "sha256": "8444cb3fbfbca31b1333e7224e2822d6e47ec6ec1d77b9483cf2b1ac3ea6fa35",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -336,13 +815,37 @@
             "category": "contenu",
             "title": "Annuaire de liens",
             "description": "Annuaire de liens externes catégorisés avec redirection trackée et compteur de clics.",
+            "i18n": {
+                "en": {
+                    "title": "Link directory",
+                    "description": "Directory of categorized external links with tracked redirection and click counter."
+                },
+                "de": {
+                    "title": "Linkverzeichnis",
+                    "description": "Verzeichnis kategorisierter externer Links mit Tracking-Weiterleitung und Klickzähler."
+                },
+                "es": {
+                    "title": "Directorio de enlaces",
+                    "description": "Directorio de enlaces externos categorizados con redirección rastreada y contador de clics."
+                },
+                "it": {
+                    "title": "Elenco link",
+                    "description": "Directory di link esterni categorizzati con reindirizzamento tracciato e contatore di clic."
+                },
+                "pt": {
+                    "title": "Diretório de ligações",
+                    "description": "Diretório de links externos categorizados com redirecionamento rastreado e contador de cliques."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/links.zip",
-            "size": 14160,
-            "sha256": "d3ff597bd2d30a3a8ef05cdf640a06cffd10fe540ce83d6fced1cda9d04c1c4b",
+            "preview": "modules/links.jpg",
+            "size": 36983,
+            "sha256": "c3ddbcddafc8d731e748dbcda3eac592dea0270cab800986bada0c67fa8ae683",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -357,13 +860,37 @@
             "category": "identite",
             "title": "Actualités",
             "description": "Actualités du site avec catégories et commentaires.",
+            "i18n": {
+                "en": {
+                    "title": "News",
+                    "description": "Site news with categories and comments."
+                },
+                "de": {
+                    "title": "News",
+                    "description": "Site-News mit Kategorien und Kommentaren."
+                },
+                "es": {
+                    "title": "Noticias",
+                    "description": "Noticias del sitio con categorías y comentarios."
+                },
+                "it": {
+                    "title": "Notizie",
+                    "description": "Notizie del sito con categorie e commenti."
+                },
+                "pt": {
+                    "title": "Notícias",
+                    "description": "Notícias do site com categorias e comentários."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/news.zip",
-            "size": 34650,
-            "sha256": "71f845727be9115804090aa115966d71ad302629e941b79d01d864d0af75e61f",
+            "preview": "modules/news.jpg",
+            "size": 74201,
+            "sha256": "7e4519aa6ae12409db787fb686ad34d07a64f74d7efe555d9d5f1f5dc4948dbe",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -378,13 +905,37 @@
             "category": "monetisation",
             "title": "Newsletter",
             "description": "Inscription à la newsletter (double opt-in) et envoi de campagnes.",
+            "i18n": {
+                "en": {
+                    "title": "Newsletter",
+                    "description": "Newsletter signup (double opt-in) and campaign sending."
+                },
+                "de": {
+                    "title": "Newsletter",
+                    "description": "Newsletter-Anmeldung (Double Opt-in) und Kampagnenversand."
+                },
+                "es": {
+                    "title": "Boletín",
+                    "description": "Suscripción al boletín (doble opt-in) y envío de campañas."
+                },
+                "it": {
+                    "title": "Newsletter",
+                    "description": "Iscrizione alla newsletter (double opt-in) e invio di campagne."
+                },
+                "pt": {
+                    "title": "Newsletter",
+                    "description": "Inscrição na newsletter (double opt-in) e envio de campanhas."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/newsletter.zip",
-            "size": 29291,
-            "sha256": "08bd762ebbf324a8b36dc88a22421e7d1d8f6db432f30036e0b8ce485212e9a7",
+            "preview": "modules/newsletter.jpg",
+            "size": 58134,
+            "sha256": "ededa311a6c539dbc7d76a60a45739fcf52138e649c4f93457258df989f443ba",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -399,13 +950,37 @@
             "category": "identite",
             "title": "Partenaires",
             "description": "Partenaires et sponsors — module gaming.",
+            "i18n": {
+                "en": {
+                    "title": "Partners",
+                    "description": "Partners and sponsors — gaming module."
+                },
+                "de": {
+                    "title": "Partner",
+                    "description": "Partner und Sponsoren — Gaming-Modul."
+                },
+                "es": {
+                    "title": "Socios",
+                    "description": "Socios y patrocinadores — módulo de gaming."
+                },
+                "it": {
+                    "title": "Partner",
+                    "description": "Partner e sponsor — modulo gaming."
+                },
+                "pt": {
+                    "title": "Parceiros",
+                    "description": "Parceiros e patrocinadores — módulo de gaming."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/partners.zip",
-            "size": 15299,
-            "sha256": "354d5109ed2f41592bbb6f883e60579977bc5db89693607acb7345fc923cfa81",
+            "preview": "modules/partners.jpg",
+            "size": 44886,
+            "sha256": "2656dcb2c68fa841be640916a7ecb1b3785c354f69a84bd80964833e5f6ec5d8",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -420,13 +995,166 @@
             "category": "monetisation",
             "title": "Paiements",
             "description": "Recharge de points et packs VIP via Stripe (argent réel).",
+            "i18n": {
+                "en": {
+                    "title": "Payments",
+                    "description": "Top-up of points and VIP packs via Stripe (real money)."
+                },
+                "de": {
+                    "title": "Zahlungen",
+                    "description": "Aufladung von Punkten und VIP-Paketen über Stripe (echtes Geld)."
+                },
+                "es": {
+                    "title": "Pagos",
+                    "description": "Recarga de puntos y paquetes VIP vía Stripe (dinero real)."
+                },
+                "it": {
+                    "title": "Pagamenti",
+                    "description": "Ricarica di punti e pacchetti VIP tramite Stripe (denaro reale)."
+                },
+                "pt": {
+                    "title": "Pagamentos",
+                    "description": "Recarga de pontos e pacotes VIP via Stripe (dinheiro real)."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/payments.zip",
-            "size": 13996,
-            "sha256": "a5799bff62bc04663df42a73fa22998e8e6234b8996159f97a011d0fd430e3ee",
+            "preview": "modules/payments.jpg",
+            "size": 45742,
+            "sha256": "19f576c79f34a1c5b123718df558180cd1455b2d266a3495a19d7fe23dc2e26f",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "module",
+            "name": "places",
+            "tier": 2,
+            "category": "contenu",
+            "title": "Carte des lieux",
+            "description": "Des lieux situés sur une carte OpenStreetMap, avec leur adresse et leur description.",
+            "i18n": {
+                "en": {
+                    "title": "Places map",
+                    "description": "Places shown on an OpenStreetMap map, with their address and their description."
+                },
+                "de": {
+                    "title": "Ortskarte",
+                    "description": "Orte auf einer OpenStreetMap-Karte, mit ihrer Adresse und ihrer Beschreibung."
+                },
+                "es": {
+                    "title": "Mapa de lugares",
+                    "description": "Lugares situados en un mapa de OpenStreetMap, con su dirección y su descripción."
+                },
+                "it": {
+                    "title": "Mappa dei luoghi",
+                    "description": "Luoghi situati su una mappa OpenStreetMap, con il loro indirizzo e la loro descrizione."
+                },
+                "pt": {
+                    "title": "Mapa de locais",
+                    "description": "Locais situados num mapa OpenStreetMap, com a sua morada e a sua descrição."
+                }
+            },
+            "version": "1.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
+            "file": "modules/places.zip",
+            "preview": "modules/places.jpg",
+            "size": 178079,
+            "sha256": "cf4a72ec8802f53ce73fdd4402cfeaa95d6e01f87a2e9bf7b6c72e682e0790ed",
+            "requires": {
+                "base": ">=1.1.0",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "module",
+            "name": "quotes",
+            "tier": 2,
+            "category": "contenu",
+            "title": "Citations",
+            "description": "Recueil de citations classées, avec leur auteur et leur source.",
+            "i18n": {
+                "en": {
+                    "title": "Quotes",
+                    "description": "A collection of quotes by category, with their author and their source."
+                },
+                "de": {
+                    "title": "Zitate",
+                    "description": "Sammlung geordneter Zitate, mit Autor und Quelle."
+                },
+                "es": {
+                    "title": "Citas",
+                    "description": "Colección de citas clasificadas, con su autor y su fuente."
+                },
+                "it": {
+                    "title": "Citazioni",
+                    "description": "Raccolta di citazioni classificate, con il loro autore e la loro fonte."
+                },
+                "pt": {
+                    "title": "Citações",
+                    "description": "Coletânea de citações classificadas, com o seu autor e a sua fonte."
+                }
+            },
+            "version": "1.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
+            "file": "modules/quotes.zip",
+            "preview": "modules/quotes.jpg",
+            "size": 60012,
+            "sha256": "16545f15c5efb71fa64147186249ab5c406cd3f3424e80a1ee965866637f764e",
+            "requires": {
+                "base": ">=1.1.0",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "module",
+            "name": "recipes",
+            "tier": 2,
+            "category": "contenu",
+            "title": "Recettes",
+            "description": "Recueil de recettes classées, avec leurs ingrédients, leurs étapes et leurs durées.",
+            "i18n": {
+                "en": {
+                    "title": "Recipes",
+                    "description": "A collection of recipes by category, with their ingredients, their steps and their times."
+                },
+                "de": {
+                    "title": "Rezepte",
+                    "description": "Sammlung geordneter Rezepte, mit Zutaten, Schritten und Zeiten."
+                },
+                "es": {
+                    "title": "Recetas",
+                    "description": "Colección de recetas clasificadas, con sus ingredientes, sus pasos y sus tiempos."
+                },
+                "it": {
+                    "title": "Ricette",
+                    "description": "Raccolta di ricette classificate, con i loro ingredienti, i loro passaggi e i loro tempi."
+                },
+                "pt": {
+                    "title": "Receitas",
+                    "description": "Coletânea de receitas classificadas, com os seus ingredientes, os seus passos e os seus tempos."
+                }
+            },
+            "version": "1.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
+            "file": "modules/recipes.zip",
+            "preview": "modules/recipes.jpg",
+            "size": 53021,
+            "sha256": "8caa71427adb388bf6540f72a383d0f505d61928812542d55af7549436c7dd42",
+            "requires": {
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -439,18 +1167,88 @@
             "category": "identite",
             "title": "Recrutements",
             "description": "Recrutement de joueurs avec candidatures et système de votes — module gaming.",
+            "i18n": {
+                "en": {
+                    "title": "Recruitments",
+                    "description": "Player recruitment with applications and voting system — gaming module."
+                },
+                "de": {
+                    "title": "Rekrutierungen",
+                    "description": "Spielerrekrutierung mit Bewerbungen und Abstimmungssystem — Gaming-Modul."
+                },
+                "es": {
+                    "title": "Reclutamientos",
+                    "description": "Reclutamiento de jugadores con solicitudes y sistema de votación — módulo de gaming."
+                },
+                "it": {
+                    "title": "Reclutamenti",
+                    "description": "Reclutamento di giocatori con candidature e sistema di voto — modulo gaming."
+                },
+                "pt": {
+                    "title": "Recrutamentos",
+                    "description": "Recrutamento de jogadores com candidaturas e sistema de votação — módulo de gaming."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/recruits.zip",
-            "size": 40692,
-            "sha256": "9b76341e603de8ef8aa5facecb08af2d3fa76d7d5280286dcfc2f1df40d13c19",
+            "preview": "modules/recruits.jpg",
+            "size": 73865,
+            "sha256": "41915a3b0c7d0a0c38d252980cd47848421f1ec0425d3fb6ef579a054ef09cb4",
             "requires": {
-                "base": ">=1.0.0",
-                "addons": []
+                "base": ">=1.1.0",
+                "addons": [
+                    "teams",
+                    "games"
+                ]
             },
             "provides_widgets": [
                 "recruits"
             ],
+            "install": "zip"
+        },
+        {
+            "type": "module",
+            "name": "sandbox",
+            "tier": 2,
+            "category": "contenu",
+            "title": "Bac à sable",
+            "description": "Un endroit pour essayer la mise en forme et voir ce que le site en fait, sans rien publier.",
+            "i18n": {
+                "en": {
+                    "title": "Sandbox",
+                    "description": "A place to try out formatting and see what the site makes of it, without publishing anything."
+                },
+                "de": {
+                    "title": "Spielwiese",
+                    "description": "Ein Ort, um Formatierung auszuprobieren und zu sehen, was die Website daraus macht, ohne etwas zu veröffentlichen."
+                },
+                "es": {
+                    "title": "Zona de pruebas",
+                    "description": "Un lugar para probar el formato y ver qué hace el sitio con él, sin publicar nada."
+                },
+                "it": {
+                    "title": "Sabbiera",
+                    "description": "Un posto per provare la formattazione e vedere cosa il sito ne fa, senza pubblicare nulla."
+                },
+                "pt": {
+                    "title": "Área de testes",
+                    "description": "Um lugar para experimentar a formatação e ver o que o site faz dela, sem publicar nada."
+                }
+            },
+            "version": "1.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
+            "file": "modules/sandbox.zip",
+            "preview": "modules/sandbox.jpg",
+            "size": 50350,
+            "sha256": "beadacaf96ee101d82f8b7d05873b67061b35181799fe4f8b1266ccc7fc1d488",
+            "requires": {
+                "base": ">=1.1.0",
+                "addons": []
+            },
+            "provides_widgets": [],
             "install": "zip"
         },
         {
@@ -460,13 +1258,37 @@
             "category": "monetisation",
             "title": "Boutique",
             "description": "Boutique de biens virtuels (grades, cosmétiques, VIP…) payables en points, et merch.",
+            "i18n": {
+                "en": {
+                    "title": "Shop",
+                    "description": "Shop of virtual goods (grades, cosmetics, VIP…) payable in points, and merch."
+                },
+                "de": {
+                    "title": "Shop",
+                    "description": "Shop für virtuelle Güter (Ränge, Kosmetik, VIP…) mit Punkten bezahlbar, und Merch."
+                },
+                "es": {
+                    "title": "Tienda",
+                    "description": "Tienda de bienes virtuales (grados, cosméticos, VIP…) pagables con puntos, y merch."
+                },
+                "it": {
+                    "title": "Negozio",
+                    "description": "Negozio di beni virtuali (gradi, cosmetici, VIP…) pagabili in punti, e merch."
+                },
+                "pt": {
+                    "title": "Loja",
+                    "description": "Loja de bens virtuais (graus, cosméticos, VIP…) pagáveis em pontos, e merch."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/shop.zip",
-            "size": 12567,
-            "sha256": "f5d6adb190b7c0c9227db1840b30aecfdbac3520f608ccc94737750906ebe585",
+            "preview": "modules/shop.jpg",
+            "size": 44555,
+            "sha256": "c736be97c80847d129179e0b9b5cf76543781f9b92ea82e1e3b0a1d4e98d8529",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -479,13 +1301,37 @@
             "category": "contenu",
             "title": "Sondages",
             "description": "Sondages publics à choix unique ou multiple avec résultats configurables.",
+            "i18n": {
+                "en": {
+                    "title": "Surveys",
+                    "description": "Public single or multiple choice surveys with configurable results."
+                },
+                "de": {
+                    "title": "Umfragen",
+                    "description": "Öffentliche Einzel- oder Mehrfachauswahl-Umfragen mit konfigurierbaren Ergebnissen."
+                },
+                "es": {
+                    "title": "Encuestas",
+                    "description": "Encuestas públicas de opción única o múltiple con resultados configurables."
+                },
+                "it": {
+                    "title": "Sondaggi",
+                    "description": "Sondaggi pubblici a scelta singola o multipla con risultati configurabili."
+                },
+                "pt": {
+                    "title": "Sondagens",
+                    "description": "Enquetes públicas de escolha única ou múltipla com resultados configuráveis."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/surveys.zip",
-            "size": 17255,
-            "sha256": "bb432cb0fa5fc333187d9d859558ff4cbaf5d93fe1cdec0b249df7084ff7c34e",
+            "preview": "modules/surveys.jpg",
+            "size": 46721,
+            "sha256": "f1f48f2045848913861f69d210c07f3cbedda93830b6533d5d57dde428604a06",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [
@@ -500,18 +1346,87 @@
             "category": "identite",
             "title": "Équipes",
             "description": "Équipes et clans — module gaming.",
+            "i18n": {
+                "en": {
+                    "title": "Teams",
+                    "description": "Teams and clans — gaming module."
+                },
+                "de": {
+                    "title": "Teams",
+                    "description": "Teams und Clans — Gaming-Modul."
+                },
+                "es": {
+                    "title": "Equipos",
+                    "description": "Equipos y clanes — módulo gaming."
+                },
+                "it": {
+                    "title": "Squadre",
+                    "description": "Squadre e clan — modulo gaming."
+                },
+                "pt": {
+                    "title": "Equipas",
+                    "description": "Equipas e clãs — módulo gaming."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/teams.zip",
-            "size": 21806,
-            "sha256": "15a6f79e914dfc3b3d5997006c51e3776acd3fbd6604c596114ae966512a89d3",
+            "preview": "modules/teams.jpg",
+            "size": 54687,
+            "sha256": "c7a9fe2e029b1ec77ac28f3c44cedd129e0bdd1f8f3ca10f2ed0a67539e0c90a",
             "requires": {
-                "base": ">=1.0.0",
-                "addons": []
+                "base": ">=1.1.0",
+                "addons": [
+                    "games"
+                ]
             },
             "provides_widgets": [
                 "teams"
             ],
+            "install": "zip"
+        },
+        {
+            "type": "module",
+            "name": "webradio",
+            "tier": 2,
+            "category": "contenu",
+            "title": "Webradio",
+            "description": "Lecteur d'un flux de webradio et grille des émissions de la semaine.",
+            "i18n": {
+                "en": {
+                    "title": "Web radio",
+                    "description": "A player for a web radio stream, and the week's show schedule."
+                },
+                "de": {
+                    "title": "Webradio",
+                    "description": "Ein Player für einen Webradio-Stream und das Sendeschema der Woche."
+                },
+                "es": {
+                    "title": "Radio web",
+                    "description": "Reproductor de un flujo de radio web y parrilla de programas de la semana."
+                },
+                "it": {
+                    "title": "Web radio",
+                    "description": "Lettore di un flusso di web radio e palinsesto delle trasmissioni della settimana."
+                },
+                "pt": {
+                    "title": "Rádio web",
+                    "description": "Leitor de um fluxo de rádio web e grelha dos programas da semana."
+                }
+            },
+            "version": "1.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
+            "file": "modules/webradio.zip",
+            "preview": "modules/webradio.jpg",
+            "size": 62105,
+            "sha256": "0cce801d9e7ae906ae62109c82f0b924238e256c8821dd44a05da75a017921cd",
+            "requires": {
+                "base": ">=1.1.0",
+                "addons": []
+            },
+            "provides_widgets": [],
             "install": "zip"
         },
         {
@@ -521,13 +1436,37 @@
             "category": "contenu",
             "title": "Wiki",
             "description": "Pages collaboratives avec historique de révisions automatique.",
+            "i18n": {
+                "en": {
+                    "title": "Wiki",
+                    "description": "Collaborative pages with automatic revision history."
+                },
+                "de": {
+                    "title": "Wiki",
+                    "description": "Kollaborative Seiten mit automatischer Revisionshistorie."
+                },
+                "es": {
+                    "title": "Wiki",
+                    "description": "Páginas colaborativas con historial de revisiones automático."
+                },
+                "it": {
+                    "title": "Wiki",
+                    "description": "Pagine collaborative con cronologia automatica delle revisioni."
+                },
+                "pt": {
+                    "title": "Wiki",
+                    "description": "Páginas colaborativas com histórico de revisões automático."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/wiki.zip",
-            "size": 17214,
-            "sha256": "dc169a33fdb17d648ef9bcc100f2cc533cdb3fdb531a35cde12272c245bd456f",
+            "preview": "modules/wiki.jpg",
+            "size": 36522,
+            "sha256": "87d11b2ab46944554a4bb445d4c5b1f394001e8923e869e7499cdb014e1e06a7",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -540,13 +1479,32 @@
             "category": "theme",
             "title": "Blockcraft",
             "description": "Thème gaming inspiré des univers cubiques. Mode jour « biome » et mode nuit « grotte », accent vert herbe, entièrement personnalisable.",
+            "i18n": {
+                "en": {
+                    "description": "Gaming theme inspired by cube-based worlds. Day \"biome\" mode and night \"cave\" mode, grass-green accent, fully customizable."
+                },
+                "de": {
+                    "description": "Gaming-Theme inspiriert von würfelbasierten Welten. Tagmodus „Biom\" und Nachtmodus „Höhle\", grasgrüner Akzent, vollständig anpassbar."
+                },
+                "es": {
+                    "description": "Tema gaming inspirado en mundos de cubos. Modo día «bioma» y modo noche «cueva», acento verde hierba, totalmente personalizable."
+                },
+                "it": {
+                    "description": "Tema gaming ispirato ai mondi a cubi. Modalità giorno «bioma» e notte «caverna», accento verde erba, completamente personalizzabile."
+                },
+                "pt": {
+                    "description": "Tema gaming inspirado em mundos de cubos. Modo dia «bioma» e modo noite «caverna», acento verde-relva, totalmente personalizável."
+                }
+            },
             "version": "1.0.0",
             "author": "NeoFrag fork",
+            "license": "Creative Commons CC BY-NC-SA 4.0",
             "file": "themes/blockcraft.zip",
-            "size": 40409,
-            "sha256": "f273af2237170c72bb088e3c427ee5b2ff87d1d63b0d8d7728b772b6654e1dc8",
+            "preview": "themes/blockcraft.jpg",
+            "size": 45011,
+            "sha256": "463a88576e0ad60a3d030f352feca54eb9ff467a343a24c2559cd558f5076c51",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -559,13 +1517,32 @@
             "category": "theme",
             "title": "Extend",
             "description": "Thème « Extend » : navy et bleu acier, titres condensés Economica, bascule nuit/jour, mise en page riche (navigation, bannière, multi-zones). Entièrement personnalisable.",
+            "i18n": {
+                "en": {
+                    "description": "Extend theme: navy & steel blue, condensed Economica headings, night/day toggle, rich layout (navigation, banner, multi-zone). Fully customizable."
+                },
+                "de": {
+                    "description": "Extend-Theme: Marineblau & Stahlblau, schmale Economica-Überschriften, Nacht-/Tagmodus, reiches Layout (Navigation, Banner, Multi-Zone). Vollständig anpassbar."
+                },
+                "es": {
+                    "description": "Tema Extend: azul marino y azul acero, títulos condensados Economica, modo noche/día, diseño rico (navegación, banner, multizona). Totalmente personalizable."
+                },
+                "it": {
+                    "description": "Tema Extend: blu navy e blu acciaio, titoli condensati Economica, modalità notte/giorno, layout ricco (navigazione, banner, multi-zona). Completamente personalizzabile."
+                },
+                "pt": {
+                    "description": "Tema Extend: azul-marinho e azul-aço, títulos condensados Economica, modo noite/dia, layout rico (navegação, banner, multi-zona). Totalmente personalizável."
+                }
+            },
             "version": "1.0.0",
             "author": "Chewbaka — port NeoFrag Reborn",
+            "license": "Creative Commons CC BY-NC-SA 4.0",
             "file": "themes/extend.zip",
-            "size": 64213,
-            "sha256": "bed09a459d68fcd5e391ce91fa42b1c604d13d731be3282d7f30095aeba1aa9b",
+            "preview": "themes/extend.jpg",
+            "size": 42841,
+            "sha256": "e30bbd59fcb7a53e28df7723108ad9d6e3c8cfa5235f5d78cb6269da7dda51b5",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -578,13 +1555,32 @@
             "category": "theme",
             "title": "Forge",
             "description": "Thème gaming « fonte en fusion » : rouge lave sur charbon, nuit par défaut et mode jour, lueur de braise, titres Rajdhani. Entièrement personnalisable.",
+            "i18n": {
+                "en": {
+                    "description": "Molten-metal gaming theme: lava red on charcoal, night by default plus a day mode, ember glow, Rajdhani headings. Fully customizable."
+                },
+                "de": {
+                    "description": "Gaming-Theme „geschmolzenes Metall\": Lavarot auf Anthrazit, Nacht als Standard plus Tagmodus, Glut-Schein, Rajdhani-Überschriften. Vollständig anpassbar."
+                },
+                "es": {
+                    "description": "Tema gaming «metal fundido»: rojo lava sobre carbón, noche por defecto y modo día, brillo de brasas, títulos Rajdhani. Totalmente personalizable."
+                },
+                "it": {
+                    "description": "Tema gaming «metallo fuso»: rosso lava su antracite, notte di default più modalità giorno, bagliore di brace, titoli Rajdhani. Completamente personalizzabile."
+                },
+                "pt": {
+                    "description": "Tema gaming «metal fundido»: vermelho lava sobre carvão, noite por defeito e modo dia, brilho de brasa, títulos Rajdhani. Totalmente personalizável."
+                }
+            },
             "version": "1.0.0",
             "author": "NeoFrag fork",
+            "license": "Creative Commons CC BY-NC-SA 4.0",
             "file": "themes/forge.zip",
-            "size": 38730,
-            "sha256": "3abfa1d14b697a8ef48f8878043664ad7035f86105bb90d3d9e44de50699e562",
+            "preview": "themes/forge.jpg",
+            "size": 41913,
+            "sha256": "5fbceef4887d132c2feb80c678458629c7bb3d223191727335d5e48552c0d45e",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -597,13 +1593,32 @@
             "category": "theme",
             "title": "Granite",
             "description": "Thème gaming épuré « roche & sommet », accent teal sur ardoise. Mode jour et mode nuit, titres condensés, entièrement personnalisable.",
+            "i18n": {
+                "en": {
+                    "description": "Clean \"rock & summit\" gaming theme, teal accent on slate. Day and night modes, condensed headings, fully customizable."
+                },
+                "de": {
+                    "description": "Cleanes Gaming-Theme „Fels & Gipfel\", Teal-Akzent auf Schiefer. Tag- und Nachtmodus, schmale Überschriften, vollständig anpassbar."
+                },
+                "es": {
+                    "description": "Tema gaming depurado «roca y cima», acento teal sobre pizarra. Modo día y noche, títulos condensados, totalmente personalizable."
+                },
+                "it": {
+                    "description": "Tema gaming essenziale «roccia e vetta», accento teal su ardesia. Modalità giorno e notte, titoli condensati, completamente personalizzabile."
+                },
+                "pt": {
+                    "description": "Tema gaming depurado «rocha e cume», acento teal sobre ardósia. Modo dia e noite, títulos condensados, totalmente personalizável."
+                }
+            },
             "version": "1.0.0",
             "author": "NeoFrag fork",
+            "license": "Creative Commons CC BY-NC-SA 4.0",
             "file": "themes/granite.zip",
-            "size": 39655,
-            "sha256": "d0523324d116ba88cc8d2cb89058be73fa88aa302b530af83ef55eab22abeefb",
+            "preview": "themes/granite.jpg",
+            "size": 43577,
+            "sha256": "94296dd391cf3b538cc7ae2cb0e0af2d0fb6a838f3cfb46799c8385d9ff44c79",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -616,13 +1631,37 @@
             "category": "identite",
             "title": "À propos",
             "description": "Bloc de présentation libre éditable en HTML.",
+            "i18n": {
+                "en": {
+                    "title": "About",
+                    "description": "Free-form presentation block, editable in HTML."
+                },
+                "de": {
+                    "title": "Über",
+                    "description": "Frei gestaltbarer Vorstellungsblock, in HTML bearbeitbar."
+                },
+                "es": {
+                    "title": "Acerca de",
+                    "description": "Bloque de presentación libre, editable en HTML."
+                },
+                "it": {
+                    "title": "Informazioni",
+                    "description": "Blocco di presentazione libero, modificabile in HTML."
+                },
+                "pt": {
+                    "title": "Sobre",
+                    "description": "Bloco de apresentação livre, editável em HTML."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "widgets/about.zip",
-            "size": 5666,
-            "sha256": "bcaeb261f5b11d99236ee1a4171e6da38ce7162b6fe523ffbe5933d6a77c0023",
+            "preview": "widgets/about.jpg",
+            "size": 32297,
+            "sha256": "01891f304ade6f3bb64e5fea5f75f4024cb3bab86786ca9689a582638b8945c5",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -635,13 +1674,37 @@
             "category": "monetisation",
             "title": "Publicité",
             "description": "Affiche une annonce de la régie pour un emplacement (masquée pour les membres sans-pub / VIP).",
+            "i18n": {
+                "en": {
+                    "title": "Advertising",
+                    "description": "Displays an ad from the ad network for a placement (hidden for ad-free / VIP members)."
+                },
+                "de": {
+                    "title": "Werbung",
+                    "description": "Zeigt eine Anzeige des Werbenetzwerks für eine Platzierung an (für werbefreie / VIP-Mitglieder ausgeblendet)."
+                },
+                "es": {
+                    "title": "Publicidad",
+                    "description": "Muestra un anuncio de la red publicitaria para un emplazamiento (oculto para los miembros sin publicidad / VIP)."
+                },
+                "it": {
+                    "title": "Pubblicità",
+                    "description": "Mostra un annuncio della rete pubblicitaria per una posizione (nascosto per i membri senza pubblicità / VIP)."
+                },
+                "pt": {
+                    "title": "Publicidade",
+                    "description": "Apresenta um anúncio da rede publicitária para um local (oculto para os membros sem publicidade / VIP)."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "widgets/ads.zip",
-            "size": 4233,
-            "sha256": "f9e76da8282ced2acc918660d4b1e604cd65264fd6a86f2b6f227967df300166",
+            "preview": "widgets/ads.jpg",
+            "size": 22269,
+            "sha256": "253a90fbaf77cc68417cfa6f29863ea3371d488cbb2f0bc8eaa76a3ff8298744",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -654,13 +1717,37 @@
             "category": "contenu",
             "title": "Articles",
             "description": "Liste des derniers articles publiés.",
+            "i18n": {
+                "en": {
+                    "title": "Articles",
+                    "description": "List of the latest published articles."
+                },
+                "de": {
+                    "title": "Artikel",
+                    "description": "Liste der zuletzt veröffentlichten Artikel."
+                },
+                "es": {
+                    "title": "Artículos",
+                    "description": "Lista de los últimos artículos publicados."
+                },
+                "it": {
+                    "title": "Articoli",
+                    "description": "Elenco degli ultimi articoli pubblicati."
+                },
+                "pt": {
+                    "title": "Artigos",
+                    "description": "Lista dos últimos artigos publicados."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/articles.zip",
-            "size": 4920,
-            "sha256": "c0fa0029b148aebb01c2371fd296c4d1bd2f7b18d99e945c3bcbc7429dc57f8e",
+            "preview": "widgets/articles.jpg",
+            "size": 31149,
+            "sha256": "a105a1d09551b7d52013f6b29c7bee7dfa2528440a0b16c5c50b7d15f0177a81",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -673,13 +1760,37 @@
             "category": "identite",
             "title": "Palmarès",
             "description": "Affiche les dernières récompenses attribuées — module gaming.",
+            "i18n": {
+                "en": {
+                    "title": "Awards",
+                    "description": "Displays the latest awards earned — gaming module."
+                },
+                "de": {
+                    "title": "Auszeichnungen",
+                    "description": "Zeigt die zuletzt vergebenen Auszeichnungen an — Gaming-Modul."
+                },
+                "es": {
+                    "title": "Palmarés",
+                    "description": "Muestra los últimos premios otorgados — módulo gaming."
+                },
+                "it": {
+                    "title": "Albo d'oro",
+                    "description": "Mostra gli ultimi premi assegnati — modulo gaming."
+                },
+                "pt": {
+                    "title": "Palmarés",
+                    "description": "Mostra os últimos prémios atribuídos — módulo gaming."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "widgets/awards.zip",
-            "size": 7188,
-            "sha256": "0fc56e2dc402c33c5c2c46217bad49c20aa15ef84e21e3e45b2e28d986b9b9cf",
+            "preview": "widgets/awards.jpg",
+            "size": 19477,
+            "sha256": "9da696d2d243c012887e3ef67c11be9dec2aa6dc591784860dc1bfb323e0214a",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -692,13 +1803,37 @@
             "category": "identite",
             "title": "Calendrier",
             "description": "Prochains événements du calendrier.",
+            "i18n": {
+                "en": {
+                    "title": "Calendar",
+                    "description": "Upcoming events from the calendar."
+                },
+                "de": {
+                    "title": "Kalender",
+                    "description": "Bevorstehende Termine aus dem Kalender."
+                },
+                "es": {
+                    "title": "Calendario",
+                    "description": "Próximos eventos del calendario."
+                },
+                "it": {
+                    "title": "Calendario",
+                    "description": "Prossimi eventi del calendario."
+                },
+                "pt": {
+                    "title": "Calendário",
+                    "description": "Próximos eventos do calendário."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/calendar.zip",
-            "size": 5033,
-            "sha256": "ba335fd53dd066aeb2414b2ef5fad07b20a7373edeabc795858017ad15a89a59",
+            "preview": "widgets/calendar.jpg",
+            "size": 27983,
+            "sha256": "dda8afeb9ba1cb016a0cec37d1042928b610f6ca3e4747ec995cbb78e6a2311f",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -711,13 +1846,37 @@
             "category": "monetisation",
             "title": "Campagne de dons",
             "description": "Affiche la progression d'une campagne de dons : barre de progression, montant collecté, top donateurs et bouton \"Faire un don\".",
+            "i18n": {
+                "en": {
+                    "title": "Donation campaign",
+                    "description": "Displays the progress of a donation campaign: progress bar, amount raised, top donors and a \"Donate\" button."
+                },
+                "de": {
+                    "title": "Spendenkampagne",
+                    "description": "Zeigt den Fortschritt einer Spendenkampagne an: Fortschrittsbalken, gesammelter Betrag, Top-Spender und Spenden-Button."
+                },
+                "es": {
+                    "title": "Campaña de donaciones",
+                    "description": "Muestra el progreso de una campaña de donaciones: barra de progreso, importe recaudado, principales donantes y botón \"Donar\"."
+                },
+                "it": {
+                    "title": "Campagna di donazioni",
+                    "description": "Mostra l'avanzamento di una campagna di donazioni: barra di avanzamento, importo raccolto, top donatori e pulsante \"Dona\"."
+                },
+                "pt": {
+                    "title": "Campanha de doações",
+                    "description": "Mostra o progresso de uma campanha de donativos: barra de progresso, valor angariado, principais doadores e botão \"Doar\"."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/donations.zip",
-            "size": 10614,
-            "sha256": "36fce86b3ba4588e57bc06f227e3cbd0b8c4c6f7d0ba9792020d6d3d11af7ca3",
+            "preview": "widgets/donations.jpg",
+            "size": 29694,
+            "sha256": "0c92ef36627b30845cbe5c9d28dbb81a25e977afbe23cfe0e6d9573c42c97a73",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -730,13 +1889,37 @@
             "category": "contenu",
             "title": "Téléchargements",
             "description": "Liste des derniers fichiers à télécharger.",
+            "i18n": {
+                "en": {
+                    "title": "Downloads",
+                    "description": "List of the latest files to download."
+                },
+                "de": {
+                    "title": "Downloads",
+                    "description": "Liste der zuletzt zum Download bereitgestellten Dateien."
+                },
+                "es": {
+                    "title": "Descargas",
+                    "description": "Lista de los últimos archivos para descargar."
+                },
+                "it": {
+                    "title": "Download",
+                    "description": "Elenco degli ultimi file da scaricare."
+                },
+                "pt": {
+                    "title": "Downloads",
+                    "description": "Lista dos últimos ficheiros para download."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/downloads.zip",
-            "size": 3310,
-            "sha256": "ddda0447e681fcb183e3dad9ff5e3a748ccebeea8c53568dcc9ac92779534ade",
+            "preview": "widgets/downloads.jpg",
+            "size": 33049,
+            "sha256": "67a47c496a1958b7ff26b31be88635efb53519cac072d88620f5e5ae541254ed",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -749,13 +1932,37 @@
             "category": "identite",
             "title": "Événements",
             "description": "Calendrier ou liste des événements à venir — module gaming.",
+            "i18n": {
+                "en": {
+                    "title": "Events",
+                    "description": "Calendar or list of upcoming events — gaming module."
+                },
+                "de": {
+                    "title": "Termine",
+                    "description": "Kalender oder Liste der bevorstehenden Termine — Gaming-Modul."
+                },
+                "es": {
+                    "title": "Eventos",
+                    "description": "Calendario o lista de eventos próximos — módulo gaming."
+                },
+                "it": {
+                    "title": "Eventi",
+                    "description": "Calendario o elenco degli eventi in arrivo — modulo gaming."
+                },
+                "pt": {
+                    "title": "Eventos",
+                    "description": "Calendário ou lista dos próximos eventos — módulo gaming."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "widgets/events.zip",
-            "size": 13638,
-            "sha256": "de37dabf9df5e21a53224d50b032183295ef4f822fc2b81b8ff5c7e23f05f66d",
+            "preview": "widgets/events.jpg",
+            "size": 34573,
+            "sha256": "5cfd5de20746c4af1abed3e6bedf83f49d20a763a24201446970d8dbe480958f",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -768,13 +1975,37 @@
             "category": "identite",
             "title": "Forum",
             "description": "Derniers sujets ou messages du forum.",
+            "i18n": {
+                "en": {
+                    "title": "Forum",
+                    "description": "Latest topics or posts from the forum."
+                },
+                "de": {
+                    "title": "Forum",
+                    "description": "Neueste Themen oder Beiträge des Forums."
+                },
+                "es": {
+                    "title": "Foro",
+                    "description": "Últimos temas o publicaciones del foro."
+                },
+                "it": {
+                    "title": "Forum",
+                    "description": "Ultimi argomenti o messaggi del forum."
+                },
+                "pt": {
+                    "title": "Fórum",
+                    "description": "Tópicos ou mensagens recentes do fórum."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "widgets/forum.zip",
-            "size": 8060,
-            "sha256": "eab3addc32d23b8afb0f2196c947a73f0b10488476200c04b015e6b43fa7699c",
+            "preview": "widgets/forum.jpg",
+            "size": 31832,
+            "sha256": "0b72411c808ea000dd0d04689c1f82a66c761bb786258fcdd8bbb8b160322a2e",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -787,13 +2018,37 @@
             "category": "identite",
             "title": "Galeries",
             "description": "Aperçu de la galerie photos avec dernières images.",
+            "i18n": {
+                "en": {
+                    "title": "Galleries",
+                    "description": "Overview of the photo gallery with the latest images."
+                },
+                "de": {
+                    "title": "Galerien",
+                    "description": "Übersicht der Fotogalerie mit den neuesten Bildern."
+                },
+                "es": {
+                    "title": "Galerías",
+                    "description": "Vista general de la galería de fotos con las últimas imágenes."
+                },
+                "it": {
+                    "title": "Gallerie",
+                    "description": "Anteprima della galleria fotografica con le ultime immagini."
+                },
+                "pt": {
+                    "title": "Galerias",
+                    "description": "Vista geral da galeria de fotos com as últimas imagens."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "widgets/gallery.zip",
-            "size": 10108,
-            "sha256": "56da9a8f817b7168e7b93379d3152242f9b72fb7c01fe02be1435a4c447b195b",
+            "preview": "widgets/gallery.jpg",
+            "size": 28885,
+            "sha256": "5778ae6c738dc0ccffd3690ed2262f44a8d876260bac9a71785cbab6c255c35b",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -806,13 +2061,37 @@
             "category": "identite",
             "title": "Serveur de jeu",
             "description": "Affiche le statut, le nombre de joueurs, la carte et un bouton \"Rejoindre\" pour un serveur de jeu (Minecraft Java, Minecraft Bedrock, Source / GoldSource — CS2, GMod, ARMA, Rust, etc.).",
+            "i18n": {
+                "en": {
+                    "title": "Game server",
+                    "description": "Shows the status, number of players, map and a 'Join' button for a game server (Minecraft Java, Minecraft Bedrock, Source / GoldSource — CS2, GMod, ARMA, Rust, etc.)."
+                },
+                "de": {
+                    "title": "Spieleserver",
+                    "description": "Zeigt den Status, die Spielerzahl, die Karte und einen 'Beitreten'-Button für einen Spieleserver (Minecraft Java, Minecraft Bedrock, Source / GoldSource — CS2, GMod, ARMA, Rust, etc.)."
+                },
+                "es": {
+                    "title": "Servidor de juego",
+                    "description": "Muestra el estado, el número de jugadores, el mapa y un botón 'Unirse' para un servidor de juego (Minecraft Java, Minecraft Bedrock, Source / GoldSource — CS2, GMod, ARMA, Rust, etc.)."
+                },
+                "it": {
+                    "title": "Server di gioco",
+                    "description": "Mostra lo stato, il numero di giocatori, la mappa e un pulsante 'Unisciti' per un server di gioco (Minecraft Java, Minecraft Bedrock, Source / GoldSource — CS2, GMod, ARMA, Rust, ecc.)."
+                },
+                "pt": {
+                    "title": "Servidor de jogo",
+                    "description": "Mostra o status, o número de jogadores, o mapa e um botão 'Entrar' para um servidor de jogo (Minecraft Java, Minecraft Bedrock, Source / GoldSource — CS2, GMod, ARMA, Rust, etc.)."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/gameserver.zip",
-            "size": 15326,
-            "sha256": "3773a98e141050d82370d183fac006bd5bf3e45da9e696c79250a15189152964",
+            "preview": "widgets/gameserver.jpg",
+            "size": 44601,
+            "sha256": "30df847d56cd93ffc3bbda2c90c2c540b8006cde94ccb4ec2b7f19792ab6ae02",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -825,13 +2104,37 @@
             "category": "contenu",
             "title": "Livre d'or",
             "description": "Derniers messages du livre d'or.",
+            "i18n": {
+                "en": {
+                    "title": "Guestbook",
+                    "description": "Latest messages from the guestbook."
+                },
+                "de": {
+                    "title": "Gästebuch",
+                    "description": "Neueste Nachrichten aus dem Gästebuch."
+                },
+                "es": {
+                    "title": "Libro de visitas",
+                    "description": "Últimos mensajes del libro de visitas."
+                },
+                "it": {
+                    "title": "Libro degli ospiti",
+                    "description": "Ultimi messaggi dal libro degli ospiti."
+                },
+                "pt": {
+                    "title": "Livro de visitas",
+                    "description": "Últimas mensagens do livro de visitas."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/guestbook.zip",
-            "size": 5005,
-            "sha256": "94d97fa58b0750b0ed7527138d163ca273e3ec454c391cbcee52be662dcc6476",
+            "preview": "widgets/guestbook.jpg",
+            "size": 28585,
+            "sha256": "8bea396c2c51f9a28cb9b0ac086dabc5ffd497c29a2400d5474f399ca6a69dd1",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -844,13 +2147,37 @@
             "category": "contenu",
             "title": "Liens",
             "description": "Liens populaires de l'annuaire.",
+            "i18n": {
+                "en": {
+                    "title": "Links",
+                    "description": "Popular links from the directory."
+                },
+                "de": {
+                    "title": "Links",
+                    "description": "Beliebte Links aus dem Verzeichnis."
+                },
+                "es": {
+                    "title": "Enlaces",
+                    "description": "Enlaces populares del directorio."
+                },
+                "it": {
+                    "title": "Link",
+                    "description": "Link popolari dalla directory."
+                },
+                "pt": {
+                    "title": "Ligações",
+                    "description": "Ligações populares do diretório."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/links.zip",
-            "size": 4735,
-            "sha256": "9dc5d959a1fe0de8dc62657d6a6233cbb1f9c228161993b3f92deaef5ea8646f",
+            "preview": "widgets/links.jpg",
+            "size": 23304,
+            "sha256": "25a6ee265a136eb3ca7497440945bf829d5597148023b3d742f7a6906a427d01",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -863,13 +2190,37 @@
             "category": "identite",
             "title": "Actualités",
             "description": "Liste des dernières actualités publiées.",
+            "i18n": {
+                "en": {
+                    "title": "News",
+                    "description": "List of the latest published news."
+                },
+                "de": {
+                    "title": "News",
+                    "description": "Liste der zuletzt veröffentlichten News."
+                },
+                "es": {
+                    "title": "Noticias",
+                    "description": "Lista de las últimas noticias publicadas."
+                },
+                "it": {
+                    "title": "Notizie",
+                    "description": "Elenco delle ultime notizie pubblicate."
+                },
+                "pt": {
+                    "title": "Notícias",
+                    "description": "Lista das últimas notícias publicadas."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "widgets/news.zip",
-            "size": 5754,
-            "sha256": "1bc836c08b51313a877dcbfb952f0ca58a08fe089e3c8e3e55a320927f907cca",
+            "preview": "widgets/news.jpg",
+            "size": 26141,
+            "sha256": "6a3ad1e5a2b11534384bd48790dc1f8c03a0ce167c86de72e4f66fd5d8ee1766",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -882,13 +2233,37 @@
             "category": "monetisation",
             "title": "Newsletter",
             "description": "Formulaire d'inscription à la newsletter.",
+            "i18n": {
+                "en": {
+                    "title": "Newsletter",
+                    "description": "Newsletter subscription form."
+                },
+                "de": {
+                    "title": "Newsletter",
+                    "description": "Newsletter-Anmeldeformular."
+                },
+                "es": {
+                    "title": "Boletín",
+                    "description": "Formulario de suscripción al boletín."
+                },
+                "it": {
+                    "title": "Newsletter",
+                    "description": "Modulo di iscrizione alla newsletter."
+                },
+                "pt": {
+                    "title": "Newsletter",
+                    "description": "Formulário de subscrição da newsletter."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/newsletter.zip",
-            "size": 3537,
-            "sha256": "c35ce55ebeca39a7407c219490901bedf3a0a3e462dab2a300ef6116385a4cbe",
+            "preview": "widgets/newsletter.jpg",
+            "size": 27501,
+            "sha256": "085bf84ed5bb30a54dee7f0eb948b95d3cf88b39a17005af8a06e555ddd47f46",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -901,13 +2276,37 @@
             "category": "identite",
             "title": "Partenaires",
             "description": "Partenaires et sponsors avec logos — widget gaming.",
+            "i18n": {
+                "en": {
+                    "title": "Partners",
+                    "description": "Partners and sponsors with logos — gaming widget."
+                },
+                "de": {
+                    "title": "Partner",
+                    "description": "Partner und Sponsoren mit Logos — Gaming-Widget."
+                },
+                "es": {
+                    "title": "Socios",
+                    "description": "Socios y patrocinadores con logos — widget gaming."
+                },
+                "it": {
+                    "title": "Partner",
+                    "description": "Partner e sponsor con loghi — widget gaming."
+                },
+                "pt": {
+                    "title": "Parceiros",
+                    "description": "Parceiros e patrocinadores com logotipos — widget gaming."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "widgets/partners.zip",
-            "size": 7525,
-            "sha256": "ab352e225e159e5fcf7ffb04ac0faf5cf57724360ead1c8b5dad8adac47ecbc2",
+            "preview": "widgets/partners.jpg",
+            "size": 23822,
+            "sha256": "ea2b3c975ea4dfb41f09f6e7aa5cf966d7e0ad533269efa9338846e8f2114e0a",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -920,13 +2319,125 @@
             "category": "identite",
             "title": "Recrutement",
             "description": "Postes actuellement ouverts au recrutement — widget gaming.",
+            "i18n": {
+                "en": {
+                    "title": "Recruitment",
+                    "description": "Positions currently open for recruitment — gaming widget."
+                },
+                "de": {
+                    "title": "Rekrutierung",
+                    "description": "Derzeit offene Stellen für die Rekrutierung — Gaming-Widget."
+                },
+                "es": {
+                    "title": "Reclutamiento",
+                    "description": "Puestos abiertos actualmente para reclutamiento — widget de gaming."
+                },
+                "it": {
+                    "title": "Reclutamento",
+                    "description": "Posizioni attualmente aperte per il reclutamento — widget gaming."
+                },
+                "pt": {
+                    "title": "Recrutamento",
+                    "description": "Vagas atualmente abertas para recrutamento — widget de gaming."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "widgets/recruits.zip",
-            "size": 5081,
-            "sha256": "48a7d05a62d3f6f263edc80aec5353bd35bb14e14644fda542b2b2d2d67b2d2e",
+            "preview": "widgets/recruits.jpg",
+            "size": 35401,
+            "sha256": "0e9f08e0666c5fad630374bc4bda71d4c933b7259fb86e17456863b7de5ff5e9",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
+                "addons": [
+                    "teams"
+                ]
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "widget",
+            "name": "rss",
+            "tier": 2,
+            "category": "contenu",
+            "title": "Lecteur de flux",
+            "description": "Les derniers articles d'un flux RSS ou Atom extérieur, mis en cache.",
+            "i18n": {
+                "en": {
+                    "title": "Feed reader",
+                    "description": "The latest articles from an external RSS or Atom feed, cached."
+                },
+                "de": {
+                    "title": "Feed-Leser",
+                    "description": "Die neuesten Artikel eines externen RSS- oder Atom-Feeds, zwischengespeichert."
+                },
+                "es": {
+                    "title": "Lector de canales",
+                    "description": "Los últimos artículos de un canal RSS o Atom externo, en caché."
+                },
+                "it": {
+                    "title": "Lettore di feed",
+                    "description": "Gli ultimi articoli di un feed RSS o Atom esterno, in cache."
+                },
+                "pt": {
+                    "title": "Leitor de feeds",
+                    "description": "Os últimos artigos de um feed RSS ou Atom externo, em cache."
+                }
+            },
+            "version": "1.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3",
+            "file": "widgets/rss.zip",
+            "preview": "widgets/rss.jpg",
+            "size": 56551,
+            "sha256": "baf84862c6d91302c72fee20ae8e18cacb0f7435d455e27a01f8c30e01707020",
+            "requires": {
+                "base": ">=1.1.0",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "widget",
+            "name": "seasonal",
+            "tier": 2,
+            "category": "contenu",
+            "title": "Effet saisonnier",
+            "description": "Neige, confettis ou feuilles sur tout l'écran, pendant une plage de dates choisie.",
+            "i18n": {
+                "en": {
+                    "title": "Seasonal effect",
+                    "description": "Snow, confetti or leaves across the whole screen, during a chosen date range."
+                },
+                "de": {
+                    "title": "Saisonaler Effekt",
+                    "description": "Schnee, Konfetti oder Blätter über den ganzen Bildschirm, während eines gewählten Zeitraums."
+                },
+                "es": {
+                    "title": "Efecto de temporada",
+                    "description": "Nieve, confeti u hojas por toda la pantalla, durante un intervalo de fechas elegido."
+                },
+                "it": {
+                    "title": "Effetto stagionale",
+                    "description": "Neve, coriandoli o foglie su tutto lo schermo, durante un intervallo di date scelto."
+                },
+                "pt": {
+                    "title": "Efeito sazonal",
+                    "description": "Neve, confete ou folhas em todo o ecrã, durante um intervalo de datas escolhido."
+                }
+            },
+            "version": "1.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3",
+            "file": "widgets/seasonal.zip",
+            "preview": "widgets/seasonal.jpg",
+            "size": 46435,
+            "sha256": "e9c134f1f3a9c140d12be646259b275fdad36e26a3d5312b654cbeb10c87aa36",
+            "requires": {
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -939,13 +2450,37 @@
             "category": "identite",
             "title": "Groupe Steam",
             "description": "Affiche le nombre de membres, la présence en ligne et l'activité d'un groupe Steam.",
+            "i18n": {
+                "en": {
+                    "title": "Steam group",
+                    "description": "Shows the number of members, online presence and activity of a Steam group."
+                },
+                "de": {
+                    "title": "Steam-Gruppe",
+                    "description": "Zeigt die Anzahl der Mitglieder, Online-Präsenz und Aktivität einer Steam-Gruppe."
+                },
+                "es": {
+                    "title": "Grupo de Steam",
+                    "description": "Muestra el número de miembros, la presencia en línea y la actividad de un grupo de Steam."
+                },
+                "it": {
+                    "title": "Gruppo Steam",
+                    "description": "Mostra il numero di membri, la presenza online e l'attività di un gruppo Steam."
+                },
+                "pt": {
+                    "title": "Grupo Steam",
+                    "description": "Mostra o número de membros, a presença online e a atividade de um grupo Steam."
+                }
+            },
             "version": "2.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/steam.zip",
-            "size": 9832,
-            "sha256": "1be5ccb18785e0fd9b4d5aae78077bfb5b2414defa4554af79fbbc2ad5d7f02c",
+            "preview": "widgets/steam.jpg",
+            "size": 39718,
+            "sha256": "81736c4e1cfb34fc487a66ae57001b34e40a8f93a9ef6eb9dbfd5b8f571b4823",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -958,13 +2493,37 @@
             "category": "contenu",
             "title": "Sondages",
             "description": "Sondage en cours sur le site.",
+            "i18n": {
+                "en": {
+                    "title": "Surveys",
+                    "description": "Active survey on the site."
+                },
+                "de": {
+                    "title": "Umfragen",
+                    "description": "Aktive Umfrage auf der Website."
+                },
+                "es": {
+                    "title": "Encuestas",
+                    "description": "Encuesta activa en el sitio."
+                },
+                "it": {
+                    "title": "Sondaggi",
+                    "description": "Sondaggio attivo sul sito."
+                },
+                "pt": {
+                    "title": "Enquetes",
+                    "description": "Enquete ativa no site."
+                }
+            },
             "version": "1.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/surveys.zip",
-            "size": 2730,
-            "sha256": "473dd9017e7ecaf395daa7200a543788e4ca588a1132e2d572b9217d9b38541c",
+            "preview": "widgets/surveys.jpg",
+            "size": 26474,
+            "sha256": "29542a50d3e47b57a3c9bcef5bd2824d661f9678d206b2a6dc28fbb0a46f334e",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -977,13 +2536,37 @@
             "category": "identite",
             "title": "Équipes",
             "description": "Équipes du clan avec leurs membres — widget gaming.",
+            "i18n": {
+                "en": {
+                    "title": "Teams",
+                    "description": "Clan teams with their members — gaming widget."
+                },
+                "de": {
+                    "title": "Teams",
+                    "description": "Clan-Teams mit ihren Mitgliedern — Gaming-Widget."
+                },
+                "es": {
+                    "title": "Equipos",
+                    "description": "Equipos del clan con sus miembros — widget gaming."
+                },
+                "it": {
+                    "title": "Squadre",
+                    "description": "Squadre del clan con i loro membri — widget gaming."
+                },
+                "pt": {
+                    "title": "Equipas",
+                    "description": "Equipes do clã com seus membros — widget gaming."
+                }
+            },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "widgets/teams.zip",
-            "size": 4240,
-            "sha256": "174a803200e3dd1fd4ee272943d7c47e4410be1c4eba446ee63928c8e90207b0",
+            "preview": "widgets/teams.jpg",
+            "size": 26163,
+            "sha256": "b85bab73cc28d3bb44b7f74bbfea294eeb0c36e06780691f05275dec5f73f535",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -996,13 +2579,37 @@
             "category": "identite",
             "title": "Serveur TeamSpeak 3",
             "description": "Affiche les channels et clients connectés à un serveur TeamSpeak 3, avec un bouton \"Se connecter\".",
+            "i18n": {
+                "en": {
+                    "title": "TeamSpeak 3 server",
+                    "description": "Shows channels and clients connected to a TeamSpeak 3 server, with a 'Connect' button."
+                },
+                "de": {
+                    "title": "TeamSpeak 3 Server",
+                    "description": "Zeigt Kanäle und Clients, die mit einem TeamSpeak 3-Server verbunden sind, mit einem 'Verbinden'-Button."
+                },
+                "es": {
+                    "title": "Servidor TeamSpeak 3",
+                    "description": "Muestra los canales y clientes conectados a un servidor TeamSpeak 3, con un botón 'Conectar'."
+                },
+                "it": {
+                    "title": "Server TeamSpeak 3",
+                    "description": "Mostra canali e client connessi a un server TeamSpeak 3, con un pulsante 'Connetti'."
+                },
+                "pt": {
+                    "title": "Servidor TeamSpeak 3",
+                    "description": "Mostra canais e clientes conectados a um servidor TeamSpeak 3, com um botão 'Conectar'."
+                }
+            },
             "version": "3.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/teamspeak.zip",
-            "size": 14879,
-            "sha256": "545535b6dbc788e54b89db364d7d8a349907d4c3eb9e6ed9c7329950fad45b65",
+            "preview": "widgets/teamspeak.jpg",
+            "size": 44440,
+            "sha256": "674917f960923fe61699e44f810e8d51241754582fe94a47700e23f7e8ee486e",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1015,13 +2622,37 @@
             "category": "identite",
             "title": "Statut live",
             "description": "Statut en direct de plusieurs chaînes Twitch / YouTube (jeu, viewers, titre, miniature) avec lecteur intégré.",
+            "i18n": {
+                "en": {
+                    "title": "Live status",
+                    "description": "Live status of several Twitch / YouTube channels (game, viewers, title, thumbnail) with embedded player."
+                },
+                "de": {
+                    "title": "Live-Status",
+                    "description": "Live-Status mehrerer Twitch-/YouTube-Kanäle (Spiel, Zuschauer, Titel, Vorschaubild) mit eingebettetem Player."
+                },
+                "es": {
+                    "title": "Estado en directo",
+                    "description": "Estado en directo de varios canales de Twitch / YouTube (juego, espectadores, título, miniatura) con reproductor integrado."
+                },
+                "it": {
+                    "title": "Stato live",
+                    "description": "Stato live di più canali Twitch / YouTube (gioco, spettatori, titolo, miniatura) con lettore integrato."
+                },
+                "pt": {
+                    "title": "Estado ao vivo",
+                    "description": "Estado ao vivo de vários canais Twitch / YouTube (jogo, espectadores, título, miniatura) com leitor integrado."
+                }
+            },
             "version": "3.0",
             "author": "NeoFrag",
+            "license": "LGPLv3",
             "file": "widgets/twitch.zip",
-            "size": 23129,
-            "sha256": "a13dedb9281bfcb94585411e3cd0713965f25af63416424133fbd828c9e3edc6",
+            "preview": "widgets/twitch.jpg",
+            "size": 50861,
+            "sha256": "48896400bdd8ad55818af480051aaa455fdf3ac87c4e52f9da92c038f0c13224",
             "requires": {
-                "base": ">=1.0.0",
+                "base": ">=1.1.0",
                 "addons": []
             },
             "provides_widgets": [],

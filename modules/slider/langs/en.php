@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 return [
 	// i18n 2026-06-11 (code strings)
 	'7cbecb62' => 'Slider widget slides',
@@ -35,4 +36,13 @@ return [
 	'aa7a6e6a' => 'Confirm deletion of this slide?',
 	'3ff2b02c' => 'Drag the rows to reorder, then click "Save order".',
 	'a3d90926' => 'Save order',
+	'c86b1531' => 'Slider',
+	'ae6af5c0' => 'Link (optional)',
+	'8fd9c7ef' => 'Save',
+	'04fc2b5b' => 'Image',
+	'c9340a06' => 'Active',
+	'caf5c873' => 'Actions',
+	'b0d653e1' => 'Inactive',
+	'eb6693d4' => 'Disable',
+	'52c9bbab' => 'Edit',
 ];

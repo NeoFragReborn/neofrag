@@ -1,0 +1,19 @@
+# L'installateur : inatteignable une fois le site installé.
+#
+# Il crée la base, écrit la configuration et pose le premier compte administrateur.
+# Il refuse déjà de s'exécuter quand `config/db.php` existe — c'est sa garde propre — mais
+# une garde qui tient au code seul est une garde de moins qu'il n'en faut pour ce fichier-là.
+#
+# La production tourne sous Caddy, dont la configuration refuse déjà `/install/`. Ce fichier est
+# l'équivalent pour Apache, c'est-à-dire pour les hébergements mutualisés que ce produit vise —
+# où il n'existait pas avant le 2026-09-21. Sur un hébergement où `AllowOverride None` est imposé,
+# il est ignoré : l'installateur s'en remet à sa propre détection d'installation existante.
+
+<IfModule mod_authz_core.c>
+	Require all denied
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+	Order allow,deny
+	Deny from all
+</IfModule>

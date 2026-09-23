@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -12,6 +13,8 @@ class Index extends Controller_Module
 {
 	public function index($members)
 	{
+		$this->css('members');
+
 		return $this->array()
 					->append($this->view('members', ['members' => $members->get()]))
 					->append($members->pagination->get_pagination());

@@ -19,8 +19,19 @@ abstract class HeadlessTestCase extends TestCase
 {
 	private static bool $booted = false;
 
+	/*
+	 * Pourquoi le saut n'est pas prononcé ici. Un markTestSkipped() dans setUpBeforeClass() saute la
+	 * classe entière, et PHPUnit 11 le compte comme une SUITE sautée, pas comme des tests sautés :
+	 * `--fail-on-skipped` n'y voit rien. La CI a affiché « OK, but some tests were skipped! Tests: 504,
+	 * Skipped: 127 » avec un code de sortie zéro, pendant des semaines. On mémorise donc la raison, et
+	 * c'est setUp() qui saute, test par test — ce que le drapeau transforme bien en échec.
+	 */
+	private static ?string $indisponible = null;
+
 	public static function setUpBeforeClass(): void
 	{
+		self::$indisponible = null;
+
 		if (!self::$booted)
 		{
 			try
@@ -29,7 +40,9 @@ abstract class HeadlessTestCase extends TestCase
 			}
 			catch (\Throwable $e)
 			{
-				self::markTestSkipped('Boot headless impossible (DB injoignable ?) : '.$e->getMessage());
+				self::$indisponible = 'Boot headless impossible (DB injoignable ?) : '.$e->getMessage();
+
+				return;
 			}
 
 			// boot.php définit NEOFRAG_HEADLESS AVANT de pouvoir échouer (require de config/…) : un
@@ -39,7 +52,9 @@ abstract class HeadlessTestCase extends TestCase
 			// config/ est absent, ce qui est justement l'état du job `test` en CI.
 			if (!function_exists('NeoFrag') || NeoFrag() === NULL)
 			{
-				self::markTestSkipped('Boot headless incomplet (config/ ou DB indisponible).');
+				self::$indisponible = 'Boot headless incomplet (config/ ou DB indisponible).';
+
+				return;
 			}
 
 			self::$booted = true;
@@ -48,12 +63,20 @@ abstract class HeadlessTestCase extends TestCase
 
 	protected function setUp(): void
 	{
+		if (self::$indisponible !== null)
+		{
+			self::markTestSkipped(self::$indisponible);
+		}
+
 		\NeoFrag()->db->transaction();
 	}
 
 	protected function tearDown(): void
 	{
-		\NeoFrag()->db->rollback();
+		if (self::$indisponible === null)
+		{
+			\NeoFrag()->db->rollback();
+		}
 	}
 
 	/** Connexion DB du framework (celle des modèles sous test). */

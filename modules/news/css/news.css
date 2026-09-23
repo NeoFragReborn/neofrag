@@ -9,18 +9,23 @@
 @media (max-width: 600px) { .news-article { padding: 20px 18px 24px; } }
 
 .news-article-cover img { width: 100%; max-height: 380px; object-fit: cover; border-radius: 12px; display: block; margin-bottom: 24px; }
-.news-article-cat { display: inline-block; background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 14%, transparent); color: var(--nf-accent, #2dd4bf); padding: 3px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; text-decoration: none; margin-bottom: 14px; }
-.news-article-cat:hover { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 22%, transparent); color: var(--nf-accent, #2dd4bf); }
+.news-article-cat { display: inline-block; background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 14%, transparent); color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); padding: 3px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; text-decoration: none; margin-bottom: 14px; }
+.news-article-cat:hover { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 22%, transparent); color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); }
 .news-article-title { font-family: "Space Grotesk", inherit; font-size: clamp(26px, 4vw, 34px); font-weight: 700; line-height: 1.2; margin: 0 0 14px; }
 .news-article-meta { display: flex; flex-wrap: wrap; gap: 18px; color: var(--nf-muted, #8593a6); font-size: 14px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--nf-border, rgba(255, 255, 255, .09)); }
 .news-article-meta i { margin-right: 5px; }
 .news-article-meta a { color: var(--nf-text, #e7eef6); text-decoration: none; }
-.news-article-meta a:hover { color: var(--nf-accent, #2dd4bf); }
+.news-article-meta a:hover { color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); }
 .news-article-body { font-size: 16px; line-height: 1.78; color: var(--nf-text, #e7eef6); }
 .news-article-body p { margin: 0 0 1.1em; }
 .news-article-body img { max-width: 100%; border-radius: 10px; }
 .news-article-body h2, .news-article-body h3 { font-family: "Space Grotesk", inherit; margin: 1.6em 0 .5em; }
 .news-article-tags { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 8px; }
 .news-article-tags a { font-size: 12px; color: var(--nf-muted, #8593a6); background: color-mix(in srgb, var(--nf-text, #e7eef6) 8%, transparent); padding: 3px 11px; border-radius: 20px; text-decoration: none; }
-.news-article-tags a:hover { color: var(--nf-accent, #2dd4bf); }
+.news-article-tags a:hover { color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); }
 .news-article-share { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--nf-border, rgba(255, 255, 255, .09)); }
+
+/* La ligne d'auteur de la liste des actualités. Le lien du nombre de commentaires (« 1 ») mesurait
+   23×14 px sur un téléphone, sous la taille minimale d'une cible tactile (24×24, WCAG 2.5.8) :
+   seul défaut relevé par le passage complet de check-mise-en-page du 2026-09-23. */
+.nf-news-meta a { display: inline-block; min-width: 24px; min-height: 24px; line-height: 24px; text-align: center; }

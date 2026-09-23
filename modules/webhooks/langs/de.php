@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'60fa2d8b' => 'Webhooks',
@@ -24,4 +25,27 @@ return [
 	'749713ce' => 'Test fehlgeschlagen: %s',
 	'16922d8f' => 'Nicht öffentlicher Host (durch SSRF-Schutz blockiert).',
 	'f9289163' => 'Ungültige URL oder cURL nicht verfügbar.',
+	'62d10724' => 'URL',
+	'b1a096a2' => 'Veranstaltungen',
+	'c9340a06' => 'Aktiv',
+	'bde466c1' => 'Alle',
+	'e2a147a0' => 'Ja',
+	'881485c2' => 'Bearbeiten: %s',
+	'afccc23b' => 'Erstellen',
+	'8fd9c7ef' => 'Speichern',
+	'7f386c83' => 'News veröffentlicht',
+	'a05569ca' => 'Artikel veröffentlicht',
+	'c8c91cb8' => 'Neues Mitglied',
+	'ddd2ffe3' => 'Neuer Kommentar',
+	'abc141a6' => 'Neues Forenthema',
+	'03bd613b' => 'Kanal ist live',
+	'c755adcd' => 'Neue News: %s',
+	'7dbe4e5a' => 'Neuer Artikel: %s',
+	'f86e4d0d' => 'Willkommen, %s!',
+	'8924a115' => 'Ein neues Mitglied ist gerade der Community beigetreten.',
+	'9c2ebd79' => 'Neuer Kommentar von %s',
+	'f9929b25' => 'Neues Thema: %s',
+	'97cbc6c8' => '%s ist live',
+	'f1f0ce0a' => 'Webhook-Test',
+	'8c654744' => 'Wenn diese Nachricht erscheint, kann die Website in diesem Kanal schreiben.',
 ];

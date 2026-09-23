@@ -41,7 +41,9 @@ $text_is_custom   = FALSE;
 	--fg-accent-strong:  color-mix(in srgb, <?php echo $accent ?> 78%, #fff 22%);
 	--fg-accent-soft:    color-mix(in srgb, <?php echo $accent ?> 18%, transparent);
 	--fg-accent-text:    color-mix(in srgb, <?php echo $accent ?> 76%, #fff 24%);
-	--fg-on-accent:      #ffffff;
+	/* Calcule, et non fige : l'accent est reglable par l'administrateur, et du blanc sur un
+	   accent clair devient illisible (1,75:1 sur le turquoise par defaut). */
+	--fg-on-accent:      <?php echo couleur_lisible_sur($accent) ?>;
 
 	--fg-link:           var(--fg-accent-text);
 	--fg-link-hover:     color-mix(in srgb, <?php echo $accent ?> 70%, #fff 30%);
@@ -79,8 +81,14 @@ $text_is_custom   = FALSE;
 	--fg-radius-sm:      9px;
 	--fg-radius-xs:      6px;
 
-	--fg-font:           "Inter", "Segoe UI", system-ui, sans-serif;
-	--fg-font-display:   "Space Grotesk", "Inter", "Segoe UI", sans-serif;
+	/* Police : déclarée dans le vocabulaire partagé `--nf-*` pour qu'un réglage d'administration
+	   puisse la surcharger sans toucher au thème. Les jetons propres au thème pointent
+	   dessus : changer `--nf-font` change toute la typographie, y compris les titres si le thème
+	   n'en distingue pas. `--nf-font-mono` reste fixe : du code se lit en chasse fixe, toujours. */
+	--nf-font:           "Inter", "Segoe UI", system-ui, sans-serif;
+	--nf-font-display:   "Space Grotesk", "Inter", "Segoe UI", sans-serif;
+	--fg-font:           var(--nf-font);
+	--fg-font-display:   var(--nf-font-display);
 	--fg-font-mono:      "JetBrains Mono", ui-monospace, "SF Mono", monospace;
 
 	--fg-banner-gradient: linear-gradient(135deg, #2dd4bf 0%, #22d3ee 55%, #0b1622 100%);
@@ -106,6 +114,12 @@ $text_is_custom   = FALSE;
 	--nf-muted:         var(--fg-muted);
 	--nf-hover:         var(--fg-surface-2);
 	--nf-danger:        var(--fg-danger);
+	/* Alias du vocabulaire partagé : les feuilles des MODULES sont écrites pour n'importe quel
+	   thème. Sans eux, `var(--nf-danger-soft, …)` retombait sur son repli — c'est ce qui posait
+	   des blocs blancs en thème sombre ailleurs dans le produit. Contrôlé par
+	   tools/check-css-variables.php. */
+	--nf-danger-soft:   color-mix(in srgb, var(--fg-danger) 18%, transparent);
+	--nf-muted-2:       var(--fg-muted);
 	--nf-success:       var(--fg-success);
 	--nf-warning:       var(--fg-warning);
 	--nf-info:          var(--fg-info);
@@ -124,9 +138,9 @@ $text_is_custom   = FALSE;
 	--fg-border:         #e2d4cc;
 	--fg-border-strong:  #cdb8ad;
 	--fg-text-strong:    #1c130f;
-	--fg-muted:          #8a6f63;
+	--fg-muted:          #7e655a;
 	--fg-muted-2:        #b09a8e;
-	--fg-on-accent:      #ffffff;
+	--fg-on-accent:      <?php echo couleur_lisible_sur($accent) ?>;
 
 	--fg-success:        #1f9d57;
 	--fg-success-soft:   #e2f6ea;
@@ -151,6 +165,12 @@ $text_is_custom   = FALSE;
 	<?php endif ?>
 	<?php if (!$accent_is_custom): ?>
 	--fg-accent:         #c43d1a;
+	/* La seconde palette emploie un AUTRE accent : `on-accent` doit donc etre recalcule ICI,
+	   sinon il garde la couleur choisie pour l'accent de la premiere. C'est ce qui mettait du
+	   blanc sur le turquoise clair de `granite` — 1,86:1, mesure sur la page servie — dans tout
+	   le panneau `panel-color` : en-tete, libelles, boutons. Le meme oubli existait dans les six
+	   themes. Constate le 2026-09-16 par tools/check-contraste.php. */
+	--fg-on-accent:      <?php echo couleur_lisible_sur('#c43d1a') ?>;
 	<?php endif ?>
 
 	/* Dérivés recalculés depuis l'accent courant — assombris pour fond clair */
@@ -348,7 +368,10 @@ i.icon:only-child { margin: 0; }
 }
 @media (max-width: 767.98px) {
 	.navbar-user .navbar-text { display: none; }
-	.navbar-user .navbar-account .dropdown-toggle .ml-2 { display: none; }
+	/* Le libelle du compte : le pont (`css/nf-bs5-bridge.css`) l'efface sous 576 px en le
+	   laissant aux lecteurs d'ecran. La regle qui vivait ici visait `.ml-2`, nom de
+	   Bootstrap 4 que le markup n'emet plus depuis la migration : elle ne selectionnait
+	   plus rien. */
 }
 .navbar-user .navbar-account { display: flex !important; flex-wrap: nowrap; align-items: center; gap: 4px; margin: 0 0 0 auto; padding: 0; list-style: none; flex: 0 0 auto; }
 .navbar-user .nav-link {
@@ -406,8 +429,12 @@ i.icon:only-child { margin: 0; }
 .card.panel-color .list-group-item { background: transparent; border-color: var(--fg-border); }
 .card.panel-color .list-group-item:hover { background: color-mix(in srgb, var(--fg-accent) 8%, transparent); color: var(--fg-accent); }
 .card.panel-color .badge { background: rgba(255, 255, 255, 0.9); color: var(--fg-accent); border: 0; }
-.card.panel-color .btn-primary { background: #fff; border-color: #fff; color: var(--fg-accent); }
-.card.panel-color .btn-primary:hover { background: #f3f3f3; border-color: #f3f3f3; }
+/* Fond = `on-accent`, texte = accent — comme blockcraft et granite. Ecrire `#fff` en dur
+   donnait l'accent sur du blanc : 1,86:1 sur le turquoise de nebula, 3,88:1 sur la lave de
+   forge. Le jeton, lui, est calcule pour rester lisible quel que soit l'accent choisi par
+   l'administrateur. Mesure : tools/check-contraste.php, 2026-09-16. */
+.card.panel-color .btn-primary { background: var(--fg-on-accent); border-color: var(--fg-on-accent); color: var(--fg-accent); }
+.card.panel-color .btn-primary:hover { filter: brightness(0.92); }
 
 /* =========================================================================
    §10 — Rows + gutters
@@ -421,7 +448,10 @@ i.icon:only-child { margin: 0; }
 .fg-header-banner .row-dark > [class*="col-"] { padding-left: 0; padding-right: 0; }
 .row.row-space { margin-top: 24px; }
 .row > [class*="col-"] > .card, .row > .col > .card, .row > [class*="col-"] > .widget, .row > .col > .widget { margin-bottom: 16px; }
-.row { margin-right: -15px; margin-left: -15px; }
+/* Les gouttieres de Bootstrap 5 valent 1,5 rem, soit -12 px de marge sur .row, compenses par les
+   12 px de padding de .container. Cette regle les remettait a -15 px — la valeur de Bootstrap 4,
+   ou la gouttiere valait 30 px. Les 3 px d'ecart depassaient donc de chaque cote : mesure a 390 px,
+   le document faisait 393 px et la page defilait lateralement. Bootstrap 5 s'en charge seul. */
 .row > [class*="col-"], .row > .col { padding-right: 15px; padding-left: 15px; }
 .card .row { margin-right: 0; margin-left: 0; }
 .card .row > [class*="col-"], .card .row > .col { padding-right: 8px; padding-left: 8px; }
@@ -463,15 +493,15 @@ i.icon:only-child { margin: 0; }
    §12 — Forms
    ======================================================================== */
 
-.form-control, .custom-select, textarea.form-control {
-	background: var(--fg-surface-2); border: 1px solid var(--fg-border);
+.form-control, .form-select, textarea.form-control {
+	background-color: var(--fg-surface-2); border: 1px solid var(--fg-border);
 	border-radius: var(--fg-radius-sm); padding: 8px 12px; font-size: 13.5px;
 	color: var(--fg-text);
 	transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
 }
 .form-control::placeholder { color: var(--fg-muted); }
-.form-control:focus, .form-control:focus-visible, .custom-select:focus {
-	outline: none; border-color: var(--fg-accent); background: var(--fg-surface);
+.form-control:focus, .form-control:focus-visible, .form-select:focus {
+	outline: none; border-color: var(--fg-accent); background-color: var(--fg-surface);
 	color: var(--fg-text-strong); box-shadow: 0 0 0 3px var(--fg-accent-soft);
 }
 .form-control.is-valid { border-color: var(--fg-success); }
@@ -482,16 +512,12 @@ i.icon:only-child { margin: 0; }
 .col-form-label, .form-label, label { color: var(--fg-text-strong); font-size: 13.5px; font-weight: 600; }
 .form-text, .text-muted { color: var(--fg-muted); }
 .input-group-text { background: var(--fg-surface-2); border: 1px solid var(--fg-border); color: var(--fg-muted); }
-/* Soude l'addon (icône) au champ : ce build BS ne gère pas le radius des
-   input-group (cf. .widget-search plus bas), d'où le décrochage icône/texte. */
-.input-group > .input-group-prepend > .input-group-text { border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: 0; }
-.input-group > .input-group-append  > .input-group-text { border-top-left-radius: 0;  border-bottom-left-radius: 0;  border-left: 0; }
-.input-group > .form-control:not(:first-child), .input-group > .custom-select:not(:first-child) { border-top-left-radius: 0;  border-bottom-left-radius: 0; }
-.input-group > .form-control:not(:last-child),  .input-group > .custom-select:not(:last-child)  { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.input-group > .form-control:not(:first-child) { border-top-left-radius: 0;  border-bottom-left-radius: 0; }
+.input-group > .form-control:not(:last-child)  { border-top-right-radius: 0; border-bottom-right-radius: 0; }
 /* BS4 fixe une height sur .form-control → empêche le stretch et le champ reste
    plus court que l'addon. height:auto le laisse s'étirer à la hauteur du groupe. */
-.input-group > .form-control, .input-group > .custom-select { height: auto; }
-.custom-control-input:checked ~ .custom-control-label::before { background: var(--fg-accent); border-color: var(--fg-accent); }
+.input-group > .form-control { height: auto; }
+.form-check-input:checked { background-color: var(--fg-accent); border-color: var(--fg-accent); }
 
 /* =========================================================================
    §13 — Nav tabs / pills
@@ -563,12 +589,6 @@ i.icon:only-child { margin: 0; }
    ======================================================================== */
 
 .badge { font-family: var(--fg-font); font-size: 11.5px; font-weight: 700; padding: 3px 7px; border-radius: 999px; display: inline-flex; align-items: center; vertical-align: middle; line-height: 1; }
-.badge-primary, .badge.badge-primary { background: var(--fg-accent); color: var(--fg-on-accent); }
-.badge-secondary { background: var(--fg-surface-2); color: var(--fg-text); border: 1px solid var(--fg-border); }
-.badge-success { background: var(--fg-success-soft); color: var(--fg-success); border: 1px solid color-mix(in srgb, var(--fg-success) 30%, transparent); }
-.badge-danger  { background: var(--fg-danger-soft);  color: var(--fg-danger);  border: 1px solid color-mix(in srgb, var(--fg-danger) 30%, transparent); }
-.badge-warning { background: var(--fg-warning-soft); color: var(--fg-warning); border: 1px solid color-mix(in srgb, var(--fg-warning) 30%, transparent); }
-.badge-info    { background: var(--fg-info-soft);    color: var(--fg-info);    border: 1px solid color-mix(in srgb, var(--fg-info) 30%, transparent); }
 
 /* =========================================================================
    §17 — Alerts
@@ -576,10 +596,10 @@ i.icon:only-child { margin: 0; }
 
 .alert { border-radius: var(--fg-radius-sm); border: 1px solid; font-size: 13.5px; padding: 12px 14px; }
 .alert i.icon:first-child, .alert i.fas:first-child { margin-right: 8px; font-size: 14px; vertical-align: middle; }
-.alert-success { background: var(--fg-success-soft); color: var(--fg-success); border-color: color-mix(in srgb, var(--fg-success) 30%, transparent); }
-.alert-danger  { background: var(--fg-danger-soft);  color: var(--fg-danger);  border-color: color-mix(in srgb, var(--fg-danger) 30%, transparent); }
-.alert-warning { background: var(--fg-warning-soft); color: var(--fg-warning); border-color: color-mix(in srgb, var(--fg-warning) 30%, transparent); }
-.alert-info    { background: var(--fg-info-soft);    color: var(--fg-info);    border-color: color-mix(in srgb, var(--fg-info) 30%, transparent); }
+.alert-success { background: var(--fg-success-soft); color: var(--bs-success-text-emphasis); border-color: color-mix(in srgb, var(--fg-success) 30%, transparent); }
+.alert-danger  { background: var(--fg-danger-soft);  color: var(--bs-danger-text-emphasis);  border-color: color-mix(in srgb, var(--fg-danger) 30%, transparent); }
+.alert-warning { background: var(--fg-warning-soft); color: var(--bs-warning-text-emphasis); border-color: color-mix(in srgb, var(--fg-warning) 30%, transparent); }
+.alert-info    { background: var(--fg-info-soft);    color: var(--bs-info-text-emphasis);    border-color: color-mix(in srgb, var(--fg-info) 30%, transparent); }
 
 /* =========================================================================
    §18 — Dropdowns / modals / pagination / breadcrumb
@@ -596,12 +616,11 @@ i.icon:only-child { margin: 0; }
 .modal-title { font-size: 17px; font-weight: 700; color: var(--fg-text-strong); line-height: 1.3; font-family: var(--fg-font-display); letter-spacing: 0.02em; }
 .modal-body { padding: 18px; }
 .modal-footer { background: var(--fg-surface-2); border-top: 1px solid var(--fg-border); padding: 12px 18px; gap: 6px; }
-.modal-header .close, .modal-header button.close {
-	width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;
-	font-size: 24px; padding: 0; margin: -8px -8px -8px auto; border-radius: var(--fg-radius-xs);
-	color: var(--fg-muted); background: transparent; border: 0; transition: background-color 120ms ease, color 120ms ease;
+.modal-header .btn-close {
+	width: 36px; height: 36px; margin: -8px -8px -8px auto; border-radius: var(--fg-radius-xs);
+	transition: background-color 120ms ease;
 }
-.modal-header .close:hover { background: var(--fg-surface-2); color: var(--fg-text-strong); }
+.modal-header .btn-close:hover { background-color: var(--fg-surface-2); }
 
 .page-link { background: var(--fg-surface); border: 1px solid var(--fg-border); color: var(--fg-text); border-radius: var(--fg-radius-xs); margin: 0 2px; padding: 6px 12px; font-size: 13px; font-weight: 600; transition: background-color 140ms ease, color 140ms ease; }
 .page-link:hover { background: var(--fg-accent-soft); color: var(--fg-accent-text); }
@@ -719,10 +738,10 @@ body .widget-user .avatar, body .widget-user img.avatar {
 .border-danger    { border-color: color-mix(in srgb, var(--fg-danger) 45%, var(--fg-border)) !important; }
 .border-warning   { border-color: color-mix(in srgb, var(--fg-warning) 45%, var(--fg-border)) !important; }
 .text-primary { color: var(--fg-accent-text) !important; }
-.text-info    { color: var(--fg-info) !important; }
-.text-success { color: var(--fg-success) !important; }
-.text-danger  { color: var(--fg-danger) !important; }
-.text-warning { color: var(--fg-warning) !important; }
+.text-info    { color: var(--bs-info-text-emphasis) !important; }
+.text-success { color: var(--bs-success-text-emphasis) !important; }
+.text-danger  { color: var(--bs-danger-text-emphasis) !important; }
+.text-warning { color: var(--bs-warning-text-emphasis) !important; }
 .bg-info    { background-color: var(--fg-info) !important; }
 .bg-success { background-color: var(--fg-success) !important; }
 .bg-danger  { background-color: var(--fg-danger) !important; }
@@ -856,13 +875,17 @@ body { background: var(--fg-bg); }
 /* Contraste des boutons pleins (WCAG AA), jour + nuit. primary (orange lave) assombri
    (le blanc passait sous AA sur l'accent clair) ; warning (gold) = texte sombre ;
    info/success/danger = fond assombri + texte blanc. */
-.btn-primary { background: color-mix(in srgb, var(--fg-accent) 84%, #000); border-color: color-mix(in srgb, var(--fg-accent) 84%, #000); color: #fff; }
+/* Le fond n'est plus assombri : cette correction servait quand le texte etait fige en
+   blanc. Maintenant que le texte prend `--fg-on-accent` — calcule POUR l'accent —
+   assombrir le fond decale la couleur de reference et degrade le rapport au lieu de
+   l'ameliorer : mesure 3,56:1 sur la pagination de forge, contre 5,2:1 sans. */
+.btn-primary { background: var(--fg-accent); border-color: var(--fg-accent); color: var(--fg-on-accent); }
 .btn-warning { color: #170f0c; }
 [data-theme="vitrine-noop"] .btn-warning { background: color-mix(in srgb, var(--fg-warning) 72%, #000); border-color: color-mix(in srgb, var(--fg-warning) 72%, #000); color: #fff; }
 .btn-info, .btn-success, .btn-danger { color: #fff; }
 .btn-info    { background: color-mix(in srgb, var(--fg-info) 80%, #000);    border-color: color-mix(in srgb, var(--fg-info) 80%, #000); }
-.btn-success { background: color-mix(in srgb, var(--fg-success) 72%, #000); border-color: color-mix(in srgb, var(--fg-success) 72%, #000); }
-.btn-danger  { background: color-mix(in srgb, var(--fg-danger) 78%, #000);  border-color: color-mix(in srgb, var(--fg-danger) 78%, #000); }
+.btn-success { background: color-mix(in srgb, var(--fg-success) 60%, #000); border-color: color-mix(in srgb, var(--fg-success) 60%, #000); }
+.btn-danger  { background: color-mix(in srgb, var(--fg-danger) 72%, #000);  border-color: color-mix(in srgb, var(--fg-danger) 72%, #000); }
 
 /* Navbar : recentrage vertical de l'icône de marque (tachymètre admin) qui dépassait. */
 .navbar-user .navbar-brand { display: inline-flex; align-items: center; }
@@ -906,12 +929,32 @@ body::before {
 .nb-nav-in { max-width: 1240px; margin: 0 auto; padding: 0 28px; height: var(--nb-nav-h); display: flex; align-items: center; gap: 26px; }
 .nb-logo { display: flex; align-items: center; gap: 11px; font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 20px; color: #fff; text-decoration: none; white-space: nowrap; }
 /* Logo de marque : PNG (tuile + glow inclus), s'adapte au mode (clair/sombre) et à la taille. */
+/* Le nom du site se RÉDUIT, avec des points de suspension, plutôt que de pousser les boutons hors de la
+   barre : un nom de communauté long faisait déborder la page sur téléphone (check-mise-en-page, 2026-09-22). */
+.nb-logo { min-width: 0; }
+.nb-logo-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.nb-mark { flex: 0 0 auto; }
 .nb-mark { width: 36px; height: 36px; border-radius: 10px; background: url('../images/brand/nf-dark.png') center / contain no-repeat; display: grid; place-items: center; }
 .nb-mark > i { display: none; }
 [data-theme="dark"] .nb-mark { background-image: url('../images/brand/nf-light.png'); }
-.nb-links { display: flex; gap: 4px; }
+.nb-links { display: flex; gap: 4px; min-width: 0; }
 .nb-links a { padding: 9px 15px; border-radius: 9px; color: var(--fg-muted); font-weight: 500; font-size: 14.5px; text-decoration: none; transition: .15s; }
 .nb-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.045); }
+/* Le menu est le widget « Navigation » de la zone du meme nom, rendu DANS la barre : il arrive
+   enveloppe dans les lignes et colonnes de la zone, et sous forme de liste Bootstrap. On neutralise
+   cet emballage pour qu'il se pose a plat dans la barre, sans gouttieres ni marges heritees. */
+.nb-links .row { --bs-gutter-x: 0; --bs-gutter-y: 0; margin: 0; flex-wrap: nowrap; align-items: center; row-gap: 0; }
+.nb-links .row > * { padding: 0; display: flex; align-items: center; }
+/* La marge basse des widgets en colonne (plus haut dans cette feuille) s'appliquait AUSSI au menu
+   de la barre : 16 px sous les liens, donc 8 px de decalage vers le haut une fois centres. Le
+   selecteur reprend la MEME forme que celui qu'il annule, sinon il perd en specificite et la marge
+   reste. Mesure : centre du logo - centre du premier lien = 0 px. */
+.nb-links .row > [class*="col-"] > .widget,
+.nb-links .row > .col > .widget { margin: 0; }
+.nb-links .nav { gap: 4px; flex-wrap: nowrap; }
+.nb-links .nav-link.active { color: #fff; background: rgba(255, 255, 255, 0.075); }
+/* Le widget emet un <i class="icon"> meme sans icone : vide, il ne laisse qu'une espace. */
+.nb-links .nav-link .icon:empty { display: none; }
 .nb-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
 .nb-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 9px; font-weight: 600; font-size: 14px; text-decoration: none; border: 1px solid transparent; transition: .18s; cursor: pointer; white-space: nowrap; }
 .nb-btn-ghost { background: rgba(255, 255, 255, 0.04); border-color: var(--fg-border); color: var(--fg-text); }
@@ -961,18 +1004,39 @@ body::before {
 .nb-foot-tools { display: flex; gap: 10px; align-items: center; }
 .nb-credit { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--fg-border); color: var(--fg-muted); font-size: 12.5px; line-height: 1.6; }
 
+/* Le bouton du menu, visible sous 860 px seulement. */
+.nb-burger { display: none; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 11px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--fg-border); color: var(--fg-text); font-size: 17px; cursor: pointer; transition: .2s ease; }
+.nb-burger:hover, .nb-burger:focus-visible { color: #fff; border-color: color-mix(in srgb, var(--fg-accent) 50%, transparent); }
+
 @media (max-width: 860px) {
-	.nb-links { display: none; }
+	.nb-burger { display: inline-flex; }
+	/* Le menu en panneau déroulant sous la barre, révélé par le bouton — il disparaissait. */
+	.nb-links {
+		position: absolute; top: 100%; left: 0; right: 0;
+		display: block;
+		background: rgba(7, 10, 16, 0.97); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+		border-bottom: 1px solid var(--fg-border);
+		padding: 0 16px; max-height: 0; overflow: hidden; opacity: 0; visibility: hidden;
+		transition: max-height .25s ease, opacity .2s ease, padding .25s ease;
+	}
+	.nb-nav.open .nb-links { max-height: 70vh; overflow-y: auto; opacity: 1; visibility: visible; padding: 8px 16px 16px; }
+	.nb-links .row, .nb-links .nav { flex-direction: column; align-items: stretch; }
+	.nb-links .row > * { width: 100%; }
+	.nb-links .nav-link { display: block; padding: 13px 4px; border-radius: 0; border-bottom: 1px solid var(--fg-border); }
+	.nb-links .nav-item:last-child .nav-link { border-bottom: 0; }
+	/* Le repli du widget de navigation n'a pas lieu d'être dans ce panneau, déjà replié. */
+	.nb-links .nf-nav-toggle { display: none !important; }
+	.nb-links .nf-nav-repliable > .nav { display: flex !important; }
 	.nb-nav-in { gap: 14px; padding: 0 16px; }
 	.nb-actions .nb-btn span { display: none; }
 }
 
 /* Popover Bootstrap (carte profil au survol d'un membre) en sombre */
+/* Bootstrap 5 dessine la flèche avec ses variables : `--bs-popover-bg` et `--bs-popover-border-color`.
+   Les règles de Bootstrap 4 (`.bs-popover-top > .arrow`, `[x-placement]`) qui la coloraient ne
+   s'appliquaient plus à rien : la flèche restait blanche sous une bulle sombre. */
+.popover { --bs-popover-bg: var(--fg-surface, #0d121b); --bs-popover-border-color: var(--fg-border, rgba(255, 255, 255, .12)); --bs-popover-header-bg: var(--fg-surface-2, #131a26); --bs-popover-header-color: var(--fg-text, #e7eef6); --bs-popover-body-color: var(--fg-text, #e7eef6); }
 .popover { background: var(--fg-surface, #0d121b); border-color: var(--fg-border, rgba(255, 255, 255, .12)); color: var(--fg-text, #e7eef6); box-shadow: 0 14px 44px -14px rgba(0, 0, 0, .65); }
 .popover .popover-header { background: var(--fg-surface-2, #131a26); border-bottom-color: var(--fg-border, rgba(255, 255, 255, .09)); color: var(--fg-text, #e7eef6); }
 .popover .popover-body, .popover .popover-body * { color: var(--fg-text, #e7eef6); }
 .popover .popover-body a, .popover a { color: var(--fg-accent, #2dd4bf); }
-.bs-popover-top > .arrow::after, .bs-popover-auto[x-placement^="top"] > .arrow::after { border-top-color: var(--fg-surface, #0d121b); }
-.bs-popover-bottom > .arrow::after, .bs-popover-auto[x-placement^="bottom"] > .arrow::after { border-bottom-color: var(--fg-surface-2, #131a26); }
-.bs-popover-left > .arrow::after, .bs-popover-auto[x-placement^="left"] > .arrow::after { border-left-color: var(--fg-surface, #0d121b); }
-.bs-popover-right > .arrow::after, .bs-popover-auto[x-placement^="right"] > .arrow::after { border-right-color: var(--fg-surface, #0d121b); }

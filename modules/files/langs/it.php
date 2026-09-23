@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'2e5318de' => '%d file aggiunti',
@@ -38,4 +39,15 @@ return [
 	'7a650382' => 'Questa azione è definitiva.',
 	'f6e75d04' => 'Gestore file',
 	'9ec37f2b' => 'Gestore file: albero, caricamento, cartelle e permessi di lettura per file/cartella.',
+	'71fc8e0e' => 'Dimensione',
+	'0aac9844' => 'Data',
+	'0eda40d4' => 'Riproduci',
+	'c38e261e' => 'Percorso',
+	'6febd6fd' => 'File',
+	'52c9bbab' => 'Modifica',
+	'aef3a525' => 'Cartella %s',
+	'c07ef58d' => 'File %s',
+	'a4e674f4' => 'Nessun elemento selezionato',
+	'6ddd7401' => '%s elemento selezionato|%s elementi selezionati',
+	'ca977443' => 'Rimuovi',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Module Révisions — historique de contenu générique. Un snapshot JSON par enregistrement,
@@ -14,7 +15,8 @@ use NF\NeoFrag\Addons\Module;
 class Revisions extends Module
 {
 	// Types de contenu suivis (whitelist : un type inconnu n'est jamais rendu/restauré).
-	const ALLOWED_TYPES = ['news', 'article'];
+	// Types revisables : declares par les modules (Module::content_types(), drapeau `revisable`).
+	// Sixieme et derniere copie en dur de la meme connaissance, retiree le 2026-09-15.
 
 	protected function __info()
 	{
@@ -25,6 +27,10 @@ class Revisions extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '1.0',
 			'depends'     => ['neofrag' => '1.0.0']
 		];
@@ -32,7 +38,9 @@ class Revisions extends Module
 
 	public static function is_allowed($type)
 	{
-		return in_array($type, self::ALLOWED_TYPES, TRUE);
+		$types = self::content_types();
+
+		return !empty($types[$type]['revisable']);
 	}
 
 	/**
@@ -142,20 +150,20 @@ class Revisions extends Module
 			$fields   = $rev ? $rev['fields'] : [];
 			$title    = isset($fields['title']) ? (string)$fields['title'] : '';
 			$body     = isset($fields['content']) ? (string)$fields['content'] : '';
-			$author   = $row['username'] ? htmlspecialchars($row['username']) : '<i>'.$this->lang('Système').'</i>';
+			$author   = $row['username'] ? htmlspecialchars((string) ($row['username'])) : '<i>'.$this->lang('Système').'</i>';
 			$is_first = ($i === 0);
 
-			$preview  = '<details><summary>'.htmlspecialchars(mb_strimwidth($title, 0, 60, '…')).'</summary>'
+			$preview  = '<details><summary>'.htmlspecialchars((string) (mb_strimwidth($title, 0, 60, '…'))).'</summary>'
 				.'<div style="max-height:240px;overflow:auto;border:1px solid var(--nf-border,#444);padding:8px;margin-top:6px;border-radius:4px;">'
-				.'<strong>'.htmlspecialchars($title).'</strong>'
-				.'<pre style="white-space:pre-wrap;word-break:break-word;margin:6px 0 0;">'.htmlspecialchars($body).'</pre>'
+				.'<strong>'.htmlspecialchars((string) ($title)).'</strong>'
+				.'<pre style="white-space:pre-wrap;word-break:break-word;margin:6px 0 0;">'.htmlspecialchars((string) ($body)).'</pre>'
 				.'</div></details>';
 
 			$restore = '';
 			if ($can_restore && !$is_first)
 			{
 				$restore = '<a class="btn btn-sm btn-outline-warning" href="'.url($restore_base.'/'.(int)$row['id']).'" '
-					.'data-confirm="'.htmlspecialchars($this->lang('Restaurer cette version ? La version actuelle sera conservée dans l\'historique.'), ENT_QUOTES).'">'
+					.'data-confirm="'.htmlspecialchars((string) ($this->lang('Restaurer cette version ? La version actuelle sera conservée dans l\'historique.')), ENT_QUOTES).'">'
 					.icon('fas fa-undo').' '.$this->lang('Restaurer').'</a>';
 			}
 			else if ($is_first)
@@ -165,9 +173,9 @@ class Revisions extends Module
 
 			$out .= '<tr>'
 				.'<td>'.(int)$row['id'].'</td>'
-				.'<td><small>'.htmlspecialchars($row['created_at']).'</small></td>'
+				.'<td><small>'.htmlspecialchars((string) ($row['created_at'])).'</small></td>'
 				.'<td>'.$author.'</td>'
-				.'<td><small>'.htmlspecialchars($row['summary']).($row['lang'] ? ' ('.htmlspecialchars($row['lang']).')' : '').'</small></td>'
+				.'<td><small>'.htmlspecialchars((string) ($row['summary'])).($row['lang'] ? ' ('.htmlspecialchars((string) ($row['lang'])).')' : '').'</small></td>'
 				.'<td>'.$preview.'</td>'
 				.($can_restore ? '<td class="text-end">'.$restore.'</td>' : '')
 				.'</tr>';

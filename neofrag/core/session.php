@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -36,6 +37,29 @@ class Session extends Core
 				$this->db	->where('remember', FALSE)
 							->where('last_activity <', $expiration_date->sql())
 							->delete('nf_session');
+
+				/**
+				 * Historique des connexions : purge au-delà de la durée de conservation.
+				 *
+				 * `nf_session_history` conserve IP, nom d'hôte, référent, agent et mode
+				 * d'authentification à chaque connexion. Rien ne l'effaçait : ni le cœur, ni aucun
+				 * module. Une table de données personnelles qui ne se vide jamais est une dette de
+				 * conformité, même quand elle ne pèse que cinq lignes — ce qui était le cas en
+				 * production le 2026-09-20.
+				 *
+				 * Défaut : 395 jours, soit treize mois. C'est la durée couramment retenue pour des
+				 * journaux de connexion, et elle laisse une comparaison d'une année sur l'autre.
+				 * `0` désactive la purge, pour l'exploitant que son propre cadre oblige à garder plus.
+				 *
+				 * Posée ici, dans le même test que la purge des sessions, pour deux raisons : le
+				 * produit n'a pas de tâche planifiée obligatoire, et un site sans visite n'a rien à
+				 * purger de toute façon.
+				 */
+				if ($retention = (int) $this->config->nf_session_history_days)
+				{
+					$this->db	->where('date <', $this->date()->sub($retention.' days')->sql())
+								->delete('nf_session_history');
+				}
 			}
 
 			$cookie_name = $this->config->nf_cookie_name;
@@ -155,7 +179,22 @@ class Session extends Core
 	// Régénère l'ID de session (+ cookie). Appelé à la création/expiration et surtout à
 	// l'élévation de privilège (login). Sur une session existante, l'UPDATE renomme l'ID en
 	// place (WHERE = ancien ID, SET = nouveau) → l'ID fixé avant le login n'existe plus en
-	// base : neutralise la fixation de session. La boucle gère la collision (improbable) d'ID.
+	// base : neutralise la fixation de session.
+	//
+	// La boucle de tirage est BORNÉE depuis le 2026-09-16, et c'est un correctif de fond.
+	//
+	// Elle s'écrivait `do { nouvel ID } while (!commit());` — sans limite. Elle était pensée pour
+	// rattraper une collision d'identifiant, dont la probabilité est négligeable. Mais `commit()`
+	// échoue aussi pour des raisons qu'un nouvel identifiant ne corrige PAS : si la ligne ne peut
+	// pas être écrite, aucun tirage ne la fera passer, et la boucle tourne jusqu'à ce que PHP tue
+	// la requête au bout de `max_execution_time`.
+	//
+	// Le cas réel, constaté sur le site de démonstration : une session « se souvenir de moi » dont
+	// le compte a été supprimé. Elle échappe au nettoyage des sessions expirées (réservé aux
+	// sessions sans `remember`), déclenche donc ce renouvellement, et sa clé étrangère vers un
+	// utilisateur absent fait échouer l'écriture indéfiniment. Mesuré : **60 s sans réponse**, pour
+	// 0,16 s avec une session saine. Le visiteur n'a aucun moyen de s'en sortir — vider le cookie
+	// ou passer en navigation privée, et c'est tout.
 	private function _renew_id()
 	{
 		$cookie_name = $this->config->nf_cookie_name;
@@ -165,20 +204,53 @@ class Session extends Core
 			$cookie_name .= '_https';
 		}
 
-		do
+		// Deux passes. La première couvre la collision d'identifiant. Si elle échoue, la cause la
+		// plus probable est la référence à un utilisateur qui n'existe plus : on la détache et on
+		// retente, ce qui rend au visiteur une session anonyme utilisable plutôt qu'une page morte.
+		foreach ([FALSE, TRUE] as $detacher_utilisateur)
 		{
-			$this->_session->set('id', unique_id());
-		}
-		while (!$this->_session->commit());
+			if ($detacher_utilisateur)
+			{
+				$this->_session->set('user', NULL);
+			}
 
-		setcookie($cookie_name, $this->_session->id, [
-			'expires'  => strtotime('+1 year'),
+			for ($essai = 0; $essai < 5; $essai++)
+			{
+				$this->_session->set('id', unique_id());
+
+				if ($this->_session->commit())
+				{
+					setcookie($cookie_name, $this->_session->id, [
+						'expires'  => strtotime('+1 year'),
+						'path'     => $this->url->base,
+						'domain'   => $this->url->domain,
+						'secure'   => (bool)$this->url->https,
+						'httponly' => TRUE,
+						'samesite' => 'Lax'
+					]);
+
+					return;
+				}
+			}
+		}
+
+		// Dix tentatives infructueuses : la session est inécrivable. On l'abandonne franchement —
+		// cookie effacé, modèle vide — plutôt que de boucler. La requête en cours se termine sans
+		// session, et la suivante en ouvre une neuve. Un refus explicite vaut mieux qu'une page qui
+		// ne répond jamais.
+		trigger_error('Session inécrivable après dix tentatives : session abandonnée.', E_USER_WARNING);
+
+		setcookie($cookie_name, '', [
+			'expires'  => 1,
 			'path'     => $this->url->base,
 			'domain'   => $this->url->domain,
 			'secure'   => (bool)$this->url->https,
 			'httponly' => TRUE,
 			'samesite' => 'Lax'
 		]);
+
+		$this->_session = $this->model2('session');
+		$this->_data    = $this->_session->data->__extends($this);
 	}
 
 	public function login($user, $remember = NULL)

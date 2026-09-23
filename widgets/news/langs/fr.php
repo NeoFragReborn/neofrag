@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traductions FR (auto-générées 2026-05-03)
@@ -12,5 +13,6 @@ return [
 	'a89c656a' => 'Actualités récentes',
 	'c8781d5e' => 'Catégories',
 	'cf8e3b18' => 'Tags',
-	'e27e3273' => 'Aucune catégorie pour le moment'
+	'e27e3273' => 'Aucune catégorie pour le moment',
+	'd2325b6e' => 'Aucun tag pour le moment',
 ];

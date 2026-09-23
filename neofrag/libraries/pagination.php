@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -189,8 +190,12 @@ class Pagination extends Library
 			}
 			else
 			{
+				// Quand le nombre par page figure dans l'adresse, `page/N` doit le précéder, page 1
+				// comprise : la route `{pages}` n'accepte que `page/N/10`, jamais `/10` seul. Le bouton
+				// « 1 » de chaque liste à nombre réglable menait ainsi à un 404 (`admin/games/10`),
+				// trouvé par check-liens le 2026-09-22.
 				$url = $this->array()
-							->append_if($p > 1,  'page/'.$p)
+							->append_if($p > 1 || !$fixed, 'page/'.$p)
 							->append_if(!$fixed, $items_per_page);
 
 				if (!$url->empty() || !is_empty($base_url))
@@ -198,12 +203,16 @@ class Pagination extends Library
 					$url->prepend(is_empty($base_url) ? 'index' : $base_url);
 				}
 
-				$buttons[] = '<a class="btn '.(($current_page == $p) ? 'btn-primary' : 'btn-light').'" href="'.url($url->implode('/')).(!empty($_GET) ? '?'.http_build_query($_GET, NULL, '&', PHP_QUERY_RFC3986) : '').'">'.$p.'</a>';
+				$buttons[] = '<a class="btn '.(($current_page == $p) ? 'btn-primary' : 'btn-light').'" href="'.url($url->implode('/')).(!empty($_GET) ? '?'.http_build_query($_GET, '', '&', PHP_QUERY_RFC3986) : '').'">'.$p.'</a>';
 			}
 		}
 
+		// `justify-content-end` et pas seulement `text-end` sur le panneau : `.pagination` est un
+		// conteneur FLEX depuis Bootstrap 4, et l'alignement du texte n'y fait rien. Les boutons
+		// restaient colles a gauche d'un bandeau qui prend toute la largeur. Signale
+		// le 2026-09-22.
 		return $this->html()
-					->attr('class', 'pagination')
+					->attr('class', 'pagination justify-content-end')
 					->content($buttons);
 	}
 
@@ -229,7 +238,11 @@ class Pagination extends Library
 
 	public function fix_items_per_page($items_per_page)
 	{
-		$this->_items_per_page = $items_per_page;
+		// Le nombre vient le plus souvent d'un RÉGLAGE, et un réglage enregistré comme texte reste du
+		// texte : `events_per_page` valait "10". Depuis `strict_types`, `array_slice()` le refuse, et la
+		// page des événements rendait 404 dès qu'elle avait quelque chose à paginer. La conversion vit
+		// ici, à la frontière, pour tous les appelants à la fois.
+		$this->_items_per_page = (int) $items_per_page;
 
 		$this->_fixed = TRUE;
 

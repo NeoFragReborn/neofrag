@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,13 +11,14 @@ abstract class Driver
 {
 	protected $info;
 
-	public function __construct($hostname, $username, $password, $database)
+	public function __construct($hostname, $username, $password, $database, $port = 3306)
 	{
 		$this->info = (object)[
 			'hostname' => $hostname,
 			'username' => $username,
 			'password' => $password,
-			'database' => $database
+			'database' => $database,
+			'port'     => (int) $port
 		];
 	}
 

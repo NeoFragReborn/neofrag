@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -98,7 +99,7 @@ class Admin extends Controller_Module
 		}
 		unset($r);
 
-		return $this->admin_back('admin/talks', $this->lang('Discussions')).$this->admin_card('fas fa-flag', $this->lang('Signalements de messages'), $this->view('admin/reports', ['reports' => $reports]));
+		return $this->admin_card('fas fa-flag', $this->lang('Signalements de messages'), $this->view('admin/reports', ['reports' => $reports]));
 	}
 
 	public function add()
@@ -106,7 +107,7 @@ class Admin extends Controller_Module
 		$this	->subtitle($this->lang('Ajouter une discussion'))
 				->form()
 				->add_rules('talks')
-				->add_submit($this->lang('Ajouter'))
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus')
 				->add_back('admin/talks');
 
 		if ($this->form()->is_valid($post))
@@ -118,7 +119,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/talks');
 		}
 
-		return $this->admin_back('admin/talks', $this->lang('Discussions')).$this->admin_card('far fa-comment', $this->lang('Ajouter une discussion'), $this->form()->display());
+		return $this->admin_card('far fa-comment', $this->lang('Ajouter une discussion'), $this->form()->display());
 	}
 
 	public function _edit($talk_id, $title)
@@ -140,7 +141,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/talks');
 		}
 
-		return $this->admin_back('admin/talks', $this->lang('Discussions')).$this->admin_card('far fa-comment', $this->lang('Édition de la discussion').' — '.$title, $this->form()->display());
+		return $this->admin_card('far fa-comment', $this->lang('Édition de la discussion').' — '.$title, $this->form()->display());
 	}
 
 	public function _admin_delete($talk_id, $title)

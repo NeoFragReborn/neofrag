@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -13,9 +14,9 @@ class Colorpicker extends Text
 		parent::__invoke($name);
 
 		$this->_check[] = function($post, &$data){
-			if (isset($post[$this->_name]) && $post[$this->_name] !== '' && !get_colors($post[$this->_name]))
+			if (isset($post[$this->_name]) && $post[$this->_name] !== '' && !is_color($post[$this->_name]))
 			{
-				$this->_errors[] = 'Couleur invalide';
+				$this->_errors[] = $this->lang('Couleur invalide');
 			}
 		};
 
@@ -27,6 +28,6 @@ class Colorpicker extends Text
 
 		return $this->addon('fas fa-eye-dropper', 'right')
 					->addon($this->label()->title('<i></i>'))
-					->size('col-3');
+					->size('col-12 col-sm-3');
 	}
 }

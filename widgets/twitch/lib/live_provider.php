@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Abstraction « provider de statut live » : chaque plateforme (Twitch, YouTube…) implémente fetch()

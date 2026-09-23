@@ -1,12 +1,26 @@
 # === Secrets & config locale (jamais versionnés) ===
-# `/config` couvre tout le dossier : db.php, crypt.php, password.php, email.php, neofrag.php
-# et url.php sont générés par l'installeur et propres à chaque déploiement.
-/config
+#
+# `db.php`, `crypt.php`, `password.php`, `email.php`, `neofrag.php` et `url.php` sont écrits par
+# l'installateur et propres à chaque déploiement. Une fois le site installé, ils portent le mot de
+# passe de la base, la clé de chiffrement et le sel des mots de passe : les suivre, c'est risquer
+# de les pousser au premier `git add -A`.
+#
+# On exclut donc TOUT par défaut, et on nomme les exceptions. Ce sens-là compte : un fichier de
+# configuration ajouté demain sera ignoré sans qu'on y pense, alors qu'une liste d'exclusions
+# l'aurait laissé passer en silence.
+/config/*
+
+# Ce qui, lui, doit vivre dans le dépôt : les gabarits qui montrent la forme de chaque fichier
+# sans en porter la valeur, la garde Apache du dossier, et de quoi comprendre tout cela.
+!/config/*.php.dist
+!/config/.htaccess
+!/config/README.md
 
 # === Runtime / généré ===
 /backups/*
 !/backups/.htaccess
-/cache
+/cache/*
+!/cache/.htaccess
 /logs/*
 !/logs/.gitkeep
 !/logs/.htaccess
@@ -42,3 +56,7 @@ install/db.txt
 # Fichiers de sauvegarde d'édition, ne jamais versionner
 *.bak
 *.bak/
+
+# Graphify : graphe de connaissance genere depuis le code (graph.json, rapport, cache).
+# Artefact de generation, 42 Mo, reconstructible en ~55 s par `/graphify .` — pas versionne.
+graphify-out/

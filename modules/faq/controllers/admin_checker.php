@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace NF\Modules\Faq\Controllers;
 use NF\NeoFrag\Loadables\Controllers\Module_Checker;
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -15,9 +16,14 @@ class Events extends Widget
 		return [
 			'title'       => $this->lang('Événements'),
 			'description' => $this->lang('Calendrier ou liste des événements à venir — module gaming.'),
+			'icon'        => 'fas fa-calendar-check',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => ['gaming'],
+			'requires'    => [],
 			'version'     => '1.0',
 			'depends'     => [
 				'neofrag' => '0.2.0'

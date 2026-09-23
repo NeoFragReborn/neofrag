@@ -1,13 +1,13 @@
 <?php $f = $filters ?? ['status' => '', 'user' => '']; ?>
 
-<form action="<?php echo url($this->url->request) ?>" method="get" class="row form-inline mb-3">
+<form action="<?php echo url($this->url->request) ?>" method="get" class="row mb-3">
 	<div class="col-md-5 mb-1">
 		<label class="visually-hidden" for="filter-user"><?php echo $this->lang('Utilisateur') ?></label>
 		<input type="text" id="filter-user" name="user" class="form-control form-control-sm w-100" placeholder="<?php echo htmlspecialchars($this->lang('Filtrer par utilisateur (mentionné ou auteur)…'), ENT_QUOTES) ?>" value="<?php echo htmlspecialchars($f['user']) ?>" />
 	</div>
 	<div class="col-md-3 mb-1">
 		<label class="visually-hidden" for="filter-status"><?php echo $this->lang('Statut') ?></label>
-		<select id="filter-status" name="status" class="form-control form-control-sm w-100">
+		<select id="filter-status" name="status" class="form-select form-select-sm w-100">
 			<option value=""       <?php echo $f['status'] === ''       ? 'selected' : '' ?>><?php echo $this->lang('Toutes les mentions') ?></option>
 			<option value="unread" <?php echo $f['status'] === 'unread' ? 'selected' : '' ?>><?php echo $this->lang('Non lues uniquement') ?></option>
 			<option value="read"   <?php echo $f['status'] === 'read'   ? 'selected' : '' ?>><?php echo $this->lang('Lues uniquement') ?></option>

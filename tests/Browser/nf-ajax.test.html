@@ -1,0 +1,182 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>NF.ajax — contrat de la couche réseau</title>
+
+<!--
+  `NF.ajax` est le passage obligé de tout le front : modales, suppressions, formulaires, popovers.
+  Cinq régressions de la dé-jQuery sont passées par lui, et la plus vicieuse était celle-ci :
+
+      jQuery ne déclenchait pas `.done()` sur un 404. `fetch`, lui, RÉSOUT quand même — et livre
+      le corps de la page d'erreur. Un appelant en `dataType: 'text'` insérait donc la page
+      « 404 Not Found » dans le DOM comme si de rien n'était. Constaté dans le Live Editor.
+
+  Le garde est écrit dans `neofrag/views/theme/main.tpl.php`. Rien ne le vérifiait : ce fichier est
+  un gabarit PHP, hors de portée des tests PHP comme des tests de navigateur classiques.
+
+  Ici, `window.fetch` est remplacé par un double qui rend ce qu'on lui demande. On éprouve donc le
+  CONTRAT de `NF.ajax` — statut, type de corps, en-têtes, sérialisation — sans réseau ni serveur.
+-->
+
+<script>window.__nfNonce = 'NONCE-TEST';</script>
+<script src="/harness.js"></script>
+<script src="/nf.js"></script>
+
+<body>
+
+<script>
+// ── Le double de `fetch` ─────────────────────────────────────────────────────
+//
+// Il retient le dernier appel pour qu'on puisse l'inspecter, et rend la réponse programmée.
+var dernier = null;
+
+function reponse(statut, corps, json) {
+	return {
+		ok:     statut >= 200 && statut < 300,
+		status: statut,
+		text:   function () { return Promise.resolve(corps); },
+		json:   function () { return Promise.resolve(json); }
+	};
+}
+
+function programmer(statut, corps, json) {
+	window.fetch = function (url, init) {
+		dernier = { url: url, init: init };
+		return Promise.resolve(reponse(statut, corps, json));
+	};
+}
+
+// Les épreuves sont asynchrones : on les enchaîne, et on ne rend le verdict qu'à la fin.
+var etapes = [];
+
+function etape(fn) { etapes.push(fn); }
+
+function derouler(i) {
+	if (i >= etapes.length) { NFTest.fini(); return; }
+
+	var suite = function () { derouler(i + 1); };
+
+	try {
+		var r = etapes[i]();
+		if (r && typeof r.then === 'function') { r.then(suite, function (e) {
+			NFTest.verifie('étape ' + i + ' : aucune exception', 'aucune', String(e));
+			suite();
+		}); }
+		else { suite(); }
+	}
+	catch (e) {
+		NFTest.verifie('étape ' + i + ' : aucune exception', 'aucune', String(e));
+		suite();
+	}
+}
+
+// ── 1. Un statut d'erreur doit REJETER ───────────────────────────────────────
+etape(function () {
+	programmer(404, '<h1>404 Not Found</h1>', null);
+
+	return NF.ajax({ url: '/page-absente', dataType: 'text' }).then(
+		function (corps) {
+			NFTest.verifie('404 : la promesse doit REJETER, pas résoudre',
+				'rejet', 'résolu avec ' + String(corps).slice(0, 24));
+		},
+		function (erreur) {
+			NFTest.verifie('404 : la promesse rejette', true, erreur instanceof Error);
+			NFTest.verifie('404 : le statut est porté par l\'erreur', 404, erreur.status);
+			NFTest.verifie('404 : le corps de la page d\'erreur n\'est PAS livré',
+				-1, String(erreur.message).indexOf('404 Not Found'));
+		}
+	);
+});
+
+// ── 2. Un 500 rejette aussi, avec son statut ────────────────────────────────
+etape(function () {
+	programmer(500, 'boum', null);
+
+	return NF.ajax({ url: '/erreur', dataType: 'text' }).then(
+		function () { NFTest.verifie('500 : rejette', 'rejet', 'résolu'); },
+		function (erreur) { NFTest.verifie('500 : le statut est porté par l\'erreur', 500, erreur.status); }
+	);
+});
+
+// ── 3. Un 200 en `dataType: 'text'` rend le TEXTE ───────────────────────────
+etape(function () {
+	programmer(200, 'bonjour', { a: 1 });
+
+	return NF.ajax({ url: '/ok', dataType: 'text' }).then(function (corps) {
+		NFTest.verifie('200 + dataType text : rend le texte', 'bonjour', corps);
+	});
+});
+
+// ── 4. Un 200 sans `dataType` rend le JSON ──────────────────────────────────
+etape(function () {
+	programmer(200, 'bonjour', { a: 1 });
+
+	return NF.ajax({ url: '/ok' }).then(function (donnees) {
+		NFTest.verifie('200 sans dataType : rend le JSON décodé', 1, donnees && donnees.a);
+	});
+});
+
+// ── 5. Même origine : l'en-tête qui identifie un appel AJAX ─────────────────
+//
+// Le CMS s'en sert pour répondre un fragment plutôt qu'une page entière. L'oublier ferait injecter
+// une page complète — mise en page comprise — dans une modale.
+etape(function () {
+	programmer(200, '', {});
+
+	return NF.ajax({ url: '/interne' }).then(function () {
+		NFTest.verifie('même origine : X-Requested-With est posé',
+			'XMLHttpRequest', dernier.init.headers['X-Requested-With']);
+		NFTest.verifie('les cookies suivent la requête', 'same-origin', dernier.init.credentials);
+	});
+});
+
+// ── 6. Origine étrangère : ne pas divulguer l'en-tête ni forcer les cookies ─
+etape(function () {
+	programmer(200, '', {});
+
+	return NF.ajax({ url: 'https://exemple.invalid/x' }).then(function () {
+		NFTest.verifie('origine étrangère : pas de X-Requested-With',
+			undefined, dernier.init.headers['X-Requested-With']);
+	});
+});
+
+// ── 7. Sérialisation d'un tableau : `clé[]`, sans jamais doubler les crochets ─
+etape(function () {
+	programmer(200, '', {});
+
+	return NF.post('/envoi', { simple: 'a', liste: ['x', 'y'], 'deja[]': ['z'] }).then(function () {
+		var envoye = dernier.init.body.toString();
+
+		NFTest.verifie('POST : valeur simple', true, envoye.indexOf('simple=a') !== -1);
+		NFTest.verifie('POST : tableau sérialisé en liste[]', true, envoye.indexOf('liste%5B%5D=x') !== -1);
+		NFTest.verifie('POST : les crochets déjà présents ne sont pas doublés',
+			-1, envoye.indexOf('deja%5B%5D%5B%5D'));
+		NFTest.verifie('POST : la méthode est bien POST', 'POST', dernier.init.method);
+	});
+});
+
+// ── 8. Un corps déjà sérialisé reçoit le bon type de contenu ────────────────
+//
+// `fetch` enverrait `text/plain` par défaut, et le serveur ne remplirait pas `$_POST`.
+etape(function () {
+	programmer(200, '', {});
+
+	return NF.ajax({ url: '/brut', method: 'POST', body: 'a=1&b=2' }).then(function () {
+		NFTest.verifie('corps en chaîne : Content-Type form-urlencoded',
+			0, String(dernier.init.headers['Content-Type'] || '').indexOf('application/x-www-form-urlencoded'));
+	});
+});
+
+// ── 9. Une valeur nulle n'est pas envoyée ───────────────────────────────────
+etape(function () {
+	programmer(200, '', {});
+
+	return NF.post('/envoi', { garde: 'oui', vide: null, absent: undefined }).then(function () {
+		var envoye = dernier.init.body.toString();
+
+		NFTest.verifie('POST : une valeur null n\'est pas envoyée', -1, envoye.indexOf('vide='));
+		NFTest.verifie('POST : une valeur undefined n\'est pas envoyée', -1, envoye.indexOf('absent='));
+	});
+});
+
+derouler(0);
+</script>

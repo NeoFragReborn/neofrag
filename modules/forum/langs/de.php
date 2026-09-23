@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -62,7 +63,7 @@ return [
 	'9d73409b' => '<i>Nachricht gelöscht</i>',
 	'a026ae67' => 'Kategorie',
 	'a47f60e2' => '%d Antwort|%d Antworten',
-	'a7320cf6' => '%d Aufruf',
+	'a7320cf6' => '%d Aufruf|%d Aufrufe',
 	'a9368b0c' => 'Thema gesperrt oder nicht...',
 	'a939fb96' => 'Alle Nachrichten sind nun als gelesen markiert',
 	'ab2b6b9e' => 'Statistiken',
@@ -75,7 +76,7 @@ return [
 	'bac23b09' => '<b>%d</b> Thema|<b>%d</b> Themen',
 	'c3773d94' => 'Thema / Nachricht bearbeiten',
 	'c5db4c8a' => 'Löschbestätigung',
-	'c69b96e4' => '%d Umleitung',
+	'c69b96e4' => '%d Umleitung|%d Umleitungen',
 	'c78d2252' => 'Bitte wählen Sie ein anderes Forum',
 	'cccdc6fa' => '<b>%d</b> Aufruf|<b>%d</b> Aufrufe',
 	'ce22e79a' => 'Keine Antwort',
@@ -86,7 +87,7 @@ return [
 	'd6d935b8' => 'Kategorie bearbeiten',
 	'd7f78423' => 'Thema als Ankündigung markieren',
 	'e0b79a88' => 'Bitte gib eine Nachricht ein',
-	'e16d51e5' => '%d Thema',
+	'e16d51e5' => '%d Thema|%d Themen',
 	'e1892b4c' => 'Wählen Sie ein Forum zum Verschieben',
 	'e1b27a21' => 'Keine Forenkategorie.<br>Erstellen Sie eine Kategorie über die Schaltfläche oben.',
 	'e7831cbd' => 'Forenliste',
@@ -229,7 +230,7 @@ return [
 	'913bc47c' => 'Volltext-Indexe neu erstellt',
 	// i18n 2026-06-11
 	'5628aaf6' => '%s hat dich in „%s" erwähnt',
-	90203601 => '%s hat auf „%s" geantwortet',
+	'90203601' => '%s hat auf „%s" geantwortet',
 	// i18n 2026-06-11 (code strings)
 	'6b8d8fc3' => 'Zurück zum Thema',
 	'dfbb200e' => '%d Erwähnung(en) als gelesen markiert',
@@ -258,4 +259,18 @@ return [
 	'558ba8aa' => 'Anhang (optional)',
 	'9b317b7c' => 'Erlaubte Typen: %s',
 	'4f90a869' => 'Maximale Größe: %s',
+	'2d8f3501' => 'Keine Forenkategorien.',
+	'b2f3db89' => 'Erstellen Sie über die Werkzeugleiste eine Kategorie, um zu beginnen.',
+	'7e6a9dc0' => '%d Forum|%d Foren',
+	'ad5a03cb' => '%d Nachricht|%d Nachrichten',
+	'93714304' => 'Alle auswählen',
+	'7b076dac' => 'Verschieben',
+	'596092e9' => 'Thema verschieben',
+	'3387b5c7' => 'Forenbeitrag',
+	'8982eb68' => 'Kein Forum in dieser Kategorie.',
+	'52442e0e' => 'Zum Neuordnen ziehen und ablegen',
+	'a52ad554' => 'Weiterleitungsforum',
+	'50cb8cb5' => 'Thema|Themen',
+	'695864e1' => 'Nachricht|Nachrichten',
+	'13f1a5c1' => 'Ziehen und ablegen',
 ];

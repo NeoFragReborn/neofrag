@@ -149,10 +149,10 @@ NF.ready(function(){
 			}).then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
 			.then(function(d){
 				saveBtn.classList.remove('disabled');
-				status('Blocs enregistrés (' + (d.count || 0) + ')', 'success');
+				status('<?php echo addslashes($this->lang('Blocs enregistrés')) ?> (' + (d.count || 0) + ')', 'success');
 			}).catch(function(s){
 				saveBtn.classList.remove('disabled');
-				status('Erreur de sauvegarde (' + s + ')', 'danger');
+				status('<?php echo addslashes($this->lang('Erreur de sauvegarde')) ?> (' + s + ')', 'danger');
 			});
 		});
 	}

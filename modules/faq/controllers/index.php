@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace NF\Modules\Faq\Controllers;
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 
@@ -25,19 +26,21 @@ class Index extends Controller_Module
 					continue;
 				}
 
-				$body .= '<h2 class="h4 mt-4 mb-2">'.htmlspecialchars($g['cat']['title']).'</h2>';
+				$body .= '<h2 class="h4 mt-4 mb-2">'.htmlspecialchars((string) ($g['cat']['title'])).'</h2>';
 				$body .= '<div class="accordion" id="faq-cat-'.(int)$g['cat']['id'].'">';
 
 				foreach ($g['questions'] as $q)
 				{
+					// L'accordéon de Bootstrap 5. La FAQ gardait celui de Bootstrap 4 — une carte, un bouton-lien
+					// et sa propre flèche — qui s'ouvrait, mais sans l'apparence ni la flèche du composant.
 					$qid = 'faq-q-'.(int)$q['id'];
-					$body .= '<div class="card">';
-					$body .= '<div class="card-header" id="head-'.$qid.'">';
-					$body .= '<button class="btn btn-link text-start w-100" type="button" data-bs-toggle="collapse" data-target="#'.$qid.'" aria-expanded="false" aria-controls="'.$qid.'">';
-					$body .= '<i class="fas fa-chevron-right me-2"></i>'.htmlspecialchars($q['question']);
-					$body .= '</button></div>';
-					$body .= '<div id="'.$qid.'" class="collapse" aria-labelledby="head-'.$qid.'" data-bs-parent="#faq-cat-'.(int)$g['cat']['id'].'">';
-					$body .= '<div class="card-body">'.$q['answer'].'</div></div></div>';
+					$body .= '<div class="accordion-item">';
+					$body .= '<h3 class="accordion-header" id="head-'.$qid.'">';
+					$body .= '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#'.$qid.'" aria-expanded="false" aria-controls="'.$qid.'">';
+					$body .= htmlspecialchars((string) ($q['question']));
+					$body .= '</button></h3>';
+					$body .= '<div id="'.$qid.'" class="accordion-collapse collapse" aria-labelledby="head-'.$qid.'" data-bs-parent="#faq-cat-'.(int)$g['cat']['id'].'">';
+					$body .= '<div class="accordion-body">'.$q['answer'].'</div></div></div>';
 				}
 
 				$body .= '</div>';

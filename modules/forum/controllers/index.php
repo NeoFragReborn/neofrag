@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -339,7 +340,7 @@ class Index extends Controller_Module
 							'type' => 'file'
 						]
 					])
-					->add_submit($this->lang('Répondre'));
+					->add_submit($this->lang('Répondre'), 'fas fa-reply');
 
 			if ($this->form()->is_valid($post))
 			{

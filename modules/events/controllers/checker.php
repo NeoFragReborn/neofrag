@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -15,12 +16,18 @@ class Checker extends Module_Checker
 		return [$this->module->pagination->fix_items_per_page($this->config->events_per_page)->get_data($this->model()->get_events(), $page)];
 	}
 
-	public function _standards($page = '')
+	// Sans tiret bas, comme le contrôleur public et comme la cible de la route : le nom de la
+	// cible doit se retrouver A L'IDENTIQUE dans le checker ET dans le contrôleur. Avec le
+	// tiret bas, le checker n'etait pas trouve, aucun argument n'etait calcule, et le
+	// contrôleur recevait le segment d'URL a la place de la liste d'evenements — d'ou
+	// « foreach() argument must be of type array|object, string given » a chaque visite de
+	// /events/standards et /events/matches.
+	public function standards($page = '')
 	{
 		return [$this->module->pagination->fix_items_per_page($this->config->events_per_page)->get_data($this->model()->get_events('filter', 'standards'), $page)];
 	}
 
-	public function _matches($page = '')
+	public function matches($page = '')
 	{
 		return [$this->module->pagination->fix_items_per_page($this->config->events_per_page)->get_data($this->model()->get_events('filter', 'matches'), $page)];
 	}
@@ -50,6 +57,14 @@ class Checker extends Module_Checker
 
 	public function _participant_add($event_id, $title, $current_status)
 	{
+		// Un visiteur qui suit le lien de participation doit être invité à se connecter. Il recevait un
+		// refus nu (404) et le journal une ligne d'erreur à chaque passage (check-mise-en-page en
+		// profil visiteur, 2026-09-23).
+		if (!$this->user())
+		{
+			$this->error->unauthorized();
+		}
+
 		$status = $this->model('participants')->status();
 
 		if (isset($status[$current_status]) && $this->model()->check_event($event_id, $title) && !$this->db->from('nf_events_participants')->where('user_id', $this->user->id)->where('event_id', $event_id)->empty())

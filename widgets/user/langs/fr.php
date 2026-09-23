@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traductions FR (auto-générées 2026-05-03)
@@ -28,4 +29,10 @@ return [
 	'cf84c44c' => 'Éditer mon profil',
 	'50d4ccb8' => 'Déconnexion',
 	'0f9d628a' => 'Espace membre : connexion, lien vers le profil ou inscription.',
+	'4a253c1f' => 'Quitter le preview',
+	'0552e076' => 'Mode preview',
+	'1648d731' => 'Les liens vers les données personnelles sont masqués pour respecter la vie privée du compte cible.',
+	'eb68e801' => 'Bienvenue <a href="',
+	'1f88c31b' => 'Options',
+	'8a4c99cf' => 'Bienvenue %s',
 ];

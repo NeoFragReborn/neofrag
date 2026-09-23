@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module calendar (it)
@@ -6,11 +7,13 @@
 
 return [
 	'02f6b476' => 'Autore',
+	'08585d21' => 'Promemoria prima di un evento seguito (ore, 0 = disattivato)',
 	'0aac9844' => 'Data',
 	'0b2e1655' => 'Gestisci eventi',
 	'1236ac3f' => 'Colore (#hex, opzionale)',
 	'14fff1cb' => 'Nessun evento passato.',
 	'159d9675' => '(tutto il giorno)',
+	'1ce788f2' => 'Configurazione modificata',
 	'2ca644f3' => 'In arrivo',
 	'2ce29ee0' => 'Fine (YYYY-MM-DD HH:MM:SS, opzionale)',
 	'32795d48' => 'Bozza',
@@ -41,6 +44,7 @@ return [
 	'daf07ea4' => 'Modifica evento',
 	'e2c8f589' => 'Stato',
 	'eb78cff1' => 'Descrizione',
+	'eee7511a' => 'Promemoria: « %s » inizia a breve',
 	'f126e15d' => 'bozza|bozze',
 	'f48cb465' => 'Nuovo evento',
 	'f6b7dc77' => 'Evento eliminato.',
@@ -48,4 +52,8 @@ return [
 	'fd283f69' => 'Calendario',
 	'fd943a7a' => 'Calendario — %s',
 	'3de1bc52' => 'Calendario eventi con esportazione iCal RFC 5545.',
+	'881485c2' => 'Modifica: %s',
+	'960d0854' => 'Gestisci gli eventi',
+	'46b60b4f' => 'j F Y',
+	'0c3ae1ce' => 'j F Y, H:i',
 ];

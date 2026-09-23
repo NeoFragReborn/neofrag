@@ -6,10 +6,25 @@
 .row:has(.mkt) > [class*="col-md-4"] { display: none !important; }
 .row:has(.mkt) > [class*="col-md-8"] { flex: 0 0 100% !important; max-width: 100% !important; }
 
-.mkt {
-	--mkt-teal: #2dd4bf; --mkt-cyan: #22d3ee; --mkt-grad: linear-gradient(135deg, #2dd4bf, #22d3ee);
-	--mkt-surface: rgba(255, 255, 255, .025); --mkt-line: rgba(255, 255, 255, .09);
-	--mkt-text: #e7eef6; --mkt-muted: #8593a6; --mkt-strong: #fff;
+/*
+ * La palette est declaree sur `.mkt` ET sur `.mkt-modal` : la fenetre de detail est ecrite EN DEHORS
+ * du bloc `.mkt`, en fin de page, et n'heritait donc d'aucune de ces couleurs. `var(--mkt-solide)`
+ * ne valait rien, la declaration entiere etait invalide, et le fond restait transparent — on lisait
+ * le texte de la fiche par-dessus les cartes. Corrige apres trois signalements de le mainteneur, le
+ * 2026-09-22 : les deux premieres fois j'avais corrige la COULEUR, jamais sa portee.
+ */
+.mkt,
+.mkt-modal {
+	/* Tirée du thème actif : écrite en dur pour un fond SOMBRE, la palette rendait sur les thèmes
+	   clairs du texte gris pâle sur fond pâle — l'en-tête et les filtres à 2,8:1 (check-mise-en-page,
+	   2026-09-23). Les valeurs de repli restent celles d'origine. */
+	--mkt-teal: var(--nf-accent, #2dd4bf); --mkt-cyan: var(--nf-accent, #22d3ee);
+	--mkt-grad: linear-gradient(135deg, var(--nf-accent, #2dd4bf), color-mix(in srgb, var(--nf-accent, #2dd4bf) 70%, #22d3ee));
+	--mkt-on-grad: var(--nf-on-accent, #04201d);
+	--mkt-surface: color-mix(in srgb, var(--nf-text, #fff) 3%, transparent); --mkt-line: var(--nf-border, rgba(255, 255, 255, .09));
+	/* `--mkt-surface` se pose SUR la page ; `--mkt-solide` la masque. */
+	--mkt-solide: var(--nf-surface, #0d141d);
+	--mkt-text: var(--nf-text, #e7eef6); --mkt-muted: var(--nf-muted, #8593a6); --mkt-strong: var(--nf-text-strong, var(--nf-text, #fff));
 	color: var(--mkt-text);
 }
 .mkt-head { text-align: center; padding: 6px 0 30px; }
@@ -21,10 +36,10 @@
 .mkt-filters { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 0 0 28px; }
 .mkt-filter { display: inline-flex; align-items: center; gap: 7px; padding: 8px 15px; border-radius: 10px; background: var(--mkt-surface); border: 1px solid var(--mkt-line); color: var(--mkt-muted); font-size: 14px; font-weight: 500; cursor: pointer; transition: .15s; }
 .mkt-filter i { font-size: 12px; }
-.mkt-filter span { background: rgba(255, 255, 255, .06); border-radius: 20px; padding: 1px 8px; font-size: 12px; }
+.mkt-filter span { background: color-mix(in srgb, var(--mkt-text) 8%, transparent); border-radius: 20px; padding: 1px 8px; font-size: 12px; }
 .mkt-filter:hover { color: var(--mkt-text); border-color: rgba(45, 212, 191, .4); }
-.mkt-filter.active { background: var(--mkt-grad); color: #04201d; border-color: transparent; }
-.mkt-filter.active span { background: rgba(0, 0, 0, .18); color: #04201d; }
+.mkt-filter.active { background: var(--mkt-grad); color: var(--mkt-on-grad); border-color: transparent; }
+.mkt-filter.active span { background: rgba(0, 0, 0, .18); color: var(--mkt-on-grad); }
 
 .mkt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
 .mkt-card { display: flex; flex-direction: column; padding: 22px; border-radius: 16px; background: var(--mkt-surface); border: 1px solid var(--mkt-line); transition: transform .2s, border-color .2s, background .2s; }
@@ -36,9 +51,9 @@
 .mkt-title { font-family: "Space Grotesk", sans-serif; font-size: 18px; font-weight: 600; color: var(--mkt-strong); margin: 0 0 7px; }
 .mkt-desc { color: var(--mkt-muted); font-size: 14px; line-height: 1.55; flex: 1; margin: 0 0 18px; }
 .mkt-card-foot { display: flex; align-items: center; gap: 10px; }
-.mkt-dl { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 9px; background: var(--mkt-grad); color: #04201d; font-weight: 600; font-size: 14px; text-decoration: none; transition: .18s; }
+.mkt-dl { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 9px; background: var(--mkt-grad); color: var(--mkt-on-grad); font-weight: 600; font-size: 14px; text-decoration: none; transition: .18s; }
 .mkt-dl span { opacity: .7; font-size: 12px; font-weight: 500; }
-.mkt-dl:hover { transform: translateY(-1px); box-shadow: 0 8px 22px -8px rgba(45, 212, 191, .55); color: #04201d; }
+.mkt-dl:hover { transform: translateY(-1px); box-shadow: 0 8px 22px -8px rgba(45, 212, 191, .55); color: var(--mkt-on-grad); }
 .mkt-scan { color: var(--mkt-muted); font-size: 14px; cursor: help; }
 
 .mkt-help { margin-top: 30px; padding: 16px 20px; border-radius: 12px; background: rgba(34, 211, 238, .06); border: 1px solid rgba(34, 211, 238, .18); color: var(--mkt-muted); font-size: 14px; text-align: center; }
@@ -56,9 +71,17 @@
 .mkt-modal[hidden] { display: none; }
 .mkt-modal { position: fixed; inset: 0; z-index: 1080; display: grid; place-items: center; padding: 20px; }
 .mkt-modal-bg { position: absolute; inset: 0; background: rgba(2, 8, 12, .72); backdrop-filter: blur(3px); }
-.mkt-modal-box { position: relative; width: 100%; max-width: 540px; max-height: 88vh; overflow: auto; padding: 26px; border-radius: 18px; background: var(--mkt-surface); border: 1px solid var(--mkt-line); box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .7); }
+/* Le fond de la fiche est OPAQUE. Il reprenait `--mkt-surface`, soit 2,5 % de blanc : parfait
+   pour une carte posee sur la page, transparent pour une fenetre qui flotte au-dessus d'elle.
+   On voyait les cartes a travers le texte. Signale le 2026-09-22. */
+.mkt-modal-box { position: relative; width: 100%; max-width: 560px; max-height: 88vh; overflow: auto; padding: 26px; border-radius: 18px; background: var(--mkt-solide); background: var(--mkt-solide, #0d141d); border: 1px solid var(--mkt-line, rgba(255, 255, 255, .09)); box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .7); }
 .mkt-modal-x { position: absolute; top: 12px; right: 16px; background: none; border: 0; color: var(--mkt-muted); font-size: 26px; line-height: 1; cursor: pointer; }
 .mkt-modal-x:hover { color: var(--mkt-strong); }
+/* L'apercu : une capture reelle de l'addon, produite par tools/capturer-apercus.php. Absent,
+   le bloc n'est pas rendu du tout — une bande vide vaudrait moins que rien. */
+.mkt-apercu { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top center; border-radius: 12px; border: 1px solid var(--mkt-line); background: var(--mkt-surface); display: block; }
+.mkt-card .mkt-apercu { margin: 0 0 14px; aspect-ratio: 16 / 9; }
+.mkt-modal-apercu { margin: 0 0 18px; }
 .mkt-modal-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; padding-right: 24px; }
 .mkt-modal-head h3 { font-family: "Space Grotesk", sans-serif; font-size: 21px; font-weight: 600; color: var(--mkt-strong); margin: 0 0 4px; }
 .mkt-modal-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }

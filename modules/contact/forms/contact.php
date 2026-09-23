@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -30,7 +31,9 @@ $this->rule($this->form_text('subject')
 
 		$sent = $this	->anti_flood()
 						->email
-						->from($this->user->email ?: $data['email'])
+						// L'expéditeur reste l'adresse du site (défaut de la bibliothèque) : écrire « De : visiteur@gmail.com »
+						// depuis notre serveur, c'est usurper son domaine — SPF/DMARC le rejettent. Le visiteur va en Reply-To.
+						->reply_to($this->user->email ?: $data['email'], $this->user() ? $this->user->username : '')
 						->to($this->config->nf_contact)
 						->subject($data['subject'])
 						->message(function() use ($data){

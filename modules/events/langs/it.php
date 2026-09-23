@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -126,4 +127,35 @@ return [
 	'fab41cdd' => 'Ricorrenza: numero totale di occorrenze (max %d).',
 	'ef1ccb4f' => 'Serie di %d eventi creata',
 	'e3ad390b' => 'Occorrenza di una serie ricorrente',
+	'62c86d0f' => 'Elimina tutta la serie',
+	'7ba70fe8' => 'Applica a tutte le occorrenze della serie (%d)',
+	'236bba4c' => 'Il titolo, il tipo, le descrizioni, il luogo, l\'immagine e la pubblicazione vengono copiati su ogni occorrenza. Le DATE no: sono loro a distinguere un\'occorrenza dalla successiva.',
+	'eb67ff64' => 'Serie aggiornata: %d occorrenze. Ciascuna conserva le proprie date.',
+	'5f5c0a0f' => 'Eliminazione della serie',
+	'7a113c7e' => 'Eliminare <b>l\'unica occorrenza</b> della serie a cui appartiene <b>%2$s</b>?|Eliminare <b>le %1$d occorrenze</b> della serie a cui appartiene <b>%2$s</b>? Saranno cancellate tutte, con i loro commenti e le loro partecipazioni.',
+	'a5bb9f79' => 'Inviti',
+	'9bd148d6' => 'Programmato per il %s',
+	'f0b7b5b5' => 'Data di pubblicazione',
+	'94949a27' => 'Squadra',
+	'3c19f7aa' => 'Avversario',
+	'37f8e895' => 'Modalità',
+	'2687aad0' => 'Indica un sito che parla dell\'evento',
+	'7b15d0f9' => 'Mappa',
+	'a6f67ef4' => 'Il nostro punteggio',
+	'909b29bc' => 'Punteggio avversario',
+	'f5655ff7' => 'Invita membri',
+	'1f3ae63f' => 'Promemoria!',
+	'3cfda0fd' => 'Non dimenticare di inviare le richieste di partecipazione ai tuoi membri!',
+	'15fc3f17' => 'Nessun round inserito',
+	'5f0de8cd' => 'Messaggio automatico.',
+	'35ceefe3' => 'Sei invitato a partecipare all\'evento <b>%s</b>.',
+	'1d83ca5f' => 'Per indicare la tua disponibilità, <a href="%s">clicca qui</a>.',
+	'c3890ba2' => 'Invito all\'evento: %s',
+	'a03a35b6' => 'Modalità: %s',
+	'7d714567' => 'Dettaglio dei round',
+	'bfa7126c' => 'Round %d',
+	'9111f8c2' => 'Diretta su Twitch',
+	'64eda44a' => 'Se ne parla qui',
+	'04fb541f' => 'Durata',
+	'bbc46366' => 'Invita',
 ];

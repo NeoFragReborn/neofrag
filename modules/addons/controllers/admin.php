@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -46,10 +47,10 @@ class Admin extends Controller_Module
 			}
 		});
 
-		$this->add_action($this->button('Scanner le disque', 'fas fa-sync', 'secondary')->modal_ajax('admin/ajax/addons/scan'));
-		$this->add_action($this->button('Mises à jour', 'fas fa-arrow-up', 'secondary')->modal_ajax('admin/ajax/addons/updates'));
-		$this->add_action($this->button('Marketplace', 'fas fa-store', 'secondary')->modal_ajax('admin/ajax/addons/marketplace'));
-		$this->add_action($this->button('Ajouter', 'fas fa-plus', 'primary')->modal_ajax('admin/ajax/addons/install'));
+		$this->add_action($this->button($this->lang('Scanner le disque'), 'fas fa-sync', 'secondary')->modal_ajax('admin/ajax/addons/scan'));
+		$this->add_action($this->button($this->lang('Mises à jour'), 'fas fa-arrow-up', 'secondary')->modal_ajax('admin/ajax/addons/updates'));
+		$this->add_action($this->button($this->lang('Marketplace'), 'fas fa-store', 'secondary')->modal_ajax('admin/ajax/addons/marketplace'));
+		$this->add_action($this->button($this->lang('Ajouter'), 'fas fa-plus', 'primary')->modal_ajax('admin/ajax/addons/install'));
 
 		return $this->module('settings')->controller('admin')->_layout(function($col) use ($addons){
 			$col->append($this	->js('mixitup.min')

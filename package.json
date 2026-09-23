@@ -1,0 +1,14 @@
+{
+    "name": "neofrag-reborn",
+    "private": true,
+    "description": "Outillage de développement front. Le site servi ne dépend d'AUCUN paquet npm : rien ici n'est déployé, rien n'est chargé par une page. ESLint sert à tools/check-js-lint.php ; Playwright pilote le navigateur de tools/check-mise-en-page.php (tests/MiseEnPage/pilote.js).",
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@playwright/test": "^1.56.0",
+        "eslint": "^10.11.0",
+        "globals": "^17.12.0"
+    },
+    "scripts": {
+        "lint": "php tools/check-js-lint.php"
+    }
+}

@@ -12,7 +12,7 @@
 	font-size: 14px;
 	padding: 5px 0 3px 15px;
 	font-family: 'Open Sans', sans-serif;
-	color: #4B5A6D;
+	color: var(--nf-text, #4B5A6D);
 	text-overflow: ellipsis;
 }
 
@@ -21,11 +21,11 @@
 }
 
 .module-admin.module-events .fc-unthemed .fc-divider, .fc-unthemed .fc-popover, .fc-unthemed .fc-row, .fc-unthemed tbody, .fc-unthemed td, .fc-unthemed th, .fc-unthemed thead {
-	border-color: #edeef1;
+	border-color: var(--nf-border, #edeef1);
 }
 
 .module-admin.module-events th.fc-day-header.fc-widget-header {
-	color: #A6ACB3;
+	color: var(--nf-muted, #A6ACB3);
 	font-size: 11px;
 	font-weight: 700;
 	letter-spacing: 1px;
@@ -35,4 +35,13 @@
 
 .module-admin.module-events .fc-event {
 	border-radius: 1px;
+}
+
+/* Le titre d'un événement du calendrier est coupé par sa case : des points de suspension le
+   disent, au lieu d'une coupure nette au milieu d'un mot (check-mise-en-page, 2026-09-23). */
+.module-admin.module-events .fc-event-title {
+	display: block;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 }

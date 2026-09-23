@@ -1,1 +1,1 @@
-<h1>Connexion requise</h1>
+<h1><?php echo $this->lang('Connexion requise') ?></h1>

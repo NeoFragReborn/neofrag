@@ -1,0 +1,19 @@
+# Le cache : rien n'y est joignable en HTTP.
+#
+# Il porte des feuilles compilées et des fragments rendus, parfois dérivés de contenu
+# réservé. Ce sont des dérivés internes, jamais une adresse publique : le produit les sert
+# lui-même quand il le faut.
+#
+# La production tourne sous Caddy, dont la configuration refuse déjà `/cache/`. Ce fichier est
+# l'équivalent pour Apache, c'est-à-dire pour les hébergements mutualisés que ce produit vise —
+# où il n'existait pas avant le 2026-09-21. Sur un hébergement où `AllowOverride None` est imposé,
+# il est ignoré : ces fichiers restent des dérivés, sans secret, mais sans raison d'être servis.
+
+<IfModule mod_authz_core.c>
+	Require all denied
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+	Order allow,deny
+	Deny from all
+</IfModule>

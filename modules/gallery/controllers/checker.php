@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -45,7 +46,20 @@ class Checker extends Module_Checker
 	{
 		if ($image = $this->model()->check_image($image_id, $name))
 		{
-			return $image;
+			if (!$this->access('gallery', 'gallery_see', $image['gallery_id']))
+			{
+				$this->error->unauthorized();
+			}
+
+			return [
+				$image['image_id'],
+				$image['original_file_id'],
+				$image['gallery_id'],
+				$image['title'],
+				$image['description'],
+				$image['gallery_name'],
+				$image['gallery_title']
+			];
 		}
 	}
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -68,5 +69,17 @@ return [
 	'f126e15d' => 'brouillon|brouillons',
 	'f5f82556' => 'État du système',
 	'f642f974' => 'Visiteurs (30j)',
-	'f6a49161' => 'Aucun bug en cours'
+	'f6a49161' => 'Aucun bug en cours',
+	'68ac49cb' => 'Chatbox staff',
+	'b0cbcaf2' => 'Ouvrir la conversation',
+	'6e7fcb93' => 'Aucun message pour l\'instant. Soyez le premier à écrire dans la chatbox staff.',
+	'508c13c0' => 'Écrire un message au staff…',
+	'0b9cde7d' => 'GD (images)',
+	'38792ae1' => 'Zip (marketplace)',
+	'203b22b1' => 'Fileinfo (upload)',
+	'893241bc' => 'cURL (réseau)',
+	'3f805424' => 'Présente',
+	'bc645dc3' => 'Absente',
+	'caf517ea' => 'Tableau de bord et panneau d\'administration central.',
+	'c0833bb9' => '%d critique|%d critiques',
 ];

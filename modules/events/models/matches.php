@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -157,7 +158,7 @@ class Matches extends Model
 			$class = 'primary';
 		}
 
-		return '<span class="badge badge-'.$class.'">'.$score1.' - '.$score2.'</span>';
+		return '<span class="badge '.badge_class($class).'">'.$score1.' - '.$score2.'</span>';
 	}
 
 	public function label_global_scores($event_id)

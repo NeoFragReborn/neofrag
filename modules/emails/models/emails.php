@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * NeoFrag — Model emails (R2.0, 2026-05-06)

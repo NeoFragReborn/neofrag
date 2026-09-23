@@ -1,4 +1,4 @@
-<table class="table table-hover table-stripped">
+<table class="table table-hover table-striped">
 	<tr>
 		<td width="20%"><?php echo $this->lang('Système d\'exploitation') ?></td>
 		<td><?php echo php_uname() ?></td>

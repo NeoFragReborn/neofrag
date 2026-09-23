@@ -1,6 +1,6 @@
 <ul class="nav <?php echo !empty($align) ? $align : 'justify-content-end' ?>">
 	<?php if ($this->user()): ?>
-		<li class="nav-item"><span class="nav-link"><?php echo $this->lang('Bienvenue <a href="'.url('user').'">'.$this->user->username.'</a>') ?></span></li>
+		<li class="nav-item"><span class="nav-link"><?php echo $this->lang('Bienvenue %s', '<a href="'.url('user').'">'.$this->user->username.'</a>') ?></span></li>
 		<li class="nav-item" data-bs-toggle="tooltip" title="<?php echo $this->lang('Éditer mon profil') ?>"><a class="nav-link" href="<?php echo url('user/profile') ?>"><?php echo icon('fas fa-cog') ?></a></li>
 		<li class="nav-item" data-bs-toggle="tooltip" title="<?php echo $this->lang('Messagerie') ?>">
 			<a class="nav-link" href="<?php echo url('talks?type=private') ?>">

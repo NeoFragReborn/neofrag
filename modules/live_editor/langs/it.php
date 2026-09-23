@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -37,4 +38,32 @@ return [
 	'eb2aa0ff' => 'Colonne',
 	'ed7211c7' => 'Conferma',
 	'f8875151' => 'Continua',
+	'2b0eb9a0' => 'Questo widget non ha varianti.',
+	'2f2c6b6e' => 'Questo widget non ha nulla da configurare.',
+	'3b542104' => 'Nessun widget corrisponde.',
+	'221f348b' => 'Filtra i widget…',
+	'c1efcb54' => 'Filtra i widget',
+	'9bc641af' => 'Lascia vuoto per mantenere il titolo predefinito del widget.',
+	'd396a751' => 'Precedente',
+	'ebcb0841' => 'Successivo',
+	'd9d7983f' => 'Pagina: %s',
+	'4e4fadfe' => 'Non è stato possibile staccare la zona dal layout comune',
+	'7ea4d2eb' => 'Non è stato possibile aggiungere la riga',
+	'ceca6766' => 'Lo spostamento della riga non è stato salvato',
+	'79a7b4bb' => 'L\'aspetto della riga non è stato salvato',
+	'b9068b0f' => 'Non è stato possibile eliminare la riga',
+	'2dc09cba' => 'Non è stato possibile aggiungere la colonna',
+	'33d97864' => 'Lo spostamento della colonna non è stato salvato',
+	'27fea8b0' => 'La larghezza della colonna non è stata salvata',
+	'8bc2d8e9' => 'Non è stato possibile eliminare la colonna',
+	'ceea4b71' => 'Non è stato possibile aggiungere il widget',
+	'555f89b3' => 'Lo spostamento del widget non è stato salvato',
+	'158c7404' => 'Le impostazioni del widget non sono state salvate',
+	'c1d9ee11' => 'L\'aspetto del widget non è stato salvato',
+	'04e895c2' => 'Non è stato possibile eliminare il widget',
+	'5aa02bd0' => 'La modifica non è stata salvata',
+	'0980709a' => 'errore',
+	'9d433e55' => 'La visualizzazione non corrisponde più a quanto salvato: ricarica la pagina.',
+	'88a46340' => 'Editor visivo del layout: trascina e rilascia i widget nelle zone del tema.',
+	'dd3795ad' => 'Menu',
 ];

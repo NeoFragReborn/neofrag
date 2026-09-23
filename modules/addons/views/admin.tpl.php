@@ -27,28 +27,54 @@
 		$type_label_data = $addon->controller()->__label;
 		$type_label = $type_label_data[1] ?? '';
 		$type_color = $type_label_data[3] ?? 'gray';
-		$thumbnail  = $addon->addon()->__path('', 'thumbnail.png');
+		/*
+		 * L'APERÇU de la carte, produit par `tools/capturer-apercus.php`.
+		 *
+		 * `__path()` résout `<type>s/<nom>/images/thumbnail.jpg`, ce qui est juste pour un module,
+		 * un widget ou un thème, et FAUX pour les addons de `addons/` : il y cherche `languages/`
+		 * et `authenticators/`, deux dossiers qui n'existent pas. D'où le repli explicite.
+		 */
+		$thumbnail = $addon->addon()->__path('images', 'thumbnail.jpg');
+
+		if (!$thumbnail)
+		{
+			// La CLASSE de l'addon sait dans quel fichier elle vit, donc dans quel dossier : c'est
+			// exact quel que soit le type, et cela ne depend d'aucune convention de nommage.
+			$fichier = (new ReflectionClass($addon->addon()))->getFileName();
+			$candidat = $fichier ? dirname($fichier).'/images/thumbnail.jpg' : '';
+
+			if ($candidat && is_file($candidat) && str_starts_with($candidat, NEOFRAG_CMS.'/'))
+			{
+				$thumbnail = substr($candidat, strlen(NEOFRAG_CMS) + 1);
+			}
+		}
 		$icon       = isset($addon->addon()->info()->icon) ? $addon->addon()->info()->icon : ($type_label_data[2] ?? 'fas fa-cube');
 		$title      = $addon->addon()->info()->title;
 		$version    = $addon->addon()->info()->version ?? '';
 		$description = $addon->addon()->info()->description ?? '';
 		?>
 		<div class="addon-card mix addon-<?php echo $type_name ?> <?php echo $is_enabled ? 'activated' : 'deactivated' ?>">
+			<?php /* La bande d'apercu existe TOUJOURS, avec image ou avec l'icone au centre. Quand
+			         elle n'apparaissait que pour les themes — les seuls a livrer un thumbnail — les
+			         cartes d'une meme ligne differaient de 50 px de haut, et la grille etirait les
+			         plus courtes en laissant un grand vide. Signale le 2026-09-22. */ ?>
 			<?php if ($thumbnail): ?>
 			<div class="addon-card-thumbnail" style="background-image: url(<?php echo url($thumbnail) ?>);"></div>
 			<?php else: ?>
-			<div class="addon-card-icon-wrap">
-				<?php if (preg_match('/^fa[bsr]?\s+fa-/', $icon)): ?>
-					<i class="<?php echo htmlspecialchars($icon) ?>"></i>
-				<?php else: ?>
-					<span class="addon-card-icon-emoji"><?php echo $icon ?></span>
-				<?php endif ?>
+			<div class="addon-card-thumbnail addon-card-thumbnail-vide">
+				<div class="addon-card-icon-wrap">
+					<?php if (preg_match('/^fa[bsr]?\s+fa-/', $icon)): ?>
+						<i class="<?php echo htmlspecialchars($icon) ?>"></i>
+					<?php else: ?>
+						<span class="addon-card-icon-emoji"><?php echo $icon ?></span>
+					<?php endif ?>
+				</div>
 			</div>
 			<?php endif ?>
 			<div class="addon-card-body">
 				<div class="addon-card-header">
 					<div class="addon-card-title-wrap">
-						<span class="badge badge-<?php echo $type_color ?>"><?php echo $type_label ?></span>
+						<span class="badge <?php echo badge_class($type_color) ?>"><?php echo $type_label ?></span>
 						<?php if ($is_enabled): ?>
 						<span class="badge text-bg-success"><span class="dot"></span> <?php echo $this->lang('Actif') ?></span>
 						<?php else: ?>
@@ -72,9 +98,9 @@
 					</div>
 				</div>
 				<h3 class="addon-card-title"><?php echo $title ?></h3>
-				<?php if ($description): ?>
+				<?php /* Rendue MEME vide : sa hauteur est reservee dans la feuille, sinon une carte
+				         sans description remonte son numero de version et casse l'alignement. */ ?>
 				<p class="addon-card-desc"><?php echo $description ?></p>
-				<?php endif ?>
 				<?php if ($version): ?>
 				<div class="addon-card-meta"><i class="fas fa-tag"></i> v<?php echo $version ?></div>
 				<?php endif ?>

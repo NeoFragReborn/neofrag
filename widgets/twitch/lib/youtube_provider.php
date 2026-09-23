@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Provider YouTube — YouTube Data API v3 (clé API + quota). search.list(eventType=live) pour la

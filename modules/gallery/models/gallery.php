@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -17,7 +18,11 @@ class Gallery extends Model
 					->join('nf_gallery_lang gl',            'g.gallery_id  = gl.gallery_id')
 					->join('nf_gallery_categories c',       'g.category_id = c.category_id')
 					->join('nf_gallery_categories_lang cl', 'c.category_id = cl.category_id')
-					->join('nf_gallery_images gi',          'g.gallery_id  = gi.gallery_id')
+					// LEFT : cette table ne sert qu'au COMPTAGE des images. En jointure stricte, un
+					// album VIDE disparaissait de la liste — la page annonçait « Aucun album »
+					// alors que trois existaient et étaient publiés. Un album sans image doit
+					// s'afficher avec 0 image, pas s'effacer.
+					->join('nf_gallery_images gi',          'g.gallery_id  = gi.gallery_id', 'LEFT')
 					->where('gl.lang', $this->config->lang->info()->name)
 					->where('cl.lang', $this->config->lang->info()->name)
 					->where('g.deleted_at', NULL)
@@ -42,7 +47,9 @@ class Gallery extends Model
 	{
 		if ($lang == 'default')
 		{
-			$lang = $this->config->lang->info()->name;
+			// Pas forcément la langue demandée : un contenu monolingue est servi dans la sienne,
+			// avec un bandeau, plutôt que de rendre 404. Jamais de repli en administration.
+			$lang = $this->langue_du_contenu('nf_gallery_lang', 'gallery_id', $gallery_id);
 		}
 
 		$this->db	->select('g.*', 'gl.title', 'gl.description', 'c.name as category_name', 'cl.title as category_title', 'c.image_id as category_image', 'c.icon_id as category_icon')
@@ -151,11 +158,35 @@ class Gallery extends Model
 
 	public function check_image($image_id, $name)
 	{
+		// Une image suit les règles de son album, comme check_gallery() : rien d'un album mis à la
+		// corbeille, rien d'un album non publié ou programmé hors administration, et le titre de
+		// l'album dans la langue servie. La jointure sans langue rendait ce titre dans une langue
+		// au hasard, et l'image d'un album supprimé restait affichable par son adresse.
+		$gallery_id = $this->db->select('gallery_id')->from('nf_gallery_images')->where('image_id', $image_id)->row();
+
+		if (!$gallery_id)
+		{
+			return FALSE;
+		}
+
 		$this->db	->select('i.*', 'g.name as gallery_name', 'gl.title as gallery_title', 'g.published')
 					->from('nf_gallery_images i')
 					->join('nf_gallery g', 'i.gallery_id  = g.gallery_id')
 					->join('nf_gallery_lang gl', 'i.gallery_id  = gl.gallery_id')
-					->where('i.image_id', $image_id);
+					->where('i.image_id', $image_id)
+					->where('g.deleted_at', NULL);
+
+		// En administration, pas de filtre de langue : l'édition d'une image doit rester possible
+		// même si son album n'est pas traduit dans la langue de l'administrateur.
+		if (!$this->url->admin)
+		{
+			if (($langue = $this->langue_du_contenu('nf_gallery_lang', 'gallery_id', $gallery_id)) !== '')
+			{
+				$this->db->where('gl.lang', $langue);
+			}
+
+			$this->db->where('g.published', TRUE)->where('g.date <=', date('Y-m-d H:i:s'));
+		}
 
 		$image = $this->db->row();
 
@@ -219,7 +250,9 @@ class Gallery extends Model
 	{
 		if ($lang == 'default')
 		{
-			$lang = $this->config->lang->info()->name;
+			// Pas forcément la langue demandée : un contenu monolingue est servi dans la sienne,
+			// avec un bandeau, plutôt que de rendre 404. Jamais de repli en administration.
+			$lang = $this->langue_du_contenu('nf_gallery_categories_lang', 'category_id', $category_id);
 		}
 
 		return $this->db->select('c.category_id', 'c.name', 'cl.title', 'c.image_id', 'c.icon_id')

@@ -1,7 +1,7 @@
 <table class="table table-hover" data-forum-view="categories"<?php if ($this->url->admin) echo ' data-category-id="'.$category_id.'"' ?>>
 	<thead class="forum-heading">
 		<tr>
-			<th class="col-<?php echo $this->url->admin ? 6 : 7 ?>" colspan="2"><h5 class="m-0"><?php
+			<th colspan="2"><h5 class="m-0"><?php
 				if ($this->url->admin)
 				{
 					echo icon('fas fa-arrows-alt-v').' ';
@@ -16,10 +16,10 @@
 				}
 				echo $title;
 			?></h5></th>
-			<th class="col-2"><h5 class="m-0"><?php echo icon('fas fa-signal') ?><span class="d-none d-sm-inline-block ms-1"><?php echo $this->lang('Statistiques') ?></span></h5></th>
-			<th class="col-3"><h5 class="m-0"><?php echo icon('far fa-comment') ?><span class="d-none d-sm-inline-block ms-1"><?php echo $this->lang('Dernier message') ?></span></h5></th>
+			<th><h5 class="m-0"><?php echo icon('fas fa-signal') ?><span class="d-none d-sm-inline-block ms-1"><?php echo $this->lang('Statistiques') ?></span></h5></th>
+			<th><h5 class="m-0"><?php echo icon('far fa-comment') ?><span class="d-none d-sm-inline-block ms-1"><?php echo $this->lang('Dernier message') ?></span></h5></th>
 			<?php if ($this->url->admin): ?>
-			<th class="col-1 text-end">
+			<th class="text-end">
 				<?php echo $this->button_access($category_id, 'category') ?>
 				<?php echo $this->button_update('admin/forum/categories/'.$category_id.'/'.url_title($title)) ?>
 				<?php echo $this->button_delete('admin/forum/categories/delete/'.$category_id.'/'.url_title($title)) ?>
@@ -30,10 +30,10 @@
 	<tbody class="forum-content">
 		<?php foreach ($forums as $forum): ?>
 		<tr<?php if ($this->url->admin) echo ' data-forum-id="'.$forum['forum_id'].'"' ?>>
-			<td class="col-1">
+			<td>
 				<?php echo $this->url->admin ? icon('fas fa-arrows-alt-v') : $forum['icon'] ?>
 			</td>
-			<td class="col-<?php echo $this->url->admin ? 5 : 6 ?>">
+			<td>
 				<h5 class="m-0"><a href="<?php echo url('forum/'.$forum['forum_id'].'/'.url_title($forum['title'])) ?>"><?php echo $forum['title'] ?></a></h5>
 				<?php if ($forum['description']) echo '<div>'.$forum['description'].'</div>' ?>
 				<?php
@@ -49,7 +49,7 @@
 				endif;
 				?>
 			</td>
-			<td class="col-2">
+			<td>
 			<?php
 				if ($forum['url'])
 				{
@@ -62,7 +62,7 @@
 				}
 			?>
 			</td>
-			<td class="col-3">
+			<td>
 				<?php if (!$forum['url']): ?>
 				<?php if ($forum['last_title']): ?>
 					<div><a href="<?php echo url('forum/topic/'.$forum['topic_id'].'/'.url_title($forum['last_title']).($forum['last_count_messages'] > $this->config->forum_messages_per_page ? '/page/'.ceil($forum['last_count_messages'] / $this->config->forum_messages_per_page) : '').'#'.$forum['last_message_id']) ?>"><?php echo icon('far fa-comment').' '.str_shortener($forum['last_title'], 40) ?></a></div>
@@ -72,7 +72,7 @@
 				<?php endif; endif ?>
 			</td>
 			<?php if ($this->url->admin): ?>
-			<td class="col-1 text-end">
+			<td class="text-end">
 				<?php echo $this->button_update('admin/forum/'.$forum['forum_id'].'/'.url_title($forum['title'])) ?>
 				<?php echo $this->button_delete('admin/forum/delete/'.$forum['forum_id'].'/'.url_title($forum['title'])) ?>
 			</td>

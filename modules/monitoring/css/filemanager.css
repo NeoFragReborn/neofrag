@@ -34,3 +34,7 @@
 .nf-fm-node > .nf-fm-label:hover { background: rgba(128,128,128,.18); }
 .nf-fm-node.active > .nf-fm-label { background: rgba(0,123,255,.25); }
 .nf-fm-node > .nf-fm-label i { width: 16px; text-align: center; opacity: .8; margin-right: 4px; }
+
+/* Les numéros de ligne de l'éditeur : le gris du thème sombre de CodeMirror (#545454) tombait à
+   2,1:1 sur son fond (check-mise-en-page, 2026-09-23). */
+.nf-fm-editor .CodeMirror .CodeMirror-gutter-wrapper .CodeMirror-linenumber { color: #9aa4ad; }

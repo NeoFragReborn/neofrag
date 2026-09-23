@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,18 +11,30 @@ use NF\NeoFrag\Loadables\Controller;
 
 class Language extends Controller
 {
-	public $__label = ['Langues', 'Langue', 'far fa-flag', 'danger'];
+	/**
+	 * Libellés du type (pluriel, singulier), icône et couleur : affichés sur les cartes de la page des
+	 * addons. Posés au constructeur, parce qu'une valeur par défaut de propriété ne peut pas appeler
+	 * lang() — écrits en dur, ils restaient en français sur un site dans une autre langue.
+	 */
+	public $__label;
+
+	public function __construct($caller)
+	{
+		parent::__construct($caller);
+
+		$this->__label = [$this->lang('Langues'), $this->lang('Langue'), 'far fa-flag', 'danger'];
+	}
 
 	public function __actions()
 	{
 		return $this->array
-					->set('enable', ['Activer', 'fas fa-check', 'success', TRUE, function($addon){
+					->set('enable', [$this->lang('Activer'), 'fas fa-check', 'success', TRUE, function($addon){
 						return !$addon->is_enabled();
 					}])
-					->set('disable', ['Désactiver', 'fas fa-times', 'muted', TRUE, function($addon){
+					->set('disable', [$this->lang('Désactiver'), 'fas fa-times', 'muted', TRUE, function($addon){
 						return count($this->config->langs) > 1 && $addon->is_enabled();
 					}])
-					->set('order', ['Ordre', 'fas fa-sort', 'info', TRUE]);
+					->set('order', [$this->lang('Ordre'), 'fas fa-sort', 'info', TRUE]);
 	}
 
 	public function enable($addon)
@@ -46,7 +59,8 @@ class Language extends Controller
 	{
 		$langs = $this	->array($this->config->langs)
 						->sort(function($a, $b){
-							return strnatcmp($a->settings()->order, $b->settings()->order);
+							// L'ordre d'une langue est un entier ; `strnatcmp()` attend des chaines.
+							return strnatcmp((string) $a->settings()->order, (string) $b->settings()->order);
 						});
 
 		if (($post = post_check('id', 'position')) && (list($addon_id, $position) = array_values($post)))

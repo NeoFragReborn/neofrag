@@ -77,4 +77,11 @@ return [
 	'abe737fd' => 'Réseaux sociaux',
 	'c77f6c43' => 'Propulsé par',
 	'275eec43' => 'Thème gaming « fonte en fusion » : rouge lave sur charbon, nuit par défaut et mode jour, lueur de braise, titres Rajdhani. Entièrement personnalisable.',
+	'49cf2272' => 'Admin',
+	'd80c7901' => 'Inscription',
+	'8a3b82de' => 'Communauté',
+	'593399a1' => 'Bienvenue sur',
+	'2128bc55' => 'NeoFrag Reborn est la continuité communautaire de NeoFrag, créé par Michaël BILCOT &amp; Jérémy VALENTIN. Open source, LGPLv3.',
+	'8c7b5204' => 'Thème communautaire NeoFrag Reborn : dark navy + teal, glassmorphism. Home à widgets, navbar + colonne latérale — pour ta team, ta guilde ou ta communauté.',
+	'4f376417' => 'Retour en haut',
 ];

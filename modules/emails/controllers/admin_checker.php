@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * NeoFrag — Module emails — Admin checker (R2.0, 2026-05-06)
@@ -36,7 +37,7 @@ class Admin_Checker extends Module_Checker
 		$template = $this->model()->get_template($id);
 		if (!$template)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 
@@ -54,7 +55,7 @@ class Admin_Checker extends Module_Checker
 		$template = $this->model()->get_template($id);
 		if (!$template)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 
@@ -72,7 +73,7 @@ class Admin_Checker extends Module_Checker
 		$template = $this->model()->get_template($id);
 		if (!$template)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 
@@ -90,7 +91,7 @@ class Admin_Checker extends Module_Checker
 		$template = $this->model()->get_template($id);
 		if (!$template)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 

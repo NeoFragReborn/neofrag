@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traducciones ES (auto-generadas 2026-05-03)
@@ -25,4 +26,5 @@ return [
 	'ebcb0841' => 'Siguiente',
 	// i18n 2026-06-11 (code strings)
 	'77703fae' => 'Configura el slider en la administración para añadir tus propias diapositivas.',
+	'bcac33c0' => 'Diapositiva %d',
 ];

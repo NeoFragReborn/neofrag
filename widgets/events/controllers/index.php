@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -44,7 +45,7 @@ class Index extends Controller_Widget
 								->where('type_id', $settings['type_id'])
 								->row();
 
-			$label  = $this->label($type['title'], $type['icon'], $type['color']);
+			$label  = $this->label($this->no_translate($type['title']), $type['icon'], $type['color']); // titre saisi en base
 			$events = $this->model()->get_events('type', $settings['type_id']);
 		}
 		else
@@ -63,7 +64,13 @@ class Index extends Controller_Widget
 	{
 		$this->css('events');
 
-		$event = $this->model()->check_event($settings['event_id']);
+		// Sans réglages — posé par un thème, ou d'une disposition ancienne —, le checker refuse de
+		// désigner un élément au hasard : c'est au rendu de s'en tirer (check-widget-contract).
+		if (!($event = $this->model()->check_event($settings['event_id'] ?? 0)))
+		{
+			return;
+		}
+
 		$types = $this->model()->get_types();
 
 		if ($types[$event['type_id']]['type'] == 1)

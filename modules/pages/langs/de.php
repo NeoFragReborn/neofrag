@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -41,4 +42,16 @@ return [
 	'f2100516' => 'Leere Seite (volle Breite)',
 	'78b7cadc' => '„Leere Seite" gibt den Inhalt ohne Rahmen oder Titel wieder — ideal für eine aus Blöcken zusammengesetzte Seite.',
 	'42bd0172' => 'Ein zukünftiges Datum plant die Veröffentlichung: Die Seite bleibt bis zu diesem Datum öffentlich verborgen (falls veröffentlicht). Leer = sofort.',
+	'0adc6e30' => 'Speichern Sie zuerst die Seite: Anschließend können Sie beim Bearbeiten Modulblöcke zusammenstellen.',
+	'b2299bb6' => 'Seitenblöcke',
+	'92a243f3' => 'Fügen Sie unterhalb des Inhalts Modulblöcke hinzu, ordnen Sie sie per Ziehen und Ablegen neu an und konfigurieren Sie ihre Optionen. Visuelles Äquivalent der [block:…]-Shortcodes.',
+	'7fb14f71' => 'Blöcke speichern',
+	'517c0b2c' => 'Geplant für %s',
+	'afccc23b' => 'Erstellen',
+	'f0b7b5b5' => 'Veröffentlichungsdatum',
+	'08ce3a09' => 'Blöcke gespeichert',
+	'ce6fa2e6' => 'Fehler beim Speichern',
+	'9cdcd1f0' => 'Statische CMS-Seiten: Über uns, Impressum, Nutzungsbedingungen usw.',
+	'4349f0db' => 'Seite %s',
+	'1bf841b2' => 'Zugriff auf den Inhalt',
 ];

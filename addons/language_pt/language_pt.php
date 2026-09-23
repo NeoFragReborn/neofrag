@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -13,10 +14,11 @@ class Language_Pt extends Language
 	protected function __info()
 	{
 		return [
-			'title'   => 'Português',
-			'icon'    => '🇵🇹',
-			'version' => '1.0',
-			'depends' => [
+			'title'       => 'Português',
+			'description' => $this->lang('Langue portugaise : locales, formats de date et d’heure, et lecture des dates saisies.'),
+			'icon'        => '🇵🇹',
+			'version'     => '1.0',
+			'depends'     => [
 				'neofrag' => '0.2.0'
 			]
 		];

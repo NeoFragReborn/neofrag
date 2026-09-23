@@ -1,0 +1,56 @@
+/*
+ * Le menu horizontal qui se replie.
+ *
+ * Quand ses entrées ne tiennent plus sur une ligne — un téléphone, ou un menu long —, le script du
+ * widget pose `.nf-nav-replie` : le bouton « Menu » apparaît et la liste se range derrière lui, en
+ * colonne quand on l'ouvre. Sans script, rien de tout cela : le menu reste entier.
+ *
+ * Les couleurs sont celles du thème (`--nf-*`, que chaque thème définit) ; le bouton hérite de la
+ * typographie des liens du menu.
+ */
+.nf-nav-toggle {
+	display: none;
+	align-items: center;
+	gap: .6rem;
+	width: 100%;
+	padding: .65rem .9rem;
+	background: transparent;
+	border: 1px solid var(--nf-border);
+	border-radius: var(--nf-radius-sm);
+	color: inherit;
+	font: inherit;
+	font-weight: 600;
+	letter-spacing: inherit;
+	text-transform: inherit;
+	cursor: pointer;
+}
+
+.nf-nav-toggle:hover,
+.nf-nav-toggle:focus-visible,
+.nf-nav-ouvert > .nf-nav-toggle {
+	border-color: var(--nf-accent);
+}
+
+.nf-nav-toggle .icon {
+	width: 1.1em;
+}
+
+.nf-nav-replie > .nf-nav-toggle {
+	display: flex;
+}
+
+.nf-nav-replie > .nav {
+	display: none;
+}
+
+.nf-nav-replie.nf-nav-ouvert > .nav {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	margin-top: .5rem;
+}
+
+.nf-nav-replie.nf-nav-ouvert > .nav > .nav-item,
+.nf-nav-replie.nf-nav-ouvert > .nav > .nav-item > .nav-link {
+	width: 100%;
+}

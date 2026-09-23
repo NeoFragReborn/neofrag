@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — deutsche Übersetzungen (auto-generiert 2026-05-03)
@@ -34,4 +35,6 @@ return [
 	'0552e076' => 'Vorschaumodus',
 	'1648d731' => 'Links zu persönlichen Daten sind ausgeblendet, um die Privatsphäre des Zielkontos zu schützen.',
 	'78aeb25c' => 'Moderation',
+	'1f88c31b' => 'Optionen',
+	'8a4c99cf' => 'Willkommen %s',
 ];

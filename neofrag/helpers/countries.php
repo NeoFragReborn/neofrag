@@ -5,8 +5,36 @@ declare(strict_types=1);
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
  */
 
+/**
+ * Les pays, code => nom, dans la langue du site.
+ *
+ * La table ci-dessous est écrite en français, la langue source. Dans une autre langue, le nom vient
+ * de la base internationale d'ICU (extension `intl`, exigée par le produit) : 245 pays traduits dans
+ * les six langues sans une ligne de traduction à tenir. Le site anglais proposait jusqu'ici
+ * « Allemagne » et « Émirats arabes unis » dans le formulaire de profil (2026-09-23).
+ *
+ * Quelques codes ne sont pas ceux d'ICU : les nations du Royaume-Uni, la Catalogne, l'Union
+ * européenne, et deux codes RETIRÉS de la norme — `an` (Antilles néerlandaises) et `cs`
+ * (Tchécoslovaquie), qu'ICU rend aujourd'hui « Curaçao » et « Serbie ». Ceux-là passent par lang().
+ */
 function get_countries(): array
 {
+	static $par_langue = [];
+
+	$langue = 'fr';
+
+	$config = NeoFrag()->config;
+
+	if (isset($config->lang) && is_object($config->lang))
+	{
+		$langue = (string) $config->lang->info()->name;
+	}
+
+	if (isset($par_langue[$langue]))
+	{
+		return $par_langue[$langue];
+	}
+
 	//https://github.com/mledoze/countries
 	$countries =  [
 		'ad'            => 'Andorre',
@@ -257,7 +285,61 @@ function get_countries(): array
 		'zw'            => 'Zimbabwe'
 	];
 
+	if ($langue !== 'fr')
+	{
+		// Écrits ici en toutes lettres pour que `check-langs` voie ces textes et exige leurs traductions.
+		$hors_icu = [
+			'an'            => NeoFrag()->lang('Antilles néerlandaises'),
+			'cs'            => NeoFrag()->lang('Tchécoslovaquie'),
+			'catalonia'     => NeoFrag()->lang('Catalogne'),
+			'england'       => NeoFrag()->lang('Angleterre'),
+			'europeanunion' => NeoFrag()->lang('Union européenne'),
+			'scotland'      => NeoFrag()->lang('Écosse'),
+			'wales'         => NeoFrag()->lang('Pays de Galles'),
+		];
+
+		foreach ($countries as $code => $nom)
+		{
+			if (isset($hors_icu[$code]))
+			{
+				$countries[$code] = $hors_icu[$code];
+			}
+			else if (class_exists('Locale') && ($traduit = \Locale::getDisplayRegion('-'.strtoupper($code), $langue)) !== '' && strcasecmp($traduit, $code) !== 0)
+			{
+				$countries[$code] = $traduit;
+			}
+		}
+	}
+
 	array_natsort($countries);
 
-	return $countries;
+	return $par_langue[$langue] = $countries;
+}
+
+/**
+ * Nom d'un pays d'après son code, ou chaîne vide si le code est inconnu.
+ *
+ * Pourquoi ce helper existe
+ * -------------------------
+ * `get_countries()[$code]` était écrit tel quel à HUIT endroits — fiches d'événement, matchs à
+ * venir, résultats, équipes, profil membre, administration des adversaires. Un code absent de la
+ * table y produisait un `Undefined array key`, journalisé à chaque affichage de la page.
+ *
+ * Deux causes possibles, et les deux se sont présentées : une donnée restaurée d'un ancien export,
+ * et un code en MAJUSCULES alors que la table est indexée en minuscules (`fr`, pas `FR`). D'où la
+ * normalisation : le même pays doit se retrouver quelle que soit la casse d'où il vient.
+ *
+ * Constaté le 2026-09-16 dans le journal du site de démonstration : `Undefined array key "CA"`,
+ * `"BE"` et `"FR"` à chaque chargement des pages Événements.
+ */
+function country_name($code): string
+{
+	$code = strtolower(trim((string) $code));
+
+	if ($code === '')
+	{
+		return '';
+	}
+
+	return (string) (get_countries()[$code] ?? '');
 }

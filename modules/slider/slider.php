@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  *
@@ -21,6 +22,10 @@ class Slider extends Module
 			'icon'        => 'fas fa-images',
 			'author'      => 'NeoFrag',
 			'license'     => 'LGPLv3',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => ['neofrag' => '0.2.0'],

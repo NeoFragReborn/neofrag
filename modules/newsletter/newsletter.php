@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Module Newsletter — inscription publique + envoi via email transactionnel.
@@ -19,6 +20,10 @@ class Newsletter extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => [],
+			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => [
@@ -50,7 +55,7 @@ class Newsletter extends Module
 			'default' => [
 				'access' => [
 					[
-						'title'  => 'Newsletter',
+						'title'  => $this->lang('Newsletter'),
 						'icon'   => 'far fa-envelope',
 						'access' => [
 							'manage_subscribers' => ['title' => $this->lang('Gérer abonnés'), 'icon' => 'fas fa-users', 'admin' => TRUE],

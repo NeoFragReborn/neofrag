@@ -1,0 +1,126 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>table2 — tri des colonnes par en-tête</title>
+
+<!--
+  Le tri par clic sur un en-tête est la seule interaction de table2, la table de TOUTE
+  l'administration. Son script (js/table2.js) est resté écrit en jQuery quand jQuery a été retiré
+  (juin 2026) : il levait « $ is not defined » au chargement, et le tri était mort partout —
+  trois mois sans que rien ne le voie, parce qu'un script qui plante avant d'attacher ses
+  écouteurs ne casse rien de visible : la page s'affiche, les en-têtes sont des liens, ils ne font
+  simplement rien.
+
+  Ici, `window.fetch` est remplacé par un double : on éprouve le CONTRAT du script — quel POST,
+  avec quels champs, ce qu'il fait de la réponse, et l'annulation d'une demande dépassée — sur le
+  VRAI fichier (/src/js/table2.js), jamais une copie.
+-->
+
+<script src="/harness.js"></script>
+<script src="/nf.js"></script>
+
+<body>
+
+<!-- Balisage repris de neofrag/libraries/table2.php et table_col.php : le panneau porte data-id,
+     chaque en-tête triable est un <a href="#" data-col="i"> dans un <th>. -->
+<div class="panel panel-table" data-id="T1">
+	<table class="table">
+		<thead><tr>
+			<th><a href="#" data-col="0" id="col0">Titre</a></th>
+			<th><a href="#" data-col="2" id="col2">Date</a></th>
+		</tr></thead>
+		<tbody><tr><td>ancien</td><td>ancien</td></tr></tbody>
+	</table>
+</div>
+
+<div class="panel panel-table" data-id="T2">
+	<table class="table"><thead><tr><th><a href="#" data-col="1" id="autre">Autre table</a></th></tr></thead></table>
+</div>
+
+<!-- Un en-tête hors de tout panneau table2 : le script ne doit pas s'en mêler. -->
+<table class="table"><thead><tr><th><a href="#" data-col="0" id="orphelin">Hors panneau</a></th></tr></thead></table>
+
+<script src="/src/js/table2.js"></script>
+
+<script>
+var appels = [];
+// Le serveur rend la table ENTIÈRE (en-têtes compris, avec les flèches de tri) : le fragment programmé
+// ici garde donc les mêmes liens d'en-tête, sinon les clics suivants n'auraient plus de cible.
+var entetes  = '<thead><tr><th><a href="#" data-col="0" id="col0">Titre</a></th><th><a href="#" data-col="2" id="col2">Date</a></th></tr></thead>';
+var suivante = function () { return { content: entetes + '<tbody id="nouveau"><tr><td>trié</td><td>trié</td></tr></tbody>' }; };
+
+// Le double de fetch : retient chaque appel (url, init) et rend la réponse programmée. Il observe
+// `init.signal` pour éprouver l'annulation.
+window.fetch = function (url, init) {
+	var appel = { url: url, init: init, annule: false };
+	appels.push(appel);
+
+	if (init && init.signal) {
+		init.signal.addEventListener('abort', function () { appel.annule = true; });
+	}
+
+	if (appel.bloque = suivante === null) {
+		return new Promise(function () {}); // ne répond jamais : sert à éprouver l'annulation
+	}
+
+	var json = suivante();
+	return Promise.resolve({ ok: true, status: 200, json: function () { return Promise.resolve(json); }, text: function () { return Promise.resolve(''); } });
+};
+
+function clic(el, options) {
+	var e = new MouseEvent('click', Object.assign({ bubbles: true, cancelable: true }, options || {}));
+	var defaut = el.dispatchEvent(e);
+	return !defaut; // true si le script a fait preventDefault()
+}
+
+function corps(appel) {
+	var b = appel.init && appel.init.body;
+	return b instanceof URLSearchParams ? b.toString() : String(b);
+}
+
+function attendre() { return new Promise(function (r) { setTimeout(r, 0); }); }
+
+NF.ready(async function () {
+	try {
+		// 1. Un clic simple : POST sur la page courante, champs table2[id] et table2[sort], pas d'action.
+		var empeche = clic(document.getElementById('col2'));
+		NFTest.verifie('le clic sur un en-tête est intercepté (preventDefault)', true, empeche);
+		NFTest.verifie('un seul appel réseau', 1, appels.length);
+		NFTest.verifie('… vers la page courante', window.location.pathname, appels[0].url);
+		NFTest.verifie('… en POST', 'POST', appels[0].init.method);
+		NFTest.verifie('… avec X-Requested-With', 'XMLHttpRequest', appels[0].init.headers['X-Requested-With']);
+		NFTest.verifie('… champs table2[id] et table2[sort], sans action', 'table2%5Bid%5D=T1&table2%5Bsort%5D=2', corps(appels[0]));
+
+		await attendre();
+		NFTest.verifie('la réponse remplace le contenu de la table', true, !!document.querySelector('[data-id="T1"] .table #nouveau'));
+		NFTest.verifie('… et seulement celle-là', false, !!document.querySelector('[data-id="T2"] #nouveau'));
+
+		// 2. Maj + clic ajoute la colonne au tri ; Ctrl + clic la retire.
+		clic(document.getElementById('col0'), { shiftKey: true });
+		NFTest.verifie('Maj + clic envoie action=append', 'table2%5Bid%5D=T1&table2%5Bsort%5D=0&table2%5Baction%5D=append', corps(appels[1]));
+
+		clic(document.getElementById('col0'), { ctrlKey: true });
+		NFTest.verifie('Ctrl + clic envoie action=drop', 'table2%5Bid%5D=T1&table2%5Bsort%5D=0&table2%5Baction%5D=drop', corps(appels[2]));
+
+		// 3. Une demande dépassée est annulée par la suivante — mais seulement sur la MÊME table.
+		suivante = null; // les prochains fetch ne répondent jamais
+		clic(document.getElementById('col2'));
+		var lente = appels[appels.length - 1];
+		clic(document.getElementById('autre')); // autre table : ne doit pas annuler la première
+		NFTest.verifie('un clic sur une autre table n\'annule pas la demande en cours', false, lente.annule);
+		clic(document.getElementById('col0'));  // même table : annule
+		NFTest.verifie('un nouveau clic sur la même table annule la demande en cours', true, lente.annule);
+		NFTest.verifie('la nouvelle demande, elle, n\'est pas annulée', false, appels[appels.length - 1].annule);
+
+		// 4. Un en-tête hors d'un panneau table2 est laissé au navigateur.
+		var avant = appels.length;
+		var empecheOrphelin = clic(document.getElementById('orphelin'));
+		NFTest.verifie('un en-tête hors panneau table2 ne déclenche rien', avant, appels.length);
+		NFTest.verifie('… et n\'est pas intercepté', false, empecheOrphelin);
+	}
+	catch (e) {
+		NFTest.echec('exception : ' + (e && e.message || e));
+	}
+
+	NFTest.fini();
+});
+</script>

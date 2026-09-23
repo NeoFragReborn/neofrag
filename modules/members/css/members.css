@@ -1,0 +1,19 @@
+/*
+ * La liste des membres : une carte par membre, en trois colonnes sur grand écran.
+ *
+ * Les cinq boutons de réseaux sociaux d'une carte passaient sur deux lignes à 1024 px, où une carte
+ * ne fait que 200 px — le cinquième seul sous les quatre autres (check-mise-en-page, 2026-09-23).
+ * Serrés d'un cran, ils tiennent sur une ligne.
+ */
+.card-member .socials {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 2px;
+	padding: 0 6px;
+}
+
+.card-member .socials .btn {
+	margin: 0;
+	padding: 4px 6px;
+}

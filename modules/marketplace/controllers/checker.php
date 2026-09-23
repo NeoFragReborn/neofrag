@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace NF\Modules\Marketplace\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module_Checker;
@@ -48,7 +49,18 @@ class Checker extends Module_Checker
 			$catalog = @json_decode(@file_get_contents(NEOFRAG_CMS . '/marketplace/catalog.json'), TRUE) ?: [];
 		}
 
+		// Le titre et la description dans la langue du site : le catalogue porte leurs traductions.
+		$addons = array_map(static function($a){
+			if (is_array($a))
+			{
+				$a['title']       = Installer::texte_catalogue($a, 'title');
+				$a['description'] = Installer::texte_catalogue($a, 'description');
+			}
+
+			return $a;
+		}, is_array($catalog['addons'] ?? NULL) ? $catalog['addons'] : []);
+
 		// [addons, base_url distant (vide si repli local → liens locaux)]
-		return [$catalog['addons'] ?? [], $remote ? rtrim($url, '/') : ''];
+		return [$addons, $remote ? rtrim($url, '/') : ''];
 	}
 }

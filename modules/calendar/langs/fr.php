@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module calendar (fr)
@@ -46,5 +47,13 @@ return [
 	'f6b7dc77' => 'Événement supprimé.',
 	'f6fbedbb' => 'Export iCal',
 	'fd283f69' => 'Calendrier',
-	'fd943a7a' => 'Calendrier — %s'
+	'fd943a7a' => 'Calendrier — %s',
+	'881485c2' => 'Éditer : %s',
+	'3de1bc52' => 'Calendrier d\'événements avec export iCal RFC 5545.',
+	'eee7511a' => 'Rappel : « %s » commence bientôt',
+	'08585d21' => 'Rappel avant un événement suivi (heures, 0 = désactivé)',
+	'1ce788f2' => 'Configuration modifiée',
+	'960d0854' => 'Gérer les événements',
+	'46b60b4f' => 'j F Y',
+	'0c3ae1ce' => 'j F Y H:i',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -17,4 +18,5 @@ return [
 	'c6972013' => 'O seu assunto',
 	'f403f6cd' => 'Ocorreu um erro ao enviar a mensagem',
 	'5cab285c' => 'Formulário de contato público com captcha opcional.',
+	'10f03736' => 'Demasiadas mensagens recentes. Tenta novamente em %d minuto(s).',
 ];

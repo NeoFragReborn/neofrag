@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'2e5318de' => '%d ficheiro(s) adicionado(s)',
@@ -38,4 +39,15 @@ return [
 	'7a650382' => 'Esta ação é definitiva.',
 	'f6e75d04' => 'Gestor de ficheiros',
 	'9ec37f2b' => 'Gestor de ficheiros: árvore, envio, pastas e permissões de leitura por ficheiro/pasta.',
+	'71fc8e0e' => 'Tamanho',
+	'0aac9844' => 'Data',
+	'0eda40d4' => 'Reproduzir',
+	'c38e261e' => 'Caminho',
+	'6febd6fd' => 'Ficheiros',
+	'52c9bbab' => 'Modificar',
+	'aef3a525' => 'Pasta %s',
+	'c07ef58d' => 'Ficheiro %s',
+	'a4e674f4' => 'Nenhum elemento selecionado',
+	'6ddd7401' => '%s elemento selecionado|%s elementos selecionados',
+	'ca977443' => 'Remover',
 ];

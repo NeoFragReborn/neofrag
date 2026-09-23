@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -16,6 +17,25 @@ class Admin extends Controller_Module
 				->js('fullcalendar.min')
 				->js('fullcalendar-locales.min')
 				->js('events');
+
+		/**
+		 * Les actions de la page vivent dans sa BARRE D'OUTILS, comme sur les autres ecrans.
+		 *
+		 * Deux défauts tenaient ici : la création d'un événement était proposée DEUX FOIS, dans
+		 * l'en-tête du calendrier (« Créer un événement ») et dans celui de la liste (« Nouvel
+		 * événement ») — deux boutons, deux libellés, une seule action ; et « Gérer les
+		 * adversaires » était un bouton posé APRÈS la carte des types, hors de tout conteneur, qui
+		 * flottait entre deux blocs sans alignement.
+		 */
+		if ($this->is_authorized('add_event'))
+		{
+			$this->add_action($this->button($this->lang('Nouvel événement'), 'fas fa-plus', 'primary')->url('admin/events/add'));
+		}
+
+		if ($this->is_authorized('modify_event'))
+		{
+			$this->add_action($this->button($this->lang('Adversaires'), 'fas fa-shield-alt', 'secondary')->url('admin/events/opponents'));
+		}
 
 		// Stat cards
 		$now            = time();
@@ -48,7 +68,6 @@ class Admin extends Controller_Module
 		$calendar_card = '<div class="card events-calendar-card">'
 			.'<div class="nf-card-header">'
 			.'<span><i class="far fa-calendar-alt"></i> '.$this->lang('Calendrier').'</span>'
-			.($this->is_authorized('add_event') ? '<a class="btn btn-primary btn-sm" href="'.url('admin/events/add').'"><i class="fas fa-plus"></i> '.$this->lang('Créer un événement').'</a>' : '')
 			.'</div>'
 			.'<div class="events-calendar-body"><div id="calendar"></div></div>'
 			.'</div>';
@@ -116,7 +135,7 @@ class Admin extends Controller_Module
 							[
 								'title'   => $this->lang('Titre'),
 								'content' => function($data){
-									$series = !empty($data['series_id']) ? ' <span class="badge text-bg-secondary" data-bs-toggle="tooltip" title="'.htmlspecialchars($this->lang('Occurrence d\'une série récurrente'), ENT_QUOTES).'"><i class="fas fa-repeat"></i></span>' : '';
+									$series = !empty($data['series_id']) ? ' <span class="badge text-bg-secondary" data-bs-toggle="tooltip" title="'.htmlspecialchars((string) ($this->lang('Occurrence d\'une série récurrente')), ENT_QUOTES).'"><i class="fas fa-repeat"></i></span>' : '';
 									return '<a href="'.url('events/'.$data['event_id'].'/'.url_title($data['title'])).'">'.$data['title'].'</a>'.$series;
 								},
 								'sort'    => function($data){
@@ -131,7 +150,7 @@ class Admin extends Controller_Module
 									if ($data['type'] == 1 && ($match = $this->model('matches')->get_match_info($data['event_id'])))//Matches
 									{
 										return  ($match['scores'] ? $this->model('matches')->label_global_scores($data['event_id']).'<span style="margin: 0 10px;"> vs </span>' : '<span style="margin-right: 10px;">'.$this->lang('Match à jouer').' vs </span>').
-												($match['opponent']['country'] ? '<img src="'.url('images/flags/'.$match['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.get_countries()[$match['opponent']['country']].'" style="margin-right: 10px;" alt="" />' : '').
+												($match['opponent']['country'] ? '<img src="'.url('images/flags/'.$match['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.country_name($match['opponent']['country']).'" style="margin-right: 10px;" alt="" />' : '').
 												$match['opponent']['title'].' <i>('.$match['game']['title'].')</i>';
 									}
 								},
@@ -190,6 +209,22 @@ class Admin extends Controller_Module
 									},
 									function($data){
 										return $this->is_authorized('delete_event') ? $this->button_delete('admin/events/delete/'.$data['event_id'].'/'.url_title($data['title'])) : NULL;
+									},
+									// Second bouton, sur les seules occurrences d'une série. Même
+									// style que la suppression simple — c'est la même nature de
+									// geste — mais l'icône de récurrence, pour qu'on ne puisse pas
+									// confondre « cette séance » et « les douze ».
+									function($data){
+										if (empty($data['series_id']) || !$this->is_authorized('delete_event'))
+										{
+											return NULL;
+										}
+
+										return $this	->button_delete(
+															'admin/events/delete-series/'.$data['event_id'].'/'.url_title($data['title']),
+															$this->lang('Supprimer toute la série')
+														)
+														->icon('fas fa-repeat');
 									}
 								],
 								'size'    => TRUE
@@ -208,16 +243,10 @@ class Admin extends Controller_Module
 			.$types
 			.'</div>';
 
-		// Opponents management link (matches only)
-		$opponents_card = $this->is_authorized('modify_event')
-			? '<a class="btn btn-outline-secondary btn-block mt-3" href="'.url('admin/events/opponents').'"><i class="fas fa-shield-alt"></i> '.$this->lang('Gérer les adversaires').'</a>'
-			: '';
-
 		// Events list card
 		$events_card = '<div class="card events-list-card">'
 			.'<div class="nf-card-header">'
 			.'<span><i class="fas fa-list"></i> '.$this->lang('Liste des événements').'</span>'
-			.($this->is_authorized('add_event') ? '<a class="btn btn-primary btn-sm" href="'.url('admin/events/add').'"><i class="fas fa-plus"></i> '.$this->lang('Nouvel événement').'</a>' : '')
 			.'</div>'
 			.'<div class="events-list-filters">'.$this->_filters().'</div>'
 			.'<div class="events-list-body">'.$events.'</div>'
@@ -227,7 +256,7 @@ class Admin extends Controller_Module
 		return $cards
 			.'<div class="row">'
 			.'<div class="col-12 col-lg-8">'.$calendar_card.'</div>'
-			.'<div class="col-12 col-lg-4">'.$types_card.$opponents_card.'</div>'
+			.'<div class="col-12 col-lg-4">'.$types_card.'</div>'
 			.'</div>'
 			.$events_card;
 	}
@@ -278,7 +307,7 @@ class Admin extends Controller_Module
 						'description' => $this->lang('Récurrence : nombre total d\'occurrences (max %d).', \NF\Modules\Events\Lib\Recurrence::MAX_OCCURRENCES)
 					]
 				])
-				->add_submit($this->lang('Ajouter'))
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus')
 				->add_back('admin/events');
 
 		if ($this->form()->is_valid($post))
@@ -322,29 +351,46 @@ class Admin extends Controller_Module
 			}
 		}
 
-		return $this->admin_back('admin/events', $this->lang('Événements')).$this->admin_card('fas fa-calendar-alt', $this->lang('Ajouter un événement'), $this->form()->display());
+		return $this->admin_card('fas fa-calendar-alt', $this->lang('Ajouter un événement'), $this->form()->display());
 	}
 
-	public function _edit($event_id, $title, $type_id, $date, $date_end, $description, $private_description, $location, $image_id, $published, $type, $publish_date = '')
+	public function _edit($event_id, $title, $type_id, $date, $date_end, $description, $private_description, $location, $image_id, $published, $type, $publish_date = '', $series_id = NULL)
 	{
-		$form_default = $this	->title($this->lang('Éditer l\'événement'))
-								->subtitle($title)
-								->form()
-								->add_rules('events', [
-									'title'               => $title,
-									'type_id'             => $type_id,
-									'image_id'            => $image_id,
-									'description'         => $description,
-									'private_description' => $private_description,
-									'location'            => $location,
-									'date'                => $date,
-									'date_end'            => $date_end,
-									'publish_date'        => $publish_date,
-									'published'           => $published
-								])
-								->add_submit($this->lang('Éditer'))
-								->add_back('admin/events')
-								->save();
+		// Une série de moins de deux occurrences n'en est pas une : proposer « toute la série » sur
+		// un événement seul offrirait un choix sans conséquence, ce qui fait douter de tous les autres.
+		$occurrences = $this->model()->count_series($series_id);
+
+		$formulaire = $this	->title($this->lang('Éditer l\'événement'))
+							->subtitle($title)
+							->form()
+							->add_rules('events', [
+								'title'               => $title,
+								'type_id'             => $type_id,
+								'image_id'            => $image_id,
+								'description'         => $description,
+								'private_description' => $private_description,
+								'location'            => $location,
+								'date'                => $date,
+								'date_end'            => $date_end,
+								'publish_date'        => $publish_date,
+								'published'           => $published
+							]);
+
+		if ($occurrences > 1)
+		{
+			$formulaire->add_rules([
+				'series' => [
+					'type'        => 'checkbox',
+					'checked'     => ['on' => FALSE],
+					'values'      => ['on' => $this->lang('Appliquer à toutes les occurrences de la série (%d)', $occurrences)],
+					'description' => $this->lang('Le titre, le type, les descriptions, le lieu, l\'image et la publication sont recopiés sur chaque occurrence. Les DATES ne le sont pas : ce sont elles qui distinguent une occurrence de la suivante.')
+				]
+			]);
+		}
+
+		$form_default = $formulaire	->add_submit($this->lang('Éditer'))
+									->add_back('admin/events')
+									->save();
 
 		if ($type == 1)//Matches
 		{
@@ -366,21 +412,21 @@ class Admin extends Controller_Module
 			$form_match = $this	->form()
 								->add_rules([
 									'team' => [
-										'label'       => 'Équipe',
+										'label'       => $this->lang('Équipe'),
 										'value'       => isset($match['team_id']) ? $match['team_id'] : NULL,
 										'values'      => $this->module('teams')->model()->get_teams_list(),
 										'type'        => 'select',
 										'rules'       => 'required'
 									],
 									'opponent' => [
-										'label'       => 'Adversaire',
+										'label'       => $this->lang('Adversaire'),
 										'value'       => isset($match['opponent_id']) ? $match['opponent_id'] : NULL,
 										'values'      => $this->model('matches')->get_opponents_list(),
 										'type'        => 'select',
 										'rules'       => 'required'
 									],
 									'mode' => [
-										'label'       => 'Mode',
+										'label'       => $this->lang('Mode'),
 										'value'       => isset($match['mode_id']) ? $match['mode_id'] : NULL,
 										'values'      => $this->module('games')->model('modes')->get_modes_list(),
 										'type'        => 'select'
@@ -392,42 +438,42 @@ class Admin extends Controller_Module
 										'type'        => 'url'
 									],
 									'website' => [
-										'label'       => 'Site web',
+										'label'       => $this->lang('Site web'),
 										'value'       => isset($match['website']) ? $match['website'] : NULL,
-										'description' => 'Renseignez un site qui parle de l\'événement',
+										'description' => $this->lang('Renseignez un site qui parle de l\'événement'),
 										'type'        => 'url'
 									]
 								])
-								->add_submit('Valider')
+								->add_submit($this->lang('Valider'))
 								->save();
 
 			$form_opponent = $this	->form()
 									->add_rules('opponents')
-									->add_submit('Valider')
+									->add_submit($this->lang('Valider'))
 									->save();
 
 			$form_round = $this	->form()
 								->add_rules([
 									'map' => [
-										'label'  => 'Carte',
+										'label'  => $this->lang('Carte'),
 										'type'   => 'select',
 										'values' => $maps,
 										'size'   => 'col-5'
 									],
 									'score1' => [
-										'label'  => 'Notre score',
+										'label'  => $this->lang('Notre score'),
 										'type'   => 'number',
 										'rules'  => 'required',
 										'size'   => 'col-3'
 									],
 									'score2' => [
-										'label'  => 'Score adverse',
+										'label'  => $this->lang('Score adverse'),
 										'type'   => 'number',
 										'rules'  => 'required',
 										'size'   => 'col-3'
 									]
 								])
-								->add_submit('Valider')
+								->add_submit($this->lang('Valider'))
 								->save();
 
 			if ($form_match->is_valid($post))
@@ -482,7 +528,27 @@ class Admin extends Controller_Module
 									in_array('on', $post['published']),
 									$post['publish_date'] ?? '');
 
-			notify($this->lang('Événement édité'));
+			// La propagation vient APRÈS l'édition de l'occupation courante, et la recouvre sans
+			// dommage : les deux écrivent les mêmes valeurs. L'inverse laisserait l'occurrence
+			// éditée en désaccord avec ses sœurs si la propagation échouait.
+			if ($occurrences > 1 && in_array('on', (array) ($post['series'] ?? [])))
+			{
+				$touchees = $this->model()->edit_series($series_id, [
+					'title'               => $post['title'],
+					'type_id'             => $post['type'],
+					'description'         => $post['description'],
+					'private_description' => $post['private_description'],
+					'location'            => $post['location'],
+					'image_id'            => $post['image'],
+					'published'           => in_array('on', $post['published'])
+				]);
+
+				notify($this->lang('Série mise à jour : %d occurrences. Les dates de chacune sont conservées.', $touchees));
+			}
+			else
+			{
+				notify($this->lang('Événement édité'));
+			}
 
 			$new_type = $this->db->select('type')->from('nf_events_types')->where('type_id', $post['type'])->row();
 
@@ -501,7 +567,7 @@ class Admin extends Controller_Module
 		if ($published && !$this->model('participants')->get_participants($event_id))
 		{
 			$alert = $this	->panel()
-							->body('<div class="float-end"><a href="'.url('events/'.$event_id.'/'.url_title($title).'#participants').'" class="btn btn-info">Inviter des membres</a></div><i class="fas fa-info-circle"></i> <b>Pense-bête !</b><br />N\'oubliez pas d\'envoyer vos demandes de participation à vos membres !</b>')
+							->body('<div class="float-end"><a href="'.url('events/'.$event_id.'/'.url_title($title).'#participants').'" class="btn btn-info">'.$this->lang('Inviter des membres').'</a></div><i class="fas fa-info-circle"></i> <b>'.$this->lang('Pense-bête !').'</b><br />'.$this->lang('N\'oubliez pas d\'envoyer vos demandes de participation à vos membres !'))
 							->color('info');
 		}
 
@@ -534,7 +600,7 @@ class Admin extends Controller_Module
 												->where('r.event_id', $event_id)
 												->order_by('r.round_id')
 												->get())
-					->no_data('Aucune manche renseignée');
+					->no_data($this->lang('Aucune manche renseignée'));
 
 			$modal_opponent = $this	->modal('Ajouter un adversaire', 'fas fa-plus')
 									->body($form_opponent->display())
@@ -546,7 +612,7 @@ class Admin extends Controller_Module
 
 			return $this->row(
 				$this	->col($alert, $panel)
-						->size('col-8'),
+						->size('col-12 col-lg-8'),
 				$this	->col(
 							$this	->panel()
 									->heading($this->lang('Détails de la rencontre'), 'fas fa-info-circle')
@@ -556,7 +622,7 @@ class Admin extends Controller_Module
 									->body($this->table()->display())
 									->footer($this->button_create('#', $this->lang('Ajouter une manche'))->modal($modal_round))
 						)
-						->size('col-4')
+						->size('col-12 col-lg-4')
 			);
 		}
 		else
@@ -582,13 +648,50 @@ class Admin extends Controller_Module
 		return $this->form()->display();
 	}
 
+	/**
+	 * Supprime toutes les occurrences d'une série récurrente.
+	 *
+	 * Le modèle savait le faire depuis la livraison de la récurrence — `delete_series()` existait,
+	 * et rien ne l'appelait. Créer douze séances d'un coup et devoir les supprimer une par une
+	 * n'était pas une limite décidée, seulement une moitié de chantier.
+	 *
+	 * La confirmation ANNONCE LE NOMBRE. « Supprimer la série » sans dire combien, sur une série
+	 * qu'on a créée il y a des mois, se clique à l'aveugle.
+	 */
+	public function _delete_series($event_id, $title, $series_id)
+	{
+		$occurrences = $this->model()->count_series($series_id);
+
+		$this	->title($this->lang('Suppression de la série'))
+				->subtitle($title)
+				->form()
+				->confirm_deletion(
+					$this->lang('Confirmation de suppression'),
+					$this->lang(
+						'Supprimer <b>l\'unique occurrence</b> de la série dont fait partie <b>%2$s</b> ?|Supprimer <b>les %1$d occurrences</b> de la série dont fait partie <b>%2$s</b> ? Elles seront toutes effacées, avec leurs commentaires et leurs participations.',
+						$occurrences,
+						$occurrences,
+						$title
+					)
+				);
+
+		if ($this->form()->is_valid())
+		{
+			$this->model()->delete_series($series_id);
+
+			return 'OK';
+		}
+
+		return $this->form()->display();
+	}
+
 	public function _types_add()
 	{
 		$this	->subtitle($this->lang('Ajouter un type d\'événement'))
 				->form()
 				->add_rules('types')
 				->add_back('admin/events')
-				->add_submit($this->lang('Ajouter'));
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -602,7 +705,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/events');
 		}
 
-		return $this->admin_back('admin/events', $this->lang('Événements')).$this->admin_card('far fa-bookmark', $this->lang('Ajouter un type d\'événement'), $this->form()->display());
+		return $this->admin_card('far fa-bookmark', $this->lang('Ajouter un type d\'événement'), $this->form()->display());
 	}
 
 	public function _types_edit($type_id, $type, $title, $color, $icon)
@@ -631,7 +734,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/events');
 		}
 
-		return $this->admin_back('admin/events', $this->lang('Événements')).$this->admin_card('far fa-bookmark', $this->lang('Éditer le type d\'événement').' — '.$title, $this->form()->display());
+		return $this->admin_card('far fa-bookmark', $this->lang('Éditer le type d\'événement').' — '.$title, $this->form()->display());
 	}
 
 	public function _types_delete($type_id, $title)
@@ -674,7 +777,7 @@ class Admin extends Controller_Module
 							->add_columns([
 								[
 									'content' => function($data){
-										$flag = $data['country'] ? '<img src="'.url('images/flags/'.$data['country'].'.png').'" data-bs-toggle="tooltip" title="'.get_countries()[$data['country']].'" style="margin-right: 10px;" alt="" />' : '';
+										$flag = $data['country'] ? '<img src="'.url('images/flags/'.$data['country'].'.png').'" data-bs-toggle="tooltip" title="'.country_name($data['country']).'" style="margin-right: 10px;" alt="" />' : '';
 
 										return $flag.'<a href="'.url('admin/events/opponents/'.$data['opponent_id'].'/'.url_title($data['title'])).'">'.$data['title'].'</a>';
 									},
@@ -711,7 +814,7 @@ class Admin extends Controller_Module
 							->no_data($this->lang('Aucun adversaire'))
 							->display();
 
-		return $this->admin_back('admin/events', $this->lang('Événements')).$this->admin_card('fas fa-shield-alt', $this->lang('Adversaires'), $opponents, '', $this->is_authorized('modify_event') ? (string)$this->button_create('admin/events/opponents/add', $this->lang('Nouvel adversaire')) : '');
+		return $this->admin_card('fas fa-shield-alt', $this->lang('Adversaires'), $opponents, '', $this->is_authorized('modify_event') ? (string)$this->button_create('admin/events/opponents/add', $this->lang('Nouvel adversaire')) : '');
 	}
 
 	public function _opponents_add()
@@ -720,7 +823,7 @@ class Admin extends Controller_Module
 				->form()
 				->add_rules('opponents')
 				->add_back('admin/events/opponents')
-				->add_submit($this->lang('Ajouter'));
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus');
 
 		if ($this->form()->is_valid($post))
 		{

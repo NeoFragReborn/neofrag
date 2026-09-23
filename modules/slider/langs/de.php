@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 return [
 	// i18n 2026-06-11 (code strings)
 	'7cbecb62' => 'Slides des Slider-Widgets',
@@ -35,4 +36,13 @@ return [
 	'aa7a6e6a' => 'Löschen dieser Slide bestätigen?',
 	'3ff2b02c' => 'Ziehe die Zeilen zum Neuordnen, dann klicke auf „Reihenfolge speichern".',
 	'a3d90926' => 'Reihenfolge speichern',
+	'c86b1531' => 'Slider',
+	'ae6af5c0' => 'Link (optional)',
+	'8fd9c7ef' => 'Speichern',
+	'04fc2b5b' => 'Bild',
+	'c9340a06' => 'Aktiv',
+	'caf5c873' => 'Aktionen',
+	'b0d653e1' => 'Inaktiv',
+	'eb6693d4' => 'Deaktivieren',
+	'52c9bbab' => 'Bearbeiten',
 ];

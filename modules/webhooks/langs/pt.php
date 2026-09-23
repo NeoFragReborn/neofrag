@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'60fa2d8b' => 'Webhooks',
@@ -24,4 +25,27 @@ return [
 	'749713ce' => 'Teste falhou: %s',
 	'16922d8f' => 'Host não público (bloqueado pela proteção anti-SSRF).',
 	'f9289163' => 'URL inválido ou cURL indisponível.',
+	'62d10724' => 'URL',
+	'b1a096a2' => 'Eventos',
+	'c9340a06' => 'Ativo',
+	'bde466c1' => 'Todos',
+	'e2a147a0' => 'Sim',
+	'881485c2' => 'Editar: %s',
+	'afccc23b' => 'Criar',
+	'8fd9c7ef' => 'Guardar',
+	'7f386c83' => 'Notícia publicada',
+	'a05569ca' => 'Artigo publicado',
+	'c8c91cb8' => 'Novo membro',
+	'ddd2ffe3' => 'Novo comentário',
+	'abc141a6' => 'Novo tópico no fórum',
+	'03bd613b' => 'Canal em direto',
+	'c755adcd' => 'Nova notícia: %s',
+	'7dbe4e5a' => 'Novo artigo: %s',
+	'f86e4d0d' => 'Bem-vindo, %s!',
+	'8924a115' => 'Um novo membro acabou de se juntar à comunidade.',
+	'9c2ebd79' => 'Novo comentário de %s',
+	'f9929b25' => 'Novo tópico: %s',
+	'97cbc6c8' => '%s está em direto',
+	'f1f0ce0a' => 'Teste do webhook',
+	'8c654744' => 'Se esta mensagem aparecer, o site consegue escrever neste canal.',
 ];

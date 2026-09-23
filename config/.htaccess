@@ -1,0 +1,25 @@
+# Le dossier des SECRETS : rien n'y est joignable en HTTP.
+#
+# Ce qu'il contient : les identifiants de la base (`db.php`), la clé de chiffrement du site
+# (`crypt.php`), le sel des mots de passe (`password.php`), les identifiants SMTP (`email.php`).
+#
+# Aujourd'hui rien ne fuit sans cette règle : ce sont des fichiers `.php`, qu'Apache EXÉCUTE au
+# lieu de les servir, et leur exécution n'affiche rien — ils ne font qu'affecter des variables.
+# Mais cette protection-là tient à une configuration PHP correcte sur toute la chaîne. Le jour où
+# PHP est désactivé pour ce dossier, mal configuré, ou remplacé par un moteur qui ignore ces
+# fichiers, c'est la clé de chiffrement du site qui part en clair dans un navigateur.
+#
+# `backups/`, `logs/` et `upload/` portent déjà chacun leur garde ; `config/` n'en avait aucune,
+# alors que c'est le seul dossier dont le contenu compromet le site entier. Ajouté le 2026-09-21.
+#
+# Sur un hébergement où `AllowOverride None` est imposé, ce fichier est ignoré : la protection
+# repose alors sur l'exécution PHP, comme avant. Caddy, lui, refuse déjà `/config/*` côté serveur.
+
+<IfModule mod_authz_core.c>
+	Require all denied
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+	Order allow,deny
+	Deny from all
+</IfModule>

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -14,8 +15,13 @@ class Discord extends Widget
 		return [
 			'title'       => $this->lang('Serveur Discord'),
 			'description' => $this->lang('Affiche les membres en ligne, les salons vocaux et un lien d\'invitation vers votre serveur Discord.'),
+			'icon'        => 'fab fa-discord',
 			'author'      => 'NeoFrag',
 			'license'     => 'LGPLv3',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '2.0',
 			'depends'     => [
 				'neofrag' => '0.2.0'

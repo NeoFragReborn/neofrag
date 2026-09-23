@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -60,7 +61,7 @@ class Block extends Controller_Module
 		foreach ($news as $n)
 		{
 			$html .= '<li class="list-group-item"><a href="'.url('news/'.$n['news_id'].'/'.url_title($n['title'])).'">'
-				.icon('far fa-newspaper').' '.htmlspecialchars($n['title']).'</a></li>';
+				.icon('far fa-newspaper').' '.htmlspecialchars((string) ($n['title'])).'</a></li>';
 		}
 
 		return $html.'</ul></div>';

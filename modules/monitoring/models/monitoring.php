@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -7,10 +8,108 @@
 namespace NF\Modules\Monitoring\Models;
 
 use NF\NeoFrag\Loadables\Model;
+use NF\Install\Lib\Installer;
 
 class Monitoring extends Model
 {
 	public $folders = ['addons', 'backups', 'cache', 'config', 'css', 'fonts', 'images', 'js', 'lib', 'logs', 'modules', 'neofrag', 'overrides', 'themes', 'upload', 'widgets'];
+
+	/**
+	 * Remet le site dans l'état d'une sauvegarde : d'abord les fichiers, ensuite la base.
+	 *
+	 * L'ordre n'est pas indifférent. Fichiers d'abord : si l'import de la base échoue ensuite, le
+	 * site tourne au moins avec un code cohérent, capable d'afficher un message lisible. Base
+	 * d'abord, c'est l'inverse — du code neuf par-dessus des tables anciennes, c'est-à-dire une page
+	 * blanche et aucun moyen de dire pourquoi.
+	 *
+	 * Le dispositif vit ici, dans le modèle, et non dans l'un des deux contrôleurs qui s'en servent :
+	 * le retour arrière automatique d'une mise à jour ratée et le bouton « Restaurer » du panneau
+	 * doivent emprunter le MÊME chemin. Deux implémentations, ce serait deux comportements, dont un
+	 * seul aurait jamais été éprouvé.
+	 *
+	 * @param  string        $archive  chemin absolu du .zip de backups/
+	 * @param  callable|NULL $progress reçoit ($n, $total) pour l'affichage en flux
+	 * @return array{restored:int,removed:int,sql:bool}
+	 * @throws \Throwable   la restauration ne masque rien : l'appelant décide quoi en dire
+	 */
+	public function restaurer(string $archive, ?callable $progress = NULL): array
+	{
+		require_once NEOFRAG_CMS.'/install/lib/installer.php';
+
+		// Le dump porte TOUTE la base en clair. Il ne sort donc pas de backups/, seul dossier dont
+		// l'accès HTTP est refusé, il porte un nom non devinable, et il est effacé quoi qu'il arrive.
+		$dump = dirname($archive).'/'.basename($archive, '.zip').'-restauration-'.bin2hex(random_bytes(6)).'.sql';
+
+		try
+		{
+			$resultat = Installer::restore_backup_package($archive, NEOFRAG_CMS, $dump, $progress);
+
+			$sql = @file_get_contents($dump);
+
+			if ($sql === FALSE)
+			{
+				throw new \RuntimeException('La copie de la base extraite est illisible.');
+			}
+
+			// import() rend TRUE, ou le message d'erreur MySQL. Un `!== TRUE` nu suffirait, mais on
+			// veut le message : « la restauration a échoué » sans la raison n'aide personne.
+			if (($erreur = $this->db->import($sql)) !== TRUE)
+			{
+				throw new \RuntimeException('import de la base : '.$erreur);
+			}
+		}
+		finally
+		{
+			if (file_exists($dump))
+			{
+				@unlink($dump);
+			}
+		}
+
+		// Le cache n'est pas restauré (cf. restore_backup_package) : ce qu'il contient a été compilé
+		// par la version qu'on vient d'annuler. On le vide pour qu'il se reconstruise proprement.
+		$this->vider_cache();
+
+		error_log('[restore] '.$resultat['restored'].' fichier(s) restauré(s), '.$resultat['removed'].' vestige(s) retiré(s), base réimportée depuis '.basename($archive));
+
+		return $resultat;
+	}
+
+	/**
+	 * Vide cache/ de ses artefacts, en laissant en place ce qui protège le dossier.
+	 *
+	 * Ni .htaccess ni index.html ne sont des artefacts : ce sont les gardes du dossier. Les emporter
+	 * au passage transformerait un cache vidé en cache exposé.
+	 */
+	public function vider_cache(): int
+	{
+		$dir = rtrim(NEOFRAG_CMS, '/').'/cache';
+
+		if (!is_dir($dir))
+		{
+			return 0;
+		}
+
+		$n  = 0;
+		$it = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS),
+			\RecursiveIteratorIterator::CHILD_FIRST
+		);
+
+		foreach ($it as $file)
+		{
+			if ($file->isDir())
+			{
+				@rmdir($file->getPathname());
+			}
+			else if (!in_array($file->getFilename(), ['.htaccess', 'index.html', 'index.php'], TRUE) && @unlink($file->getPathname()))
+			{
+				$n++;
+			}
+		}
+
+		return $n;
+	}
 
 	/**
 	 * Liste les backups .zip du dossier backups/, triés du plus récent au plus ancien.

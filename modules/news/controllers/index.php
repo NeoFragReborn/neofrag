@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -12,6 +13,9 @@ class Index extends Controller_Module
 {
 	public function index($news)
 	{
+		// La feuille du module sert aussi à la liste : la ligne d'auteur y porte le lien des commentaires.
+		$this->css('news');
+
 		$panels = $this->array;
 
 		foreach ($news as $news)

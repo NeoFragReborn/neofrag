@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -54,7 +55,7 @@ class Api extends Controller_Module
 		};
 
 		// Pré-processe tous les .scss du projet (PHP inline → SCSS pur) dans un dossier mirror temporaire.
-		// Nécessaire car scssphp 1.x n'a plus l'équivalent de preprocessingFunction() de la 0.x,
+		// Nécessaire car scssphp n'a plus, depuis la 1.x, l'équivalent de preprocessingFunction() de la 0.x,
 		// et certains thèmes peuvent injecter du PHP dans les .scss pour les couleurs admin-customizables.
 		$build_mirror = function($files){
 			$mirror = sys_get_temp_dir().'/neofrag-scss-mirror-'.uniqid();

@@ -5,7 +5,19 @@ NF.ready(function(){
 	if (!document.getElementById('gallery-dropzone')){ return; }
 
 	new Dropzone('#gallery-dropzone', {
-		dictDefaultMessage: '<div class="text-center"><h2><?php echo icon('fas fa-cloud-upload-alt') ?> DropZone</h2><p class="text-muted">Déposez vos images dans cette zone, ou cliquez ici</p></div>',
+		dictDefaultMessage: '<div class="text-center"><h2><?php echo icon('fas fa-cloud-upload-alt') ?> DropZone</h2><p class="text-muted"><?php echo addslashes($this->lang('Déposez vos images dans cette zone, ou cliquez ici')) ?></p></div>',
+		/* Les textes de la bibliothèque (dropzone.js garde ses valeurs d'origine, en anglais) : ils
+		   s'affichent à l'utilisateur — lien de retrait, refus d'un fichier trop lourd, erreur du
+		   serveur — et passent donc par les traductions du module. Les {{…}} sont remplis par Dropzone. */
+		dictFallbackMessage: '<?php echo addslashes($this->lang('Votre navigateur ne permet pas de déposer des fichiers par glisser-déposer.')) ?>',
+		dictFallbackText: '<?php echo addslashes($this->lang('Utilisez le formulaire ci-dessous pour envoyer vos fichiers.')) ?>',
+		dictFileTooBig: '<?php echo addslashes($this->lang('Fichier trop volumineux ({{filesize}} Mio). Taille maximale : {{maxFilesize}} Mio.')) ?>',
+		dictInvalidFileType: '<?php echo addslashes($this->lang('Ce type de fichier n\'est pas accepté.')) ?>',
+		dictResponseError: '<?php echo addslashes($this->lang('Le serveur a répondu avec le code {{statusCode}}.')) ?>',
+		dictCancelUpload: '<?php echo addslashes($this->lang('Annuler')) ?>',
+		dictCancelUploadConfirmation: '<?php echo addslashes($this->lang('Voulez-vous vraiment annuler cet envoi ?')) ?>',
+		dictRemoveFile: '<?php echo addslashes($this->lang('Retirer')) ?>',
+		dictMaxFilesExceeded: '<?php echo addslashes($this->lang('Vous ne pouvez plus envoyer d\'autres fichiers.')) ?>',
 		addRemoveLinks: true,
 		autoProcessQueue: false,
 		parallelUploads: 20,
@@ -23,7 +35,7 @@ NF.ready(function(){
 			/* On lance l'upload sur clic du bouton */
 			if (submitButton){
 				submitButton.addEventListener('click', function() {
-					submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Téléchargement en cours...';
+					submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <?php echo addslashes($this->lang('Téléchargement en cours...')) ?>';
 					submitButton.disabled = true;
 					myDropzone.processQueue();
 				});
@@ -33,7 +45,7 @@ NF.ready(function(){
 			myDropzone.on('addedfile', function() {
 				if (submitButton){
 					submitButton.style.display = '';
-					submitButton.innerHTML = '<?php echo icon('fas fa-cloud-upload-alt') ?> Ajouter les images';
+					submitButton.innerHTML = '<?php echo icon('fas fa-cloud-upload-alt') ?> <?php echo addslashes($this->lang('Ajouter les images')) ?>';
 					submitButton.disabled = false;
 				}
 				hideAll('.label-dropzone');
@@ -69,10 +81,10 @@ NF.ready(function(){
 				if (progressBar){ progressBar.style.width = totalPercentage + '%'; }
 				document.querySelectorAll('.progress-percent').forEach(function(el){
 					el.innerHTML = (totalPercentage === 100)
-						? '<i class="fas fa-spinner fa-spin"></i> Encore un tout petit instant...'
-						: '<b><i class="fas fa-spinner fa-spin"></i> ' + Math.round(totalPercentage) + '%</b> Veuillez patienter...';
+						? '<i class="fas fa-spinner fa-spin"></i> <?php echo addslashes($this->lang('Encore un tout petit instant...')) ?>'
+						: '<b><i class="fas fa-spinner fa-spin"></i> ' + Math.round(totalPercentage) + '%</b> <?php echo addslashes($this->lang('Veuillez patienter...')) ?>';
 				});
-				document.querySelectorAll('.progress-size').forEach(function(el){ el.innerHTML = sentsizeInMB + '/' + sizeInMB + ' Mo'; });
+				document.querySelectorAll('.progress-size').forEach(function(el){ el.innerHTML = sentsizeInMB + '/' + sizeInMB + ' <?php echo addslashes($this->lang('Mo')) ?>'; });
 				showAll('.upload-infos');
 			});
 		}

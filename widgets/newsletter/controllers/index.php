@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace NF\Widgets\Newsletter\Controllers;
 use NF\NeoFrag\Loadables\Controllers\Widget as Controller_Widget;
 
@@ -17,7 +18,7 @@ class Index extends Controller_Widget
 		$body .= '<form method="post" action="'.url('newsletter').'">';
 		$body .= '<div class="input-group input-group-sm">';
 		$body .= '<input type="email" name="data[email]" class="form-control" placeholder="'.$this->lang('ton@email.fr').'" required>';
-		$body .= '<div class="input-group-append"><button type="submit" class="btn btn-primary"><i class="fas fa-envelope"></i></button></div>';
+		$body .= '<button type="submit" class="btn btn-primary"><i class="fas fa-envelope"></i></button>';
 		$body .= '</div>';
 		$body .= '</form>';
 		if ($nb > 0)

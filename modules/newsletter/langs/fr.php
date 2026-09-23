@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module newsletter (fr)
@@ -103,4 +104,7 @@ return [
 	'209cc33f' => 'Cible',
 	'96f7da00' => 'Membres',
 	'03158917' => 'Groupe',
+	'056af2ff' => 'Inscription à la newsletter (double opt-in) et envoi de campagnes.',
+	'79987719' => 'inscription newsletter en attente|inscriptions newsletter en attente',
+	'080b55ee' => 'Gérer la newsletter',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -78,10 +79,10 @@ return [
 	'dc275fe4' => 'Filtrar',
 	'599dba10' => 'Restablecer',
 	'8a7e7178' => '%d resultado|%d resultados',
-	93714304 => 'Seleccionar todo',
+	'93714304' => 'Seleccionar todo',
 	'537f45bd' => 'Acción en lote…',
 	'96d3b970' => 'Publicar',
-	84915314 => 'Despublicar',
+	'84915314' => 'Despublicar',
 	'a3f47afc' => 'Aplicar',
 	'41f2f22f' => '%d noticia actualizada.|%d noticias actualizadas.',
 	'f0b7b5b5' => 'Fecha de publicación',
@@ -106,4 +107,7 @@ return [
 	'62aefade' => '%s noticias',
 	'e50e7c03' => 'Últimas noticias',
 	'93d0faf6' => 'Una fecha futura programa la publicación: la noticia permanece oculta públicamente hasta esa fecha (si «Publicada» está marcada).',
+	'4c9e9abd' => 'Vistas',
+	'cf2e7bf8' => 'Noticias de una categoría',
+	'32795d48' => 'Borrador',
 ];

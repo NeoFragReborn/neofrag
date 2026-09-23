@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: FoxLey
@@ -26,4 +27,5 @@ return [
 	'ebcb0841' => 'Next',
 	// i18n 2026-06-11 (code strings)
 	'77703fae' => 'Configure the slider in the admin to add your own slides.',
+	'bcac33c0' => 'Slide %d',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  *
@@ -17,12 +18,16 @@ class Moderation extends Module
 	protected function __info()
 	{
 		return [
-			'title'       => 'Modération',
+			'title'       => $this->lang('Modération'),
 			'description' => $this->lang('Système de modération étendu : signalements, sanctions (avertissement, mute, ban, restrictions), historique et traçabilité.'),
 			'icon'        => 'fas fa-shield-alt',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '1.0',
 			'admin'       => TRUE,
 			'depends'     => [
@@ -279,6 +284,65 @@ class Moderation extends Module
 	}
 
 	/**
+	 * Le libellé traduit d'un code de la modération : statut d'un signalement, raison, type de cible,
+	 * type et portée d'une sanction. L'administration affichait les codes eux-mêmes (`pending`,
+	 * `forum_message`, `ban_temp`), dans toutes les langues. Un code inconnu est rendu tel quel.
+	 */
+	public function libelle(string $famille, $code): string
+	{
+		$code = (string) $code;
+
+		$libelles = [
+			'statut' => [
+				'pending'   => $this->lang('En attente'),
+				'reviewed'  => $this->lang('Examiné'),
+				'actioned'  => $this->lang('Sanctionné'),
+				'dismissed' => $this->lang('Classé sans suite'),
+				'duplicate' => $this->lang('Doublon'),
+			],
+			'raison' => [
+				'spam'           => $this->lang('Spam'),
+				'harassment'     => $this->lang('Harcèlement'),
+				'illegal'        => $this->lang('Contenu illégal'),
+				'nsfw'           => $this->lang('Contenu explicite'),
+				'misinformation' => $this->lang('Désinformation'),
+				'duplicate'      => $this->lang('Doublon / hors sujet'),
+				'other'          => $this->lang('Autre'),
+			],
+			'cible' => [
+				'forum_message' => $this->lang('Message du forum'),
+				'forum_topic'   => $this->lang('Sujet du forum'),
+				'talks_message' => $this->lang('Message privé'),
+				'comment'       => $this->lang('Commentaire'),
+				'profile'       => $this->lang('Profil'),
+			],
+			'sanction' => [
+				'warning'            => $this->lang('Avertissement'),
+				'mute'               => $this->lang('Mute'),
+				'ban_temp'           => $this->lang('Ban temporaire'),
+				'ban_perm'           => $this->lang('Ban définitif'),
+				'restrict_upload'    => $this->lang('Restriction : fichiers'),
+				'restrict_links'     => $this->lang('Restriction : liens'),
+				'restrict_avatar'    => $this->lang('Restriction : avatar'),
+				'restrict_signature' => $this->lang('Restriction : signature'),
+				'restrict_comment'   => $this->lang('Restriction : commentaires'),
+				'shadow_ban'         => $this->lang('Shadow ban'),
+			],
+			'portee' => [
+				'global'    => $this->lang('Tout le site'),
+				'forum'     => $this->lang('Forum'),
+				'talks'     => $this->lang('Discussions'),
+				'comments'  => $this->lang('Commentaires'),
+				'wiki'      => 'Wiki',
+				'gallery'   => $this->lang('Galerie'),
+				'guestbook' => $this->lang('Livre d\'or'),
+			],
+		];
+
+		return (string) ($libelles[$famille][$code] ?? $code);
+	}
+
+	/**
 	 * Helper : rend un bouton "Signaler" + injecte le JS du module si pas déjà fait.
 	 *
 	 * Usage dans une vue :
@@ -305,11 +369,11 @@ class Moderation extends Module
 		$this->css('moderation')->js('moderation');
 
 		$attrs = 'data-moderation-report'
-		       . ' data-target-type="'.htmlspecialchars($type).'"'
+		       . ' data-target-type="'.htmlspecialchars((string) ($type)).'"'
 		       . ' data-target-id="'.htmlspecialchars((string)$id).'"'
-		       . ' data-url="'.htmlspecialchars($url).'"';
+		       . ' data-url="'.htmlspecialchars((string) ($url)).'"';
 
-		return '<a href="#" class="btn btn-sm btn-link text-muted nf-report-btn" '.$attrs.' data-bs-toggle="tooltip" title="'.htmlspecialchars($this->lang('Signaler ce contenu')).'">'
+		return '<a href="#" class="btn btn-sm btn-link text-muted nf-report-btn" '.$attrs.' data-bs-toggle="tooltip" title="'.htmlspecialchars((string) ($this->lang('Signaler ce contenu'))).'">'
 		     . '<i class="fas fa-flag"></i>'
 		     . '</a>';
 	}

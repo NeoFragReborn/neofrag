@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -15,6 +16,8 @@ use NF\NeoFrag\Core;
  * @property mixed $nf_captcha_public_key
  * @property mixed $nf_contact
  * @property mixed $nf_cookie_expire
+ * @property mixed $nf_font
+ * @property mixed $nf_session_history_days
  * @property mixed $nf_cookie_name
  * @property mixed $nf_copyright
  * @property mixed $nf_cron_key
@@ -84,6 +87,29 @@ use NF\NeoFrag\Core;
  * @property mixed $nf_welcome_content
  * @property mixed $nf_welcome_title
  * @property mixed $nf_welcome_user_id
+ *
+ * Réglages du cœur lus par les modules (marketplace, dons, réseaux sociaux, supervision,
+ * traduction, version) :
+ * @property mixed $nf_donations_paypal_email
+ * @property mixed $nf_marketplace_url
+ * @property mixed $nf_monitoring_check_url
+ * @property mixed $nf_registration_validation
+ * @property mixed $nf_social_bluesky
+ * @property mixed $nf_social_discord
+ * @property mixed $nf_social_linkedin
+ * @property mixed $nf_social_mastodon
+ * @property mixed $nf_social_threads
+ * @property mixed $nf_social_tiktok
+ * @property mixed $nf_theme_epoch
+ * @property mixed $nf_translate_api
+ * @property mixed $nf_pwa
+ * @property mixed $nf_version
+ *
+ * Deux valeurs que Config pose lui-même (voir `_const`), pas des réglages : la langue courante
+ * et la liste des langues installées. `mixed` et non `Language` : cet addon résout `date()`,
+ * `time` ou `datetime` par méthode magique, et le typer ferait surgir ces appels comme inconnus.
+ * @property mixed $lang
+ * @property mixed $langs
  */
 class Config extends Core
 {
@@ -162,7 +188,11 @@ class Config extends Core
 			if ($n > 1)
 			{
 				uasort($langs, function($a, $b){
-					return strnatcmp($a->settings()->order, $b->settings()->order);
+					// L'ordre d'affichage d'une langue est un ENTIER, et `strnatcmp()` attend deux
+					// chaines : hors mode strict, PHP convertissait en silence. Le cast ne change
+					// pas le classement — c'est le tri naturel qui est voulu ici, pour que 2 passe
+					// avant 10.
+					return strnatcmp((string) $a->settings()->order, (string) $b->settings()->order);
 				});
 
 				$this->trigger('config_langs_listed', $langs, $main_lang);

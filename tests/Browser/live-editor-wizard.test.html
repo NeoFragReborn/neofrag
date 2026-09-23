@@ -1,0 +1,178 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Assistant d'ajout de widget</title>
+
+<!--
+  L'assistant remplace deux <select> empilés par quatre étapes et une sélection par cartes.
+  Ce qui doit tenir, et qu'aucun test PHP ne voit :
+
+    - les étapes SANS OBJET disparaissent — « Type » si le widget n'a pas de variante, « Titre »
+      pour le widget `module` (il porte celui de la page), « Configuration » si le serveur ne
+      renvoie pas de formulaire ;
+    - les numéros d'étape se renumérotent en conséquence : jamais « 1, 3, 4 » ;
+    - les champs ENVOYÉS AU SERVEUR restent `widget`, `type` et `title`. C'est le contrat avec le
+      contrôleur et les deux checkers : l'assistant est une couche de présentation, et une
+      régression ici casserait l'ajout de widget sans toucher une ligne de PHP.
+
+  Le balisage ci-dessous est une MAQUETTE réduite (3 widgets, 2 types) : la vue réelle est un
+  gabarit PHP qu'un navigateur ne peut pas rendre seul. Les crochets dont l'assistant dépend
+  (`data-role`, `data-panel`, les identifiants de champs) sont vérifiés contre le VRAI gabarit par
+  tests/Unit/LiveEditorWizardMarkupTest.php — sans quoi cette maquette pourrait dériver et rester
+  verte pendant que la production casse.
+
+  La fonction éprouvée, elle, est la VRAIE : /src/ sert les sources du projet, PHP neutralisé.
+-->
+
+<script>window.__nfNonce = 'NONCE-TEST';</script>
+<script src="/harness.js"></script>
+<script src="/nf.js"></script>
+<script>
+// On n'éprouve pas l'amorçage de l'éditeur (il suppose une page d'administration complète), mais
+// l'assistant seul : on neutralise NF.ready avant de charger le fichier.
+NF.ready = function(){};
+</script>
+<script src="/src/modules/live_editor/js/live-editor.js"></script>
+
+<body>
+
+<form id="live-editor-settings-form" class="nf-le-wiz" data-lang-aucun-resultat="Aucun widget ne correspond.">
+	<input type="hidden" name="widget" id="live-editor-settings-widget" value="news">
+	<input type="hidden" name="type"   id="live-editor-settings-type"   value="index">
+
+	<ol class="nf-le-wiz-steps" role="tablist">
+		<li><button type="button" class="nf-le-wiz-step" role="tab" data-step="widget"   aria-selected="false" tabindex="-1"><span class="nf-le-wiz-step-n"></span><span class="nf-le-wiz-step-l">Widget</span></button></li>
+		<li><button type="button" class="nf-le-wiz-step" role="tab" data-step="type"     aria-selected="false" tabindex="-1"><span class="nf-le-wiz-step-n"></span><span class="nf-le-wiz-step-l">Type</span></button></li>
+		<li><button type="button" class="nf-le-wiz-step" role="tab" data-step="title"    aria-selected="false" tabindex="-1"><span class="nf-le-wiz-step-n"></span><span class="nf-le-wiz-step-l">Titre</span></button></li>
+		<li><button type="button" class="nf-le-wiz-step" role="tab" data-step="settings" aria-selected="false" tabindex="-1"><span class="nf-le-wiz-step-n"></span><span class="nf-le-wiz-step-l">Configuration</span></button></li>
+	</ol>
+
+	<div class="nf-le-wiz-panels">
+		<section class="nf-le-wiz-panel" data-panel="widget" role="tabpanel">
+			<label class="nf-le-wiz-filtre"><input type="search" data-role="filtre"></label>
+			<div class="nf-le-wiz-cards" role="listbox" data-role="widgets">
+				<button type="button" class="nf-le-wiz-card" role="option" data-value="news"    data-recherche="actualités news"      aria-selected="true"  tabindex="0"><span class="nf-le-wiz-card-l">Actualités</span></button>
+				<button type="button" class="nf-le-wiz-card" role="option" data-value="module"  data-recherche="module module"        aria-selected="false" tabindex="-1"><span class="nf-le-wiz-card-l">Module</span></button>
+				<button type="button" class="nf-le-wiz-card" role="option" data-value="copyright" data-recherche="copyright copyright" aria-selected="false" tabindex="-1"><span class="nf-le-wiz-card-l">Copyright</span></button>
+			</div>
+			<p class="nf-le-wiz-vide" data-role="vide" hidden></p>
+		</section>
+
+		<section class="nf-le-wiz-panel" data-panel="type" role="tabpanel" hidden>
+			<div class="nf-le-wiz-cards" role="listbox" data-role="types">
+				<button type="button" class="nf-le-wiz-card nf-le-wiz-card--texte" role="option" data-widget="news" data-value="index"  aria-selected="false" tabindex="-1" hidden><span>Liste</span></button>
+				<button type="button" class="nf-le-wiz-card nf-le-wiz-card--texte" role="option" data-widget="news" data-value="slider" aria-selected="false" tabindex="-1" hidden><span>Défilement</span></button>
+			</div>
+		</section>
+
+		<section class="nf-le-wiz-panel" data-panel="title" role="tabpanel" hidden>
+			<input type="text" id="live-editor-settings-title" name="title" value="Mon titre">
+		</section>
+
+		<section class="nf-le-wiz-panel" data-panel="settings" role="tabpanel" hidden>
+			<div id="live-editor-settings" data-widget-id="" data-original-widget="" data-original-type=""></div>
+		</section>
+	</div>
+</form>
+
+<button type="button" id="prev">Précédent</button>
+<button type="button" id="suivant">Suivant</button>
+
+<script>
+var form = document.getElementById('live-editor-settings-form');
+
+// Réponses du serveur, simulées : `news` a des réglages, les autres non.
+var AVEC_REGLAGES = { news: '<label>Nombre <input name="settings[n]" value="5"></label>' };
+var appels = [];
+
+var wiz = nfLeWizard(form, {
+	precedent: document.getElementById('prev'),
+	suivant:   document.getElementById('suivant'),
+	charger:   function(widget, type, conteneur, fini){
+		appels.push(widget + '::' + type);
+		var html = AVEC_REGLAGES[widget] || '';
+		conteneur.innerHTML = html;
+		fini(!html);
+	}
+});
+
+var valeur    = function(id){ return document.getElementById(id).value; };
+var etape     = function(cle){ return form.querySelector('.nf-le-wiz-step[data-step="' + cle + '"]'); };
+var numeros   = function(){
+	return Array.prototype.slice.call(form.querySelectorAll('.nf-le-wiz-step'))
+		.filter(function(b){ return !b.hidden; })
+		.map(function(b){ return b.querySelector('.nf-le-wiz-step-n').textContent; }).join(',');
+};
+var carte     = function(role, v){ return form.querySelector('[data-role="' + role + '"] .nf-le-wiz-card[data-value="' + v + '"]'); };
+var visible   = function(cle){ return !form.querySelector('.nf-le-wiz-panel[data-panel="' + cle + '"]').hidden; };
+
+// ── État initial : widget « news », qui a deux types et des réglages ─────────
+NFTest.verifie('on ouvre sur l\'étape Widget', true, visible('widget'));
+NFTest.verifie('les quatre étapes sont utiles pour « news »', ['widget','type','title','settings'], wiz.etapesUtiles());
+NFTest.verifie('elles sont numérotées 1 à 4', '1,2,3,4', numeros());
+NFTest.verifie('le premier type est présélectionné', 'index', valeur('live-editor-settings-type'));
+NFTest.verifie('les réglages ont été demandés une fois', ['news::index'], appels);
+
+// ── Un widget sans variante : l'étape « Type » disparaît ─────────────────────
+carte('widgets', 'copyright').click();
+
+NFTest.verifie('le champ envoyé au serveur suit la carte', 'copyright', valeur('live-editor-settings-widget'));
+NFTest.verifie('sans variante, le type retombe sur « index »', 'index', valeur('live-editor-settings-type'));
+NFTest.verifie('l\'étape Type disparaît', false, wiz.etapesUtiles().indexOf('type') !== -1);
+NFTest.verifie('sans réglages, l\'étape Configuration disparaît aussi', ['widget','title'], wiz.etapesUtiles());
+NFTest.verifie('la renumérotation suit : jamais « 1, 3 »', '1,2', numeros());
+NFTest.verifie('la carte porte aria-selected', 'true', carte('widgets', 'copyright').getAttribute('aria-selected'));
+NFTest.verifie('l\'ancienne carte ne le porte plus', 'false', carte('widgets', 'news').getAttribute('aria-selected'));
+
+// ── Le widget `module` : pas de titre non plus ───────────────────────────────
+carte('widgets', 'module').click();
+
+NFTest.verifie('pour « module », il ne reste que l\'étape Widget', ['widget'], wiz.etapesUtiles());
+NFTest.verifie('le titre saisi est mis de côté, pas envoyé', '', valeur('live-editor-settings-title'));
+
+// ── Retour sur un widget ordinaire : le titre revient ────────────────────────
+carte('widgets', 'news').click();
+
+NFTest.verifie('le titre mis de côté est restitué', 'Mon titre', valeur('live-editor-settings-title'));
+NFTest.verifie('les quatre étapes reviennent', ['widget','type','title','settings'], wiz.etapesUtiles());
+
+// ── Navigation ───────────────────────────────────────────────────────────────
+document.getElementById('suivant').click();
+NFTest.verifie('Suivant mène à l\'étape Type', true, visible('type'));
+NFTest.verifie('le bouton Précédent est alors actif', false, document.getElementById('prev').disabled);
+
+document.getElementById('prev').click();
+NFTest.verifie('Précédent ramène à Widget', true, visible('widget'));
+NFTest.verifie('et Précédent redevient inactif', true, document.getElementById('prev').disabled);
+
+etape('settings').click();
+NFTest.verifie('un clic direct sur une étape y mène', true, visible('settings'));
+
+// ── La navigation saute les étapes sans objet ────────────────────────────────
+carte('widgets', 'copyright').click();
+NFTest.verifie('quitter une étape devenue inutile ramène en arrière', false, visible('settings'));
+
+wiz.aller('widget');
+document.getElementById('suivant').click();
+NFTest.verifie('Suivant saute « Type » absent et va au Titre', true, visible('title'));
+
+// ── Choix d'un type ──────────────────────────────────────────────────────────
+carte('widgets', 'news').click();
+carte('types', 'slider').click();
+
+NFTest.verifie('le type choisi part au serveur', 'slider', valeur('live-editor-settings-type'));
+NFTest.verifie('les réglages sont rechargés pour ce type', 'news::slider', appels[appels.length - 1]);
+
+// ── Filtre ───────────────────────────────────────────────────────────────────
+var filtre = form.querySelector('[data-role="filtre"]');
+filtre.value = 'copy';
+filtre.dispatchEvent(new Event('input', { bubbles: true }));
+
+NFTest.verifie('le filtre masque ce qui ne correspond pas', 'none', carte('widgets', 'news').style.display);
+NFTest.verifie('et garde ce qui correspond', '', carte('widgets', 'copyright').style.display);
+
+filtre.value = 'zzz';
+filtre.dispatchEvent(new Event('input', { bubbles: true }));
+NFTest.verifie('aucun résultat : le message apparaît', false, form.querySelector('[data-role="vide"]').hidden);
+
+NFTest.fini();
+</script>

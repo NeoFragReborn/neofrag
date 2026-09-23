@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -44,8 +45,8 @@ class Index extends Controller_Module
 		{
 			$url = url('pages/'.url_title($p['title']));
 			$html .= '<li class="list-group-item">'
-				   . '<a href="'.$url.'">'.icon('far fa-file-alt').' '.htmlspecialchars($p['title']).'</a>'
-				   . (!empty($p['subtitle']) ? ' <small class="text-muted">— '.htmlspecialchars($p['subtitle']).'</small>' : '')
+				   . '<a href="'.$url.'">'.icon('far fa-file-alt').' '.htmlspecialchars((string) ($p['title'])).'</a>'
+				   . (!empty($p['subtitle']) ? ' <small class="text-muted">— '.htmlspecialchars((string) ($p['subtitle'])).'</small>' : '')
 				   . '</li>';
 		}
 		$html .= '</ul>';

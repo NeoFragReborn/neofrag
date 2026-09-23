@@ -1,26 +1,26 @@
 <div class="row">
-	<div class="col-5 text-center">
-		<h5>Tous nos podiums</h5>
+	<div class="col-12 col-lg-5 text-center">
+		<h5><?php echo $this->lang('Tous nos podiums') ?></h5>
 		<div class="row">
 			<div class="col text-center">
-				<span data-bs-toggle="tooltip" title="1ère place"><?php echo icon('fas fa-trophy trophy-gold fa-2x') ?></span>
+				<span data-bs-toggle="tooltip" title="<?php echo $this->lang('1ère place') ?>"><?php echo icon('fas fa-trophy trophy-gold fa-2x') ?></span>
 				<h4 class="m-0"><?php echo $total_gold[0] ?></h4>
 			</div>
 			<div class="col text-center">
-				<span data-bs-toggle="tooltip" title="2ème place"><?php echo icon('fas fa-trophy trophy-silver fa-2x') ?></span>
+				<span data-bs-toggle="tooltip" title="<?php echo $this->lang('2e place') ?>"><?php echo icon('fas fa-trophy trophy-silver fa-2x') ?></span>
 				<h4 class="m-0"><?php echo $total_silver[0] ?></h4>
 			</div>
 			<div class="col text-center">
-				<span data-bs-toggle="tooltip" title="3ème place"><?php echo icon('fas fa-trophy trophy-bronze fa-2x') ?></span>
+				<span data-bs-toggle="tooltip" title="<?php echo $this->lang('3e place') ?>"><?php echo icon('fas fa-trophy trophy-bronze fa-2x') ?></span>
 				<h4 class="m-0"><?php echo $total_bronze[0] ?></h4>
 			</div>
 		</div>
 	</div>
-	<div class="col-7">
-		<table class="table table-hover m-0">
+	<div class="col-12 col-lg-7">
+		<div class="table-responsive"><table class="table table-hover m-0">
 			<thead>
 				<tr>
-					<th>Équipes</th>
+					<th><?php echo $this->lang('Équipes') ?></th>
 					<th class="text-center"><?php echo icon('fas fa-trophy trophy-gold') ?></th>
 					<th class="text-center"><?php echo icon('fas fa-trophy trophy-silver') ?></th>
 					<th class="text-center"><?php echo icon('fas fa-trophy trophy-bronze') ?></th>
@@ -38,6 +38,6 @@
 				</tr>
 				<?php endforeach ?>
 			</tbody>
-		</table>
+		</table></div>
 	</div>
 </div>

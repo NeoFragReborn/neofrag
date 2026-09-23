@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -92,5 +93,18 @@ return [
 	'35d40dc5' => 'Restaurer la révision #%d',
 	'125bf259' => 'Le contenu actuel sera remplacé par cette version. La version actuelle reste conservée dans l\'historique.',
 	'c755adcd' => 'Nouvelle actualité : %s',
-	'd417f5d1' => 'Envoyer l\'actualité <b>%s</b> à la corbeille ? Elle restera restaurable depuis l\'admin.'
+	'd417f5d1' => 'Envoyer l\'actualité <b>%s</b> à la corbeille ? Elle restera restaurable depuis l\'admin.',
+	'32795d48' => 'Brouillon',
+	'52c9bbab' => 'Modifier',
+	'ba435f83' => 'Supprimer "%s" ?',
+	'a4377818' => 'Actualité',
+	'7c8d7109' => '%s actualité',
+	'62aefade' => '%s actualités',
+	'4c9e9abd' => 'Vues',
+	'e50e7c03' => 'Dernières actualités',
+	'cf2e7bf8' => 'Actualités d\'une catégorie',
+	'8e91d04c' => 'Actualités du site avec catégories et commentaires.',
+	'ca4ae516' => 'Modifier une catégorie',
+	'af5fdbe3' => 'Supprimer une catégorie',
+	'93d0faf6' => 'Une date future programme la publication : l\'actualité reste masquée publiquement jusqu\'à cette date (si « Publiée » est cochée).',
 ];

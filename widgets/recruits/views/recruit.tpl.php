@@ -9,21 +9,21 @@
 	<?php if ($team_id): ?>
 	<li class="list-group-item">
 		<span class="float-end"><b><?php echo $team_name ?></b></span>
-		<?php echo icon('fas fa-headset') ?> Equipe
+		<?php echo icon('fas fa-headset') ?> <?php echo $this->lang('Équipe') ?>
 	</li>
 	<?php endif ?>
 	<li class="list-group-item">
 		<span class="float-end"><b><?php echo $role ?></b></span>
-		<?php echo icon('fas fa-sitemap') ?> Rôle proposé
+		<?php echo icon('fas fa-sitemap') ?> <?php echo $this->lang('Rôle proposé') ?>
 	</li>
 	<li class="list-group-item">
 		<span class="float-end"><b><?php echo ($size) ?></b></span>
-		<?php echo icon('fas fa-users').' '.($size > 1 ? 'Postes disponibles' : 'Poste disponible') ?>
+		<?php echo icon('fas fa-users').' '.$this->lang('Poste disponible|Postes disponibles', $size) ?>
 	</li>
 	<?php if ($date_end): ?>
 	<li class="list-group-item">
 		<span class="float-end"><b><?php echo timetostr('j M Y', $date_end) ?></b></span>
-		<?php echo icon('far fa-calendar') ?> Date limite
+		<?php echo icon('far fa-calendar') ?> <?php echo $this->lang('Date limite') ?>
 	</li>
 	<?php endif ?>
 </ul>

@@ -1,31 +1,38 @@
 <?php
 declare(strict_types=1);
-// Outil d'administration : jamais servi en HTTP (sinon maintenance/migrations/dumps
-// seraient executables par n'importe qui si tools/ etait expose par erreur).
-if (PHP_SAPI !== 'cli')
-{
-	http_response_code(404);
-	exit;
-}
-
 
 /**
- * NeoFrag Reborn — fige l'état de la démo (après tools/seed-demo.php) en install/demo.sql.
+ * dump-demo — fige l'état de la démo (après tools/seed-demo.php) en install/demo.sql.
  *
- * demo.sql est : (1) la charge de l'AUTO-RESET du site de démo (rechargée périodiquement via
- * le cron gardé), et (2) le contenu initial du site de démo. Il NE touche PAS le compte admin
- * (créé par l'installeur), ni les secrets, ni la config sensible — en mode démo ces éléments
- * sont verrouillés par les gardes. Il restaure : config d'affichage démo (nebula, sans vitrine),
- * membres démo (non-admin), et tout le contenu (news/forum/galerie/gaming/à-la-carte).
+ * Famille : outil
  *
- * Connexion : config/db.php ($db[0]) surchargé par NF_DB_* (cf. dump-schema.php).
- * Usage : docker compose exec -T web php tools/dump-demo.php  (après seed-demo.php)
+ * Ce qu'il produit
+ * ----------------
+ * `install/demo.sql` est (1) la charge de l'AUTO-RESET du site de démo, rechargée périodiquement
+ * par le cron gardé, et (2) le contenu initial du site de démo.
+ *
+ * CE QU'IL RESTAURE : la configuration d'affichage démo (nebula, sans vitrine), les réglages non
+ * sensibles, TOUS les membres sauf le compte de secours, tout le contenu, les mises en page et les
+ * menus. CE QU'IL NE RESTAURE PAS, et qui doit donc rester VERROUILLÉ en mode démo : les addons
+ * installés (`nf_addon`), les rôles et permissions. La liste des modules verrouillés vit dans
+ * `NF_DEMO_MODULES_VERROUILLES` (neofrag/helpers/system.php) — `check-demo-lock` vérifie que les
+ * deux listes ne divergent pas.
+ *
+ * Usage
+ * -----
+ *   php tools/dump-demo.php            après seed-demo.php
+ *   php tools/dump-demo.php --force    accepte un instantané plus pauvre que l'actuel
  */
 
-const DEMO_OUT  = __DIR__ . '/../install/demo.sql';
-const CONFIG_DB = __DIR__ . '/../config/db.php';
+require __DIR__.'/lib/outil.php';
+require __DIR__.'/lib/site.php';
+require __DIR__.'/lib/sql.php';
 
-/** Tables de CONTENU rechargées à chaque reset (TRUNCATE + INSERT). */
+[$o] = nf_options(['force' => FALSE]);
+
+const DEMO_OUT = __DIR__.'/../install/demo.sql';
+
+/** Tables de CONTENU rechargées à chaque reset (DELETE + INSERT). */
 const CONTENT_TABLES = [
     'nf_news_categories', 'nf_news_categories_lang', 'nf_news', 'nf_news_lang',
     'nf_articles_categories', 'nf_articles_categories_lang', 'nf_articles', 'nf_articles_lang',
@@ -34,8 +41,6 @@ const CONTENT_TABLES = [
     'nf_games', 'nf_games_lang', 'nf_teams', 'nf_teams_lang', 'nf_teams_users',
     'nf_events_types', 'nf_events', 'nf_awards',
     'nf_comment', 'nf_reactions',
-    // nf_wiki_pages exclu : le wiki (doc) vit dans install/wiki.sql, chargé à l'install des 2 paquets
-    // (donc partagé, pas réinitialisé par le reset démo).
     'nf_faq_categories', 'nf_faq_questions',
     'nf_downloads_categories', 'nf_downloads', 'nf_links_categories', 'nf_links',
     'nf_partners', 'nf_partners_lang', 'nf_guestbook',
@@ -43,115 +48,153 @@ const CONTENT_TABLES = [
     'nf_recruits', 'nf_recruits_fields', 'nf_calendar_events',
     'nf_bug_tickets', 'nf_bug_comments', 'nf_donations_campaigns', 'nf_donations',
     'nf_ads', 'nf_newsletter_subscribers',
+
+    // ── Ajouté le 2026-09-16, quand l'administration de la démo est passée de LECTURE SEULE à
+    // « le contenu est modifiable ». Le critère de cette liste est exactement celui du verrou
+    // (cf. NF_DEMO_MODULES_VERROUILLES) : tout ce qu'un visiteur peut désormais changer doit être
+    // rétabli ici, sinon la démo se dégrade définitivement, une visite après l'autre.
+    'nf_events_matches', 'nf_events_matches_opponents', 'nf_events_matches_rounds',
+    'nf_events_participants',
+    'nf_pages', 'nf_pages_lang', 'nf_pages_instances',
+    'nf_menus', 'nf_menus_items',
+    'nf_custom_emojis', 'nf_slider_slides',
+    // `nf_media` n'y est PAS, et le module `media` est verrouillé : c'est le seul endroit du
+    // produit dont la suppression efface aussi le FICHIER sur le disque. Rétablir la ligne sans
+    // le fichier donnerait une image cassée. Galerie et téléchargements, eux, ne suppriment que
+    // la ligne — leurs fichiers survivent, donc ils restent modifiables.
+    'nf_talks', 'nf_talks_messages', 'nf_talks_participants', 'nf_talks_attachments',
+    'nf_revisions',
+    'nf_wiki_pages', 'nf_wiki_revisions',
+
+    // Les MISES EN PAGE : l'éditeur en direct est une des vitrines du produit, et il écrit ici.
+    // Sans ces deux tables, un visiteur qui déplace un bloc le déplace pour toujours.
+    'nf_dispositions', 'nf_widgets',
 ];
 
-main();
+$db       = nf_connexion();
+$theme_t  = nf_type_id($db, 'theme');
+$widget_t = nf_type_id($db, 'widget');
 
-function main(): void
+$out  = nf_sql_entete('dump-demo', 'instantané du site de DÉMO (config affichage + membres + contenu), rechargé par l\'auto-reset');
+$out .= "-- Ne touche pas le compte admin ni les secrets (verrouillés en mode démo).\n\n";
+$out .= "SET FOREIGN_KEY_CHECKS = 0;\n";
+$out .= "SET NAMES utf8mb4;\n";
+// La remise à zéro est ATOMIQUE : un visiteur ne doit jamais voir l'état intermédiaire.
+//
+// Constaté le 2026-09-16 en naviguant pendant un import : le module Événements journalisait
+// `Trying to access array offset on null` parce qu'il lisait `nf_events` alors que
+// `nf_events_types` venait d'être vidée et pas encore réécrite. C'est devenu possible en
+// remplaçant les TRUNCATE par des DELETE : TRUNCATE est du DDL, il provoque un commit implicite.
+$out .= "START TRANSACTION;\n\n";
+
+// 1. Config d'affichage démo (idempotent) : nebula par défaut, vitrine + landing retirés.
+$out .= "-- Config démo (idempotent)\n";
+$out .= "UPDATE `nf_settings` SET `value` = 'nebula' WHERE `name` = 'nf_default_theme';\n";
+$out .= "DELETE FROM `nf_addon` WHERE `name` = 'vitrine' AND `type_id` = {$theme_t};\n";
+$out .= "DELETE FROM `nf_dispositions` WHERE `theme` = 'vitrine';\n";
+$out .= "DELETE FROM `nf_addon` WHERE `name` = 'landing' AND `type_id` = {$widget_t};\n";
+$out .= "DELETE FROM `nf_widgets` WHERE `widget` = 'landing';\n";
+
+// Forum, galerie, pages et événements lisibles par les VISITEURS (rôle 3) : le seed crée les
+// catégories en SQL sans grant de lecture → 403 sur le détail. Permission `module.action`, scope 0.
+foreach (['forum.category_read', 'gallery.gallery_see', 'pages.access_page', 'events.access_events_type'] as $permission)
 {
-    $db = connect();
-
-    $theme_t  = type_id($db, 'theme');
-    $widget_t = type_id($db, 'widget');
-
-    $out  = "-- NeoFrag Reborn — instantané du site de DÉMO (config affichage + membres + contenu).\n";
-    $out .= "-- Généré par tools/dump-demo.php. Rechargé par l'auto-reset démo. NE PAS éditer à la main.\n";
-    $out .= "-- Ne touche pas le compte admin ni les secrets (verrouillés en mode démo).\n\n";
-    $out .= "SET FOREIGN_KEY_CHECKS = 0;\n";
-    $out .= "SET NAMES utf8mb4;\n\n";
-
-    // 1. Config d'affichage démo (idempotent) : nebula par défaut, vitrine + landing retirés.
-    $out .= "-- Config démo (idempotent)\n";
-    $out .= "UPDATE `nf_settings` SET `value` = 'nebula' WHERE `name` = 'nf_default_theme';\n";
-    $out .= "DELETE FROM `nf_addon` WHERE `name` = 'vitrine' AND `type_id` = {$theme_t};\n";
-    $out .= "DELETE FROM `nf_dispositions` WHERE `theme` = 'vitrine';\n";
-    $out .= "DELETE FROM `nf_addon` WHERE `name` = 'landing' AND `type_id` = {$widget_t};\n";
-    $out .= "DELETE FROM `nf_widgets` WHERE `widget` = 'landing';\n";
-    // Forum lisible par les VISITEURS (rôle 3) : le seed crée les catégories en SQL sans grant de
-    // lecture → 403 sur le détail d'un forum. La permission est `forum.category_read` (module.action,
-    // cf. access::__invoke), scope 0 = global (toutes catégories). Validé : guest → 200.
-    $out .= "DELETE FROM `nf_role_permissions` WHERE `role_id` = 3 AND `permission` = 'forum.category_read';\n";
-    $out .= "INSERT INTO `nf_role_permissions` (`role_id`, `permission`, `scope_id`, `authorized`) VALUES (3, 'forum.category_read', 0, 'allow');\n\n";
-
-    // 2. Membres démo (garde l'admin et tout compte admin existant).
-    $out .= "-- Membres démo (l'admin est préservé)\n";
-    $out .= "DELETE FROM `nf_user_profile` WHERE `id` NOT IN (SELECT `id` FROM `nf_user` WHERE `admin` = '1');\n";
-    $out .= "DELETE FROM `nf_user` WHERE `admin` = '0';\n";
-    $out .= "TRUNCATE TABLE `nf_user_points`;\n";
-    $out .= "TRUNCATE TABLE `nf_karma`;\n";
-    $out .= dump_inserts($db, 'nf_user', "WHERE `admin` = '0'");
-    $out .= dump_inserts($db, 'nf_user_profile', "WHERE `id` NOT IN (SELECT `id` FROM (SELECT `id` FROM `nf_user` WHERE `admin` = '1') t)");
-    $out .= dump_inserts($db, 'nf_user_points');
-    $out .= dump_inserts($db, 'nf_karma');
-
-    // 3. Contenu (TRUNCATE + INSERT).
-    $out .= "\n-- Contenu\n";
-    foreach (CONTENT_TABLES as $table) {
-        if (!table_exists($db, $table)) {
-            continue;
-        }
-        $out .= "TRUNCATE TABLE `{$table}`;\n";
-        $out .= dump_inserts($db, $table);
-    }
-
-    $out .= "\nSET FOREIGN_KEY_CHECKS = 1;\n";
-
-    file_put_contents(DEMO_OUT, $out);
-    fwrite(STDOUT, "install/demo.sql écrit (" . (count(CONTENT_TABLES) + 4) . " tables, config démo incluse).\n");
+    $out .= "DELETE FROM `nf_role_permissions` WHERE `role_id` = 3 AND `permission` = '{$permission}';\n";
+    $out .= "INSERT INTO `nf_role_permissions` (`role_id`, `permission`, `scope_id`, `authorized`) VALUES (3, '{$permission}', 0, 'allow');\n";
 }
 
-function dump_inserts(mysqli $db, string $table, string $where = ''): string
+$out .= "\n";
+
+// 1 bis. Les RÉGLAGES du site — restaurés depuis le 2026-09-16, ce qui permet de laisser ouverts
+// les écrans de configuration des modules de contenu. Deux précautions : les réglages SENSIBLES
+// sont exclus (jamais dans un fichier versionné, et les écraser couperait la démo de son cron), et
+// `ON DUPLICATE KEY UPDATE` plutôt que DELETE : un réglage apparu depuis l'instantané reste.
+$sensibles = [
+    'nf_cron_key',                 // sans elle, la remise à zéro s'auto-détruit
+    'nf_monitoring_check_url',     // origine des mises à jour du cœur
+    'nf_smtp_password', 'nf_smtp_user', 'nf_smtp_host', 'nf_email_password',
+    'nf_recaptcha_secret', 'nf_hcaptcha_secret',
+    'nf_paypal_secret', 'nf_stripe_secret', 'nf_stripe_webhook_secret',
+    'nf_twitch_client_secret', 'nf_youtube_api_key', 'nf_giphy_api_key',
+];
+
+$exclusion = "`name` NOT IN ('".implode("', '", array_map([$db, 'real_escape_string'], $sensibles))."')";
+
+$out .= "-- Réglages du site (les réglages sensibles sont exclus, cf. tools/dump-demo.php)\n";
+$out .= nf_sql_upserts($db, 'nf_settings', ['value'], "WHERE {$exclusion}");
+$out .= "\n";
+
+// 2. Membres démo. UN SEUL compte échappe à la remise à zéro — le plus ancien administrateur, celui
+// que l'installeur a créé : le compte de SECOURS, jamais annoncé nulle part. `demo` est administrateur
+// et doit être rétabli comme n'importe quel autre membre (sinon le premier visiteur qui change son mot
+// de passe ferme la porte à tout le monde).
+$secours = (int) nf_scalar($db, "SELECT MIN(`id`) FROM `nf_user` WHERE `admin` = '1'");
+
+if ($secours <= 0)
 {
-    $res = $db->query("SELECT * FROM `{$table}` {$where}");
-    if (!$res || $res->num_rows === 0) {
-        return "-- {$table} : aucune donnée.\n";
-    }
-    $cols    = array_map(static fn($f) => $f->name, $res->fetch_fields());
-    $colList = '`' . implode('`, `', $cols) . '`';
-    $rows = [];
-    while ($row = $res->fetch_assoc()) {
-        $values = array_map(static function ($v) use ($db): string {
-            return $v === null ? 'NULL' : "'" . $db->real_escape_string((string) $v) . "'";
-        }, array_values($row));
-        $rows[] = '(' . implode(', ', $values) . ')';
-    }
-    return "INSERT INTO `{$table}` ({$colList}) VALUES\n" . implode(",\n", $rows) . ";\n";
+    nf_refus('aucun compte administrateur : impossible de désigner un compte de secours');
 }
 
-function type_id(mysqli $db, string $name): int
+// Les comptes de l'instantané sont REMIS EN ÉTAT, jamais supprimés puis réinsérés : `nf_session`
+// porte une clé étrangère vers `nf_user`, et supprimer la ligne d'un visiteur connecté bloquait sa
+// requête 30 s (page blanche toutes les 15 minutes, 2026-09-16). Seuls disparaissent les comptes
+// créés DEPUIS l'instantané.
+$ids_demo  = array_map('intval', nf_colonne($db, "SELECT `id` FROM `nf_user` WHERE `id` <> {$secours}"));
+$conserves = implode(', ', array_merge([$secours], $ids_demo));
+
+$out .= "-- Membres démo — remis en état (upsert), jamais supprimés : une session vivante\n";
+$out .= "-- s'appuie sur la ligne `nf_user`, et la retirer bloquait le site 30 s (cf. tools/dump-demo.php).\n";
+$out .= "DELETE FROM `nf_user_profile` WHERE `id` NOT IN ({$conserves});\n";
+$out .= "DELETE FROM `nf_user` WHERE `id` NOT IN ({$conserves});\n";
+// `nf_session` a bien une clé étrangère `ON DELETE CASCADE` — mais l'import tourne avec
+// `FOREIGN_KEY_CHECKS = 0`, donc la cascade NE JOUE PAS : les sessions survivaient à leur compte,
+// et un visiteur « se souvenir de moi » restait bloqué sur une page qui ne se chargeait jamais.
+$out .= "DELETE FROM `nf_session` WHERE `user_id` IS NOT NULL AND `user_id` NOT IN ({$conserves});\n";
+$out .= "DELETE FROM `nf_user_points`;\n";
+$out .= "DELETE FROM `nf_karma`;\n";
+$out .= nf_sql_upserts($db, 'nf_user', ['*'], "WHERE `id` <> {$secours}");
+$out .= nf_sql_upserts($db, 'nf_user_profile', ['*'], "WHERE `id` <> {$secours}");
+$out .= nf_sql_inserts($db, 'nf_user_points');
+$out .= nf_sql_inserts($db, 'nf_karma');
+
+// 3. Contenu. `DELETE FROM` et non `TRUNCATE` : TRUNCATE est du DDL, il prend un verrou de
+// métadonnées EXCLUSIF et attend derrière toute lecture en cours. DELETE est du DML ordinaire.
+$out .= "\n-- Contenu\n";
+
+foreach (CONTENT_TABLES as $table)
 {
-    $r = $db->query("SELECT id FROM nf_addon_type WHERE name = '" . $db->real_escape_string($name) . "'");
-    return (int) ($r->fetch_row()[0] ?? 0);
+    if (!nf_table_existe($db, $table))
+    {
+        continue;
+    }
+
+    $out .= "DELETE FROM `{$table}`;\n";
+    $out .= nf_sql_inserts($db, $table);
 }
 
-function table_exists(mysqli $db, string $table): bool
+$out .= "\nCOMMIT;\n";
+$out .= "SET FOREIGN_KEY_CHECKS = 1;\n";
+
+// ── Garde-fou : ne jamais remplacer un instantané par un instantané plus pauvre ──────────
+//
+// Incident du 2026-09-16 : le cron recharge l'instantané toutes les 15 minutes ; il a tiré une
+// version périmée ENTRE le peuplement et la prise d'instantané, et le dump a figé une base déjà
+// appauvrie. L'instantané suivant a propagé le vide. Rien dans la chaîne ne pouvait le signaler :
+// on compare donc le nouvel instantané à celui qu'il remplace, et on refuse la régression.
+$nb_inserts = substr_count($out, "\nINSERT INTO ") + (str_starts_with($out, 'INSERT INTO ') ? 1 : 0);
+
+if (!$o['force'] && is_file(DEMO_OUT))
 {
-    $res = $db->query("SHOW TABLES LIKE '" . $db->real_escape_string($table) . "'");
-    return (bool) ($res && $res->num_rows);
+    $avant = substr_count((string) file_get_contents(DEMO_OUT), "\nINSERT INTO ");
+
+    if ($nb_inserts < $avant)
+    {
+        nf_refus("le nouvel instantané est plus pauvre que l'actuel ({$nb_inserts} INSERT contre {$avant}).\n"
+            ."  La base de la démo a probablement été rechargée depuis un instantané périmé pendant le\n"
+            ."  peuplement — le cron de remise à zéro passe toutes les 15 minutes. Repeuple la base\n"
+            ."  (php tools/seed-demo.php) puis relance, ou passe --force si la perte est voulue.");
+    }
 }
 
-function connect(): mysqli
-{
-    $cfg = ['hostname' => '127.0.0.1', 'port' => 3306, 'username' => 'root', 'password' => '', 'database' => 'neofrag'];
-    if (is_file(CONFIG_DB)) {
-        $db = [];
-        require CONFIG_DB;
-        if (!empty($db[0]) && is_array($db[0])) {
-            $cfg = array_merge($cfg, $db[0]);
-        }
-    }
-    foreach (['hostname' => 'NF_DB_HOST', 'port' => 'NF_DB_PORT', 'username' => 'NF_DB_USER', 'password' => 'NF_DB_PASS', 'database' => 'NF_DB_NAME'] as $key => $var) {
-        $val = getenv($var);
-        if ($val !== false && $val !== '') {
-            $cfg[$key] = $val;
-        }
-    }
-    mysqli_report(MYSQLI_REPORT_OFF);
-    $conn = @new mysqli($cfg['hostname'], $cfg['username'], (string) $cfg['password'], $cfg['database'], (int) $cfg['port']);
-    if ($conn->connect_errno) {
-        fwrite(STDERR, "Connexion BDD impossible : {$conn->connect_error}\n");
-        exit(1);
-    }
-    $conn->set_charset('utf8mb4');
-    return $conn;
-}
+file_put_contents(DEMO_OUT, $out);
+printf("install/demo.sql écrit (%d tables, %d INSERT, config démo incluse).\n", count(CONTENT_TABLES) + 4, $nb_inserts);

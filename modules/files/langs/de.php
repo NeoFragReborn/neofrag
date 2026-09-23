@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'2e5318de' => '%d Datei(en) hinzugefügt',
@@ -38,4 +39,15 @@ return [
 	'7a650382' => 'Diese Aktion ist endgültig.',
 	'f6e75d04' => 'Dateimanager',
 	'9ec37f2b' => 'Dateimanager: Baum, Upload, Ordner und Lese-Berechtigungen pro Datei/Ordner.',
+	'71fc8e0e' => 'Größe',
+	'0aac9844' => 'Datum',
+	'0eda40d4' => 'Abspielen',
+	'c38e261e' => 'Pfad',
+	'6febd6fd' => 'Dateien',
+	'52c9bbab' => 'Bearbeiten',
+	'aef3a525' => 'Ordner %s',
+	'c07ef58d' => 'Datei %s',
+	'a4e674f4' => 'Kein Element ausgewählt',
+	'6ddd7401' => '%s Element ausgewählt|%s Elemente ausgewählt',
+	'ca977443' => 'Entfernen',
 ];

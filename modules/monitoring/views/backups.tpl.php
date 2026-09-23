@@ -51,6 +51,9 @@ foreach ($backups as $b)
 							<a class="btn btn-sm btn-outline-primary" href="<?php echo url('admin/monitoring/download/'.urlencode($b['slug'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Télécharger') ?>">
 								<?php echo icon('fas fa-download') ?>
 							</a>
+							<a class="btn btn-sm btn-outline-warning" href="<?php echo url('admin/monitoring/restore/'.urlencode($b['slug'])) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Restaurer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Remettre le site dans l\'état du %s ? Les fichiers et la base seront remplacés par ceux de cette sauvegarde ; tout ce qui a été publié depuis sera perdu. La configuration, les journaux et le cache ne sont pas touchés.', $b['date']), ENT_QUOTES) ?>" data-confirm-style="danger">
+								<?php echo icon('fas fa-undo') ?>
+							</a>
 							<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/monitoring/delete/'.urlencode($b['slug'])) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer définitivement cette sauvegarde ?'), ENT_QUOTES) ?>">
 								<?php echo icon('fas fa-trash-alt') ?>
 							</a>

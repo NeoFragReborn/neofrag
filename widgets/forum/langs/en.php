@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: FoxLey
@@ -25,5 +26,5 @@ return [
 	'4d3108b5' => '%d topic created|%d topics created',
 	'b9a17562' => '%d message posted|%d messages posted',
 	'a9106984' => '%d announcement|%d announcements',
-	'4788f138' => '%d participant',
+	'4788f138' => '%d participant|%d participants',
 ];

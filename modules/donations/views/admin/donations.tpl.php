@@ -1,13 +1,15 @@
 <?php
+/**
+ * Corps de la liste des dons d'une campagne — SANS carte ni en-tête : l'enveloppe est posée par le
+ * contrôleur via `admin_card()`, comme sur les autres écrans d'administration. Le bouton
+ * « Ajouter un don » vit dans la barre d'outils de la page, une seule fois.
+ */
 $cid = $campaign['id'];
-$header_left  = '<span><i class="fas fa-list"></i> '.htmlspecialchars($campaign['title']).' <small class="text-muted">'.(int)$totals['count'].' '.$this->lang($totals['count'] > 1 ? 'dons' : 'don').' · '.number_format($totals['total'], 2, ',', ' ').' '.htmlspecialchars($campaign['currency']).'</small></span>';
-$header_right = '<span><a class="btn btn-primary btn-sm" href="'.url('admin/donations/'.$cid.'/donation/add').'"><i class="fas fa-plus"></i> '.$this->lang('Ajouter un don').'</a></span>';
 ?>
-<div class="card">
-	<div class="card-header"><?php echo $header_left.$header_right ?></div>
-	<?php if (empty($donations)): ?>
-	<div class="card-body text-center text-muted py-4"><?php echo $this->lang('Aucun don pour le moment.') ?></div>
-	<?php else: ?>
+<?php if (empty($donations)): ?>
+	<?php echo $vide ?>
+<?php else: ?>
+<div class="table-responsive">
 	<table class="table table-hover mb-0">
 		<thead>
 			<tr>
@@ -39,7 +41,7 @@ $header_right = '<span><a class="btn btn-primary btn-sm" href="'.url('admin/dona
 				<td class="text-end"><strong><?php echo number_format($d['amount'], 2, ',', ' ') ?> <?php echo htmlspecialchars($d['currency']) ?></strong></td>
 				<td><?php echo $d['source'] === 'paypal' ? '<i class="fab fa-paypal"></i> PayPal' : '<i class="fas fa-keyboard"></i> '.$this->lang('Manuel') ?></td>
 				<?php $status_labels = ['pending' => $this->lang('En attente'), 'completed' => $this->lang('Validé'), 'refunded' => $this->lang('Remboursé')]; ?>
-				<td class="text-center"><span class="badge badge-<?php echo $status_badges[$d['status']] ?>"><?php echo $status_labels[$d['status']] ?? htmlspecialchars($d['status']) ?></span></td>
+				<td class="text-center"><span class="badge <?php echo badge_class($status_badges[$d['status']] ?? 'secondary') ?>"><?php echo $status_labels[$d['status']] ?? htmlspecialchars($d['status']) ?></span></td>
 				<td class="text-center">
 					<?php if ($d['is_public']): ?>
 						<i class="far fa-eye text-success" title="<?php echo $this->lang('Public') ?>"></i>
@@ -56,5 +58,5 @@ $header_right = '<span><a class="btn btn-primary btn-sm" href="'.url('admin/dona
 			<?php endforeach ?>
 		</tbody>
 	</table>
-	<?php endif ?>
 </div>
+<?php endif ?>

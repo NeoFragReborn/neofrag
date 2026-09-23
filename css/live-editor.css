@@ -195,8 +195,10 @@ body.nf-le-chrome .live-editor-navbar .btn-group .btn.live-editor-mode:hover {
 	background: rgba(94, 92, 230, 0.10);
 }
 
+/* Le fond est assombri de 22 % : le violet clair du mode sombre (#7c75ff) ne tenait que 3,6:1 sous
+   le texte blanc (check-mise-en-page, 2026-09-23). */
 body.nf-le-chrome .live-editor-navbar .btn-group .btn.live-editor-mode.active {
-	background: var(--nf-le-accent);
+	background: color-mix(in srgb, var(--nf-le-accent) 78%, #000);
 	color: #fff;
 	box-shadow: 0 1px 3px rgba(94, 92, 230, 0.40);
 }
@@ -390,19 +392,15 @@ body.nf-le-chrome [data-typer]:after {
 	font-size: 14px;
 }
 
-.live-editor-modal .modal-content .modal-header .close {
-	color: var(--nf-le-modal-muted);
-	opacity: 1;
-	font-weight: 400;
-	font-size: 22px;
-	padding: 4px 8px;
+.live-editor-modal .modal-content .modal-header .btn-close {
+	width: 32px;
+	height: 32px;
 	border-radius: var(--nf-le-radius-xs);
-	transition: background-color 140ms ease, color 140ms ease;
+	transition: background-color 140ms ease;
 }
 
-.live-editor-modal .modal-content .modal-header .close:hover {
-	background: var(--nf-le-modal-surface-2);
-	color: var(--nf-le-modal-text);
+.live-editor-modal .modal-content .modal-header .btn-close:hover {
+	background-color: var(--nf-le-modal-surface-2);
 }
 
 .live-editor-modal .modal-content .modal-body {
@@ -411,7 +409,7 @@ body.nf-le-chrome [data-typer]:after {
 	padding: 18px 20px;
 }
 
-.live-editor-modal .modal-content .modal-body .form-group.row + .form-group.row {
+.live-editor-modal .modal-content .modal-body .nf-field.row + .nf-field.row {
 	margin-top: 0;
 }
 
@@ -429,14 +427,6 @@ body.nf-le-chrome [data-typer]:after {
 	border-color: var(--nf-le-modal-border);
 	color: var(--nf-le-modal-muted);
 	text-shadow: none;
-}
-
-.live-editor-modal .modal-content .modal-body form label.radio-inline {
-	padding-top: 6px;
-}
-
-.live-editor-modal .modal-content .modal-body form label.radio-inline + label.radio-inline {
-	margin-left: 10px;
 }
 
 .live-editor-modal .modal-content .modal-body form .btn-group {
@@ -617,40 +607,6 @@ body.nf-le-chrome [data-typer]:after {
 	line-height: 1.3;
 	color: var(--nf-le-text);
 	padding: 0 4px;
-}
-
-/* Legacy thumbnail (PNG-based themes that have not been migrated) ------ */
-
-.live-editor-modal a.thumbnail {
-	display: block;
-	border: 1.5px solid var(--nf-le-card-border);
-	border-radius: var(--nf-le-radius-sm);
-	padding: 4px;
-	background: var(--nf-le-card-bg);
-	transition: border-color 140ms ease;
-}
-
-.live-editor-modal a.thumbnail:hover {
-	border-color: var(--nf-le-card-hover);
-}
-
-.live-editor-modal a.thumbnail.active,
-.live-editor-modal a.thumbnail.active:hover {
-	border-color: var(--nf-le-card-active);
-}
-
-.live-editor-modal a.thumbnail img {
-	border-radius: var(--nf-le-radius-xs);
-	display: block;
-	width: 100%;
-}
-
-.live-editor-modal .caption {
-	font-size: 12px;
-	font-weight: 600;
-	color: var(--nf-le-modal-muted);
-	margin-bottom: 6px;
-	text-align: center;
 }
 
 /* =========================================================================
@@ -957,4 +913,166 @@ body.nf-le-chrome [data-typer]:after {
 	border: 2px dashed var(--nf-le-ovl-accent);
 	border-radius: var(--nf-le-ovl-radius-sm);
 	margin: 4px;
+}
+
+/* =========================================================================
+   ASSISTANT WIDGET (modale de réglages) — 4 étapes : widget, type, titre, config
+   =========================================================================
+   Remplace deux <select> empilés. Les jetons sont ceux de .live-editor-modal, donc le clair et le
+   sombre suivent sans règle en double. */
+
+.nf-le-wiz-steps {
+	display: flex;
+	gap: 6px;
+	margin: 0 0 18px;
+	border-bottom: 1px solid var(--nf-le-modal-border);
+}
+
+.nf-le-wiz-step {
+	flex: 1 1 0;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 12px;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	background: none;
+	color: var(--nf-le-modal-muted);
+	font-size: .9rem;
+	text-align: left;
+	cursor: pointer;
+}
+
+.nf-le-wiz-step:hover { color: var(--nf-le-modal-text); }
+
+.nf-le-wiz-step.is-courante {
+	color: var(--nf-le-accent);
+	border-bottom-color: var(--nf-le-accent);
+}
+
+/* Le numéro d'étape est calculé à l'affichage : il suit les étapes réellement utiles, de sorte
+   qu'on ne voit jamais « 1, 3, 4 » quand une étape est escamotée. */
+.nf-le-wiz-step-n {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: var(--nf-le-modal-surface-2);
+	color: inherit;
+	font-size: .78rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.nf-le-wiz-step.is-courante .nf-le-wiz-step-n {
+	background: var(--nf-le-card-active-bg);
+	color: var(--nf-le-accent);
+}
+
+.nf-le-wiz-step-l { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Hauteur stable d'un panneau à l'autre : sans elle, la modale saute de taille à chaque étape. */
+.nf-le-wiz-panels { min-height: 260px; }
+
+.nf-le-wiz-filtre {
+	position: relative;
+	display: block;
+	margin-bottom: 14px;
+}
+
+.nf-le-wiz-filtre > i,
+.nf-le-wiz-filtre > svg {
+	position: absolute;
+	top: 50%;
+	left: 12px;
+	transform: translateY(-50%);
+	color: var(--nf-le-modal-muted);
+	pointer-events: none;
+}
+
+.nf-le-wiz-filtre .form-control { padding-left: 36px; }
+
+.nf-le-wiz-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(124px, 1fr));
+	gap: 10px;
+	max-height: 340px;
+	overflow-y: auto;
+	padding: 2px;
+}
+
+.nf-le-wiz-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 92px;
+	padding: 14px 10px;
+	border: 1px solid var(--nf-le-card-border);
+	border-radius: var(--nf-le-radius);
+	background: var(--nf-le-card-bg);
+	color: var(--nf-le-text);
+	font-size: .85rem;
+	line-height: 1.25;
+	text-align: center;
+	cursor: pointer;
+	transition: border-color .12s ease, background-color .12s ease;
+}
+
+.nf-le-wiz-card:hover { border-color: var(--nf-le-card-hover); }
+
+.nf-le-wiz-card:focus-visible {
+	outline: 2px solid var(--nf-le-accent);
+	outline-offset: 2px;
+}
+
+.nf-le-wiz-card[aria-selected="true"] {
+	border-color: var(--nf-le-card-active);
+	background: var(--nf-le-card-active-bg);
+	color: var(--nf-le-accent);
+}
+
+.nf-le-wiz-card-i { font-size: 1.5rem; line-height: 1; }
+
+.nf-le-wiz-card-l {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* Les types n'ont pas d'icône : cartes plus basses, en ligne. */
+.nf-le-wiz-card--texte {
+	flex-direction: row;
+	min-height: 0;
+	padding: 10px 14px;
+}
+
+.nf-le-wiz-vide,
+.nf-le-wiz-aide {
+	margin: 12px 0 0;
+	color: var(--nf-le-modal-muted);
+	font-size: .85rem;
+}
+
+/* Pied : Annuler à gauche, la navigation au centre, Valider à droite. */
+.nf-le-wiz-footer { justify-content: space-between; }
+
+.nf-le-wiz-nav { display: inline-flex; gap: 8px; }
+
+@media (max-width: 575.98px) {
+	.nf-le-wiz-steps { gap: 0; }
+	.nf-le-wiz-step-l { display: none; }          /* à l'étroit, les numéros suffisent */
+	.nf-le-wiz-step { justify-content: center; }
+	.nf-le-wiz-cards { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+	.nf-le-wiz-footer { flex-wrap: wrap; gap: 8px; }
+	.nf-le-wiz-nav { order: 3; width: 100%; justify-content: space-between; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nf-le-wiz-card { transition: none; }
 }

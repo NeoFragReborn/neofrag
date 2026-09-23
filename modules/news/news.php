@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,6 +11,55 @@ use NF\NeoFrag\Addons\Module;
 
 class News extends Module
 {
+
+	/** Descripteurs de contenu — cf. Module::content_types(). */
+	public function declare_content_types()
+	{
+		return [
+			'news' => [
+				'table' => 'nf_news', 'pk' => 'news_id', 'author' => 'user_id',
+				'reactable' => TRUE, 'subscribable' => TRUE, 'revisable' => TRUE,
+			],
+			'news-category' => [
+				'table' => 'nf_news_categories', 'pk' => 'category_id',
+				'subscribable' => TRUE,
+			],
+		];
+	}
+
+	/** URL publique d'une actualite (titre lu dans la langue courante). */
+	public function content_url($type, $id)
+	{
+		if ($type !== 'news')
+		{
+			return '';
+		}
+
+		$title = $this->db	->select('title')
+							->from('nf_news_lang')
+							->where('news_id', (int) $id)
+							->where('lang', $this->config->lang->info()->name)
+							->row();
+
+		return $title ? 'news/'.(int) $id.'/'.url_title($title) : '';
+	}
+
+	/**
+	 * Corbeille : ce module declare LUI-MEME son type restaurable (inversion du 2026-09-15).
+	 * Avant, c'est `trash` qui tenait en dur la liste des tables des autres modules — il ne
+	 * pouvait donc pas etre du coeur sans tirer news/articles/gallery/forum avec lui.
+	 * Desormais le coeur collecte, il ne connait plus personne. Idiome repris de `groups()`.
+	 */
+	public function trash_types()
+	{
+		return [
+			'news' => [
+				'label'   => 'Actualité', 'table' => 'nf_news',
+				'pk'      => 'news_id', 'lang' => 'nf_news_lang', 'title' => 'title',
+				'restore' => 'restore_news', 'purge' => 'purge_news', 'url' => 'news/%d/%s',
+			],
+		];
+	}
 	protected function __info()
 	{
 		return [
@@ -19,6 +69,10 @@ class News extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => ['communaute', 'gaming'],
+			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => [

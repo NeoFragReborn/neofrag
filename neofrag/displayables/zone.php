@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -26,7 +27,9 @@ class Zone extends Displayable
 			{
 				$zone_id    = $disposition['zone'];
 				$theme      = $this->theme($disposition['theme']);
-				$zone_label = !empty($theme->info()->zones[$zone_id]) ? $theme->info()->zones[$zone_id] : NeoFrag()->lang('Zone #%d', $zone_id);
+				// Le nom d'une zone est aussi son IDENTIFIANT (dispositions, `Output::region()`) : il reste
+				// en français dans la déclaration du thème, et se traduit ici, à l'affichage.
+				$zone_label = !empty($theme->info()->zones[$zone_id]) ? $theme->lang($theme->info()->zones[$zone_id]) : NeoFrag()->lang('Zone #%d', $zone_id);
 
 				$is_common  = $disposition['page'] == '*';
 				$fork_label = $is_common ? NeoFrag()->lang('Disposition commune') : NeoFrag()->lang('Disposition spécifique à la page');

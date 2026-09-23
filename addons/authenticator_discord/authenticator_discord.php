@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -13,12 +14,13 @@ class Authenticator_Discord extends Authenticator
 	protected function __info()
 	{
 		return [
-			'title'   => 'Discord',
-			'icon'    => 'fab fa-discord',
-			'color'   => '#5865F2',
-			'help'    => 'https://discordapp.com/developers/applications/me#top',
-			'version' => '1.0',
-			'depends' => [
+			'title'       => 'Discord',
+			'description' => $this->lang('Connexion par un compte Discord. Demande une application déclarée chez Discord ; portée demandée : identify.'),
+			'icon'        => 'fab fa-discord',
+			'color'       => '#5865F2',
+			'help'        => 'https://discordapp.com/developers/applications/me#top',
+			'version'     => '1.0',
+			'depends'     => [
 				'addon/authenticator' => '1.0'
 			]
 		];

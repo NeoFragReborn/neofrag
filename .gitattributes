@@ -63,5 +63,10 @@ docs/**            linguist-documentation
 /.dockerignore         export-ignore
 /phpunit.xml           export-ignore
 /phpstan.neon          export-ignore
+/phpstan-base.neon     export-ignore
+/package.json          export-ignore
+/package-lock.json     export-ignore
+/eslint.config.js      export-ignore
+/playwright.config.js  export-ignore
 /phpstan-baseline.neon export-ignore
 /phpstan-bootstrap.php export-ignore

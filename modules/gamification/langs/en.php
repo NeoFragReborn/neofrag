@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'505a1973' => 'Scale',
@@ -7,4 +8,22 @@ return [
 	'b3011687' => 'Gamification',
 	'0f3561b9' => 'Karma, points and VIP. Reputation and virtual currency derived from activity (adjustable scale).',
 	'a01a5e14' => 'Daily login',
+	'8fd9c7ef' => 'Save',
+	'5b12b2e7' => 'Karma — per reaction received',
+	'e0031437' => 'Karma — per published content',
+	'b59702a1' => 'Karma — per month of membership',
+	'30d789d3' => 'Points — comment posted',
+	'532c1231' => 'Points — forum message',
+	'ea2178e5' => 'Points — forum topic created',
+	'61c840cd' => 'Points — reaction received',
+	'8a9566ce' => 'Points — reaction given',
+	'e7e69105' => 'Points — news / article published',
+	'f1fb3859' => 'Points — daily login',
+	'ae0446e0' => 'Daily cap — comment',
+	'4a212851' => 'Daily cap — forum message',
+	'd817f8a5' => 'Daily cap — forum topic',
+	'2bdac6e2' => 'Daily cap — reaction received (0=unlimited)',
+	'498a2706' => 'Daily cap — reaction given',
+	'd6d8eab6' => 'Daily cap — news / article (0=unlimited)',
+	'ff1fe341' => 'Daily cap — login',
 ];

@@ -1,0 +1,88 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>NF.insertHtml / NF.replaceHtml</title>
+
+<!--
+  Le JS inséré dynamiquement doit S'EXÉCUTER, dans le BON document, avec le BON nonce CSP.
+
+  Le Live Editor manipule le DOM d'une iframe depuis la page parente. Ce sont deux réponses HTTP,
+  donc deux nonces. Trois pièges s'y superposent, et aucun n'est visible côté PHP :
+
+    1. `insertAdjacentHTML` et `el.outerHTML = …` n'exécutent JAMAIS les <script> — un widget qui
+       s'initialise en JS inline restait donc inerte jusqu'au rechargement de l'iframe ;
+    2. un <script> créé par `document.createElement` dans la page parente puis inséré dans l'iframe
+       n'y est pas un script de l'iframe : il doit naître dans le document qui l'accueille ;
+    3. lui poser le nonce de la page parente le ferait refuser par la CSP de l'iframe.
+
+  L'épreuve vérifie aussi ce qu'il ne faut PAS faire : rejouer les scripts déjà en place.
+-->
+
+<script>window.__nfNonce = 'NONCE-PARENT';</script>
+<script src="/harness.js"></script>
+<script src="/nf.js"></script>
+
+<body>
+<div id="parent-cible"><p>déjà là côté parent</p></div>
+<iframe id="cadre" src="/live-editor-scripts-iframe.html" style="width:400px;height:120px"></iframe>
+
+<script>
+document.getElementById('cadre').addEventListener('load', function () {
+	var cadre = document.getElementById('cadre');
+	var doc   = cadre.contentDocument;
+	var win   = cadre.contentWindow;
+
+	// ── insertHtml dans l'IFRAME ──────────────────────────────────────────────
+	var cible = doc.getElementById('cible');
+
+	NF.insertHtml(cible, 'beforeend',
+		'<div class="widget-ajoute">contenu</div>' +
+		'<script>window.widgetInitialise = true; window.nonceVuALExecution = document.currentScript.nonce;<\/script>');
+
+	NFTest.verifie('le JS inline du widget ajouté s\'exécute', true, win.widgetInitialise === true);
+	NFTest.verifie('il s\'exécute DANS l\'iframe, pas dans le parent', true, typeof window.widgetInitialise === 'undefined');
+	NFTest.verifie('il porte le nonce de l\'IFRAME, pas celui du parent', 'NONCE-IFRAME', win.nonceVuALExecution);
+	NFTest.verifie('le script déjà présent n\'est PAS rejoué', 1, win.compteurDejaLa);
+	NFTest.verifie('le contenu existant est intact', true, !!doc.getElementById('deja-la'));
+	NFTest.verifie('le nœud ajouté est bien dans l\'iframe', true, !!doc.querySelector('#cible .widget-ajoute'));
+
+	// ── replaceHtml dans l'IFRAME ─────────────────────────────────────────────
+	var remplacable = doc.getElementById('remplacable');
+
+	NF.replaceHtml(remplacable,
+		'<div id="remplacable" data-role="nouveau">nouveau</div>' +
+		'<script>window.remplacementInitialise = true;<\/script>');
+
+	NFTest.verifie('le JS inline du remplaçant s\'exécute', true, win.remplacementInitialise === true);
+	NFTest.verifie('le nœud est bien remplacé', 'nouveau', doc.getElementById('remplacable').getAttribute('data-role'));
+	NFTest.verifie('l\'ancien nœud n\'est plus dans le document', false, doc.body.contains(remplacable));
+
+	// ── insertHtml dans le PARENT ─────────────────────────────────────────────
+	NF.insertHtml(document.getElementById('parent-cible'), 'beforeend',
+		'<span>p</span><script>window.parentInitialise = true; window.nonceParentVu = document.currentScript.nonce;<\/script>');
+
+	NFTest.verifie('côté parent aussi, le script s\'exécute', true, window.parentInitialise === true);
+	NFTest.verifie('et il porte le nonce du PARENT', 'NONCE-PARENT', window.nonceParentVu);
+
+	// ── les quatre positions ──────────────────────────────────────────────────
+	var hote = document.createElement('div');
+	hote.innerHTML = '<b id="pivot">pivot</b>';
+	document.body.appendChild(hote);
+
+	NF.insertHtml(hote.querySelector('#pivot'), 'beforebegin', '<i>avant</i><script>window.avantOk = true;<\/script>');
+	NF.insertHtml(hote.querySelector('#pivot'), 'afterend',    '<i>apres</i><script>window.apresOk = true;<\/script>');
+	NF.insertHtml(hote, 'afterbegin',                          '<i>debut</i><script>window.debutOk = true;<\/script>');
+
+	NFTest.verifie('position beforebegin', true, window.avantOk === true);
+	NFTest.verifie('position afterend',    true, window.apresOk === true);
+	NFTest.verifie('position afterbegin',  true, window.debutOk === true);
+
+	// ── setHtml, le chemin déjà en place, ne doit pas régresser ───────────────
+	var boite = document.createElement('div');
+	document.body.appendChild(boite);
+	NF.setHtml(boite, '<script>window.setHtmlOk = true;<\/script>');
+
+	NFTest.verifie('NF.setHtml exécute toujours ses scripts', true, window.setHtmlOk === true);
+
+	NFTest.fini();
+});
+</script>

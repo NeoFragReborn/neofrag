@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -66,7 +67,16 @@ class Crypt extends Library
 
 		return implode(array_map(function($a) use ($charset, $n, &$i){
 			return $charset[(++$i * array_sum(array_map('ord', str_split(sha1($a))))) % $n];
-		}, str_split($data, ceil(strlen($data) / $length))));
+		/*
+		 * `ceil()` rend un FLOTTANT, et `str_split()` attend un entier : sous `strict_types`,
+		 * la coercition silencieuse devient une TypeError. Comme cette methode fabrique le jeton
+		 * CSRF de toute page a formulaire, la panne serait un 500 sur l'ensemble du site — c'est
+		 * pour cette raison que ce fichier etait reste hors de la vague `strict_types`.
+		 *
+		 * Le `max(1, …)` ferme l'autre bord : une longueur demandee superieure a celle de
+		 * l'empreinte donnerait une taille de decoupe nulle, que `str_split()` refuse aussi.
+		 */
+		}, str_split($data, max(1, (int) ceil(strlen($data) / $length)))));
 	}
 
 	// Chiffrement AU REPOS (distinct de __invoke/decode qui sont scopés session) : pour

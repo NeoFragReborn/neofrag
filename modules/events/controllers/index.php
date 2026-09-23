@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -18,17 +19,31 @@ class Index extends Controller_Module
 
 		foreach ($events as $event)
 		{
-			if ($types[$event['type_id']]['type'] == 1)//Matches
+			// La vérification d'accès passe EN PREMIER.
+			//
+			// `get_types()` ne rend que les types visibles par le visiteur : un type auquel il n'a
+			// pas droit n'y figure pas du tout. Le code déréférençait pourtant `$types[$type_id]`
+			// avant de vérifier quoi que ce soit — d'où, à chaque affichage de la liste,
+			// `Undefined array key 1` puis `Trying to access array offset on null`, trois fois par
+			// événement. Constaté le 2026-09-16 dans le journal du site de démonstration, où les
+			// types créés en SQL n'avaient reçu aucune permission.
+			//
+			// Le second garde-fou (`$type` absent) couvre le cas inverse : un droit accordé sur un
+			// type que `get_types()` ne rend pas. L'événement est alors ignoré, pas rendu à moitié.
+			if (!$this->access('events', 'access_events_type', $event['type_id']))
 			{
-				$icon = 'fas fa-crosshairs';
-			}
-			else
-			{
-				$icon = 'far fa-calendar';
+				continue;
 			}
 
+			if (($type = $types[$event['type_id']] ?? NULL) === NULL)
+			{
+				continue;
+			}
+
+			$icon = $type['type'] == 1 ? 'fas fa-crosshairs' : 'far fa-calendar';//Matches
+
 			$data = [
-				'type'         => $types[$event['type_id']],
+				'type'         => $type,
 				'participants' => $this->model('participants')->count_participants($event['event_id'])
 			];
 
@@ -37,12 +52,9 @@ class Index extends Controller_Module
 				$data['match'] = $match;
 			}
 
-			if ($this->access('events', 'access_events_type', $event['type_id']))
-			{
-				$panels->append($this	->panel()
-										->heading('<a href="'.url('events/'.$event['event_id'].'/'.url_title($event['title'])).'">'.$event['title'].'</a>'.(!empty($data['match']) ? '<div class="float-end">'.($data['match']['game']['icon_id'] ? '<img src="'.NeoFrag()->model2('file', $data['match']['game']['icon_id'])->path().'" class="img-icon" alt="" />' : icon('fas fa-gamepad')).' '.$data['match']['game']['title'].'</div>' : ''), $icon)
-										->body($this->view('event', array_merge($event, $data)), FALSE));
-			}
+			$panels->append($this	->panel()
+									->heading('<a href="'.url('events/'.$event['event_id'].'/'.url_title($event['title'])).'">'.$event['title'].'</a>'.(!empty($data['match']) ? '<div class="float-end">'.($data['match']['game']['icon_id'] ? '<img src="'.NeoFrag()->model2('file', $data['match']['game']['icon_id'])->path().'" class="img-icon" alt="" />' : icon('fas fa-gamepad')).' '.$data['match']['game']['title'].'</div>' : ''), $icon)
+									->body($this->view('event', array_merge($event, $data)), FALSE));
 		}
 
 		if (!$events)
@@ -189,7 +201,7 @@ class Index extends Controller_Module
 								'users'   => $users,
 								'form_id' => $this->form()->token()
 							]))
-							->submit('Inviter')
+							->submit($this->lang('Inviter'))
 							->cancel()
 							->set_id('c2dac90bb0731401a293d27ee036757a')
 							->callback(function(){});

@@ -1,0 +1,42 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>disposition (tient lieu d'iframe du Live Editor)</title>
+
+<!--
+  Reproduit la structure REELLE rendue par neofrag/displayables/{zone,row,col}.php, verifiee sur la
+  page servie : en-tete de zone, puis des lignes ; chaque ligne porte ses colonnes ; chaque colonne
+  enveloppe ses widgets dans `.live-editor-col` quand le mode Colonnes est actif.
+-->
+
+<section id="zone" data-disposition-id="92">
+	<header class="nf-le-zone-header">outils de la zone</header>
+
+	<div class="live-editor-row">
+		<header class="live-editor-row-header">outils de la ligne</header>
+		<div class="row" data-row-id="0">
+			<div class="col-12" data-col-id="0">
+				<div class="live-editor-col">
+					<header class="nf-le-col-header">outils de la colonne</header>
+					<div class="widget" data-widget-id="0">widget A</div>
+					<div class="widget" data-widget-id="1">widget B</div>
+				</div>
+			</div>
+			<div class="col-12" data-col-id="1">
+				<div class="live-editor-col">
+					<header class="nf-le-col-header">outils de la colonne</header>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="live-editor-row">
+		<header class="live-editor-row-header">outils de la ligne</header>
+		<div class="row" data-row-id="1">
+			<div class="col-12" data-col-id="0">
+				<div class="live-editor-col">
+					<header class="nf-le-col-header">outils de la colonne</header>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

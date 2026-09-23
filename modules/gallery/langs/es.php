@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -53,7 +54,7 @@ return [
 	'7a9e99e6' => '¿Está seguro de que desea eliminar la categoría <b>%s</b>? <br /> Todos los álbumes asociados a esta categoría también se eliminarán.',
 	'7f9392da' => 'Haga clic en el marco para seleccionar sus imágenes',
 	'86c33902' => 'Editar',
-	'86e02610' => '%d imagen',
+	'86e02610' => '%d imagen|%d imágenes',
 	'87bf30f1' => 'Nuevo álbum de fotos',
 	'9caeb208' => 'El icono debe ser cuadrado',
 	'a026ae67' => 'Categoría',
@@ -100,4 +101,23 @@ return [
 	// i18n 2026-06-11 (code strings)
 	'b914f016' => 'Imágenes de la galería',
 	'7f1f539c' => 'Una fecha futura programa la publicación: el álbum permanece oculto públicamente hasta esa fecha (si es visible). Vacío = inmediato.',
+	'398d8489' => 'Integración <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Código para integrar y mostrar esta galería en un contenido libre html/bbcode"></i>',
+	'b9b71e8e' => 'Título de la imagen',
+	'517c0b2c' => 'Programada para el %s',
+	'f0b7b5b5' => 'Fecha de publicación',
+	'afccc23b' => 'Crear',
+	'ff1485d1' => 'Suelta tus imágenes en esta zona o haz clic aquí',
+	'017c90f5' => 'Tu navegador no permite subir archivos arrastrándolos y soltándolos.',
+	'01081a31' => 'Usa el formulario de abajo para subir tus archivos.',
+	'572556ef' => 'El archivo es demasiado grande ({{filesize}} MiB). Tamaño máximo: {{maxFilesize}} MiB.',
+	'37bb0291' => 'Este tipo de archivo no está permitido.',
+	'9e1bbb9b' => 'El servidor respondió con el código {{statusCode}}.',
+	'de35108a' => '¿Seguro que quieres cancelar este envío?',
+	'ca977443' => 'Quitar',
+	'ebe0e1da' => 'No puedes subir más archivos.',
+	'f8291e95' => 'Subiendo...',
+	'1b08248b' => 'Solo un momento más...',
+	'cb9a08b2' => 'Espera un momento...',
+	'd9035f7e' => 'MB',
+	'73ae9de7' => 'Volver al álbum %s',
 ];

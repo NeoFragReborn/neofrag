@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -153,7 +154,7 @@ class Checker extends Module_Checker
 
 	public function _member($id, $username)
 	{
-		if (($user = $this->model2('user', $id)->check($username)) && !$user->deleted)
+		if (($user = $this->model2('user', $id)->check($username)) && !$user->deleted && (int) $user->id !== nf_compte_masque())
 		{
 			return [$user];
 		}

@@ -14,7 +14,19 @@ function relative_path($file): string
 
 function extension($file): string
 {
-	return strtolower(pathinfo(parse_url($file, PHP_URL_PATH), PATHINFO_EXTENSION));
+	// parse_url() rend FALSE sur une adresse qu'il ne sait pas lire (« /fr/a:80 », « /:80 », « ///x ») et
+	// NULL quand il n'y a pas de chemin (« //x »). Or c'est l'adresse DEMANDÉE qui arrive ici, via
+	// Url::__construct() : un robot en envoie de cette forme, et pathinfo() exigeant une chaîne, la
+	// requête finissait en erreur 500 au lieu du 404 attendu. On retombe alors sur la chaîne brute,
+	// débarrassée de sa requête et de son ancre.
+	$path = parse_url((string) $file, PHP_URL_PATH);
+
+	if (!is_string($path))
+	{
+		$path = strtok((string) $file, '?#') ?: '';
+	}
+
+	return strtolower(pathinfo($path, PATHINFO_EXTENSION));
 }
 
 function get_mime_by_extension($extension)
@@ -28,6 +40,9 @@ function get_mime_by_extension($extension)
 		'jpg'   => 'image/jpeg',
 		'js'    => 'application/x-javascript',
 		'json'  => 'application/json',
+		// Le manifeste d'application. Son type propre : servi en `application/json`, certains
+		// navigateurs refusent de l'interpreter comme un manifeste.
+		'webmanifest' => 'application/manifest+json',
 		'html'  => 'text/html',
 		'otf'   => 'application/x-font-opentype',
 		'png'   => 'image/png',
@@ -50,10 +65,15 @@ function detect_mime_type(string $path): string
 	}
 
 	// finfo lit les magic bytes du contenu réel — ne jamais se fier au type annoncé par le client.
+	//
+	// Pas de `finfo_close()` : depuis PHP 8.5, `finfo_open()` rend un OBJET, libéré tout seul quand
+	// la variable sort du champ de visibilité, et l'appel explicite est déprécié. Il produisait les
+	// quatre avertissements de dépréciation de la suite de tests. Le supprimer reste correct sur
+	// PHP 8.2 à 8.4, que le projet prend aussi en charge : la ressource y est libérée de la même
+	// façon en fin de fonction.
 	if (function_exists('finfo_open') && ($finfo = finfo_open(FILEINFO_MIME_TYPE)))
 	{
 		$mime = finfo_file($finfo, $path);
-		finfo_close($finfo);
 
 		if (is_string($mime) && $mime !== '')
 		{
@@ -309,8 +329,46 @@ function image_normalize($filename, $max_width, $max_height = NULL): bool
 		imagegif($dst, $filename);
 	}
 
-	imagedestroy($src);
-	imagedestroy($dst);
-
+	// Pas d'`imagedestroy()` : depuis PHP 8.0 les images sont des OBJETS, libérés par le
+	// ramasse-miettes, et l'appel n'a plus aucun effet — PHP 8.5 le déprécie donc.
 	return TRUE;
+}
+
+/**
+ * Garde un journal sous une taille fixée, en conservant UNE génération précédente.
+ *
+ * Pourquoi cette fonction existe
+ * ------------------------------
+ * `NEOFRAG_LOGS` consigne, pour CHAQUE page servie, toutes ses requêtes SQL et ses en-têtes. Rien
+ * ne bornait le fichier : sur l'atelier — le seul des trois sites où le réglage est actif —
+ * `logs/neofrag.log` avait atteint **1,7 Go** le 2026-09-20, chaque passage de la batterie en
+ * ajoutant une centaine de mégaoctets.
+ *
+ * Le danger n'est pas le fichier, c'est le disque : les trois installations le partagent, et un
+ * atelier qui le remplit arrête aussi la production. Le correctif appartient au produit et non au
+ * serveur — n'importe qui activant `NEOFRAG_LOGS` sur son hébergement aura le même problème, et
+ * n'a pas forcément `logrotate`.
+ *
+ * `.1` est écrasé à chaque bascule : on garde de quoi lire ce qui vient de se passer, pas un
+ * historique. Un journal de débogage n'est pas une archive.
+ *
+ * @return bool vrai si la bascule a eu lieu
+ */
+function nf_log_rotate(string $fichier, int $max_octets): bool
+{
+	if ($max_octets < 1 || !is_file($fichier))
+	{
+		return FALSE;
+	}
+
+	clearstatcache(TRUE, $fichier);
+
+	if ((int) @filesize($fichier) < $max_octets)
+	{
+		return FALSE;
+	}
+
+	// `rename` est atomique : une requête concurrente qui écrit encore dans l'ancien descripteur
+	// n'écrit pas dans le vide — sa ligne finit dans `.1`.
+	return @rename($fichier, $fichier.'.1');
 }

@@ -123,7 +123,7 @@ if (!defined('NEOFRAG_HEADLESS'))
 	foreach ([
 				'array', 'assets', 'color', 'countries', 'debug', 'file', 'geolocalisation', 'dir',
 				'input', 'location', 'markdown', 'notify', 'sanitize', 'statistics', 'string',
-				'system', 'time', 'user_agent'
+				'system', 'theme', 'time', 'user_agent'
 			] as $helper)
 	{
 		require_once 'neofrag/helpers/'.$helper.'.php';
@@ -174,10 +174,13 @@ if (!defined('NEOFRAG_HEADLESS'))
 	});
 
 	// Câblage du cœur DATA + ACCÈS, dans l'ordre de index.php (input, debug, url, db, access, config) —
-	// tous bootent proprement headless (vérifié). On s'arrête là : PAS de output/session/groups/events
+	// tous bootent proprement headless (vérifié) — plus `events`, le bus d'événements : pur PHP (écouteurs
+	// statiques), aucune dépendance HTTP, et les modèles l'appellent (`NeoFrag()->events->fire(…)` dans
+	// `access`) — sans lui, `NeoFrag()->events` valait FALSE et tout `fire()` d'un modèle sous test aurait
+	// fatalisé (2026-09-17, en écrivant EventsTest). On s'arrête là : PAS de output/session/groups
 	// (rendu/routing/HTTP), et PAS le tail HTTP de index.php (CSP ob_start + output()/exit).
 	// Permet d'exercer les modèles « données » + le contrôle d'accès (Access::can), pas le rendu.
-	foreach (['input', 'debug', 'url', 'db', 'access', 'config'] as $core)
+	foreach (['input', 'debug', 'url', 'db', 'access', 'config', 'events'] as $core)
 	{
 		NeoFrag()->{'core_'.$core};
 	}

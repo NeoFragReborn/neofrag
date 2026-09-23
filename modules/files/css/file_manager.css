@@ -83,7 +83,7 @@
 .files-tree a:hover,
 .files-tree a.active{
 	background: var(--nf-surface-2);
-	color: var(--nf-accent);
+	color: var(--nf-accent-text, var(--nf-accent));
 	text-decoration: none;
 }
 
@@ -183,7 +183,7 @@
 
 .files-upload-dropzone:hover,
 .files-upload-dropzone.is-dragover{
-	color: var(--nf-accent);
+	color: var(--nf-accent-text, var(--nf-accent));
 	background: var(--nf-accent-soft);
 	border-color: var(--nf-accent);
 }
@@ -281,7 +281,7 @@
 
 .files-name i{
 	width: 18px;
-	color: var(--nf-accent);
+	color: var(--nf-accent-text, var(--nf-accent));
 }
 
 .files-size,
@@ -329,11 +329,21 @@
 	}
 
 	.files-toolbar,
-	.files-toolbar-main,
 	.files-selection-bar{
 		align-items: stretch;
 		flex-direction: column;
 		width: 100%;
+	}
+
+	/* Les deux boutons principaux sont des icônes : empilés, ils prenaient chacun toute la
+	   largeur, l'un sous l'autre (et décalés de la marge entre boutons). Ils se partagent la
+	   ligne. */
+	.files-toolbar-main{
+		width: 100%;
+	}
+
+	.files-toolbar-main > .btn{
+		flex: 1 1 0;
 	}
 
 	.files-selection-bar{

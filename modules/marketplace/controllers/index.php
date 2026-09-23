@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace NF\Modules\Marketplace\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module calendar (de)
@@ -6,11 +7,13 @@
 
 return [
 	'02f6b476' => 'Autor',
+	'08585d21' => 'Erinnerung vor einem verfolgten Termin (Stunden, 0 = deaktiviert)',
 	'0aac9844' => 'Datum',
 	'0b2e1655' => 'Veranstaltungen verwalten',
 	'1236ac3f' => 'Farbe (#hex, optional)',
 	'14fff1cb' => 'Keine vergangenen Veranstaltungen.',
 	'159d9675' => '(ganztägig)',
+	'1ce788f2' => 'Konfiguration geändert',
 	'2ca644f3' => 'Bevorstehend',
 	'2ce29ee0' => 'Ende (YYYY-MM-DD HH:MM:SS, optional)',
 	'32795d48' => 'Entwurf',
@@ -41,6 +44,7 @@ return [
 	'daf07ea4' => 'Veranstaltung bearbeiten',
 	'e2c8f589' => 'Status',
 	'eb78cff1' => 'Beschreibung',
+	'eee7511a' => 'Erinnerung: „%s“ beginnt bald',
 	'f126e15d' => 'Entwurf|Entwürfe',
 	'f48cb465' => 'Neue Veranstaltung',
 	'f6b7dc77' => 'Veranstaltung gelöscht.',
@@ -48,4 +52,8 @@ return [
 	'fd283f69' => 'Kalender',
 	'fd943a7a' => 'Kalender — %s',
 	'3de1bc52' => 'Event-Kalender mit iCal-Export RFC 5545.',
+	'881485c2' => 'Bearbeiten: %s',
+	'960d0854' => 'Events verwalten',
+	'46b60b4f' => 'j. F Y',
+	'0c3ae1ce' => 'j. F Y, H:i',
 ];

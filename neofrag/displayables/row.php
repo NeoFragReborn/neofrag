@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -56,7 +57,10 @@ class Row extends Displayable
 			}
 		}
 
-		$output .= '<div class="row'.(!empty($this->_style) ? ' '.$this->_style.($live_editor ? '" data-original-style="'.$this->_style : '') : '').'"'.($this->_id !== NULL ? ' data-row-id="'.$this->_id.'"' : '').'>
+		// `nf-row` : la ligne d'une disposition. Le socle lui donne un espace entre colonnes EMPILÉES
+		// (css/nf-bs5-bridge.css) — sans lui, sur un téléphone, le premier bloc de la colonne latérale
+		// touchait le dernier du contenu (signalé le 2026-09-23).
+		$output .= '<div class="row nf-row'.(!empty($this->_style) ? ' '.$this->_style.($live_editor ? '" data-original-style="'.$this->_style : '') : '').'"'.($this->_id !== NULL ? ' data-row-id="'.$this->_id.'"' : '').'>
 						'.parent::__toString().'
 					</div>';
 

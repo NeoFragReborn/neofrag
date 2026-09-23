@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -71,9 +72,39 @@ class Admin_Checker extends Module_Checker
 				$event['image_id'],
 				$event['published'],
 				$event['type'],
-				$event['publish_date'] ?? ''
+				$event['publish_date'] ?? '',
+				$event['series_id'] ?? NULL
 			];
 		}
+	}
+
+	/**
+	 * Suppression de TOUTE une série récurrente.
+	 *
+	 * Route distincte de `_delete`, et non une case à cocher ajoutée à sa confirmation : le
+	 * formulaire de confirmation de suppression n'accepte QUE le champ `delete` (cf. Form::is_valid),
+	 * et une case en plus ferait échouer la validation en silence. Deux gestes, deux routes, deux
+	 * confirmations qui disent chacune ce qu'elles emportent.
+	 *
+	 * Le droit exigé est celui de la suppression d'un événement : supprimer douze occurrences reste
+	 * la même action, répétée.
+	 */
+	public function _delete_series($event_id, $title)
+	{
+		if (!$this->is_authorized('delete_event'))
+		{
+			$this->error->unauthorized();
+		}
+
+		$this->ajax();
+
+		if (($event = $this->model()->check_event($event_id, $title)) && !empty($event['series_id']))
+		{
+			return [$event_id, $event['title'], (int) $event['series_id']];
+		}
+
+		// Événement hors série : il n'y a pas de série à supprimer. On ne retombe pas sur la
+		// suppression simple — l'opérateur a demandé autre chose que ce qu'on ferait.
 	}
 
 	public function _delete($event_id, $title)

@@ -32,7 +32,7 @@
 
 .nf-stat-label {
 	font-size: 12px;
-	color: #6c757d;
+	color: var(--nf-muted, #6c757d);
 	text-transform: uppercase;
 	letter-spacing: 0.04em;
 	font-weight: 600;
@@ -51,7 +51,7 @@
 
 .nf-stat-trend {
 	font-size: 12px;
-	color: #6c757d;
+	color: var(--nf-muted, #6c757d);
 	margin-top: 6px;
 }
 .nf-stat-trend a {
@@ -70,13 +70,9 @@
 }
 .nf-card-header i {
 	margin-right: 6px;
-	color: #6c757d;
+	color: var(--nf-muted, #6c757d);
 }
 
-.badge-orange {
-	background-color: #ff9800;
-	color: #fff;
-}
 
 .timeline-item {
 	border-left: 2px solid #dee2e6;
@@ -105,7 +101,7 @@
 .nf-report-btn:hover,
 .nf-report-btn:focus {
 	opacity: 1;
-	color: #dc3545 !important;
+	color: var(--bs-danger-text-emphasis, var(--nf-danger, #dc3545)) !important;
 	text-decoration: none;
 }
 /* Apparition douce sur hover du message parent (talks/forum) */

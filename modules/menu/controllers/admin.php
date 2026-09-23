@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -24,12 +25,12 @@ class Admin extends Controller_Module
 			{
 				$slug  = url_title($m['title']);
 				$body .= '<tr>'
-					.'<td><strong>'.htmlspecialchars($m['title']).'</strong></td>'
-					.'<td><code>'.htmlspecialchars($m['name']).'</code></td>'
+					.'<td><strong>'.htmlspecialchars((string) ($m['title'])).'</strong></td>'
+					.'<td><code>'.htmlspecialchars((string) ($m['name'])).'</code></td>'
 					.'<td class="text-end">'.(int)$m['nb'].'</td>'
 					.'<td class="text-end" style="white-space:nowrap;">'
 					.'<a class="btn btn-sm btn-outline-primary" href="'.url('admin/menu/edit/'.$m['menu_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
-					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/menu/delete/'.$m['menu_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ce menu et tous ses items ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
+					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/menu/delete/'.$m['menu_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce menu et tous ses items ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 			}
 			$body .= '</tbody></table>';
@@ -61,7 +62,7 @@ class Admin extends Controller_Module
 				'title' => ['label' => $this->lang('Titre'),              'type' => 'text', 'value' => $is_new ? '' : $menu['title'], 'rules' => 'required'],
 				'name'  => ['label' => $this->lang('Identifiant (slug)'), 'type' => 'text', 'value' => $is_new ? '' : $menu['name'],  'rules' => 'required']
 			 ])
-			 ->add_submit($is_new ? $this->lang('Créer') : $this->lang('Enregistrer'));
+			 ->add_submit($is_new ? $this->lang('Créer') : $this->lang('Enregistrer'), $is_new ? 'fas fa-plus' : 'fas fa-check');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -79,8 +80,7 @@ class Admin extends Controller_Module
 			redirect('admin/menu/edit/'.$menu['menu_id'].'/'.url_title($data['title']));
 		}
 
-		$out = $this->admin_back('admin/menu', $this->lang('Menus'))
-			 . $this->admin_card($is_new ? 'fas fa-plus' : 'fas fa-edit', $is_new ? $this->lang('Nouveau menu') : $this->lang('Réglages du menu'), $this->form()->display());
+		$out = $this->admin_card($is_new ? 'fas fa-plus' : 'fas fa-edit', $is_new ? $this->lang('Nouveau menu') : $this->lang('Réglages du menu'), $this->form()->display());
 
 		if (!$is_new)
 		{
@@ -112,11 +112,11 @@ class Admin extends Controller_Module
 				$slug   = url_title($it['title']);
 				$pad    = $depth ? 'padding-left:'.(18 + $depth * 22).'px;' : '';
 				$body  .= '<tr>'
-					.'<td style="'.$pad.'">'.($depth ? '<i class="fas fa-level-up-alt fa-rotate-90 text-muted" style="margin-right:6px;"></i>' : '').($it['icon'] ? '<i class="'.htmlspecialchars($it['icon']).'" style="margin-right:6px;"></i>' : '').'<strong>'.htmlspecialchars($it['title']).'</strong>'
-					.($it['url'] ? ' <small class="text-muted">'.htmlspecialchars($it['url']).'</small>' : '').'</td>'
+					.'<td style="'.$pad.'">'.($depth ? '<i class="fas fa-level-up-alt fa-rotate-90 text-muted" style="margin-right:6px;"></i>' : '').($it['icon'] ? '<i class="'.htmlspecialchars((string) ($it['icon'])).'" style="margin-right:6px;"></i>' : '').'<strong>'.htmlspecialchars((string) ($it['title'])).'</strong>'
+					.($it['url'] ? ' <small class="text-muted">'.htmlspecialchars((string) ($it['url'])).'</small>' : '').'</td>'
 					.'<td class="text-end" style="white-space:nowrap;">'
 					.'<a class="btn btn-sm btn-outline-primary" href="'.url('admin/menu/item/edit/'.$it['item_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
-					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/menu/item/delete/'.$it['item_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer cet item (et ses sous-items) ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
+					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/menu/item/delete/'.$it['item_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer cet item (et ses sous-items) ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 				foreach ($children[$it['item_id']] ?? [] as $child)
 				{
@@ -169,7 +169,7 @@ class Admin extends Controller_Module
 				'target'    => ['label' => $this->lang('Ouverture'),   'type' => 'select', 'values' => ['' => $this->lang('Même onglet'), '_blank' => $this->lang('Nouvel onglet')], 'value' => $is_new ? '' : $item['target']],
 				'position'  => ['label' => $this->lang('Position'),    'type' => 'text',   'value' => $is_new ? '0' : $item['position']]
 			 ])
-			 ->add_submit($is_new ? $this->lang('Ajouter') : $this->lang('Enregistrer'));
+			 ->add_submit($is_new ? $this->lang('Ajouter') : $this->lang('Enregistrer'), $is_new ? 'fas fa-plus' : 'fas fa-check');
 
 		if ($this->form()->is_valid($post))
 		{

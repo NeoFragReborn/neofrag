@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -13,12 +14,13 @@ class Authenticator_Google extends Authenticator
 	protected function __info()
 	{
 		return [
-			'title'   => 'Google',
-			'icon'    => 'fab fa-google',
-			'color'   => '#db4437',
-			'help'    => 'https://console.developers.google.com/apis/credentials',
-			'version' => '1.0',
-			'depends' => [
+			'title'       => 'Google',
+			'description' => $this->lang('Connexion par un compte Google. Demande un identifiant client déclaré dans la console Google.'),
+			'icon'        => 'fab fa-google',
+			'color'       => '#db4437',
+			'help'        => 'https://console.developers.google.com/apis/credentials',
+			'version'     => '1.0',
+			'depends'     => [
 				'addon/authenticator' => '1.0'
 			]
 		];

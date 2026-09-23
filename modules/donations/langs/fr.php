@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module donations (fr)
@@ -77,5 +78,12 @@ return [
 	'f8f081d9' => 'don',
 	'fa1fc1cd' => 'sur %s d\'objectif',
 	'feb9fa15' => 'Bouton PayPal hébergé (Hosted Button ID)',
-	'fee23223' => 'Ajouter un don'
+	'fee23223' => 'Ajouter un don',
+	'bdf67320' => 'Aucune campagne.',
+	'65747968' => 'Créez-en une pour commencer.',
+	'4f180bc1' => 'Donations',
+	'a32ca295' => 'Jusqu\'au %s',
+	'51746598' => 'Voir la campagne',
+	'b29b863e' => 'Aucune campagne active pour le moment.',
+	'16150764' => 'Voir la page publique',
 ];

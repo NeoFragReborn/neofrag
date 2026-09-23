@@ -1,13 +1,13 @@
 # Le framework
 
-Référence des briques que tu manipules en écrivant des addons. Pour l'architecture
-interne complète, voir [`docs/architecture.md`](../architecture.md).
+Référence des briques que tu manipules en écrivant des addons. Pour l'architecture interne complète,
+voir [`docs/architecture.md`](../architecture.md). Tout ce qui suit est vérifié contre le code de
+NeoFrag Reborn 1.1.0.
 
 ## Le service locator — `NeoFrag()`
 
-Tout le framework est accessible via le singleton global `NeoFrag()` et, dans une
-classe d'addon, via `$this` (qui y délègue). Les services s'obtiennent par méthodes
-magiques :
+Tout le framework est accessible via le singleton global `NeoFrag()` et, dans une classe d'addon, via
+`$this` (qui y délègue). Les services s'obtiennent par méthodes magiques :
 
 ```php
 $this->db        // accès base de données
@@ -15,9 +15,13 @@ $this->config    // configuration du site (nf_name, nf_default_theme…)
 $this->user      // membre courant
 $this->url       // requête / segments / base
 $this->lang(...) // traduction
-$this->module('forum');         // un module
-NeoFrag()->model2('addon');      // un modèle
+$this->events    // événements internes (fire / on)
+$this->module('forum');        // un module — NULL s'il n'est pas installé
+NeoFrag()->model2('addon');    // un modèle
 ```
+
+> `__call` **avale les appels inconnus** : `$this->methode_inexistante()` ne casse rien. Pour éprouver
+> un contrôle, injecte un défaut que la magie ne rattrape pas (une fonction globale absente).
 
 ## Routing
 
@@ -26,25 +30,36 @@ Un module déclare ses routes dans `__info().routes` : `motif => méthode`.
 ```php
 'routes' => [
     ''                 => 'index',   // page d'accueil du module
-    '{id}/{url_title}' => '_show',    // /module/42/slug
-    'admin{pages}'     => 'index',    // admin paginée
+    '{id}/{url_title}' => '_show',   // /module/42/slug
+    'admin{pages}'     => 'index',   // administration paginée
 ],
 ```
 
-- Placeholders **fixes** : `{id}` (entier), `{key_id}`, `{url_title}` (slug), `{url_title*}`,
-  `{page}` et `{pages}` (pagination). Un placeholder inconnu → 404 silencieux.
-- Cycle : le **checker** (`controllers/checker.php`) valide la route et charge les
-  données ; ce qu'il **retourne** devient les arguments de la méthode homonyme du
-  **contrôleur** (`controllers/index.php`).
+- Placeholders **fixes** : `{id}` (entier), `{key_id}`, `{url_title}` (slug), `{url_title*}`, `{page}`
+  et `{pages}` (pagination). Un placeholder inconnu → 404 silencieux.
+- Cycle : le **checker** (`controllers/checker.php`) valide la route et charge les données ; ce qu'il
+  **retourne** devient les arguments de la méthode homonyme du **contrôleur** (`controllers/index.php`).
+- Le routeur d'aujourd'hui est `route → module → page → 404`. Les **régions nommées** des thèmes
+  (`region('content')`) sont la fondation du futur routage centré sur les pages (outlines, routes
+  réservées), pas encore écrit.
 
-> En test/curl, `is_crawler` saute la session : envoie un **User-Agent de navigateur**.
+> En test ou avec `curl`, le CMS traite les agents non-navigateur comme des robots et **n'ouvre pas la
+> session** : envoie un **User-Agent de navigateur**.
 
-## ORM — Model2
+### Un refus de checker se lit dans le journal
 
-Query builder fluide. La table porte le préfixe `nf_`.
+Quand un checker échoue — champ POST manquant, cible inexistante — le site répond **404** ; le motif
+(route, checker, méthode, champ absent et ce qui est arrivé à la place) est **toujours journalisé**
+(`[checker] …`). En mode debug, le motif est rendu au client et le statut est **400** : « ta requête est
+mal formée » plutôt que « cette adresse n'existe pas ». `post_check('a', 'b?')` : le suffixe `?`
+rend un champ facultatif (`NULL` s'il manque).
+
+## Base de données
+
+Query builder fluide ; les tables portent le préfixe `nf_`.
 
 ```php
-$rows = NeoFrag()->db
+$rows = $this->db
     ->select('id', 'title', 'created')
     ->from('nf_news')
     ->where('published', '1')
@@ -53,50 +68,66 @@ $rows = NeoFrag()->db
     ->limit(10)
     ->get();                 // tableau de lignes ; ->row() pour une seule
 
-$id = NeoFrag()->db->insert('nf_news', ['title' => $t, 'body' => $b]);  // renvoie l'id
-NeoFrag()->db->where('id', $id)->update('nf_news', ['title' => $t2]);
-NeoFrag()->db->where('id', $id)->delete('nf_news');
+$id = $this->db->insert('nf_news', ['title' => $t, 'body' => $b]);  // renvoie l'id
+$this->db->where('id', $id)->update('nf_news', ['title' => $t2]);
+$this->db->where('id', $id)->delete('nf_news');
+
+$this->db->transaction(); … $this->db->commit();   // ou ->rollback()
 ```
 
-Pour les entités gérées (addons, fichiers…), passe par les **modèles** :
-`NeoFrag()->model2('addon')`, `NeoFrag()->model2('file', $id)->delete()`. Pour itérer un ensemble typé
-(p. ex. tous les addons installés), `NeoFrag()->collection('addon')->get()`.
+- **`table_exists('nf_teams')`** — vrai si la table existe. Le paquet s'installe à la carte : un module
+  du cœur qui lit la table d'un module optionnel **doit** se garder ainsi (ou déclarer la dépendance
+  dans `requires`). Résultat mis en cache pour la requête.
+- **`import($sql)`** — exécute du SQL multi-instructions (DDL d'installation) hors du pipeline des
+  requêtes préparées.
+- Une **jointure qui ne sert qu'à compter ou à décorer doit être `LEFT`** : sept listes faisaient
+  disparaître tout contenu sans enfant (un forum sans message, un album sans image) par une jointure
+  stricte.
+- `MATCH … AGAINST` (FULLTEXT) **ne voit pas** une ligne insérée dans une transaction non validée :
+  InnoDB n'indexe qu'au commit. Un test de recherche FULLTEXT ne peut pas s'envelopper dans la
+  transaction annulée du socle de test.
+
+Pour les entités gérées (addons, fichiers…), passe par les **modèles** : `NeoFrag()->model2('addon')`,
+`NeoFrag()->model2('file', $id)->delete()` ; pour itérer un ensemble typé,
+`NeoFrag()->collection('addon')->get()`.
 
 ## Formulaires — `form()` & `form2()`
 
-Deux API coexistent — choisis selon le contexte :
+Deux API coexistent (décision actée : la v1 est gelée, pas migrée en masse) :
 
-- **`form2()`** — fluide, chaque champ est un objet `form_*()`. Idéale pour les formulaires **publics** ou
-  **riches**, et c'est la **seule** qui valide un formulaire de **confirmation seule** (sans champ).
-- **`form()`** — l'API **historique**, employée par les **écrans d'administration** des modules : champs
-  déclarés en tableau via `add_rules([...])`, traitée par `is_valid($post)`, rendue par `->display()`.
-  Exemple complet dans [Créer un module](create-a-module.md) (§7 — l'administration).
-
-`form2()` construit, valide (CSRF inclus) et traite un formulaire :
+- **`form()`** — l'API des **écrans d'administration** : champs déclarés en tableau via
+  `add_rules([...])`, traitée par `is_valid($post)`, rendue par `->display()`. Exemple complet dans
+  [Créer un module](create-a-module.md) (§7).
+- **`form2()`** — fluide, chaque champ est un objet `form_*()`. Pour les formulaires **publics** ou
+  **riches**, et la **seule** qui valide un formulaire de **confirmation seule** (sans champ) — une
+  confirmation de suppression n'accepte **que** le champ `delete` : une case ajoutée la ferait échouer
+  en silence.
 
 ```php
 return $this->form2()
     ->rule($this->form_text('title')->title($this->lang('Titre'))->required())
     ->rule($this->form_textarea('body')->title($this->lang('Contenu')))
+    ->captcha()
     ->success(function ($data) {
-        NeoFrag()->db->insert('nf_news', $data);
-        notify('Enregistré');
+        $this->db->insert('nf_news', $data);
+        notify($this->lang('Enregistré'));
     })
-    ->submit('Publier');
+    ->submit($this->lang('Publier'));
 ```
 
-> Un formulaire de **confirmation seule** (sans champ) ne se valide pas avec `form()` :
-> utilise `form2`. Le checker reçoit le **vrai titre**, pas le slug.
+Les deux portent leur propre jeton CSRF. Une action déclenchée par un **lien** ou un **POST écrit à la
+main** doit le vérifier elle-même : `csrf_url()`, `check_csrf()`, `csrf_token()` (trait `Admin_Helpers`).
 
-## Tables — Table2
+## Tables — `table2()`
 
-`table2()` rend des listes paginées, triables et cherchables à partir d'une requête —
-idéal pour les écrans d'administration (ex. la liste des membres, `modules/user/controllers/admin.php`).
+Rend des listes paginées, **triables par clic sur l'en-tête** (Maj + clic : tri multi-colonnes ;
+Ctrl + clic : retirer) et filtrables, à partir d'une requête. Exemple : la liste des membres,
+`modules/user/controllers/admin.php`. Le tri est servi par `js/table2.js` en vanilla.
 
 ## Traductions
 
-`$this->lang('Clé')` renvoie la traduction. Les fichiers `langs/fr.php` mappent le
-**crc32b de la clé source** vers la traduction :
+`$this->lang('Clé')` renvoie la traduction. Les fichiers `langs/fr.php` mappent le **crc32b de la
+clé source** vers la traduction :
 
 ```php
 return [
@@ -104,47 +135,97 @@ return [
 ];
 ```
 
-`$this->lang('%d élément(s)', $n)` accepte des arguments (style `sprintf`).
+- `$this->lang('%d élément(s)', $n)` accepte des arguments (style `sprintf`).
+- Le **français est la langue source** ; six langues sont livrées et `tools/check-langs.php --toutes`
+  refuse une clé manquante dans l'une d'elles. `--fix` ajoute les clés manquantes au **français seul**.
+- **Ne traduis jamais du contenu de la base** (un titre écrit par l'administrateur) : `lang()` le
+  cherche en vain et journalise un avertissement à chaque visite. Emballe-le dans
+  `$this->no_translate(...)`.
+
+## Le front : Bootstrap 5, vanilla, CSP stricte
+
+- **Bootstrap 5.3**, **sans jQuery**. Les classes de grille portent toujours un point de rupture
+  (`col-12 col-lg-8`) ; `tools/check-classes-bs4.php` refuse les classes de Bootstrap 4.
+- **CSP stricte à nonce** : chaque réponse HTML porte un nonce aléatoire, posé sur tous les `<script>`
+  inline par le filtre d'`index.php`, et `script-src` n'autorise que `'self'`, ce nonce, et les origines
+  de reCAPTCHA (plus Google Analytics **si** un identifiant est configuré). **Aucun script depuis un
+  CDN.** Le JS inséré dynamiquement passe par `NF.setHtml` / `NF.insertHtml` / `NF.replaceHtml`, qui
+  ré-exécutent les `<script>` ajoutés avec le bon nonce, y compris dans l'iframe de l'éditeur en direct.
+- **`window.NF`**, défini dans le gabarit principal, remplace les quelques primitives dont on avait
+  besoin — et rien de plus (ce n'est pas un mini-jQuery) :
+
+| Primitive | Rôle |
+|---|---|
+| `NF.ready(fn)` | exécute `fn` quand le DOM est prêt (ou tout de suite s'il l'est déjà) |
+| `NF.data(el, 'ma-cle')` | lit `data-ma-cle` avec la coercition de jQuery (nombre, booléen, JSON) |
+| `NF.ajax({url, method, data, dataType, headers, signal})` | `fetch` avec `X-Requested-With` sur la même origine, corps `form-urlencoded`, tableaux en `clé[]` ; **rejette** sur un statut d'erreur ; `dataType: 'text'` sinon JSON |
+| `NF.post(url, data)` | raccourci POST |
+| `NF.setHtml(el, html)` | `innerHTML` + exécution des scripts |
+| `NF.insertHtml(cible, position, html)` | `insertAdjacentHTML` + exécution des seuls scripts ajoutés |
+| `NF.replaceHtml(el, html)` | remplace l'élément, scripts exécutés |
+| `NF.runScripts(root)`, `NF.loadScript(src)` | ré-exécuter, charger avec le nonce |
+
+- Les modales (`js/modal.js`), les notifications (`js/notify.js`) et les confirmations (`js/confirm.js`)
+  sont chargées par les thèmes.
+- Deux contrôles gardent ce front : `check-js-sources` (syntaxe, PHP interpolé toléré, et aucun `$(`),
+  `check-js-console` (les vraies pages, dans un vrai navigateur : aucune erreur, aucune violation CSP).
+  Le harnais `tests/Browser/*.test.html` + `tools/check-js.php` éprouve le **contrat** d'un script sur
+  le vrai fichier, avec des doubles de `fetch`.
+
+## Sécurité : ce qui existe déjà
+
+Avant d'écrire le tien : `Rate_Limit` (par clé, ex. `contact:ip:<ip>`), `Audit_Log` (actions
+sensibles), `File_Jail` (chemins d'upload), `Moderation`, TOTP pour la double authentification,
+`sanitize_html()` (HTMLPurifier) pour le HTML riche, `is_dangerous_upload()`, et le mode démo
+(`nf_demo()`) qui verrouille l'écriture des modules sensibles.
+
+## Événements
+
+`$this->events->fire('forum.post.created', $message_id, $topic_id, $user_id)` côté émetteur ;
+`$this->events->on('forum.post.created', function (...) { … })` côté abonné. Les écouteurs restent
+actifs pour toute la requête.
 
 ## Helpers utiles
 
-- `url('forum/42')` — construit une URL routée (préfixe langue inclus).
-- `$this->config->nf_name`, `->nf_default_theme` — config du site.
-- `notify('Message', 'success')` — toast.
-- `htmlspecialchars(...)` / `sanitize_html(...)` — échappement / nettoyage anti-XSS
-  (HTMLPurifier) pour le HTML riche entrant et sortant.
+- `url('forum/42')` — construit une URL routée (préfixe de langue inclus).
+- `notify('Message')` — notification à l'écran après redirection.
+- `htmlspecialchars(...)` / `sanitize_html(...)` — échappement / nettoyage anti-XSS.
+- `nf_demo()` — vrai sur le site de démonstration.
 
 ## Migrations
 
-Le schéma évolue par migrations versionnées, suivies dans `nf_migrations` :
+Le schéma du **cœur** évolue par migrations versionnées, suivies dans `nf_migrations` :
 
 ```bash
 php tools/migrate.php status                 # appliqué / en attente
-php tools/migrate.php up [--pretend]          # applique (dry-run avec --pretend)
+php tools/migrate.php up [--pretend]          # applique (simulation avec --pretend)
 php tools/migrate.php down [--step=N]         # annule
 php tools/migrate.php baseline --until=NAME   # adopter une base existante
 ```
 
-Fichiers : `migrations/AAAA_MM_JJ_nom.up.sql` (+ `.down.sql` pour la réversibilité).
-Le DDL MySQL est auto-commit → **backup avant `up` en prod**.
+Fichiers : `migrations/AAAA_MM_JJ_nom.up.sql` (+ `.down.sql`). Le DDL MySQL est auto-commit →
+**sauvegarde avant `up` en production**. Les **addons** ont leurs propres migrations
+(`<addon>/install/migrations/`, suivies dans `nf_addon_migrations`) — voir
+[Créer un module](create-a-module.md). Le site de démonstration **ne joue aucune migration** : son état
+vient de son instantané.
 
 ## Surcharge à trois niveaux
 
-Résolution des vues/classes/fichiers (premier trouvé gagne) :
+Résolution des vues, classes et fichiers (premier trouvé gagne) :
 
 1. `overrides/{type}/{fichier}` — global
 2. `themes/{thème actif}/overrides/{type}/{fichier}` — par thème
 3. l'original livré
 
-Tu personnalises sans forker et sans casser les mises à jour.
+Tu personnalises sans forker et sans casser les mises à jour. Attention : deux fichiers homonymes à deux
+niveaux, et `path()` sert l'un ou l'autre selon l'appelant — un assistant s'est affiché sans style à
+cause d'un doublon (`tools/check-assets.php` le refuse désormais).
 
-## Environnement de dev
+## Environnement de développement
 
-Stack Docker : `web` (Apache + PHP 8.3), `db` (MariaDB 11), `phpmyadmin`, `mailpit`.
-
-```bash
-docker compose up -d                 # http://localhost:8080
-docker compose exec web composer test
-```
-
-Voir [`docs/development.md`](../development.md) pour le détail (CI, SCSS, déploiement).
+Le projet tourne sur **tout PHP 8.2+ avec MySQL ou MariaDB** (Apache + `mod_rewrite`, ou nginx, ou
+Caddy). La voie de référence du projet est une **installation d'épreuve sur un serveur**, où tourne
+la batterie complète : `php tools/check-all.php --navigateur`, `vendor/bin/phpunit --fail-on-skipped`
+et `composer stan`. L'environnement, la base de test et la boucle de travail sont décrits dans
+[`docs/development.md`](../development.md) ; chaque outil est décrit dans
+[`tools/README.md`](../../tools/README.md).

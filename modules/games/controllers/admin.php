@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -16,7 +17,7 @@ class Admin extends Controller_Module
 						->add_columns([
 							[
 								'content' => function($data){
-									$output = '<img src="'.NeoFrag()->model2('file', $data['icon_id'])->path().'" class="img-icon" alt="" /> '.$data['title'];
+									$output = NeoFrag()->model2('file', $data['icon_id'])->img('class="img-icon" alt=""').' '.$data['title'];
 									return $data['parent_id'] ? '<span style="padding-left: 35px;">'.$output.'</span>' : $output;
 								},
 								'search'  => function($data){
@@ -61,7 +62,7 @@ class Admin extends Controller_Module
 				->add_rules('games', [
 					'games' => $this->model()->get_games_list()
 				])
-				->add_submit($this->lang('Ajouter'))
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus')
 				->add_back('admin/games');
 
 		if ($this->form()->is_valid($post))
@@ -98,7 +99,7 @@ class Admin extends Controller_Module
 		$modes = $this	->table()
 						->add_columns([
 							[
-								'title'   => 'Titre',
+								'title'   => $this->lang('Titre'),
 								'content' => function($data){
 									return $data['title'];
 								}
@@ -116,7 +117,7 @@ class Admin extends Controller_Module
 							]
 						])
 						->data($this->model('modes')->get_modes($game_id))
-						->no_data('Aucun mode')
+						->no_data($this->lang('Aucun mode'))
 						->pagination(FALSE)
 						->display();
 
@@ -138,16 +139,16 @@ class Admin extends Controller_Module
 				$this	->panel()
 						->heading($this->lang('Édition du jeu %s', $title), 'fas fa-gamepad')
 						->body($this->form()->display())
-						->size('col-7')
+						->size('col-12 col-lg-7')
 			),
 			$this	->col(
 						$this	->panel()
 								->heading('Modes', 'fas fa-cog')
 								->body($modes)
-								->footer($this->button_create('admin/games/modes/add/'.$game_id.'/'.url_title($title),  'Ajouter un mode')),
+								->footer($this->button_create('admin/games/modes/add/'.$game_id.'/'.url_title($title),  $this->lang('Ajouter un mode'))),
 						$this->_panel_maps($maps, $game_id, $title)
 					)
-					->size('col-5')
+					->size('col-12 col-lg-5')
 		);
 	}
 
@@ -170,13 +171,13 @@ class Admin extends Controller_Module
 
 	public function _maps_add($game_id = NULL, $game = NULL)
 	{
-		$this	->subtitle('Nouvelle carte')
+		$this	->subtitle($this->lang('Nouvelle carte'))
 				->form()
 				->add_rules('maps', [
 					'games'   => $this->model()->get_games_list(TRUE),
 					'game_id' => $game_id
 				])
-				->add_submit($this->lang('Ajouter'))
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus')
 				->add_back('admin/games');
 
 		if ($this->form()->is_valid($post))
@@ -240,10 +241,10 @@ class Admin extends Controller_Module
 
 	public function _modes_add($game_id, $game)
 	{
-		$this	->subtitle('Nouveau mode')
+		$this	->subtitle($this->lang('Nouveau mode'))
 				->form()
 				->add_rules('modes')
-				->add_submit($this->lang('Ajouter'))
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus')
 				->add_back($back = 'admin/games/'.$game_id.'/'.$game);
 
 		if ($this->form()->is_valid($post))
@@ -260,7 +261,7 @@ class Admin extends Controller_Module
 
 	public function _modes_edit($mode_id, $game_id, $title, $game)
 	{
-		$this	->title('Éditer le mode')
+		$this	->title($this->lang('Éditer le mode'))
 				->subtitle($title)
 				->form()
 				->add_rules('modes', [
@@ -303,13 +304,13 @@ class Admin extends Controller_Module
 		$maps = $this	->table()
 						->add_columns(array_filter([
 							[
-								'title'   => 'Titre',
+								'title'   => $this->lang('Titre'),
 								'content' => function($data){
 									return $data['title'];
 								}
 							],
 							$game_id ? NULL : [
-								'title'   => 'Jeu',
+								'title'   => $this->lang('Jeu'),
 								'content' => function($data){
 									return ($data['icon_id'] ? '<img src="'.NeoFrag()->model2('file', $data['icon_id'])->path().'" class="img-icon" alt="" /> ' : '').'<a href="'.url('admin/games/'.$data['game_id'].'/'.$data['name']).'">'.$data['game_title'].'</a>';
 								}

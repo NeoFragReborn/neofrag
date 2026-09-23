@@ -99,4 +99,40 @@ trait Forum_Subscriptions
 					->where('type',     'topic')
 					->update('nf_forum_track', 'last_notified_at = CURRENT_TIMESTAMP');
 	}
+
+	// ── Administration ────────────────────────────────────────────────────────────
+	//
+	// Vue d'ensemble et désabonnement d'autorité, réservés au panneau : même sujet que
+	// ci-dessus, même table, donc même fichier.
+
+	public function get_all_subscriptions($limit = 500)
+	{
+		return $this->db->select(	'tr.topic_id',
+									'tr.user_id',
+									'tr.created_at',
+									'tr.last_notified_at',
+									'tr.type',
+									'u.username',
+									'u.email',
+									't.title as topic_title',
+									't.forum_id',
+									'f.title as forum_title'
+								)
+						->from('nf_forum_track tr')
+						->join('nf_user u',         'u.id = tr.user_id')
+						->join('nf_forum_topics t', 't.topic_id = tr.topic_id')
+						->join('nf_forum f',        'f.forum_id = t.forum_id')
+						->order_by('tr.created_at DESC')
+						->limit((int)$limit)
+						->get();
+	}
+
+	public function admin_unsubscribe($topic_id, $user_id)
+	{
+		$this->db	->where('topic_id', (int)$topic_id)
+					->where('user_id',  (int)$user_id)
+					->where('type',     'topic')
+					->delete('nf_forum_track');
+		return TRUE;
+	}
 }

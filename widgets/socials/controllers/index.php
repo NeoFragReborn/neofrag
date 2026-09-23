@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Jérémy VALENTIN <jeremy.valentin@neofr.ag>

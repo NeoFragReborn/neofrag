@@ -2,27 +2,8 @@
 	margin-top: 15px;
 }
 
-.vignettes-content .thumbnail {
-	margin-bottom: 10px;
-	position: relative;
-	display: block;
-}
-
-.vignettes-content .thumbnail:hover, .dropzone:hover {
+.dropzone:hover {
 	border-color: #428bca;
-}
-
-.vignettes-content .thumbnail .actions {
-	top: 4px;
-	right: 4px;
-	position: absolute;
-	padding: 5px;
-	background-color: rgba(255,255,255,.8);
-	border-bottom-left-radius: 3px;
-}
-
-.vignettes-content .thumbnail .actions:hover {
-	background-color: rgba(255,255,255,1);
 }
 
 .vignettes-content > .row {
@@ -47,8 +28,12 @@
 	margin-top: 10px;
 }
 
+/* Le fond et la bordure suivent le thème : la bibliothèque pose un fond blanc, sous lequel le titre
+   « DropZone », clair en mode sombre, devenait invisible. */
 .dropzone {
-	border: 5px solid rgba(0, 0, 0, 0.1);
+	border: 5px solid var(--nf-border, rgba(0, 0, 0, 0.1));
+	background: var(--nf-surface, #fff);
+	color: var(--nf-text, inherit);
 	padding: 20px 15px;
 }
 

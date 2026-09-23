@@ -1,8 +1,8 @@
 .comments {
-	.media {
+	.nf-comment {
 		padding-bottom: 10px;
 
-		+ .media {
+		+ .nf-comment {
 			border-top: 1px solid var(--nf-border, #ebebeb);
 			padding-top: 20px;
 		}
@@ -19,7 +19,7 @@
 			padding-bottom: 0;
 		}
 
-		.media-body {
+		.nf-comment-body {
 			padding-left: 15px;
 
 			h6 {
@@ -32,7 +32,7 @@
 		}
 
 		&:hover {
-			.media-body {
+			.nf-comment-body {
 				.list-inline {
 					display: block;
 				}
@@ -44,11 +44,11 @@
 			width: 50px;
 
 			.inner-ring {
-				background: #fff;
+				background: var(--nf-surface, #fff);
 			}
 
 			&:after {
-				border-color: #fff;
+				border-color: var(--nf-surface, #fff);
 			}
 		}
 	}

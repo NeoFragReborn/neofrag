@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Widget Vidéo — lecteur HTML5 + playlist des vidéos de la bibliothèque média.
@@ -19,6 +20,10 @@ class Video extends Widget
 			'link'        => 'https://neofr.ag',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '1.0',
 			'depends'     => ['neofrag' => '1.0.0']
 		];

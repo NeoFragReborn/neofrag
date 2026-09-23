@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -116,17 +117,28 @@ class Form extends Library
 	{
 		array_unshift($this->_buttons, [
 			'label'  => NeoFrag()->lang('Retour'),
-			'action' => $this->url->back() ?: $url
+			'action' => $this->url->back() ?: $url,
+			'icon'   => 'fas fa-arrow-left'
 		]);
 
 		return $this;
 	}
 
-	public function add_submit($label)
+	/**
+	 * Bouton de validation du formulaire.
+	 *
+	 * L'icône a un défaut VOLONTAIRE : les 118 boutons d'envoi du projet étaient rendus nus alors
+	 * que tous les boutons écrits à la main (barres d'outils, tableaux) portent une icône — d'où
+	 * l'impression que « certains boutons de l'admin n'ont pas d'icône ». Le défaut est posé ici,
+	 * une seule fois, plutôt que recopié sur chaque appel. Les écrans dont l'action n'est pas une
+	 * validation (envoyer, supprimer, cloner…) passent leur propre icône en second argument.
+	 */
+	public function add_submit($label, $icon = 'fas fa-check')
 	{
 		$this->_buttons[] = [
 			'type'  => 'submit',
-			'label' => $label
+			'label' => $label,
+			'icon'  => $icon
 		];
 
 		return $this;
@@ -163,14 +175,16 @@ class Form extends Library
 
 	public function is_valid(&$post = NULL)
 	{
-		// Site de démo : les écritures de l'administration sont bloquées (le front reste
-		// interactif, l'auto-reset nettoie). Le contenu/config admin n'est jamais persisté.
-		if (nf_demo() && $this->url->admin && strtolower($_SERVER['REQUEST_METHOD']) == 'post')
+		// Site de démo : seules les écritures que la remise à zéro horaire sait défaire sont
+		// permises (cf. nf_demo_ecriture_permise). Réglages, addons, comptes et envois de courrier
+		// restent refusés — la remise à zéro ne les rétablit pas.
+		if (nf_demo() && $this->url->admin && strtolower($_SERVER['REQUEST_METHOD']) == 'post'
+			&& !nf_demo_ecriture_permise())
 		{
 			static $notified = FALSE;
 			if (!$notified)
 			{
-				notify(NeoFrag()->lang('Action désactivée sur le site de démonstration.'), 'warning');
+				notify(NeoFrag()->lang('Cette partie est en lecture seule sur le site de démonstration.'), 'warning');
 				$notified = TRUE;
 			}
 			return FALSE;
@@ -241,7 +255,16 @@ class Form extends Library
 		{
 			if ($this->_has_upload())
 			{
-				$files = $_FILES[$token];
+				// `$_FILES[$token]` peut être ABSENT, même quand le formulaire déclare un envoi de
+				// fichier : il n'existe que si la requête est en `multipart/form-data`. Un navigateur
+				// l'envoie toujours — mais pas un client qui poste en `x-www-form-urlencoded`, ce que
+				// font les outils de contrôle et tout appel programmatique.
+				//
+				// La lecture nue journalisait alors un `Undefined array key` à chaque envoi, sans rien
+				// casser : la boucle ci-dessous ne fait rien quand `tmp_name` est vide, et un tableau
+				// vide se comporte exactement comme l'absence de fichier. Constaté le 2026-09-16 dans
+				// le journal du site de démonstration.
+				$files = $_FILES[$token] ?? [];
 
 				foreach ($this->_rules as $var => $options)
 				{
@@ -322,17 +345,18 @@ class Form extends Library
 
 		if ($is_file && !empty($_FILES[$this->token()]['error'][$var]) && $_FILES[$this->token()]['error'][$var] != 4)
 		{
+			// Le code 4 (UPLOAD_ERR_NO_FILE) n'arrive pas ici : l'absence de fichier relève de la
+			// règle `required`, vérifiée juste au-dessus.
 			$errors = [
-				1 => 'La taille du fichier téléchargé excède la valeur de upload_max_filesize, configurée dans le php.ini',
-				2 => 'La taille du fichier téléchargé excède la valeur de MAX_FILE_SIZE, qui a été spécifiée dans le formulaire HTML',
-				3 => 'Le fichier n\'a été que partiellement téléchargé',
-				4 => 'No file was uploaded',
-				6 => 'Un dossier temporaire est manquant',
-				7 => 'Échec de l\'écriture du fichier sur le disque',
-				8 => 'Une extension PHP a arrêté l\'envoi de fichier'
+				1 => NeoFrag()->lang('La taille du fichier téléchargé excède la valeur de upload_max_filesize, configurée dans le php.ini'),
+				2 => NeoFrag()->lang('La taille du fichier téléchargé excède la valeur de MAX_FILE_SIZE, qui a été spécifiée dans le formulaire HTML'),
+				3 => NeoFrag()->lang('Le fichier n\'a été que partiellement téléchargé'),
+				6 => NeoFrag()->lang('Un dossier temporaire est manquant'),
+				7 => NeoFrag()->lang('Échec de l\'écriture du fichier sur le disque'),
+				8 => NeoFrag()->lang('Une extension PHP a arrêté l\'envoi de fichier')
 			];
 
-			return NeoFrag()->lang($errors[$_FILES[$this->token()]['error'][$var]]);
+			return $errors[$_FILES[$this->token()]['error'][$var]] ?? NeoFrag()->lang('Erreur');
 		}
 
 		if (isset($options['check']) && is_callable($options['check']))
@@ -397,7 +421,7 @@ class Form extends Library
 	{
 		if ($post[$var] !== '' && $post[$var] != (int)$post[$var])
 		{
-			return 'Nombre invalide';
+			return NeoFrag()->lang('Nombre invalide');
 		}
 
 		return $this->_check_text($post, $var, $options);
@@ -407,7 +431,7 @@ class Form extends Library
 	{
 		if ($post[$var] !== '' && !preg_match('/^0[1-9]([. ]?)\d{2}(?:\1\d{2}){3}$/', $post[$var], $match))
 		{
-			return 'Numéro de téléphone invalide';
+			return NeoFrag()->lang('Numéro de téléphone invalide');
 		}
 
 		return $this->_check_text($post, $var, $options);
@@ -449,7 +473,7 @@ class Form extends Library
 			{
 				return '<div class="modal-header">
 							<h5 class="modal-title">'.$title.'</h5>
-							<button type="button" class="close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span><span class="visually-hidden">'.NeoFrag()->lang('Fermer').'</span></button>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="'.NeoFrag()->lang('Fermer').'"></button>
 						</div>
 						<div class="modal-body">
 							'.$message.'
@@ -475,7 +499,7 @@ class Form extends Library
 
 		if ($has_upload = $this->_has_upload())
 		{
-			$this->js('file');
+			$this->js('file')->css('form-file');
 		}
 
 		$output .= '<form action="'.url($this->url->request).'" method="post"'.($has_upload ? ' enctype="multipart/form-data"' : '').'>
@@ -498,7 +522,7 @@ class Form extends Library
 				}
 				else
 				{
-					$output .= '<div class="form-group row'.(isset($this->_errors[$var]) ? ' has-error' : '').'">';
+					$output .= '<div class="nf-field row'.(isset($this->_errors[$var]) ? ' nf-field-invalid' : '').'">';
 
 					if ($this->_fast_mode)
 					{
@@ -513,7 +537,18 @@ class Form extends Library
 							$output .= '<em>*</em>';
 						}
 
-						$output .= '</label><div class="'.(!empty($options['size']) && preg_match('/^col-([1-9])$/', $options['size'], $match) ? 'col-'.$match[1] : 'col-sm-9').'">'.$display.'</div>';
+						// La taille demandée est reprise TELLE QUELLE si elle est une classe de
+						// colonne Bootstrap valide. L'ancienne expression n'acceptait que `col-1` à
+						// `col-9` : un `col-md-4` — l'idiome naturel, et responsive — ne matchait pas
+						// et retombait silencieusement sur `col-sm-9`, pleine largeur. C'est ce qui
+						// faisait dix-sept champs numériques larges de 900 px sur la page du barème
+						// de gamification. Les points de rupture et les colonnes 10 à 12 sont donc
+						// acceptés, et la classe n'est plus reconstruite : `col-md-4` reste `col-md-4`.
+						$taille = !empty($options['size']) && preg_match('/^col-(?:(?:sm|md|lg|xl|xxl)-)?(?:[1-9]|1[0-2])$/', $options['size'])
+							? $options['size']
+							: 'col-sm-9';
+
+						$output .= '</label><div class="'.$taille.'">'.$display.'</div>';
 					}
 
 					$output .= '</div>';
@@ -524,21 +559,36 @@ class Form extends Library
 		if ($this->_display_captcha)
 		{
 			NeoFrag()->js('https://www.google.com/recaptcha/api.js?hl='.$this->config->lang->info()->name.'&_=');
-			$output .= '<div class="form-group row"><div class="'.($this->_fast_mode ? 'input-group' : 'offset-3 col-9').'">'.$this->captcha->display().'</div></div>';
+			$output .= '<div class="nf-field row"><div class="'.($this->_fast_mode ? 'input-group' : 'offset-3 col-9').'">'.$this->captcha->display().'</div></div>';
 		}
 
-		if ($this->_display_required)
+		// La mention n'a de sens que s'il y a VRAIMENT une étoile à l'écran. Elle s'affichait sur
+		// tout formulaire, y compris ceux dont aucun champ n'est requis — comme le barème de
+		// gamification, dix-sept champs et pas une seule étoile : le lecteur cherche ce qu'elle
+		// désigne, et ne trouve rien.
+		$un_champ_requis = FALSE;
+
+		foreach ($this->_rules as $options)
 		{
-			$output .= '<div class="form-group row"><div class="offset-3 col-9"><em class="text-muted">'.NeoFrag()->lang('* Toutes les informations marquées d\'une étoile sont requises').'</em></div></div>';
+			if (!empty($options['rules']) && in_array('required', (array) $options['rules'], TRUE))
+			{
+				$un_champ_requis = TRUE;
+				break;
+			}
+		}
+
+		if ($this->_display_required && $un_champ_requis)
+		{
+			$output .= '<div class="nf-field row"><div class="offset-lg-3 col-12 col-lg-9"><em class="text-muted">'.NeoFrag()->lang('* Toutes les informations marquées d\'une étoile sont requises').'</em></div></div>';
 		}
 
 		if (!empty($this->_buttons))
 		{
-			$output .= '<div class="'.($this->_fast_mode ? 'text-center' : 'form-group row').'">';
+			$output .= '<div class="'.($this->_fast_mode ? 'text-center' : 'nf-field row').'">';
 
 			if (!$this->_fast_mode)
 			{
-				$output .= '<div class="offset-3 col-9">';
+				$output .= '<div class="offset-lg-3 col-12 col-lg-9">';
 			}
 
 			foreach ($this->_buttons as $i => $button)
@@ -581,13 +631,15 @@ class Form extends Library
 
 	private function _display_button($button)
 	{
+		$icone = !empty($button['icon']) ? icon($button['icon']).' ' : '';
+
 		if (isset($button['type']) && $button['type'] == 'submit')
 		{
-			return '<button class="btn btn-primary" type="submit">'.$button['label'].'</button>';
+			return '<button class="btn btn-primary" type="submit">'.$icone.$button['label'].'</button>';
 		}
 		else if (!empty($button['label']) && !empty($button['action']))
 		{
-			return '<a href="'.url($button['action']).'" class="btn btn-secondary">'.$button['label'].'</a>';
+			return '<a href="'.url($button['action']).'" class="btn btn-secondary">'.$icone.$button['label'].'</a>';
 		}
 
 		return '';
@@ -614,10 +666,36 @@ class Form extends Library
 		}
 		else if (isset($options['value']))
 		{
-			return (string)$options['value'];
+			// Un champ à valeurs MULTIPLES (cases à cocher, liste à choix multiple) porte un tableau
+			// ici. Le convertir en chaîne posait « Array to string conversion » à chaque rendu du
+			// formulaire concerné, et produisait le texte « Array » dans l'attribut. On rend la
+			// première valeur, qui est ce que l'appelant attend d'un champ simple.
+			return is_array($options['value'])
+				? (string) (reset($options['value']) ?: '')
+				: (string) $options['value'];
 		}
 
-		return isset($options['default']) ? (string)$options['default'] : '';
+		return isset($options['default'])
+			? (is_array($options['default']) ? (string) (reset($options['default']) ?: '') : (string) $options['default'])
+			: '';
+	}
+
+	/**
+	 * Une valeur posée dans un attribut ou dans une zone de texte.
+	 *
+	 * La valeur passait par `addcslashes(…, '"')`, un échappement de CHAÎNE PHP sans aucun effet en
+	 * HTML : le guillemet devenait `\"` et fermait tout de même l'attribut. Une citation dont la source
+	 * valait `"><img src=x>` injectait donc une balise dans le formulaire d'édition — vu par
+	 * check-mise-en-page, qui y a trouvé une « image cassée » (2026-09-23).
+	 *
+	 * Les valeurs enregistrées PAR CE FORMULAIRE sont déjà encodées à l'entrée (is_valid) ; celles qui
+	 * arrivent par un autre chemin (import, API, SQL de démonstration) ne le sont pas. D'où
+	 * `double_encode = FALSE` : l'entité existante reste telle quelle — le rendu ne change pas — et
+	 * seul le caractère brut est encodé.
+	 */
+	static private function _attr($value): string
+	{
+		return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', FALSE);
 	}
 
 	private function _display_popover($var, $options, &$icons = '')
@@ -638,7 +716,7 @@ class Form extends Library
 
 		if ($popover)
 		{
-			return ' data-bs-toggle="popover" data-trigger="hover" data-placement="right" data-html="true" data-content="'.utf8_htmlentities(implode('<br /><br />', $popover)).'"';
+			return ' data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="right" data-bs-html="true" data-bs-content="'.utf8_htmlentities(implode('<br /><br />', $popover)).'"';
 		}
 	}
 
@@ -715,18 +793,28 @@ class Form extends Library
 
 		$output = '';
 
+		// Balisage Bootstrap 5 : l'addon est un ENFANT DIRECT du groupe. Les wrappers
+		// `input-group-prepend` / `input-group-append` de Bootstrap 4 étaient encore émis ici et
+		// rattrapés en CSS dans chaque thème ; le rattrapage ne suffisait pas — chaque partie
+		// gardait ses quatre coins arrondis, si bien que l'icône, le champ et la pipette
+		// formaient trois boîtes accolées au lieu d'un seul champ. Bootstrap 5 s'en charge tout
+		// seul dès que le wrapper disparaît, sans aucune règle de rattrapage.
 		if (isset($options['icon']))
 		{
 			$output .= '<div class="input-group'.(!empty($classes) ? ' '.implode(' ', $classes) : '').'">
-				<div class="input-group-prepend"><span class="input-group-text">'.($options['icon'] ? icon($options['icon']) : '<i></i>').'</span></div>';
+				<span class="input-group-text">'.($options['icon'] ? icon($options['icon']) : '<i class="nf-color-swatch"></i>').'</span>';
 		}
 
 		$placeholder = '';
 
+		// Le champ de fichier était le SEUL champ sans classe : le navigateur dessinait alors son
+		// widget natif gris, sans bordure ni rayon, au milieu de champs habillés par le thème.
+		// Bootstrap habille `input[type=file].form-control` comme les autres.
+		$class = ' class="form-control"';
+
 		if ($type != 'file')
 		{
-			$class = ' class="form-control"';
-			$value = ' value="'.addcslashes($this->_display_value($var, $options), '"').'"';
+			$value = ' value="'.self::_attr($this->_display_value($var, $options)).'"';
 
 			if (!empty($options['placeholder']))
 			{
@@ -739,11 +827,11 @@ class Form extends Library
 
 			if ($placeholder)
 			{
-				$placeholder = ' placeholder="'.$placeholder.'"';
+				$placeholder = ' placeholder="'.self::_attr($placeholder).'"';
 			}
 		}
 
-		$input = '<input id="form_'.$this->token().'_'.$var.'" name="'.$this->token().'['.$var.']" type="'.$type.'"'.(!empty($value) ? $value : '').(!empty($class) ? $class : '').($type == 'password' && isset($options['autocomplete']) && $options['autocomplete'] === FALSE ? ' autocomplete="off"' : '').(!empty($options['rules']) && in_array('disabled', $options['rules']) ? ' disabled="disabled"' : '').$placeholder.' />';
+		$input = '<input id="form_'.$this->token().'_'.$var.'" name="'.$this->token().'['.$var.']" type="'.$type.'"'.(!empty($value) ? $value : '').$class.($type == 'password' && isset($options['autocomplete']) && $options['autocomplete'] === FALSE ? ' autocomplete="off"' : '').(!empty($options['rules']) && in_array('disabled', $options['rules']) ? ' disabled="disabled"' : '').$placeholder.' />';
 
 		if ($type == 'file')
 		{
@@ -760,15 +848,15 @@ class Form extends Library
 				else
 				{
 					$input = '	<div class="row">
-									<div class="col-3">
-										<div class="thumbnail">
+									<div class="col-12 col-lg-3">
+										<div class="nf-file-preview card card-body p-2">
 											<img src="'.url($this->db->select('path')->from('nf_file')->where('id', $options['value'])->row()).'" class="img-fluid mb-1" alt="" />
-											<div class="caption text-center">
-												<a class="btn btn-outline-danger btn-block btn-sm form-file-delete" href="#" data-input="'.$this->token().'['.$var.']">'.icon('far fa-trash-alt').' '.NeoFrag()->lang('Supprimer').'</a>
+											<div class="text-center">
+												<a class="btn btn-outline-danger d-block w-100 btn-sm form-file-delete" href="#" data-input="'.$this->token().'['.$var.']">'.icon('far fa-trash-alt').' '.NeoFrag()->lang('Supprimer').'</a>
 											</div>
 										</div>
 									</div>
-									<div class="col-9">
+									<div class="col-12 col-lg-9">
 										'.$input.'
 									</div>
 								</div>';
@@ -782,7 +870,7 @@ class Form extends Library
 		{
 			if (in_array('color', $classes))
 			{
-				$output .= '<div class="input-group-append"><span class="input-group-text"><span class="fas fa-eye-dropper"></span></span></div>';
+				$output .= '<span class="input-group-text nf-color-toggle"><span class="fas fa-eye-dropper"></span></span>';
 			}
 
 			$output .= '</div>';
@@ -795,7 +883,7 @@ class Form extends Library
 	{
 		NeoFrag()->js('iconpicker');
 
-		return '<button id="form_'.$this->token().'_'.$var.'" name="'.$this->token().'['.$var.']" class="btn btn-light'.((isset($this->_errors[$var])) ? ' btn-danger' : '').' iconpicker" data-icon="'.addcslashes($this->_display_value($var, $options), '"').'"></button>';
+		return '<button id="form_'.$this->token().'_'.$var.'" name="'.$this->token().'['.$var.']" class="btn btn-light'.((isset($this->_errors[$var])) ? ' btn-danger' : '').' iconpicker" data-icon="'.self::_attr($this->_display_value($var, $options)).'"></button>';
 	}
 
 	private function _display_colorpicker($var, $options, $post)
@@ -888,15 +976,26 @@ class Form extends Library
 		{
 			$user_value = (array)$this->_display_value($var, $options);
 
+			$i = 0;
+
+			// Les cases sont posées dans une GRILLE qui se remplit sur toute la largeur
+			// disponible. Empilées une par ligne, un groupe un peu fourni devient une colonne
+			// interminable : la page des statistiques en aligne vingt-deux, soit huit cents
+			// pixels de haut pour une liste qui tient en trois colonnes, et toute la largeur de
+			// l'écran reste vide à côté.
+			$output .= '<div class="nf-check-grid">';
+
 			foreach ($options['values'] as $value => $label)
 			{
-				 $output .= '	<div class="checkbox">
-									<label>
-										<input type="checkbox" name="'.$this->token().'['.$var.'][]" value="'.$value.'"'.(in_array((string)$value, $user_value) ? ' checked="checked"' : '').' />
-										'.$label.'
-									</label>
+				$id = 'form_'.$this->token().'_'.$var.'_'.($i++);
+
+				 $output .= '	<div class="form-check">
+									<input class="form-check-input" type="checkbox" id="'.$id.'" name="'.$this->token().'['.$var.'][]" value="'.self::_attr($value).'"'.(in_array((string)$value, $user_value) ? ' checked="checked"' : '').' />
+									<label class="form-check-label" for="'.$id.'">'.$label.'</label>
 								</div>';
 			}
+
+			$output .= '</div>';
 		}
 
 		return $output;
@@ -910,12 +1009,19 @@ class Form extends Library
 		{
 			$user_value = $this->_display_value($var, $options);
 
+			$i = 0;
+
+			// `radio-inline` et `checkbox` sont des classes de Bootstrap 3 : elles ne sont définies
+			// NULLE PART dans le projet, qui est en Bootstrap 5. Les boutons radio sortaient donc
+			// sans aucun style — collés les uns aux autres, sans espace ni alignement.
 			foreach ($options['values'] as $value => $label)
 			{
-				 $output .= '	<label class="radio-inline">
-									<input type="radio" name="'.$this->token().'['.$var.']" value="'.$value.'"'.($user_value == (string)$value ? ' checked="checked"' : '').' />
-									'.$label.'
-								</label>';
+				$id = 'form_'.$this->token().'_'.$var.'_'.($i++);
+
+				 $output .= '	<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" id="'.$id.'" name="'.$this->token().'['.$var.']" value="'.self::_attr($value).'"'.($user_value == (string)$value ? ' checked="checked"' : '').' />
+									<label class="form-check-label" for="'.$id.'">'.$label.'</label>
+								</div>';
 			}
 		}
 
@@ -929,7 +1035,7 @@ class Form extends Library
 			return;
 		}
 
-		$output = '<select class="form-control" id="form_'.$this->token().'_'.$var.'" name="'.$this->token().'['.$var.']">
+		$output = '<select class="form-select" id="form_'.$this->token().'_'.$var.'" name="'.$this->token().'['.$var.']">
 						<option></option>';
 
 		if (!empty($options['values']))
@@ -938,7 +1044,7 @@ class Form extends Library
 
 			foreach ($options['values'] as $value => $label)
 			{
-				$output .= '<option value="'.$value.'"'.($user_value == (string)$value ? ' selected="selected"' : '').'>'.$label.'</option>';
+				$output .= '<option value="'.self::_attr($value).'"'.($user_value == (string)$value ? ' selected="selected"' : '').'>'.$label.'</option>';
 			}
 		}
 
@@ -947,7 +1053,7 @@ class Form extends Library
 
 	private function _display_textarea($var, $options, $post, $editor = FALSE)
 	{
-		return '<textarea id="form_'.$this->token().'_'.$var.'" class="form-control'.($editor ? ' editor' : '').'" rows="10" name="'.$this->token().'['.$var.']">'.$this->_display_value($var, $options).'</textarea>';
+		return '<textarea id="form_'.$this->token().'_'.$var.'" class="form-control'.($editor ? ' editor' : '').'" rows="10" name="'.$this->token().'['.$var.']">'.self::_attr($this->_display_value($var, $options)).'</textarea>';
 	}
 
 	private function _display_editor($var, $options, $post)

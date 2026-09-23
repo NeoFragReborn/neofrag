@@ -1,9 +1,12 @@
 NF.ready(function(){
+	/*
+	 * La taille d'un fichier, dans la langue de la page : Intl écrit l'unité (« ko » en français, « kB »
+	 * en anglais) et le séparateur décimal propres à chaque langue. Les unités étaient écrites en dur, en
+	 * français. Un navigateur sans les unités d'Intl retombe sur les symboles internationaux.
+	 */
 	var formatSize = function(size){
-		if (!size){ return '0 o'; }
-
-		var units = ['o', 'Ko', 'Mo', 'Go'];
-		var value = size;
+		var units = ['byte', 'kilobyte', 'megabyte', 'gigabyte'];
+		var value = size || 0;
 		var unit  = 0;
 
 		while (value >= 1024 && unit < units.length - 1){
@@ -11,7 +14,32 @@ NF.ready(function(){
 			unit++;
 		}
 
-		return (unit ? value.toFixed(1) : Math.round(value)) + ' ' + units[unit];
+		var digits = unit ? 1 : 0;
+
+		try {
+			return new Intl.NumberFormat(document.documentElement.lang || undefined, {
+				style: 'unit', unit: units[unit], unitDisplay: 'short',
+				minimumFractionDigits: digits, maximumFractionDigits: digits
+			}).format(value);
+		}
+		catch (e){
+			return value.toFixed(digits) + ' ' + ['B', 'KB', 'MB', 'GB'][unit];
+		}
+	};
+
+	/*
+	 * Le compte des éléments sélectionnés, au pluriel de la langue de la page. Les deux formes sont
+	 * rendues côté serveur avec « {n} » à la place du nombre, que le script remplace.
+	 */
+	var selectionLabel = function(n){
+		if (!n){
+			return <?php echo json_encode((string) $this->lang('Aucun élément sélectionné')) ?>;
+		}
+
+		return (n > 1
+			? <?php echo json_encode((string) $this->lang('%s élément sélectionné|%s éléments sélectionnés', 2, '{n}')) ?>
+			: <?php echo json_encode((string) $this->lang('%s élément sélectionné|%s éléments sélectionnés', 1, '{n}')) ?>
+		).replace('{n}', n);
 	};
 
 	var init = function(){
@@ -45,9 +73,7 @@ NF.ready(function(){
 				});
 
 				if (count){
-					count.textContent = !checked
-						? 'Aucun element selectionne'
-						: checked + ' element' + (checked > 1 ? 's' : '') + ' selectionne' + (checked > 1 ? 's' : '');
+					count.textContent = selectionLabel(checked);
 				}
 
 				if (selectAll){
@@ -75,7 +101,7 @@ NF.ready(function(){
 				});
 
 				if (summary){
-					summary.textContent = paths.length + ' element' + (paths.length > 1 ? 's' : '') + ' selectionne' + (paths.length > 1 ? 's' : '');
+					summary.textContent = selectionLabel(paths.length);
 				}
 
 				if (paths.length === 1){
@@ -165,8 +191,8 @@ NF.ready(function(){
 					var remove = document.createElement('button');
 					remove.type = 'button';
 					remove.className = 'btn btn-danger';
-					remove.title = 'Retirer';
-					remove.setAttribute('aria-label', 'Retirer');
+					remove.title = <?php echo json_encode((string) $this->lang('Retirer')) ?>;
+					remove.setAttribute('aria-label', remove.title);
 					remove.innerHTML = '<i class="fas fa-times"></i>';
 					remove.addEventListener('click', function(){
 						files.splice(index, 1);

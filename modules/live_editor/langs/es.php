@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -37,4 +38,32 @@ return [
 	'eb2aa0ff' => 'Cols',
 	'ed7211c7' => 'Validar',
 	'f8875151' => 'Continuar',
+	'2b0eb9a0' => 'Este widget no tiene variantes.',
+	'2f2c6b6e' => 'Este widget no tiene nada que configurar.',
+	'3b542104' => 'Ningún widget coincide.',
+	'221f348b' => 'Filtrar widgets…',
+	'c1efcb54' => 'Filtrar widgets',
+	'9bc641af' => 'Déjelo vacío para conservar el título predeterminado del widget.',
+	'd396a751' => 'Anterior',
+	'ebcb0841' => 'Siguiente',
+	'd9d7983f' => 'Página: %s',
+	'4e4fadfe' => 'No se pudo separar la zona de la disposición común',
+	'7ea4d2eb' => 'No se pudo añadir la fila',
+	'ceca6766' => 'No se guardó el desplazamiento de la fila',
+	'79a7b4bb' => 'No se guardó la apariencia de la fila',
+	'b9068b0f' => 'No se pudo eliminar la fila',
+	'2dc09cba' => 'No se pudo añadir la columna',
+	'33d97864' => 'No se guardó el desplazamiento de la columna',
+	'27fea8b0' => 'No se guardó el ancho de la columna',
+	'8bc2d8e9' => 'No se pudo eliminar la columna',
+	'ceea4b71' => 'No se pudo añadir el widget',
+	'555f89b3' => 'No se guardó el desplazamiento del widget',
+	'158c7404' => 'No se guardaron los ajustes del widget',
+	'c1d9ee11' => 'No se guardó la apariencia del widget',
+	'04e895c2' => 'No se pudo eliminar el widget',
+	'5aa02bd0' => 'No se guardó el cambio',
+	'0980709a' => 'error',
+	'9d433e55' => 'Lo que ves ya no coincide con lo guardado: recarga la página.',
+	'88a46340' => 'Editor visual de diseño: arrastra y suelta widgets en las zonas del tema.',
+	'dd3795ad' => 'Menú',
 ];

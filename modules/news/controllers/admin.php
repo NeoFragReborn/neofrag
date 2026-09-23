@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -52,7 +53,7 @@ class Admin extends Controller_Module
 			$news_html .= '<div class="nf-content-card-head">';
 			$news_html .= '<div class="nf-content-card-title">';
 			if ($this->is_authorized('modify_news')) $news_html .= '<input type="checkbox" name="selected[]" value="'.(int)$n['news_id'].'" class="nf-bulk-cb" style="margin-right:6px;vertical-align:middle;">';
-			$news_html .= '<a href="'.url('news/'.$n['news_id'].'/'.$slug).'">'.htmlspecialchars($n['title']).'</a></div>';
+			$news_html .= '<a href="'.url('news/'.$n['news_id'].'/'.$slug).'">'.htmlspecialchars((string) ($n['title'])).'</a></div>';
 			$is_scheduled = $published && !empty($n['date']) && strtotime($n['date']) > time();
 			if (!$published)         { $st_cls = 'draft';     $st_icon = 'fa-clock';            $st_lbl = $this->lang('Brouillon'); }
 			elseif ($is_scheduled)   { $st_cls = 'scheduled'; $st_icon = 'fa-calendar-alt';     $st_lbl = $this->lang('Programmée le %s', timetostr($this->lang('d/m/Y H:i'), $n['date'])); }
@@ -63,7 +64,7 @@ class Admin extends Controller_Module
 			$news_html .= '</div>';
 
 			$news_html .= '<div class="nf-content-card-meta">';
-			$news_html .= '<span><i class="fas fa-folder"></i> '.htmlspecialchars($n['category_title'] ?? '—').'</span>';
+			$news_html .= '<span><i class="fas fa-folder"></i> '.htmlspecialchars((string) ($n['category_title'] ?? '—')).'</span>';
 			$news_html .= '<span><i class="fas fa-user"></i> '.$author.'</span>';
 			$news_html .= '<span><i class="far fa-clock"></i> '.time_span($n['date']).'</span>';
 			$news_html .= '<span><i class="far fa-comments"></i> '.$comments.'</span>';
@@ -77,7 +78,7 @@ class Admin extends Controller_Module
 			}
 			if ($this->is_authorized('delete_news'))
 			{
-				$news_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/news/delete/'.$n['news_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer "%s" ?', $n['title'])).'" title="'.$this->lang('Supprimer').'"><i class="fas fa-trash"></i></a>';
+				$news_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/news/delete/'.$n['news_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer "%s" ?', $n['title']))).'" title="'.$this->lang('Supprimer').'"><i class="fas fa-trash"></i></a>';
 			}
 			$news_html .= '</div>';
 
@@ -95,18 +96,18 @@ class Admin extends Controller_Module
 		// Barre recherche / filtre (GET). $_GET préservé à travers la pagination par get_pagination().
 		$form_action = url($this->module->pagination->get_url());
 		$toolbar  = '<form method="get" action="'.$form_action.'" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">';
-		$toolbar .= '<input type="text" name="q" value="'.htmlspecialchars($filters['q']).'" class="form-control form-control-sm" placeholder="'.htmlspecialchars($this->lang('Rechercher un titre…'), ENT_QUOTES).'" style="max-width:240px;">';
-		$toolbar .= '<select name="category" class="form-control form-control-sm" style="width:auto;">';
+		$toolbar .= '<input type="text" name="q" value="'.htmlspecialchars((string) ($filters['q'])).'" class="form-control form-control-sm" placeholder="'.htmlspecialchars((string) ($this->lang('Rechercher un titre…')), ENT_QUOTES).'" style="max-width:240px;">';
+		$toolbar .= '<select name="category" class="form-select form-select-sm" style="width:auto;">';
 		$toolbar .= '<option value="0">'.$this->lang('Toutes les catégories').'</option>';
 		foreach ($filters['categories'] as $cid => $ctitle)
 		{
-			$toolbar .= '<option value="'.(int)$cid.'"'.((int)$filters['category'] === (int)$cid ? ' selected' : '').'>'.htmlspecialchars($ctitle).'</option>';
+			$toolbar .= '<option value="'.(int)$cid.'"'.((int)$filters['category'] === (int)$cid ? ' selected' : '').'>'.htmlspecialchars((string) ($ctitle)).'</option>';
 		}
 		$toolbar .= '</select>';
-		$toolbar .= '<select name="status" class="form-control form-control-sm" style="width:auto;">';
+		$toolbar .= '<select name="status" class="form-select form-select-sm" style="width:auto;">';
 		foreach (['' => $this->lang('Tous les statuts'), 'published' => $this->lang('Publiées'), 'draft' => $this->lang('Brouillons')] as $val => $label)
 		{
-			$toolbar .= '<option value="'.$val.'"'.($filters['status'] === $val ? ' selected' : '').'>'.htmlspecialchars($label).'</option>';
+			$toolbar .= '<option value="'.$val.'"'.($filters['status'] === $val ? ' selected' : '').'>'.htmlspecialchars((string) ($label)).'</option>';
 		}
 		$toolbar .= '</select>';
 		$toolbar .= $this->sort_select($filters['sort_cols'], $filters['sort']);
@@ -129,7 +130,7 @@ class Admin extends Controller_Module
 		{
 			$bulk_bar = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">'
 				.'<label style="display:flex;align-items:center;gap:6px;font-size:13px;margin:0;cursor:pointer;"><input type="checkbox" id="nf-bulk-all-news"> '.$this->lang('Tout sélectionner').'</label>'
-				.'<select name="bulk_action" class="form-control form-control-sm" style="width:auto;" required>'
+				.'<select name="bulk_action" class="form-select form-select-sm" style="width:auto;" required>'
 					.'<option value="">'.$this->lang('Action groupée…').'</option>'
 					.'<option value="publish">'.$this->lang('Publier').'</option>'
 					.'<option value="unpublish">'.$this->lang('Dépublier').'</option>'
@@ -137,7 +138,7 @@ class Admin extends Controller_Module
 				.'<button type="submit" class="btn btn-sm btn-primary">'.$this->lang('Appliquer').'</button>'
 				.'</div>';
 
-			$news_html = '<form method="post" action="'.htmlspecialchars(url($this->url->request), ENT_QUOTES).'">'.$bulk_bar.$news_html.'</form>'
+			$news_html = '<form method="post" action="'.htmlspecialchars((string) (url($this->url->request)), ENT_QUOTES).'">'.$bulk_bar.$news_html.'</form>'
 				.'<script>(function(){var a=document.getElementById("nf-bulk-all-news");if(a){a.addEventListener("change",function(){document.querySelectorAll(".nf-bulk-cb").forEach(function(c){c.checked=a.checked;});});}})();</script>';
 		}
 
@@ -147,7 +148,7 @@ class Admin extends Controller_Module
 							->add_columns([
 								[
 									'content' => function($data){
-										return '<a href="'.url('admin/news/categories/'.$data['category_id'].'/'.$data['name']).'"><img src="'.NeoFrag()->model2('file', $data['icon_id'])->path().'" alt="" /> '.$data['title'].'</a>';
+										return '<a href="'.url('admin/news/categories/'.$data['category_id'].'/'.$data['name']).'">'.NeoFrag()->model2('file', $data['icon_id'])->img().' '.$data['title'].'</a>';
 									},
 									'search'  => function($data){
 										return $data['title'];
@@ -196,7 +197,7 @@ class Admin extends Controller_Module
 				->add_rules('news', [
 					'categories' => $this->model('categories')->get_categories_list()
 				])
-				->add_submit($this->lang('Ajouter'))
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus')
 				->add_back('admin/news');
 
 		if ($this->form()->is_valid($post))
@@ -222,8 +223,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/news');
 		}
 
-		return $this->admin_back('admin/news', $this->lang('Actualités'))
-			.$this->admin_card('far fa-file-alt', $this->lang('Ajouter une actualité'), $this->form()->display());
+		return $this->admin_card('far fa-file-alt', $this->lang('Ajouter une actualité'), $this->form()->display());
 	}
 
 	public function _edit($news_id, $category_id, $user_id, $image_id, $date, $published, $views, $vote, $title, $introduction, $content, $tags, $category_name, $category_title, $news_image, $category_image, $category_icon)
@@ -271,8 +271,7 @@ class Admin extends Controller_Module
 
 		$history_btn = '<a class="btn btn-sm btn-light" href="'.url('admin/news/history/'.(int)$news_id.'/'.url_title($title)).'">'.icon('fas fa-history').' '.$this->lang('Historique').'</a>';
 
-		return $this->admin_back('admin/news', $this->lang('Actualités'))
-			.$this->admin_card('fas fa-edit', $this->lang('Éditer l\'actualité').' — '.$title, $this->form()->display(), '', $history_btn);
+		return $this->admin_card('fas fa-edit', $this->lang('Éditer l\'actualité').' — '.$title, $this->form()->display(), '', $history_btn);
 	}
 
 	public function _delete($news_id, $title)
@@ -298,7 +297,7 @@ class Admin extends Controller_Module
 				->form()
 				->add_rules('categories')
 				->add_back('admin/news')
-				->add_submit($this->lang('Ajouter'));
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -311,8 +310,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/news');
 		}
 
-		return $this->admin_back('admin/news', $this->lang('Actualités'))
-			.$this->admin_card('fas fa-folder-plus', $this->lang('Ajouter une catégorie'), $this->form()->display());
+		return $this->admin_card('fas fa-folder-plus', $this->lang('Ajouter une catégorie'), $this->form()->display());
 	}
 
 	public function _categories_edit($category_id, $title, $image_id, $icon_id)
@@ -339,8 +337,7 @@ class Admin extends Controller_Module
 			redirect_back('admin/news');
 		}
 
-		return $this->admin_back('admin/news', $this->lang('Actualités'))
-			.$this->admin_card('fas fa-folder-open', $this->lang('Éditer la catégorie').' — '.$title, $this->form()->display());
+		return $this->admin_card('fas fa-folder-open', $this->lang('Éditer la catégorie').' — '.$title, $this->form()->display());
 	}
 
 	public function _categories_delete($category_id, $title)
@@ -382,8 +379,7 @@ class Admin extends Controller_Module
 			? $revisions->history_panel('news', (int)$news_id, 'admin/news/revision/restore/'.(int)$news_id.'/'.url_title($title), $this->is_authorized('modify_news'))
 			: '';
 
-		return $this->admin_back('admin/news', $this->lang('Actualités'))
-			.$this->admin_card('fas fa-history', $this->lang('Historique').' — '.$title, $panel);
+		return $this->admin_card('fas fa-history', $this->lang('Historique').' — '.$title, $panel);
 	}
 
 	public function _revision_restore($news_id, $title, $revision_id)

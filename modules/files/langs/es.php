@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'2e5318de' => '%d archivo(s) añadido(s)',
@@ -38,4 +39,15 @@ return [
 	'7a650382' => 'Esta acción es definitiva.',
 	'f6e75d04' => 'Gestor de archivos',
 	'9ec37f2b' => 'Gestor de archivos: árbol, subida, carpetas y permisos de lectura por archivo/carpeta.',
+	'71fc8e0e' => 'Tamaño',
+	'0aac9844' => 'Fecha',
+	'0eda40d4' => 'Reproducir',
+	'c38e261e' => 'Ruta',
+	'6febd6fd' => 'Archivos',
+	'52c9bbab' => 'Modificar',
+	'aef3a525' => 'Carpeta %s',
+	'c07ef58d' => 'Archivo %s',
+	'a4e674f4' => 'Ningún elemento seleccionado',
+	'6ddd7401' => '%s elemento seleccionado|%s elementos seleccionados',
+	'ca977443' => 'Quitar',
 ];

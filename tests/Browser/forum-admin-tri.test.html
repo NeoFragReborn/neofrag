@@ -1,0 +1,126 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Administration du forum — réorganisation par glisser-déposer</title>
+
+<!--
+  La page d'administration du forum affiche des poignées « Glisser-déposer pour réorganiser » sur
+  chaque catégorie, forum et sous-forum. Depuis juin 2026, elles ne faisaient rien : le script
+  (modules/forum/js/forum.js) plantait au chargement sur « $ is not defined », et ses sélecteurs
+  visaient un balisage qui n'existait plus. Une poignée qui ne fait rien n'émet aucune erreur
+  visible ; il a fallu exécuter le fichier pour le voir.
+
+  Ici, SortableJS est remplacé par un double qui retient ce que le script lui demande, et
+  `window.fetch` par un double qui retient ce qu'il envoie. On éprouve le CONTRAT du script :
+  quelles listes il rend triables, avec quelles poignées, et ce qu'il POSTe quand un élément
+  change de place — y compris quand il change de catégorie ou de forum. Le fichier visé est le
+  VRAI (/src/modules/forum/js/forum.js) et le balisage est repris de views/admin.tpl.php.
+-->
+
+<script src="/harness.js"></script>
+<script src="/nf.js"></script>
+
+<body>
+
+<div id="forums-list" class="forum-admin" data-url-categories="/ajax/categories/move" data-url-forums="/ajax/forum/move">
+	<div class="card forum-admin-card" id="cat1">
+		<div class="card-header" data-category-id="1"><strong>Général</strong></div>
+		<ul class="forum-admin-list" data-category-id="1" id="liste1">
+			<li class="forum-admin-item" data-forum-id="11" id="forum11">
+				<div class="forum-admin-row"><span class="forum-admin-handle"></span><div class="forum-admin-main">Annonces</div></div>
+				<ul class="forum-admin-subforums" id="sous11">
+					<li class="forum-admin-subforum-item" data-forum-id="111" id="sf111"><span class="forum-admin-handle"></span>Règles</li>
+					<li class="forum-admin-subforum-item" data-forum-id="112" id="sf112"><span class="forum-admin-handle"></span>Événements</li>
+				</ul>
+			</li>
+			<li class="forum-admin-item" data-forum-id="12" id="forum12">
+				<div class="forum-admin-row"><span class="forum-admin-handle"></span><div class="forum-admin-main">Discussions</div></div>
+			</li>
+		</ul>
+	</div>
+	<div class="card forum-admin-card" id="cat2">
+		<div class="card-header" data-category-id="2"><strong>Jeux</strong></div>
+		<ul class="forum-admin-list" data-category-id="2" id="liste2">
+			<li class="forum-admin-item" data-forum-id="21" id="forum21">
+				<div class="forum-admin-row"><span class="forum-admin-handle"></span><div class="forum-admin-main">Stratégie</div></div>
+				<ul class="forum-admin-subforums" id="sous21"></ul>
+			</li>
+		</ul>
+	</div>
+</div>
+
+<script>
+// Le double de SortableJS : retient chaque instance (conteneur, options) et permet de déclencher onEnd.
+var instances = [];
+window.Sortable = function (el, options) { instances.push({ el: el, options: options }); };
+
+// Le double de fetch : retient chaque appel.
+var appels = [];
+window.fetch = function (url, init) {
+	appels.push({ url: url, init: init });
+	return Promise.resolve({ ok: true, status: 200, text: function () { return Promise.resolve('OK'); }, json: function () { return Promise.resolve({}); } });
+};
+
+function corps(appel) {
+	var b = appel.init && appel.init.body;
+	return b instanceof URLSearchParams ? b.toString() : String(b);
+}
+
+function instance(el) {
+	for (var i = 0; i < instances.length; i++) { if (instances[i].el === el) { return instances[i]; } }
+	return null;
+}
+
+function fin(inst, item, to, newIndex) {
+	// Déplace réellement le nœud, comme SortableJS l'aurait fait, puis annonce la fin du geste.
+	to.appendChild(item);
+	inst.options.onEnd({ item: item, to: to, from: item.parentNode, newIndex: newIndex });
+}
+</script>
+
+<script src="/src/modules/forum/js/forum.js"></script>
+
+<script>
+NF.ready(function () {
+	try {
+		var liste = document.getElementById('forums-list');
+		var cats  = instance(liste);
+		var l1    = instance(document.getElementById('liste1'));
+		var l2    = instance(document.getElementById('liste2'));
+		var s11   = instance(document.getElementById('sous11'));
+		var s21   = instance(document.getElementById('sous21'));
+
+		// 1. Ce qui est rendu triable, et par quelle poignée.
+		NFTest.verifie('cinq listes triables : catégories, 2 listes de forums, 2 listes de sous-forums', 5, instances.length);
+		NFTest.verifie('les catégories : les cartes, par leur en-tête', ['.forum-admin-card', '.card-header'], cats && [cats.options.draggable, cats.options.handle]);
+		NFTest.verifie('les forums : groupe partagé entre catégories', 'forum-admin-list', l1 && l1.options.group);
+		NFTest.verifie('… saisis par la poignée de LEUR ligne, pas celle d\'un sous-forum', '.forum-admin-row > .forum-admin-handle', l1 && l1.options.handle);
+		NFTest.verifie('les sous-forums : groupe partagé entre forums', 'forum-admin-subforums', s11 && s11.options.group);
+
+		// 2. Déplacer une catégorie : category_id de son en-tête, position d'arrivée.
+		fin(cats, document.getElementById('cat2'), liste, 0);
+		NFTest.verifie('catégorie déplacée : POST sur l\'adresse des catégories', '/ajax/categories/move', appels[0].url);
+		NFTest.verifie('… en POST, avec X-Requested-With', ['POST', 'XMLHttpRequest'], [appels[0].init.method, appels[0].init.headers['X-Requested-With']]);
+		NFTest.verifie('… category_id=2&position=0', 'category_id=2&position=0', corps(appels[0]));
+
+		// 3. Déplacer un forum d'une catégorie à l'autre : parent_id = la catégorie d'ARRIVÉE.
+		fin(l1, document.getElementById('forum12'), document.getElementById('liste2'), 1);
+		NFTest.verifie('forum déplacé : POST sur l\'adresse des forums', '/ajax/forum/move', appels[1].url);
+		NFTest.verifie('… parent_id = catégorie d\'arrivée (2), forum_id=12, position=1', 'parent_id=2&forum_id=12&position=1', corps(appels[1]));
+
+		// 4. Déplacer un sous-forum d'un forum à l'autre : parent_id = le forum d'arrivée.
+		fin(s11, document.getElementById('sf112'), document.getElementById('sous21'), 0);
+		NFTest.verifie('sous-forum déplacé : parent_id = forum d\'arrivée (21), forum_id=112, position=0', 'parent_id=21&forum_id=112&position=0', corps(appels[2]));
+
+		// 5. Réordonner un sous-forum dans son propre forum.
+		fin(s11, document.getElementById('sf111'), document.getElementById('sous11'), 0);
+		NFTest.verifie('sous-forum réordonné : parent_id = son forum (11)', 'parent_id=11&forum_id=111&position=0', corps(appels[3]));
+
+		NFTest.verifie('quatre gestes, quatre appels, pas un de plus', 4, appels.length);
+	}
+	catch (e) {
+		NFTest.echec('exception : ' + (e && e.message || e));
+	}
+
+	NFTest.fini();
+});
+</script>

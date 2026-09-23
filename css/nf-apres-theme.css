@@ -1,0 +1,114 @@
+/*
+ * CE QUI DOIT PASSER APRES LA FEUILLE DU THEME.
+ *
+ * Les sept themes redefinissent largement Bootstrap pour imposer leur dessin. Chaque fois qu'ils
+ * ecrasent une regle de base par une forme COURTE — `border`, `border-radius` — ils effacent au
+ * passage ce que Bootstrap y avait mis, et personne ne s'en apercoit : rien ne casse, l'ecran est
+ * seulement un peu faux. Cette feuille retablit ces oublis, une seule fois pour les sept, et elle
+ * est chargee APRES eux : `css/nf-bs5-bridge.css`, charge avant, serait ecrase a son tour.
+ *
+ * Les couleurs viennent des variables `--nf-*`, que les sept themes declarent toutes : chacun garde
+ * donc SA palette sans qu'on recopie sept fois la meme logique.
+ *
+ *
+ * 1. LES BOUTONS « CONTOUR », qui n'avaient plus de cadre.
+ *
+ * LE DEFAUT. Chacun des sept themes pose `.btn { border: 1px solid transparent }` pour maitriser
+ * son propre dessin, puis ne redefinit qu'UNE variante de contour : `.btn-outline-primary`. Comme
+ * cette regle arrive apres Bootstrap et ecrase la bordure par la forme courte, les six autres
+ * variantes perdent la leur. Le produit en emploie 90 : `btn-outline-danger` 51 fois,
+ * `btn-outline-secondary` 17, `warning` 10, `info` 7, `success` 4, `light` 1.
+ *
+ * Rien ne cassait : le texte gardait sa couleur, et le bouton ressemblait a un simple lien. le mainteneur
+ * l'a signale le 2026-09-22 sur le bandeau de maintenance, ou « Ouvrir le site » n'avait de cadre
+ * qu'au survol.
+ *
+ * POURQUOI ICI ET PAS DANS LE PONT. `css/nf-bs5-bridge.css` est charge AVANT la feuille du theme :
+ * tout ce qu'il dirait serait ecrase par le `.btn` du theme. Cette feuille est chargee APRES, en
+ * dernier, par le `__init()` de chaque theme.
+ *
+ * POURQUOI UNE SEULE FEUILLE POUR SEPT THEMES. Les couleurs viennent des variables `--nf-*`, que
+ * les sept declarent toutes. Chaque theme garde donc SA palette sans qu'on recopie sept fois la
+ * meme logique — et une correction ici les corrige tous.
+ */
+
+.btn-outline-secondary,
+.btn-outline-success,
+.btn-outline-danger,
+.btn-outline-warning,
+.btn-outline-info,
+.btn-outline-light {
+	background-color: transparent;
+	border-color: currentColor;
+}
+
+.btn-outline-secondary { color: var(--nf-muted,   #8a94a6); border-color: var(--nf-border, rgba(128, 138, 157, 0.45)); }
+.btn-outline-success   { color: var(--bs-success-text-emphasis, var(--nf-success, #2fbf71)); }
+.btn-outline-danger    { color: var(--bs-danger-text-emphasis, var(--nf-danger, #e5484d)); }
+.btn-outline-warning   { color: var(--bs-warning-text-emphasis, var(--nf-warning, #e2a03f)); }
+.btn-outline-info      { color: var(--bs-info-text-emphasis, var(--nf-info, #3aa6d6)); }
+.btn-outline-light     { color: #fff; border-color: rgba(255, 255, 255, 0.85); }
+
+/* Au survol et au focus, la couleur remplit et le texte passe en negatif — le comportement de
+   Bootstrap, que les themes avaient perdu avec la bordure. */
+.btn-outline-secondary:hover, .btn-outline-secondary:focus-visible { background-color: var(--nf-border, rgba(128, 138, 157, 0.45)); color: var(--nf-text, #fff); border-color: transparent; }
+.btn-outline-success:hover,   .btn-outline-success:focus-visible   { background-color: var(--nf-success, #2fbf71); color: #fff; border-color: transparent; }
+.btn-outline-danger:hover,    .btn-outline-danger:focus-visible    { background-color: var(--nf-danger,  #e5484d); color: #fff; border-color: transparent; }
+.btn-outline-warning:hover,   .btn-outline-warning:focus-visible   { background-color: var(--nf-warning, #e2a03f); color: #1b1b1b; border-color: transparent; }
+.btn-outline-info:hover,      .btn-outline-info:focus-visible      { background-color: var(--nf-info,    #3aa6d6); color: #fff; border-color: transparent; }
+.btn-outline-light:hover,     .btn-outline-light:focus-visible     { background-color: #fff; color: #1b1b1b; border-color: #fff; }
+
+/* Un bouton desactive garde son cadre, mais ne promet plus rien. */
+.btn-outline-secondary:disabled, .btn-outline-success:disabled, .btn-outline-danger:disabled,
+.btn-outline-warning:disabled,   .btn-outline-info:disabled,    .btn-outline-light:disabled,
+.btn-outline-secondary.disabled, .btn-outline-success.disabled, .btn-outline-danger.disabled,
+.btn-outline-warning.disabled,   .btn-outline-info.disabled,    .btn-outline-light.disabled {
+	background-color: transparent;
+}
+
+
+/*
+ * 2. LES COINS DES CARTES.
+ *
+ * Une carte est arrondie ; son en-tete et son pied portent un fond. Bootstrap arrondit pour cela le
+ * PREMIER et le DERNIER enfant d'une carte — une regle que les sept themes ecrasent en redefinissant
+ * `.card-header` et `.card-footer` sans la reprendre. Leurs coins carres depassaient donc du cadre
+ * arrondi : l'impression d'une ombre anguleuse derriere un cadre rond, signalee le
+ * 2026-09-22 sur plusieurs ecrans.
+ *
+ * `inherit` plutot qu'une valeur : chaque theme a son propre rayon, et un enfant qui herite suit
+ * celui de SA carte, y compris quand le theme le change.
+ */
+.card > .card-header:first-child,
+.card > .card-body:first-child,
+.card > .list-group:first-child > .list-group-item:first-child,
+.card > .card-img-top,
+.card > img:first-child {
+	border-top-left-radius:  inherit;
+	border-top-right-radius: inherit;
+}
+
+.card > .card-footer:last-child,
+.card > .card-body:last-child,
+.card > .list-group:last-child > .list-group-item:last-child,
+.card > .card-img-bottom,
+.card > img:last-child {
+	border-bottom-left-radius:  inherit;
+	border-bottom-right-radius: inherit;
+}
+
+/*
+ * 3. LES LISTES DÉROULANTES, qui gardent la place de leur flèche.
+ *
+ * LE DÉFAUT. Bootstrap 5 dessine la flèche d'une liste `.form-select` en image de fond, à droite,
+ * et réserve 2,25rem de marge intérieure pour qu'un libellé long ne passe pas dessous. Chaque thème
+ * habille ses listes avec ses champs — `.form-control, .form-select { padding: 8px 12px }` — et
+ * cette forme courte rendait la marge droite à 12 px : le texte recouvrait la flèche. Les listes
+ * portaient `form-control` jusqu'au 2026-09-23, donc AUCUNE flèche ; c'est en passant à
+ * `form-select` que la question se pose.
+ *
+ * POURQUOI ICI. Chargée après les thèmes, cette règle rétablit la seule marge dont la flèche a
+ * besoin, sans toucher au reste de leur dessin.
+ */
+.form-select { padding-right: 2.25rem; }
+.form-select[multiple], .form-select[size]:not([size="1"]) { padding-right: .75rem; }

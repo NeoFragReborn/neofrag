@@ -1,0 +1,150 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Carte des lieux — ce que le script demande à la carte</title>
+
+<!--
+  La carte des lieux ne s'observe que dans un navigateur : ce qui est révélé, ce qui est
+  posé sur la carte, ce qui est refusé. Aucun test PHP ne le voit.
+
+  Ce qui est éprouvé ici est NOTRE script (/src/modules/places/js/places.js), pas Leaflet : la
+  bibliothèque est remplacée par un faux qui enregistre ce qu'on lui demande. C'est le même parti que
+  le faux transport HTTP des providers Twitch — on couvre notre logique sans dépendre du réseau, et
+  `check-js.php` ne sert d'ailleurs pas les fichiers `.min.js`, à dessein.
+
+  Ce qu'on veut savoir :
+    - le conteneur de carte, livré `hidden`, est bien révélé — et SEULEMENT s'il y a des lieux ;
+    - un marqueur par lieu lisible, au bon endroit ;
+    - une couleur qui n'est pas hexadécimale est refusée (elle finirait dans un `style`) ;
+    - une classe d'icône fantaisiste retombe sur le défaut ;
+    - un lieu sans coordonnées lisibles est ignoré, sans casser les autres ;
+    - le titre d'un lieu ne peut pas devenir du balisage dans la bulle.
+-->
+
+<script src="/harness.js"></script>
+<script src="/nf.js"></script>
+
+<body>
+
+<div class="nf-places" data-places-lat="46.9665" data-places-lon="3.861" data-places-zoom="6"
+     data-places-attribution="&copy; les contributeurs d'OpenStreetMap">
+	<div class="nf-places-map" hidden style="height:300px"></div>
+	<ul class="nf-places-list">
+		<li class="nf-places-item" data-place-lat="48.8566" data-place-lon="2.3522"
+		    data-place-title="Salle du centre" data-place-icon="fas fa-gamepad" data-place-color="#c1440e"></li>
+		<li class="nf-places-item" data-place-lat="50.6365" data-place-lon="3.063"
+		    data-place-title="&lt;img src=x onerror=alert(1)&gt;" data-place-icon="red;background:url(//ailleurs)"
+		    data-place-color="red;background:url(//ailleurs)"></li>
+		<li class="nf-places-item" data-place-lat="pas un nombre" data-place-lon="3.063"
+		    data-place-title="Sans coordonnées" data-place-icon="fas fa-map-marker-alt" data-place-color=""></li>
+	</ul>
+</div>
+
+<div class="nf-places" id="vide" data-places-lat="0" data-places-lon="0" data-places-zoom="6">
+	<div class="nf-places-map" hidden style="height:300px"></div>
+	<ul class="nf-places-list"></ul>
+</div>
+
+<script>
+// ── Le faux Leaflet : il n'affiche rien, il note ce qu'on lui demande ────────
+var journal = { map: null, tuiles: null, marqueurs: [], bulles: [] };
+
+function fauxCarte(conteneur, options) {
+	journal.map = { conteneur: conteneur, options: options };
+
+	return {
+		getZoom:  function () { return options.zoom; },
+		setView:  function (latlon, zoom) { journal.map.vue = [latlon, zoom]; return this; },
+		fitBounds: function (b, o) { journal.map.fitBounds = o; return this; },
+		on:       function () { return this; },
+		scrollWheelZoom: { enable: function () {}, disable: function () {} }
+	};
+}
+
+window.L = {
+	map: fauxCarte,
+	tileLayer: function (url, options) {
+		journal.tuiles = { url: url, options: options };
+		return { addTo: function () { return this; } };
+	},
+	divIcon: function (options) {
+		return { _divicon: options };
+	},
+	marker: function (latlon, options) {
+		var couche = {
+			latlon: latlon,
+			options: options,
+			addTo: function () { return this; },
+			bindPopup: function (contenu) { journal.bulles.push(contenu); return this; },
+			openPopup: function () { return this; }
+		};
+		journal.marqueurs.push(couche);
+		return couche;
+	},
+	featureGroup: function () {
+		return { getBounds: function () { return 'bounds'; } };
+	}
+};
+</script>
+
+<script src="/src/modules/places/js/places.js"></script>
+
+<script>
+// Le script de la carte s'amorce sur `NF.ready` ; ce bloc s'y accroche APRÈS lui, donc il tourne
+// une fois que la carte est en place. Sans cela les vérifications partaient AVANT le script, et
+// ne trouvaient évidemment aucun marqueur — c'est ce que la première version de cette épreuve a
+// montré.
+NF.ready(function () {
+try {
+	var bloc  = document.querySelector('.nf-places');
+	var vide  = document.getElementById('vide');
+	var carte = bloc.querySelector('.nf-places-map');
+
+	NFTest.verifie('le conteneur de carte est révélé quand il y a des lieux', false, carte.hidden);
+	NFTest.verifie('… et reste masqué quand il n\'y en a aucun', true, vide.querySelector('.nf-places-map').hidden);
+
+	NFTest.verifie('un marqueur par lieu LISIBLE, le troisième est ignoré', 2, journal.marqueurs.length);
+	NFTest.verifie('le premier marqueur est au bon endroit', [48.8566, 2.3522], journal.marqueurs[0].latlon);
+	NFTest.verifie('le second aussi', [50.6365, 3.063], journal.marqueurs[1].latlon);
+
+	NFTest.verifie('les tuiles viennent d\'OpenStreetMap, en https',
+		true, journal.tuiles && journal.tuiles.url.indexOf('https://tile.openstreetmap.org/') === 0);
+	NFTest.verifie('… avec l\'attribution que le gabarit a fournie',
+		true, journal.tuiles && journal.tuiles.options.attribution.indexOf('OpenStreetMap') !== -1);
+
+	NFTest.verifie('le centre vient des attributs du gabarit', [46.9665, 3.861], journal.map.options.center);
+	NFTest.verifie('le zoom aussi', 6, journal.map.options.zoom);
+	NFTest.verifie('la molette ne happe pas la page au chargement', false, journal.map.options.scrollWheelZoom);
+
+	// ── Ce qui part dans un style ou dans du balisage ────────────────────────
+	var html0 = journal.marqueurs[0].options.icon._divicon.html;
+	var html1 = journal.marqueurs[1].options.icon._divicon.html;
+
+	NFTest.verifie('une couleur hexadécimale est posée sur le marqueur',
+		true, html0.indexOf('background-color') !== -1);
+	NFTest.verifie('une couleur qui n\'est pas hexadécimale est REFUSÉE',
+		true, html1.indexOf('background-color') === -1 && html1.indexOf('ailleurs') === -1);
+	NFTest.verifie('une classe d\'icône fantaisiste retombe sur le défaut',
+		true, html1.indexOf('fas fa-map-marker-alt') !== -1);
+	NFTest.verifie('l\'icône demandée est bien posée quand elle est valide',
+		true, html0.indexOf('fas fa-gamepad') !== -1);
+
+	NFTest.verifie('la bulle reçoit un ÉLÉMENT, pas une chaîne',
+		'DIV', journal.bulles.length ? journal.bulles[0].nodeName : null);
+	NFTest.verifie('… et le titre y passe par textContent, jamais interprété',
+		true, journal.bulles.length > 1 && journal.bulles[1].innerHTML.indexOf('&lt;img') !== -1);
+
+	// ── Cliquer une entrée amène la carte sur le lieu ────────────────────────
+	bloc.querySelectorAll('.nf-places-item')[0].dispatchEvent(new MouseEvent('click', { bubbles: true }));
+	NFTest.verifie('cliquer une entrée de la liste déplace la carte',
+		[[48.8566, 2.3522], 15], journal.map.vue);
+
+	NFTest.verifie('plusieurs marqueurs : le cadrage est affiné par la bibliothèque',
+		true, !!journal.map.fitBounds);
+}
+catch (e) {
+	NFTest.echec('exception : ' + (e && e.message || e));
+}
+
+NFTest.fini();
+});
+</script>

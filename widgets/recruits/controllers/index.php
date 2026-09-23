@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -21,19 +22,21 @@ class Index extends Controller_Widget
 						->body($this->view('index', [
 							'recruits' => $recruits
 						]), FALSE)
-						->footer('<a href="'.url('recruits').'">'.icon('far fa-arrow-alt-circle-right').' Voir toutes les annonces</a>');
+						->footer('<a href="'.url('recruits').'">'.icon('far fa-arrow-alt-circle-right').' '.$this->lang('Voir toutes les annonces').'</a>');
 		}
 		else
 		{
 			return $this->panel()
 						->heading('Recrutement')
-						->body('Aucune offre pour le moment...');
+						->body($this->lang('Aucune offre pour le moment'));
 		}
 	}
 
 	public function recruit($settings = [])
 	{
-		$recruit = $this->model()->get_recruit($settings['recruit_id']);
+		// Sans réglages — posé par un thème, ou d'une disposition ancienne —, le checker refuse de
+		// désigner un élément au hasard : c'est au rendu de s'en tirer (check-widget-contract).
+		$recruit = $this->model()->get_recruit($settings['recruit_id'] ?? 0);
 
 		if (!empty($recruit))
 		{
@@ -54,14 +57,14 @@ class Index extends Controller_Widget
 								'team_name'    => $recruit['team_name'],
 								'image_id'     => $recruit['image_id']
 							]), FALSE)
-							->footer('<a href="'.url('recruits/'.$recruit['recruit_id'].'/'.url_title($recruit['title'])).'">'.icon('far fa-eye').' Découvrir l\'offre</a>');
+							->footer('<a href="'.url('recruits/'.$recruit['recruit_id'].'/'.url_title($recruit['title'])).'">'.icon('far fa-eye').' '.$this->lang('Découvrir l\'offre').'</a>');
 			}
 		}
 		else
 		{
 			return $this->panel()
 						->heading('Recrutement')
-						->body('Aucune offre pour le moment');
+						->body($this->lang('Aucune offre pour le moment'));
 		}
 	}
 }

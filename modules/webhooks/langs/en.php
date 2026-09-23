@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'60fa2d8b' => 'Webhooks',
@@ -24,4 +25,27 @@ return [
 	'749713ce' => 'Test failed: %s',
 	'16922d8f' => 'Non-public host (blocked by SSRF protection).',
 	'f9289163' => 'Invalid URL or cURL unavailable.',
+	'62d10724' => 'URL',
+	'b1a096a2' => 'Events',
+	'c9340a06' => 'Active',
+	'bde466c1' => 'All',
+	'e2a147a0' => 'Yes',
+	'881485c2' => 'Edit: %s',
+	'afccc23b' => 'Create',
+	'8fd9c7ef' => 'Save',
+	'7f386c83' => 'News published',
+	'a05569ca' => 'Article published',
+	'c8c91cb8' => 'New member',
+	'ddd2ffe3' => 'New comment',
+	'abc141a6' => 'New forum topic',
+	'03bd613b' => 'Channel goes live',
+	'c755adcd' => 'New news post: %s',
+	'7dbe4e5a' => 'New article: %s',
+	'f86e4d0d' => 'Welcome, %s!',
+	'8924a115' => 'A new member has just joined the community.',
+	'9c2ebd79' => 'New comment from %s',
+	'f9929b25' => 'New topic: %s',
+	'97cbc6c8' => '%s is live',
+	'f1f0ce0a' => 'Webhook test',
+	'8c654744' => 'If you can see this message, the site can post in this channel.',
 ];

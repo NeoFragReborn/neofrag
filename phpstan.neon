@@ -1,23 +1,5 @@
+# L'analyse ordinaire : la configuration (phpstan-base.neon) plus le legs gelé (phpstan-baseline.neon).
+# La baseline se régénère par `composer stan:baseline`, jamais à la main.
 includes:
+    - phpstan-base.neon
     - phpstan-baseline.neon
-
-parameters:
-    # Niveau volontairement bas : le cœur repose massivement sur des magic methods (__get/__call,
-    # service locator) → les niveaux élevés produisent surtout du bruit. À ce niveau on attrape
-    # l'essentiel à fort signal : variables/méthodes/fonctions indéfinies, mauvais nombre d'arguments
-    # (c.-à-d. exactement la classe de bug type $mail->AddCC). Le legacy est gelé via le baseline.
-    level: 2
-    phpVersion: 80200
-    bootstrapFiles:
-        - phpstan-bootstrap.php
-    scanDirectories:
-        - vendor
-    paths:
-        - neofrag
-        - modules
-        - widgets
-        - addons
-    excludePaths:
-        # Code d'install/migrations historique (upstream) : hors périmètre du filet.
-        - neofrag/install/*
-    reportUnmatchedIgnoredErrors: false

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,19 +11,74 @@ use NF\NeoFrag\Addons\Module;
 
 class Comments extends Module
 {
+
+	/** Descripteurs de contenu — cf. Module::content_types(). */
+	public function declare_content_types()
+	{
+		return [
+			'comment' => [
+				'table' => 'nf_comment', 'pk' => 'id', 'author' => 'user_id',
+				'reactable' => TRUE,
+			],
+		];
+	}
+
+	/** URL d'un commentaire = celle du contenu commente, ancree sur le fil. */
+	public function content_url($type, $id)
+	{
+		if ($type !== 'comment')
+		{
+			return '';
+		}
+
+		$comment = $this->db->select('module', 'module_id')->from('nf_comment')->where('id', (int) $id)->row(FALSE);
+
+		if (!$comment)
+		{
+			return '';
+		}
+
+		// Delegation au module commente, via le resolveur partage : `comments` n'a pas a
+		// connaitre news, articles ni forum.
+		$url = self::content_url_of($comment['module'], (int) $comment['module_id']);
+
+		return $url ? $url.'#comments' : '';
+	}
+
+	/** Corbeille : type sans table de langue — le « titre » vient de la colonne content. */
+	public function trash_types()
+	{
+		return [
+			'comment' => [
+				'label'   => 'Commentaire', 'table' => 'nf_comment',
+				'pk'      => 'id', 'content' => 'content',
+				'restore' => 'restore_comment', 'purge' => 'purge_comment',
+			],
+		];
+	}
 	protected function __info()
 	{
 		return [
 			'title'       => $this->lang('Commentaires'),
-			'description' => 'Système de commentaires réutilisable par les modules (news, articles, etc.).',
+			'description' => $this->lang('Système de commentaires réutilisable par les modules (news, articles, etc.).'),
 			'icon'        => 'far fa-comments',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '1.0',
 			'admin'       => TRUE,
 			'routes'      => [
-				'admin/{pages}' => 'index'
+				'admin/{pages}' => 'index',
+				// Les commentaires d'UN contenu précis. La colonne « Commentaires » des listes
+				// d'administration pointait déjà ici — `admin()` plus bas construit l'adresse —
+				// mais la route n'existait pas : chaque compteur menait à un 404. Constaté par
+				// tools/check-liens.php sur neuf pages (actualités et événements).
+				'admin/{url_title}/{id}'         => '_module',
+				'admin/{url_title}/{id}/{pages}' => '_module'
 			]
 		];
 	}
@@ -46,6 +102,7 @@ class Comments extends Module
 			$new = $this->view('new', [
 				'form' => $this	->form2()
 								->compact()
+								->rule($this->form_hidden('comment_id')) // cible d'une réponse (posée par comments.js)
 								->rule($this->form_textarea('comment')
 											->rows(4)
 											->required()
@@ -63,11 +120,31 @@ class Comments extends Module
 									}
 									$rateLimit->hit($rl_key, 8, 300, 600);
 
-									$this	->model2('comment')
-											->set('module',    $module)
-											->set('module_id', $module_id)
-											->set('content',   $data['comment'])
-											->create();
+									$comment = $this	->model2('comment')
+														->set('module',    $module)
+														->set('module_id', $module_id)
+														->set('content',   $data['comment']);
+
+									// Réponse : rattache le nouveau commentaire à un commentaire de PREMIER niveau
+									// (profondeur limitée à 1) du MÊME contenu, encore vivant. Validé en base pour
+									// ne jamais faire confiance au comment_id posté.
+									$parent_id = (int) ($data['comment_id'] ?? 0);
+									if ($parent_id)
+									{
+										$parent = $this->db	->select('parent_id', 'module', 'module_id', 'deleted_at')
+															->from('nf_comment')
+															->where('id', $parent_id)
+															->row();
+
+										if ($parent && $parent['parent_id'] === NULL && $parent['deleted_at'] === NULL
+											&& (string) $parent['module'] === (string) $module
+											&& (int) $parent['module_id'] === (int) $module_id)
+										{
+											$comment->set('parent', $parent_id);
+										}
+									}
+
+									$comment->create();
 
 									if ($webhooks)
 									{
@@ -106,7 +183,7 @@ class Comments extends Module
 
 									refresh();
 								})
-								->submit('Envoyer')
+								->submit($this->lang('Envoyer'))
 			]);
 		}
 		else

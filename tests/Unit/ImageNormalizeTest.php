@@ -33,7 +33,6 @@ final class ImageNormalizeTest extends TestCase
 		$im   = imagecreatetruecolor($w, $h);
 		imagefill($im, 0, 0, imagecolorallocate($im, 10, 120, 200));
 		imagepng($im, $path);
-		imagedestroy($im);
 
 		return $path;
 	}

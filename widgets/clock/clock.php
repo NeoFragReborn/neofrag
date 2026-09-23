@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -14,8 +15,13 @@ class Clock extends Widget
 		return [
 			'title'       => $this->lang('Horloge & calendrier'),
 			'description' => $this->lang('Affichage dynamique de l\'heure, de la date du jour et des anniversaires des membres.'),
+			'icon'        => 'fas fa-clock',
 			'author'      => 'NeoFrag',
 			'license'     => 'LGPLv3',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '3.0',
 			'depends'     => [
 				'neofrag' => '0.2.0'

@@ -29,13 +29,13 @@
 			+   '<div class="modal-dialog modal-dialog-centered" role="document">'
 			+     '<div class="modal-content">'
 			+       '<div class="modal-header">'
-			+         '<h5 class="modal-title" id="nf-confirm-title"><i class="fas fa-exclamation-triangle text-warning"></i> <span class="title-text">Confirmation</span></h5>'
-			+         '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>'
+			+         '<h5 class="modal-title" id="nf-confirm-title"><i class="fas fa-exclamation-triangle text-warning"></i> <span class="title-text"><?php echo addslashes($this->lang('Confirmation')) ?></span></h5>'
+			+         '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo addslashes($this->lang('Fermer')) ?>"></button>'
 			+       '</div>'
 			+       '<div class="modal-body" id="nf-confirm-body"></div>'
 			+       '<div class="modal-footer">'
-			+         '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="nf-confirm-cancel">Annuler</button>'
-			+         '<button type="button" class="btn btn-danger" id="nf-confirm-ok">Confirmer</button>'
+			+         '<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="nf-confirm-cancel"><?php echo addslashes($this->lang('Annuler')) ?></button>'
+			+         '<button type="button" class="btn btn-danger" id="nf-confirm-ok"><?php echo addslashes($this->lang('Confirmer')) ?></button>'
 			+       '</div>'
 			+     '</div>'
 			+   '</div>'
@@ -59,11 +59,11 @@
 		var validStyles = ['primary', 'success', 'warning', 'danger', 'info', 'secondary'];
 		var style = (opts.style && validStyles.indexOf(opts.style) >= 0) ? opts.style : 'danger';
 
-		$title.textContent = opts.title || 'Confirmation';
+		$title.textContent = opts.title || '<?php echo addslashes($this->lang('Confirmation')) ?>';
 		$icon.className = (opts.icon || 'fas fa-exclamation-triangle') + ' text-' + style;
 		$body.innerHTML = '<p class="m-0">' + escapeHtml(opts.message) + '</p>';
-		$ok.textContent = opts.ok || 'Confirmer';
-		$cancel.textContent = opts.cancel || 'Annuler';
+		$ok.textContent = opts.ok || '<?php echo addslashes($this->lang('Confirmer')) ?>';
+		$cancel.textContent = opts.cancel || '<?php echo addslashes($this->lang('Annuler')) ?>';
 		$ok.className = 'btn btn-' + style;
 
 		// Click handler one-shot

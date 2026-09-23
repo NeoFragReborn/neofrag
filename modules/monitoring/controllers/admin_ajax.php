@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -7,6 +8,7 @@
 namespace NF\Modules\Monitoring\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
+use NF\Install\Lib\Installer;
 
 class Admin_Ajax extends Controller_Module
 {
@@ -19,9 +21,13 @@ class Admin_Ajax extends Controller_Module
 			$this->config('nf_monitoring_last_check', time());
 
 			//https://www.php.net/supported-versions.php
-			$current             = 7.4;
-			$security_fixes_only = 7.2;
-			$last_end_of_life    = 7.1;
+			/*
+			 * Des CHAINES, pas des nombres : `version_compare()` attend des chaines, et un
+			 * flottant ne sait pas comparer des versions — 7.10 vaudrait moins que 7.4.
+			 */
+			$current             = '7.4';
+			$security_fixes_only = '7.2';
+			$last_end_of_life    = '7.1';
 
 			if (version_compare(PHP_VERSION, $last_end_of_life, '<='))
 			{
@@ -43,25 +49,33 @@ class Admin_Ajax extends Controller_Module
 
 			dir_create('cache/monitoring');
 
-			// Scan local des fichiers + tentative de récupération du checksum officiel.
-			// Le domaine est configurable via la setting `nf_monitoring_check_url`
-			// (default: https://neofr.ag, mais peut être ton propre miroir genre https://neofrag.new).
-			// Si network échoue, on tombe en mode dégradé : tree local sans comparaison cross-checksum.
-			// Source de checksums officiels (réglage nf_monitoring_check_url). VIDE par défaut : la
-			// vérification d'intégrité distante est désactivée tant qu'aucun miroir n'est configuré
-			// (NeoFrag Reborn ne sert pas encore de checksums) → tree local seul, sans fausse alarme.
-			$check_url = rtrim(trim((string)($this->config->nf_monitoring_check_url ?? '')), '/');
+			// Origine des manifestes (version.json, checksum.json). `nf_monitoring_check_url` peut la
+			// surcharger, mais UNIQUEMENT vers un hôte de l'allow-list, en HTTPS/443 — même garantie
+			// anti-SSRF que le marketplace, dont c'est délibérément la même liste d'hôtes.
+			//
+			// Ce réglage était VIDE par défaut et déclaré nulle part : version.json n'était donc jamais
+			// téléchargé, le thème admin ne voyait jamais de nouvelle version, et le bouton de mise à
+			// jour n'apparaissait jamais. Il a maintenant un défaut valide.
+			require_once NEOFRAG_CMS.'/install/lib/installer.php';
 
-			$version  = NULL;
-			$checksum = NULL;
-			foreach ($check_url !== '' ? ['version', 'checksum'] : [] as $file)
+			$cfg       = $this->config->nf_monitoring_check_url;
+			$check_url = Installer::sanitize_update_url(is_string($cfg) ? trim($cfg) : NULL);
+
+			// Injoignable -> MODE DÉGRADÉ : arbre local seul, aucune fausse alerte d'intégrité.
+			$version  = Installer::fetch_version_manifest($check_url);
+			$checksum = Installer::fetch_checksum_manifest($check_url);
+
+			// Le thème admin lit le manifeste depuis ce cache pour savoir s'il existe une version plus
+			// récente. Il n'est réécrit que lorsque le téléchargement a réussi : une coupure réseau ne
+			// doit pas faire disparaître une mise à jour déjà signalée.
+			if ($version !== NULL)
 			{
-				$url = $check_url.'/'.$file.'.json?v='.version_format(NEOFRAG_VERSION).($this->config->nf_update_beta ? '&beta=1' : '');
-				if ($$file = $this->network($url)->type('text')->get())
-				{
-					file_put_contents('cache/monitoring/'.$file.'.json', $$file);
-					$$file = (array)json_decode($$file);
-				}
+				file_put_contents('cache/monitoring/version.json', json_encode($version));
+			}
+
+			if ($checksum !== NULL)
+			{
+				file_put_contents('cache/monitoring/checksum.json', json_encode($checksum));
 			}
 
 			// Scan local des md5
@@ -207,13 +221,20 @@ class Admin_Ajax extends Controller_Module
 
 			$server = [];
 
-			foreach ($this->model()->check_server() as $check)
+			// La MEME variable servait aux deux boucles imbriquees : lisible de travers, et un piege
+			// pour la prochaine modification. Chaque niveau a desormais son nom.
+			foreach ($this->model()->check_server() as $groupe)
 			{
-				foreach ($check['check'] as $name => $check)
+				foreach ($groupe['check'] as $name => $sonde)
 				{
-					$title = NULL;
-					$result = $check['check']($this->_notifications, $title);
-					$server[$name] = $title === NULL ? $result : [$result, $title];
+					$title  = NULL;
+					$result = $sonde['check']($this->_notifications, $title);
+
+					// Le CAST n'est pas cosmetique : une sonde qui pose un titre y met parfois un
+					// objet de langue. json_encode le rend en objet vide, et le script ecrivait
+					// « [object Object] » dans la case — vu sur « Envoi d'email », page de
+					// supervision, le 2026-09-22.
+					$server[$name] = $title === NULL ? $result : [$result, (string) $title];
 				}
 			}
 
@@ -288,96 +309,133 @@ class Admin_Ajax extends Controller_Module
 		});
 	}
 
+	/**
+	 * Mise à jour du cœur par superposition du paquet officiel.
+	 *
+	 * Ce bouton était désactivé par un garde-fou binaire (NEOFRAG_ALLOW_AUTOUPDATE), pour une raison
+	 * réelle : le code téléchargeait la release UPSTREAM (neofrag.download) et l'étalait par-dessus,
+	 * ce qui aurait écrasé tout le code divergé de ce fork. Un interrupteur global n'était toutefois
+	 * qu'un pansement — il empêchait aussi les mises à jour légitimes. Ce sont maintenant quatre
+	 * garanties de nature, qui laissent passer la bonne mise à jour et rien d'autre :
+	 *
+	 *   1. l'origine vient de l'allow-list (sanitize_update_url) — neofrag.download n'y est pas, et
+	 *      une valeur injectée en base ne peut pas l'y faire entrer ;
+	 *   2. le manifeste ne fournit qu'un NOM DE FICHIER, jamais une URL — ni hôte, ni chemin, donc
+	 *      ni redirection ni remontée de répertoire ;
+	 *   3. l'empreinte SHA-256 est vérifiée AVANT qu'un seul fichier du site ne soit touché ;
+	 *   4. l'archive est contrôlée entrée par entrée (anti-zip-slip, symlinks refusés).
+	 *
+	 * Une sauvegarde est prise juste avant d'écrire, comme précédemment.
+	 */
 	public function update()
 	{
-		// Garde-fou fork : l'auto-update télécharge la release upstream officielle
-		// (neofrag.download) et la superpose au code — ce qui écraserait les
-		// modifications de ce fork divergé (NeoFrag Reborn). Désactivé sauf opt-in explicite.
-		if (!defined('NEOFRAG_ALLOW_AUTOUPDATE') || !NEOFRAG_ALLOW_AUTOUPDATE)
+		if (nf_demo())
 		{
-			error_log('[monitoring] auto-update bloqué (fork) — NEOFRAG_ALLOW_AUTOUPDATE non défini');
-			exit('Auto-update désactivé sur ce fork : il superposerait la release upstream et écraserait le code forké. Pour le réactiver à vos risques, définir NEOFRAG_ALLOW_AUTOUPDATE = TRUE dans config/neofrag.php.');
+			return;
 		}
 
-		if ($version = $this->theme('admin')->update())
+		require_once NEOFRAG_CMS.'/install/lib/installer.php';
+
+		if (!($version = $this->theme('admin')->update()))
 		{
-			$this->_stream(function() use ($version){
-				$this->_backup();
+			return; // déjà à jour, ou manifeste jamais récupéré
+		}
 
-				dir_create('cache/monitoring');
+		// Le manifeste dit QUOI télécharger ; l'allow-list dit D'OÙ. Les deux moitiés viennent de
+		// sources différentes, et c'est voulu : compromettre le manifeste ne déplace pas l'origine.
+		$cfg  = $this->config->nf_monitoring_check_url;
+		$base = Installer::sanitize_update_url(is_string($cfg) ? trim($cfg) : NULL);
 
-				$this	->network('https://neofrag.download/?v='.version_format($version->version))
-						->stream($file = 'cache/monitoring/neofrag.zip', function($size, $total){
-							$this->_flush(2, $size / $total * 100);
-						});
+		$name   = (string)($version->file   ?? '');
+		$sha256 = (string)($version->sha256 ?? '');
 
-				$scan_zip = function($callback) use ($file){
-					if ($zip = zip_open($file))
-					{
-						while ($zip_entry = zip_read($zip))
-						{
-							$entry_name = zip_entry_name($zip_entry);
+		if (!preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*\.zip$/', $name) || !preg_match('/^[a-f0-9]{64}$/i', $sha256))
+		{
+			error_log('[update] manifeste incomplet ou refusé (file="'.$name.'")');
+			exit($this->lang('Le manifeste de mise à jour est incomplet : nom de paquet ou empreinte SHA-256 absent ou invalide.'));
+		}
 
-							if (preg_match('#/|^index.php$#', $entry_name) && (!preg_match('#^(config|install)/#', $entry_name) || !file_exists($entry_name)) && zip_entry_open($zip, $zip_entry, 'r'))
-							{
-								$callback($zip_entry, $entry_name);
-							}
+		$this->_stream(function() use ($version, $base, $name, $sha256){
+			$archive = $this->_backup();
 
-							zip_entry_close($zip_entry);
-						}
+			dir_create('cache/monitoring');
 
-						zip_close($zip);
-					}
-				};
+			$file = 'cache/monitoring/neofrag.zip';
 
-				$files = [];
+			// Téléchargement + vérification d'empreinte. Tout échec lève AVANT la moindre écriture
+			// dans l'arborescence du site : à ce stade, le site est encore intact.
+			try
+			{
+				Installer::download_update($base.'/'.$name, $file, $sha256, function($size, $total){
+					$this->_flush(2, $total > 0 ? $size / $total * 100 : 0);
+				});
+			}
+			catch (\Throwable $e)
+			{
+				// Rien n'a encore été écrit dans l'arborescence : il n'y a rien à annuler. La
+				// sauvegarde prise plus haut reste disponible, mais elle n'est pas nécessaire ici.
+				@unlink($file);
+				error_log('[update] '.$e->getMessage());
+				exit($this->lang('Mise à jour interrompue : %s', $e->getMessage()));
+			}
 
-				$scan_zip(function($zip_entry, $entry_name) use (&$files){
-					$files[] = $entry_name;
+			$patch_name = preg_replace('/[^a-z0-9]/i', '_', $version->version);
+
+			// ── À partir d'ici, le site est modifié : tout échec doit être ANNULÉ ─────────────
+			//
+			// Le bloc couvre les deux écritures irréversibles à la main : la pose des fichiers et la
+			// migration de la base. C'est exactement le périmètre où un arrêt laisse un site
+			// mi-ancien mi-neuf — des tables migrées sous du code ancien, ou l'inverse.
+			//
+			// L'application des fichiers vit dans Installer : elle est ainsi testable hors HTTP
+			// (cf. tests/Unit/UpdatePackageTest.php), ce qu'une closure de contrôleur n'est pas.
+			// Anti-zip-slip, filtrage des entrées, préservation de config/ et balayage des vestiges
+			// de neofrag/ y sont réunis, avec leurs gardes.
+			try
+			{
+				$applique = Installer::apply_update_package($file, NEOFRAG_CMS, function($n, $total){
+					$this->_flush(3, $n / $total * 100);
 				});
 
-				if ($total = count($files))
+				error_log('[update] '.$applique['written'].' fichier(s) appliqué(s), '.$applique['removed'].' vestige(s) retiré(s)');
+
+				if (!$this->config->nf_version)
 				{
-					$scan_zip(function($zip_entry, $entry_name) use ($total){
-						static $i = 0;
-						$this->_flush(3, ++$i / $total * 100);
-
-						if (substr($entry_name, -1) != '/')
-						{
-							dir_create(preg_replace('#/[^/]+$#', '', $entry_name));
-							file_put_contents($entry_name, zip_entry_read($zip_entry, zip_entry_filesize($zip_entry)));
-						}
-					});
-
-					unlink($file);
-
-					foreach (array_diff(array_keys(dir_scan('neofrag')), array_filter($files, function($a){
-						return preg_match('_^neofrag/_', $a);
-					})) as $file)
-					{
-						unlink($file);
-					}
-
-					if (!$this->config->nf_version)
-					{
-						$this->config('nf_version', version_format(NEOFRAG_VERSION));
-					}
-
-					if ($patch = @NeoFrag()->install($patch_name = preg_replace('/[^a-z0-9]/i', '_', $version->version)))
-					{
-						$patch->up();
-					}
-
-					$this->_flush(4, 100);
-
-					$this->module('tools')->api()->scss();
-
-					$this	->config('nf_update_callback',       $patch_name)
-							->config('nf_version',               version_format($version->version))
-							->config('nf_monitoring_last_check', 0);
+					$this->config('nf_version', version_format(NEOFRAG_VERSION));
 				}
-			});
-		}
+
+				if ($patch = @NeoFrag()->install($patch_name))
+				{
+					$patch->up();
+				}
+
+				$this->_flush(4, 100);
+			}
+			catch (\Throwable $e)
+			{
+				@unlink($file);
+				error_log('[update] '.$e->getMessage());
+				exit($this->lang('Mise à jour interrompue : %s', $e->getMessage()).' '.$this->_retour_arriere($archive));
+			}
+
+			unlink($file);
+
+			// Volontairement HORS du périmètre annulable. Une feuille de style qui ne compile pas se
+			// reconstruit d'un bouton dans « Outils » ; annuler pour autant une mise à jour par
+			// ailleurs réussie serait disproportionné. On le signale, on n'y touche pas.
+			try
+			{
+				$this->module('tools')->api()->scss();
+			}
+			catch (\Throwable $e)
+			{
+				error_log('[update] recompilation des feuilles de style échouée : '.$e->getMessage());
+			}
+
+			$this	->config('nf_update_callback',       $patch_name)
+					->config('nf_version',               version_format($version->version))
+					->config('nf_monitoring_last_check', 0);
+		});
 	}
 
 	private function _flush($step, $value)
@@ -410,7 +468,7 @@ class Admin_Ajax extends Controller_Module
 		// Sans ça, le JS xhr.progress n'est jamais déclenché et la progress bar reste figée à 0.
 		// apache_setenv n'existe que sous mod_php : en PHP 8, l'appeler sous fpm-fcgi/PHP-FPM lève une
 		// Error « fonction inconnue » que @ ne masque pas → fatal au lancement de la sauvegarde.
-		if (function_exists('apache_setenv')) { @apache_setenv('no-gzip', 1); }
+		if (function_exists('apache_setenv')) { @apache_setenv('no-gzip', '1'); }
 		@ini_set('zlib.output_compression', 0);
 		@ini_set('output_buffering', 'off');
 		@ini_set('implicit_flush', 1);
@@ -418,7 +476,7 @@ class Admin_Ajax extends Controller_Module
 		{
 			@ob_end_clean();
 		}
-		ob_implicit_flush(1);
+		ob_implicit_flush(TRUE);
 
 		header('Content-Type: text/event-stream');
 		header('Cache-Control: no-cache, no-store, must-revalidate');
@@ -442,8 +500,18 @@ class Admin_Ajax extends Controller_Module
 		exit;
 	}
 
+	/**
+	 * Fabrique une archive complète du site — base comprise — sous backups/, et REND son chemin.
+	 *
+	 * Le chemin rendu est ce qui rend le retour arrière possible : sans lui, l'appelant ne sait pas
+	 * quelle archive il vient de prendre, et ne peut donc pas la remettre en place s'il échoue.
+	 *
+	 * @return string chemin absolu de l'archive écrite
+	 */
 	private function _backup()
 	{
+		require_once NEOFRAG_CMS.'/install/lib/installer.php';
+
 		dir_create('backups');
 
 		// Défense en profondeur : si le dossier a été créé au runtime (déploiement sans le
@@ -464,19 +532,37 @@ class Admin_Ajax extends Controller_Module
 			$this->_flush(0, $value);
 		});
 
+		// `$file` servait AUSSI de variable de boucle plus bas : après la boucle, il ne désignait
+		// plus l'archive mais le dernier fichier ajouté dedans. Tant que personne ne se resservait
+		// du nom, ça ne se voyait pas ; le retour arrière, lui, a besoin de ce nom.
+		$archive = $file.'.zip';
+
 		$zip = new \ZipArchive;
-		$zip->open($file.'.zip', \ZipArchive::CREATE);
+		$zip->open($archive, \ZipArchive::CREATE);
 
-		$zip->addFile($dump, 'DATABASE.sql');
+		$zip->addFile($dump, Installer::BACKUP_SQL_ENTRY);
 
-		$files = array_merge(array_keys(dir_scan(array_diff($this->model()->folders, ['backups']))), ['index.php', '.htaccess']);
+		// `vendor/` ne figure pas dans la liste des dossiers du panneau — et pourtant un paquet de
+		// mise à jour le livre (cf. Installer::UPDATE_MAX_PACKAGE, « vendor/ inclus »). Une archive
+		// qui ne le contient pas ne permet donc PAS d'annuler une mise à jour : elle remettrait
+		// l'ancien code sur les nouvelles dépendances. Une sauvegarde incomplète est pire qu'une
+		// sauvegarde absente, parce qu'on croit l'avoir.
+		//
+		// On l'ajoute ici et pas dans `folders`, parce que cette liste sert aussi à l'empreinte
+		// d'intégrité et au calcul d'occupation : y toucher changerait le sens de deux autres
+		// mesures pour résoudre un problème qui n'appartient qu'à la sauvegarde.
+		$files = array_merge(
+			array_keys(dir_scan(array_diff($this->model()->folders, ['backups']))),
+			is_dir('vendor') ? array_keys(dir_scan(['vendor'])) : [],
+			['index.php', '.htaccess']
+		);
 
 		$total = count($files);
 		$i     = 0;
 
-		foreach ($files as $file)
+		foreach ($files as $chemin)
 		{
-			$zip->addFile($file);
+			$zip->addFile($chemin);
 
 			$this->_flush(1, ++$i / $total * 100);
 		}
@@ -484,6 +570,36 @@ class Admin_Ajax extends Controller_Module
 		$zip->close();
 
 		unlink($dump);
+
+		// Chemin absolu : l'archive a été écrite relativement au répertoire courant, mais le retour
+		// arrière peut survenir alors qu'on ne l'a plus.
+		return rtrim(NEOFRAG_CMS, '/').'/'.$archive;
+	}
+
+	/**
+	 * Annule une mise à jour en remettant l'archive prise juste avant, et rend une phrase à afficher.
+	 *
+	 * Cette fonction ne relève JAMAIS : elle est appelée depuis la branche d'erreur d'une mise à jour
+	 * déjà interrompue. Une exception ici remplacerait le message expliquant ce qui a échoué par un
+	 * autre message expliquant que le sauvetage a échoué — en perdant le premier, qui est le plus
+	 * utile des deux. On les rend donc tous les deux, l'un derrière l'autre.
+	 */
+	private function _retour_arriere($archive)
+	{
+		try
+		{
+			$this->model()->restaurer($archive, function($n, $total){
+				$this->_flush(5, $total > 0 ? $n / $total * 100 : 0);
+			});
+
+			return (string)$this->lang('Le site a été remis dans l\'état où il était avant la mise à jour.');
+		}
+		catch (\Throwable $e)
+		{
+			error_log('[update] retour arrière IMPOSSIBLE : '.$e->getMessage().' @ '.$e->getFile().':'.$e->getLine());
+
+			return (string)$this->lang('Le retour arrière a échoué à son tour (%s). La sauvegarde %s est intacte : elle peut être restaurée depuis le panneau de surveillance, ou téléchargée.', $e->getMessage(), basename($archive));
+		}
 	}
 
 	private function _notify($message, $type = 'danger')
@@ -491,7 +607,7 @@ class Admin_Ajax extends Controller_Module
 		// Cast string : $message peut être un objet Language qui se sérialise en {} via json_encode()
 		// Map 'error' → 'danger' (legacy) car 'error' n'est pas une couleur valide dans get_colors()
 		if ($type === 'error') $type = 'danger';
-		$this->_notifications[] = [(string)$message, get_colors($type) ? $type : 'danger'];
+		$this->_notifications[] = [(string)$message, is_color($type) ? $type : 'danger'];
 	}
 
 	// ===== Gestionnaire de fichiers webmaster ================================================
@@ -611,7 +727,7 @@ class Admin_Ajax extends Controller_Module
 			}
 		}
 
-		$sort = function($a, $b){ return strcasecmp($a['name'], $b['name']); };
+		$sort = function($a, $b){ return strcasecmp((string) $a['name'], (string) $b['name']); };
 		usort($dirs, $sort);
 		usort($files, $sort);
 

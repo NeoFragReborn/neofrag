@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -29,5 +30,26 @@ return [
 	'bd3e9a22' => 'Publier cette page maintenant',
 	'c5db4c8a' => 'Confirmation de suppression',
 	'd103c7e9' => 'Ajouter une page',
-	'e1b5ca71' => 'Pages'
+	'e1b5ca71' => 'Pages',
+	'52c9bbab' => 'Modifier',
+	'a858201f' => 'Pages disponibles',
+	'bd0ae7ae' => 'Aucune page publiée pour le moment.',
+	'517c0b2c' => 'Programmée le %s',
+	'afccc23b' => 'Créer',
+	'0adc6e30' => 'Enregistrez d\'abord la page : vous pourrez ensuite y composer des blocs de module en l\'éditant.',
+	'fffae9b2' => 'Blocs de module injectables — collez le code dans le contenu :',
+	'b2299bb6' => 'Blocs de la page',
+	'92a243f3' => 'Ajoutez des blocs de module sous le contenu, réordonnez-les par glisser-déposer et configurez leurs options. Équivalent visuel des shortcodes [block:…].',
+	'7fb14f71' => 'Enregistrer les blocs',
+	'0b2225c8' => 'Gabarit',
+	'3346e037' => 'Normal (cadre)',
+	'f2100516' => 'Page nue (pleine largeur)',
+	'78b7cadc' => '« Page nue » rend le contenu sans cadre ni titre — idéal pour une page composée de blocs.',
+	'f0b7b5b5' => 'Date de publication',
+	'42bd0172' => 'Une date future programme la publication : la page reste masquée publiquement jusqu\'à cette date (si publiée). Vide = immédiat.',
+	'08ce3a09' => 'Blocs enregistrés',
+	'ce6fa2e6' => 'Erreur de sauvegarde',
+	'9cdcd1f0' => 'Pages CMS statiques : à propos, mentions légales, conditions, etc.',
+	'4349f0db' => 'Page %s',
+	'1bf841b2' => 'Accès au contenu',
 ];

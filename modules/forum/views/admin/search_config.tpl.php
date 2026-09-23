@@ -1,21 +1,11 @@
-<div class="row mb-3">
-	<div class="col-md-6">
-		<div class="card">
-			<div class="card-body text-center">
-				<h5 class="text-muted small text-uppercase"><?php echo $this->lang('Messages indexés') ?></h5>
-				<h3 class="m-0"><?php echo number_format((int)$stats['indexed_messages'], 0, ',', ' ') ?></h3>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-6">
-		<div class="card">
-			<div class="card-body text-center">
-				<h5 class="text-muted small text-uppercase"><?php echo $this->lang('Sujets indexés') ?></h5>
-				<h3 class="m-0"><?php echo number_format((int)$stats['indexed_topics'], 0, ',', ' ') ?></h3>
-			</div>
-		</div>
-	</div>
-</div>
+<?php
+/**
+ * Les deux compteurs passent par la GRILLE DE STATISTIQUES partagée (`admin_stats`, rendue en
+ * `.nf-stats-grid`) au lieu de deux `<div class="card">` roulées à la main : mêmes tuiles, mêmes
+ * espacements et mêmes couleurs que partout ailleurs dans l'administration.
+ */
+?>
+<?php echo $compteurs ?>
 
 <form action="<?php echo url($this->url->request) ?>" method="post">
 	<div class="alert alert-info">

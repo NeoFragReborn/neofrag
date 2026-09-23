@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -39,7 +40,7 @@ class Admin extends Controller_Module
 
 				$recruits_body .= '<div class="nf-content-card">';
 				$recruits_body .= '<div class="nf-content-card-head">';
-				$recruits_body .= '<div class="nf-content-card-title"><a href="'.url('recruits/'.$r['recruit_id'].'/'.$slug).'">'.htmlspecialchars($r['title']).'</a></div>';
+				$recruits_body .= '<div class="nf-content-card-title"><a href="'.url('recruits/'.$r['recruit_id'].'/'.$slug).'">'.htmlspecialchars((string) ($r['title'])).'</a></div>';
 				$recruits_body .= '<span class="nf-content-card-status '.$status_class.'"><i class="fas '.($is_closed ? 'fa-lock' : 'fa-check').'"></i> '.$status_text.'</span>';
 				$recruits_body .= '</div>';
 				$recruits_body .= '<div class="nf-content-card-meta">';
@@ -52,7 +53,7 @@ class Admin extends Controller_Module
 				$recruits_body .= '<span class="nf-content-card-spacer"></span>';
 				if ($this->access->effective_admin()) $recruits_body .= (string)$this->button_access($r['recruit_id'], 'recruit');
 				if ($this->is_authorized('modify_recruit')) $recruits_body .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/recruits/'.$r['recruit_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
-				if ($this->is_authorized('delete_recruit')) $recruits_body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/recruits/delete/'.$r['recruit_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				if ($this->is_authorized('delete_recruit')) $recruits_body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/recruits/delete/'.$r['recruit_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$recruits_body .= '</div>';
 				$recruits_body .= '</div>';
 			}
@@ -70,7 +71,7 @@ class Admin extends Controller_Module
 
 		return '<div class="nf-list-layout">'
 			.'<div class="nf-list-aside">'.$this->admin_card('fab fa-black-tie', $this->lang('Candidatures'), $candidacies_body).'</div>'
-			.'<div class="nf-list-main">'.$this->admin_card('fas fa-bullhorn', $this->lang('Offres de recrutement'), $recruits_body, count($recruits).' '.$this->lang('offre|offres', count($recruits)), $add_btn).'</div>'
+			.'<div class="nf-list-main">'.$this->admin_card('fas fa-bullhorn', $this->lang('Offres de recrutement'), $recruits_body, $this->lang('%d offre|%d offres', count($recruits), count($recruits)), $add_btn).'</div>'
 			.'</div>';
 	}
 
@@ -81,7 +82,7 @@ class Admin extends Controller_Module
 				->add_rules('recruit', [
 					'teams' => $this->model()->get_teams_list()
 				])
-				->add_submit($this->lang('Ajouter'))
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus')
 				->add_back('admin/recruits');
 
 		if ($this->form()->is_valid($post))
@@ -111,7 +112,6 @@ class Admin extends Controller_Module
 	public function _edit($recruit_id, $title, $introduction, $description, $requierments, $date, $user_id, $size, $role, $icon, $date_end, $closed, $team_id, $image_id, $username, $avatar, $sex, $total_candidacies, $candidacies_pending, $candidacies_accepted, $candidacies_declined, $team_name)
 	{
 		$this	->subtitle($title)
-				->css('recruits')
 				->js('knob')
 				->form()
 				->add_rules('recruit', [
@@ -156,7 +156,7 @@ class Admin extends Controller_Module
 				$this	->panel()
 						->heading($title.' <span class="ms-2">'.(string)$this->button_access($recruit_id, 'recruit').'</span>', 'fas fa-briefcase')
 						->body($this->form()->display())
-						->size('col-8')
+						->size('col-12 col-lg-8')
 			),
 			$this->col(
 				$this	->panel()
@@ -169,13 +169,13 @@ class Admin extends Controller_Module
 												'candidacies_accepted' => $candidacies_accepted,
 												'candidacies_declined' => $candidacies_declined
 											]))
-						->footer(($this->is_authorized('candidacy_vote') || $this->is_authorized('candidacy_reply')) ? '<a href="'.url('admin/recruits/candidacies/'.$recruit_id.'/'.url_title($title)).'" class="btn btn-outline-info">Voir les candidatures</a>' : '<span class="text-red">Vous n\'êtes pas autorisé à gérer les candidatures...</span>')
-						->size('col-4'),
+						->footer(($this->is_authorized('candidacy_vote') || $this->is_authorized('candidacy_reply')) ? '<a href="'.url('admin/recruits/candidacies/'.$recruit_id.'/'.url_title($title)).'" class="btn btn-outline-info">'.$this->lang('Voir les candidatures').'</a>' : '<span class="text-red">'.$this->lang('Vous n\'êtes pas autorisé à gérer les candidatures...').'</span>')
+						->size('col-12 col-lg-4'),
 				$this	->panel()
 						->heading('Formulaire', 'fas fa-tasks')
 						->body($this->view('admin-custom-form', ['fields' => $this->model()->get_fields($recruit_id)]))
 						->footer('<a href="'.url('admin/recruits/fields/'.$recruit_id.'/'.url_title($title)).'" class="btn btn-outline-info">'.icon('fas fa-sliders-h').' '.$this->lang('Personnaliser le formulaire').'</a>')
-						->size('col-4')
+						->size('col-12 col-lg-4')
 			)
 		);
 	}
@@ -204,7 +204,7 @@ class Admin extends Controller_Module
 			$this->error->unauthorized();
 		}
 
-		$this->subtitle('Candidatures en attentes');
+		$this->subtitle($this->lang('Candidatures en attentes'));
 
 		$candidacies_pending = $this->table()
 									->add_columns([
@@ -221,7 +221,7 @@ class Admin extends Controller_Module
 											'size'    => TRUE
 										],
 										[
-											'title'   => 'Candidat',
+											'title'   => $this->lang('Candidat'),
 											'content' => function($data){
 												if ($data['user_id'])
 												{
@@ -240,7 +240,7 @@ class Admin extends Controller_Module
 											}
 										],
 										[
-											'title'   => 'Date',
+											'title'   => $this->lang('Date'),
 											'content' => function($data){
 												return '<span data-bs-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
 											},
@@ -249,7 +249,7 @@ class Admin extends Controller_Module
 											}
 										],
 										[
-											'title'   => 'Offre',
+											'title'   => $this->lang('Offre'),
 											'content' => function($data){
 												return $data['title'];
 											},
@@ -280,7 +280,7 @@ class Admin extends Controller_Module
 					->append($this	->panel()
 									->heading('Liste des candidatures en attentes', 'fab fa-black-tie')
 									->body($candidacies_pending)
-									->size('col-8')
+									->size('col-12 col-lg-8')
 					)
 					->append($this->panel_back());
 	}
@@ -292,7 +292,7 @@ class Admin extends Controller_Module
 		$candidacies_pending = $this->table()
 									->add_columns([
 										[
-											'title'   => 'Candidat',
+											'title'   => $this->lang('Candidat'),
 											'content' => function($data){
 												if ($data['user_id'])
 												{
@@ -311,7 +311,7 @@ class Admin extends Controller_Module
 											}
 										],
 										[
-											'title'   => 'Date',
+											'title'   => $this->lang('Date'),
 											'content' => function($data){
 												return '<span data-bs-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
 											},
@@ -350,7 +350,7 @@ class Admin extends Controller_Module
 		$candidacies_accepted = $this->table()
 									->add_columns([
 										[
-											'title'   => 'Candidat',
+											'title'   => $this->lang('Candidat'),
 											'content' => function($data){
 												if ($data['user_id'])
 												{
@@ -369,7 +369,7 @@ class Admin extends Controller_Module
 											}
 										],
 										[
-											'title'   => 'Date',
+											'title'   => $this->lang('Date'),
 											'content' => function($data){
 												return '<span data-bs-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
 											},
@@ -408,7 +408,7 @@ class Admin extends Controller_Module
 		$candidacies_declined = $this->table()
 									->add_columns([
 										[
-											'title'   => 'Candidat',
+											'title'   => $this->lang('Candidat'),
 											'content' => function($data){
 												if ($data['user_id'])
 												{
@@ -427,7 +427,7 @@ class Admin extends Controller_Module
 											}
 										],
 										[
-											'title'   => 'Date',
+											'title'   => $this->lang('Date'),
 											'content' => function($data){
 												return '<span data-bs-toggle="tooltip" title="'.timetostr($this->lang('l j F Y, H:i'), $data['date']).'">'.time_span($data['date']).'</span>';
 											},
@@ -489,18 +489,18 @@ class Admin extends Controller_Module
 									'rules'  => 'required'
 								],
 								'status' => [
-									'label'  => 'Décision',
+									'label'  => $this->lang('Décision'),
 									'value'  => $status,
 									'values' => [
-										'1' => 'En attente',
-										'2' => 'Acceptée',
-										'3' => 'Refusée'
+										'1' => $this->lang('En attente'),
+										'2' => $this->lang('Acceptée'),
+										'3' => $this->lang('Refusée')
 									],
 									'type'   => 'radio',
 									'rules'  => 'required'
 								]
 							])
-							->add_submit('Envoyer la réponse')
+							->add_submit($this->lang('Envoyer la réponse'), 'fas fa-paper-plane')
 							->save();
 
 		if ($reply_form->is_valid($post))
@@ -569,23 +569,23 @@ class Admin extends Controller_Module
 		$vote_form = $this	->form()
 							->add_rules([
 								'vote' => [
-									'label'  => 'Je suis',
+									'label'  => $this->lang('Je suis'),
 									'value'  => isset($user_vote['vote']) ? $user_vote['vote'] : NULL,
 									'values' => [
-										'1' => icon('far fa-thumbs-up').' <span class="text-green">Favorable</span>',
-										'0' => icon('far fa-thumbs-down').' <span class="text-red">Défavorable</span>'
+										'1' => icon('far fa-thumbs-up').' <span class="text-green">'.$this->lang('Favorable').'</span>',
+										'0' => icon('far fa-thumbs-down').' <span class="text-red">'.$this->lang('Défavorable').'</span>'
 									],
 									'type'   => 'radio',
 									'rules'  => 'required'
 								],
 								'comment' => [
-									'label'  => 'Commentaire',
+									'label'  => $this->lang('Commentaire'),
 									'type'   => 'textarea',
 									'value'  => isset($user_vote['comment']) ? $user_vote['comment'] : NULL,
 									'rules'  => 'required'
 								]
 							])
-							->add_submit('Envoyer mon avis')
+							->add_submit($this->lang('Envoyer mon avis'), 'fas fa-paper-plane')
 							->save();
 
 		if ($vote_form->is_valid($post))
@@ -613,18 +613,18 @@ class Admin extends Controller_Module
 
 		if ($status == 1)
 		{
-			$statut_heading = icon('fas fa-hourglass-end').' Candidature <b>en cours d\'éxamination</b>';
-			$statut_color   = 'bg-teal';
+			$statut_heading = icon('fas fa-hourglass-end').' '.$this->lang('Candidature <b>en cours d\'examen</b>');
+			$statut_color   = 'text-bg-secondary';
 		}
 		else if ($status == 2)
 		{
-			$statut_heading = icon('fas fa-check').' Candidature <b>acceptée</b>';
-			$statut_color   = 'bg-green';
+			$statut_heading = icon('fas fa-check').' '.$this->lang('Candidature <b>acceptée</b>');
+			$statut_color   = 'text-bg-success';
 		}
 		else
 		{
-			$statut_heading = icon('fas fa-times').' Candidature <b>refusée</b>';
-			$statut_color   = 'bg-red';
+			$statut_heading = icon('fas fa-times').' '.$this->lang('Candidature <b>refusée</b>');
+			$statut_color   = 'text-bg-danger';
 		}
 
 		return $this->row(
@@ -632,9 +632,9 @@ class Admin extends Controller_Module
 				$this	->panel_box()
 						->heading($statut_heading, '', 'admin/recruits/candidacies/'.$recruit_id.'/'.url_title($title))
 						->color($statut_color)
-						->footer(icon('fas fa-arrow-circle-left').' Retour aux candidatures de cette offre'),
+						->footer(icon('fas fa-arrow-circle-left').' '.$this->lang('Retour aux candidatures de cette offre')),
 				$this	->panel()
-						->heading($this->lang('Candidature de').' <b>'.htmlspecialchars($pseudo).'</b> <a href="mailto:'.$email.'" class="btn btn-info btn-sm ms-2" data-bs-toggle="tooltip" title="'.$this->lang('Contacter par e-mail').'">'.icon('far fa-envelope').'</a>', 'fab fa-black-tie')
+						->heading($this->lang('Candidature de %s', '<b>'.htmlspecialchars((string) ($pseudo)).'</b>').' <a href="mailto:'.$email.'" class="btn btn-info btn-sm ms-2" data-bs-toggle="tooltip" title="'.$this->lang('Contacter par e-mail').'">'.icon('far fa-envelope').'</a>', 'fab fa-black-tie')
 						->body($this->view('candidacy', [
 							'candidacy_id'  => $candidacy_id,
 							'custom'        => $this->model()->get_candidacy_custom($candidacy_id),
@@ -659,8 +659,8 @@ class Admin extends Controller_Module
 						])),
 				$this	->panel()
 						->heading($this->lang('Réponse au candidat'), 'fas fa-lock')
-						->body($this->is_authorized('candidacy_reply') ? $reply_form->display() : '<span class="text-red">Vous n\'êtes pas autorisé à gérer le statut de la candidature.</span>')
-						->size('col-7'),
+						->body($this->is_authorized('candidacy_reply') ? $reply_form->display() : '<span class="text-red">'.$this->lang('Vous n\'êtes pas autorisé à gérer le statut de la candidature.').'</span>')
+						->size('col-12 col-lg-7'),
 				$this->button_back()
 			),
 			$this->col(
@@ -672,8 +672,8 @@ class Admin extends Controller_Module
 						])),
 				$this	->panel()
 						->heading('Mon avis sur la candidature', 'far fa-star')
-						->body($this->is_authorized('candidacy_vote') ? $vote_form->display() : '<span class="text-red">Vous n\'êtes pas autorisé à déposer votre avis.</span>')
-						->size('col-5')
+						->body($this->is_authorized('candidacy_vote') ? $vote_form->display() : '<span class="text-red">'.$this->lang('Vous n\'êtes pas autorisé à déposer votre avis.').'</span>')
+						->size('col-12 col-lg-5')
 			)
 		);
 	}
@@ -703,11 +703,11 @@ class Admin extends Controller_Module
 			{
 				if ($status == 2)
 				{
-					$message = '<div class="alert alert-success">Votre candidature a été <b>acceptée</b>. Félicitations !</div>'.$reply;
+					$message = '<div class="alert alert-success">'.$this->lang('Votre candidature a été <b>acceptée</b>. Félicitations !').'</div>'.$reply;
 				}
 				else if ($status == 3)
 				{
-					$message = '<div class="alert alert-danger">Votre candidature a été <b>refusée</b>. Désolé !</div>'.$reply;
+					$message = '<div class="alert alert-danger">'.$this->lang('Votre candidature a été <b>refusée</b>. Désolé !').'</div>'.$reply;
 				}
 				else
 				{
@@ -722,7 +722,7 @@ class Admin extends Controller_Module
 						$talk_id = $talks->model()->create_conversation(
 							(int)$this->user->id,
 							'direct',
-							'Candidature : '.$candidacy['title'],
+							(string) $this->lang('Candidature : %s', $candidacy['title']),
 							'',
 							[(int)$candidacy['user_id']]
 						);
@@ -738,9 +738,10 @@ class Admin extends Controller_Module
 			if ($this->config->recruits_send_mail && $candidacy['email'])
 			{
 				$this	->email
-						->from($this->config->nf_contact ? $this->config->nf_contact : $this->user->email)
+						// Expéditeur : l'adresse du site (défaut de la bibliothèque). Le repli sur l'adresse personnelle
+						// de l'administrateur usurpait son domaine et la divulguait au candidat.
 						->to($candidacy['email'])
-						->subject('Candidature :: '.$candidacy['title'])
+						->subject((string) $this->lang('Candidature : %s', $candidacy['title']))
 						->message('default', [
 							'content' => bbcode($reply).($this->user() ? '<br /><br /><br />'.$this->user->link() : '')
 						])
@@ -760,7 +761,7 @@ class Admin extends Controller_Module
 					'required' => ['label' => $this->lang('Obligatoire'), 'type' => 'checkbox', 'values' => ['1' => $this->lang('Réponse obligatoire')]]
 				])
 				->add_back('admin/recruits/'.$recruit_id.'/'.url_title($title))
-				->add_submit($this->lang('Ajouter le champ'));
+				->add_submit($this->lang('Ajouter le champ'), 'fas fa-plus');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -785,8 +786,8 @@ class Admin extends Controller_Module
 				$meta .= $f['required'] ? ', '.$this->lang('obligatoire') : '';
 
 				$list .= '<li class="list-group-item d-flex justify-content-between align-items-center">'
-						.'<span>'.htmlspecialchars($f['label']).' <small class="text-muted">('.$meta.')</small></span>'
-						.'<a href="'.url('admin/recruits/fields/delete/'.$f['field_id'].'/'.url_title($title)).'" class="btn btn-sm btn-outline-danger" data-confirm="'.htmlspecialchars($this->lang('Supprimer ce champ ?')).'">'.icon('far fa-trash-alt').'</a>'
+						.'<span>'.htmlspecialchars((string) ($f['label'])).' <small class="text-muted">('.$meta.')</small></span>'
+						.'<a href="'.url('admin/recruits/fields/delete/'.$f['field_id'].'/'.url_title($title)).'" class="btn btn-sm btn-outline-danger" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce champ ?'))).'">'.icon('far fa-trash-alt').'</a>'
 						.'</li>';
 			}
 
@@ -794,7 +795,7 @@ class Admin extends Controller_Module
 		}
 
 		return $this->panel()
-					->heading($this->lang('Personnaliser le formulaire').' — '.htmlspecialchars($title), 'fas fa-sliders-h')
+					->heading($this->lang('Personnaliser le formulaire').' — '.htmlspecialchars((string) ($title)), 'fas fa-sliders-h')
 					->body($list.'<hr />'.$this->form()->display())
 					->size('col-12');
 	}

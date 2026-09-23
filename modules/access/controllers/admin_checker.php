@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -64,7 +65,7 @@ class Admin_Checker extends Module_Checker
 
 		if (!$role)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 
@@ -86,7 +87,7 @@ class Admin_Checker extends Module_Checker
 
 		if (!$role)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 
@@ -108,7 +109,7 @@ class Admin_Checker extends Module_Checker
 
 		if (!$role)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 
@@ -165,9 +166,13 @@ class Admin_Checker extends Module_Checker
 		}
 
 		// Liste des groupes DB non-auto (les auto admins/members/visitors sont en mémoire, pas en DB)
-		$groups = $this->db	->select('g.group_id', 'g.name', 'g.color', 'g.icon', 'IFNULL(gl.title, g.name) AS title')
+		// Le titre dans la langue du site, sinon dans une autre, sinon le nom (même règle que le cœur,
+		// neofrag/core/groups.php) : le français était écrit en dur ici.
+		$langue = preg_match('/^[a-z]{2}$/', $code = (string) $this->config->lang->info()->name) ? $code : 'fr';
+
+		$groups = $this->db	->select('g.group_id', 'g.name', 'g.color', 'g.icon', 'COALESCE(gl.title, (SELECT gx.title FROM nf_groups_lang gx WHERE gx.group_id = g.group_id ORDER BY gx.lang = "fr" DESC, gx.lang LIMIT 1), g.name) AS title')
 							->from('nf_groups g')
-							->join('nf_groups_lang gl', 'gl.group_id = g.group_id AND gl.lang = "fr"', 'LEFT')
+							->join('nf_groups_lang gl', 'gl.group_id = g.group_id AND gl.lang = "'.$langue.'"', 'LEFT')
 							->order_by('g.`order`', 'g.name')
 							->get(FALSE);
 
@@ -213,7 +218,7 @@ class Admin_Checker extends Module_Checker
 
 		if (!$role)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 
@@ -245,7 +250,7 @@ class Admin_Checker extends Module_Checker
 
 		if (!$user)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 
@@ -275,7 +280,7 @@ class Admin_Checker extends Module_Checker
 
 		if (!$user)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 
@@ -325,7 +330,7 @@ class Admin_Checker extends Module_Checker
 
 		if ($data === NULL)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 

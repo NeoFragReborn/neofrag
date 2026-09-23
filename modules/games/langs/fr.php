@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -32,4 +33,24 @@ return [
 	'e9dde9ee' => 'Nouveau jeu',
 	'f8f21a53' => 'Êtes-vous sûr(e) de vouloir supprimer la carte <b>%s</b> ?',
 	'52c9bbab' => 'Modifier',
+	'b83726b5' => 'Aucune carte',
+	'58a98c98' => 'Ajouter une carte',
+	'cd59c74e' => 'Catalogue de jeux pratiqués — module gaming.',
+	'97671a33' => 'Jeux',
+	'df149063' => 'Cartes',
+	'3b7c3ac5' => 'Modifier une carte',
+	'f0b91828' => 'Supprimer une carte',
+	'9b5c5028' => 'Modes',
+	'706ddc6d' => 'Nouvelle carte',
+	'344f7b7d' => 'Éditer la carte',
+	'1bbaf0c0' => 'Suppression d\'une carte',
+	'6b18f6b3' => 'Nouveau mode',
+	'29307c20' => 'Éditer le mode',
+	'35cc8e91' => 'Suppression d\'un mode',
+	'8d43033f' => 'Aucun mode',
+	'caa44e1a' => 'Ajouter un mode',
+	'baa9cb55' => 'Jeu',
+	'ff116db6' => 'Nom de la carte',
+	'04fc2b5b' => 'Image',
+	'c8569b6a' => 'Nom du mode',
 ];

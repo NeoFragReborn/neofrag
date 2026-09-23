@@ -9,9 +9,12 @@
 	padding: 10px 20px;
 }
 
+/* Le pied reprend la couleur de texte de la boîte (`text-bg-*` la choisit lisible sur son fond) :
+   écrit en blanc d'office, il disparaissait sur une boîte claire. */
 .small-box > .small-box-footer {
 	background: none repeat scroll 0 0 rgba(0, 0, 0, 0.1);
-	color: rgba(255, 255, 255, 0.8);
+	color: inherit;
+	opacity: .9;
 	display: block;
 	padding: 4px 0;
 	position: relative;
@@ -22,7 +25,8 @@
 
 .small-box > .small-box-footer:hover {
 	background: none repeat scroll 0 0 rgba(0, 0, 0, 0.15);
-	color: #fff;
+	color: inherit;
+	opacity: 1;
 }
 
 .small-box h3 {

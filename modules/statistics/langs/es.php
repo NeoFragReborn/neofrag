@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -6,7 +7,7 @@
 
 return [
 	'01eef66f' => 'Inscriptions (30j)',
-	'16080d87' => 'Évolution dans le temps',
+	'16080d87' => 'Evolución en el tiempo',
 	'1d555291' => 'Commentaires (30j)',
 	'319c181d' => 'Messages forum (30j)',
 	'491c55d0' => 'Período',

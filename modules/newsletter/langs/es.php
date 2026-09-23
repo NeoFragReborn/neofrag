@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module newsletter (es)
@@ -104,4 +105,6 @@ return [
 	'209cc33f' => 'Destino',
 	'96f7da00' => 'Miembros',
 	'03158917' => 'Grupo',
+	'79987719' => 'suscripción al boletín pendiente|suscripciones al boletín pendientes',
+	'080b55ee' => 'Gestionar boletín',
 ];

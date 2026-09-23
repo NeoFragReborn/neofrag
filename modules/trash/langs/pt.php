@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'94b735a4' => 'Reciclagem',
@@ -11,7 +12,7 @@ return [
 	'3eb668b0' => 'Título',
 	'af954628' => 'Eliminado em',
 	'5110bd54' => 'Por',
-	93714304 => 'Selecionar tudo',
+	'93714304' => 'Selecionar tudo',
 	'605a8679' => 'Eliminar definitivamente a seleção? Ação irreversível.',
 	'124b47ce' => '%d elemento(s) restaurado(s).',
 	'58dca009' => '%d elemento(s) eliminado(s) definitivamente.',

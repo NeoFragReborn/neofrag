@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -37,4 +38,32 @@ return [
 	'eb2aa0ff' => 'Spalten',
 	'ed7211c7' => 'Bestätigen',
 	'f8875151' => 'Weiter',
+	'2b0eb9a0' => 'Dieses Widget hat keine Varianten.',
+	'2f2c6b6e' => 'An diesem Widget gibt es nichts einzustellen.',
+	'3b542104' => 'Kein Widget passt.',
+	'221f348b' => 'Widgets filtern…',
+	'c1efcb54' => 'Widgets filtern',
+	'9bc641af' => 'Leer lassen, um den Standardtitel des Widgets zu behalten.',
+	'd396a751' => 'Zurück',
+	'ebcb0841' => 'Weiter',
+	'd9d7983f' => 'Seite: %s',
+	'4e4fadfe' => 'Der Bereich konnte nicht vom gemeinsamen Layout getrennt werden',
+	'7ea4d2eb' => 'Die Zeile konnte nicht hinzugefügt werden',
+	'ceca6766' => 'Das Verschieben der Zeile wurde nicht gespeichert',
+	'79a7b4bb' => 'Das Erscheinungsbild der Zeile wurde nicht gespeichert',
+	'b9068b0f' => 'Die Zeile konnte nicht gelöscht werden',
+	'2dc09cba' => 'Die Spalte konnte nicht hinzugefügt werden',
+	'33d97864' => 'Das Verschieben der Spalte wurde nicht gespeichert',
+	'27fea8b0' => 'Die Spaltenbreite wurde nicht gespeichert',
+	'8bc2d8e9' => 'Die Spalte konnte nicht gelöscht werden',
+	'ceea4b71' => 'Das Widget konnte nicht hinzugefügt werden',
+	'555f89b3' => 'Das Verschieben des Widgets wurde nicht gespeichert',
+	'158c7404' => 'Die Widget-Einstellungen wurden nicht gespeichert',
+	'c1d9ee11' => 'Das Erscheinungsbild des Widgets wurde nicht gespeichert',
+	'04e895c2' => 'Das Widget konnte nicht gelöscht werden',
+	'5aa02bd0' => 'Die Änderung wurde nicht gespeichert',
+	'0980709a' => 'Fehler',
+	'9d433e55' => 'Die Anzeige entspricht nicht mehr dem gespeicherten Stand: Laden Sie die Seite neu.',
+	'88a46340' => 'Visueller Layout-Editor: Widgets per Drag & Drop in die Bereiche des Themes ziehen.',
+	'dd3795ad' => 'Menü',
 ];

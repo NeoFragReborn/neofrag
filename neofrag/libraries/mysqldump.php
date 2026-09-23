@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -178,13 +179,17 @@ class Mysqldump extends Library
 							{
 								$values[] = 'NULL';
 							}
+							// `(string)` : le pilote rend les colonnes numériques en entiers ou en flottants PHP, et
+							// sous strict_types (vague du 2026-09-21) str_replace() et escape_string() refusaient
+							// un entier — la SAUVEGARDE du Monitoring, et donc la mise à jour du cœur qui commence
+							// par elle, s'arrêtait à la première ligne. Trouvé le 2026-09-23 par check-mise-a-jour.
 							elseif (preg_match('#^[^(]*(BYTE|COUNTER|SERIAL|INT|LONG$|CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER)#i', $cols[$key]))
 							{
-								$values[] = str_replace(',', '.', $value);
+								$values[] = str_replace(',', '.', (string) $value);
 							}
 							else
 							{
-								$values[] = '\''.utf8_string($db()->escape_string($value)).'\'';
+								$values[] = '\''.utf8_string($db()->escape_string((string) $value)).'\'';
 							}
 						}
 

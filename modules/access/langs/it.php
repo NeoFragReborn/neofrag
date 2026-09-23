@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -118,4 +119,29 @@ return [
 	'1ce8c867' => 'Valore',
 	'f14f39cf' => 'Origine (ruolo)',
 	'e8058b83' => 'globale',
+	'ad15a3b6' => 'Nessun permesso da configurare per questo modulo.',
+	'cdeded7d' => 'Salvato',
+	'ce6fa2e6' => 'Errore di salvataggio',
+	'5c6aceb9' => 'Ruoli',
+	'4d8362df' => 'Nessuno',
+	'afccc23b' => 'Crea',
+	'6ddb4279' => 'Modifica ruolo',
+	'8fd9c7ef' => 'Salva',
+	'9b80ec64' => 'Utente',
+	'bde12464' => 'Vedi permessi effettivi',
+	'03158917' => 'Gruppo',
+	'd6cecdee' => 'Ruolo',
+	'2cecf817' => 'Tipo',
+	'caf5c873' => 'Azioni',
+	'eb78cff1' => 'Descrizione',
+	'53576710' => 'Gestione dei permessi per gruppo di utenti e per modulo.',
+	'83122521' => 'Super amministratore',
+	'b7d3e5ee' => 'Visitatore',
+	'd598edac' => 'Moderatore',
+	'9409e26b' => 'Moderatore senior',
+	'45069517' => 'Accesso completo al sistema. Equivale al flag nf_user.admin=1.',
+	'74e427de' => 'Utente connesso di base.',
+	'79263869' => 'Utente non autenticato (anonimo).',
+	'90130d8a' => 'Ruolo migrato dal gruppo nf_groups id 1.',
+	'41b16ae1' => 'Ruolo migrato dal gruppo nf_groups id 2. Eredita da moderation_junior.',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Corbeille admin : liste le contenu soft-deleted, filtre par type, restauration / purge en masse.
@@ -7,7 +8,6 @@
 namespace NF\Modules\Trash\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
-use NF\Modules\Trash\Trash;
 
 class Admin extends Controller_Module
 {
@@ -17,7 +17,7 @@ class Admin extends Controller_Module
 
 		// On ne garde que les types dont la table existe : un module optionnel non installé (modèle tout
 		// bundlé, activé à la carte) n'a pas sa table → sinon la requête fataliserait (« table doesn't exist »).
-		$types = array_filter(Trash::TYPES, function($cfg){
+		$types = array_filter($this->module('trash')->types(), function($cfg){
 			return NeoFrag()->db->table_exists($cfg['table']);
 		});
 
@@ -100,7 +100,9 @@ class Admin extends Controller_Module
 			foreach ($rows as $row)
 			{
 				$row['type']  = $type;
-				$row['label'] = $cfg['label'];
+				// Traduction a l'affichage : la declaration du module reste de la donnee pure
+				// (pas de dependance a la couche langue), ce qui la rend testable hors HTTP.
+				$row['label'] = $this->libelle($cfg);
 				$items[]      = $row;
 			}
 		}
@@ -110,15 +112,27 @@ class Admin extends Controller_Module
 		return $this->admin_card('fas fa-trash-restore', $this->lang('Corbeille'), $this->_render($items, $types, $filter));
 	}
 
+	/**
+	 * Le libellé d'un type, traduit au nom du module qui le DÉCLARE : « Galerie » est un texte du module
+	 * gallery, et la corbeille ne l'a pas dans ses traductions. Traduit au nom de la corbeille, il restait
+	 * en français sur le site anglais, avec une alerte au journal à chaque affichage (2026-09-23).
+	 */
+	private function libelle(array $cfg)
+	{
+		$proprietaire = !empty($cfg['module']) ? NeoFrag()->module($cfg['module']) : NULL;
+
+		return ($proprietaire ?: $this)->lang($cfg['label']);
+	}
+
 	private function _render(array $items, array $types, $filter)
 	{
 		// Barre de filtre par type.
 		$toolbar = '<form method="get" action="'.url('admin/trash').'" style="margin-bottom:12px;">'
-			.'<select name="type" class="form-control form-control-sm" style="width:auto;display:inline-block;" data-nf-submit-on-change>'
+			.'<select name="type" class="form-select form-select-sm" style="width:auto;display:inline-block;" data-nf-submit-on-change>'
 			.'<option value="">'.$this->lang('Tous les types').'</option>';
 		foreach ($types as $type => $cfg)
 		{
-			$toolbar .= '<option value="'.$type.'"'.($filter === $type ? ' selected' : '').'>'.htmlspecialchars($cfg['label']).'</option>';
+			$toolbar .= '<option value="'.$type.'"'.($filter === $type ? ' selected' : '').'>'.htmlspecialchars((string) $this->libelle($cfg)).'</option>';
 		}
 		$toolbar .= '</select></form>';
 
@@ -131,15 +145,15 @@ class Admin extends Controller_Module
 		foreach ($items as $it)
 		{
 			$rows .= '<tr>'
-				.'<td><input type="checkbox" name="selected[]" value="'.htmlspecialchars($it['type'].':'.(int)$it['id']).'" class="nf-trash-cb"></td>'
-				.'<td><span class="badge text-bg-secondary">'.htmlspecialchars($it['label']).'</span></td>'
-				.'<td>'.htmlspecialchars(str_shortener(trim(strip_tags((string)$it['title'])), 80, '…')).'</td>'
+				.'<td><input type="checkbox" name="selected[]" value="'.htmlspecialchars((string) ($it['type'].':'.(int)$it['id'])).'" class="nf-trash-cb"></td>'
+				.'<td><span class="badge text-bg-secondary">'.htmlspecialchars((string) ($it['label'])).'</span></td>'
+				.'<td>'.htmlspecialchars((string) (str_shortener(trim(strip_tags((string)$it['title'])), 80, '…'))).'</td>'
 				.'<td><small>'.htmlspecialchars((string)$it['deleted_at']).'</small></td>'
 				.'<td><small>'.($it['deleted_by'] ? htmlspecialchars((string)$it['deleted_by']) : '—').'</small></td>'
 				.'</tr>';
 		}
 
-		$confirm_purge = htmlspecialchars($this->lang('Purger définitivement la sélection ? Action irréversible.'), ENT_QUOTES);
+		$confirm_purge = htmlspecialchars((string) ($this->lang('Purger définitivement la sélection ? Action irréversible.')), ENT_QUOTES);
 
 		return $toolbar
 			.'<form method="post" action="'.url('admin/trash').'"><input type="hidden" name="_" value="'.$this->csrf_token().'">'

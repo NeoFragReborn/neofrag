@@ -1,0 +1,46 @@
+# La configuration de PHPStan, sans la baseline. `phpstan.neon` l'inclut avec la baseline pour
+# l'analyse ordinaire ; `composer stan:baseline` analyse avec ce fichier seul pour régénérer la
+# baseline entière — incluse, elle masquerait ses propres entrées et la régénération rendrait un
+# fichier vide.
+parameters:
+    # Niveau volontairement bas : le cœur repose massivement sur des magic methods (__get/__call,
+    # service locator) → les niveaux élevés produisent surtout du bruit. À ce niveau on attrape
+    # l'essentiel à fort signal : variables/méthodes/fonctions indéfinies, mauvais nombre d'arguments
+    # (c.-à-d. exactement la classe de bug type $mail->AddCC). Le legacy est gelé via le baseline.
+    level: 2
+    phpVersion: 80200
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    scanDirectories:
+        - vendor
+    paths:
+        - neofrag
+        - modules
+        - widgets
+        - addons
+    excludePaths:
+        # Code d'install/migrations historique (upstream) : hors périmètre du filet.
+        - neofrag/install/*
+    ignoreErrors:
+        # config/ n'est pas versionné : sur un dépôt nu (la CI), PHPStan ne trouve pas config/url.php,
+        # que site_origin() n'inclut d'ailleurs qu'après avoir vérifié qu'il existe.
+        -
+            identifier: include.fileNotFound
+            path: neofrag/helpers/location.php
+        # Un gabarit, un formulaire, une table est INCLUS par la bibliothèque qui l'affiche, au sein de
+        # l'objet appelant : `$this` y est toujours défini — PHPStan, lui, lit le fichier seul. Ces
+        # entrées se comptaient par centaines dans la baseline, fichier par fichier, et chaque
+        # `$this->lang()` ajouté à une vue en changeait le compte (2026-09-23, la vitrine traduite).
+        -
+            message: '#^Variable \$this might not be defined\.$#'
+            paths:
+                - */views/*
+                - */forms/*
+                - */tables/*
+        -
+            message: '#^Undefined variable: \$this$#'
+            paths:
+                - */views/*
+                - */forms/*
+                - */tables/*
+    reportUnmatchedIgnoredErrors: false

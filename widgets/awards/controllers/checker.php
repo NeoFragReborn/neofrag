@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -13,7 +14,7 @@ class Checker extends Controller
 	{
 		return [
 			'count'         => max(1, min(20, (int)($settings['count'] ?? 5))),
-			'display_panel' => in_array($settings['display_panel'] ?? 'oui', ['oui', 'non'], TRUE) ? $settings['display_panel'] : 'oui'
+			'display_panel' => in_array($settings['display_panel'] ?? 'oui', ['oui', 'non'], TRUE) ? ($settings['display_panel'] ?? 'oui') : 'oui'
 		];
 	}
 }

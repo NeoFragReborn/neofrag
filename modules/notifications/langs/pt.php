@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'd37efb26' => 'Notificações',

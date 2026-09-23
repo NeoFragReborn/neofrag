@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -21,9 +22,9 @@ class Checker extends Controller
 
 		return [
 			'group'        => $group,
-			'show_avatar'  => in_array($settings['show_avatar']  ?? '1', ['0', '1'], TRUE) ? $settings['show_avatar']  : '1',
-			'show_summary' => in_array($settings['show_summary'] ?? '0', ['0', '1'], TRUE) ? $settings['show_summary'] : '0',
-			'display'      => in_array($settings['display']      ?? 'compact', ['compact', 'full'], TRUE) ? $settings['display'] : 'compact'
+			'show_avatar'  => in_array($settings['show_avatar']  ?? '1', ['0', '1'], TRUE) ? ($settings['show_avatar'] ?? '1')  : '1',
+			'show_summary' => in_array($settings['show_summary'] ?? '0', ['0', '1'], TRUE) ? ($settings['show_summary'] ?? '0') : '0',
+			'display'      => in_array($settings['display']      ?? 'compact', ['compact', 'full'], TRUE) ? ($settings['display'] ?? 'compact') : 'compact'
 		];
 	}
 }

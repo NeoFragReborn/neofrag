@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -144,4 +145,29 @@ return [
 	'1a3e614b' => 'Eliminar definitivamente?',
 	'81d7f96a' => 'Guardado.',
 	'42888b00' => 'Concluído.',
+	'b8f68c38' => 'O manifesto de atualização está incompleto: nome do pacote ou impressão SHA-256 em falta ou inválido.',
+	'd7899acc' => 'Atualização interrompida: %s',
+	'3750c510' => 'O navio está a afundar!',
+	'd6760697' => 'Icebergue à vista!',
+	'461c4f0b' => 'Tudo em ordem, capitão!',
+	'f3dba025' => 'Cópia de segurança em curso...',
+	'1e22cbbf' => 'O site foi reposto no estado em que estava antes da atualização.',
+	'13648960' => 'A reversão também falhou (%s). A cópia de segurança %s está intacta: pode ser restaurada a partir do painel de monitorização ou transferida.',
+	'135a26db' => 'Cópia de segurança restaurada: %d ficheiros repostos, %d vestígios removidos, base de dados reimportada.',
+	'b63665a3' => 'A restauração falhou: %s',
+	'66d26b7f' => 'Restaurar',
+	'8335d9bb' => 'Repor o site no estado de %s? Os ficheiros e a base de dados serão substituídos pelos desta cópia de segurança; tudo o que foi publicado desde então será perdido. A configuração, os registos e a cache não são alterados.',
+	'500cc9c4' => 'Confirmação',
+	'0aac9844' => 'Data',
+	'54cb6c83' => 'Ficheiro',
+	'71fc8e0e' => 'Tamanho',
+	'caf5c873' => 'Ações',
+	'445a0d6e' => 'Transferir',
+	'8fd9c7ef' => 'Guardar',
+	'0f0f9344' => 'B',
+	'4cbee36c' => 'Utilizado',
+	'882cc3ca' => 'Aviso',
+	'f0823f1d' => 'Conselho',
+	'4ab31b94' => 'Cópia de segurança guardada na pasta <b>backups</b> do teu FTP',
+	'f512948d' => 'Monitorização',
 ];

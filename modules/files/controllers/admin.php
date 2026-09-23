@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: HiddenCMS — porté sur NeoFrag Reborn
@@ -833,7 +834,7 @@ class Admin extends Controller_Module
 				return $a['dir'] ? -1 : 1;
 			}
 
-			return strnatcasecmp($a['name'], $b['name']);
+			return strnatcasecmp((string) $a['name'], (string) $b['name']);
 		});
 
 		if (empty($items))
@@ -940,16 +941,15 @@ class Admin extends Controller_Module
 						.'<input type="hidden" name="files_action" value="mkdir">'
 						.'<div class="modal-header">'
 							.'<h5 class="modal-title">'.icon('fas fa-folder-plus').' '.$this->lang('Creer un dossier').'</h5>'
-							.'<button type="button" class="close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'">'
-								.'<span aria-hidden="true">&times;</span>'
+							.'<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'">'
 							.'</button>'
 						.'</div>'
 						.'<div class="modal-body">'
-							.'<div class="form-group">'
+							.'<div class="nf-field">'
 								.'<label>'.$this->lang('Nom du dossier').'</label>'
 								.'<input class="form-control" type="text" name="name" placeholder="'.$this->lang('Nouveau dossier').'" required>'
 							.'</div>'
-							.'<div class="form-group mb-0">'
+							.'<div class="nf-field mb-0">'
 								.'<label>'.$this->lang('Chemin').'</label>'
 								.$this->render_path_input($dir)
 								.'<small class="form-text text-muted">'.$this->lang('Tapez pour afficher les dossiers existants').'</small>'
@@ -977,8 +977,7 @@ class Admin extends Controller_Module
 						.'<input type="hidden" name="files_action" value="upload">'
 						.'<div class="modal-header">'
 							.'<h5 class="modal-title">'.icon('fas fa-upload').' '.$this->lang('Ajouter des fichiers').'</h5>'
-							.'<button type="button" class="close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'">'
-								.'<span aria-hidden="true">&times;</span>'
+							.'<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'">'
 							.'</button>'
 						.'</div>'
 						.'<div class="modal-body">'
@@ -1013,18 +1012,17 @@ class Admin extends Controller_Module
 						.'<div class="files-selected-inputs"></div>'
 						.'<div class="modal-header">'
 							.'<h5 class="modal-title">'.icon('fas fa-exchange-alt').' '.$this->lang('Deplacer la selection').'</h5>'
-							.'<button type="button" class="close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'">'
-								.'<span aria-hidden="true">&times;</span>'
+							.'<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'">'
 							.'</button>'
 						.'</div>'
 						.'<div class="modal-body">'
 							.'<p class="files-selected-summary text-muted"></p>'
-							.'<div class="form-group files-rename-field">'
+							.'<div class="nf-field files-rename-field">'
 								.'<label>'.$this->lang('Nom').'</label>'
 								.'<input class="form-control" type="text" name="name">'
 								.'<small class="form-text text-muted">'.$this->lang('Disponible uniquement pour un seul element selectionne').'</small>'
 							.'</div>'
-							.'<div class="form-group mb-0">'
+							.'<div class="nf-field mb-0">'
 								.'<label>'.$this->lang('Chemin de destination').'</label>'
 								.$this->render_path_input($dir)
 							.'</div>'
@@ -1052,8 +1050,7 @@ class Admin extends Controller_Module
 						.'<div class="files-selected-inputs"></div>'
 						.'<div class="modal-header">'
 							.'<h5 class="modal-title">'.icon('far fa-trash-alt').' '.$this->lang('Supprimer la selection').'</h5>'
-							.'<button type="button" class="close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'">'
-								.'<span aria-hidden="true">&times;</span>'
+							.'<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'">'
 							.'</button>'
 						.'</div>'
 						.'<div class="modal-body">'

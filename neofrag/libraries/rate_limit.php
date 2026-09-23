@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Rate limiting library — anti-brute-force / anti-spam.
@@ -68,8 +69,9 @@ class Rate_Limit extends Library
 			];
 		}
 
-		// Reset si fenêtre dépassée ou pas de row
-		if (!$row || ($now - (int)($row['first_attempt_ts'] ?? 0)) > $windowSeconds)
+		// Nouvelle fenêtre (pas de ligne, ou fenêtre dépassée) : on repart de 1 — mais le seuil vaut dès la
+		// première tentative : un seuil de 1 doit bloquer tout de suite (il ne le faisait pas).
+		if (!$row || ($now - (int)($row['first_attempt_ts'] ?? 0)) > (int) $windowSeconds)
 		{
 			NeoFrag()->db->replace('nf_rate_limit', [
 				'rate_key'         => $key,
@@ -78,12 +80,14 @@ class Rate_Limit extends Library
 				'locked_until'     => NULL,
 			]);
 
-			return ['attempts' => 1, 'locked' => FALSE, 'retry_after' => 0];
+			$attempts = 1;
+		}
+		else
+		{
+			$attempts = (int)$row['attempts'] + 1;
 		}
 
-		// Incrémenter
-		$attempts = (int)$row['attempts'] + 1;
-		$locked   = $attempts >= $maxAttempts;
+		$locked = $attempts >= (int) $maxAttempts;
 
 		if ($locked)
 		{
@@ -98,12 +102,15 @@ class Rate_Limit extends Library
 			return [
 				'attempts'    => $attempts,
 				'locked'      => TRUE,
-				'retry_after' => $lockoutSeconds
+				'retry_after' => (int) $lockoutSeconds
 			];
 		}
 
-		NeoFrag()->db	->where('rate_key', $key)
-						->update('nf_rate_limit', ['attempts' => $attempts]);
+		if ($attempts > 1)
+		{
+			NeoFrag()->db	->where('rate_key', $key)
+							->update('nf_rate_limit', ['attempts' => $attempts]);
+		}
 
 		return ['attempts' => $attempts, 'locked' => FALSE, 'retry_after' => 0];
 	}
@@ -141,7 +148,7 @@ class Rate_Limit extends Library
 			{
 				if (!empty($_SERVER[$h]))
 				{
-					$ip = trim(explode(',', $_SERVER[$h])[0]);
+					$ip = trim(explode(',', (string) $_SERVER[$h])[0]);
 
 					if (filter_var($ip, FILTER_VALIDATE_IP) !== FALSE)
 					{

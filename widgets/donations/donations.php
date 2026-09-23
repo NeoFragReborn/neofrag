@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -14,8 +15,13 @@ class Donations extends Widget
 		return [
 			'title'       => $this->lang('Campagne de dons'),
 			'description' => $this->lang('Affiche la progression d\'une campagne de dons : barre de progression, montant collecté, top donateurs et bouton "Faire un don".'),
+			'icon'        => 'fas fa-hand-holding-heart',
 			'author'      => 'NeoFrag',
 			'license'     => 'LGPLv3',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '1.0',
 			'depends'     => ['neofrag' => '0.2.0'],
 			'types'       => [

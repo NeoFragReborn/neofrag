@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -91,7 +92,7 @@ class Index extends Controller_Module
 							'image'          => $image,
 							'count'          => count($this->model()->get_images($gallery_id))
 						]), FALSE)
-						->footer_if($this->access('gallery', 'gallery_post', $gallery_id), $this->button($this->lang('Poster une image'), 'fas fa-plus', 'primary btn-block')->modal_ajax('ajax/gallery/post/'.$gallery_id.'/'.url_title($name)))
+						->footer_if($this->access('gallery', 'gallery_post', $gallery_id), $this->button($this->lang('Poster une image'), 'fas fa-plus', 'primary d-block w-100')->modal_ajax('ajax/gallery/post/'.$gallery_id.'/'.url_title($name)))
 						->size('col-12 col-lg-4')
 			),
 			$this->col(
@@ -101,5 +102,27 @@ class Index extends Controller_Module
 				])
 			)->size('col-12 col-lg-8')
 		);
+	}
+
+	public function _image($image_id, $original_file_id, $gallery_id, $title, $description, $gallery_name, $gallery_title)
+	{
+		$album = 'gallery/album/'.$gallery_id.'/'.$gallery_name;
+
+		$this	->title($title)
+				->breadcrumb($gallery_title, $album)
+				->breadcrumb($title);
+
+		return $this->array()
+					->append($this->row($this->col(
+						$this	->panel()
+								->heading($title, 'far fa-image')
+								->body($this->view('image', [
+									'original_file_id' => $original_file_id
+								]).($description ? '<p class="mt-3 mb-0">'.bbcode($description).'</p>' : ''))
+								->footer('<a href="'.url($album).'">'.icon('fas fa-arrow-left').' '.$this->lang('Retour à l\'album %s', $gallery_title).'</a>', 'left')
+					)))
+					->append_if(($comments = $this->module('comments')) && $comments->is_enabled(), function() use (&$comments, $image_id){
+						return $this->row($this->col($comments('gallery', $image_id)));
+					});
 	}
 }

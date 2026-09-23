@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -19,8 +20,8 @@ class Index extends Controller_Module
 			if (($recruit['closed'] || ($recruit['candidacies_accepted'] >= $recruit['size']) || ($recruit['date_end'] && strtotime($recruit['date_end']) < time())) && !$this->config->recruits_hide_unavailable)
 			{
 				$panels->append($this	->panel()
-										->heading($recruit['title'], $recruit['icon'] ?: 'fas fa-bullhorn')
-										->body('Cette offre n\'est plus disponible actuellement.')
+										->heading($this->no_translate($recruit['title']), $recruit['icon'] ?: 'fas fa-bullhorn') // titre saisi en base
+										->body($this->lang('Cette offre n\'est plus disponible actuellement.'))
 										->color('info'));
 			}
 			else
@@ -31,11 +32,14 @@ class Index extends Controller_Module
 				}
 				else
 				{
-					$footer = '<a href="'.url('recruits/'.$recruit['recruit_id'].'/'.url_title($recruit['title'])).'" class="btn btn-light">'.icon('far fa-eye').' '.$this->lang('En savoir plus').'</a> <a href="'.url('recruits/postulate/'.$recruit['recruit_id'].'/'.url_title($recruit['title'])).'" class="btn btn-primary">'.icon('fas fa-briefcase').' '.$this->lang('Postuler').'</a>';
+					// « Postuler » seulement pour qui en a la permission : le checker de `postulate` la
+					// vérifie, et le bouton menait sinon à un refus.
+					$footer = '<a href="'.url('recruits/'.$recruit['recruit_id'].'/'.url_title($recruit['title'])).'" class="btn btn-light">'.icon('far fa-eye').' '.$this->lang('En savoir plus').'</a>'
+							.($this->access('recruits', 'recruit_postulate', $recruit['recruit_id']) ? ' <a href="'.url('recruits/postulate/'.$recruit['recruit_id'].'/'.url_title($recruit['title'])).'" class="btn btn-primary">'.icon('fas fa-briefcase').' '.$this->lang('Postuler').'</a>' : '');
 				}
 
 				$panels->append($this	->panel()
-										->heading($candidacy ? $recruit['title'].'<div class="float-end"><span class="badge text-bg-dark">'.$this->lang('J\'ai postulé !').'</span></div>' : $recruit['title'], $recruit['icon'] ?: 'fas fa-bullhorn', 'recruits/'.$recruit['recruit_id'].'/'.url_title($recruit['title']))
+										->heading($this->no_translate($candidacy ? $recruit['title'].'<div class="float-end"><span class="badge text-bg-dark">'.$this->lang('J\'ai postulé !').'</span></div>' : $recruit['title']), $recruit['icon'] ?: 'fas fa-bullhorn', 'recruits/'.$recruit['recruit_id'].'/'.url_title($recruit['title'])) // titre saisi en base
 										->body($this->view('index', [
 											'recruit_id'   => $recruit['recruit_id'],
 											'title'        => $recruit['title'],
@@ -80,9 +84,12 @@ class Index extends Controller_Module
 			}
 			else
 			{
-				if ($this->access('recruits', 'recruit_postulate', $recruit_id))
+				// Les mêmes conditions que le checker de `postulate` : une offre fermée ou complète
+				// affichait « Postuler », et le clic menait à un refus (403, trouvé par check-liens le
+				// 2026-09-22). La permission et la date sont déjà vérifiées au-dessus.
+				if (!$closed && $candidacies_accepted < $size)
 				{
-					$href = '<a href="'.url('recruits/postulate/'.$recruit_id.'/'.url_title($title)).'" class="btn btn-primary btn-block">'.icon('fas fa-briefcase').' '.$this->lang('Postuler').'</a>';
+					$href = '<a href="'.url('recruits/postulate/'.$recruit_id.'/'.url_title($title)).'" class="btn btn-primary d-block w-100">'.icon('fas fa-briefcase').' '.$this->lang('Postuler').'</a>';
 				}
 				else
 				{
@@ -146,9 +153,9 @@ class Index extends Controller_Module
 																			'team_name' => $team_name
 																		]))
 									)
-									->size('col-6'),
+									->size('col-12 col-lg-6'),
 							$this	->col($postulate_panel)
-									->size('col-6')
+									->size('col-12 col-lg-6')
 						)
 					);
 	}
@@ -219,7 +226,7 @@ class Index extends Controller_Module
 						])
 						->add_rules($custom_rules)
 						->add_captcha()
-						->add_submit($this->lang('Envoyer ma candidature'));
+						->add_submit($this->lang('Envoyer ma candidature'), 'fas fa-paper-plane');
 
 				if ($this->form()->is_valid($post))
 				{
@@ -262,7 +269,9 @@ class Index extends Controller_Module
 							try
 							{
 								$sender_id = (int)$this->user->id ?: (int)$recipients[0]['id'];
-								$body      = '<div class="alert alert-info m-0"><b>Message automatique.</b><br />Une nouvelle candidature vient d\'être déposée par '.($this->user->id ? htmlspecialchars($user['username']) : htmlspecialchars($post['pseudo'])).'.<br /><br />Pour la visualiser, <a href="'.url('admin/recruits/candidacy/'.$candidacy_id.'/'.url_title($title)).'">cliquer ici</a>.</div>';
+								$body      = '<div class="alert alert-info m-0"><b>'.$this->lang('Message automatique.').'</b><br />'
+								           .$this->lang('Une nouvelle candidature vient d\'être déposée par %s.', htmlspecialchars((string) ($this->user->id ? $this->user->username : $post['pseudo'])))
+								           .'<br /><br />'.$this->lang('Pour la visualiser, <a href="%s">cliquer ici</a>.', url('admin/recruits/candidacy/'.$candidacy_id.'/'.url_title($title))).'</div>';
 
 								foreach ($recipients as $recipient)
 								{
@@ -271,7 +280,7 @@ class Index extends Controller_Module
 									$talk_id = $talks->model()->create_conversation(
 										$sender_id,
 										'direct',
-										'Candidature : '.$title,
+										(string) $this->lang('Candidature : %s', $title),
 										'',
 										[(int)$recipient['id']]
 									);

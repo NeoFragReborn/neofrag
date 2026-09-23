@@ -3,7 +3,7 @@ $accent = $this->config->forge_theme_color ?: '#e2502b';
 ?>
 <div class="nf-le-style-section">
 	<h6 class="nf-le-style-grid-title"><?php echo icon('far fa-square') ?> <?php echo $this->lang('Apparence du widget') ?></h6>
-	<div class="nf-le-style-grid" data-target="widget">
+	<div class="nf-le-style-grid" data-nf-target="widget">
 		<button type="button" class="nf-le-style-card live-editor-overview" data-style="panel-default" data-label="<?php echo $this->lang('Widget classique') ?>">
 			<span class="nf-le-style-thumb">
 				<svg viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

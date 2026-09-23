@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -19,7 +20,8 @@ class Admin extends Controller_Module
 		$tabs = [
 			['key' => 'index',     'url' => 'admin/user',           'icon' => 'fas fa-users',          'title' => $this->lang('Membres')],
 			['key' => 'sessions',  'url' => 'admin/user/sessions',  'icon' => 'fas fa-globe',          'title' => $this->lang('Sessions')],
-			['key' => 'audit-log', 'url' => 'admin/user/audit-log', 'icon' => 'fas fa-clipboard-list', 'title' => $this->lang('Journal d\'audit')]
+			['key' => 'audit-log', 'url' => 'admin/user/audit-log', 'icon' => 'fas fa-clipboard-list', 'title' => $this->lang('Journal d\'audit')],
+			['key' => 'fields',    'url' => 'admin/user/fields',    'icon' => 'fas fa-list-ul',        'title' => $this->lang('Champs de profil')]
 		];
 
 		$html = '<div class="nf-local-nav">';
@@ -27,7 +29,7 @@ class Admin extends Controller_Module
 		{
 			$is_active = ($t['key'] === $active);
 			$html .= '<a class="nf-local-tab'.($is_active ? ' active' : '').'" href="'.url($t['url']).'">';
-			$html .= '<i class="'.$t['icon'].'"></i> '.htmlspecialchars($t['title']);
+			$html .= '<i class="'.$t['icon'].'"></i> '.htmlspecialchars((string) ($t['title']));
 			$html .= '</a>';
 		}
 		$html .= '</div>';
@@ -70,7 +72,7 @@ class Admin extends Controller_Module
 			$groups_html .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/user/groups/edit/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
 			if (!$is_auto)
 			{
-				$groups_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/user/groups/delete/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer ce groupe ?')).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				$groups_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/user/groups/delete/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce groupe ?'))).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 			}
 			$groups_html .= '</span>';
 			$groups_html .= '</li>';
@@ -106,7 +108,7 @@ class Admin extends Controller_Module
 			$members_html .= '<div class="nf-member-avatar-wrap">'.$user->avatar().'<span class="nf-member-status '.($is_online ? 'online' : 'offline').'" title="'.($is_online ? $this->lang('En ligne') : $this->lang('Hors ligne')).'"></span></div>';
 			$members_html .= '<div class="nf-member-identity">';
 			$members_html .= '<div class="nf-member-name">'.$user->link().'</div>';
-			$members_html .= '<a class="nf-member-email" href="mailto:'.htmlspecialchars($user->email).'">'.htmlspecialchars($user->email).'</a>';
+			$members_html .= '<a class="nf-member-email" href="mailto:'.htmlspecialchars((string) ($user->email)).'">'.htmlspecialchars((string) ($user->email)).'</a>';
 			$members_html .= '</div>';
 			$members_html .= '</div>';
 
@@ -124,7 +126,7 @@ class Admin extends Controller_Module
 						$tooltip_lines[] = strip_tags((string)NeoFrag()->groups->display($sid, TRUE, FALSE));
 					}
 					$tooltip_text = implode(' • ', $tooltip_lines);
-					$members_html .= '<span class="nf-member-groups-more" data-bs-toggle="tooltip" title="'.htmlspecialchars($tooltip_text).'">+'.count($secondary_ids).'</span>';
+					$members_html .= '<span class="nf-member-groups-more" data-bs-toggle="tooltip" title="'.htmlspecialchars((string) ($tooltip_text)).'">+'.count($secondary_ids).'</span>';
 				}
 				$members_html .= '</div>';
 			}
@@ -145,7 +147,7 @@ class Admin extends Controller_Module
 			{
 				$members_html .= '<a class="btn btn-sm btn-outline-warning" href="'.url('admin/user/totp-reset/'.$user->id.'/'.url_title($user->username)).'" title="'.$this->lang('Réinitialiser le 2FA').'"><i class="fas fa-shield-alt"></i></a>';
 			}
-			$members_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/user/delete/'.$user->id.'/'.url_title($user->username)).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer %s ?', $user->username)).'" title="'.$this->lang('Supprimer').'"><i class="fas fa-trash"></i></a>';
+			$members_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/user/delete/'.$user->id.'/'.url_title($user->username)).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer %s ?', $user->username))).'" title="'.$this->lang('Supprimer').'"><i class="fas fa-trash"></i></a>';
 			$members_html .= '</div>';
 
 			$members_html .= '</div>';
@@ -183,6 +185,7 @@ class Admin extends Controller_Module
 		$members = $this->db	->select('id', 'username', 'email', 'registration_date', 'last_activity_date', 'admin')
 								->from('nf_user')
 								->where('deleted', '0')
+								->where('id !=', nf_compte_masque())
 								->order_by('id')
 								->get(FALSE);
 
@@ -228,6 +231,180 @@ class Admin extends Controller_Module
 		exit;
 	}
 
+	/**
+	 * Champs de profil définis par l'administrateur.
+	 *
+	 * Le profil livré couvre l'état civil et les réseaux ; ces champs-ci laissent une communauté
+	 * ajouter ce qui lui est propre sans qu'on livre une migration à chaque fois.
+	 */
+	public function _fields()
+	{
+		$this	->title($this->lang('Membres'))
+				->subtitle($this->lang('Champs de profil'))
+				->icon('fas fa-list-ul');
+
+		$types = [
+			'text'     => $this->lang('Texte court'),
+			'textarea' => $this->lang('Texte long'),
+			'select'   => $this->lang('Liste déroulante'),
+			'radio'    => $this->lang('Choix unique'),
+			'checkbox' => $this->lang('Case à cocher'),
+			'url'      => $this->lang('Adresse web'),
+			'number'   => $this->lang('Nombre'),
+			'date'     => $this->lang('Date'),
+		];
+
+		/** @var \NF\Modules\User\Models\Fields $fields */
+		$fields = $this->model('fields');
+		$champs = $fields->get_fields();
+		$lignes = '';
+
+		foreach ($champs as $champ)
+		{
+			$lignes .= '<tr>'
+				.'<td><b>'.htmlspecialchars((string) ($champ['label'])).'</b>'
+				.'<br /><small class="text-muted"><code>'.htmlspecialchars((string) ($champ['name'])).'</code></small></td>'
+				.'<td>'.htmlspecialchars((string) ($types[$champ['type']] ?? $champ['type'])).'</td>'
+				.'<td>'.($champ['required'] ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-minus text-muted"></i>').'</td>'
+				.'<td>'.($champ['public']
+					? '<i class="fas fa-eye text-success" title="'.htmlspecialchars((string) ($this->lang('Visible sur la fiche publique'))).'"></i>'
+					: '<i class="fas fa-eye-slash text-muted" title="'.htmlspecialchars((string) ($this->lang('Privé'))).'"></i>').'</td>'
+				.'<td class="text-end">'
+				.'<a class="btn btn-sm btn-outline-primary" href="'.url('admin/user/fields/edit/'.$champ['field_id'].'/'.url_title($champ['label'])).'"><i class="fas fa-pen"></i></a> '
+				.'<a class="btn btn-sm btn-outline-danger" href="'.url('admin/user/fields/delete/'.$champ['field_id'].'/'.url_title($champ['label'])).'"><i class="far fa-trash-alt"></i></a>'
+				.'</td></tr>';
+		}
+
+		$table = $champs
+			? '<table class="table table-striped align-middle"><thead><tr>'
+				.'<th>'.$this->lang('Libellé').'</th><th>'.$this->lang('Type').'</th>'
+				.'<th>'.$this->lang('Obligatoire').'</th><th>'.$this->lang('Public').'</th><th></th>'
+				.'</tr></thead><tbody>'.$lignes.'</tbody></table>'
+			: '<p class="text-muted mb-0">'.$this->lang('Aucun champ supplémentaire. Le profil livré reste disponible tel quel.').'</p>';
+
+		$ajouter = '<a class="btn btn-sm btn-primary" href="'.url('admin/user/fields/add').'">'.icon('fas fa-plus').' '.$this->lang('Ajouter un champ').'</a>';
+
+		return $this->_user_subnav('fields')
+			.$this->admin_card('fas fa-list-ul', $this->lang('Champs de profil'), $table, '', $ajouter);
+	}
+
+	public function _fields_add()
+	{
+		$this	->title($this->lang('Champs de profil'))
+				->subtitle($this->lang('Ajouter'))
+				->form()
+				->add_rules('field')
+				->add_back('admin/user/fields')
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus');
+
+		if ($this->form()->is_valid($post))
+		{
+			/** @var \NF\Modules\User\Models\Fields $fields */
+			$fields = $this->model('fields');
+			$fields->add_field(
+				$post['label'],
+				$post['type'],
+				$post['options'],
+				in_array('on', (array) $post['required']),
+				in_array('on', (array) $post['public']),
+				(string) $post['description']
+			);
+
+			notify($this->lang('Champ ajouté'));
+
+			redirect('admin/user/fields');
+		}
+
+		return $this->panel()
+					->heading($this->lang('Ajouter un champ'), 'fas fa-plus')
+					->body($this->form()->display())
+					->size('col-12');
+	}
+
+	public function _fields_edit($field_id, $name, $label, $description, $type, $options, $required, $public)
+	{
+		$this	->title($this->lang('Champs de profil'))
+				->subtitle($label)
+				->form()
+				->add_rules('field', [
+					'label'       => $label,
+					'description' => $description,
+					'type'        => $type,
+					'options'     => $options,
+					'required'    => $required,
+					'public'      => $public,
+				])
+				->add_back('admin/user/fields')
+				// Sans libellé, `add_submit()` levait une ArgumentCountError : l'écran d'édition d'un
+				// champ de profil plantait à chaque ouverture (trouvé par check-liens, 2026-09-22).
+				->add_submit($this->lang('Enregistrer'));
+
+		if ($this->form()->is_valid($post))
+		{
+			/** @var \NF\Modules\User\Models\Fields $fields */
+			$fields = $this->model('fields');
+			$fields->edit_field(
+				$field_id,
+				$post['label'],
+				$post['type'],
+				$post['options'],
+				in_array('on', (array) $post['required']),
+				in_array('on', (array) $post['public']),
+				(string) $post['description']
+			);
+
+			notify($this->lang('Champ modifié'));
+
+			redirect('admin/user/fields');
+		}
+
+		// Le nom technique est rappelé mais jamais modifiable : il relie la définition aux valeurs
+		// que les membres ont déjà saisies.
+		$rappel = '<p class="text-muted"><small>'
+			.$this->lang('Nom technique : %s — fixé à la création, il ne change pas.', '<code>'.htmlspecialchars((string) ($name)).'</code>')
+			.'</small></p>';
+
+		return $this->panel()
+					->heading($this->lang('Modifier un champ'), 'fas fa-pen')
+					->body($rappel.$this->form()->display())
+					->size('col-12');
+	}
+
+	public function _fields_delete($field_id, $label)
+	{
+		$this	->title($this->lang('Confirmation de suppression'))
+				->form()
+				->confirm_deletion(
+					$this->lang('Confirmation de suppression'),
+					$this->lang('Supprimer le champ <b>%s</b> effacera aussi ce que les membres y ont saisi. Continuer ?', htmlspecialchars((string) ($label)))
+				);
+
+		if ($this->form()->is_valid())
+		{
+			/** @var \NF\Modules\User\Models\Fields $fields */
+			$fields = $this->model('fields');
+			$fields->delete_field($field_id);
+
+			notify($this->lang('Champ supprimé'));
+
+			redirect('admin/user/fields');
+		}
+
+		return $this->form()->display();
+	}
+
+	public function _fields_sort()
+	{
+		if ($ordre = post('ordre'))
+		{
+			/** @var \NF\Modules\User\Models\Fields $fields */
+			$fields = $this->model('fields');
+			$fields->sort_fields((array) $ordre);
+		}
+
+		return TRUE;
+	}
+
 	public function _groups_add()
 	{
 		$this	->title($this->lang('Groupes'))
@@ -235,7 +412,7 @@ class Admin extends Controller_Module
 				->form()
 				->add_rules('groups')
 				->add_back('admin/user')
-				->add_submit($this->lang('Ajouter'));
+				->add_submit($this->lang('Ajouter'), 'fas fa-plus');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -376,21 +553,21 @@ class Admin extends Controller_Module
 					? '<span class="badge text-bg-success">OK</span>'
 					: '<span class="badge text-bg-danger">FAIL</span>';
 				$user_disp = $row['username']
-					? htmlspecialchars($row['username']).' (#'.($row['user_id'] ?: '?').')'
+					? htmlspecialchars((string) ($row['username'])).' (#'.($row['user_id'] ?: '?').')'
 					: '<i class="text-muted">anonyme</i>';
 				$target = $row['target_type']
-					? htmlspecialchars($row['target_type']).':'.htmlspecialchars($row['target_id'] ?? '')
+					? htmlspecialchars((string) ($row['target_type'])).':'.htmlspecialchars((string) ($row['target_id'] ?? ''))
 					: '<i class="text-muted">-</i>';
 				$details = $row['details']
-					? '<code style="font-size:11px">'.htmlspecialchars(substr($row['details'], 0, 80)).(strlen($row['details']) > 80 ? '…' : '').'</code>'
+					? '<code style="font-size:11px">'.htmlspecialchars((string) (substr($row['details'], 0, 80))).(strlen($row['details']) > 80 ? '…' : '').'</code>'
 					: '<i class="text-muted">-</i>';
 
 				$body .= '<tr>'
 					.'<td>'.date('Y-m-d H:i:s', $row['created_ts']).'</td>'
 					.'<td>'.$user_disp.'</td>'
-					.'<td><code>'.htmlspecialchars($row['action']).'</code></td>'
+					.'<td><code>'.htmlspecialchars((string) ($row['action'])).'</code></td>'
 					.'<td>'.$target.'</td>'
-					.'<td><small>'.htmlspecialchars($row['ip_address'] ?? '-').'</small></td>'
+					.'<td><small>'.htmlspecialchars((string) ($row['ip_address'] ?? '-')).'</small></td>'
 					.'<td>'.$badge.'</td>'
 					.'<td>'.$details.'</td>'
 					.'</tr>';
@@ -413,7 +590,7 @@ class Admin extends Controller_Module
 	{
 		$this	->title($this->lang('Reset 2FA'))
 				->form()
-				->confirm_deletion($this->lang('Reset 2FA'), $this->lang('Réinitialiser le 2FA de <b>%s</b> ? Le user devra le reconfigurer s\'il veut le réactiver. Cette action est tracée dans l\'audit log.', htmlspecialchars($user['username'])));
+				->confirm_deletion($this->lang('Reset 2FA'), $this->lang('Réinitialiser le 2FA de <b>%s</b> ? Le user devra le reconfigurer s\'il veut le réactiver. Cette action est tracée dans l\'audit log.', htmlspecialchars((string) ($user['username']))));
 
 		if ($this->form()->is_valid())
 		{
@@ -445,7 +622,7 @@ class Admin extends Controller_Module
 	{
 		$this	->title($this->lang('Supprimer l\'utilisateur'))
 				->form()
-				->confirm_deletion($this->lang('Supprimer l\'utilisateur'), $this->lang('Supprimer le compte de <b>%s</b> ? Le compte sera anonymisé (soft-delete RGPD) et ses sessions fermées. Action tracée dans l\'audit log.', htmlspecialchars($user['username'])));
+				->confirm_deletion($this->lang('Supprimer l\'utilisateur'), $this->lang('Supprimer le compte de <b>%s</b> ? Le compte sera anonymisé (soft-delete RGPD) et ses sessions fermées. Action tracée dans l\'audit log.', htmlspecialchars((string) ($user['username']))));
 
 		if ($this->form()->is_valid())
 		{

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace NF\Modules\Faq\Controllers;
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 
@@ -16,11 +17,11 @@ class Admin extends Controller_Module
 			foreach ($cats as $c) {
 				$slug = url_title($c['title']);
 				$cats_body .= '<tr>'
-					.'<td><strong>'.htmlspecialchars($c['title']).'</strong></td>'
+					.'<td><strong>'.htmlspecialchars((string) ($c['title'])).'</strong></td>'
 					.'<td class="text-end">'.(int)$c['nb'].'</td>'
 					.'<td class="text-end" style="white-space:nowrap;">'
 					.'<a class="btn btn-sm btn-outline-primary" href="'.url('admin/faq/cat/'.$c['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
-					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/faq/cat/delete/'.$c['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer cette catégorie ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
+					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/faq/cat/delete/'.$c['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer cette catégorie ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 			}
 			$cats_body .= '</tbody></table>';
@@ -42,21 +43,21 @@ class Admin extends Controller_Module
 
 				$qs_body .= '<div class="nf-content-card">';
 				$qs_body .= '<div class="nf-content-card-head">';
-				$qs_body .= '<div class="nf-content-card-title">'.htmlspecialchars($q['question']).'</div>';
+				$qs_body .= '<div class="nf-content-card-title">'.htmlspecialchars((string) ($q['question'])).'</div>';
 				$qs_body .= '<span class="nf-content-card-status '.($published ? 'published' : 'draft').'">';
 				$qs_body .= '<i class="fas '.($published ? 'fa-check' : 'fa-clock').'"></i> '.($published ? $this->lang('Publiée') : $this->lang('Brouillon'));
 				$qs_body .= '</span>';
 				$qs_body .= '</div>';
 				if (!empty($q['answer'])) {
-					$qs_body .= '<div class="nf-content-card-desc">'.htmlspecialchars(strip_tags($q['answer'])).'</div>';
+					$qs_body .= '<div class="nf-content-card-desc">'.htmlspecialchars((string) (strip_tags($q['answer']))).'</div>';
 				}
 				$qs_body .= '<div class="nf-content-card-meta">';
-				$qs_body .= '<span><i class="fas fa-folder"></i> '.htmlspecialchars($q['cat_title']).'</span>';
+				$qs_body .= '<span><i class="fas fa-folder"></i> '.htmlspecialchars((string) ($q['cat_title'])).'</span>';
 				$qs_body .= '</div>';
 				$qs_body .= '<div class="nf-content-card-foot">';
 				$qs_body .= '<span class="nf-content-card-spacer"></span>';
 				$qs_body .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/faq/q/'.$q['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
-				$qs_body .= '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/faq/q/delete/'.$q['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars($this->lang('Supprimer cette question ?'), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				$qs_body .= '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/faq/q/delete/'.$q['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer cette question ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$qs_body .= '</div>';
 				$qs_body .= '</div>';
 			}
@@ -66,18 +67,18 @@ class Admin extends Controller_Module
 		// Barre recherche / filtre (GET). $_GET préservé à travers la pagination par get_pagination().
 		$form_action = url($this->module->pagination->get_url());
 		$toolbar  = '<form method="get" action="'.$form_action.'" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">';
-		$toolbar .= '<input type="text" name="q" value="'.htmlspecialchars($filters['q']).'" class="form-control form-control-sm" placeholder="'.htmlspecialchars($this->lang('Rechercher une question ou réponse…'), ENT_QUOTES).'" style="max-width:260px;">';
-		$toolbar .= '<select name="category" class="form-control form-control-sm" style="width:auto;">';
+		$toolbar .= '<input type="text" name="q" value="'.htmlspecialchars((string) ($filters['q'])).'" class="form-control form-control-sm" placeholder="'.htmlspecialchars((string) ($this->lang('Rechercher une question ou réponse…')), ENT_QUOTES).'" style="max-width:260px;">';
+		$toolbar .= '<select name="category" class="form-select form-select-sm" style="width:auto;">';
 		$toolbar .= '<option value="0">'.$this->lang('Toutes les catégories').'</option>';
 		foreach ($cats as $c)
 		{
-			$toolbar .= '<option value="'.(int)$c['id'].'"'.((int)$filters['category'] === (int)$c['id'] ? ' selected' : '').'>'.htmlspecialchars($c['title']).'</option>';
+			$toolbar .= '<option value="'.(int)$c['id'].'"'.((int)$filters['category'] === (int)$c['id'] ? ' selected' : '').'>'.htmlspecialchars((string) ($c['title'])).'</option>';
 		}
 		$toolbar .= '</select>';
-		$toolbar .= '<select name="status" class="form-control form-control-sm" style="width:auto;">';
+		$toolbar .= '<select name="status" class="form-select form-select-sm" style="width:auto;">';
 		foreach (['' => $this->lang('Tous les statuts'), 'published' => $this->lang('Publiées'), 'draft' => $this->lang('Brouillons')] as $val => $label)
 		{
-			$toolbar .= '<option value="'.$val.'"'.($filters['status'] === $val ? ' selected' : '').'>'.htmlspecialchars($label).'</option>';
+			$toolbar .= '<option value="'.$val.'"'.($filters['status'] === $val ? ' selected' : '').'>'.htmlspecialchars((string) ($label)).'</option>';
 		}
 		$toolbar .= '</select>';
 		$toolbar .= $this->sort_select($filters['sort_cols'], $filters['sort']);
@@ -136,7 +137,7 @@ class Admin extends Controller_Module
 				'sort_order'  => ['label' => $this->lang('Ordre tri'), 'type' => 'text', 'value' => $is_new ? '0' : $q['sort_order']],
 				'published'   => ['label' => $this->lang('Publier'), 'type' => 'checkbox', 'value' => ['1'], 'values' => ['1' => $this->lang('Question publiée')], 'checked' => ['1' => ($is_new || !empty($q['published']))]]
 			 ])
-			 ->add_submit($is_new ? $this->lang('Créer') : $this->lang('Enregistrer'));
+			 ->add_submit($is_new ? $this->lang('Créer') : $this->lang('Enregistrer'), $is_new ? 'fas fa-plus' : 'fas fa-check');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -155,7 +156,7 @@ class Admin extends Controller_Module
 			redirect('admin/faq');
 		}
 
-		return $this->admin_back('admin/faq', $this->lang('FAQ')).$this->admin_card($is_new ? 'fas fa-plus' : 'fas fa-edit', $is_new ? $this->lang('Nouvelle question') : $this->lang('Éditer question'), $this->form()->display());
+		return $this->admin_card($is_new ? 'fas fa-plus' : 'fas fa-edit', $is_new ? $this->lang('Nouvelle question') : $this->lang('Éditer question'), $this->form()->display());
 	}
 
 	// CATEGORIES
@@ -186,7 +187,7 @@ class Admin extends Controller_Module
 				'title'      => ['label' => $this->lang('Titre'), 'type' => 'text', 'value' => $is_new ? '' : $c['title'], 'rules' => 'required'],
 				'sort_order' => ['label' => $this->lang('Ordre tri'), 'type' => 'text', 'value' => $is_new ? '0' : $c['sort_order']]
 			 ])
-			 ->add_submit($is_new ? $this->lang('Créer') : $this->lang('Enregistrer'));
+			 ->add_submit($is_new ? $this->lang('Créer') : $this->lang('Enregistrer'), $is_new ? 'fas fa-plus' : 'fas fa-check');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -198,6 +199,6 @@ class Admin extends Controller_Module
 			redirect('admin/faq');
 		}
 
-		return $this->admin_back('admin/faq', $this->lang('FAQ')).$this->admin_card($is_new ? 'fas fa-folder-plus' : 'fas fa-folder-open', $is_new ? $this->lang('Nouvelle catégorie') : $this->lang('Éditer catégorie : %s', $c['title']), $this->form()->display());
+		return $this->admin_card($is_new ? 'fas fa-folder-plus' : 'fas fa-folder-open', $is_new ? $this->lang('Nouvelle catégorie') : $this->lang('Éditer catégorie : %s', $c['title']), $this->form()->display());
 	}
 }

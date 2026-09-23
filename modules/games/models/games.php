@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -117,9 +118,17 @@ class Games extends Model
 			NeoFrag()->model2('file', $file)->delete();
 		}
 
-		foreach ($this->db->select('team_id')->from('nf_teams')->where('game_id', $game_id)->get() as $team_id)
+		// couplage(teams): purge a la suppression d'un jeu — on retire les groupes de permission des
+		// equipes qui lui etaient rattachees. Sans le module `teams` installe, il n'y a tout
+		// simplement rien a purger : on saute. Ce sens du couplage etait declare DUR, ce qui formait
+		// un cycle avec `teams` (qui a besoin de `games` pour la donnee elle-meme) et rendait les
+		// deux modules impossibles a installer separement. Assoupli le 2026-09-15.
+		if ($this->db->table_exists('nf_teams'))
 		{
-			$this->groups->delete('teams', $team_id);
+			foreach ($this->db->select('team_id')->from('nf_teams')->where('game_id', $game_id)->get() as $team_id)
+			{
+				$this->groups->delete('teams', $team_id);
+			}
 		}
 
 		$this->db	->where('game_id', $game_id)

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Widget « Statut live » multi-chaînes / multi-plateformes (Twitch, YouTube). Les chaînes sont déclarées
@@ -74,7 +75,7 @@ class Index extends Controller_Widget
 	}
 
 	/** « provider:chaîne » par ligne → liste normalisée ; rétro-compat de l'ancien réglage `username` (Twitch). */
-	private function _parse_channels($settings)
+	public function _parse_channels($settings)
 	{
 		$out = [];
 
@@ -134,7 +135,7 @@ class Index extends Controller_Widget
 
 	/** Transport HTTP caché partagé par les providers : GET caché (CACHE_TTL), POST (token) caché selon expires_in,
 	 *  cache négatif après échec. Signature : fn(method, url, headers[], body?): ?array. */
-	private function _make_http(): callable
+	public function _make_http(): callable
 	{
 		$cache_dir = 'cache/widget_twitch';
 

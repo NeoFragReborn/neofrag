@@ -5,7 +5,7 @@
 <div class="card-body">
 	<div class="row align-items-center">
 		<?php if ($icon_id): ?>
-		<div class="col-2 text-center">
+		<div class="col-12 col-lg-2 text-center">
 			<img class="img-fluid rounded" src="<?php echo NeoFrag()->model2('file', $icon_id)->path() ?>" alt="">
 		</div>
 		<?php endif ?>

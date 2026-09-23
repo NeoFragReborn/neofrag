@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Module Menu — constructeur de menus nommés réutilisables (items hiérarchiques).
@@ -19,6 +20,10 @@ class Menu extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => ['neofrag' => '0.2.0'],
@@ -40,7 +45,7 @@ class Menu extends Module
 			'default' => [
 				'access' => [
 					[
-						'title'  => 'Menus',
+						'title'  => $this->lang('Menus'),
 						'icon'   => 'fas fa-bars',
 						'access' => [
 							'manage' => ['title' => $this->lang('Gérer les menus'), 'icon' => 'fas fa-edit', 'admin' => TRUE]

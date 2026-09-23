@@ -1,0 +1,19 @@
+# La documentation : lisible dans le dépôt, pas sur le site.
+#
+# Elle contient les fiches de travail, les notes d'exploitation et les chemins du serveur.
+# Servie en texte par Apache — ce qui était le cas avant le 2026-09-21 — elle publie tout cela
+# à qui devine une adresse.
+#
+# La production tourne sous Caddy, dont la configuration refuse déjà `/docs/`. Ce fichier est
+# l'équivalent pour Apache, c'est-à-dire pour les hébergements mutualisés que ce produit vise —
+# où il n'existait pas avant le 2026-09-21. Sur un hébergement où `AllowOverride None` est imposé,
+# il est ignoré : les fichiers `.md` restent refusés par la règle d'extension du `.htaccess` racine.
+
+<IfModule mod_authz_core.c>
+	Require all denied
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+	Order allow,deny
+	Deny from all
+</IfModule>

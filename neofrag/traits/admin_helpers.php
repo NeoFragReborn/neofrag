@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * NeoFrag — Trait Admin_Helpers (R2.1, 2026-05-06)
@@ -18,7 +19,7 @@
  * - Aucune classe CSS inventée — tout existe dans themes/admin/css/style.css.
  * - Compose les helpers NeoFrag existants (button_create, button_update, button_delete, button_access).
  * - Aria-labels sur les boutons icon-only.
- * - Echappement XSS systématique via htmlspecialchars().
+ * - Echappement XSS systématique via htmlspecialchars((string) ()).
  */
 
 namespace NF\NeoFrag\Traits;
@@ -79,7 +80,7 @@ trait Admin_Helpers
 		}
 
 		return '<a class="settings-section-back" href="'.\url($url).'">'
-			.'<i class="fas fa-arrow-left"></i> '.htmlspecialchars($label)
+			.'<i class="fas fa-arrow-left"></i> '.htmlspecialchars((string) ($label))
 			.'</a>';
 	}
 
@@ -99,9 +100,9 @@ trait Admin_Helpers
 
 		$html  = '<div class="settings-section-card">';
 		$html .= '<div class="settings-section-header">';
-		$html .= '<div class="settings-section-icon"><i class="'.htmlspecialchars($icon).'"></i></div>';
+		$html .= '<div class="settings-section-icon"><i class="'.htmlspecialchars((string) ($icon)).'"></i></div>';
 		$html .= '<div class="settings-section-meta">';
-		$html .= '<div class="settings-section-title">'.htmlspecialchars($title).'</div>';
+		$html .= '<div class="settings-section-title">'.htmlspecialchars((string) ($title)).'</div>';
 		if ($subtitle !== '')
 		{
 			$html .= '<div class="settings-section-subtitle">'.$subtitle.'</div>';
@@ -174,11 +175,11 @@ trait Admin_Helpers
 	protected function admin_empty($icon, $title, $desc = '', $cta = '')
 	{
 		$html  = '<div class="nf-empty">';
-		$html .= '<i class="'.htmlspecialchars($icon).'"></i>';
-		$html .= '<div class="nf-empty-title">'.htmlspecialchars($title).'</div>';
+		$html .= '<i class="'.htmlspecialchars((string) ($icon)).'"></i>';
+		$html .= '<div class="nf-empty-title">'.htmlspecialchars((string) ($title)).'</div>';
 		if ($desc !== '')
 		{
-			$html .= '<div class="nf-empty-desc">'.htmlspecialchars($desc).'</div>';
+			$html .= '<div class="nf-empty-desc">'.htmlspecialchars((string) ($desc)).'</div>';
 		}
 		if ($cta !== '')
 		{
@@ -210,9 +211,9 @@ trait Admin_Helpers
 			$html .= '<div class="nf-stat-label">';
 			if (!empty($s['icon']))
 			{
-				$html .= '<i class="'.htmlspecialchars($s['icon']).'"></i> ';
+				$html .= '<i class="'.htmlspecialchars((string) ($s['icon'])).'"></i> ';
 			}
-			$html .= htmlspecialchars($s['label']).'</div>';
+			$html .= htmlspecialchars((string) ($s['label'])).'</div>';
 			$html .= '<div class="nf-stat-value">'.htmlspecialchars((string)$s['value']).'</div>';
 
 			if (!empty($s['trend']))
@@ -222,7 +223,7 @@ trait Admin_Helpers
 				{
 					$cls = 'flat';
 				}
-				$html .= '<div class="nf-stat-trend '.$cls.'">'.htmlspecialchars($s['trend']).'</div>';
+				$html .= '<div class="nf-stat-trend '.$cls.'">'.htmlspecialchars((string) ($s['trend'])).'</div>';
 			}
 
 			$html .= '</div>';
@@ -246,14 +247,14 @@ trait Admin_Helpers
 		$html = '<label class="text-muted" style="font-size:12px;display:flex;align-items:center;gap:6px;margin:0;">'
 			.'<i class="fas fa-sort"></i> '.$this->lang('Trier').'</label>';
 
-		$html .= '<select name="sort" class="form-control form-control-sm" style="width:auto;">';
+		$html .= '<select name="sort" class="form-select form-select-sm" style="width:auto;">';
 		foreach ($cols as $key => $label)
 		{
 			$html .= '<option value="'.htmlspecialchars((string)$key).'"'.(($state['key'] ?? '') === $key ? ' selected' : '').'>'.htmlspecialchars((string)$label).'</option>';
 		}
 		$html .= '</select>';
 
-		$html .= '<select name="order" class="form-control form-control-sm" style="width:auto;">';
+		$html .= '<select name="order" class="form-select form-select-sm" style="width:auto;">';
 		$html .= '<option value="desc"'.(($state['dir'] ?? '') === 'desc' ? ' selected' : '').'>'.$this->lang('Décroissant').'</option>';
 		$html .= '<option value="asc"'.(($state['dir'] ?? '') === 'asc' ? ' selected' : '').'>'.$this->lang('Croissant').'</option>';
 		$html .= '</select>';

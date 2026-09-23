@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Jérémy VALENTIN <jeremy.valentin@neofr.ag>
@@ -14,10 +15,15 @@ class Socials extends Widget
 	{
 		return [
 			'title'       => $this->lang('Réseaux sociaux'),
-			'description' => 'Liens vers les réseaux sociaux configurés (Facebook, Twitter, Instagram, etc.).',
+			'description' => $this->lang('Liens vers les réseaux sociaux configurés (Facebook, Twitter, Instagram, etc.).'),
+			'icon'        => 'fas fa-share-nodes',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Jérémy VALENTIN <jeremy.valentin@neofr.ag>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '1.0',
 			'depends'     => [
 				'neofrag' => '0.2.2'

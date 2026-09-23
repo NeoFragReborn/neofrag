@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -118,4 +119,29 @@ return [
 	'1ce8c867' => 'Value',
 	'f14f39cf' => 'Source (role)',
 	'e8058b83' => 'global',
+	'ad15a3b6' => 'No permissions to configure for this module.',
+	'cdeded7d' => 'Saved',
+	'ce6fa2e6' => 'Save error',
+	'5c6aceb9' => 'Roles',
+	'4d8362df' => 'None',
+	'afccc23b' => 'Create',
+	'6ddb4279' => 'Edit role',
+	'8fd9c7ef' => 'Save',
+	'9b80ec64' => 'User',
+	'bde12464' => 'View effective permissions',
+	'03158917' => 'Group',
+	'd6cecdee' => 'Role',
+	'2cecf817' => 'Type',
+	'caf5c873' => 'Actions',
+	'eb78cff1' => 'Description',
+	'53576710' => 'Permission management by user group and by module.',
+	'83122521' => 'Super Administrator',
+	'b7d3e5ee' => 'Visitor',
+	'd598edac' => 'Moderator',
+	'9409e26b' => 'Senior Moderator',
+	'45069517' => 'Full system access. Equivalent to the nf_user.admin=1 flag.',
+	'74e427de' => 'Standard signed-in user.',
+	'79263869' => 'Unauthenticated (anonymous) user.',
+	'90130d8a' => 'Role migrated from group nf_groups id 1.',
+	'41b16ae1' => 'Role migrated from group nf_groups id 2. Inherits from moderation_junior.',
 ];

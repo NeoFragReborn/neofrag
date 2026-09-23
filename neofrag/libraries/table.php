@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -268,14 +269,18 @@ class Table extends Library
 
 		if (empty($this->_data))
 		{
-			$output = '<div class="clearfix"></div>'.($this->_no_data ?: NeoFrag()->lang('Il n\'y a rien ici pour le moment'));
+			// Le message sortait NU, sans la moindre enveloppe : dans une carte, il se retrouvait
+			// collé au bord, sans marge ni alignement, alors que la même table remplie produit un
+			// <table> qui a les siennes. On reprend `table-empty`, la classe que la seconde
+			// bibliothèque de tableaux utilise déjà pour ce cas, afin que les deux se ressemblent.
+			$output = '<div class="clearfix"></div><div class="table-empty">'.($this->_no_data ?: NeoFrag()->lang('Il n\'y a rien ici pour le moment')).'</div>';
 		}
 		else
 		{
 			if (!$this->_ajax && $this->_is_searchable())
 			{
 				$search_input = '	<div class="table-search float-start">
-										<div class="form-group has-feedback">
+										<div class="position-relative">
 											<input class="form-control" data-provide="typeahead" data-items="5" data-source="'.utf8_htmlentities('['.implode(', ', array_unique(array_filter($words))).']').'" type="text"'.(!empty($search) ? ' value="'.$search.'"' : '').' placeholder="'.NeoFrag()->lang('Rechercher').'" autocomplete="off" />
 										</div>
 									</div>';
@@ -329,8 +334,8 @@ class Table extends Library
 
 			if ($this->_pagination && !empty($this->output->module()->pagination) && $this->output->module()->pagination->count() > 10)
 			{
-				$output .= '<div class="form-group float-start">
-								<select class="form-control" style="width: auto;" data-nf-nav-select data-nf-nav-base="'.url($this->output->module()->pagination->get_url()).'" autocomplete="off">
+				$output .= '<div class="float-start">
+								<select class="form-select" style="width: auto;" data-nf-nav-select data-nf-nav-base="'.url($this->output->module()->pagination->get_url()).'" autocomplete="off">
 									<option value="10"'. ($this->output->module()->pagination->get_items_per_page() == 10  ? ' selected="selected"' : '').' data-url="page/1/10">'.NeoFrag()->lang('%d résultat|%d résultats', 10, 10).'</option>
 									<option value="25"'. ($this->output->module()->pagination->get_items_per_page() == 25  ? ' selected="selected"' : '').' data-url="page/1/25">'.NeoFrag()->lang('%d résultat|%d résultats', 25, 25).'</option>
 									<option value="50"'. ($this->output->module()->pagination->get_items_per_page() == 50  ? ' selected="selected"' : '').' data-url="page/1/50">'.NeoFrag()->lang('%d résultat|%d résultats', 50, 50).'</option>
@@ -392,7 +397,7 @@ class Table extends Library
 
 					if (!empty($th['align']) && in_array($th['align'], ['left', 'center', 'right']))
 					{
-						$class[] = 'text-'.$th['align'];
+						$class[] = nf_bs_align($th['align']);
 					}
 
 					$header .= '		<th'.(!empty($class) ? ' class="'.implode(' ', $class).'"' : '').(!is_bool($width) ? ' style="width: '.$width.';"' : '').(!empty($sort) ? $sort : '').'>'.(!empty($th['title']) ? $th['title'] : '').'</th>';
@@ -447,7 +452,7 @@ class Table extends Library
 
 							if (!empty($value['align']) && in_array($value['align'], ['left', 'center', 'right']))
 							{
-								$classes[] = 'text-'.$value['align'];
+								$classes[] = nf_bs_align($value['align']);
 							}
 
 							$content = '<td'.(!empty($classes) ? ' class="'.implode(' ', $classes).'"' : '').'>'.$content.'</td>';

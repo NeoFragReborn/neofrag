@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -6,19 +7,19 @@
 
 $rules = [
 	'name' => [
-		'label' => 'Titre de l\'événement',
+		'label' => $this->lang('Titre de l\'événement'),
 		'value' => $this->form()->value('name'),
 		'type'  => 'text',
 		'rules' => 'required'
 	],
 	'location' => [
-		'label' => 'Lieu',
+		'label' => $this->lang('Lieu'),
 		'icon'  => 'fas fa-map-marker-alt',
 		'value' => $this->form()->value('location'),
 		'type'  => 'text'
 	],
 	'date' => [
-		'label' => 'Date',
+		'label' => $this->lang('Date'),
 		'value' => $this->form()->value('date') ? timetostr($this->lang('d/m/Y'), strtotime($this->form()->value('date'))) : '',
 		'type'  => 'date',
 		'check' => function($value){
@@ -31,7 +32,7 @@ $rules = [
 		'rules' => 'required'
 	],
 	'team' => [
-		'label'  => 'Équipe',
+		'label'  => $this->lang('Équipe'),
 		'value'  => $this->form()->value('team_id'),
 		'values' => $this->form()->value('teams'),
 		'type'   => 'select',
@@ -39,7 +40,7 @@ $rules = [
 		'rules'  => 'required'
 	],
 	'game' => [
-		'label'  => 'Jeu',
+		'label'  => $this->lang('Jeu'),
 		'value'  => $this->form()->value('game_id'),
 		'values' => $this->form()->value('games'),
 		'type'   => 'select',
@@ -47,7 +48,7 @@ $rules = [
 		'rules'  => 'required'
 	],
 	'platform' => [
-		'label'  => 'Plateforme',
+		'label'  => $this->lang('Plateforme'),
 		'icon'   => 'fas fa-tv',
 		'value'  => $this->form()->value('platform'),
 		'values' => [
@@ -64,7 +65,7 @@ $rules = [
 		'rules'  => 'required'
 	],
 	'ranking' => [
-		'label' => 'Classement',
+		'label' => $this->lang('Classement'),
 		'icon'  => 'fas fa-trophy',
 		'value' => $this->form()->value('ranking'),
 		'type'  => 'number',
@@ -72,7 +73,7 @@ $rules = [
 		'rules' => 'required'
 	],
 	'participants' => [
-		'label' => 'Nombre d\'équipes',
+		'label' => $this->lang('Nombre d\'équipes'),
 		'icon'  => 'fas fa-users',
 		'value' => $this->form()->value('participants'),
 		'type'  => 'number',
@@ -80,12 +81,12 @@ $rules = [
 		'rules' => 'required'
 	],
 	'description' => [
-		'label' => 'Commentaire',
+		'label' => $this->lang('Commentaire'),
 		'value' => $this->form()->value('description'),
 		'type'  => 'editor'
 	],
 	'image' => [
-		'label'  => 'Image',
+		'label'  => $this->lang('Image'),
 		'value'  => $this->form()->value('image'),
 		'type'   => 'file',
 		'upload' => 'awards',

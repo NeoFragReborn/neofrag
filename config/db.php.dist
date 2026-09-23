@@ -1,0 +1,18 @@
+<?php
+
+/*
+ * GABARIT — ce fichier n'est jamais lu. Le vrai `config/db.php` est écrit par l'installateur
+ * (`install/lib/installer.php::write_config`) à l'étape « base de données », et il est ignoré
+ * par git : il porte le mot de passe de la base.
+ *
+ * `port` n'est écrit QUE s'il diffère de 3306, pour garder les configurations courantes propres.
+ * `driver` vaut toujours `mysqli` aujourd'hui.
+ */
+
+$db[] = [
+	'hostname' => '127.0.0.1',
+	'username' => 'utilisateur_de_la_base',
+	'password' => 'mot_de_passe_de_la_base',
+	'database' => 'nom_de_la_base',
+	'driver'   => 'mysqli',
+];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -42,10 +43,12 @@ class Modes extends Model
 
 	public function check_mode($mode_id, $title)
 	{
-		$mode = $this->db	->select('m.mode_id', 'm.game_id', 'm.title', 'gl.title as game_title')
+		// Le PERMALIEN du jeu (`g.name`), comme `check_map()` : `_modes_edit()` en fait son lien de
+		// retour vers `admin/games/{id}/{url_title}`. Le titre traduit qu'on rendait ici
+		// (« Counter-Strike 2 ») donnait une adresse avec des espaces, et un 404 (2026-09-22).
+		$mode = $this->db	->select('m.mode_id', 'm.game_id', 'm.title', 'g.name')
 							->from('nf_games_modes m')
 							->join('nf_games g',        'm.game_id = g.game_id')
-							->join('nf_games_lang gl',  'm.game_id = gl.game_id')
 							->where('m.mode_id', $mode_id)
 							->row();
 

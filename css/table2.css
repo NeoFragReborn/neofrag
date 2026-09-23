@@ -1,32 +1,7 @@
-.panel-table .panel-heading .table-search {
-	float: right;
-	border: 0;
-	outline: 0;
-	margin-top: 5px;
-	padding-right: 15px;
-}
-
-.panel-table .panel-heading .form-control-feedback {
-	top: 11px;
-	right: 8px;
-}
-
-.panel-table .panel-footer {
-	overflow: auto;
-}
-
-.panel-table .panel-footer .pagination {
-	float: right;
-	margin: 5px 0;
-}
-
-.panel-table .panel-footer .pagination .btn {
-	padding: 3px 7px;
-	min-width: 25px;
-}
-
-.panel-table .panel-footer .pagination .btn + .btn {
-	margin-left: 5px;
+/* Le tableau d'une carte est enveloppé pour défiler sur un téléphone : l'enveloppe ne doit pas
+   ajouter la marge basse que Bootstrap donne à `.table`. */
+.panel-table > .table-responsive > .table {
+	margin-bottom: 0;
 }
 
 .panel-table .table .compact {
@@ -38,9 +13,12 @@
 	width: 37px;
 }
 
+/* Le padding manquait : dans une carte, le message se retrouvait colle au bord. */
 .table-empty {
+	padding: 28px 20px;
 	text-align: center;
-	font-size: 1.1em;
+	font-size: 1.05em;
+	color: var(--nf-muted, var(--fg-muted, #6b7280));
 }
 
 .table-empty .btn {

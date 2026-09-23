@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: FoxLey
@@ -8,4 +9,5 @@
 return [
 	'160813ca' => 'Breadcrumb',
 	'cd247522' => 'Home',
+	'77b960d5' => 'Contextual navigation breadcrumb.',
 ];

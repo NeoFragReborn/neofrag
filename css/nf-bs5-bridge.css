@@ -1,13 +1,16 @@
 /*
- * Pont de compatibilité Bootstrap 4 -> 5 (Lot A.2, cf. les notes du mainteneur).
+ * LE SOCLE DU PRODUIT, entre Bootstrap 5 et la feuille du thème.
  *
- * BS5 a supprimé quelques classes BS4 que NeoFrag utilise comme HOOKS sémantiques (donc non
- * renommables sans casser du JS/CSS) ou dont le remplacement markup serait disproportionné :
- *   - .form-group         : lue par live-editor.js et themes/admin/js/settings.js (sélecteurs).
- *   - .media / .media-*   : structure des bulles talks (.media-left/right) + commentaires/forum.
- *   - .input-group-*pend  : wrappers d'addons encore présents dans les forms.
- *   - .close              : boutons « x » encore en markup (les versions JS sont déjà en .btn-close).
- * On restaure leur APPARENCE (cosmétique). Theme-aware via currentColor (pas le noir codé en dur de BS4).
+ * Chargée par les sept thèmes juste après `bootstrap.min.css` et avant leur propre feuille (qui
+ * peut donc tout redéfinir), elle porte ce que le produit ajoute à Bootstrap 5 pour tous les thèmes :
+ * les variables de Bootstrap tirées de la palette du thème, et les composants du PRODUIT
+ * (`nf-field`, `nf-card-grid`, `nf-form-inline`…).
+ *
+ * Elle s'appelait « pont » parce qu'elle rattrapait des classes de Bootstrap 3 et 4 que le balisage
+ * employait encore (`form-group`, `media`, `close`, `btn-block`, `card-columns`…). Le 2026-09-23,
+ * tout le balisage a été migré : ces rattrapages ont disparu, et `tools/check-classes-bs4.php`
+ * refuse désormais un nom hérité, qu'une feuille le redéfinisse ou non. Le nom du fichier est
+ * resté, parce que des thèmes tiers le chargent sous ce nom.
  */
 
 /* Dark mode des composants Bootstrap 5 : on active le dark natif BS5 via data-bs-theme="dark"
@@ -25,43 +28,88 @@
 	--bs-tertiary-color:  color-mix(in srgb, var(--nf-text, #dee2e6) 50%, transparent);
 }
 
+/* Les couleurs CONTEXTUELLES de Bootstrap 5.3 — pastilles douces, alertes, fonds et textes
+   `-subtle` / `-emphasis` — tirées de la palette du thème actif.
+
+   Les pastilles de Bootstrap 4 (`badge-danger`…) ont disparu en Bootstrap 5 ; chaque thème les
+   redessinait « douces » — fond pâle, texte de la couleur — et ce texte échouait au contraste :
+   rouge sur rose pâle à 3,6:1, orange sur crème à 2,9:1, pour 4,5:1 exigés (check-mise-en-page,
+   2026-09-23). Leur équivalent Bootstrap 5.3 est `bg-danger-subtle text-danger-emphasis`
+   (cf. badge_class() dans neofrag/helpers/color.php), dont les couleurs sont ces variables-ci.
+
+   Elles sont calculées UNE fois pour les sept thèmes, depuis les jetons `--nf-*` que chacun déclare.
+   Le texte mélange la couleur avec le texte le plus contrasté du thème : sombre en mode clair, clair
+   en mode sombre — le contraste suit le mode sans règle à part. Un thème qui veut d'autres nuances
+   redéfinit la variable dans sa propre feuille. */
+:root,
+[data-bs-theme] {
+	--nf-contexte-texte: var(--nf-text-strong, var(--nf-text));
+	--bs-primary-bg-subtle:     color-mix(in srgb, var(--nf-accent) 14%, var(--nf-surface));
+	--bs-primary-border-subtle: color-mix(in srgb, var(--nf-accent) 35%, var(--nf-surface));
+	--bs-primary-text-emphasis: color-mix(in srgb, var(--nf-accent) 55%, var(--nf-contexte-texte));
+	--bs-secondary-bg-subtle:     color-mix(in srgb, var(--nf-muted) 14%, var(--nf-surface));
+	--bs-secondary-border-subtle: color-mix(in srgb, var(--nf-muted) 35%, var(--nf-surface));
+	--bs-secondary-text-emphasis: color-mix(in srgb, var(--nf-muted) 55%, var(--nf-contexte-texte));
+	--bs-success-bg-subtle:     color-mix(in srgb, var(--nf-success) 14%, var(--nf-surface));
+	--bs-success-border-subtle: color-mix(in srgb, var(--nf-success) 35%, var(--nf-surface));
+	--bs-success-text-emphasis: color-mix(in srgb, var(--nf-success) 55%, var(--nf-contexte-texte));
+	--bs-info-bg-subtle:     color-mix(in srgb, var(--nf-info) 14%, var(--nf-surface));
+	--bs-info-border-subtle: color-mix(in srgb, var(--nf-info) 35%, var(--nf-surface));
+	--bs-info-text-emphasis: color-mix(in srgb, var(--nf-info) 55%, var(--nf-contexte-texte));
+	--bs-warning-bg-subtle:     color-mix(in srgb, var(--nf-warning) 14%, var(--nf-surface));
+	--bs-warning-border-subtle: color-mix(in srgb, var(--nf-warning) 35%, var(--nf-surface));
+	--bs-warning-text-emphasis: color-mix(in srgb, var(--nf-warning) 55%, var(--nf-contexte-texte));
+	--bs-danger-bg-subtle:     color-mix(in srgb, var(--nf-danger) 14%, var(--nf-surface));
+	--bs-danger-border-subtle: color-mix(in srgb, var(--nf-danger) 35%, var(--nf-surface));
+	--bs-danger-text-emphasis: color-mix(in srgb, var(--nf-danger) 55%, var(--nf-contexte-texte));
+}
+
 /* Espacement icône → texte : le helper icon() rend <i class="icon …"> suivi du texte avec une simple
    espace, donc trop collé. On donne une petite marge de base ; les icônes SEULES (sans texte) -> 0. */
 i.icon { margin-right: .4em; }
 i.icon:only-child { margin-right: 0; }
 
-/* form-group : n'apportait que la marge basse entre champs. */
-.form-group { margin-bottom: 1rem; }
+/* Un champ de formulaire : son libellé, sa saisie, son aide. `nf-field` est la classe du PRODUIT qui
+   remplace `form-group`, supprimée par Bootstrap 5 (2026-09-23) : elle porte la marge entre deux
+   champs, que chaque thème peut ajuster, et sert de crochet au JavaScript de l'administration
+   (themes/admin/js/settings.js, le widget navigation). */
+.nf-field { margin-bottom: 1rem; }
 
-/* media object (supprimé en BS5) : avatar + corps côte à côte. */
-.media { display: flex; align-items: flex-start; }
-.media-body { flex: 1 1 auto; }
-.media-left, .media-right { flex: 0 0 auto; }
-.media-right { order: 1; }
+.input-group > .form-control:not(:first-child) { border-top-left-radius: 0;  border-bottom-left-radius: 0; }
+.input-group > .form-control:not(:last-child)  { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+/* BS4 fixait une height sur .form-control, ce qui empêche l'étirement : le champ restait plus
+   court que l'addon posé à côté. */
+.input-group > .form-control { height: auto; }
 
-/* input-group-prepend/append (supprimés en BS5 : enfants directs désormais) : garder l'inline. */
-.input-group-prepend, .input-group-append { display: flex; align-items: center; }
-.input-group-prepend { margin-right: -1px; }
-.input-group-append  { margin-left: -1px; }
-
-/* .close -> .btn-close en BS5. On restitue le bouton « x » texte, theme-aware. */
-.close {
-	box-sizing: content-box;
-	margin-left: auto;
-	padding: 0 .25rem;
-	background: transparent;
-	border: 0;
-	font-size: 1.5rem;
-	font-weight: 700;
-	line-height: 1;
+/* Un lien DANS une alerte prend la couleur de l'alerte, souligné : écrit dans la couleur d'accent,
+   il tombait à 4,5:1 sur le rose pâle d'une alerte d'erreur (check-mise-en-page, 2026-09-23). C'est
+   ce que fait `.alert-link` de Bootstrap, appliqué aux liens qui ne la portent pas. */
+.alert a:not(.btn) {
 	color: inherit;
-	opacity: .5;
-	cursor: pointer;
+	font-weight: 600;
+	text-decoration: underline;
 }
-.close:hover { opacity: .9; }
-/* Dans une alerte, le « x » se positionne en haut à droite (BS5 ne le fait que pour .btn-close). */
-.alert { position: relative; }
-.alert > .close { position: absolute; top: 0; right: 0; padding: .75rem 1rem; }
+
+/* La couleur d'une série de statistiques, posée à côté de son libellé : écrire le libellé dans la
+   couleur de sa courbe le rendait illisible dès que la couleur était pâle (jaune, vert clair). */
+.nf-series-swatch {
+	display: inline-block;
+	width: .75em;
+	height: .75em;
+	border-radius: 50%;
+	margin-right: .15em;
+	vertical-align: baseline;
+}
+
+/* La croix de fermeture de Bootstrap 5 (`.btn-close`, qui remplace le `.close` de Bootstrap 4) a une
+   cible de 1em : 21 px à la taille de texte des thèmes, sous les 24 px qu'un doigt demande
+   (check-mise-en-page, 2026-09-23). La croix reste dessinée à 1em, centrée dans une zone plus large. */
+.btn-close {
+	box-sizing: border-box;
+	width: max(1.5em, 24px);
+	height: max(1.5em, 24px);
+	padding: 0;
+}
 
 /* Zones scrollables (remplacent jquery.mCustomScrollbar) : overflow natif + scrollbar fine. */
 .panel-notifications .card-body { max-height: 255px; }
@@ -84,3 +132,302 @@ i.icon:only-child { margin-right: 0; }
 .module-user .activity-message::-webkit-scrollbar-thumb,
 .module-user .message-list::-webkit-scrollbar-thumb,
 .widget-talks .card-body::-webkit-scrollbar-thumb { background: rgba(127, 127, 127, .5); border-radius: 4px; }
+
+/* Remplissage automatique du navigateur (mots de passe, identifiants, email).
+ *
+ * Chrome et Firefox peignent d'autorite un fond jaune sur les champs qu'ils remplissent, et cette
+ * couleur ignore totalement le theme : sur un fond sombre, le champ devient un rectangle jaune
+ * criard, avec un texte quasi illisible. Aucun thème ne traitait ce cas.
+ *
+ * On ne peut pas surcharger `background-color` (le navigateur la reimpose), mais une ombre interne
+ * tres epaisse repeint la surface, et `-webkit-text-fill-color` reprend la main sur le texte. La
+ * transition de dix mille secondes est l'autre parade connue : elle repousse indefiniment
+ * l'application de la couleur du navigateur sur les moteurs qui ignorent l'ombre.
+ *
+ * Les couleurs viennent des jetons du thème actif — `--nf-*` en administration, `--fg-*` sur le
+ * site public — avec un repli neutre pour les thèmes qui n'en declarent aucun.
+ */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+	-webkit-box-shadow: inset 0 0 0 1000px var(--nf-surface, var(--fg-surface, #fff)) !important;
+	box-shadow: inset 0 0 0 1000px var(--nf-surface, var(--fg-surface, #fff)) !important;
+	-webkit-text-fill-color: var(--nf-text, var(--fg-text, #111)) !important;
+	caret-color: var(--nf-text, var(--fg-text, #111));
+	transition: background-color 10000s ease-in-out 0s;
+}
+
+/* Firefox expose le meme etat sous un autre nom. */
+input:autofill,
+textarea:autofill,
+select:autofill {
+	box-shadow: inset 0 0 0 1000px var(--nf-surface, var(--fg-surface, #fff)) !important;
+	-webkit-text-fill-color: var(--nf-text, var(--fg-text, #111)) !important;
+	color: var(--nf-text, var(--fg-text, #111)) !important;
+}
+
+/* =========================================================================
+   Barre utilisateur sur petit écran
+
+   `.navbar-user` est posée par les six thèmes publics, chacun avec sa propre vue et ses règles,
+   et toutes déclarent `flex-wrap: nowrap` sur le conteneur. Sur un téléphone, les éléments ne
+   passent donc jamais à la ligne : ils DÉBORDENT. À 390 px, le nom du compte sortait de l'écran,
+   coupé en plein milieu, et la page se décalait horizontalement.
+
+   Sous 576 px, le libellé textuel s'efface et l'avatar suffit à désigner le menu du compte — la
+   cible reste cliquable, et le nom reste lu par les lecteurs d'écran.
+   ======================================================================== */
+
+@media (max-width: 575.98px) {
+	/* Le libellé « Mon compte » à côté de l'avatar : masqué à l'œil, conservé pour l'assistance. */
+	.navbar-user .dropdown-toggle > .ms-2 {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	/* Rien ne doit forcer la barre au-delà de l'écran. */
+	.navbar-user,
+	.navbar-user .container-fluid,
+	.navbar-user .navbar-collapse {
+		max-width: 100%;
+		min-width: 0;
+	}
+
+	.navbar-user .navbar-brand {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   .nav-link : un composant Bootstrap 5 qu'aucun thème n'habillait.
+
+   Sa couleur vient de `--bs-nav-link-color`, qui vaut le BLEU par défaut de
+   Bootstrap. Les thèmes stylent bien `a` et `.list-group-item`, mais pas celui-ci :
+   dans la même page, le widget « Catégories » sortait aux couleurs du thème et le
+   widget « Galeries » — qui emploie `nav-link` — sortait en bleu Bootstrap.
+   Signalé sur la démo.
+
+   On raccorde les variables du composant aux jetons du thème, plutôt que d'écraser
+   la couleur : les thèmes qui voudront s'en écarter n'ont qu'à redéfinir les jetons.
+   ───────────────────────────────────────────────────────────────────────────── */
+.nav {
+	--bs-nav-link-color:          var(--nf-text, inherit);
+	--bs-nav-link-hover-color:    var(--nf-accent, inherit);
+	--bs-nav-link-disabled-color: var(--nf-muted, inherit);
+}
+
+.nav-pills {
+	--bs-nav-pills-link-active-bg:    var(--nf-accent, #0d6efd);
+	--bs-nav-pills-link-active-color: var(--nf-on-accent, #fff);
+}
+
+/* L'entrée active d'une liste de navigation : sans cela elle reste de la couleur du
+   texte, et rien ne distingue la page courante. */
+.nav .nav-link.active {
+	color: var(--nf-accent-text, var(--nf-accent, inherit));
+	font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   .nf-card-grid : une grille de cartes qui remplit la largeur disponible.
+
+   Les albums et les images de la galerie employaient `.card-columns`, classe de
+   Bootstrap 4 supprimée en Bootstrap 5 sans équivalent : elle n'était plus définie,
+   et les cartes s'empilaient sur une seule colonne. Rétablie ici d'abord sous son
+   ancien nom, elle est depuis le 2026-09-23 un composant du produit, sous le sien.
+
+   On la rétablit en grille CSS plutôt qu'en colonnes typographiques : les cartes
+   gardent des hauteurs propres et l'ordre de lecture reste de gauche à droite, ce
+   que l'ancien `column-count` ne faisait pas.
+   ───────────────────────────────────────────────────────────────────────────── */
+.nf-card-grid {
+	display:               grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap:                   16px;
+	align-items:           start;
+}
+
+.nf-card-grid > .card {
+	margin-bottom: 0; /* la gouttière de la grille suffit */
+}
+
+/* Les SEPT thèmes portent une règle `.card + .card { margin-top: … }`, qui sert à espacer des
+   cartes EMPILÉES. Dans une grille, le sélecteur d'adjacence suit l'ordre du DOM, pas la position :
+   il s'applique donc à toutes les cartes sauf la première, y compris à celles qui sont sur la même
+   ligne. Résultat visible sur la galerie : la deuxième carte d'une rangée descend de quelques
+   pixels par rapport à sa voisine, et la rangée n'a plus de ligne de base commune.
+   Signalé le 2026-09-16, capture à l'appui. La gouttière de la grille suffit ici. */
+.nf-card-grid > .card + .card {
+	margin-top: 0;
+}
+
+@media (max-width: 575.98px) {
+	.nf-card-grid { grid-template-columns: 1fr; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   .blockquote-footer : Bootstrap fixe sa couleur à #6c757d, un gris pensé pour un
+   fond CLAIR. Sur les cinq thèmes sombres, la signature des actualités
+   (« Par Rekkles_FR le 11 sep 2026 ») tombait donc entre **3,33:1 et 4,23:1** —
+   sous le seuil AA de 4,5:1, et visiblement plus terne que le texte voisin.
+
+   Rien ne le signalait : la feuille est valide, la page répond 200. Trouvé par
+   `tools/check-contraste.php`, qui mesure le rapport réellement calculé sur la
+   page servie, thème par thème et mode par mode.
+
+   `--nf-text-muted` est défini par les SEPT thèmes (garanti par
+   `tools/check-css-variables.php`), donc pas de repli littéral ici : un repli
+   masquerait justement une variable manquante.
+   ───────────────────────────────────────────────────────────────────────────── */
+.blockquote-footer {
+	color: var(--nf-text-muted);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Les couleurs SÉMANTIQUES employées comme couleur de TEXTE sur fond clair.
+
+   Un vert ou un rouge choisi pour remplir un bouton est trop clair pour écrire
+   dessus : `.text-success` (`#1f9d57` chez `extend`) donnait **3,49:1** sur le
+   blanc, sous le seuil AA, sur le score d'un match ; `.text-danger`, 4,4:1 sur les
+   compteurs de la modération.
+
+   Ils prennent les variables `-emphasis` de Bootstrap 5.3, que le socle tire de
+   la palette du thème (en tête de cette feuille) : sombres en mode clair, claires
+   en mode sombre. Même principe que `--*-accent-text` : une teinte pour remplir,
+   une autre pour écrire.
+   ───────────────────────────────────────────────────────────────────────────── */
+/* `!important` parce que Bootstrap en met un sur ses utilitaires de couleur : sans lui, la règle
+   est écrite, valide, et sans le moindre effet — le genre de correctif qu'on croit appliqué. */
+.text-success { color: var(--bs-success-text-emphasis) !important; }
+.text-danger  { color: var(--bs-danger-text-emphasis) !important; }
+.text-warning { color: var(--bs-warning-text-emphasis) !important; }
+.text-info    { color: var(--bs-info-text-emphasis) !important; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   .nf-form-inline : un formulaire dont les champs restent sur une ligne.
+
+   Recherche du forum, recherche des discussions, liste des joueurs d'une équipe,
+   widget de recherche, et le mode « en ligne » du constructeur de formulaires. Ils
+   portaient `.form-inline`, classe de Bootstrap 4 supprimée en Bootstrap 5 : les
+   champs s'empilaient. Bootstrap 5 compose ce cas avec la grille, champ par champ ;
+   ces formulaires sont trop différents pour cela, d'où ce composant du produit
+   (renommé le 2026-09-23 : il n'imite plus une classe de Bootstrap).
+   ───────────────────────────────────────────────────────────────────────────── */
+.nf-form-inline {
+	display:    flex;
+	flex-flow:  row wrap;
+	align-items: center;
+	gap:        0.5rem;
+}
+
+/* En Bootstrap 4, les champs d'un formulaire en ligne étaient `width: auto`.
+   Sans cela, `.form-control` reste à 100 % et chaque champ prend sa propre ligne
+   malgré le `flex-wrap`.
+
+   Un champ DANS un groupe (`.input-group`, champ + bouton collés) n'est pas concerné :
+   c'est le groupe qui le dimensionne. La règle mobile ci-dessous le passait à 100 %,
+   et le bouton de la recherche tombait sous le champ (thème Extend, 2026-09-23). */
+.nf-form-inline .form-control:not(.input-group > *),
+.nf-form-inline .form-select:not(.input-group > *) {
+	width: auto;
+	display: inline-block;
+}
+
+/* Les formulaires en ligne repassent en colonne sur petit écran : une barre de
+   recherche et son bouton ne tiennent pas côte à côte à 360 px. */
+@media (max-width: 575.98px) {
+	.nf-form-inline {
+		flex-direction: column;
+		align-items:    stretch;
+	}
+
+	.nf-form-inline .form-control:not(.input-group > *),
+	.nf-form-inline .form-select:not(.input-group > *),
+	.nf-form-inline > .input-group {
+		width: 100%;
+	}
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   `.nf-field-invalid` : le champ refusé par la validation.
+
+   Les deux bibliothèques de formulaires marquaient ce cas avec un nom hérité —
+   `.has-error` (Bootstrap 3) pour l'une, `.has-danger` (une préversion de
+   Bootstrap 4) pour l'autre. Bootstrap 5 ne définit ni l'un ni l'autre, et aucun
+   des sept thèmes non plus. La seule déclaration qui subsistait vivait dans une
+   feuille d'administration héritée que plus aucun thème ne chargeait — elle a été
+   supprimée depuis, justement parce qu'elle faisait croire à une couverture qui
+   n'existait pas.
+
+   Le champ fautif n'avait donc AUCUNE marque depuis le passage à Bootstrap 5. Le
+   message s'affichait bien sous le formulaire, mais rien ne désignait lequel des
+   dix champs le concernait. Aucune erreur, aucune trace : le genre de panne qui
+   ne se voit qu'en essayant d'envoyer un formulaire incomplet.
+
+   Le marqueur porte sur le CONTENEUR, pas sur le contrôle — c'est ce qui le
+   distingue de `.is-invalid`, que Bootstrap applique au champ lui-même. On teinte
+   donc l'étiquette, et on répercute l'état sur le contrôle qu'elle enveloppe.
+   ───────────────────────────────────────────────────────────────────────────── */
+.nf-field-invalid > label,
+.nf-field-invalid > .col-form-label,
+.nf-field-invalid > legend {
+	color: var(--nf-danger, var(--fg-danger, #dc3545));
+}
+
+.nf-field-invalid .form-control,
+.nf-field-invalid .form-select,
+.nf-field-invalid .form-check-input {
+	border-color: var(--nf-danger, var(--fg-danger, #dc3545));
+}
+
+.nf-field-invalid .form-control:focus,
+.nf-field-invalid .form-select:focus {
+	border-color: var(--nf-danger, var(--fg-danger, #dc3545));
+	box-shadow:   0 0 0 .25rem color-mix(in srgb, var(--nf-danger, var(--fg-danger, #dc3545)) 25%, transparent);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Les colonnes EMPILÉES d'une disposition (.nf-row, neofrag/displayables/row.php).
+
+   Sur un téléphone, les colonnes passent l'une sous l'autre ; rien ne les séparait :
+   le premier bloc de la colonne latérale touchait le dernier du contenu — la
+   pagination, une galerie, l'« Espace membre » collé dessous (signalé
+   le 2026-09-23, captures à l'appui, dans plusieurs thèmes).
+
+   `row-gap` et non la gouttière verticale de Bootstrap (`gy-*`) : elle n'agit
+   qu'entre les lignes d'une ligne flexible REPLIÉE, donc uniquement quand les
+   colonnes s'empilent. `gy-*` passe par des marges hautes, que les thèmes
+   contredisent en posant leur propre marge sur la ligne (`.row-default`) — elle
+   aurait décalé aussi l'affichage sur ordinateur.
+   ───────────────────────────────────────────────────────────────────────────── */
+.row.nf-row {
+	row-gap: 1.25rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Le carrousel garde ses commandes CLAIRES sur un thème sombre.
+
+   Bootstrap 5.3 attache au thème sombre (`[data-bs-theme=dark]`, posé par chaque thème du
+   produit) des points, des flèches et une légende NOIRS : un réglage pensé pour des photos
+   claires. Sur les diapositives de la démonstration, les points noirs se perdaient sur l'image
+   (signalé le 2026-09-23). Un carrousel montre des images, pas le fond de la page :
+   ses commandes restent blanches quel que soit le thème, et `.carousel-dark` reste le moyen
+   explicite de les assombrir pour des images claires.
+   ───────────────────────────────────────────────────────────────────────────── */
+.carousel:not(.carousel-dark) {
+	--bs-carousel-indicator-active-bg: #fff;
+	--bs-carousel-caption-color: #fff;
+	--bs-carousel-control-icon-filter: none;
+}

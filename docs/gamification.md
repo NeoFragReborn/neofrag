@@ -1,4 +1,4 @@
-# Gamification, boutique & monétisation — NeoFrag Reborn 1.0.0
+# Gamification, boutique & monétisation — NeoFrag Reborn 1.1.0
 
 Pile **engagement → monnaie → boutique → VIP → argent réel**, construite le 2026-06-03. Toute la boucle
 fonctionne **en points internes** ; l'argent réel (Stripe) est branché mais reste à activer (clés + revue

@@ -3,15 +3,19 @@
 	transition: background-color 0.3s ease;
 }
 
-/* Couleurs santé : appliquées au panel entier selon état (JS toggle bg-red/orange/green) */
-.panel-monitoring.bg-gray   { background-color: #f0f0f0 !important; color: #555; }
-.panel-monitoring.bg-green  { background-color: #d4edda !important; color: #155724; }
-.panel-monitoring.bg-orange { background-color: #fff3cd !important; color: #856404; }
-.panel-monitoring.bg-red    { background-color: #f8d7da !important; color: #721c24; }
+/* Couleurs santé : appliquées au panel entier selon état (JS toggle nf-sante-erreur/orange/green).
+   Elles viennent des variables de Bootstrap 5.3 que le socle tire de la palette du thème : écrites
+   en dur (#d4edda…), elles restaient claires en mode sombre, sous un titre devenu clair lui aussi —
+   « Santé du site » à 1,06:1 (check-mise-en-page, 2026-09-23). */
+.panel-monitoring.nf-sante-inconnue   { background-color: var(--bs-secondary-bg-subtle) !important; color: var(--bs-secondary-text-emphasis); }
+.panel-monitoring.nf-sante-ok  { background-color: var(--bs-success-bg-subtle) !important;   color: var(--bs-success-text-emphasis); }
+.panel-monitoring.nf-sante-alerte { background-color: var(--bs-warning-bg-subtle) !important;   color: var(--bs-warning-text-emphasis); }
+.panel-monitoring.nf-sante-erreur    { background-color: var(--bs-danger-bg-subtle) !important;    color: var(--bs-danger-text-emphasis); }
+.panel-monitoring .status-legend h3 { color: inherit; }
 
-.panel-monitoring.bg-green  .status-legend,
-.panel-monitoring.bg-orange .status-legend,
-.panel-monitoring.bg-red    .status-legend { color: inherit; }
+.panel-monitoring.nf-sante-ok  .status-legend,
+.panel-monitoring.nf-sante-alerte .status-legend,
+.panel-monitoring.nf-sante-erreur    .status-legend { color: inherit; }
 
 .panel-monitoring .status-legend {
 	background-color: rgba(0,0,0,.05);
@@ -27,7 +31,7 @@
 span.monitoring-icon-status {
 	border: 3px solid currentColor;
 	border-radius: 50%;
-	color: #aaa;
+	color: var(--nf-muted, #aaa);
 	display: inline-block;
 	margin: 20px auto;
 	font-size: 53px;
@@ -35,9 +39,9 @@ span.monitoring-icon-status {
 	opacity: .85;
 	transition: color 0.3s ease, border-color 0.3s ease;
 }
-.panel-monitoring.bg-green  span.monitoring-icon-status { color: #28a745; }
-.panel-monitoring.bg-orange span.monitoring-icon-status { color: #ff9800; }
-.panel-monitoring.bg-red    span.monitoring-icon-status { color: #dc3545; }
+.panel-monitoring.nf-sante-ok  span.monitoring-icon-status { color: var(--bs-success-text-emphasis, var(--nf-success, #28a745)); }
+.panel-monitoring.nf-sante-alerte span.monitoring-icon-status { color: var(--bs-warning-text-emphasis, var(--nf-warning, #ff9800)); }
+.panel-monitoring.nf-sante-erreur    span.monitoring-icon-status { color: var(--bs-danger-text-emphasis, var(--nf-danger, #dc3545)); }
 
 .beat-slow {
 	animation: beat .75s infinite alternate;
@@ -81,7 +85,7 @@ span.monitoring-icon-status {
 }
 
 .panel-storage .monitoring-storage-title small {
-	color: #49525F;
+	color: var(--nf-muted, #5f6b78);
 	font-size: 11px;
 	font-weight: 700;
 }
@@ -102,30 +106,38 @@ span.monitoring-icon-status {
 	display: block !important;
 }
 
-/* Textes Used + Pourcent : centrés DANS le creux du demi-cercle */
+/* Textes Used + Pourcent : centrés DANS le creux du demi-cercle.
+ *
+ * La géométrie (js/knob.js, 190×180, épaisseur 0.2) : centre à 90 px du haut, rayon INTÉRIEUR de
+ * l'arc ≈ 59 px. À 32 px du haut, la valeur — une centaine de pixels de large — avait ses coins DANS
+ * l'épaisseur de l'arc : « 10.15Go » touchait le trait (signalé le 2026-09-22). À 60 px,
+ * ses coins sont à 8 px du bord intérieur ; le pourcentage passe juste sous la corde, entre les deux
+ * extrémités de l'arc. */
 .panel-storage #storage-used {
 	position: absolute;
-	top: 32px;
+	top: 60px;
 	left: 0;
 	right: 0;
 	text-align: center;
-	font-size: 22px;
+	font-size: 20px;
 	font-weight: 700;
 	line-height: 1.1;
 	z-index: 2;
 	margin: 0;
 	white-space: nowrap;
+	/* La valeur touchait la pointe gauche de l'arc des qu'elle depassait cinq caracteres. */
+	padding: 0 30px;
 }
 
 .panel-storage #storage-pourcent {
 	position: absolute;
-	top: 64px;
+	top: 88px;
 	left: 0;
 	right: 0;
 	text-align: center;
 	font-size: 12px;
 	font-weight: 600;
-	color: #6c757d;
+	color: var(--nf-muted, #5f6b78);
 	z-index: 2;
 	margin: 0;
 }
@@ -186,11 +198,11 @@ span.monitoring-icon-status {
 }
 
 span.icon.far.fa-file {
-	color: #9e9e9e;
+	color: var(--nf-muted, #9e9e9e);
 }
 
 span.icon.expand-icon {
-	color: #f0ad4e;
+	color: var(--bs-warning-text-emphasis, var(--nf-warning, #f0ad4e));
 }
 
 .treeview .list-group .list-group-item span.badge {

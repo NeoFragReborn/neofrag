@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  *
@@ -860,7 +861,7 @@ class Moderation extends Library
 
 			// Stocke le talk_id dans handled_note du report (et marque comme reviewed)
 			$this->update_report_status($report_id, 'reviewed', $moderator_id,
-				'Médiation ouverte (talk_id='.$talk_id.')');
+				(string) $this->lang('Médiation ouverte (discussion #%d)', (int) $talk_id));
 
 			return (int)$talk_id;
 		}

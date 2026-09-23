@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Module Wiki — pages collaboratives avec historique des révisions.
@@ -19,6 +20,10 @@ class Wiki extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => [],
+			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => ['neofrag' => '0.2.0'],
@@ -43,10 +48,10 @@ class Wiki extends Module
 			'default' => [
 				'access' => [
 					[
-						'title'  => 'Wiki',
+						'title'  => $this->lang('Wiki'),
 						'icon'   => 'fas fa-book',
 						'access' => [
-							'manage' => ['title' => 'Gérer pages wiki', 'icon' => 'fas fa-edit', 'admin' => TRUE]
+							'manage' => ['title' => $this->lang('Gérer les pages du wiki'), 'icon' => 'fas fa-edit', 'admin' => TRUE]
 						]
 					]
 				]

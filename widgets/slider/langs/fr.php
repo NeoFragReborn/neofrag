@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traductions FR (auto-générées 2026-05-03)
@@ -23,4 +24,6 @@ return [
 	'77c705a8' => 'Activer cette slide (sinon ignorée à l\'affichage)',
 	'd396a751' => 'Précédent',
 	'ebcb0841' => 'Suivant',
+	'77703fae' => 'Configure le slider dans l\'admin pour ajouter tes propres slides.',
+	'bcac33c0' => 'Diapositive %d',
 ];

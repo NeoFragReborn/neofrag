@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -144,4 +145,29 @@ return [
 	'1a3e614b' => 'Eliminare definitivamente?',
 	'81d7f96a' => 'Salvato.',
 	'42888b00' => 'Fatto.',
+	'b8f68c38' => 'Il manifesto di aggiornamento è incompleto: nome del pacchetto o impronta SHA-256 mancante o non valido.',
+	'd7899acc' => 'Aggiornamento interrotto: %s',
+	'3750c510' => 'La nave sta affondando!',
+	'd6760697' => 'Iceberg in vista!',
+	'461c4f0b' => 'Tutto in ordine, capitano!',
+	'f3dba025' => 'Backup in corso...',
+	'1e22cbbf' => 'Il sito è stato riportato allo stato in cui si trovava prima dell\'aggiornamento.',
+	'13648960' => 'Anche il ripristino è fallito (%s). Il backup %s è intatto: può essere ripristinato dal pannello di monitoraggio oppure scaricato.',
+	'135a26db' => 'Backup ripristinato: %d file rimessi al loro posto, %d residui rimossi, database reimportato.',
+	'b63665a3' => 'Il ripristino è fallito: %s',
+	'66d26b7f' => 'Ripristina',
+	'8335d9bb' => 'Riportare il sito allo stato del %s? I file e il database saranno sostituiti da quelli di questo backup; tutto ciò che è stato pubblicato da allora andrà perso. Configurazione, registri e cache non vengono toccati.',
+	'500cc9c4' => 'Conferma',
+	'0aac9844' => 'Data',
+	'54cb6c83' => 'File',
+	'71fc8e0e' => 'Dimensione',
+	'caf5c873' => 'Azioni',
+	'445a0d6e' => 'Scarica',
+	'8fd9c7ef' => 'Salva',
+	'0f0f9344' => 'B',
+	'4cbee36c' => 'Usato',
+	'882cc3ca' => 'Avviso',
+	'f0823f1d' => 'Consiglio',
+	'4ab31b94' => 'Backup salvato nella cartella <b>backups</b> del tuo FTP',
+	'f512948d' => 'Monitoraggio',
 ];

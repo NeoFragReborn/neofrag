@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -56,8 +57,8 @@ class Checker extends Controller
 			'client_id'     => $client_id,
 			'client_secret' => $client_secret,
 			'api_key'       => $api_key,
-			'open_mode'     => in_array($settings['open_mode']    ?? 'popup', ['popup', 'newtab'], TRUE) ? $settings['open_mode']    : 'popup',
-			'show_offline'  => in_array($settings['show_offline'] ?? '1', ['0', '1'], TRUE)              ? $settings['show_offline'] : '1'
+			'open_mode'     => in_array($settings['open_mode']    ?? 'popup', ['popup', 'newtab'], TRUE) ? ($settings['open_mode'] ?? 'popup')    : 'popup',
+			'show_offline'  => in_array($settings['show_offline'] ?? '1', ['0', '1'], TRUE)              ? ($settings['show_offline'] ?? '1') : '1'
 		];
 	}
 }

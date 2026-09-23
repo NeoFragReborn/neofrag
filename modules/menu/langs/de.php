@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'b3b427cb' => 'Menüs',
@@ -30,4 +31,9 @@ return [
 	'b2341c75' => 'Eintrag bearbeiten',
 	'96d5c170' => 'Baukasten für wiederverwendbare benannte Menüs (hierarchische Einträge) für die Navigation.',
 	'85111a17' => 'Menüs verwalten',
+	'881485c2' => 'Bearbeiten: %s',
+	'afccc23b' => 'Erstellen',
+	'8fd9c7ef' => 'Speichern',
+	'4a818505' => 'Artikel|Artikel',
+	'4678bb10' => 'Neuer Artikel',
 ];

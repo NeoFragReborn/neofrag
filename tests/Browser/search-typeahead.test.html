@@ -1,0 +1,247 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Recherche instantanée — contrat du typeahead</title>
+
+<!--
+  La suggestion instantanée est la seule pièce du front qui prend du CONTENU DE SITE et le
+  reconstruit dans le DOM à chaque frappe. C'est donc à la fois la plus visible et la plus exposée :
+
+    - elle insère des titres écrits par les membres (sujets de forum, actualités, pseudos). S'ils
+      étaient posés en `innerHTML`, n'importe quel titre deviendrait une injection de script —
+      stockée, servie à tous, déclenchée sans clic. Le code emploie `textContent` ; rien ne le
+      vérifiait ;
+    - elle appelle le serveur à chaque touche. Sans le seuil de deux caractères ni le délai de
+      200 ms, une frappe de dix lettres fait dix requêtes sur un point d'entrée public.
+
+  Ces propriétés ne s'observent que dans un navigateur : ce sont des effets sur le DOM réel et sur
+  l'ordonnanceur. Aucun test PHP ne les voit.
+
+  Ici, `window.fetch` est remplacé par un double : on éprouve le CONTRAT du widget — quand il
+  appelle, avec quoi, et ce qu'il fabrique de la réponse — sans réseau ni serveur. Le fichier visé
+  est le VRAI (`/src/widgets/search/js/search.js`), jamais une copie qui dériverait.
+-->
+
+<script src="/harness.js"></script>
+
+<body>
+
+<!-- Balisage repris de widgets/search/views/index.tpl.php : le script cherche `.nf-search` en
+     ancêtre de l'input, et `.nf-search-suggest` à l'intérieur. -->
+<form class="form-inline" action="/search" method="get" autocomplete="off">
+	<div class="input-group input-group-sm nf-search">
+		<input type="text" class="form-control" name="q" data-suggest-url="/ajax/search/suggest">
+		<span class="input-group-append"><button class="btn btn-light" type="submit">ok</button></span>
+		<div class="nf-search-suggest" role="listbox" hidden></div>
+	</div>
+</form>
+
+<p id="dehors">zone extérieure au widget</p>
+
+<script>
+// ── Le double de `fetch` ─────────────────────────────────────────────────────
+var appels = [];
+var reponse = [];
+
+window.fetch = function (url, init) {
+	appels.push({ url: url, init: init });
+
+	return Promise.resolve({
+		ok:   true,
+		json: function () { return Promise.resolve(reponse); }
+	});
+};
+
+var input = document.querySelector('input[data-suggest-url]');
+var boite = document.querySelector('.nf-search-suggest');
+
+function frappe(valeur) {
+	input.value = valeur;
+	input.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+function touche(cle) {
+	input.dispatchEvent(new KeyboardEvent('keydown', { key: cle, bubbles: true, cancelable: true }));
+}
+
+/** Le widget attend 200 ms avant d'appeler : on lui laisse de la marge. */
+function apresDebounce(suite) { setTimeout(suite, 320); }
+
+function elements() { return boite.querySelectorAll('.nf-search-suggest-item'); }
+</script>
+
+<!-- Le vrai fichier du widget. Chargé APRÈS le double de fetch, et avant les épreuves. -->
+<script src="/src/widgets/search/js/search.js"></script>
+
+<script>
+// Le widget s'amorce sur DOMContentLoaded ; ce bloc s'y accroche APRÈS lui, donc il tourne une
+// fois le widget branché sur l'input.
+document.addEventListener('DOMContentLoaded', function () {
+
+	var etapes = [];
+
+	function etape(fn) { etapes.push(fn); }
+
+	function derouler(i) {
+		if (i >= etapes.length) { NFTest.fini(); return; }
+		etapes[i](function () { derouler(i + 1); });
+	}
+
+	// ── 1. Sous deux caractères, on n'appelle pas ────────────────────────────
+	etape(function (suite) {
+		appels = [];
+		frappe('a');
+
+		apresDebounce(function () {
+			NFTest.verifie('un seul caractère : aucun appel au serveur', 0, appels.length);
+			NFTest.verifie('un seul caractère : le menu reste fermé', true, boite.hidden);
+			suite();
+		});
+	});
+
+	// ── 2. Deux caractères : un appel, et il porte ce qu'il faut ─────────────
+	etape(function (suite) {
+		appels  = [];
+		reponse = [{ title: 'Salut tout le monde', url: '/fr/forum/topic/1/salut', module: 'Forum', icon: 'fas fa-comments' }];
+		frappe('sa');
+
+		apresDebounce(function () {
+			NFTest.verifie('deux caractères : un appel', 1, appels.length);
+
+			if (appels.length) {
+				NFTest.verifie('le terme est transmis, encodé', true, appels[0].url.indexOf('q=sa') !== -1);
+				NFTest.verifie('l\'appel s\'annonce comme AJAX',
+					'XMLHttpRequest', appels[0].init.headers['X-Requested-With']);
+				NFTest.verifie('les cookies suivent la requête', 'same-origin', appels[0].init.credentials);
+			}
+
+			suite();
+		});
+	});
+
+	// ── 3. Le menu se remplit ───────────────────────────────────────────────
+	etape(function (suite) {
+		NFTest.verifie('le menu s\'ouvre', false, boite.hidden);
+		NFTest.verifie('un élément par résultat', 1, elements().length);
+
+		var item = elements()[0];
+
+		NFTest.verifie('le titre est rendu', 'Salut tout le monde',
+			item.querySelector('.nf-search-suggest-title').textContent);
+		NFTest.verifie('le module est rendu', 'Forum',
+			item.querySelector('.nf-search-suggest-mod').textContent);
+		NFTest.verifie('le lien pointe où le serveur a dit', '/fr/forum/topic/1/salut',
+			item.getAttribute('href'));
+		suite();
+	});
+
+	// ── 4. LE point : un titre piégé ne doit rien exécuter ───────────────────
+	//
+	// Un titre est écrit par un membre. Posé en `innerHTML`, celui-ci deviendrait une injection de
+	// script stockée, servie à chaque visiteur qui tape deux lettres. Il doit rester du TEXTE.
+	etape(function (suite) {
+		var piege = '<img src=x onerror="window.__nfXSS=1">';
+		appels  = [];
+		reponse = [{ title: piege, url: '/fr/news/1/x', module: '<b>Actus</b>', icon: 'fas fa-newspaper' }];
+		frappe('xx');
+
+		apresDebounce(function () {
+			var item = elements()[0];
+
+			NFTest.verifie('un titre piégé reste du texte, tel quel', piege,
+				item.querySelector('.nf-search-suggest-title').textContent);
+			NFTest.verifie('aucune balise n\'a été fabriquée depuis le titre',
+				0, item.querySelectorAll('img').length);
+			NFTest.verifie('aucun script du titre ne s\'est exécuté',
+				undefined, window.__nfXSS);
+			NFTest.verifie('le nom de module aussi reste du texte', '<b>Actus</b>',
+				item.querySelector('.nf-search-suggest-mod').textContent);
+			suite();
+		});
+	});
+
+	// ── 5. Zéro résultat : on ferme, on ne laisse pas un menu vide ───────────
+	etape(function (suite) {
+		reponse = [];
+		frappe('zz');
+
+		apresDebounce(function () {
+			NFTest.verifie('aucun résultat : le menu est fermé', true, boite.hidden);
+			NFTest.verifie('aucun résultat : le menu est vidé', 0, elements().length);
+			suite();
+		});
+	});
+
+	// ── 6. Le clavier ───────────────────────────────────────────────────────
+	etape(function (suite) {
+		reponse = [
+			{ title: 'Premier',  url: '/a', module: 'M', icon: 'i' },
+			{ title: 'Deuxième', url: '/b', module: 'M', icon: 'i' }
+		];
+		frappe('kk');
+
+		apresDebounce(function () {
+			NFTest.verifie('deux résultats affichés', 2, elements().length);
+
+			touche('ArrowDown');
+			NFTest.verifie('flèche bas : le premier devient actif', true, elements()[0].classList.contains('active'));
+
+			touche('ArrowDown');
+			NFTest.verifie('flèche bas : le second devient actif', true, elements()[1].classList.contains('active'));
+
+			touche('ArrowDown');
+			NFTest.verifie('flèche bas en bout de liste : on reste sur le dernier',
+				true, elements()[1].classList.contains('active'));
+
+			touche('ArrowUp');
+			NFTest.verifie('flèche haut : on remonte', true, elements()[0].classList.contains('active'));
+
+			touche('ArrowUp');
+			NFTest.verifie('flèche haut en tête de liste : on reste sur le premier',
+				true, elements()[0].classList.contains('active'));
+
+			touche('Escape');
+			NFTest.verifie('Échap ferme le menu', true, boite.hidden);
+			suite();
+		});
+	});
+
+	// ── 7. Un clic hors du widget ferme ─────────────────────────────────────
+	etape(function (suite) {
+		reponse = [{ title: 'Quelque chose', url: '/c', module: 'M', icon: 'i' }];
+		frappe('cc');
+
+		apresDebounce(function () {
+			NFTest.verifie('le menu est ouvert avant le clic', false, boite.hidden);
+
+			document.getElementById('dehors').dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+			NFTest.verifie('un clic hors du widget ferme le menu', true, boite.hidden);
+			suite();
+		});
+	});
+
+	// ── 8. Le délai d'attente groupe les frappes ────────────────────────────
+	//
+	// Sans lui, taper « bonjour » lance sept requêtes sur un point d'entrée public.
+	etape(function (suite) {
+		appels = [];
+		frappe('bo');
+		frappe('bon');
+		frappe('bonj');
+		frappe('bonjo');
+
+		apresDebounce(function () {
+			NFTest.verifie('quatre frappes rapprochées ne font qu\'un appel', 1, appels.length);
+
+			if (appels.length) {
+				NFTest.verifie('et c\'est la DERNIÈRE saisie qui part',
+					true, appels[0].url.indexOf('q=bonjo') !== -1);
+			}
+
+			suite();
+		});
+	});
+
+	derouler(0);
+});
+</script>

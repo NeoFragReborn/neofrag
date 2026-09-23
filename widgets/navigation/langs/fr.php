@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traductions FR (auto-générées 2026-05-03)
@@ -34,4 +35,14 @@ return [
 	'76828c83' => 'Photo de couverture',
 	'11db7719' => 'Avatar',
 	'3dcd8730' => 'Aucune session active',
+	'6db60ef7' => 'Menu géré',
+	'26db591e' => '— Liens manuels (ci-dessous) —',
+	'571ec895' => 'Affiche un menu créé dans « Menus » (remplace les liens manuels ci-dessous).',
+	'eaf7576f' => 'Title',
+	'98420d15' => 'Menu de navigation horizontal ou vertical configurable.',
+	'1c5e079e' => 'Horizontal',
+	'510016ca' => 'Vertical',
+	'92df285e' => 'Lien vers un module',
+	'f2a3fffd' => 'Lien vers une page',
+	'dd3795ad' => 'Menu',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -64,9 +65,13 @@ class Text extends Labelable
 		};
 
 		$this->_template[] = function(&$input){
+			// Le groupe de Bootstrap 5 : les étiquettes sont des ENFANTS DIRECTS de `.input-group`, avant
+			// ou après le champ. Bootstrap 4 les enveloppait dans `.input-group-prepend` /
+			// `.input-group-append`, que la version 5 a supprimés ; le nom était fabriqué ici
+			// (`'input-group-'.$align`), et aucune recherche de classe ne le voyait (2026-09-23).
 			$addons = [
-				'prepend' => NULL,
-				'append'  => NULL
+				'prepend' => '',
+				'append'  => ''
 			];
 
 			$add_group = function($addon, $align) use (&$addons){
@@ -75,13 +80,7 @@ class Text extends Labelable
 					$align = 'prepend';
 				}
 
-				if (!isset($addons[$align]))
-				{
-					$addons[$align] = $this	->html()
-											->attr('class', 'input-group-'.$align);
-				}
-
-				$addons[$align]->append('<div class="input-group-text">'.$addon.'</div>');
+				$addons[$align] .= '<span class="input-group-text">'.$addon.'</span>';
 			};
 
 			if ($this->_iconpicker)
@@ -98,7 +97,9 @@ class Text extends Labelable
 				$add_group($addon, $addon->align());
 			}
 
-			if ($addons)
+			// Un groupe seulement s'il y a une étiquette : `if ($addons)` était toujours vrai (deux clés),
+			// et CHAQUE champ texte se retrouvait enveloppé dans un groupe vide.
+			if ($addons['prepend'] !== '' || $addons['append'] !== '')
 			{
 				$input = parent	::html()
 								->attr('class', 'input-group')

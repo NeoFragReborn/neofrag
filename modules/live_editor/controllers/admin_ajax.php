@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -118,7 +119,7 @@ class Admin_Ajax extends Controller_Module
 
 	public function col_add($disposition_id, $disposition, $row_id)
 	{
-		$disposition[$row_id]->append($col = $this->col()->size('col-4'));
+		$disposition[$row_id]->append($col = $this->col()->size('col-12 col-lg-4'));
 		$this->model()->set_disposition($disposition_id, $disposition);
 
 		return $col->id($disposition[$row_id]->last_key());
@@ -149,7 +150,7 @@ class Admin_Ajax extends Controller_Module
 									'title'    => $title ? utf8_htmlentities($title) : NULL,
 									'widget'   => $widget_name,
 									'type'     => $type,
-									'settings' => $this->widget($widget_name)->get_settings($type, $settings)
+									'settings' => $this->widget($widget_name)->get_settings($type, $settings ?: [])
 								]);
 
 		$disposition[$row_id][$col_id]->append($widget = $this->widget($widget_id));
@@ -178,13 +179,17 @@ class Admin_Ajax extends Controller_Module
 
 	public function widget_settings($widget_id = 0, $widget = '', $type = 'index', $title = '', $settings = '')
 	{
-		$this->model()->get_widgets($widgets, $types);
+		// Sorties par référence de `get_widgets()` : déclarées ici pour que l'analyse statique
+		// les voie définies — `model()` passe par une magic method, sa signature lui échappe.
+		$widgets = $types = $icones = [];
+		$this->model()->get_widgets($widgets, $types, $icones);
 
 		return $this->view('widget', [
 			'widget_id' => $widget_id,
 			'title'     => $title,
 			'widget'    => $widget ?: array_keys($widgets)[0],
 			'widgets'   => $widgets,
+			'icones'    => $icones,
 			'type'      => $type,
 			'types'     => $types
 		]);
@@ -192,7 +197,7 @@ class Admin_Ajax extends Controller_Module
 
 	public function widget_update($disposition_id, $disposition, $row_id, $col_id, $widget_id, $id, $widget, $type, $title, $settings)
 	{
-		$settings = $this->widget($widget)->get_settings($type, $settings);
+		$settings = $this->widget($widget)->get_settings($type, $settings ?: []);
 
 		$this->db	->where('widget_id', $id)
 					->update('nf_widgets', [

@@ -1,7 +1,13 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
+ *
+ * couplage(recruits): la fiche d'une equipe affiche ses recrutements ouverts, mais
+ * _check_team_recruits() sort AVANT toute requete si le module n'est pas la
+ * (`module('recruits')` + `table_exists`). Le controle etait a l'origine place APRES la requete,
+ * ce qui ne protegeait rien : corrige le 2026-09-15.
  */
 
 namespace NF\Modules\Teams\Controllers;
@@ -57,9 +63,9 @@ class Index extends Controller_Module
 			$matches = $this->table()
 							->add_columns([
 								[
-									'title'   => 'Date',
+									'title'   => $this->lang('Date'),
 									'content' => function($data){
-										return timetostr('d/m/Y', $data['date']);
+										return timetostr($this->lang('d/m/Y'), $data['date']);
 									},
 									'size'    => TRUE,
 									'class'   => 'align-middle'
@@ -78,11 +84,11 @@ class Index extends Controller_Module
 									'class'   => 'col-1 text-center align-middle'
 								],
 								[
-									'title'   => 'Adversaire',
+									'title'   => $this->lang('Adversaire'),
 									'content' => function($data){
 										if ($data['match']['opponent']['country'])
 										{
-											$opponent = '<img src="'.url('images/flags/'.$data['match']['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.get_countries()[$data['match']['opponent']['country']].'" style="margin-right: 8px;" alt="" />';
+											$opponent = '<img src="'.url('images/flags/'.$data['match']['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.country_name($data['match']['opponent']['country']).'" style="margin-right: 8px;" alt="" />';
 										}
 
 										$opponent .= $data['match']['opponent']['title'];
@@ -92,14 +98,14 @@ class Index extends Controller_Module
 									'class'   => 'align-middle'
 								],
 								[
-									'title'   => 'Événement',
+									'title'   => $this->lang('Événement'),
 									'content' => function($data){
 										return '<a href="'.url('events/'.$data['event_id'].'/'.url_title($data['title'])).'">'.$data['title'].'</a>';
 									},
 									'class'   => 'align-middle'
 								],
 								[
-									'title'   => '<div class="text-center">Score</div>',
+									'title'   => '<div class="text-center">'.$this->lang('Score').'</div>',
 									'content' => function($data){
 										return $this->module('events')->model('matches')->display_scores($data['match']['scores'], $color).'<span class="'.$color.'">'.$data['match']['scores'][0].':'.$data['match']['scores'][1].'</span>';
 									},
@@ -154,15 +160,24 @@ class Index extends Controller_Module
 
 	public function _check_team_recruits($team_id)
 	{
+		// Le controle de presence du module etait place APRES la requete (cf. le `if` plus bas) :
+		// sans `recruits` installe, nf_recruits n'existe pas et la page d'une equipe fatalisait
+		// avant meme d'atteindre la garde. Corrige le 2026-09-15 — on sort d'abord.
+		if (!$this->module('recruits') || !$this->db->table_exists('nf_recruits'))
+		{
+			return NULL;
+		}
+
 		$recruits = $this->db	->select('r.*', 'COUNT(DISTINCT rc.candidacy_id) as candidacies', 'COUNT(DISTINCT CASE WHEN rc.status = \'1\' THEN rc.candidacy_id END) as candidacies_pending', 'COUNT(DISTINCT CASE WHEN rc.status = \'2\' THEN rc.candidacy_id END) as candidacies_accepted', 'COUNT(DISTINCT CASE WHEN rc.status = \'3\' THEN rc.candidacy_id END) as candidacies_declined')
 								->from('nf_recruits r')
-								->join('nf_recruits_candidacies rc', 'rc.recruit_id = r.recruit_id')
+								// LEFT : voir modules/recruits/models/recruits.php.
+								->join('nf_recruits_candidacies rc', 'rc.recruit_id = r.recruit_id', 'LEFT')
 								->group_by('r.recruit_id')
 								->where('r.closed', FALSE)
 								->where('r.team_id', $team_id)
 								->get();
 
-		if ($recruits && $this->module('recruits'))
+		if ($recruits)
 		{
 			foreach ($recruits as $recruit)
 			{

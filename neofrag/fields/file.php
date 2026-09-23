@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace NF\NeoFrag\Fields;
 
+#[\AllowDynamicProperties]
 class File
 {
 	public function init($field): void

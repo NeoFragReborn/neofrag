@@ -1,0 +1,16 @@
+<?php
+
+/*
+ * GABARIT — ce fichier n'est jamais lu. L'installateur écrit le vrai `config/url.php` en figeant
+ * l'origine de la requête d'installation : c'est le seul moment où le `Host` est de confiance,
+ * puisque c'est l'administrateur qui installe.
+ *
+ * Toutes les URL ABSOLUES du produit sont construites dessus — liens de réinitialisation de mot de
+ * passe, validation d'inscription, retours OAuth, retours de paiement — et jamais sur le `Host` de
+ * la requête, qui est forgeable par un visiteur.
+ *
+ * C'est le SEUL fichier de ce dossier qu'on modifie à la main : quand le site change de domaine.
+ * L'oublier laisse les liens des e-mails pointer vers l'ancienne adresse.
+ */
+
+$url['site'] = 'https://exemple.tld';

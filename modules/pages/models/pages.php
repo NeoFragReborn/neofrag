@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -182,6 +183,39 @@ class Pages extends Model
 		ksort($out);
 
 		return $out;
+	}
+
+	/**
+	 * Une page publique, par son nom, dans la bonne langue : celle du visiteur si la page y existe,
+	 * sinon celle où elle est écrite (`langue_du_contenu()`, qui déclare aussi les `hreflang`).
+	 *
+	 * La jointure d'origine ne filtrait aucune langue : une page traduite était servie dans la
+	 * première version que la base rendait, française ou anglaise, quelle que soit la langue du
+	 * visiteur. Invisible tant que chaque page n'avait qu'une version (relevé le 2026-09-23, en
+	 * donnant une version anglaise aux pages de la démonstration).
+	 */
+	public function page_publique(string $name)
+	{
+		$page_id = $this->db->select('page_id')->from('nf_pages')->where('name', $name)->where('published', TRUE)->row();
+
+		if (!$page_id)
+		{
+			return NULL;
+		}
+
+		$langue = $this->langue_du_contenu('nf_pages_lang', 'page_id', $page_id);
+
+		$this->db	->select('p.page_id', 'pl.title', 'pl.subtitle', 'pl.content', 'p.layout')
+					->from('nf_pages p')
+					->join('nf_pages_lang pl', 'p.page_id = pl.page_id')
+					->where('p.page_id', $page_id);
+
+		if ($langue !== '')
+		{
+			$this->db->where('pl.lang', $langue);
+		}
+
+		return $this->db->row() ?: NULL;
 	}
 
 	public function check_page($page_id, $title, $lang = 'default', $all = FALSE)

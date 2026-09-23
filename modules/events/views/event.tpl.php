@@ -4,7 +4,7 @@
 <?php endif ?>
 <?php if (!empty($match['opponent']))://Matches ?>
 <div class="card-body text-center">
-	<div class="row no-gutters align-items-center">
+	<div class="row g-0 align-items-center">
 		<div class="text-end col-<?php echo ($icon = NeoFrag()->model2('file', $match['team']['icon_id'])->path()) ? 4 : 5 ?>">
 			<h5 class="m-0">
 				<a href="<?php echo url('events/team/'.$match['team_id'].'/'.$match['team']['name']) ?>">
@@ -13,21 +13,21 @@
 			</h5>
 		</div>
 		<?php if ($icon): ?>
-		<div class="text-start col-1">
+		<div class="text-start col-12 col-lg-1">
 			<img src="<?php echo $icon ?>" class="img-fluid" alt="" />
 		</div>
 		<?php endif ?>
 		<?php if ($match['scores']): ?>
-			<div class="text-center col-2">
+			<div class="text-center col-12 col-lg-2">
 				<h3 class="<?php echo $color ?> m-0"><?php echo $match['scores'][0] ?>:<?php echo $match['scores'][1] ?></h3>
 			</div>
 		<?php else: ?>
-			<div class="text-center col-2">
+			<div class="text-center col-12 col-lg-2">
 				<h3 class="m-0">VS</h3>
 			</div>
 		<?php endif ?>
 		<?php if ($match['opponent']['image_id']): ?>
-		<div class="text-end col-1">
+		<div class="text-end col-12 col-lg-1">
 			<img src="<?php echo NeoFrag()->model2('file', $match['opponent']['image_id'])->path() ?>" class="img-fluid" alt="" />
 		</div>
 		<?php endif ?>
@@ -38,7 +38,7 @@
 
 					if ($match['opponent']['country'])
 					{
-						$opponent .= '<img src="'.url('images/flags/'.$match['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.get_countries()[$match['opponent']['country']].'" style="margin-left: 10px;" alt="" />';
+						$opponent .= '<img src="'.url('images/flags/'.$match['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.country_name($match['opponent']['country']).'" style="margin-left: 10px;" alt="" />';
 					}
 
 					if ($match['opponent']['website'])
@@ -56,22 +56,22 @@
 <?php if (!empty($rounds)): ?>
 <div class="card-body">
 	<?php if ($mode): ?>
-		<p class="<?php echo count($rounds) > 1 ? 'float-end' : 'text-center' ?>"><?php echo icon('fas fa-cog') ?>Mode: <?php echo $mode ?></p>
+		<p class="<?php echo count($rounds) > 1 ? 'float-end' : 'text-center' ?>"><?php echo icon('fas fa-cog').$this->lang('Mode : %s', $mode) ?></p>
 	<?php endif ?>
 	<?php if (count($rounds) > 1): ?>
-		<p class="fw-bold">Détail des manches</p>
+		<p class="fw-bold"><?php echo $this->lang('Détail des manches') ?></p>
 		<?php for ($i = 0; $i < count($rounds); $i++) { ?>
 			<div class="card-group mb-2">
 				<div class="card text-center justify-content-center">
-					<h6 class="m-0"><?php echo $match['team']['title'].' '.$this->model('matches')->display_scores([$rounds[$i]['score1'], $rounds[$i]['score2']], $color) ?></h6>
+					<h6 class="m-0"><?php echo ($match['team']['title'] ?? '').' '.$this->model('matches')->display_scores([$rounds[$i]['score1'], $rounds[$i]['score2']], $color) ?></h6>
 				</div>
-				<div class="card p-2 col-3 text-center">
-					<span class="badge text-bg-dark">Manche <?php echo $i+1 ?></span>
+				<div class="card p-2 col-12 col-lg-3 text-center">
+					<span class="badge text-bg-dark"><?php echo $this->lang('Manche %d', $i + 1) ?></span>
 					<h4 class="my-2"><?php echo $rounds[$i]['score1'] ?>:<?php echo $rounds[$i]['score2'] ?></h4>
 					<a href="#"><?php echo $this->label($rounds[$i]['title'], 'far fa-map')->popover_if($rounds[$i]['image_id'], function($id){ return utf8_htmlentities('<img src="'.NeoFrag()->model2('file', $id)->path().'" class="img-fluid" alt="" />'); })?></a>
 				</div>
 				<div class="card text-center justify-content-center">
-					<h6 class="m-0"><?php echo $this->model('matches')->display_scores([$rounds[$i]['score1'], $rounds[$i]['score2']], $color, TRUE).' '.$match['opponent']['title'] ?></h6>
+					<h6 class="m-0"><?php echo $this->model('matches')->display_scores([$rounds[$i]['score1'], $rounds[$i]['score2']], $color, TRUE).' '.($match['opponent']['title'] ?? '') ?></h6>
 				</div>
 			</div>
 		<?php } ?>
@@ -99,8 +99,8 @@ endif;
 <?php if ($webtv || $website): ?>
 <div class="card-body">
 	<ul class="list-inline m-0">
-		<?php echo $webtv ? '<li class="list-inline-item"><a href="'.$webtv.'" target="_blank">'.icon('fab fa-twitch').' Retransmission sur Twitch</a></li>' : '' ?>
-		<?php echo $website ? '<li class="list-inline-item"><a href="'.$website.'" target="_blank">'.icon('far fa-newspaper').' On en parle ici</a></li>' : '' ?>
+		<?php echo $webtv ? '<li class="list-inline-item"><a href="'.$webtv.'" target="_blank">'.icon('fab fa-twitch').' '.$this->lang('Retransmission sur Twitch').'</a></li>' : '' ?>
+		<?php echo $website ? '<li class="list-inline-item"><a href="'.$website.'" target="_blank">'.icon('far fa-newspaper').' '.$this->lang('On en parle ici').'</a></li>' : '' ?>
 	</ul>
 </div>
 <?php endif ?>
@@ -115,7 +115,7 @@ endif;
 	</div>
 	<ul class="list-inline m-0">
 		<li class="list-inline-item"><?php echo $this->label($type['title'], $type['icon'], $type['color'], 'events/type/'.$type['type_id'].'/'.url_title($type['title'])) ?></li>
-		<li class="list-inline-item"><?php echo icon('far fa-clock') ?> <?php echo '<span data-bs-toggle="tooltip" title="'.timetostr(NeoFrag()->lang('l j F Y, H:i'), $date).'">'.timetostr(NeoFrag()->lang('d/m/Y H:i'), $date).'</span>'.($date_end ? '&nbsp;&nbsp;<span data-bs-toggle="tooltip" title="Durée"><i>'.icon('fas fa-hourglass-end').(ceil((strtotime($date_end) - strtotime($date)) / ( 60 * 60 ))).'h</i></span>' : '') ?></li>
+		<li class="list-inline-item"><?php echo icon('far fa-clock') ?> <?php echo '<span data-bs-toggle="tooltip" title="'.timetostr(NeoFrag()->lang('l j F Y, H:i'), $date).'">'.timetostr(NeoFrag()->lang('d/m/Y H:i'), $date).'</span>'.($date_end ? '&nbsp;&nbsp;<span data-bs-toggle="tooltip" title="'.$this->lang('Durée').'"><i>'.icon('fas fa-hourglass-end').(ceil((strtotime($date_end) - strtotime($date)) / ( 60 * 60 ))).'h</i></span>' : '') ?></li>
 		<?php if (strtotime($date) > time()): ?>
 		<li class="list-inline-item"><?php echo icon('far fa-hourglass-half') ?> <span class="nf-countdown" data-countdown="<?php echo (int)strtotime($date) ?>"></span></li>
 		<?php endif ?>

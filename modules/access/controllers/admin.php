@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -81,7 +82,7 @@ class Admin extends Controller_Module
 
 		$this	->form()
 				->add_rules('role', ['parent_choices' => $parent_choices])
-				->add_submit($this->lang('Créer'))
+				->add_submit($this->lang('Créer'), 'fas fa-plus')
 				->add_back('admin/access/roles');
 
 		if ($this->form()->is_valid($post))
@@ -188,7 +189,7 @@ class Admin extends Controller_Module
 						'value' => $role['title'].' (copie)'
 					]
 				])
-				->add_submit($this->lang('Cloner'))
+				->add_submit($this->lang('Cloner'), 'fas fa-clone')
 				->add_back('admin/access/roles');
 
 		if ($this->form()->is_valid($post))

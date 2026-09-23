@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -41,4 +42,16 @@ return [
 	'f2100516' => 'Página nua (largura total)',
 	'78b7cadc' => '«Página nua» apresenta o conteúdo sem moldura nem título — ideal para uma página composta por blocos.',
 	'42bd0172' => 'Uma data futura agenda a publicação: a página permanece oculta publicamente até essa data (se publicada). Vazio = imediato.',
+	'0adc6e30' => 'Guarde primeiro a página: poderá depois compor blocos de módulo ao editá-la.',
+	'b2299bb6' => 'Blocos da página',
+	'92a243f3' => 'Adicione blocos de módulo abaixo do conteúdo, reordene-os arrastando e configure as suas opções. Equivalente visual dos shortcodes [block:…].',
+	'7fb14f71' => 'Guardar os blocos',
+	'517c0b2c' => 'Agendada para %s',
+	'afccc23b' => 'Criar',
+	'f0b7b5b5' => 'Data de publicação',
+	'08ce3a09' => 'Blocos guardados',
+	'ce6fa2e6' => 'Erro ao guardar',
+	'9cdcd1f0' => 'Páginas CMS estáticas: sobre, aviso legal, condições, etc.',
+	'4349f0db' => 'Página %s',
+	'1bf841b2' => 'Acesso ao conteúdo',
 ];

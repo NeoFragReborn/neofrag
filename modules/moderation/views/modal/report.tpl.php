@@ -6,7 +6,7 @@
 ?>
 <div class="modal-header">
 	<h5 class="modal-title"><?php echo \icon('fas fa-flag').' '.$this->lang('Signaler ce contenu') ?></h5>
-	<button type="button" class="close" data-bs-dismiss="modal" aria-label="Fermer"><span aria-hidden="true">&times;</span></button>
+	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"></button>
 </div>
 <div class="modal-body">
 	<?php
@@ -34,7 +34,7 @@
 		<input type="hidden" name="target_id" value="<?php echo htmlspecialchars($target_id) ?>" />
 		<input type="hidden" name="url" value="<?php echo htmlspecialchars($url) ?>" />
 
-		<div class="form-group">
+		<div class="nf-field">
 			<label class="fw-bold"><?php echo $this->lang('Raison du signalement') ?></label>
 			<?php
 			$reasons = [
@@ -62,7 +62,7 @@
 		// Les profils/users + l'absence d'URL fournie = contexte requis manuellement.
 		$auto_context = !empty($url) && !in_array($target_type, ['profile', 'user'], TRUE);
 		?>
-		<div class="form-group">
+		<div class="nf-field">
 			<?php if ($auto_context): ?>
 			<label><?php echo $this->lang('Commentaire (optionnel, 500 caractères max)') ?></label>
 			<textarea name="comment" class="form-control" rows="3" maxlength="500" placeholder="<?php echo $this->lang('Précise pourquoi ce contenu pose problème (optionnel mais aide les modérateurs).') ?>"></textarea>

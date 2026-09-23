@@ -2,12 +2,12 @@
 <ul class="list-group list-group-flush">
 	<?php foreach ($matches as $match): ?>
 	<li class="list-group-item">
-		<div class="row no-gutters align-items-center">
-			<div class="col-1">
+		<div class="row g-0 align-items-center">
+			<div class="col-12 col-lg-1">
 				<?php echo $this->module('events')->model('matches')->display_scores($match['match']['scores'], $color) ?>
 			</div>
 			<?php if ($match['match']['opponent']['image_id']): ?>
-			<div class="text-center col-1">
+			<div class="text-center col-12 col-lg-1">
 				<img src="<?php echo NeoFrag()->model2('file', $match['match']['opponent']['image_id'])->path() ?>" class="img-fluid" alt="" />
 			</div>
 			<?php endif ?>
@@ -19,7 +19,7 @@
 
 					if ($match['match']['opponent']['country'])
 					{
-						$opponent .= '<img src="'.url('images/flags/'.$match['match']['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.get_countries()[$match['match']['opponent']['country']].'" style="margin-left: 10px;" alt="" />';
+						$opponent .= '<img src="'.url('images/flags/'.$match['match']['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.country_name($match['match']['opponent']['country']).'" style="margin-left: 10px;" alt="" />';
 					}
 
 					echo $opponent;

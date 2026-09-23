@@ -17,7 +17,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 5px;
-	border: 1px solid var(--dungeon-border, var(--nf-border, #ccc));
+	border: 1px solid var(--nf-border, var(--nf-border, #ccc));
 	background: transparent;
 	border-radius: 999px;
 	padding: 2px 10px;
@@ -27,12 +27,12 @@
 	transition: border-color .15s, background .15s, transform .1s;
 }
 .nf-reaction-main:hover:not([disabled]) {
-	border-color: var(--dungeon-accent, var(--nf-accent, #6c5ce7));
-	background: color-mix(in srgb, var(--dungeon-accent, #6c5ce7) 10%, transparent);
+	border-color: var(--nf-accent, var(--nf-accent, #6c5ce7));
+	background: color-mix(in srgb, var(--nf-accent, #6c5ce7) 10%, transparent);
 }
 .nf-reaction-main.reacted {
-	border-color: var(--dungeon-accent, var(--nf-accent, #6c5ce7));
-	background: color-mix(in srgb, var(--dungeon-accent, #6c5ce7) 14%, transparent);
+	border-color: var(--nf-accent, var(--nf-accent, #6c5ce7));
+	background: color-mix(in srgb, var(--nf-accent, #6c5ce7) 14%, transparent);
 }
 .nf-reaction-main[disabled] { cursor: default; opacity: .65; }
 .nf-reaction-emoji { font-size: 16px; line-height: 1; }
@@ -45,8 +45,8 @@
 	display: flex;
 	gap: 2px;
 	padding: 4px 6px;
-	background: var(--dungeon-surface, var(--nf-surface, #fff));
-	border: 1px solid var(--dungeon-border, var(--nf-border, rgba(0,0,0,.15)));
+	background: var(--nf-surface, var(--nf-surface, #fff));
+	border: 1px solid var(--nf-border, var(--nf-border, rgba(0,0,0,.15)));
 	border-radius: 999px;
 	box-shadow: 0 4px 14px rgba(0,0,0,.18);
 	opacity: 0;
@@ -74,7 +74,7 @@
 	transition: transform .1s, background .1s;
 }
 .nf-reaction-pick:hover { transform: scale(1.35) translateY(-2px); }
-.nf-reaction-pick.picked { background: color-mix(in srgb, var(--dungeon-accent, #6c5ce7) 22%, transparent); }
+.nf-reaction-pick.picked { background: color-mix(in srgb, var(--nf-accent, #6c5ce7) 22%, transparent); }
 
 /* Résumé : pills emoji + compte. */
 .nf-reaction-summary {
@@ -91,6 +91,6 @@
 	line-height: 1.4;
 	padding: 1px 7px;
 	border-radius: 999px;
-	background: var(--dungeon-surface-2, var(--nf-surface-2, rgba(0,0,0,.05)));
-	color: var(--dungeon-muted, var(--nf-muted, #777));
+	background: var(--nf-surface-2, var(--nf-surface-2, rgba(0,0,0,.05)));
+	color: var(--nf-muted, var(--nf-muted, #777));
 }

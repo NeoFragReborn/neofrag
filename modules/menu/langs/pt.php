@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'b3b427cb' => 'Menus',
@@ -30,4 +31,9 @@ return [
 	'b2341c75' => 'Editar o item',
 	'96d5c170' => 'Construtor de menus nomeados reutilizáveis (itens hierárquicos) para a navegação.',
 	'85111a17' => 'Gerir os menus',
+	'881485c2' => 'Editar: %s',
+	'afccc23b' => 'Criar',
+	'8fd9c7ef' => 'Guardar',
+	'4a818505' => 'item|itens',
+	'4678bb10' => 'Novo item',
 ];

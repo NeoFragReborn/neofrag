@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -80,4 +81,6 @@ return [
 	'893241bc' => 'cURL (network)',
 	'3f805424' => 'Present',
 	'bc645dc3' => 'Absent',
+	'caf517ea' => 'Dashboard and central administration panel.',
+	'c0833bb9' => '%d critical|%d critical',
 ];

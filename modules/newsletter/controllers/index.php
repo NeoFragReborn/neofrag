@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -22,7 +23,7 @@ class Index extends Controller_Module
 						'rules' => 'required'
 					]
 				])
-				->add_submit($this->lang('S\'inscrire'));
+				->add_submit($this->lang('S\'inscrire'), 'fas fa-envelope-open-text');
 
 		if ($this->form()->is_valid($post))
 		{
@@ -91,7 +92,7 @@ class Index extends Controller_Module
 							]);
 
 			$body = '<div class="alert alert-success">'
-				.'<i class="fas fa-check-circle"></i> '.$this->lang('Inscription confirmée ! Tu recevras les prochaines newsletters à <strong>%s</strong>.', htmlspecialchars($sub['email']))
+				.'<i class="fas fa-check-circle"></i> '.$this->lang('Inscription confirmée ! Tu recevras les prochaines newsletters à <strong>%s</strong>.', htmlspecialchars((string) ($sub['email'])))
 				.'</div>';
 		}
 
@@ -124,7 +125,7 @@ class Index extends Controller_Module
 						->delete();
 
 		$body = '<div class="alert alert-success">'
-			.'<i class="fas fa-check-circle"></i> '.$this->lang('Tu as bien été désinscrit de la newsletter. <strong>%s</strong> ne recevra plus de newsletters.', htmlspecialchars($sub['email']))
+			.'<i class="fas fa-check-circle"></i> '.$this->lang('Tu as bien été désinscrit de la newsletter. <strong>%s</strong> ne recevra plus de newsletters.', htmlspecialchars((string) ($sub['email'])))
 			.'</div>';
 
 		return $this->panel()->title($this->lang('Newsletter'), 'far fa-envelope')->body($body);

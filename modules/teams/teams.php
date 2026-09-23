@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -14,11 +15,15 @@ class Teams extends Module
 	{
 		return [
 			'title'       => $this->lang('Équipes'),
-			'description' => 'Équipes et clans — module gaming.',
+			'description' => $this->lang('Équipes et clans — module gaming.'),
 			'icon'        => 'fas fa-headset',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => ['gaming'],
+			'requires'    => ['games'],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => [
@@ -58,7 +63,7 @@ class Teams extends Module
 			'default' => [
 				'access'  => [
 					[
-						'title'  => 'Équipes',
+						'title'  => $this->lang('Équipes'),
 						'icon'   => 'fas fa-headset',
 						'access' => [
 							'add_teams' => [
@@ -79,7 +84,7 @@ class Teams extends Module
 						]
 					],
 					[
-						'title'  => 'Rôles',
+						'title'  => $this->lang('Rôles'),
 						'icon'   => 'fas fa-sitemap',
 						'access' => [
 							'add_teams_roles' => [

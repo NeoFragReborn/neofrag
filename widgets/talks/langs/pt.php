@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traduções PT (auto-geradas 2026-05-03)
@@ -16,4 +17,5 @@ return [
 	'16a1faef' => 'As minhas conversas',
 	'f42a966e' => '%d sala pública a descobrir|%d salas públicas a descobrir',
 	'58a22494' => 'Nova conversa',
+	'1f88c31b' => 'Opções',
 ];

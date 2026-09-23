@@ -24,6 +24,15 @@ $labels = [
 	'size'   => (string) $this->lang('Taille'),
 	'dl'     => (string) $this->lang('Télécharger'),
 	'none'   => (string) $this->lang('Aucune dépendance'),
+	'ident'  => (string) $this->lang('Identifiant'),
+	'licence'=> (string) $this->lang('Licence'),
+	'pose'   => (string) $this->lang('Installation'),
+	'zip'    => (string) $this->lang('Archive à déposer dans l\'administration'),
+	'scan'   => (string) $this->lang('À poser sur le disque, puis « Scanner le disque »'),
+	'sceau'  => (string) $this->lang('Empreinte SHA-256'),
+	// Les unités de taille, avec le nombre à la place de %s (« Mo » en français, « MB » ailleurs).
+	'mo'     => (string) $this->lang('%s Mo'),
+	'ko'     => (string) $this->lang('%s Ko'),
 ];
 ?>
 <div class="mkt">
@@ -43,7 +52,7 @@ $labels = [
 	<div class="mkt-grid">
 		<?php foreach ($addons as $a):
 			$tmeta = $types[$a['type']] ?? ['one' => $a['type'], 'icon' => 'fas fa-cube'];
-			$size  = $a['size'] > 1048576 ? round($a['size'] / 1048576, 1).' Mo' : round($a['size'] / 1024).' Ko';
+			$size  = $a['size'] > 1048576 ? $this->lang('%s Mo', round($a['size'] / 1048576, 1)) : $this->lang('%s Ko', round($a['size'] / 1024));
 		?>
 		<div class="mkt-card" data-type="<?php echo htmlspecialchars($a['type']) ?>" data-key="<?php echo htmlspecialchars($a['type'].':'.$a['name']) ?>" role="button" tabindex="0" title="<?php echo $this->lang('Voir le détail') ?>">
 			<div class="mkt-card-top">
@@ -51,6 +60,11 @@ $labels = [
 				<span class="mkt-badge"><?php echo htmlspecialchars((string) $tmeta['one']) ?></span>
 				<span class="mkt-ver">v<?php echo htmlspecialchars($a['version']) ?></span>
 			</div>
+			<?php /* L'apercu n'est rendu que s'il existe : une bande vide dirait moins que rien. */ ?>
+			<?php if (!empty($a['preview'])): ?>
+				<?php $ap = $base_url !== '' ? $base_url.'/'.$a['preview'] : $this->url->base.'marketplace/'.$a['preview']; ?>
+				<img class="mkt-apercu" src="<?php echo htmlspecialchars($ap) ?>" alt="" loading="lazy" width="640" height="400" />
+			<?php endif ?>
 			<h3 class="mkt-title"><?php echo htmlspecialchars($a['title']) ?></h3>
 			<p class="mkt-desc"><?php echo htmlspecialchars($a['description'] ?: $this->lang('Addon NeoFrag Reborn.')) ?></p>
 			<div class="mkt-card-foot">
@@ -105,7 +119,7 @@ $labels = [
 	function open(key) {
 		var a = MKT[key]; if (!a) return;
 		var t = TYPES[a.type] || { one: a.type, icon: 'fas fa-cube' };
-		var size = a.size > 1048576 ? (a.size / 1048576).toFixed(1) + ' Mo' : Math.round(a.size / 1024) + ' Ko';
+		var size = a.size > 1048576 ? L.mo.replace('%s', (a.size / 1048576).toFixed(1)) : L.ko.replace('%s', Math.round(a.size / 1024));
 		var req = [];
 		if (a.requires && a.requires.base) req.push('NeoFrag ' + a.requires.base);
 		if (a.requires && a.requires.addons) for (var k in a.requires.addons) req.push(k + ' ' + a.requires.addons[k]);
@@ -113,10 +127,19 @@ $labels = [
 		var dl = BASE + '/' + a.file;
 		var rows = '';
 		rows += '<div><dt>' + esc(L.cat) + '</dt><dd>' + esc(a.category || '—') + '</dd></div>';
+		rows += '<div><dt>' + esc(L.ident) + '</dt><dd><code>' + esc(a.name) + '</code></dd></div>';
 		rows += '<div><dt>' + esc(L.compat) + '</dt><dd>' + (req.length ? esc(req.join(' · ')) : esc(L.none)) + '</dd></div>';
 		if (widgets) rows += '<div><dt>' + esc(L.widgets) + '</dt><dd>' + esc(widgets) + '</dd></div>';
+		rows += '<div><dt>' + esc(L.pose) + '</dt><dd>' + esc(a.install === 'scan' ? L.scan : L.zip) + '</dd></div>';
+		if (a.license) rows += '<div><dt>' + esc(L.licence) + '</dt><dd>' + esc(a.license) + '</dd></div>';
 		rows += '<div><dt>' + esc(L.size) + '</dt><dd>' + esc(size) + '</dd></div>';
+		if (a.sha256) rows += '<div><dt>' + esc(L.sceau) + '</dt><dd><code>' + esc(a.sha256.slice(0, 16)) + '…</code></dd></div>';
+
+		// L'apercu d'abord : c'est ce qu'on vient voir.
+		var apercu = a.preview ? '<img class="mkt-apercu mkt-modal-apercu" src="' + esc(BASE + '/' + a.preview) + '" alt="" />' : '';
+
 		body.innerHTML =
+			apercu +
 			'<div class="mkt-modal-head">' +
 				'<span class="mkt-ico mkt-ico-' + esc(a.type) + '"><i class="' + esc(t.icon) + '"></i></span>' +
 				'<div><h3 id="mktmTitle">' + esc(a.title) + '</h3>' +

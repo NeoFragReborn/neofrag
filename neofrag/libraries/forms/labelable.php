@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -97,8 +98,8 @@ abstract class Labelable extends Library
 		$display = $this->_form->display();
 
 		return parent	::html()
-						->attr('class', 'form-group')
-						->append_attr_if($this->_errors, 'class', 'has-danger')
+						->attr('class', 'nf-field')
+						->append_attr_if($this->_errors, 'class', 'nf-field-invalid')
 						->append_attr_if($this->_size, 'class', $this->_size)
 						->content($this	->array
 										->append_if(($label = (string)$this->_label()) && !($display & \NF\NeoFrag\Libraries\Form2::FORM_COMPACT), function() use ($label){
@@ -262,17 +263,21 @@ abstract class Labelable extends Library
 		if ($this->_info || $this->_errors)
 		{
 			$label	->icon_if(!$this->_errors, $icon = 'fas fa-info-circle text-info')
-					->attr('data-toggle',    'popover')
-					->attr('data-trigger',   'hover')
-					->attr('data-placement', 'auto')
-					->attr('data-html',      'true')
-					->attr('data-content',   utf8_htmlentities(implode('<br /><br />', array_filter([
+					->attr('data-bs-toggle',    'popover')
+					->attr('data-bs-trigger',   'hover')
+					->attr('data-bs-placement', 'auto')
+					->attr('data-bs-html',      'true')
+					->attr('data-bs-content',   utf8_htmlentities(implode('<br /><br />', array_filter([
 						$this->_info   ? $this->label($this->_info, $icon) : '',
 						$this->_errors ? $this->label(implode('<br />', $this->_errors), 'fas fa-exclamation-triangle')->attr('class', 'text-danger') : ''
 					]))));
 		}
 
-		if ($this->_required)
+		// L'étoile ne se pose que sur un libellé EXISTANT : elle signale qu'un champ nommé est
+		// obligatoire, elle ne dit rien toute seule. Les champs sans titre — l'avatar et la photo
+		// de couverture de l'espace membre — affichaient une étoile orpheline flottant au-dessus
+		// de l'image, sans que rien n'indique à quoi elle se rapportait.
+		if ($this->_required && trim(strip_tags((string)$label)) !== '')
 		{
 			$label .= '<em>*</em>';
 		}

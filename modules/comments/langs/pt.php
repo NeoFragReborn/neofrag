@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -18,7 +19,7 @@ return [
 	'c5db4c8a' => 'Confirmação de exclusão',
 	'38012b05' => 'Responder',
 	// i18n 2026-06-11
-	93714304 => 'Selecionar tudo',
+	'93714304' => 'Selecionar tudo',
 	'bc8f177d' => 'Eliminar a seleção',
 	'6c57e7dd' => 'Eliminar os comentários selecionados?',
 	'ad59e4ea' => '%d comentário eliminado.|%d comentários eliminados.',
@@ -29,4 +30,7 @@ return [
 	'6714db33' => 'Eliminar este comentário?',
 	'6bec17f1' => 'Nenhum comentário',
 	'245e9606' => 'comentário|comentários',
+	'93ac18cc' => '%s n.º %d',
+	'016d7125' => 'Sistema de comentários reutilizável pelos módulos (notícias, artigos, etc.).',
+	'e16ce76b' => 'Comentário',
 ];

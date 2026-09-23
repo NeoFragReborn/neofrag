@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -53,7 +54,7 @@ return [
 	'7a9e99e6' => 'Are you sure you want to delete the category<b>%s</b>? <br /> All albums associated with this category will also be deleted.',
 	'7f9392da' => 'Click in the frame to select your images',
 	'86c33902' => 'Edit',
-	'86e02610' => '%d image',
+	'86e02610' => '%d image|%d images',
 	'87bf30f1' => 'New photo album',
 	'9caeb208' => 'The icon must be square',
 	'a026ae67' => 'Category',
@@ -100,4 +101,23 @@ return [
 	// i18n 2026-06-11 (code strings)
 	'b914f016' => 'Gallery images',
 	'7f1f539c' => 'A future date schedules publication: the album stays publicly hidden until that date (if visible). Empty = immediate.',
+	'398d8489' => 'Embed <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Code to embed to display this gallery in a free html/bbcode content"></i>',
+	'b9b71e8e' => 'Image title',
+	'517c0b2c' => 'Scheduled for %s',
+	'f0b7b5b5' => 'Publication date',
+	'afccc23b' => 'Create',
+	'ff1485d1' => 'Drop your images in this area, or click here',
+	'017c90f5' => 'Your browser does not support drag-and-drop file uploads.',
+	'01081a31' => 'Use the form below to upload your files.',
+	'572556ef' => 'File is too big ({{filesize}} MiB). Maximum size: {{maxFilesize}} MiB.',
+	'37bb0291' => 'This file type is not allowed.',
+	'9e1bbb9b' => 'The server responded with code {{statusCode}}.',
+	'de35108a' => 'Do you really want to cancel this upload?',
+	'ca977443' => 'Remove',
+	'ebe0e1da' => 'You cannot upload any more files.',
+	'f8291e95' => 'Uploading...',
+	'1b08248b' => 'Just a moment more...',
+	'cb9a08b2' => 'Please wait...',
+	'd9035f7e' => 'MB',
+	'73ae9de7' => 'Back to the album %s',
 ];

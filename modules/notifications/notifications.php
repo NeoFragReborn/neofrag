@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Module Notifications — centre de notifications in-site (cloche + non-lus).
@@ -13,17 +14,9 @@ use NF\NeoFrag\Addons\Module;
 
 class Notifications extends Module
 {
-	// Résolution du propriétaire d'un contenu (table, clé primaire) par type émetteur.
-	const OWNER_MAP = [
-		'news'          => ['nf_news',           'news_id'],
-		'articles'      => ['nf_articles',       'article_id'],
-		'article'       => ['nf_articles',       'article_id'],
-		'comment'       => ['nf_comment',        'id'],
-		'forum-message' => ['nf_forum_messages', 'message_id'],
-	];
-
-	// Cibles d'abonnement autorisées (tokens URL-safe, routés via {url_title}).
-	const SUB_TYPES = ['news', 'article', 'news-category', 'article-category'];
+	// Plus de registre en dur ici : le proprietaire d'un contenu, ses abonnements et son URL
+	// viennent des descripteurs declares par les modules eux-memes (cf. Module::content_types(),
+	// inversion du 2026-09-15). Ce module ne nomme donc plus news, articles ni forum.
 
 	protected function __info()
 	{
@@ -34,6 +27,10 @@ class Notifications extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '1.0',
 			'depends'     => ['neofrag' => '1.0.0'],
 			'routes'      => [
@@ -86,12 +83,21 @@ class Notifications extends Module
 	/** Notifie le propriétaire d'un contenu (propriétaire + URL résolus via OWNER_MAP / content_url). */
 	public function push_to_content_owner($content, $content_id, $type, $title, $actor_id = NULL)
 	{
-		if (!isset(self::OWNER_MAP[$content]))
+		$types = self::content_types();
+
+		if (!isset($types[$content]) || empty($types[$content]['table']))
 		{
 			return NULL;
 		}
 
-		list($table, $pk) = self::OWNER_MAP[$content];
+		$table = $types[$content]['table'];
+		$pk     = $types[$content]['pk'];
+
+		// Module non installe : sa table n'existe pas — rien a notifier, pas de fatale.
+		if (!$this->db->table_exists($table))
+		{
+			return NULL;
+		}
 
 		$owner = $this->db	->select('user_id')
 							->from($table)
@@ -102,68 +108,27 @@ class Notifications extends Module
 		return $owner ? $this->push_unique((int)$owner, $type, $title, $this->content_url($content, $content_id), $actor_id) : NULL;
 	}
 
-	/** URL publique (best-effort) d'un contenu connu, pour le lien de la notification. */
+	/**
+	 * URL publique d'un contenu, pour le lien de la notification.
+	 *
+	 * Ne construit plus rien elle-meme : elle delegue au module qui declare le contenu
+	 * (cf. Module::content_url_of()). Ce module portait auparavant la logique d'URL de news,
+	 * articles, forum et commentaires — il les nommait donc tous en dur.
+	 *
+	 * Conserve comme point d'entree public : `comments` et le widget `latest_comments` l'appellent.
+	 */
 	public function content_url($content, $content_id)
 	{
-		$content_id = (int)$content_id;
-		$lang       = $this->config->lang->info()->name;
-
-		// Modèle « tout bundlé, activé à la carte » : la table d'un module non installé peut être absente.
-		// On tolère son absence (lien vide) au lieu de fataliser sur « table doesn't exist ».
-		$content_tables = [
-			'comment'       => 'nf_comment',
-			'news'          => 'nf_news_lang',
-			'articles'      => 'nf_articles_lang',
-			'article'       => 'nf_articles_lang',
-			'forum-message' => 'nf_forum_messages',
-		];
-		if (isset($content_tables[$content]) && !$this->db->table_exists($content_tables[$content]))
-		{
-			return '';
-		}
-
-		if ($content === 'comment')
-		{
-			$c = $this->db->select('module', 'module_id')->from('nf_comment')->where('id', $content_id)->row(FALSE);
-			if (!$c)
-			{
-				return '';
-			}
-			$inner = $this->content_url($c['module'], (int)$c['module_id']);
-			return $inner ? $inner.'#comments' : '';
-		}
-
-		if ($content === 'news')
-		{
-			$t = $this->db->select('title')->from('nf_news_lang')->where('news_id', $content_id)->where('lang', $lang)->row();
-			return $t ? 'news/'.$content_id.'/'.url_title($t) : '';
-		}
-
-		if ($content === 'articles' || $content === 'article')
-		{
-			$t = $this->db->select('title')->from('nf_articles_lang')->where('article_id', $content_id)->where('lang', $lang)->row();
-			return $t ? 'articles/'.$content_id.'/'.url_title($t) : '';
-		}
-
-		if ($content === 'forum-message')
-		{
-			$topic_id = $this->db->select('topic_id')->from('nf_forum_messages')->where('message_id', $content_id)->row();
-			if (!$topic_id)
-			{
-				return '';
-			}
-			$t = $this->db->select('title')->from('nf_forum_topics')->where('topic_id', (int)$topic_id)->row();
-			return $t ? 'forum/topic/'.(int)$topic_id.'/'.url_title($t).'#'.$content_id : '';
-		}
-
-		return '';
+		return self::content_url_of($content, (int) $content_id);
 	}
 
 	// --- Abonnements -------------------------------------------------------
 
 	public static function is_subscribable($type)
 	{
-		return in_array($type, self::SUB_TYPES, TRUE);
+		$types = self::content_types();
+
+		return !empty($types[$type]['subscribable']);
 	}
 
 	public function is_subscribed($type, $id, $user_id = NULL)
@@ -239,12 +204,14 @@ class Notifications extends Module
 		$this->css('notifications')->js('notifications');
 
 		$subscribed = $this->is_subscribed($type, $id);
-		$follow     = $this->lang('Suivre');
-		$following  = $this->lang('Suivi');
+		// `lang()` rend un objet de traduction differee. On le fige ici, parce que ces deux
+		// valeurs partent ensuite dans `htmlspecialchars((string) ())`, qui n'accepte que des chaines.
+		$follow     = (string) $this->lang('Suivre');
+		$following  = (string) $this->lang('Suivi');
 
 		return '<button type="button" class="btn btn-sm nf-follow-btn'.($subscribed ? ' following btn-secondary' : ' btn-outline-secondary').'"'
-			.' data-follow-toggle data-follow-type="'.htmlspecialchars($type).'" data-follow-id="'.(int)$id.'"'
-			.' data-label-follow="'.htmlspecialchars($follow, ENT_QUOTES).'" data-label-following="'.htmlspecialchars($following, ENT_QUOTES).'">'
+			.' data-follow-toggle data-follow-type="'.htmlspecialchars((string) ($type)).'" data-follow-id="'.(int)$id.'"'
+			.' data-label-follow="'.htmlspecialchars((string) ($follow), ENT_QUOTES).'" data-label-following="'.htmlspecialchars((string) ($following), ENT_QUOTES).'">'
 			.'<i class="'.($subscribed ? 'fas' : 'far').' fa-bell"></i> <span class="nf-follow-label">'.($subscribed ? $following : $follow).'</span>'
 			.'</button>';
 	}
@@ -329,8 +296,8 @@ class Notifications extends Module
 			foreach ($items as $n)
 			{
 				$list .= '<a class="dropdown-item nf-notif-item'.(empty($n['is_read']) ? ' unread' : '').'" href="'.url($n['url'] ?: 'notifications').'" data-notif-id="'.(int)$n['id'].'">'
-					.'<span class="nf-notif-title">'.htmlspecialchars($n['title']).'</span>'
-					.'<small class="text-muted d-block">'.htmlspecialchars($n['created_at']).'</small>'
+					.'<span class="nf-notif-title">'.htmlspecialchars((string) ($n['title'])).'</span>'
+					.'<small class="text-muted d-block">'.htmlspecialchars((string) ($n['created_at'])).'</small>'
 					.'</a>';
 			}
 		}
@@ -338,7 +305,7 @@ class Notifications extends Module
 		$badge = $count > 0 ? '<span class="badge text-bg-danger nf-notif-badge">'.($count > 99 ? '99+' : $count).'</span>' : '';
 
 		return '<li class="nav-item dropdown nf-notif">'
-			.'<a class="nav-link" href="#" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="'.htmlspecialchars($this->lang('Notifications'), ENT_QUOTES).'">'
+			.'<a class="nav-link" href="#" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="'.htmlspecialchars((string) ($this->lang('Notifications')), ENT_QUOTES).'">'
 			.icon('far fa-bell').$badge
 			.'</a>'
 			.'<div class="dropdown-menu dropdown-menu-end nf-notif-menu">'

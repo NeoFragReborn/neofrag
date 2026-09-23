@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'505f8eba' => 'Reloj y calendario',
@@ -13,4 +14,5 @@ return [
 	'9d74099b' => 'Cumpleaños del día',
 	'84261eaa' => 'años',
 	'dc30aca9' => 'Sin cumpleaños hoy',
+	'11203c52' => '%d año|%d años',
 ];

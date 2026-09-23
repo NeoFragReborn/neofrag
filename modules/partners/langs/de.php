@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -42,4 +43,6 @@ return [
 	'be53bc1a' => 'Geben Sie den Aktionscode ein, den Ihre Benutzer verwenden können, um durch Ihren Partner Aktionen zu nutzen',
 	// i18n 2026-06-11 (code strings)
 	'39e91bd5' => 'Partner|Partner',
+	'8b8988ac' => 'Löschen?',
+	'8a8bad0b' => 'Über %s',
 ];

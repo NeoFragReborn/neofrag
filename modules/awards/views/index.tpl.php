@@ -8,31 +8,31 @@
 	<?php endif ?>
 	<div class="card-body">
 		<div class="text-center">
-			<h5><?php echo $stats_team ? 'Palmarès de cette équipe' : 'Palmarès sur ce jeu' ?></h5>
+			<h5><?php echo $stats_team ? $this->lang('Palmarès de cette équipe') : $this->lang('Palmarès sur ce jeu') ?></h5>
 			<ul class="list-inline">
 				<li class="list-inline-item">
-					<span data-bs-toggle="tooltip" title="1ère place"><?php echo icon('fas fa-trophy fa-2x trophy-gold') ?></span><br />
-					<?php echo $total_gold[0].($total_gold[0] > 1 ? ' trophées' : ' trophée') ?>
+					<span data-bs-toggle="tooltip" title="<?php echo $this->lang('1ère place') ?>"><?php echo icon('fas fa-trophy fa-2x trophy-gold') ?></span><br />
+					<?php echo $this->lang('%d trophée|%d trophées', $total_gold[0], $total_gold[0]) ?>
 				</li>
 				<li class="list-inline-item">
-					<span data-bs-toggle="tooltip" title="2ème place"><?php echo icon('fas fa-trophy fa-2x trophy-silver') ?></span><br />
-					<?php echo $total_silver[0].($total_silver[0] > 1 ? ' trophées' : ' trophée') ?>
+					<span data-bs-toggle="tooltip" title="<?php echo $this->lang('2e place') ?>"><?php echo icon('fas fa-trophy fa-2x trophy-silver') ?></span><br />
+					<?php echo $this->lang('%d trophée|%d trophées', $total_silver[0], $total_silver[0]) ?>
 				</li>
 				<li class="list-inline-item">
-					<span data-bs-toggle="tooltip" title="3ème place"><?php echo icon('fas fa-trophy fa-2x trophy-bronze') ?></span><br />
-					<?php echo $total_bronze[0].($total_bronze[0] > 1 ? ' trophées' : ' trophée') ?>
+					<span data-bs-toggle="tooltip" title="<?php echo $this->lang('3e place') ?>"><?php echo icon('fas fa-trophy fa-2x trophy-bronze') ?></span><br />
+					<?php echo $this->lang('%d trophée|%d trophées', $total_bronze[0], $total_bronze[0]) ?>
 				</li>
 			</ul>
 		</div>
 	</div>
 <?php endif ?>
-<table class="table table-hover">
+<div class="table-responsive"><table class="table table-hover">
 	<thead>
 		<tr>
 			<th></th>
-			<th><span data-bs-toggle="tooltip" title="Classement"><?php echo icon('fas fa-trophy') ?></span></th>
-			<th><span data-bs-toggle="tooltip" title="Plateforme"><?php echo icon('fas fa-tv') ?></span></th>
-			<th colspan="2">Événement</th>
+			<th><span data-bs-toggle="tooltip" title="<?php echo $this->lang('Classement') ?>"><?php echo icon('fas fa-trophy') ?></span></th>
+			<th><span data-bs-toggle="tooltip" title="<?php echo $this->lang('Plateforme') ?>"><?php echo icon('fas fa-tv') ?></span></th>
+			<th colspan="2"><?php echo $this->lang('Événement') ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -47,19 +47,21 @@
 					<?php
 					if ($award['ranking'] == 1)
 					{
-						echo '<span data-bs-toggle="tooltip" title="'.$award['ranking'].'er / '.$award['participants'].' équipes">'.icon('fas fa-trophy trophy-gold').'</span>';
+						echo '<span data-bs-toggle="tooltip" title="'.$this->lang('1er sur %d équipe|1er sur %d équipes', $award['participants'], $award['participants']).'">'.icon('fas fa-trophy trophy-gold').'</span>';
 					}
 					else if ($award['ranking'] == 2)
 					{
-						echo '<span data-bs-toggle="tooltip" title="'.$award['ranking'].'ème / '.$award['participants'].' équipes">'.icon('fas fa-trophy trophy-silver').'</span>';
+						echo '<span data-bs-toggle="tooltip" title="'.$this->lang('2e sur %d équipe|2e sur %d équipes', $award['participants'], $award['participants']).'">'.icon('fas fa-trophy trophy-silver').'</span>';
 					}
 					else if ($award['ranking'] == 3)
 					{
-						echo '<span data-bs-toggle="tooltip" title="'.$award['ranking'].'ème / '.$award['participants'].' équipes">'.icon('fas fa-trophy trophy-bronze').'</span>';
+						echo '<span data-bs-toggle="tooltip" title="'.$this->lang('3e sur %d équipe|3e sur %d équipes', $award['participants'], $award['participants']).'">'.icon('fas fa-trophy trophy-bronze').'</span>';
 					}
 					else
 					{
-						echo $award['ranking'].'<small>ème</small>';
+						// Le rang en chiffre, l'infobulle le dit en toutes lettres : un suffixe ordinal ne se traduit pas
+						// (« 21st », « 22nd » en anglais).
+						echo '<span data-bs-toggle="tooltip" title="'.$this->lang('Rang %d sur %d équipe|Rang %d sur %d équipes', $award['participants'], $award['ranking'], $award['participants']).'">'.$award['ranking'].'</span>';
 					}
 					?>
 				</td>
@@ -68,7 +70,7 @@
 					<a href="<?php echo url('awards/'.$award['award_id'].'/'.url_title($award['name'])) ?>"><?php echo $award['name'] ?></a>
 				</td>
 				<td>
-					<?php if ($award['location']): ?><div><span data-bs-toggle="tooltip" title="Lieu"><?php echo icon('fas fa-map-marker-alt').' '.$award['location'] ?></span></div><?php endif ?>
+					<?php if ($award['location']): ?><div><span data-bs-toggle="tooltip" title="<?php echo $this->lang('Lieu') ?>"><?php echo icon('fas fa-map-marker-alt').' '.$award['location'] ?></span></div><?php endif ?>
 				</td>
 			</tr>
 		<?php
@@ -76,8 +78,8 @@
 		else:
 		?>
 		<tr>
-			<td colspan="4">Aucun trophée...</td>
+			<td colspan="4"><?php echo $this->lang('Aucun trophée…') ?></td>
 		</tr>
 		<?php endif ?>
 	</tbody>
-</table>
+</table></div>

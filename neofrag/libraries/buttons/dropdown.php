@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -41,7 +42,8 @@ class Dropdown extends Button
 			$tag = 'button';
 		};
 
-		return $this->data('toggle', 'dropdown');
+		// `bs-toggle` : voir Modal::dismiss(). Bootstrap 5 ignore `data-toggle` en silence.
+		return $this->data('bs-toggle', 'dropdown');
 	}
 
 	public function dropdown($dropdown)

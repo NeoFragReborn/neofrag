@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -14,7 +15,9 @@ class Categories extends Model
 	{
 		if ($lang == 'default')
 		{
-			$lang = $this->config->lang->info()->name;
+			// Pas forcément la langue demandée : un contenu monolingue est servi dans la sienne,
+			// avec un bandeau, plutôt que de rendre 404. Jamais de repli en administration.
+			$lang = $this->langue_du_contenu('nf_news_categories_lang', 'category_id', $category_id);
 		}
 
 		return $this->db->select('c.category_id', 'cl.title', 'c.image_id', 'c.icon_id')
@@ -31,7 +34,9 @@ class Categories extends Model
 		return $this->db->select('c.category_id', 'c.icon_id', 'c.name', 'cl.title', 'COUNT(n.news_id) as nb_news')
 						->from('nf_news_categories c')
 						->join('nf_news_categories_lang cl', 'c.category_id = cl.category_id')
-						->join('nf_news n', 'c.category_id = n.category_id')
+						// LEFT : cette jointure ne sert qu'a COMPTER les actualites. En stricte, une
+						// categorie VIDE disparaissait de la liste des categories.
+						->join('nf_news n', 'c.category_id = n.category_id', 'LEFT')
 						->where('cl.lang', $this->config->lang->info()->name)
 						->group_by('c.category_id')
 						->order_by('cl.title')

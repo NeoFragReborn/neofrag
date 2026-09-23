@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -69,7 +70,13 @@ class Url extends Core
 		$this->_const['subdomain']    = $this->domain && $this->host != $this->domain ? substr($this->host, 0, -strlen($this->domain) - 1) : '';
 		$this->_const['ajax_header']  = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
 		$this->_const['base']         = @$_SERVER['REDIRECT_CONTEXT'];
-		$base2                        = substr($_SERVER['SCRIPT_NAME'], 0, -9);//-strlen('index.php')
+		// La base du site se déduit de SCRIPT_NAME quand il se termine par `index.php` — ce que donnent
+		// Apache, nginx et Caddy, à la racine (`/index.php`) comme en sous-dossier (`/site/index.php`).
+		// Un SAPI qui y met autre chose (le serveur intégré de PHP 8.3 pose le chemin demandé pour une
+		// adresse à extension sans fichier) donnait une base tronquée au hasard — `/fr/css/bootstrap` —
+		// et tout asset partait en redirection de langue. Hors ce cas, la base est la racine.
+		$script                       = (string) ($_SERVER['SCRIPT_NAME'] ?? '');
+		$base2                        = str_ends_with($script, 'index.php') ? substr($script, 0, -9) : '/';
 
 		if (strpos($this->request, $this->base.$base2) === 0)
 		{
@@ -104,13 +111,29 @@ class Url extends Core
 				$this->_const['segments'] = explode('/', $this->extension ? substr($this->request, 0, - strlen($this->extension) - 1) : ($this->request ?: 'index'));
 			}
 
-			if (preg_match('/^(humans|robots)\.txt$/', $this->request, $match))
+			if (preg_match('/^(humans|robots)\.txt$|^(favicon)\.ico$/', $this->request, $match))
 			{
-				$this->_const['segments'] = explode('/', 'ajax/settings/'.$match[1]);
+				$this->_const['segments'] = explode('/', 'ajax/settings/'.($match[1] ?: $match[2]));
 			}
 			else if (preg_match('/^sitemap\.xml$/', $this->request))
 			{
 				$this->_const['segments'] = explode('/', 'ajax/settings/sitemap');
+			}
+			else if (preg_match('/^manifest\.webmanifest$/', $this->request))
+			{
+				// Le manifeste d'application (PWA). Servi par le produit et non déposé en fichier :
+				// son contenu dépend du site — nom, couleur, adresse de départ, favicon choisi.
+				$this->_const['segments'] = explode('/', 'ajax/settings/manifest');
+			}
+			else if (preg_match('/^service-worker\.js$/', $this->request))
+			{
+				// Le service worker. Servi par le produit, et TOUJOURS : c'est en le récupérant
+				// qu'un worker déjà installé apprend qu'il doit se retirer, quand le réglage est
+				// éteint. Un fichier absent le laisserait en place pour toujours.
+				//
+				// À la RACINE, et pas ailleurs : la portée d'un worker est celle du dossier qui le
+				// sert. Servi depuis `/js/`, il ne verrait que `/js/`.
+				$this->_const['segments'] = explode('/', 'ajax/settings/service_worker');
 			}
 
 			if (isset($config['segments']) && is_a($config['segments'], 'closure'))
@@ -176,10 +199,19 @@ class Url extends Core
 					$segments($request);
 				}
 			}
-			else if (!defined('NEOFRAG_INSTALL') && !$this->cli && !preg_match('_^user/auth/_', $this->request))
+			// Les fichiers RACINE que réclament les robots et les navigateurs — robots.txt, humans.txt,
+			// sitemap.xml, favicon.ico — n'ont pas de version par langue et ne doivent JAMAIS être
+			// redirigés vers un préfixe : `Url::redirect()` répond en JSON dès que l'extension est txt,
+			// xml ou json, si bien qu'un moteur de recherche demandant /sitemap.xml recevait
+			// `{"redirect":"\/fr\/sitemap.xml"}` avec un code 200 — mesuré en production le 2026-09-20.
+			// Ils sont déjà routés vers ajax/settings/* plus haut : on les sert, sans détour.
+			else if (!defined('NEOFRAG_INSTALL') && !$this->cli && !preg_match('_^user/auth/_', $this->request)
+			                                     && !preg_match('_^(humans|robots)\.txt$|^sitemap\.xml$|^favicon\.ico$|^manifest\.webmanifest$|^service-worker\.js$_', $this->request))
 			{
 				$this->on('config_lang_selected', function(){
-					redirect($this->request.$this->query);
+					// Une VRAIE redirection : sans cela, `/quoi.json` rendait 200 + JSON au lieu du
+					// 404 que la page absente mérite. Vaut pour toute extension.
+					$this->redirect_http(url($this->request.$this->query));
 				});
 			}
 		});
@@ -290,9 +322,40 @@ class Url extends Core
 		return $url;
 	}
 
+	/**
+	 * La réponse attendue est-elle du JSON plutôt que du HTML ?
+	 *
+	 * Trois sources légitimes, et une quatrième qui a été retirée le 2026-09-21 :
+	 *
+	 *   - `cli`          : en ligne de commande, il n'y a pas de page à rendre ;
+	 *   - `ajax`         : la route commence par `/ajax/` — elle le DÉCLARE (cf.
+	 *                      `Module_Checker::ajax()`, employé à 49 endroits) ;
+	 *   - le drapeau `ajax` du module, pour les cas qui se décident à l'exécution.
+	 *
+	 * CE QUI A ÉTÉ RETIRÉ : `in_array($this->extension, ['json', 'txt', 'xml'])`.
+	 *
+	 * Une extension de fichier ne dit rien de la nature de la requête. Cet amalgame a coûté deux
+	 * fois : un moteur de recherche demandant `/sitemap.xml` recevait `{"redirect":…}` en **200**,
+	 * et toute adresse inconnue en `.json`, `.xml` ou `.txt` faisait de même — dont
+	 * `/update/version.json`, qu'interrogent les autres sites NeoFrag pour leurs mises à jour, et
+	 * qui attendent un fichier ou un 404, pas un JSON de redirection.
+	 *
+	 * Les deux correctifs précédents avaient traité les symptômes — les quatre fichiers racine,
+	 * puis la redirection de langue. Celui-ci traite la cause. un chantier interne.
+	 *
+	 * CE QU'ON N'A PAS FAIT, ET POURQUOI. `ajax_header` — l'en-tête `X-Requested-With` — est
+	 * calculé juste à côté (ligne 71) et n'est lu nulle part. Le brancher ici semblait naturel ;
+	 * mesuré, cela change le rendu de TOUTE requête XHR vers une page ordinaire : `/fr/forum`
+	 * interrogé avec cet en-tête rendait alors un fragment au lieu d'une page. Deux scripts visent
+	 * une adresse construite à l'exécution (`js/help.js`, `js/sortable.js`), qu'on ne peut pas
+	 * énumérer ; le gain n'était pas mesurable, le risque si. C'est une question à instruire pour
+	 * elle-même, pas un passager d'A17.
+	 */
 	public function ajax()
 	{
-		return $this->cli || in_array($this->extension, ['json', 'txt', 'xml']) || $this->ajax || $this->output->data->get('module', 'ajax');
+		return $this->cli
+			|| $this->ajax
+			|| $this->output->data->get('module', 'ajax');
 	}
 
 	public function external($external)
@@ -341,6 +404,39 @@ class Url extends Core
 		}
 
 		$this->trigger('output', $output);
+	}
+
+	/**
+	 * Redirige par l'en-tête HTTP, TOUJOURS — là où `redirect()` répond un JSON dès que l'adresse
+	 * finit par `.json`, `.txt` ou `.xml` (cf. `ajax()`).
+	 *
+	 * Ce mélange a coûté deux fois. Le 2026-09-17, un moteur de recherche demandant `/sitemap.xml`
+	 * recevait `{"redirect":"\/fr\/sitemap.xml"}` avec un code **200** ; le correctif d'alors a sorti
+	 * les quatre fichiers racine de la redirection de langue, sans toucher au motif. Le 2026-09-20,
+	 * la mesure a montré que **toute** adresse inconnue en `.json`, `.xml` ou `.txt` rendait encore
+	 * 200 — dont `/update/version.json`, que les autres sites NeoFrag interrogent pour leurs mises
+	 * à jour, et qui n'attendent pas un JSON de redirection mais un fichier ou un 404.
+	 *
+	 * La cause est un amalgame : `ajax()` confond « la requête vient d'un XMLHttpRequest » et « la
+	 * réponse attendue est du JSON ». Une extension de fichier ne dit rien de la première.
+	 *
+	 * `redirect()` n'est pas corrigée à la racine : 253 appels dans 67 fichiers en dépendent, dont des
+	 * flux d'administration qui attendent bel et bien `{"redirect":…}`. Seule la redirection de langue
+	 * — le chemin qu'emprunte toute adresse sans préfixe, donc toute adresse inconnue — passe ici.
+	 */
+	public function redirect_http($location, int $code = 302)
+	{
+		if (!headers_sent())
+		{
+			header('Location: '.$location, TRUE, $code);
+		}
+
+		// `trigger()` prend son second argument PAR RÉFÉRENCE : lui passer la chaîne vide en dur lève
+		// une erreur fatale. Elle était invisible en HTTP — l'en-tête `Location` partant avant — et ne
+		// se voyait que dans le journal, où elle a laissé 13 traces en production le 2026-09-20.
+		$sortie = '';
+
+		$this->trigger('output', $sortie);
 	}
 
 	public function refresh()

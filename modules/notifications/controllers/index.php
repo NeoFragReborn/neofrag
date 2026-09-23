@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Page frontend listant toutes les notifications du user courant (marquées lues à l'ouverture).
@@ -29,8 +30,8 @@ class Index extends Controller_Module
 			foreach ($items as $n)
 			{
 				$body .= '<a class="list-group-item list-group-item-action'.(empty($n['is_read']) ? ' nf-notif-unread' : '').'" href="'.url($n['url'] ?: 'notifications').'">'
-					.'<div>'.htmlspecialchars($n['title']).'</div>'
-					.'<small class="text-muted">'.htmlspecialchars($n['created_at']).($n['actor'] ? ' · '.htmlspecialchars($n['actor']) : '').'</small>'
+					.'<div>'.htmlspecialchars((string) ($n['title'])).'</div>'
+					.'<small class="text-muted">'.htmlspecialchars((string) ($n['created_at'])).($n['actor'] ? ' · '.htmlspecialchars((string) ($n['actor'])) : '').'</small>'
 					.'</a>';
 			}
 			$body .= '</div>';

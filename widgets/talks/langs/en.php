@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: FoxLey
@@ -17,4 +18,5 @@ return [
 	'16a1faef' => 'My conversations',
 	'f42a966e' => '%d public room to discover|%d public rooms to discover',
 	'58a22494' => 'New conversation',
+	'1f88c31b' => 'Options',
 ];

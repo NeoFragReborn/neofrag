@@ -82,4 +82,7 @@ return [
 	'8a3b82de' => 'Community',
 	'593399a1' => 'Welcome to',
 	'2128bc55' => 'NeoFrag Reborn is the community continuation of NeoFrag, created by Michaël BILCOT &amp; Jérémy VALENTIN. Open source, LGPLv3.',
+	'49cf2272' => 'Admin',
+	'd80c7901' => 'Registration',
+	'4f376417' => 'Back to top',
 ];

@@ -1,0 +1,112 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Position d'un élément déplacé</title>
+
+<!--
+  Le defaut du 2026-09-15 : « le changement de position d'un row ne se sauvegarde pas ».
+
+  Il ne s'agissait PAS d'un echec d'enregistrement — le serveur repondait 200 et ecrivait bien.
+  Il faisait simplement le mauvais deplacement, parce que l'indice envoye etait decale de 1 :
+  `evt.newIndex` de SortableJS compte TOUS les enfants du conteneur, en-tetes compris, et deux des
+  trois conteneurs du Live Editor commencent par un en-tete.
+
+      <section data-disposition-id>  ->  <header class="nf-le-zone-header">, puis les lignes
+      <div class="live-editor-col">  ->  <header class="nf-le-col-header">,  puis les widgets
+
+  Deposer une ligne tout en haut demandait donc la position 1, et le serveur la remettait la ou
+  elle etait deja. Rien ne le signalait : l'appel REUSSISSAIT.
+
+  Le balisage ci-dessous reproduit la structure reelle, verifiee sur la page rendue.
+-->
+
+<script>window.__nfNonce = 'NONCE-TEST';</script>
+<script src="/harness.js"></script>
+<script src="/nf.js"></script>
+<script>NF.ready = function(){};</script>
+<script src="/src/modules/live_editor/js/live-editor.js"></script>
+
+<body>
+
+<!-- Une zone : en-tete, puis trois lignes. -->
+<section id="zone" data-disposition-id="92">
+	<header class="nf-le-zone-header">outils de la zone</header>
+	<div class="live-editor-row" id="ligne-a"><div class="row" data-row-id="0"></div></div>
+	<div class="live-editor-row" id="ligne-b"><div class="row" data-row-id="1"></div></div>
+	<div class="live-editor-row" id="ligne-c"><div class="row" data-row-id="2"></div></div>
+</section>
+
+<!-- Une colonne : en-tete, puis deux widgets. -->
+<div class="live-editor-col" id="colonne">
+	<header class="nf-le-col-header">outils de la colonne</header>
+	<div data-widget-id="9001" id="widget-a"></div>
+	<div data-widget-id="9002" id="widget-b"></div>
+</div>
+
+<!-- Une ligne : QUE des colonnes, aucun en-tete (le sien est a l'exterieur). -->
+<div class="row" id="ligne-cols" data-row-id="0">
+	<div data-col-id="0" id="col-a"></div>
+	<div data-col-id="1" id="col-b"></div>
+</div>
+
+<script>
+var el = function(id){ return document.getElementById(id); };
+
+/** Rejoue ce que SortableJS transmet : le conteneur, l'element, et son index BRUT. */
+var evenement = function(conteneur, element){
+	return {
+		to:       conteneur,
+		item:     element,
+		newIndex: Array.prototype.indexOf.call(conteneur.children, element)
+	};
+};
+
+// ── Lignes : l'en-tete de zone est l'enfant 0 ────────────────────────────────
+var zone = el('zone');
+
+NFTest.verifie('l\'index BRUT de la premiere ligne vaut 1 (l\'en-tete occupe le 0)',
+	1, evenement(zone, el('ligne-a')).newIndex);
+
+NFTest.verifie('la position CORRIGEE de la premiere ligne vaut 0',
+	0, nfLePosition(evenement(zone, el('ligne-a')), '.live-editor-row'));
+
+NFTest.verifie('deuxieme ligne : position 1',
+	1, nfLePosition(evenement(zone, el('ligne-b')), '.live-editor-row'));
+
+NFTest.verifie('troisieme ligne : position 2',
+	2, nfLePosition(evenement(zone, el('ligne-c')), '.live-editor-row'));
+
+// Le cas exact signale : remonter la derniere ligne tout en haut.
+zone.insertBefore(el('ligne-c'), el('ligne-a'));
+
+NFTest.verifie('remontee en tete : l\'index brut dirait 1 — la correction dit 0',
+	0, nfLePosition(evenement(zone, el('ligne-c')), '.live-editor-row'));
+
+// ── Widgets : l'en-tete de colonne est l'enfant 0 ────────────────────────────
+var colonne = el('colonne');
+
+NFTest.verifie('premier widget : index brut 1',
+	1, evenement(colonne, el('widget-a')).newIndex);
+
+NFTest.verifie('premier widget : position corrigee 0',
+	0, nfLePosition(evenement(colonne, el('widget-a')), '[data-widget-id]'));
+
+NFTest.verifie('second widget : position 1',
+	1, nfLePosition(evenement(colonne, el('widget-b')), '[data-widget-id]'));
+
+// ── Colonnes : pas d'en-tete, la correction ne doit RIEN changer ─────────────
+var ligneCols = el('ligne-cols');
+
+NFTest.verifie('premiere colonne : position 0 (inchangee)',
+	0, nfLePosition(evenement(ligneCols, el('col-a')), '[data-col-id]'));
+
+NFTest.verifie('seconde colonne : position 1 (inchangee)',
+	1, nfLePosition(evenement(ligneCols, el('col-b')), '[data-col-id]'));
+
+// ── Repli defensif : un element etranger au conteneur ────────────────────────
+var orphelin = document.createElement('div');
+
+NFTest.verifie('element introuvable : on rend l\'index brut plutot que -1',
+	7, nfLePosition({ to: zone, item: orphelin, newIndex: 7 }, '.live-editor-row'));
+
+NFTest.fini();
+</script>

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -28,6 +29,16 @@ class News extends Model
 
 	public function get_news($filter = '', $filter_data = '')
 	{
+		/*
+		 * La langue d'une LISTE est celle qu'on demande — sauf pour la page d'une catégorie, qui
+		 * est une page de contenu comme une autre. Si la catégorie n'existe que dans une langue,
+		 * la lister dans une autre rendait une liste vide, donc un 404 pour le visiteur. On sert
+		 * alors la langue de la catégorie, et la page le dit.
+		 */
+		$lang = $filter == 'category' && !empty($filter_data)
+			? $this->langue_du_contenu('nf_news_categories_lang', 'category_id', $filter_data)
+			: $this->config->lang->info()->name;
+
 		$this->db	->select('n.*', 'nl.title', 'nl.introduction', 'nl.content', 'nl.tags', 'IFNULL(n.image_id, c.image_id) as image', 'c.icon_id as category_icon', 'c.name as category_name', 'cl.title as category_title', 'u.id as user_id', 'u.username', 'up.avatar', 'up.sex')
 					->from('nf_news n')
 					->join('nf_news_lang nl',            'n.news_id     = nl.news_id')
@@ -35,8 +46,8 @@ class News extends Model
 					->join('nf_news_categories_lang cl', 'c.category_id = cl.category_id')
 					->join('nf_user u',                  'n.user_id     = u.id AND u.deleted = "0"')
 					->join('nf_user_profile up',         'up.id         = u.id')
-					->where('nl.lang', $this->config->lang->info()->name)
-					->where('cl.lang', $this->config->lang->info()->name)
+					->where('nl.lang', $lang)
+					->where('cl.lang', $lang)
 					->where('n.deleted_at', NULL)
 					->order_by('n.date DESC');
 
@@ -83,7 +94,9 @@ class News extends Model
 	{
 		if ($lang == 'default')
 		{
-			$lang = $this->config->lang->info()->name;
+			// Pas forcément la langue demandée : un contenu monolingue est servi dans la sienne,
+			// avec un bandeau, plutôt que de rendre 404. Jamais de repli en administration.
+			$lang = $this->langue_du_contenu('nf_news_lang', 'news_id', $news_id);
 		}
 
 		$this->db	->select('n.news_id', 'n.category_id', 'u.id as user_id', 'n.image_id', 'n.date', 'n.published', 'n.views', 'n.vote', 'nl.title', 'nl.introduction', 'nl.content', 'nl.tags', 'c.name as category_name', 'cl.title as category_title', 'IFNULL(n.image_id, c.image_id) as image', 'c.icon_id as category_icon', 'u.username', 'u.admin', 'MAX(s.last_activity) > DATE_SUB(NOW(), INTERVAL 5 MINUTE) as online', 'up.quote', 'up.avatar', 'up.sex')
@@ -93,7 +106,13 @@ class News extends Model
 						->join('nf_news_categories_lang cl', 'c.category_id = cl.category_id')
 						->join('nf_user u',                  'u.id          = n.user_id AND u.deleted = "0"')
 						->join('nf_user_profile up',         'u.id          = up.id')
-						->join('nf_session        s',        'u.id          = s.user_id')
+						// LEFT, et non une jointure stricte : la table des sessions ne sert QU'À
+						// calculer le témoin « en ligne » de l'auteur. En stricte, une actualité
+						// dont l'auteur n'a aucune session ouverte devenait INTROUVABLE — la page
+						// répondait 404 alors que l'article existait et était publié. Constaté en
+						// production sur la démo : l'auteur de l'actualité 6 avait zéro session,
+						// et « Continuer à lire » ne menait nulle part.
+						->join('nf_session        s',        'u.id          = s.user_id', 'LEFT')
 						->where('n.news_id', $news_id)
 						->where('nl.lang', $lang)
 						->where('cl.lang', $lang)
@@ -106,6 +125,13 @@ class News extends Model
 		}
 
 		$news = $this->db->row();
+
+		if ($news && url_title($news['title']) != $title && !$this->url->admin
+			&& $this->titre_d_une_autre_langue('nf_news_lang', 'news_id', $news_id, (string) $title))
+		{
+			// Arrivé par le sélecteur de langue, avec le titre d'une autre version : l'adresse de celle-ci.
+			NeoFrag()->url->redirect_http(url('news/'.(int) $news_id.'/'.url_title($news['title'])), 301);
+		}
 
 		if ($news && url_title($news['title']) == $title)
 		{

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module media (de)
@@ -43,7 +44,7 @@ return [
 	'e7b3bb5c' => 'Bilder',
 	'0718fc05' => 'Videos',
 	'd9bc1991' => 'Audio',
-	98579906 => 'PDF',
+	'98579906' => 'PDF',
 	'395762b5' => 'Nach Name oder Titel suchen…',
 	'dc275fe4' => 'Filtern',
 	'599dba10' => 'Zurücksetzen',
@@ -51,4 +52,9 @@ return [
 	'8a7e7178' => '%d Ergebnis|%d Ergebnisse',
 	// i18n 2026-06-11 (code strings)
 	'f494deec' => '%s: Erweiterung nicht erlaubt (.%s)',
+	'4e26ca0a' => 'Das Hochladen von Dateien ist auf der Demo-Website deaktiviert.',
+	'8fd9c7ef' => 'Speichern',
+	'0aac9844' => 'Datum',
+	'71fc8e0e' => 'Größe',
+	'61b64006' => 'Medien verwalten',
 ];

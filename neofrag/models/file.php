@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -49,6 +50,14 @@ class File extends Model2
 		// (→ basename(array) → TypeError). Identique pour NULL / nom de champ / index >= 1.
 		$orig_name = $var !== NULL ? $files['name'][$var] : $files['name'];
 
+		// Site de démonstration : aucun fichier n'est accepté. La remise à zéro horaire recharge la
+		// BASE ; elle ne touche pas au disque. Un fichier déposé par un visiteur resterait donc sur
+		// le serveur indéfiniment — avec tout ce que ça suppose si le fichier est illicite.
+		if (nf_demo())
+		{
+			return FALSE;
+		}
+
 		// Garde central : refuse les extensions exécutables/dangereuses quel que soit le
 		// type MIME annoncé par le client (défense en profondeur, cf. upload/.htaccess).
 		if (is_dangerous_upload(basename($orig_name)))
@@ -90,6 +99,18 @@ class File extends Model2
 		{
 			return url($this->path);
 		}
+	}
+
+	/**
+	 * La balise <img> du fichier, ou RIEN quand il n'y a pas de fichier.
+	 *
+	 * `'<img src="'.$fichier->path().'" …'` écrit sans garde donnait `src=""` pour une catégorie ou
+	 * un jeu sans icône : le navigateur recharge alors la PAGE elle-même comme image, et dessine une
+	 * image cassée. check-mise-en-page en a trouvé dans cinq listes de l'administration (2026-09-23).
+	 */
+	public function img(string $attributs = 'alt=""'): string
+	{
+		return ($chemin = $this->path()) ? '<img src="'.$chemin.'" '.$attributs.' />' : '';
 	}
 
 	public function delete()

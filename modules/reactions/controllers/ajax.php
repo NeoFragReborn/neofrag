@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Endpoint AJAX : /ajax/reactions/toggle/{type}/{id} — bascule le "j'aime" de l'utilisateur courant.

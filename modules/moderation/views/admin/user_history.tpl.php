@@ -8,8 +8,8 @@
 				<dl class="row mb-0">
 					<dt class="col-sm-5"><?php echo $this->lang('ID') ?></dt><dd class="col-sm-7"><?php echo (int)$user['id'] ?></dd>
 					<dt class="col-sm-5"><?php echo $this->lang('Inscrit') ?></dt><dd class="col-sm-7"><small><?php echo htmlspecialchars((string)$user['registration_date']) ?></small></dd>
-					<dt class="col-sm-5"><?php echo $this->lang('Admin') ?></dt><dd class="col-sm-7"><?php echo $user['admin'] === '1' ? '<span class="badge text-bg-danger">Oui</span>' : 'Non' ?></dd>
-					<dt class="col-sm-5"><?php echo $this->lang('Supprimé') ?></dt><dd class="col-sm-7"><?php echo $user['deleted'] === '1' ? '<span class="badge text-bg-secondary">Oui</span>' : 'Non' ?></dd>
+					<dt class="col-sm-5"><?php echo $this->lang('Admin') ?></dt><dd class="col-sm-7"><?php echo $user['admin'] === '1' ? '<span class="badge text-bg-danger">'.$this->lang('Oui').'</span>' : $this->lang('Non') ?></dd>
+					<dt class="col-sm-5"><?php echo $this->lang('Supprimé') ?></dt><dd class="col-sm-7"><?php echo $user['deleted'] === '1' ? '<span class="badge text-bg-secondary">'.$this->lang('Oui').'</span>' : $this->lang('Non') ?></dd>
 				</dl>
 			</div>
 		</div>
@@ -24,7 +24,7 @@
 					<?php foreach ($active_sanctions as $s): ?>
 					<li class="list-group-item">
 						<a href="<?php echo url($_modbase.'/sanctions/'.(int)$s['id']) ?>">
-							<span class="badge text-bg-danger"><?php echo htmlspecialchars($s['type']) ?></span>
+							<span class="badge text-bg-danger"><?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $s['type'])) ?></span>
 							<small class="text-muted"><?php echo htmlspecialchars($s['scope']) ?></small>
 						</a>
 						<div class="small text-muted mt-1">
@@ -79,7 +79,7 @@
 						<li class="list-group-item">
 							<i class="fas fa-gavel text-danger"></i>
 							<strong><?php echo $this->lang('Sanction') ?> :</strong>
-							<a href="<?php echo url($_modbase.'/sanctions/'.(int)$event['id']) ?>"><?php echo htmlspecialchars($event['type']) ?> · <?php echo htmlspecialchars($event['scope']) ?></a>
+							<a href="<?php echo url($_modbase.'/sanctions/'.(int)$event['id']) ?>"><?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $event['type'])) ?> · <?php echo htmlspecialchars($this->module('moderation')->libelle('portee', $event['scope'])) ?></a>
 							<?php if (!empty($event['revoked_at'])): ?><span class="badge text-bg-secondary"><?php echo $this->lang('Levée') ?></span><?php endif ?>
 							<small class="float-end text-muted" title="<?php echo htmlspecialchars($event['created_at']) ?>"><?php echo time_span(strtotime($event['created_at'])) ?></small>
 							<?php if (!empty($event['reason'])): ?>
@@ -90,18 +90,18 @@
 						<li class="list-group-item">
 							<i class="fas fa-flag text-warning"></i>
 							<strong><?php echo $this->lang('Signalé') ?> :</strong>
-							<a href="<?php echo url($_modbase.'/reports/'.(int)$event['id']) ?>"><?php echo htmlspecialchars($event['target_type']) ?> #<?php echo htmlspecialchars($event['target_id']) ?></a>
-							<small class="text-muted">(<?php echo htmlspecialchars($event['reason']) ?>)</small>
-							<span class="badge text-bg-light"><?php echo htmlspecialchars($event['status']) ?></span>
+							<a href="<?php echo url($_modbase.'/reports/'.(int)$event['id']) ?>"><?php echo htmlspecialchars($this->module('moderation')->libelle('cible', $event['target_type'])) ?> #<?php echo htmlspecialchars($event['target_id']) ?></a>
+							<small class="text-muted">(<?php echo htmlspecialchars($this->module('moderation')->libelle('raison', $event['reason'])) ?>)</small>
+							<span class="badge text-bg-light"><?php echo htmlspecialchars($this->module('moderation')->libelle('statut', $event['status'])) ?></span>
 							<small class="float-end text-muted"><?php echo time_span(strtotime($event['created_at'])) ?></small>
 						</li>
 					<?php elseif ($event['event_type'] === 'report_made'): ?>
 						<li class="list-group-item">
 							<i class="fas fa-bullhorn text-info"></i>
 							<strong><?php echo $this->lang('A signalé') ?> :</strong>
-							<a href="<?php echo url($_modbase.'/reports/'.(int)$event['id']) ?>"><?php echo htmlspecialchars($event['target_type']) ?> #<?php echo htmlspecialchars($event['target_id']) ?></a>
-							<small class="text-muted">(<?php echo htmlspecialchars($event['reason']) ?>)</small>
-							<span class="badge text-bg-light"><?php echo htmlspecialchars($event['status']) ?></span>
+							<a href="<?php echo url($_modbase.'/reports/'.(int)$event['id']) ?>"><?php echo htmlspecialchars($this->module('moderation')->libelle('cible', $event['target_type'])) ?> #<?php echo htmlspecialchars($event['target_id']) ?></a>
+							<small class="text-muted">(<?php echo htmlspecialchars($this->module('moderation')->libelle('raison', $event['reason'])) ?>)</small>
+							<span class="badge text-bg-light"><?php echo htmlspecialchars($this->module('moderation')->libelle('statut', $event['status'])) ?></span>
 							<small class="float-end text-muted"><?php echo time_span(strtotime($event['created_at'])) ?></small>
 						</li>
 					<?php endif; endforeach ?>

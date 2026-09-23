@@ -43,7 +43,7 @@
 							->attr('href',   $this->config->$var)
 							->attr('target', '_blank')
 							->attr('class',  $settings['social_style'])
-							->append_attr_if(!$is_list,                            'class', 'btn-block')
+							->append_attr_if(!$is_list,                            'class', 'd-block w-100')
 							->attr_if($settings['social_style'] != 'btn btn-link', 'style', 'background-color: '.$bgcolor)
 							->content($this	->label()
 											->icon_if(in_array($settings['content_display'], ['all', 'icon']), 'fab '.$icon.' '.$settings['icon_size'])

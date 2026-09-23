@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -23,6 +24,10 @@ class Checker extends Controller
 	/** Soit un menu nommé (module menu), soit la saisie manuelle de liens (comportement historique). */
 	protected function _resolve($settings)
 	{
+		// Reglages absents : un widget peut etre pose sans passer par son formulaire (install()
+		// d'un theme, ajout en Live Editor, disposition ancienne). Cf. tools/check-widget-reglages.php.
+		$settings = (array) $settings + ['menu' => ''];
+
 		if (!empty($settings['menu']))
 		{
 			$menu = NeoFrag()->db->select('menu_id')->from('nf_menus')->where('name', $settings['menu'])->row(FALSE);

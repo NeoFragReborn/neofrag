@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'505a1973' => 'Baremo',
@@ -7,4 +8,22 @@ return [
 	'b3011687' => 'Gamificación',
 	'0f3561b9' => 'Karma, puntos y VIP. Reputación y moneda virtual derivadas de la actividad (baremo ajustable).',
 	'a01a5e14' => 'Conexión diaria',
+	'8fd9c7ef' => 'Guardar',
+	'5b12b2e7' => 'Karma — por reacción recibida',
+	'e0031437' => 'Karma — por contenido publicado',
+	'b59702a1' => 'Karma — por mes de antigüedad',
+	'30d789d3' => 'Puntos — comentario publicado',
+	'532c1231' => 'Puntos — mensaje del foro',
+	'ea2178e5' => 'Puntos — tema del foro creado',
+	'61c840cd' => 'Puntos — reacción recibida',
+	'8a9566ce' => 'Puntos — reacción dada',
+	'e7e69105' => 'Puntos — noticia / artículo publicado',
+	'f1fb3859' => 'Puntos — conexión diaria',
+	'ae0446e0' => 'Límite diario — comentario',
+	'4a212851' => 'Límite diario — mensaje del foro',
+	'd817f8a5' => 'Límite diario — tema del foro',
+	'2bdac6e2' => 'Límite diario — reacción recibida (0=ilimitado)',
+	'498a2706' => 'Límite diario — reacción dada',
+	'd6d8eab6' => 'Límite diario — noticia / artículo (0=ilimitado)',
+	'ff1fe341' => 'Límite diario — conexión',
 ];

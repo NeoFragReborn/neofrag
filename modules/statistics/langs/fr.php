@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -27,4 +28,8 @@ return [
 	'6cd1f3e4' => 'Inscriptions',
 	'a9c7e828' => 'Connections de membres',
 	'652ccf72' => 'Statistiques de visite et de trafic du site.',
+	'c1fc5864' => '7 jours',
+	'f7573263' => '30 jours',
+	'66972eab' => '90 jours',
+	'87721081' => '1 an',
 ];

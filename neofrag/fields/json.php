@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace NF\NeoFrag\Fields;
 
+#[\AllowDynamicProperties]
 class Json
 {
 	public function init($field): void

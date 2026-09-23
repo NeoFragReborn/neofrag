@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -118,4 +119,29 @@ return [
 	'1ce8c867' => 'Valor',
 	'f14f39cf' => 'Origen (rol)',
 	'e8058b83' => 'global',
+	'ad15a3b6' => 'No hay permisos que configurar para este módulo.',
+	'cdeded7d' => 'Guardado',
+	'ce6fa2e6' => 'Error al guardar',
+	'5c6aceb9' => 'Roles',
+	'4d8362df' => 'Ninguno',
+	'afccc23b' => 'Crear',
+	'6ddb4279' => 'Editar rol',
+	'8fd9c7ef' => 'Guardar',
+	'9b80ec64' => 'Usuario',
+	'bde12464' => 'Ver permisos efectivos',
+	'03158917' => 'Grupo',
+	'd6cecdee' => 'Rol',
+	'2cecf817' => 'Tipo',
+	'caf5c873' => 'Acciones',
+	'eb78cff1' => 'Descripción',
+	'53576710' => 'Gestión de permisos por grupo de usuarios y por módulo.',
+	'83122521' => 'Superadministrador',
+	'b7d3e5ee' => 'Visitante',
+	'd598edac' => 'Moderador',
+	'9409e26b' => 'Moderador sénior',
+	'45069517' => 'Acceso completo al sistema. Equivale al indicador nf_user.admin=1.',
+	'74e427de' => 'Usuario conectado básico.',
+	'79263869' => 'Usuario no autenticado (anónimo).',
+	'90130d8a' => 'Rol migrado desde el grupo nf_groups id 1.',
+	'41b16ae1' => 'Rol migrado desde el grupo nf_groups id 2. Hereda de moderation_junior.',
 ];

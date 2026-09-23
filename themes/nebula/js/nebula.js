@@ -1,6 +1,5 @@
 /**
  * Nebula theme — interactions légères.
- * - sélecteur de thème (footer) : pose le cookie nf_theme et recharge
  * - bouton « retour en haut » au défilement (respecte prefers-reduced-motion)
  */
 (function () {
@@ -15,17 +14,32 @@
 			onScroll();
 		}
 
-		document.querySelectorAll('[data-theme-pick]').forEach(function (el) {
-			el.addEventListener('click', function () {
-				document.cookie = 'nf_theme=' + encodeURIComponent(el.getAttribute('data-theme-pick')) + ';path=/;max-age=31536000;samesite=lax';
-				location.reload();
+		// Menu mobile : le bouton déroule le panneau de liens ; un lien choisi, Échap ou un clic
+		// ailleurs le referment.
+		var burger = document.getElementById('nb-burger');
+		if (nav && burger) {
+			var fermer = function () {
+				nav.classList.remove('open');
+				burger.setAttribute('aria-expanded', 'false');
+			};
+
+			burger.addEventListener('click', function (e) {
+				e.stopPropagation();
+				var open = nav.classList.toggle('open');
+				burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+				nav.classList.add('scrolled');
 			});
-		});
+
+			nav.querySelectorAll('.nb-links a').forEach(function (a) { a.addEventListener('click', fermer); });
+			document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { fermer(); } });
+			document.addEventListener('click', function (e) { if (!nav.contains(e.target)) { fermer(); } });
+		}
+
 
 		var btn = document.createElement('button');
 		btn.type = 'button';
 		btn.className = 'fg-to-top';
-		btn.setAttribute('aria-label', 'Retour en haut');
+		btn.setAttribute('aria-label', '<?php echo addslashes($this->lang('Retour en haut')) ?>');
 		btn.innerHTML = '<i class="fas fa-chevron-up"></i>';
 		document.body.appendChild(btn);
 

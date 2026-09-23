@@ -105,13 +105,48 @@ if (!$is_dashboard) {
 			?>
 			<nav class="nf-breadcrumb" aria-label="<?php echo $this->lang('Fil d\'ariane') ?>">
 				<a href="<?php echo url('admin') ?>"><i class="fas fa-th-large"></i></a>
-				<?php if ($module_title && $module_name !== 'admin'): ?>
+				<?php
+				/**
+				 * Fil d'Ariane : [accueil] / [module, cliquable dès qu'on l'a quitté] / [page courante]
+				 *
+				 * Sur 36 des 97 sous-pages d'administration, il n'existait AUCUN moyen de remonter au
+				 * module, sinon le bouton du navigateur : ni bouton « Retour », ni lien dans le fil.
+				 *
+				 * Le nom du module vient désormais de `info()->title`, et non du titre posé par le
+				 * contrôleur. C'est ce qui permet de traiter les 36 d'un coup : la moitié de ces pages
+				 * appelle `title()`, qui REMPLACE le titre du module par celui de la sous-page. Le fil
+				 * n'avait alors qu'un seul segment — « Abonnés » sans « Newsletter » devant — et il n'y
+				 * avait plus rien à rendre cliquable. En repartant de l'addon lui-même, le nom du module
+				 * est toujours connu, quoi que le contrôleur ait fait de son titre.
+				 */
+				$subtitle      = $this->output->data->get('module', 'subtitle');
+				$titre_module  = $module->info()->title;
+				$sur_index     = $module_method === 'index';
+
+				// Ce que le contrôleur a posé, s'il désigne autre chose que le module lui-même.
+				$titre_courant = $subtitle ?: ($module_title !== $titre_module ? $module_title : '');
+
+				/**
+				 * Tous les modules n'ont pas de page d'accueil d'administration.
+				 *
+				 * `access` déclare `'admin' => FALSE` : il n'apparaît pas au menu et n'expose aucune
+				 * route `admin/access`. Le fil rendait pourtant son nom cliquable, et le lien menait
+				 * droit à un 404 depuis chacune de ses pages. On ne lie donc que si le module dit
+				 * lui-même qu'il a une page d'accueil.
+				 */
+				$a_un_accueil = (bool) ($module->info()->admin ?? FALSE);
+				?>
+				<?php if ($titre_module && $module_name !== 'admin'): ?>
 				<span class="nf-breadcrumb-sep">/</span>
-				<span class="nf-breadcrumb-current"><?php if ($module_icon): ?><i class="<?php echo htmlspecialchars($module_icon) ?>"></i> <?php endif ?><?php echo $module_title ?></span>
+				<?php if (!$sur_index && $a_un_accueil): ?>
+				<a class="nf-breadcrumb-current" href="<?php echo url('admin/'.$module_name) ?>"><?php if ($module_icon): ?><i class="<?php echo htmlspecialchars($module_icon) ?>"></i> <?php endif ?><?php echo $titre_module ?></a>
+				<?php else: ?>
+				<span class="nf-breadcrumb-current"><?php if ($module_icon): ?><i class="<?php echo htmlspecialchars($module_icon) ?>"></i> <?php endif ?><?php echo $titre_module ?></span>
 				<?php endif ?>
-				<?php if ($subtitle = $this->output->data->get('module', 'subtitle')): ?>
+				<?php endif ?>
+				<?php if ($titre_courant): ?>
 				<span class="nf-breadcrumb-sep">/</span>
-				<span class="nf-breadcrumb-sub"><?php echo $subtitle ?></span>
+				<span class="nf-breadcrumb-sub"><?php echo $titre_courant ?></span>
 				<?php endif ?>
 			</nav>
 
@@ -143,8 +178,31 @@ if (!$is_dashboard) {
 		</header>
 
 		<div class="nf-content">
+			<?php
+			/**
+			 * Le nom du module sert de classe CSS (`.module-statistics`, `.module-addons`… sont
+			 * stylés dans themes/admin/css/style.css). Mais un BLOQUEUR DE PUBLICITÉ masque, par
+			 * règle générique, tout élément dont la classe contient le jeton « ads » : la page
+			 * d'administration de la régie publicitaire disparaissait donc ENTIÈREMENT — contenu
+			 * vide, seuls le fil d'Ariane, la barre d'outils et le pied de page restaient.
+			 *
+			 * Constaté le 2026-09-15 et confirmé des deux côtés : le serveur envoyait bien la
+			 * carte et son texte, et la page s'affiche correctement en navigation privée.
+			 *
+			 * On neutralise donc le jeton sans renommer le module : son nom sert aussi d'URL, de
+			 * préfixe de table et de clé d'enregistrement d'addon. Aucune règle CSS ne visait
+			 * `.module-ads` (vérifié), le changement n'a donc pas d'effet de bord.
+			 */
+			$classe_module = ['ads' => 'regie'];
+
+			// On redemande le module plutôt que de réutiliser la variable du fil d'Ariane : celle-ci
+			// n'est posée que dans la branche SANS erreur. Sur une page d'erreur, la ligne suivante
+			// lisait donc une variable inexistante, et chaque 404 laissait un avertissement dans le
+			// journal de production.
+			$nom_module = ($addon_courant = $this->output->module()) ? $addon_courant->info()->name : '';
+			?>
 			<?php if (!$error): ?>
-				<div class="module module-admin module-<?php echo $module->info()->name ?>"><?php echo $module ?></div>
+				<div class="module module-admin module-<?php echo $classe_module[$nom_module] ?? $nom_module ?>"><?php echo $module ?></div>
 			<?php else: ?>
 				<div class="module module-admin module-error"><?php echo $error ?></div>
 			<?php endif ?>

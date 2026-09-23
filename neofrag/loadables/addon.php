@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -8,6 +9,11 @@ namespace NF\NeoFrag\Loadables;
 
 use NF\NeoFrag\NeoFrag;
 
+/**
+ * @property mixed $__addon La ligne `nf_addon` de cet addon (id, name, type, data…), posée par le
+ *                          constructeur. `mixed` et non `Models\Addon` : un Model2 résout ses colonnes
+ *                          par méthode magique, et PHPStan verrait trente accès inconnus.
+ */
 abstract class Addon extends NeoFrag implements \NF\NeoFrag\Loadable
 {
 	static protected $_objects = [];
@@ -99,19 +105,46 @@ abstract class Addon extends NeoFrag implements \NF\NeoFrag\Loadable
 		return $this->__settings;
 	}
 
+	/**
+	 * Un addon qu'on ne peut pas eteindre est forcement actif. Sinon, son reglage fait foi.
+	 *
+	 * Auparavant cette methode s'appuyait sur is_removable(), ce qui produisait une incoherence :
+	 * l'administration proposait « Desactiver » pour comments/pages/search alors que is_enabled()
+	 * repondait TRUE quoi qu'il arrive ; et a l'inverse un module d'infrastructure non desactivable
+	 * pouvait rester eteint sans aucun moyen de le rallumer.
+	 */
 	public function is_enabled()
 	{
-		return !$this->is_removable() || !empty($this->settings()->enabled);
+		return !$this->is_deactivatable() || !empty($this->settings()->enabled);
 	}
 
+	/**
+	 * Peut-on l'eteindre depuis l'administration ? Declare par l'addon lui-meme
+	 * ('deactivatable' => FALSE sur l'infrastructure sans laquelle le site ne tourne pas).
+	 * Defaut : oui.
+	 */
 	public function is_deactivatable()
 	{
-		return !isset(static::$core) || !array_key_exists($this->__info['name'], static::$core) || static::$core[$this->__info['name']];
+		$info = $this->info();
+
+		return !isset($info->deactivatable) || (bool) $info->deactivatable;
 	}
 
+	/**
+	 * Peut-on le desinstaller ? Non s'il appartient au coeur (livre toujours), non plus s'il n'est
+	 * pas diffusable — cas du theme `vitrine`, qui est notre propre site.
+	 *
+	 * Remplace trois tableaux statiques (Module::$core, Widget::$core, Theme::$core) et une
+	 * surcharge (Widget::is_removable()) qui se contredisaient et avaient tous derive : celle des
+	 * widgets protegeait sept noms qui ne sont pas des widgets, et celle des themes protegeait un
+	 * theme « default » inexistant tout en laissant `nebula` — le seul theme public livre —
+	 * supprimable. La source de verite est desormais la declaration de l'addon.
+	 */
 	public function is_removable()
 	{
-		return !isset(static::$core) || empty(static::$core[$this->__info['name']]);
+		$info = $this->info();
+
+		return empty($info->core) && (!isset($info->distributed) || (bool) $info->distributed);
 	}
 
 	public function install()

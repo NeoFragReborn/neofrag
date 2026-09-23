@@ -1,0 +1,43 @@
+name: compose-up
+description: >-
+  Lance `docker compose up` en RÉESSAYANT, parce qu'un tirage d'image depuis Docker Hub échoue
+  parfois pour des raisons qui n'ont rien à voir avec le dépôt. Le 2026-09-22, la CI est passée au
+  rouge sur « read: connection reset by peer » en récupérant le jeton d'authentification du registre
+  pour mariadb:11 : aucun code en cause, et la page d'intégration continue affichait pourtant un
+  échec. Un incident de registre ne doit pas se lire comme un défaut du produit.
+
+inputs:
+  args:
+    description: 'Les arguments passés à `docker compose up` (ex. « -d --wait db »).'
+    required: true
+  tentatives:
+    description: 'Nombre de tentatives avant de déclarer l''échec.'
+    required: false
+    default: '3'
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        NF_ARGS: ${{ inputs.args }}
+        NF_TENTATIVES: ${{ inputs.tentatives }}
+      run: |
+        set -u
+        attente=10
+        for n in $(seq 1 "$NF_TENTATIVES"); do
+            if [ "$n" -gt 1 ]; then
+                echo "::notice::compose-up — tentative $n/$NF_TENTATIVES après $attente s. L'échec"\
+                     "ci-dessus est souvent un aléa du registre d'images, pas un défaut du dépôt."
+                sleep "$attente"
+                attente=$(( attente * 3 ))
+            fi
+            # shellcheck disable=SC2086
+            if docker compose up $NF_ARGS; then
+                exit 0
+            fi
+        done
+        echo "::error::compose-up a échoué $NF_TENTATIVES fois de suite sur « docker compose up"\
+             "$NF_ARGS ». Au-delà d'une tentative, ce n'est probablement plus le registre : lire"\
+             "la sortie de la DERNIÈRE tentative ci-dessus."
+        exit 1

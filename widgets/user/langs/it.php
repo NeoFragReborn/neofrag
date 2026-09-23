@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traduzioni IT (auto-generate 2026-05-03)
@@ -34,4 +35,6 @@ return [
 	'0552e076' => 'Modalità anteprima',
 	'1648d731' => 'I link ai dati personali sono nascosti per rispettare la privacy dell\'account di destinazione.',
 	'78aeb25c' => 'Moderazione',
+	'1f88c31b' => 'Opzioni',
+	'8a4c99cf' => 'Benvenuto/a %s',
 ];

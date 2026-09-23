@@ -15,14 +15,17 @@ NF.ready(function(){
 		group.dataset.nfColor = '1';
 
 		var input  = group.querySelector('input[type="text"]');
-		var swatch = group.querySelector('.input-group-prepend i') || group.querySelector('i');
+		// Balisage Bootstrap 5 : les addons sont des enfants directs du groupe (les wrappers
+		// input-group-prepend / -append de Bootstrap 4 ont ete retires de la bibliotheque de
+		// formulaires). La pastille porte desormais sa propre classe.
+		var swatch = group.querySelector('.nf-color-swatch') || group.querySelector('.input-group-text i');
 		if (!input){ return; }
 
 		function paint(){
 			if (swatch){ swatch.style.background = resolveColor(input.value) || 'transparent'; }
 		}
 
-		var toggle = group.querySelector('.input-group-append');
+		var toggle = group.querySelector('.nf-color-toggle');
 		if (toggle){
 			toggle.style.cursor = 'pointer';
 			toggle.setAttribute('data-bs-toggle', 'dropdown');

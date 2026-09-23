@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Système de permissions refondu (R1) — Roles autonomes + sémantique allow/never/default + wildcards + inheritance + scope hiérarchique.

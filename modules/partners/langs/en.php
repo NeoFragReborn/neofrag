@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -42,4 +43,6 @@ return [
 	'be53bc1a' => 'Enter the promo code that your users can use to benefit from promotions through your partner',
 	// i18n 2026-06-11 (code strings)
 	'39e91bd5' => 'partner|partners',
+	'8b8988ac' => 'Delete?',
+	'8a8bad0b' => 'About %s',
 ];

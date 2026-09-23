@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -63,15 +64,31 @@ class Live_Editor extends Model
 		return $this->db->from('nf_widgets')->where('widget_id', $widget_id)->row() ?: FALSE;
 	}
 
-	public function get_widgets(&$widgets, &$types)
+	/**
+	 * Widgets installés : titres, types, et icônes.
+	 *
+	 * $icones est le troisième paramètre plutôt qu'une refonte de $widgets : les deux checkers
+	 * n'utilisent que les CLÉS de $widgets (`isset($widgets[$nom])`) et la vue n'en lit que le
+	 * titre — en changer la forme les casserait sans rien apporter.
+	 *
+	 * L'icône vient de la déclaration de l'addon, avec repli sur celle du module générique : un
+	 * widget sans icône doit rendre un pictogramme neutre, jamais une case vide. Les noms déclarés
+	 * sont vérifiés contre le FontAwesome embarqué par tools/check-addon-declarations.php (règle 7).
+	 */
+	public function get_widgets(&$widgets, &$types, &$icones = NULL)
 	{
+		$icones = is_array($icones) ? $icones : [];
+
 		foreach (NeoFrag()->model2('addon')->get('widget') as $widget)
 		{
-			$widgets[$name = $widget->info()->name] = $widget->info()->title;
+			$info = $widget->info();
 
-			if (!empty($widget->info()->types))
+			$widgets[$name = $info->name] = $info->title;
+			$icones[$name]                = !empty($info->icon) ? $info->icon : 'fas fa-puzzle-piece';
+
+			if (!empty($info->types))
 			{
-				$types[$name] = $widget->info()->types;
+				$types[$name] = $info->types;
 				array_natsort($types[$name]);
 			}
 		}

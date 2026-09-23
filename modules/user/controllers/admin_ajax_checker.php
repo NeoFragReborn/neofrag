@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -12,7 +13,7 @@ class Admin_Ajax_Checker extends Module_Checker
 {
 	public function _groups_sort()
 	{
-		if (($check = post_check('id', 'position')) && ($group = $this->groups->check_group([$check['id']])) && $group['auto'] != 'neofrag')
+		if (($check = post_check('id', 'position')) && ($group = NeoFrag('NF\NeoFrag\Core\Groups')->check_group([$check['id']])) && $group['auto'] != 'neofrag')
 		{
 			return $check;
 		}

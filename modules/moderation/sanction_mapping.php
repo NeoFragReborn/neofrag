@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * R1.8 — Mapping permission → checks de sanction.
  *

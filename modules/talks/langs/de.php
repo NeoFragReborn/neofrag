@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -104,4 +105,33 @@ return [
 	'0213838b' => 'Max. 2000 Zeichen.',
 	'e4c1464f' => 'Dateien: %s · max %s',
 	'52025860' => 'Unterhaltungs-Admin',
+	'5f649bfd' => 'Private Nachrichten',
+	'2cecf817' => 'Typ',
+	'afccc23b' => 'Erstellen',
+	'c627cc86' => 'Beenden',
+	'1b148e6f' => 'Archiv',
+	'94b735a4' => 'Papierkorb',
+	'36d699e5' => 'Suche',
+	'0dede4b4' => 'Unterhaltungen',
+	'0aac9844' => 'Datum',
+	'02f6b476' => 'Autor',
+	'790009e3' => 'Nachricht',
+	'406089a4' => 'Aktion',
+	'e3202498' => 'Alle',
+	'4788f138' => '%d Teilnehmer|%d Teilnehmer',
+	'594ae39c' => 'Mitglieder',
+	'0cbbe048' => 'Mindestens 3 Zeichen eingeben, um zu suchen.',
+	'4c4aec08' => 'Keine Ergebnisse für "%s"',
+	'18874ad9' => 'System',
+	'6958ab6a' => 'Teilnehmer',
+	'66d26b7f' => 'Wiederherstellen',
+	'3d83137a' => 'Neues Thema',
+	'99a8bf5e' => '<b>GIF</b>: Kopiere den Link eines GIFs von %s oder %s und füge ihn hier ein. Er wird als Bild angezeigt.',
+	'b8124b7d' => 'Datei nicht lesbar',
+	'f6638f8a' => 'Leere Datei',
+	'396d3773' => 'Datei zu groß',
+	'64010e83' => 'Dateityp kann nicht erkannt werden',
+	'bf8bf003' => 'Dateityp nicht erlaubt: %s',
+	'584e9133' => 'Verdächtige Datei (ausführbarer Inhalt erkannt)',
+	'215a962f' => 'Gekürzter Link — Vorsicht',
 ];

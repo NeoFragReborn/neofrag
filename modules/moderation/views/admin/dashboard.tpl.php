@@ -1,4 +1,16 @@
-<?php $_modbase = !empty($_user_side ?? FALSE) ? 'moderation' : 'admin/moderation'; ?>
+<?php
+$_user = !empty($_user_side ?? FALSE);
+$_modbase = $_user ? 'moderation' : 'admin/moderation';
+
+// Cote administration, la zone de contenu fait toute la largeur : deux colonnes 7/5 tiennent.
+// Cote ESPACE MEMBRE, la meme vue est servie dans une colonne d'environ 450 px, a cote du
+// panneau du membre. Les deux tableaux y etaient tronques — « Actions » et « Rejete » coupes
+// net au bord de la carte. On empile donc les deux blocs plutot que de les juxtaposer : chacun
+// recupere la largeur entiere, et rien n'est coupe.
+// Signale le 2026-09-16, capture a l'appui.
+$_col_principale = $_user ? 'col-12' : 'col-12 col-lg-7';
+$_col_laterale   = $_user ? 'col-12 mt-3' : 'col-12 col-lg-5';
+?>
 <div class="nf-stats-grid">
 	<div class="nf-stat-card<?php echo $stats['pending'] > 0 ? ' nf-stat-attention' : '' ?>">
 		<div class="nf-stat-label"><i class="fas fa-flag"></i> <?php echo $this->lang('Signalements en attente') ?></div>
@@ -28,7 +40,7 @@
 
 <div class="row mt-3">
 	<!-- Signalements récents -->
-	<div class="col-12 col-lg-7">
+	<div class="<?php echo $_col_principale ?>">
 		<div class="card">
 			<div class="nf-card-header">
 				<span><i class="fas fa-flag"></i> <?php echo $this->lang('Signalements récents en attente') ?></span>
@@ -40,7 +52,7 @@
 					<?php echo $this->lang('Aucun signalement en attente. Tout va bien !') ?>
 				</div>
 			<?php else: ?>
-				<table class="table table-hover m-0">
+				<div class="table-responsive"><table class="table table-hover m-0">
 					<thead>
 						<tr>
 							<th><?php echo $this->lang('Date') ?></th>
@@ -54,22 +66,22 @@
 					<?php foreach ($recent_reports as $r): ?>
 						<tr>
 							<td><small class="text-muted"><?php echo time_span(strtotime($r['created_at'])) ?></small></td>
-							<td><span class="badge text-bg-secondary"><?php echo htmlspecialchars($r['target_type']) ?></span></td>
+							<td><span class="badge text-bg-secondary"><?php echo htmlspecialchars($this->module('moderation')->libelle('cible', $r['target_type'])) ?></span></td>
 							<td><?php echo $r['target_username'] ? '<a href="'.url($_modbase.'/users/'.(int)$r['target_user_id']).'">@'.htmlspecialchars($r['target_username']).'</a>' : '<i class="text-muted">'.$this->lang('inconnu').'</i>' ?></td>
-							<td><?php echo htmlspecialchars($r['reason']) ?></td>
+							<td><?php echo htmlspecialchars($this->module('moderation')->libelle('raison', $r['reason'])) ?></td>
 							<td class="text-end">
 								<a class="btn btn-sm btn-outline-primary" href="<?php echo url($_modbase.'/reports/'.(int)$r['id']) ?>"><i class="fas fa-eye"></i></a>
 							</td>
 						</tr>
 					<?php endforeach ?>
 					</tbody>
-				</table>
+				</table></div>
 			<?php endif ?>
 		</div>
 	</div>
 
 	<!-- Top users signalés -->
-	<div class="col-12 col-lg-5">
+	<div class="<?php echo $_col_laterale ?>">
 		<div class="card mb-3">
 			<div class="nf-card-header">
 				<span><i class="fas fa-user-times"></i> <?php echo $this->lang('Top users signalés (30 jours)') ?></span>
@@ -77,7 +89,7 @@
 			<?php if (empty($top_reported)): ?>
 				<div class="card-body text-center text-muted py-3"><small><?php echo $this->lang('Aucune donnée') ?></small></div>
 			<?php else: ?>
-				<table class="table m-0">
+				<div class="table-responsive"><table class="table m-0">
 					<tbody>
 					<?php foreach ($top_reported as $u): ?>
 						<tr>
@@ -86,7 +98,7 @@
 						</tr>
 					<?php endforeach ?>
 					</tbody>
-				</table>
+				</table></div>
 			<?php endif ?>
 		</div>
 		<div class="card">
@@ -96,7 +108,7 @@
 			<?php if (empty($top_reporters)): ?>
 				<div class="card-body text-center text-muted py-3"><small><?php echo $this->lang('Aucune donnée') ?></small></div>
 			<?php else: ?>
-				<table class="table m-0">
+				<div class="table-responsive"><table class="table m-0">
 					<thead>
 						<tr><th><?php echo $this->lang('Reporter') ?></th><th class="text-end"><?php echo $this->lang('Total') ?></th><th class="text-end"><?php echo $this->lang('Actionné') ?></th><th class="text-end"><?php echo $this->lang('Rejeté') ?></th></tr>
 					</thead>
@@ -112,17 +124,17 @@
 						</tr>
 					<?php endforeach ?>
 					</tbody>
-				</table>
+				</table></div>
 			<?php endif ?>
 		</div>
 	</div>
 </div>
 
-<div class="row mt-3">
-	<div class="col-12 text-end">
-		<a class="btn btn-secondary" href="<?php echo url($_modbase.'/sanctions') ?>"><i class="fas fa-gavel"></i> <?php echo $this->lang('Sanctions') ?></a>
-		<?php if ($this->access('moderation', 'manage_settings')): ?>
-		<a class="btn btn-outline-secondary" href="<?php echo url($_modbase.'/settings') ?>"><i class="fas fa-cogs"></i> <?php echo $this->lang('Réglages') ?></a>
-		<?php endif ?>
-	</div>
-</div>
+<?php
+/**
+ * Les actions « Sanctions » et « Réglages » sont remontées dans la BARRE D'OUTILS de la page
+ * (`add_action` dans le contrôleur), comme sur tous les autres écrans d'administration. Elles
+ * étaient ici, en bas à droite du contenu : le même type de bouton placé ailleurs d'une page à
+ * l'autre, ce qui est précisément ce qui donne l'impression d'incohérence.
+ */
+?>

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -15,11 +16,12 @@ class Admin_Checker extends Module_Checker
 		return [
 			$this	->collection('user')
 					->where('deleted', FALSE)
+					->where('_.id !=', nf_compte_masque())
 					->filters(
 						$this	->form2()
 								->rule($this->form_text('username')
 											->title('Pseudo')
-											->data($this->collection('user')->select('username')->where('deleted', FALSE)->array())
+											->data($this->collection('user')->select('username')->where('deleted', FALSE)->where('_.id !=', nf_compte_masque())->array())
 											->filter('_.username LIKE')
 								)
 								->rule($this->form_text('email')
@@ -42,9 +44,47 @@ class Admin_Checker extends Module_Checker
 		return [$format];
 	}
 
+	/**
+	 * Un champ de profil existe-t-il ? Sinon la route rend 404, plutôt qu'une page d'édition vide.
+	 */
+	public function _fields_edit($field_id)
+	{
+		/** @var \NF\Modules\User\Models\Fields $fields */
+		$fields = $this->model('fields');
+
+		if ($champ = $fields->get_field($field_id))
+		{
+			return [
+				$champ['field_id'],
+				$champ['name'],
+				$champ['label'],
+				$champ['description'],
+				$champ['type'],
+				(string) $champ['options'],
+				(bool) $champ['required'],
+				(bool) $champ['public'],
+			];
+		}
+	}
+
+	public function _fields_delete($field_id)
+	{
+		/** @var \NF\Modules\User\Models\Fields $fields */
+		$fields = $this->model('fields');
+
+		if ($champ = $fields->get_field($field_id))
+		{
+			return [$champ['field_id'], $champ['label']];
+		}
+	}
+
 	public function _groups_edit()
 	{
-		if ($group = $this->groups->check_group(func_get_args()))
+		// La classe du CŒUR, désignée explicitement. Ni `$this->groups` ni `NeoFrag()->groups` ne
+		// conviennent : le module `user` possède son propre modèle `groups`, du même nom, qui masque
+		// la bibliothèque. L'appel échouait sur « Call to undefined method Models\Groups::check() »
+		// et l'édition d'un groupe rendait un 404 — constaté par tools/check-liens.php.
+		if ($group = NeoFrag('NF\NeoFrag\Core\Groups')->check_group(func_get_args()))
 		{
 			return [
 				isset($group['id']) ? $group['id'] : 0,
@@ -62,7 +102,7 @@ class Admin_Checker extends Module_Checker
 	{
 		$this->ajax();
 
-		if ($group = $this->groups->check_group(func_get_args()))
+		if ($group = NeoFrag('NF\NeoFrag\Core\Groups')->check_group(func_get_args()))
 		{
 			if (!$group['auto'])
 			{
@@ -109,7 +149,7 @@ class Admin_Checker extends Module_Checker
 
 		if (!$user)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 
@@ -141,7 +181,7 @@ class Admin_Checker extends Module_Checker
 
 		if (!$user)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 
@@ -158,7 +198,7 @@ class Admin_Checker extends Module_Checker
 
 		if (!$user)
 		{
-			$this->error->not_found();
+			$this->error();
 			return;
 		}
 

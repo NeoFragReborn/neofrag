@@ -20,7 +20,7 @@
 }
 .widget-gs-offline > i {
 	font-size: 24px;
-	color: var(--nf-danger, #dc2626);
+	color: var(--bs-danger-text-emphasis, var(--nf-danger, #dc2626));
 }
 .widget-gs-offline-text { display: flex; flex-direction: column; gap: 2px; }
 .widget-gs-offline-text strong { color: var(--nf-text, #0f1419); font-size: 14px; }
@@ -70,7 +70,7 @@
 	gap: 6px;
 	font-size: 13px;
 }
-.widget-gs-stat-row > i { color: var(--nf-success, #16a34a); font-size: 14px; }
+.widget-gs-stat-row > i { color: var(--bs-success-text-emphasis, var(--nf-success, #16a34a)); font-size: 14px; }
 .widget-gs-stat-num {
 	font-family: 'JetBrains Mono', monospace;
 	font-weight: 700;
@@ -171,7 +171,7 @@
 .widget-gs-player-score {
 	font-family: 'JetBrains Mono', monospace;
 	font-size: 11px;
-	color: var(--nf-accent, #5e5ce6);
+	color: var(--nf-accent-text, var(--nf-accent, #5e5ce6));
 	font-weight: 600;
 }
 

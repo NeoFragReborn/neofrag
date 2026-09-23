@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  */
@@ -18,5 +19,25 @@ return [
 	'5b00c662' => 'membres en ligne',
 	'2aa68b91' => 'membre en ligne',
 	'e16d555c' => 'Natif',
-	'fdd16ad9' => 'Natif (intégré au thème)'
+	'fdd16ad9' => 'Natif (intégré au thème)',
+	'816f205c' => 'Discord',
+	'4b9e75a1' => 'Veuillez configurer l\'ID du serveur Discord dans le panneau d\'administration.',
+	'5b5583b2' => 'Serveur Discord',
+	'6bd10de9' => 'Affiche les membres en ligne, les salons vocaux et un lien d\'invitation vers votre serveur Discord.',
+	'2547c34e' => '%d autres',
+	'a12b1086' => 'Salons vocaux',
+	'f930d5d6' => 'Rejoindre le serveur',
+	'1f88c31b' => 'Options',
+	'f17b1287' => 'ID du serveur',
+	'ea59365b' => 'Mode d\'affichage',
+	'1d70079f' => 'Iframe officiel Discord',
+	'f66ed182' => 'Lien d\'invitation',
+	'82748555' => 'Sombre',
+	'eba0fcd6' => 'Clair',
+	'23bd043a' => 'Hauteur (iframe, px)',
+	'0dda30a2' => 'Comment activer le widget Discord ?',
+	'bb31a60e' => 'Allez dans <strong>Widget</strong>',
+	'662aacc8' => 'Activez <strong>Activer le widget du serveur</strong>',
+	'ea4f31d7' => 'Iframe',
+	'c0e8f575' => 'widget officiel Discord, plus lourd, look fixe',
 ];

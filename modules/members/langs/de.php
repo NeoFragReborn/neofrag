@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — deutsche Übersetzungen (auto-generiert 2026-05-03)
@@ -12,4 +13,6 @@ return [
 	'49cf2272' => 'Admin',
 	'f92bd0a9' => 'Alle Mitglieder anzeigen',
 	'aa733a2d' => 'Liste der Site-Mitglieder mit öffentlichen Profilen.',
+	'34222b59' => 'Gesehen %s',
+	'3b5fa87a' => 'Kontaktieren',
 ];

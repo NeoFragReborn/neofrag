@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traduções PT (auto-geradas 2026-05-03)
@@ -7,7 +8,7 @@
 return [
 	'0ae333a4' => 'Últimos membros',
 	'1ccc3a46' => 'Sem membros de momento',
-	'1ee0d939' => 'Admin',
+	'1ee0d939' => 'Admin|Admins',
 	'2939ca55' => 'Lista de membros',
 	'359cc583' => 'à esquerda',
 	'400c350f' => 'à direita',
@@ -22,4 +23,5 @@ return [
 	'eaf3aad0' => 'Quem está online?',
 	'96f7da00' => 'Membros',
 	'1ea90f79' => 'Fechar',
+	'1f88c31b' => 'Opções',
 ];

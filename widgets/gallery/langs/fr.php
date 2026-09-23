@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traductions FR (auto-générées 2026-05-03)
@@ -21,5 +22,7 @@ return [
 	'e27e3273' => 'Aucune catégorie pour le moment',
 	'e3202498' => 'Toutes',
 	'ebcb0841' => 'Suivant',
-	'f21e5d9a' => 'Aperçu de la galerie photos avec dernières images.'
+	'f21e5d9a' => 'Aperçu de la galerie photos avec dernières images.',
+	'51c02c0c' => 'Galerie',
+	'f8594147' => 'Album',
 ];

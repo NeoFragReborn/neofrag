@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -24,11 +25,16 @@ class Select extends Multiple
 			};
 
 			$input = parent ::html('select')
-							->attr('class', 'form-control selectize')
+							->attr('class', 'form-select selectize')
 							->attr('data-options', $encode($this->_data))
 							->attr_if($this->_multiple,                      'multiple')
 							->attr_if($this->_disabled || $this->_read_only, 'disabled')
-							->attr_if(!empty($this->_render) && !empty($this->_render[0]), 'data-render-option', utf8_htmlentities($this->_render[0]))
+							// `attr_if` est un APPEL DE FONCTION : PHP évalue ses trois arguments avant
+							// d'entrer dedans, même quand la condition est fausse. Sans le `?? ''`,
+							// `$this->_render[0]` était donc lu alors que `_render` valait NULL, et
+							// chaque liste déroulante sans rendu personnalisé posait un avertissement
+							// « Trying to access array offset on null » dans le journal de production.
+							->attr_if(!empty($this->_render[0]), 'data-render-option', utf8_htmlentities($this->_render[0] ?? ''))
 							->attr_if($this->_search,                        'data-search-field',  $this->_search + 1)
 							->attr_if(!is_empty($this->_value),              'data-value',         implode(',', (array)$this->_value));
 
@@ -36,7 +42,8 @@ class Select extends Multiple
 			{
 				$input	->attr('data-optgroups',      $encode($this->_optgroup[1]))
 						->attr('data-optgroup-field', $this->_optgroup[0] + 1)
-						->attr_if(!empty($this->_render) && !empty($this->_render[1]), 'data-render-optgroup', $this->_render[1]);
+						// Même piège qu'au-dessus : l'argument est évalué quoi qu'il arrive.
+						->attr_if(!empty($this->_render[1]), 'data-render-optgroup', $this->_render[1] ?? '');
 			}
 
 			$this	->css('tom-select.bootstrap5.min')

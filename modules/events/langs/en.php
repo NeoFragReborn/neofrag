@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -126,4 +127,35 @@ return [
 	'fab41cdd' => 'Recurrence: total number of occurrences (max %d).',
 	'ef1ccb4f' => 'Series of %d events created',
 	'e3ad390b' => 'Occurrence of a recurring series',
+	'62c86d0f' => 'Delete the whole series',
+	'7ba70fe8' => 'Apply to every occurrence in the series (%d)',
+	'236bba4c' => 'The title, type, descriptions, location, image and publication are copied onto every occurrence. The DATES are not: they are what tells one occurrence from the next.',
+	'eb67ff64' => 'Series updated: %d occurrences. Each keeps its own dates.',
+	'5f5c0a0f' => 'Delete the series',
+	'7a113c7e' => 'Delete <b>the only occurrence</b> of the series <b>%2$s</b> belongs to?|Delete <b>all %1$d occurrences</b> of the series <b>%2$s</b> belongs to? They will all be erased, along with their comments and their attendance.',
+	'a5bb9f79' => 'Invitations',
+	'9bd148d6' => 'Scheduled for %s',
+	'f0b7b5b5' => 'Publication date',
+	'94949a27' => 'Team',
+	'3c19f7aa' => 'Opponent',
+	'37f8e895' => 'Mode',
+	'2687aad0' => 'Enter a website that covers the event',
+	'7b15d0f9' => 'Map',
+	'a6f67ef4' => 'Our score',
+	'909b29bc' => 'Opponent\'s score',
+	'f5655ff7' => 'Invite members',
+	'1f3ae63f' => 'Reminder!',
+	'3cfda0fd' => 'Don\'t forget to send your participation requests to your members!',
+	'15fc3f17' => 'No rounds entered',
+	'5f0de8cd' => 'Automatic message.',
+	'35ceefe3' => 'You are invited to take part in the event <b>%s</b>.',
+	'1d83ca5f' => 'To indicate your availability, <a href="%s">click here</a>.',
+	'c3890ba2' => 'Event invitation: %s',
+	'a03a35b6' => 'Mode: %s',
+	'7d714567' => 'Round details',
+	'bfa7126c' => 'Round %d',
+	'9111f8c2' => 'Live on Twitch',
+	'64eda44a' => 'Coverage here',
+	'04fb541f' => 'Duration',
+	'bbc46366' => 'Invite',
 ];

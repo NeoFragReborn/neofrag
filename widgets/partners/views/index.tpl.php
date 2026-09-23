@@ -1,5 +1,5 @@
 <style type="text/css">
-#partners-carousel-<?php echo $id ?> .item > .row {
+#partners-carousel-<?php echo $id ?> .carousel-item > .row {
 	padding: <?php echo ($total_partners > $display_number) ? '15px 40px' : '0 15px' ?>;
 }
 
@@ -17,7 +17,8 @@
 	vertical-align: middle;
 }
 
-#partners-carousel-<?php echo $id ?> .carousel-control {
+#partners-carousel-<?php echo $id ?> .carousel-control-prev,
+#partners-carousel-<?php echo $id ?> .carousel-control-next {
 	width: 40px;
 }
 </style>
@@ -52,14 +53,14 @@
 			<?php endfor ?>
 		</div>
 		<?php if ($total_slides > 1): ?>
-		<a class="carousel-control-prev" href="#partners-carousel-<?php echo $id ?>" role="button" data-bs-slide="prev">
+		<button class="carousel-control-prev" type="button" data-bs-target="#partners-carousel-<?php echo $id ?>" data-bs-slide="prev">
 			<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-			<span class="visually-hidden">Previous</span>
-		</a>
-		<a class="carousel-control-next" href="#partners-carousel-<?php echo $id ?>" role="button" data-bs-slide="next">
+			<span class="visually-hidden"><?php echo $this->lang('Précédent') ?></span>
+		</button>
+		<button class="carousel-control-next" type="button" data-bs-target="#partners-carousel-<?php echo $id ?>" data-bs-slide="next">
 			<span class="carousel-control-next-icon" aria-hidden="true"></span>
-			<span class="visually-hidden">Next</span>
-		</a>
+			<span class="visually-hidden"><?php echo $this->lang('Suivant') ?></span>
+		</button>
 		<?php endif ?>
 	</div>
 </div>

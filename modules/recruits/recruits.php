@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -19,6 +20,10 @@ class Recruits extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => ['gaming'],
+			'requires'    => ['teams', 'games'],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => [
@@ -131,12 +136,16 @@ class Recruits extends Module
 			],
 			'recruit' => [
 				'get_all' => function(){
-					return NeoFrag()->db->select('recruit_id', 'CONCAT_WS(" ", "Offre", title)')->from('nf_recruits')->get();
+					// Le libellé se compose en PHP, après la requête (même règle que modules/files/files.php).
+					return array_map(fn($ligne) => [
+						'recruit_id' => $ligne['recruit_id'],
+						'title'      => (string) $this->lang('Offre %s', $ligne['title'])
+					], NeoFrag()->db->select('recruit_id', 'title')->from('nf_recruits')->get());
 				},
 				'check' => function($recruit_id){
 					if (($recruit = NeoFrag()->db->select('title')->from('nf_recruits')->where('recruit_id', $recruit_id)->row()) !== [])
 					{
-						return 'Offre '.$recruit;
+						return (string) $this->lang('Offre %s', $recruit);
 					}
 				},
 				'init' => [

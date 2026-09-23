@@ -45,12 +45,52 @@ function timetostr($format, $timestamp = NULL): string
 		$format = preg_replace('#(?<!%)((?:%%)*)%e#', '\1%#d', $format);
 	}
 
+	$config = NeoFrag()->config;
+	$langue = isset($config->lang) && is_object($config->lang) ? (string) $config->lang->info()->name : 'fr';
+
+	// Les NOMS de jours et de mois viennent d'ICU (extension intl, exigée par le produit), dans la
+	// langue du site : `date()` les écrit toujours en anglais, et la traduction qui suivait ne
+	// connaissait que les formes COMPLÈTES — « 30 aug 2026 », « 16 sep 2026 » sur un site français
+	// (signalé le 2026-09-23). ICU connaît aussi les abréviations (« 16 sept. 2026 »),
+	// et la casse de chaque langue : tout mettre en minuscules écrivait « märz » en allemand.
+	if (class_exists('IntlDateFormatter'))
+	{
+		static $formateurs = [];
+
+		$locale = ['fr' => 'fr_FR', 'en' => 'en_GB', 'de' => 'de_DE', 'es' => 'es_ES', 'it' => 'it_IT', 'pt' => 'pt_PT'][$langue] ?? $langue;
+		$noms   = ['D' => 'EEE', 'l' => 'EEEE', 'M' => 'MMM', 'F' => 'MMMM'];
+		$output = '';
+
+		for ($i = 0, $n = strlen($format); $i < $n; $i++)
+		{
+			$c = $format[$i];
+
+			// Un caractère échappé (`\à`, `\l\e`) s'écrit tel quel, comme le fait date().
+			if ($c === '\\' && $i + 1 < $n)
+			{
+				$output .= $format[++$i];
+				continue;
+			}
+
+			if (isset($noms[$c]))
+			{
+				$formateurs[$locale.$c] ??= new \IntlDateFormatter($locale, \IntlDateFormatter::NONE, \IntlDateFormatter::NONE, date_default_timezone_get(), \IntlDateFormatter::GREGORIAN, $noms[$c]);
+				$output .= (string) $formateurs[$locale.$c]->format($timestamp);
+				continue;
+			}
+
+			$output .= date($c, $timestamp);
+		}
+
+		$output = preg_replace('/ +/', ' ', $output) ?? $output;
+
+		return utf8_string(mb_strtoupper(mb_substr($output, 0, 1)).mb_substr($output, 1));
+	}
+
 	$output = date($format, $timestamp);
 
-	// Localisation : si l'addon language actif a une méthode localize_date_output(),
-	// l'utiliser pour traduire les noms de jours/mois en EN → langue cible.
-	// Fix le bug "friday dernier" (date() PHP natif retourne toujours en EN).
-	$lang_addon = NeoFrag()->config->lang ?? NULL;
+	// Sans intl : la traduction des noms complets que porte l'addon de langue.
+	$lang_addon = $config->lang ?? NULL;
 	if (is_object($lang_addon) && method_exists($lang_addon, 'localize_date_output'))
 	{
 		$output = $lang_addon->localize_date_output($output);

@@ -5,17 +5,131 @@ declare(strict_types=1);
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
  */
 
+/**
+ * Reconnaît le NAVIGATEUR et le SYSTÈME d'une chaîne d'agent utilisateur.
+ *
+ * Rend `['navigateur' => …, 'version' => …, 'icone' => …, 'systeme' => …, 'icone_systeme' => …]`.
+ * Les valeurs inconnues sont des chaînes vides — jamais NULL, pour que l'appelant n'ait pas à s'en
+ * soucier.
+ *
+ * L'ORDRE DES TESTS EST LE POINT DÉLICAT : presque tous les navigateurs mentent. Edge annonce
+ * « Chrome » et « Safari », Chrome annonce « Safari », Opera annonce « Chrome ». On va donc du plus
+ * spécifique au plus générique, et le premier qui reconnaît gagne.
+ */
+function analyser_user_agent(string $agent): array
+{
+	$vide = ['navigateur' => '', 'version' => '', 'icone' => '', 'systeme' => '', 'icone_systeme' => ''];
+
+	if (trim($agent) === '')
+	{
+		return $vide;
+	}
+
+	// Du plus spécifique au plus générique : motif, nom, icône.
+	$navigateurs = [
+		['#\bEdg(?:e|A|iOS)?/([\d.]+)#i',        'Edge',              'fab fa-edge'],
+		['#\bOPR/([\d.]+)#i',                    'Opera',             'fab fa-opera'],
+		['#\bOpera[ /]([\d.]+)#i',               'Opera',             'fab fa-opera'],
+		['#\bVivaldi/([\d.]+)#i',                'Vivaldi',           'fas fa-globe'],
+		['#\bYaBrowser/([\d.]+)#i',              'Yandex',            'fas fa-globe'],
+		['#\bSamsungBrowser/([\d.]+)#i',         'Samsung Internet',  'fas fa-globe'],
+		['#\bBrave/([\d.]+)#i',                  'Brave',             'fas fa-globe'],
+		['#\bFirefox/([\d.]+)#i',                'Firefox',           'fab fa-firefox-browser'],
+		['#\bFxiOS/([\d.]+)#i',                  'Firefox',           'fab fa-firefox-browser'],
+		['#\bCriOS/([\d.]+)#i',                  'Chrome',            'fab fa-chrome'],
+		['#\bChrome/([\d.]+)#i',                 'Chrome',            'fab fa-chrome'],
+		['#\bChromium/([\d.]+)#i',               'Chromium',          'fab fa-chrome'],
+		['#\bVersion/([\d.]+).*\bSafari/#i',     'Safari',            'fab fa-safari'],
+		['#\bMSIE ([\d.]+)#i',                   'Internet Explorer', 'fab fa-internet-explorer'],
+		['#\bTrident/.*\brv:([\d.]+)#i',         'Internet Explorer', 'fab fa-internet-explorer'],
+	];
+
+	$systemes = [
+		['#\bWindows NT 10\.0#i',       'Windows 10 ou 11', 'fab fa-windows'],
+		['#\bWindows NT 6\.3#i',        'Windows 8.1',      'fab fa-windows'],
+		['#\bWindows NT 6\.1#i',        'Windows 7',        'fab fa-windows'],
+		['#\bWindows#i',                'Windows',          'fab fa-windows'],
+		['#\bAndroid ?([\d.]*)#i',      'Android',          'fab fa-android'],
+		['#\b(iPhone|iPad|iPod)#i',     'iOS',              'fab fa-apple'],
+		['#\bMac OS X#i',               'macOS',            'fab fa-apple'],
+		['#\bUbuntu#i',                 'Ubuntu',           'fab fa-ubuntu'],
+		['#\bLinux#i',                  'Linux',            'fab fa-linux'],
+	];
+
+	$resultat = $vide;
+
+	foreach ($navigateurs as [$motif, $nom, $icone])
+	{
+		if (preg_match($motif, $agent, $trouve))
+		{
+			$resultat['navigateur'] = $nom;
+			$resultat['version']    = $trouve[1] ?? '';
+			$resultat['icone']      = $icone;
+			break;
+		}
+	}
+
+	foreach ($systemes as [$motif, $nom, $icone])
+	{
+		if (preg_match($motif, $agent))
+		{
+			$resultat['systeme']       = $nom;
+			$resultat['icone_systeme'] = $icone;
+			break;
+		}
+	}
+
+	return $resultat;
+}
+
+/**
+ * Icônes du navigateur et du système, pour l'historique des sessions.
+ *
+ * Pourquoi cette fonction ne ressemble plus à ce qu'elle était
+ * ------------------------------------------------------------
+ * Elle posait une image d'attente, puis un script envoyait l'agent de chaque ligne à
+ * `https://neofr.ag/user-agent.json` — un domaine TIERS — pour recevoir le nom du navigateur. Deux
+ * problèmes, l'un de fond :
+ *
+ *   - les agents utilisateurs des membres du site, administrateurs compris, partaient chez un tiers
+ *     à chaque consultation de l'historique. Personne ne l'avait demandé, et rien ne le disait ;
+ *   - le rendu dépendait d'un service extérieur : s'il ne répond pas, la page reste sur des images
+ *     de chargement. Les icônes servies étaient d'ailleurs de vieux logos en PNG, ce que le mainteneur a
+ *     signalé.
+ *
+ * L'analyse se fait donc ici, hors ligne, et les icônes viennent de la police déjà embarquée.
+ */
 function user_agent($user_agent): string
 {
-	if (!is_empty($user_agent))
+	if (is_empty($user_agent))
 	{
-		NeoFrag()->js('user-agent');
-		return '<img src="'.image('ajax-loader.gif').'" data-user-agent="'.$user_agent.'" alt="" />';
+		return '<i class="fas fa-circle-question text-muted" data-bs-toggle="tooltip" title="'
+			.htmlspecialchars((string) NeoFrag()->lang('Agent inconnu'), ENT_QUOTES).'"></i>';
 	}
-	else
+
+	$a      = analyser_user_agent((string) $user_agent);
+	$sortie = '';
+
+	if ($a['icone'])
 	{
-		return '<img src="'.image('icons/user-silhouette-question.png').'" alt="" />';
+		$titre = trim($a['navigateur'].' '.$a['version']);
+		$sortie .= '<i class="'.$a['icone'].'" data-bs-toggle="tooltip" title="'.htmlspecialchars((string) ($titre), ENT_QUOTES).'"></i> ';
 	}
+
+	if ($a['icone_systeme'])
+	{
+		$sortie .= '<i class="'.$a['icone_systeme'].'" data-bs-toggle="tooltip" title="'.htmlspecialchars((string) ($a['systeme']), ENT_QUOTES).'"></i>';
+	}
+
+	if ($sortie === '')
+	{
+		// Agent non reconnu : on montre la chaîne brute en infobulle plutôt qu'une icône muette,
+		// pour que la ligne reste exploitable.
+		return '<i class="fas fa-circle-question text-muted" data-bs-toggle="tooltip" title="'
+			.htmlspecialchars((string) (mb_substr((string) $user_agent, 0, 200)), ENT_QUOTES).'"></i>';
+	}
+
+	return trim($sortie);
 }
 
 function is_crawler(): bool

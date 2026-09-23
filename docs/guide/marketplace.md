@@ -85,9 +85,52 @@ correspondre aux zips publiés (même run).
 
 Le catalogue porte `base_version` (la version du CMS pour laquelle il a été bâti). **Admin → Thèmes & Addons
 → Mises à jour** la compare à la version installée et **signale** une nouvelle version du cœur le cas échéant.
-La mise à jour reste **manuelle** : télécharge la release et remplace les fichiers (hors `config/`, `upload/`,
-`backups/`), puis visite le site (les migrations s'appliquent).
 
-> L'**auto-update par overlay** (bouton du Monitoring) est **désactivé sur ce fork** (`NEOFRAG_ALLOW_AUTOUPDATE`) :
-> l'ancien mécanisme téléchargeait la release **upstream** (`neofrag.download`) et l'écrasait par-dessus —
-> ce qui détruirait le code Reborn divergé. Le réactiver suppose une **source de release propre au fork**.
+Deux chemins pour l'appliquer.
+
+### En un clic depuis le Monitoring
+
+**Admin → Monitoring → Mettre à jour**. Le site prend d'abord une **sauvegarde**, puis télécharge le paquet
+de mise à jour, vérifie son empreinte, superpose les fichiers, applique les migrations en attente et
+recompile les feuilles de style.
+
+Ce bouton était désactivé sur ce fork (`NEOFRAG_ALLOW_AUTOUPDATE`) parce que l'ancien mécanisme téléchargeait
+la release **upstream** (`neofrag.download`) et l'étalait par-dessus, ce qui aurait écrasé le code Reborn
+divergé. Un interrupteur global empêchait toutefois aussi les mises à jour légitimes. Il est remplacé par
+quatre garanties de nature :
+
+1. l'**origine** vient de la même allow-list que le marketplace — `neofrag.download` n'y est pas, et une
+   valeur injectée en base ne peut pas l'y faire entrer ;
+2. `version.json` ne fournit qu'un **nom de fichier**, jamais une URL : ni hôte, ni chemin, donc ni
+   redirection ni remontée de répertoire ;
+3. l'empreinte **SHA-256** est vérifiée **avant** qu'un seul fichier du site ne soit touché ;
+4. l'archive est contrôlée **entrée par entrée** (anti-zip-slip, symlinks refusés).
+
+`config/` et `install/` ne sont jamais réécrits quand ils existent déjà : la configuration d'un site en
+service est préservée.
+
+### À la main
+
+Télécharge la release et remplace les fichiers (hors `config/`, `upload/`, `backups/`), puis visite le
+site — les migrations s'appliquent.
+
+### Publier une mise à jour (opérateur)
+
+`php tools/build-release.php` produit, en plus des paquets d'installation, **trois fichiers à publier
+ensemble** sur l'origine de mise à jour (`https://neofrag-reborn.xyz/update/` par défaut, surchargeable
+via `nf_monitoring_check_url` vers un hôte autorisé) :
+
+| Fichier | Rôle |
+|---|---|
+| `neofrag-reborn-update-<v>.zip` | le paquet, **à plat** (aucun dossier racine) |
+| `version.json` | version publiée, nom du zip, son SHA-256, sa taille |
+| `checksum.json` | une empreinte MD5 par fichier livré, pour le contrôle d'intégrité du Monitoring |
+
+> Le paquet de mise à jour est **plat**, contrairement aux paquets d'installation qui rangent tout sous
+> `neofrag-reborn/`. C'est essentiel : l'updater écrit chaque entrée à son propre chemin, donc un paquet
+> à dossier racine créerait un sous-dossier `neofrag-reborn/` au lieu de remplacer quoi que ce soit — la
+> mise à jour « réussirait » sans rien mettre à jour.
+
+> Les trois fichiers forment un **jeu cohérent d'un même run** : le SHA-256 de `version.json` et les
+> empreintes de `checksum.json` ne valent que pour ce zip précis. Publier l'un sans les autres fait
+> échouer la vérification côté site.

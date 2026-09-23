@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -118,4 +119,29 @@ return [
 	'1ce8c867' => 'Wert',
 	'f14f39cf' => 'Quelle (Rolle)',
 	'e8058b83' => 'global',
+	'ad15a3b6' => 'Für dieses Modul gibt es keine Berechtigungen zu konfigurieren.',
+	'cdeded7d' => 'Gespeichert',
+	'ce6fa2e6' => 'Fehler beim Speichern',
+	'5c6aceb9' => 'Rollen',
+	'4d8362df' => 'Keine',
+	'afccc23b' => 'Erstellen',
+	'6ddb4279' => 'Rolle bearbeiten',
+	'8fd9c7ef' => 'Speichern',
+	'9b80ec64' => 'Benutzer',
+	'bde12464' => 'Effektive Berechtigungen anzeigen',
+	'03158917' => 'Gruppe',
+	'd6cecdee' => 'Rolle',
+	'2cecf817' => 'Typ',
+	'caf5c873' => 'Aktionen',
+	'eb78cff1' => 'Beschreibung',
+	'53576710' => 'Verwaltung der Berechtigungen nach Benutzergruppe und nach Modul.',
+	'83122521' => 'Super-Administrator',
+	'b7d3e5ee' => 'Besucher',
+	'd598edac' => 'Moderator',
+	'9409e26b' => 'Senior-Moderator',
+	'45069517' => 'Vollständiger Systemzugriff. Entspricht dem Flag nf_user.admin=1.',
+	'74e427de' => 'Angemeldeter Standardbenutzer.',
+	'79263869' => 'Nicht angemeldeter (anonymer) Benutzer.',
+	'90130d8a' => 'Aus der Gruppe nf_groups id 1 übernommene Rolle.',
+	'41b16ae1' => 'Aus der Gruppe nf_groups id 2 übernommene Rolle. Erbt von moderation_junior.',
 ];

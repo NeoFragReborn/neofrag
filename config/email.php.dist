@@ -1,0 +1,27 @@
+<?php
+
+/*
+ * GABARIT — ce fichier n'est jamais lu. L'installateur écrit le vrai `config/email.php` UNE SEULE
+ * FOIS : un redéploiement ne réécrase pas un SMTP déjà réglé.
+ *
+ * Un `host` vide fait passer par la fonction `mail()` de PHP, ce qui suffit en hébergement
+ * mutualisé. Pour un service transactionnel, quelques réglages courants :
+ *
+ *   Resend    host=smtp.resend.com        port=465  secure=ssl  username=resend
+ *   Brevo     host=smtp-relay.brevo.com   port=587  secure=tls  username=<identifiant>
+ *   SendGrid  host=smtp.sendgrid.net      port=587  secure=tls  username=apikey
+ *   Mailgun   host=smtp.mailgun.org       port=587  secure=tls  username=postmaster@<domaine>
+ *   Postmark  host=smtp.postmarkapp.com   port=587  secure=tls  username=<jeton de serveur>
+ *   Gmail     host=smtp.gmail.com         port=465  secure=ssl  username=<adresse>
+ *
+ * Le mot de passe écrit ici part en clair sur le disque : c'est pourquoi le dossier est interdit
+ * en HTTP et exclu de git.
+ */
+
+$email['smtp'] = [
+	'host'     => '',
+	'username' => '',
+	'password' => '',
+	'port'     => 587,
+	'secure'   => 'tls',
+];

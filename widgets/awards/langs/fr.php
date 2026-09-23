@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  */
@@ -16,5 +17,8 @@ return [
 	'cbea6d24' => '%der / %d équipes',
 	'd40929a6' => '%dème',
 	'ddaee116' => 'Avec %d trophée|Avec %d trophées',
-	'f90fb52e' => 'Tous nos palmarès'
+	'f90fb52e' => 'Tous nos palmarès',
+	'd0e2fd31' => 'Nombre de palmarès',
+	'042e2c3d' => 'Afficher dans un panneau',
+	'e2a147a0' => 'Oui',
 ];

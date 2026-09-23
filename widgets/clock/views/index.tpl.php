@@ -23,7 +23,7 @@
 		<li class="list-group-item widget-clock-birthday-item">
 			<i class="fas fa-gift fa-fw"></i>
 			<?php echo $this->user->link($b['user_id'], $b['username']) ?>
-			<span class="float-end text-muted"><?php echo $age ?> <?php echo $this->lang('ans') ?></span>
+			<span class="float-end text-muted"><?php echo $this->lang('%d an|%d ans', $age, $age) ?></span>
 		</li>
 			<?php endforeach ?>
 		<?php else: ?>
@@ -37,8 +37,15 @@
 <?php if ($clock || $calendar): ?>
 <script>
 (function(){
-	var DAYS = ["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"];
-	var MONTHS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+	// Jour et mois dans la langue de la page (<html lang>), par le navigateur : « Dimanche 5 janvier 2026 »,
+	// « Sunday, January 5, 2026 », « Sonntag, 5. Januar 2026 »… Première lettre en capitale, comme avant.
+	var OPTIONS = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+	function dateLongue(d){
+		var s;
+		try { s = d.toLocaleDateString(document.documentElement.lang || 'fr', OPTIONS); }
+		catch (e) { s = d.toLocaleDateString('fr', OPTIONS); }
+		return s.charAt(0).toUpperCase() + s.slice(1);
+	}
 	function pad(n){ return n < 10 ? '0' + n : '' + n; }
 	function tick(){
 		var d = new Date();
@@ -46,7 +53,7 @@
 		if (clk) clk.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
 		var cal = document.getElementById('widget-clock-date');
 		if (cal && !cal.dataset.set){
-			cal.textContent = DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+			cal.textContent = dateLongue(d);
 			cal.dataset.set = '1';
 		}
 	}

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -28,8 +29,8 @@ class Checker extends Controller
 
 		return [
 			'server_id' => $server_id,
-			'mode'      => in_array($settings['mode']  ?? 'native', ['native', 'iframe'], TRUE) ? $settings['mode']  : 'native',
-			'theme'     => in_array($settings['theme'] ?? 'dark',   ['dark', 'light'],     TRUE) ? $settings['theme'] : 'dark',
+			'mode'      => in_array($settings['mode']  ?? 'native', ['native', 'iframe'], TRUE) ? ($settings['mode'] ?? 'native')  : 'native',
+			'theme'     => in_array($settings['theme'] ?? 'dark',   ['dark', 'light'],     TRUE) ? ($settings['theme'] ?? 'dark') : 'dark',
 			'height'    => (string)$height,
 			'invite'    => $invite
 		];

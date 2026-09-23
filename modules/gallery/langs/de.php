@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -53,7 +54,7 @@ return [
 	'7a9e99e6' => 'Sind Sie sicher, dass Sie die Kategorie <b>%s</b> löschen möchten? <br /> Alle Alben dieser Kategorie werden ebenfalls gelöscht.',
 	'7f9392da' => 'Klicken Sie in den Rahmen, um Ihre Bilder auszuwählen',
 	'86c33902' => 'Bearbeiten',
-	'86e02610' => '%d Bild',
+	'86e02610' => '%d Bild|%d Bilder',
 	'87bf30f1' => 'Neues Fotoalbum',
 	'9caeb208' => 'Das Symbol muss quadratisch sein',
 	'a026ae67' => 'Kategorie',
@@ -100,4 +101,23 @@ return [
 	// i18n 2026-06-11 (code strings)
 	'b914f016' => 'Galeriebilder',
 	'7f1f539c' => 'Ein zukünftiges Datum plant die Veröffentlichung: Das Album bleibt bis zu diesem Datum öffentlich verborgen (falls sichtbar). Leer = sofort.',
+	'398d8489' => 'Einbetten <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Code zum Einbetten, um diese Galerie in einem freien HTML-/BBCode-Inhalt anzuzeigen"></i>',
+	'b9b71e8e' => 'Bildtitel',
+	'517c0b2c' => 'Geplant für %s',
+	'f0b7b5b5' => 'Veröffentlichungsdatum',
+	'afccc23b' => 'Erstellen',
+	'ff1485d1' => 'Legen Sie Ihre Bilder in diesem Bereich ab oder klicken Sie hier',
+	'017c90f5' => 'Ihr Browser unterstützt das Hochladen von Dateien per Drag & Drop nicht.',
+	'01081a31' => 'Verwenden Sie das Formular unten, um Ihre Dateien hochzuladen.',
+	'572556ef' => 'Die Datei ist zu groß ({{filesize}} MiB). Maximale Größe: {{maxFilesize}} MiB.',
+	'37bb0291' => 'Dieser Dateityp wird nicht akzeptiert.',
+	'9e1bbb9b' => 'Der Server hat mit dem Code {{statusCode}} geantwortet.',
+	'de35108a' => 'Möchten Sie diesen Upload wirklich abbrechen?',
+	'ca977443' => 'Entfernen',
+	'ebe0e1da' => 'Sie können keine weiteren Dateien hochladen.',
+	'f8291e95' => 'Wird hochgeladen...',
+	'1b08248b' => 'Nur noch einen kleinen Moment...',
+	'cb9a08b2' => 'Bitte warten...',
+	'd9035f7e' => 'MB',
+	'73ae9de7' => 'Zurück zum Album %s',
 ];

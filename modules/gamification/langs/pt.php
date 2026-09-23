@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'505a1973' => 'Tabela',
@@ -7,4 +8,22 @@ return [
 	'b3011687' => 'Gamificação',
 	'0f3561b9' => 'Karma, pontos e VIP. Reputação e moeda virtual derivadas da atividade (tabela ajustável).',
 	'a01a5e14' => 'Início de sessão diário',
+	'8fd9c7ef' => 'Guardar',
+	'5b12b2e7' => 'Karma — por reação recebida',
+	'e0031437' => 'Karma — por conteúdo publicado',
+	'b59702a1' => 'Karma — por mês de antiguidade',
+	'30d789d3' => 'Pontos — comentário publicado',
+	'532c1231' => 'Pontos — mensagem no fórum',
+	'ea2178e5' => 'Pontos — tópico do fórum criado',
+	'61c840cd' => 'Pontos — reação recebida',
+	'8a9566ce' => 'Pontos — reação dada',
+	'e7e69105' => 'Pontos — notícia / artigo publicado',
+	'f1fb3859' => 'Pontos — início de sessão diário',
+	'ae0446e0' => 'Limite diário — comentário',
+	'4a212851' => 'Limite diário — mensagem no fórum',
+	'd817f8a5' => 'Limite diário — tópico do fórum',
+	'2bdac6e2' => 'Limite diário — reação recebida (0=ilimitado)',
+	'498a2706' => 'Limite diário — reação dada',
+	'd6d8eab6' => 'Limite diário — notícia / artigo (0=ilimitado)',
+	'ff1fe341' => 'Limite diário — início de sessão',
 ];

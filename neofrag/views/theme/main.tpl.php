@@ -13,19 +13,65 @@
 <?php if ($this->config->nf_humans_txt): ?>
 <link rel="author" href="<?php echo url('humans.txt') ?>" type="text/plain">
 <?php endif ?>
-<link rel="shortcut icon" href="<?php echo $path = ($this->config->nf_favicon && ($favicon = NeoFrag()->model2('file', $this->config->nf_favicon)->path())) ? $favicon : image('favicon.png') ?>" type="<?php echo get_mime_by_extension(extension($path)) ?>">
+<link rel="shortcut icon" href="<?php echo $path = favicon_url() ?>" type="<?php echo get_mime_by_extension(extension($path)) ?>">
 <link rel="apple-touch-icon" href="<?php echo image('apple-touch-icon.png') ?>">
+<?php /* Manifeste d'application : rend le site installable. Servi par le produit, cf. Settings\Controllers\Ajax::manifest(). */ ?>
+<link rel="manifest" href="<?php echo $this->url->base ?>manifest.webmanifest">
 <?php if (!$this->config->nf_favicon): // favicon par défaut : variante claire quand le navigateur est en mode sombre ?>
 <link rel="icon" href="<?php echo image('favicon-dark.png') ?>" media="(prefers-color-scheme: dark)" type="image/png">
 <?php endif ?>
 <?php echo $this->output->css() ?>
+<?php
+/**
+ * Police choisie par l'administrateur.
+ *
+ * Posée APRÈS les feuilles du thème : c'est ce qui lui permet de surcharger `--nf-font`, que chaque
+ * thème définit avec sa propre police. Les jetons propres aux thèmes (`--gr-font`, `--bc-font`…)
+ * pointent tous dessus, si bien qu'une seule déclaration suffit pour les sept.
+ *
+ * `police_du_site()` ne rend que des valeurs de la liste blanche : ce qui suit part dans une adresse
+ * envoyée à un tiers et dans une feuille de style, ce n'est pas un endroit pour de la saisie libre.
+ *
+ * `preconnect` avant la feuille : la fonte vient d'un autre domaine, et la résolution DNS plus la
+ * poignée de main TLS coûtent un aller-retour qu'on évite ici. `display=swap` affiche le texte avec
+ * la police de repli le temps que la fonte arrive, plutôt que de laisser un blanc.
+ */
+if ($nf_police = police_du_site()):
+?>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=<?php echo rawurlencode($nf_police) ?>:wght@400;500;600;700&amp;display=swap">
+<style>:root{--nf-font:<?php echo police_du_site_pile($nf_police) ?>;--nf-font-display:<?php echo police_du_site_pile($nf_police) ?>}</style>
+<?php endif ?>
+<?php
+/*
+ * `hreflang` : n'annoncer que des adresses qui répondent.
+ *
+ * Cette boucle émettait une déclaration par langue ACTIVE du site, en échangeant le seul préfixe. Sur
+ * un contenu rédigé dans une seule langue, cinq d'entre elles menaient à un 404 — et ce sont les
+ * moteurs de recherche qui les suivent. Quand le module a dit dans quelles langues son contenu
+ * existe (cf. `Model::langue_du_contenu()`), on s'y tient. Les pages qui ne déclarent rien — accueil,
+ * forum, espace membre — sont réellement disponibles partout : elles gardent le comportement d'avant.
+ */
+$nf_langues_page = (array) ($this->output->data->get('module', 'langues_du_contenu') ?: []);
+?>
 <?php foreach ($this->config->langs as $lang): ?>
+<?php if (!$nf_langues_page || in_array($lang->info()->name, $nf_langues_page, TRUE)): ?>
 <link rel="alternate" href="<?php echo $this->url->base.implode('/', array_merge([$lang->info()->name], $this->url->segments)).$this->url->query ?>" hreflang="<?php echo $lang->info()->name ?>">
+<?php endif ?>
 <?php endforeach ?>
 <?php
 // SEO : description, canonical, Open Graph et Twitter Card. URLs absolues (les crawlers les exigent).
 $nf_origin    = ($this->url->https ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'];
-$nf_canonical = $nf_origin.$this->url->base.implode('/', array_merge([$this->config->lang->info()->name], $this->url->segments));
+/*
+ * `canonical` : l'adresse de RÉFÉRENCE, qui n'est pas toujours celle qu'on sert.
+ *
+ * Quand la langue demandée n'a pas de version et qu'on sert l'original à la place, les six adresses
+ * rendent le même texte. Sans ce renvoi, un moteur les indexe toutes et les traite comme du contenu
+ * dupliqué, ce qui dessert la vraie page. Le canonical désigne donc la langue réellement servie.
+ */
+$nf_langue_page = (string) ($this->output->data->get('module', 'langue_servie') ?: $this->config->lang->info()->name);
+$nf_canonical = $nf_origin.$this->url->base.implode('/', array_merge([$nf_langue_page], $this->url->segments));
 $nf_seo_desc  = trim((string)($description ?? $this->config->nf_description));
 $nf_og_image  = '';
 if ($this->config->nf_logo && ($nf_img = NeoFrag()->model2('file', $this->config->nf_logo)->path())) {
@@ -74,8 +120,8 @@ if ($nf_og_image && strpos($nf_og_image, '://') === FALSE) {
 	<div id="nf-maint-banner" class="bg-danger py-2 w-100">
 		<div class="container">
 			<div class="row align-items-center">
-				<div class="col-6 text-white"><?php echo icon('fas fa-power-off').' '.$this->lang('Site en opération de maintenance') ?></div>
-				<div class="col-6 text-end"><a href="<?php echo url('admin/settings/maintenance') ?>" class="btn btn-outline-light"><?php echo $this->lang('Ouvrir le site') ?></a></div>
+				<div class="col-12 col-lg-6 text-white"><?php echo icon('fas fa-power-off').' '.$this->lang('Site en opération de maintenance') ?></div>
+				<div class="col-12 col-lg-6 text-end"><a href="<?php echo url('admin/settings/maintenance') ?>" class="btn btn-outline-light"><?php echo $this->lang('Ouvrir le site') ?></a></div>
 			</div>
 		</div>
 	</div>
@@ -172,6 +218,17 @@ window.NF = (function(){
 		}
 
 		return fetch(url, init).then(function(response){
+			// Un statut d'erreur doit REJETER. jQuery ne déclenchait pas .done() sur un 404 ; fetch,
+			// lui, ne résout pas seulement : il livre le corps de la page d'erreur. Sans ce garde, un
+			// appelant en dataType 'text' insère la page « 404 Not Found » dans le DOM comme si de
+			// rien n'était (constaté dans le Live Editor). Les flux qui signalent une erreur
+			// applicative répondent en 200 avec un JSON (ex. le file-manager et son `sudo`), ils ne
+			// sont donc pas concernés.
+			if (!response.ok){
+				var error = new Error('HTTP ' + response.status + ' — ' + url);
+				error.status = response.status;
+				throw error;
+			}
 			return opts.dataType === 'text' ? response.text() : response.json();
 		});
 	}
@@ -180,12 +237,30 @@ window.NF = (function(){
 		return ajax({ url: url, method: 'POST', data: data });
 	}
 
+	// Le nonce qui vaut pour le document d'accueil du script. Le Live Editor manipule le DOM d'une
+	// IFRAME : c'est une seconde réponse HTTP, donc un second nonce, et poser celui de la page parente
+	// sur un script de l'iframe le ferait refuser. Repli sur le nonce de cette page quand le document
+	// n'a pas de fenêtre propre — le cas d'un fragment de <template>, dont le contenu sera de toute
+	// façon adopté par cette page-ci.
+	function nonceFor(doc){
+		try {
+			var win = doc && doc.defaultView;
+			if (win && win !== window && win.__nfNonce){ return win.__nfNonce; }
+		}
+		catch (e){} // document d'une iframe d'une autre origine : inaccessible, on garde le nôtre
+		return nonce;
+	}
+
 	function recreateScript(old){
-		var s = document.createElement('script');
+		// Le script doit NAÎTRE dans le document qui l'accueille : un <script> créé par le document
+		// parent puis inséré dans l'iframe n'y est pas exécuté comme un script de l'iframe.
+		var doc = old.ownerDocument || document;
+		var n   = nonceFor(doc);
+		var s   = doc.createElement('script');
 		for (var i = 0; i < old.attributes.length; i++){
 			s.setAttribute(old.attributes[i].name, old.attributes[i].value);
 		}
-		if (nonce){ s.setAttribute('nonce', nonce); }
+		if (n){ s.setAttribute('nonce', n); }
 		s.textContent = old.textContent;
 		old.parentNode.replaceChild(s, old);
 	}
@@ -201,6 +276,40 @@ window.NF = (function(){
 		runScripts(el);
 	}
 
+	/**
+	 * insertAdjacentHTML avec exécution des <script> AJOUTÉS, et eux seuls.
+	 *
+	 * insertAdjacentHTML n'exécute jamais les scripts : un widget qui s'initialise en JS inline reste
+	 * inerte jusqu'au rechargement de la page. Mais relancer runScripts() sur tout le conteneur
+	 * rejouerait aussi les scripts déjà en place — d'où le repérage des bornes avant insertion.
+	 */
+	function insertHtml(target, position, html){
+		var parent = target.parentNode;
+		var debut, fin;
+
+		if (position === 'beforeend'){        debut = target.lastChild;      fin = null; }
+		else if (position === 'afterbegin'){  debut = null;                  fin = target.firstChild; }
+		else if (position === 'beforebegin'){ debut = target.previousSibling; fin = target; }
+		else if (position === 'afterend'){    debut = target;                fin = target.nextSibling; }
+		else { target.insertAdjacentHTML(position, html); return; }
+
+		var conteneur = (position === 'beforeend' || position === 'afterbegin') ? target : parent;
+
+		target.insertAdjacentHTML(position, html);
+
+		var node = debut ? debut.nextSibling : conteneur.firstChild;
+		while (node && node !== fin){
+			if (node.nodeType === 1){ runScripts(node); }
+			node = node.nextSibling;
+		}
+	}
+
+	/** Équivalent de `el.outerHTML = html`, mais les <script> du remplaçant s'exécutent. */
+	function replaceHtml(el, html){
+		insertHtml(el, 'beforebegin', html);
+		el.parentNode.removeChild(el);
+	}
+
 	function loadScript(src){
 		return new Promise(function(resolve, reject){
 			var s = document.createElement('script');
@@ -214,7 +323,8 @@ window.NF = (function(){
 
 	return {
 		ready: ready, data: data, ajax: ajax, post: post,
-		setHtml: setHtml, runScripts: runScripts, loadScript: loadScript
+		setHtml: setHtml, insertHtml: insertHtml, replaceHtml: replaceHtml,
+		runScripts: runScripts, loadScript: loadScript
 	};
 })();
 </script>
@@ -267,7 +377,11 @@ NF.ready(function(){
 	<?php echo $this->output->js_load() ?>
 });
 </script>
-<?php if (empty($_COOKIE['nf_consent'])): ?>
+<?php
+/* Jamais dans le back-office : un administrateur connecte n'est pas un visiteur a qui l'on
+   demande son consentement analytique, et la banniere y recouvrait le pied de page et le bas
+   des formulaires sur toutes les pages. Elle reste servie sur le site public. */
+if (empty($_COOKIE['nf_consent']) && empty($this->url->admin)): ?>
 <style>
 /* Couleurs via tokens du thème actif (dungeon puis admin), fallback codé en dur. */
 .nf-cookie-banner {
@@ -298,13 +412,39 @@ NF.ready(function(){
 	font-weight: 500;
 	font-size: 13px;
 }
-.nf-cookie-banner__btn--accept { background: var(--dungeon-accent, var(--nf-accent, #03c1a2)); color: #fff; }
+.nf-cookie-banner__btn--accept { background: var(--dungeon-accent, var(--nf-accent, #03c1a2)); color: var(--nf-on-accent, #fff); }
 .nf-cookie-banner__btn--reject { background: transparent; color: var(--dungeon-text, var(--nf-text, #fff)); border: 1px solid var(--dungeon-border-strong, var(--nf-border, #888)); }
 .nf-cookie-banner__btn:hover { opacity: 0.85; }
 </style>
 <div id="nf-cookie-banner" class="nf-cookie-banner" role="dialog" aria-label="<?php echo $this->lang('Consentement aux cookies') ?>">
 	<div class="nf-cookie-banner__text">
-		<strong>🍪 <?php echo $this->lang('Cookies & confidentialité') ?></strong> — <?php echo $this->lang('Ce site utilise des cookies essentiels pour fonctionner. Vous pouvez accepter les cookies analytiques pour nous aider à améliorer le site, ou les refuser.') ?> <a href="<?php echo url('mentions-legales') ?>"><?php echo $this->lang('En savoir plus') ?></a>
+		<?php
+		/**
+		 * « En savoir plus » ne s'affiche que si la page existe VRAIMENT.
+		 *
+		 * Le lien pointait en dur vers `mentions-legales`, une page statique qu'aucune installation
+		 * ne crée : sur un site neuf — et sur celui-ci — il menait à un 404, affiché à CHAQUE
+		 * visiteur, en bas de CHAQUE page. Le bandeau reste utile sans lui ; un lien mort, non.
+		 *
+		 * La page se crée depuis l'administration (Contenu → Pages), avec l'adresse
+		 * « mentions-legales ». Son contenu est un texte juridique : il revient à l'exploitant du
+		 * site, pas au produit.
+		 */
+		$page_mentions = FALSE;
+
+		if (($pages = $this->module('pages')) && $pages->is_enabled())
+		{
+			foreach ($pages->model()->get_pages() as $page_statique)
+			{
+				if ($page_statique['name'] === 'mentions-legales' && $page_statique['published'])
+				{
+					$page_mentions = TRUE;
+					break;
+				}
+			}
+		}
+		?>
+		<strong>🍪 <?php echo $this->lang('Cookies & confidentialité') ?></strong> — <?php echo $this->lang('Ce site utilise des cookies essentiels pour fonctionner. Vous pouvez accepter les cookies analytiques pour nous aider à améliorer le site, ou les refuser.') ?><?php if ($page_mentions): ?> <a href="<?php echo url('mentions-legales') ?>"><?php echo $this->lang('En savoir plus') ?></a><?php endif ?>
 	</div>
 	<div class="nf-cookie-banner__buttons">
 		<button type="button" class="nf-cookie-banner__btn nf-cookie-banner__btn--accept" data-nf-consent="full"><?php echo $this->lang('Tout accepter') ?></button>

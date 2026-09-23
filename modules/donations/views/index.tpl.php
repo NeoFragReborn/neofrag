@@ -21,7 +21,7 @@
 				<span class="text-muted"><i class="fas fa-users"></i> <?php echo $c['count'] ?> <?php echo $this->lang($c['count'] > 1 ? 'donateurs' : 'donateur') ?></span>
 			</div>
 
-			<a href="<?php echo url('donations/'.$c['name']) ?>" class="btn btn-primary btn-block mt-3"><?php echo $this->lang('Voir la campagne') ?></a>
+			<a href="<?php echo url('donations/'.$c['name']) ?>" class="btn btn-primary d-block w-100 mt-3"><?php echo $this->lang('Voir la campagne') ?></a>
 		</div>
 	</div>
 	<?php endforeach ?>

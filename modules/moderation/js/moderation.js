@@ -55,7 +55,7 @@
 				});
 			})
 			.catch(function(){
-				$content.innerHTML = '<div class="modal-body"><div class="alert alert-danger">Erreur de chargement.</div></div>';
+				$content.innerHTML = '<div class="modal-body"><div class="alert alert-danger"><?php echo addslashes($this->lang('Erreur de chargement.')) ?></div></div>';
 			});
 	}
 

@@ -1,7 +1,12 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Modern statistics admin v0.4 — stat cards with trends + filter bar + chart card.
+ *
+ * couplage(forum): les compteurs passent tous par _safe_count(), qui enveloppe la requete dans
+ * un try/catch et rend 0 si la table n'existe pas. Sans le module forum, la statistique vaut
+ * zero au lieu de casser la page.
  */
 
 namespace NF\Modules\Statistics\Controllers;
@@ -22,13 +27,13 @@ class Admin extends Controller_Module
 		foreach ($stats as $s)
 		{
 			$cards .= '<div class="nf-stat-card">';
-			$cards .= '<div class="nf-stat-label"><i class="'.$s['icon'].'"></i> '.htmlspecialchars($s['label']).'</div>';
+			$cards .= '<div class="nf-stat-label"><i class="'.$s['icon'].'"></i> '.htmlspecialchars((string) ($s['label'])).'</div>';
 			$cards .= '<div class="nf-stat-value">'.$s['value'].'</div>';
 			if (!empty($s['trend']))
 			{
 				$cards .= '<div class="nf-stat-trend '.($s['trend_class'] ?? '').'">';
 				if (!empty($s['trend_icon'])) $cards .= '<i class="'.$s['trend_icon'].'"></i> ';
-				$cards .= htmlspecialchars($s['trend']);
+				$cards .= htmlspecialchars((string) ($s['trend']));
 				$cards .= '</div>';
 			}
 			$cards .= '</div>';

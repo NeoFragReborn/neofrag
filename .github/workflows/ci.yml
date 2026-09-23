@@ -13,8 +13,9 @@ jobs:
   composer-audit:
     name: Composer audit (CVE des dépendances verrouillées)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
@@ -25,8 +26,9 @@ jobs:
   lint:
     name: Lint PHP (php -l)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
@@ -53,17 +55,159 @@ jobs:
             fi
           done
           [ "$csrf_viol" = "1" ] && exit 1 || true
+      # Les outils eux-mêmes respectent leurs conventions (en-tête, garde par le socle, plomberie
+      # dans tools/lib/, verdicts, ports, catalogue de tools/README.md à jour). Sans ce contrôle,
+      # chaque passe de rangement était à refaire à la suivante.
+      - name: Garde des conventions des outils
+        run: php tools/check-tools.php
       - name: Garde strict_types (ratchet — ne doit jamais baisser)
         run: php tools/check-strict-types.php
-      # Les inventaires annoncés dans docs/ doivent correspondre au code : `docs/README.md` a
-      # affiché « 53 modules · 6 thèmes » pendant des semaines (réel : 54 et 7) sur une ligne qui
-      # se disait « vérifiée contre le code réel ». Invisible en relecture, trivial à détecter.
-      - name: Garde inventaires doc ↔ code
-        run: php tools/check-docs-counts.php
+      # Découplage du paquet : chaque addon doit déclarer core/presets/requires, et le cœur ne doit
+      # JAMAIS dépendre d'un addon optionnel. Sans ce contrôle, l'appartenance au cœur est un défaut
+      # implicite — c'est ainsi qu'emojis, files et webhooks s'y sont retrouvés sans décision, et
+      # c'est la même classe de défaut qui a produit le 500 de juin 2026 sur une install allégée.
+      - name: Garde déclarations d'addons (cœur ↮ optionnel)
+        run: php tools/check-addon-declarations.php
+      # Couplage RÉEL entre addons, lu dans le code par le tokenizer PHP : quel addon lit la table,
+      # nomme la classe, demande le service ou pointe la route d'un autre. Tout couplage FATAL
+      # (table, classe) doit être déclaré dans `requires` ou annoté « couplage: <raison> » à
+      # l'endroit où il a lieu. Sans ce contrôle, la moitié « qui dépend de qui » n'existe nulle
+      # part — c'est ce trou qui a produit le 500 de juin 2026 sur une install allégée.
+      - name: Garde couplage entre addons (déclaré ou annoté)
+        run: php tools/check-addon-coupling.php
+      # Caractères INVISIBLES dans les sources. Une séquence backslash-b mangée par un
+      # outil d'édition, devenue un vrai BACKSPACE (0x08), a rendu muette la détection des tables
+      # citées en JS de check-addon-coupling.php ci-dessus : le fichier passait `php -l`, le motif ne correspondait
+      # simplement jamais, et le contrôle se disait vert en étant aveugle. Rien ne le voyait.
+      - name: Garde hygiène des sources (aucun caractère invisible)
+        run: php tools/check-source-hygiene.php
+      # `php -l` pour le JavaScript, et le vocabulaire. Rien ne vérifiait la syntaxe des fichiers JS :
+      # une parenthèse manquante ne se découvrait qu'en ouvrant la page. Une partie contient du PHP
+      # interpolé, que `node --check` refuse : l'outil le neutralise avant de vérifier la structure.
+      # Et jQuery n'est plus chargé depuis juin 2026 ; trois fichiers l'appelaient encore le 2026-09-17
+      # et levaient « $ is not defined » au chargement — syntaxiquement valide, donc règle de vocabulaire.
+      # node est préinstallé sur les runners ubuntu-latest.
+      - name: Garde sources JavaScript (syntaxe et vocabulaire sans jQuery)
+        run: php tools/check-js-sources.php
+      # ESLint voit ce que les deux precedents ne voient pas : une globale creee par oubli d'un
+      # `var`, un `innerHTML` nourri d'une valeur calculee, un `eval` deguise, du code apres un
+      # `return`. Aucun paquet npm n'est deploye : ceci est de l'outillage, comme PHPStan.
+      - name: Outillage front (ESLint)
+        run: npm ci --no-audit --no-fund
+      - name: Garde ESLint (globales implicites, innerHTML calcule, eval)
+        run: php tools/check-js-lint.php
+      # Deux copies IDENTIQUES d'un meme asset, l'une dans le cœur l'autre dans un addon : `path()`
+      # resout selon l'APPELANT, donc deux pages servent deux fichiers differents. Tant qu'ils sont
+      # identiques rien ne se voit ; le jour ou l'on en modifie un, la moitie des pages garde
+      # l'ancien, sans erreur ni trace. C'est ce qui a fait afficher l'assistant de widget sans
+      # aucun style le 2026-09-15, alors que la feuille etait bien deployee.
+      - name: Garde assets masqués (aucune copie identique)
+        run: php tools/check-assets.php
+      # La documentation respecte ses règles : chiffres d'inventaire justes (« 53 modules » affiché
+      # pendant des semaines pour 54 réels), renvois vivants (Markdown ne se compile pas), aucun
+      # document orphelin, aucun outil nommé qui n'existe plus, aucune prose recopiée d'un document
+      # à l'autre (c'est la copie qui diverge, et qui coûte une passe de rangement à chaque fois).
+      - name: Garde documentation ↔ code
+        run: php tools/check-docs.php
+      # Un module se branche sur un « carrefour » en posant `controllers/<carrefour>.php`, et le
+      # carrefour appelle la méthode du même nom sans rien vérifier. Si elle est renommée, rendue
+      # privée ou dotée d'un paramètre obligatoire de plus, l'erreur fatale n'apparaît qu'à
+      # l'ouverture de la page qui agrège — en production. 39 contrats sont vérifiés ici.
+      - name: Garde contrats d'addons (carrefours + régions de thème)
+        run: php tools/check-addon-contracts.php
+      # Tout ce qui concerne lang() : les clés absentes des six langues (un avertissement PHP à
+      # chaque rendu — 3 846 en une journée de production), les formats de date que chaque langue
+      # doit déclarer, les pluriels sans assez d'arguments (une page 404 avec le bon titre), et les
+      # traductions qui ont perdu la forme plurielle de leur source (« 3 topic », 47 cas).
+      - name: Garde traductions (les six langues, formats de date, pluriels)
+        run: php tools/check-langs.php --toutes
+      # check-langs ne voit que ce qui passe DÉJÀ par lang(). Un texte écrit en dur — `<th>Décision</th>`
+      # dans une vue, `title = 'Retour en haut'` dans un script — restait en français sur un site
+      # anglais : 340 relevés sur les pages rendues, 740 dans les sources, le 2026-09-23.
+      - name: Garde textes en dur (tout texte d'interface passe par les traductions)
+        run: php tools/check-textes-en-dur.php
+      # `var(--nf-bg-elevated, #fff)` a l'air sûr : il y a un repli. C'est le piège. La variable
+      # n'était définie que dans les thèmes PUBLICS ; sous l'administration, chaque usage retombait
+      # sur le repli BLANC et posait un bloc blanc au milieu d'une page sombre. Le navigateur ne
+      # signale rien, la feuille est valide, et le défaut ne se voit qu'à l'œil, dans le bon thème.
+      - name: Garde variables CSS (employées ↔ définies par tous les thèmes)
+        run: php tools/check-css-variables.php
+      # Même famille de silence, autre cause : Bootstrap 5 a SUPPRIMÉ ou redéfini des classes de
+      # Bootstrap 3 et 4. Une vue qui les emploie encore ne casse pas, elle s'affiche de travers — et
+      # rien ne le signale. Depuis le 2026-09-23, le balisage est entièrement migré, et le contrôle
+      # refuse tout nom hérité, même redéfini par une feuille : dans les gabarits, les feuilles, les
+      # données livrées, et fabriqué par concaténation ; plus la grille sur une cellule de tableau et
+      # la liste déroulante en `form-control`.
+      - name: Garde legs Bootstrap 3 et 4 (aucun, même redéfini)
+        run: php tools/check-classes-bs4.php
+      # `->name` sur un addon CHARGE rend FALSE, sans le moindre avertissement : le nom est dans
+      # info()->name. Trois endroits s'y etaient fait prendre (statistiques prefixees a vide,
+      # exclusion de live_editor/pages inoperante, dependances toutes annoncees manquantes).
+      - name: Garde nom d'addon (->name sur un addon chargé)
+        run: php tools/check-addon-name.php
+      # Un theme declare ses zones dans __info() ; l'installation cree une disposition par zone et
+      # l'editeur de mise en page les propose. Si le gabarit n'appelle jamais region() ni zone(),
+      # le widget qu'on y place est bien enregistre et ne s'affiche nulle part. `nebula` et
+      # `vitrine` promettaient ainsi « Header » et « Footer » sans les tenir (2026-09-20).
+      - name: Garde zones de thème (déclarées ↔ rendues)
+        run: php tools/check-theme-zones.php
+      # Un widget peut arriver SANS reglages : pose par l'install() d'un theme, ajoute en Live
+      # Editor avant qu'on ouvre son formulaire, ou restaure depuis une disposition ancienne. Douze
+      # checkers sur trente-huit lisaient leurs cles sans repli ; onze n'y perdaient qu'un
+      # avertissement, le douzieme (`partners`) employait la sienne comme DIVISEUR et plantait.
+      - name: Garde réglages de widget (lus ↔ avec valeur de repli)
+        run: php tools/check-widget-reglages.php
+      # Le site de démonstration ouvre son administration aux visiteurs. Ce qu'ils peuvent modifier
+      # doit être exactement ce que la remise à zéro sait défaire — sans quoi la démo se dégrade
+      # définitivement, une visite après l'autre.
+      - name: Garde verrou du site de démonstration
+        run: php tools/check-demo-lock.php
+      # La démonstration se remet à zéro en rejouant install/demo.sql. Une clé primaire écrite deux
+      # fois fait refuser TOUT l'import : le 2026-09-22, la remise à zéro a échoué quatorze heures
+      # sans que rien le dise.
+      - name: Garde instantanés SQL livrés (aucune clé primaire en double)
+        run: php tools/check-instantanes.php
+      # Les `.htaccess` du paquet ne sont exercés par personne : la production tourne sous Caddy.
+      # Ils avaient divergé dans le mauvais sens — `/les notes du mainteneur` servi en texte sur toute
+      # installation Apache. Ce contrôle relit ce qu'Apache doit refuser, avec la raison de chaque ligne.
+      - name: Garde .htaccess (Apache refuse tout ce que Caddy refuse)
+        run: php tools/check-htaccess.php
 
   test:
     name: PHPUnit (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Sans base de données, les 56 tests d'INTÉGRATION se sautent eux-mêmes en silence : la suite
+    # s'affiche verte alors qu'un cinquième des tests n'a rien vérifié. Le service ci-dessous leur
+    # donne une vraie base, préparée par tools/prepare-test-db.php.
+    services:
+      db:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          # La base du site installé par ci-install (la suite headless s'y amorce) : l'Installer
+          # s'y connecte, il ne la crée pas.
+          MARIADB_DATABASE: neofrag
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      NF_TEST_DB_HOST: 127.0.0.1
+      NF_TEST_DB_PORT: '3306'
+      NF_TEST_DB_NAME: neofrag_test
+      NF_TEST_DB_USER: neofrag_test
+      NF_TEST_DB_PASS: neofrag_test
+      # Pour ci-install : la suite headless amorce le framework contre un site INSTALLÉ (config/ +
+      # base). Sans installation, elle se sautait — 60 tests — et la CI restait verte quand même.
+      NF_DB_HOST: 127.0.0.1
+      NF_DB_PORT: '3306'
+      NF_DB_USER: root
+      NF_DB_PASS: root
+      NF_DB_NAME: neofrag
     strategy:
       fail-fast: false
       matrix:
@@ -71,26 +215,36 @@ jobs:
         # toutes pour attraper les régressions spécifiques à une version (ex. comportements unserialize).
         php: ['8.2', '8.3', '8.4', '8.5']
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: mbstring, intl, mysqli
+          # Les mêmes extensions que les jobs qui installent le site : ci-install tourne ici aussi.
+          extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
           tools: phpunit:11
       # Les tests touchent du code qui dépend du vendor (sanitize_html → HTMLPurifier, etc.). Sans
-      # composer install, phpunit fatalise sur « Class HTMLPurifier_Config not found ». --ignore-platform-req=php
-      # permet d'installer les versions verrouillées sur les PHP plus récents (8.4/8.5) que certaines libs déclarent.
+      # composer install, phpunit fatalise sur « Class HTMLPurifier_Config not found ». Le verrou
+      # s'installe sur les quatre versions sans option : composer.json fixe la plateforme à PHP 8.2.0.
       - name: composer install
-        run: composer install --no-interaction --no-progress --ignore-platform-req=php
+        run: composer install --no-interaction --no-progress
+      # Un site installé pour de vrai : c'est ce qu'exige la suite headless, sur les quatre versions.
+      - name: Installation complète (la suite headless amorce le framework)
+        run: php tools/ci-install.php
+      - name: Prépare la base des tests d'intégration
+        run: php tools/prepare-test-db.php --root-user=root --root-pass=root
+      # Aucun test ne doit être « skipped » : un saut signifie que la base n'a pas été jointe et
+      # que les tests d'intégration n'ont, une fois de plus, rien vérifié. On fait donc échouer
+      # la CI dessus plutôt que de la laisser afficher un vert trompeur.
       - name: phpunit
-        run: phpunit
+        run: phpunit --fail-on-skipped
 
   phpstan:
     name: PHPStan (analyse statique)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
@@ -103,10 +257,17 @@ jobs:
       # ce qui a attrapé les 7 widgets cassés + array_last (conflit PHP 8.5). Le reste est gelé (baseline).
       - name: phpstan
         run: vendor/bin/phpstan analyse --no-progress --memory-limit=2G
+      # Le wiki livré (install/wiki.sql) et celui de la démonstration (install/demo.sql) sont
+      # générés depuis docs/guide/ (la conversion passe par CommonMark : d'où ce job, qui installe
+      # les dépendances). Rien ne disait quand les régénérer : le 2026-09-23, les dix pages
+      # avaient une semaine de retard, et « Créer un widget » enseignait une classe de Bootstrap 4.
+      - name: Garde wiki livré ↔ guides
+        run: php tools/check-wiki-docs.php
 
   db-smoke:
     name: Schema + migration runner (smoke)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       db:
         image: mariadb:11
@@ -127,11 +288,11 @@ jobs:
       NF_DB_PASS: root
       NF_DB_NAME: neofrag
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          extensions: mysqli
+          extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
       - name: Import schema.sql cœur lean (valide le DDL + collations)
         run: mysql -h127.0.0.1 -P3306 -uroot -proot neofrag < install/schema.sql
@@ -141,12 +302,141 @@ jobs:
         run: php tools/migrate.php up
       - name: Status final (tout doit être appliqué)
         run: php tools/migrate.php status
+      # Le contrôle de couplage croit les annotations « couplage: ». Celui-ci ne croit rien : il
+      # installe CHAQUE profil pour de vrai sur une base jetable, sert le site avec le serveur
+      # intégré de PHP et échoue au moindre 5xx — y compris sur les routes des modules ABSENTS, qui
+      # doivent rendre un 404 propre. C'est le seul garde-fou qui aurait attrapé la garde de `teams`
+      # placée APRÈS la requête qu'elle devait protéger.
+      - name: Installe Composer + extensions pour le filet de conformité
+        run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+      - name: Filet de conformité (les 4 profils d'installation démarrent et répondent)
+        env:
+          NF_DB_NAME_PREFIX: nfprofil
+        run: php tools/check-install-profiles.php
+
+  interface:
+    name: Interface (responsive mesuré + navigation admin)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Le responsive ne reposait que sur des captures regardées à la main. Une entrée du suivi
+    # affirmait « 0 débordement de 390 px à 2560 px » — c'était faux : 309 colonnes s'appliquaient
+    # dès 0 px, et les six thèmes publics portaient encore la gouttière Bootstrap 4 (-15px) là où
+    # Bootstrap 5 utilise -12px. Rien ne pouvait le dire, puisque rien ne mesurait.
+    # Un débordement horizontal est un FAIT : scrollWidth > clientWidth sur la racine du document.
+    services:
+      db:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: neofrag
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      NF_DB_HOST: 127.0.0.1
+      NF_DB_PORT: '3306'
+      NF_DB_USER: root
+      NF_DB_PASS: root
+      NF_DB_NAME: neofrag
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, intl, mysqli, gd, zip, curl
+          coverage: none
+      - name: composer install
+        run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+      # Une vraie installation : sans dispositions ni contenu, les pages rendraient du vide et la
+      # mesure dirait « aucun débordement » sans avoir rien mesuré.
+      - name: Installation complète (tous les modules + admin)
+        run: php tools/ci-install.php
+      # Chaque étape navigateur a SON délai : le 2026-09-23, Chrome s'est figé pendant la mesure du
+      # débordement, et le job a attendu ses trente minutes avant d'échouer sans dire où. Un délai
+      # par étape fait échouer vite, sous le nom de l'étape qui bloque.
+      # Chrome est préinstallé sur les runners ubuntu-latest. L'outil démarre son propre serveur,
+      # ouvre une session d'administrateur temporaire et fait le ménage derrière lui.
+      - name: Mesure du débordement horizontal (390 / 768 / 1400 px)
+        timeout-minutes: 8
+        run: php tools/check-responsive.php 390,768,1400
+      # Sur une sous-page d'administration, il faut pouvoir remonter au module — par le fil d'Ariane
+      # ou par un bouton « Retour ». Le comptage fait à la main annonçait 36 pages fautives sur 97 :
+      # il ne voyait qu'un seul des deux chemins. Celui-ci ouvre les pages et regarde ce qu'elles
+      # rendent, ce qui est le seul critère que vit l'utilisateur.
+      - name: Retour au module depuis chaque sous-page d'administration
+        timeout-minutes: 8
+        run: php tools/check-admin-back.php
+      # Quatre scripts sont restés en jQuery trois mois après sa sortie et plantaient au chargement
+      # sans rien casser de visible : un script qui meurt avant d'attacher ses écouteurs ne fait ni
+      # 500, ni ligne de journal, ni test rouge. Ce balayage ouvre chaque page dans un vrai navigateur,
+      # une sonde en tête de document, et refuse toute erreur non rattrapée, violation CSP ou script
+      # introuvable. C'est le contrôle qui les aurait vus en une passe.
+      - name: Erreurs JavaScript et CSP au chargement des pages (navigateur réel)
+        timeout-minutes: 10
+        run: php tools/check-js-console.php
+      # Un lien interne mort ne casse ni le code ni la page cible : il casse le CHEMIN entre les
+      # deux, et rien ne le voyait. Le premier passage en a trouvé 65 sur 400 pages — dont toutes
+      # les actualités, qui répondaient 404 aux membres CONNECTÉS à cause d'une erreur levée par le
+      # formulaire de commentaire.
+      - name: Liens internes morts (site public + administration)
+        timeout-minutes: 10
+        # `/demo/` est servi par une AUTRE installation en production ; le serveur intégré ne la connaît pas.
+        run: php tools/check-liens.php --max=600 --ignorer=/demo
+      # Un contenu rédigé dans une seule langue proposait quand même les cinq autres, et les cinq
+      # rendaient 404 : soixante adresses mortes sur soixante-douze mesurées le 2026-09-21. Trois
+      # propriétés doivent être vraies ensemble sur la page servie — elle répond, elle le dit, et
+      # elle n'annonce aux moteurs que des adresses vivantes — et aucune ne se voit dans le code.
+      # Sert seize pages qui traversent les chemins distincts du routeur, puis LIT LE JOURNAL PHP :
+      # le seul contrôle qui voie une erreur survenue après l'envoi des en-têtes (302 correct, puis
+      # erreur fatale à chaque redirection de langue — 24 contrôles verts pendant qu'elle tournait).
+      - name: Journal PHP muet pendant que les pages répondent
+        timeout-minutes: 5
+        run: php tools/check-journal.php
+      # Le service worker est le seul composant capable de casser un site de façon DURABLE : installé
+      # dans un navigateur, il y reste même si le fichier disparaît du serveur. Deux propriétés le
+      # rendent sûr — éteint il se retire, allumé il ne met jamais le HTML en cache — et aucune ne se
+      # voit à la relecture. Ce pas bascule le réglage, mesure les deux états, et le remet en place.
+      - name: Service worker (se retire à l extinction, ne cache jamais le HTML)
+        timeout-minutes: 5
+        run: php tools/check-service-worker.php
+      # EN DERNIER, et c'est délibéré : ce pas SÈME du contenu, parce que le contrôle mesure des
+      # pages de contenu et qu'une installation neuve n'en a aucune — il refuserait alors de juger
+      # (code 2), ce qui est le bon comportement mais laisserait le job rouge. Semer plus tôt
+      # changerait l'état que mesurent les pas précédents. `--sans-config-demo` laisse les thèmes.
+      - name: Contenu monolingue servi dans les autres langues
+        timeout-minutes: 8
+        run: |
+          php tools/seed-demo.php --sans-config-demo
+          php tools/check-langues-contenu.php
+
+  js-browser:
+    name: Épreuves JS (navigateur sans interface)
+    runs-on: ubuntu-latest
+    # Un job qui pend est tué : celui des épreuves JS a tenu six heures les 21 et 22 septembre 2026.
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      # Certaines propriétés du front ne s'observent QUE dans un navigateur : ce qui s'exécute ou non,
+      # dans quel document, avec quel nonce CSP. Aucun test PHP ne les voit — et c'est précisément le
+      # trou par lequel sont passées les cinq régressions de la dé-jQuery, puis le JS inerte des widgets
+      # ajoutés en Live Editor, qui a vécu des mois sans que rien ne le signale.
+      # Chrome est préinstallé sur les runners ubuntu-latest.
+      - name: Épreuves de tests/Browser/
+        run: php tools/check-js.php
 
   e2e-smoke:
     name: Smoke E2E (install complète + flux critiques)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
@@ -157,10 +447,17 @@ jobs:
       # runtime dès qu'une classe vendored est instanciée (ex. PHPMailer pour l'email de lost-password → 500).
       - name: composer install (vendor/ monté dans le conteneur web)
         run: composer install --no-interaction --no-progress
+      # Le tirage des images passe par l'action qui RÉESSAIE : un incident du registre Docker Hub
+      # (jeton d'authentification refusé, connexion coupée) n'a rien à voir avec le dépôt et ne
+      # doit pas afficher un échec. Voir .github/actions/compose-up/action.yml.
       - name: Démarrer MariaDB (stack compose)
-        run: docker compose up -d --wait db
+        uses: ./.github/actions/compose-up
+        with:
+          args: -d --wait db
       - name: Construire + démarrer le web (apache + .htaccess réels)
-        run: docker compose up -d --build web
+        uses: ./.github/actions/compose-up
+        with:
+          args: -d --build web
       - name: Installer (tout bundlé + admin) — non-interactif
         run: >-
           docker compose exec -T
@@ -178,11 +475,23 @@ jobs:
       - name: Smoke test (échec au moindre 5xx)
         run: >-
           docker compose exec -T web
-          php tools/smoke-test.php http://localhost:8080 --email=ci-admin@example.test
-      # Le job `test` tourne SANS base → les suites integration/headless (23 classes) y SKIPPENT en
-      # silence. C'est ICI, sur l'install complète, qu'elles s'exécutent réellement contre la base.
-      # Sans cette étape, un bug purement runtime/DB passe (ex. réel : newsletter scheduled_at en
-      # TIMESTAMP rejeté au-delà de 2038 ; seed nf_migrations désynchronisé d'un fichier de migration).
+          php tools/check-smoke.php http://localhost:8080 --email=ci-admin@example.test
+      # Le contrat des widgets face à l'éditeur en direct : demander l'écran de configuration de chacun
+      # des 69 couples widget/type doit répondre 200, qu'il ait un `controllers/admin.php` ou non — dix
+      # widgets sans écran étaient impossibles à ajouter. Il lui faut une installation configurée avec
+      # un administrateur : c'est ici qu'elle existe. Il démarre son propre serveur PHP dans le conteneur.
+      - name: Contrat des widgets face à l'éditeur en direct (chaque couple widget/type)
+        run: >-
+          docker compose exec -T web
+          php tools/check-widget-contract.php
+      # ATTENTION, ce commentaire a été faux longtemps. Il affirmait que les suites integration et
+      # headless « s'exécutent réellement contre la base » ICI, le job `test` tournant sans base.
+      # Mesuré le 2026-09-21 : ce pas saute 67 tests (509 tests, 1 320 assertions) faute de
+      # `config/db-test.php` dans le conteneur — les suites d'intégration ne s'y exécutent PAS.
+      # Depuis le même jour, c'est le job `test` qui les joue vraiment, sur les quatre versions de
+      # PHP : 509 tests, 1 513 assertions, aucun sauté. Ce pas garde sa valeur — il exerce les suites
+      # headless contre une installation Apache complète — mais il ne couvre pas ce qu'il disait.
+      # Reste à faire : préparer la base de test dans le conteneur, puis `--fail-on-skipped`.
       # Placé APRÈS le smoke (certains tests d'intégration réécrivent des tables jetables).
       - name: PHPUnit complet contre la base installée (integration + headless)
         run: >-

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -19,6 +20,10 @@ class Events extends Module
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => FALSE,
+			'presets'     => ['gaming'],
+			'requires'    => ['games', 'teams'],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => [
@@ -28,6 +33,11 @@ class Events extends Module
 				//Index
 				'{page}'                                    => 'index',
 				'upcoming{page}'                            => 'upcoming',
+				// La cible d'une route nomme la methode du CONTROLEUR, pas celle du checker : le
+				// checker est toujours cherche avec un tiret bas devant. Cote public le contrôleur
+				// ecrit `standards()`, cote administration `_standards()` — d'ou l'asymetrie des
+				// deux blocs, qui est voulue. Verifie dans les deux sens : mettre le tiret bas ici
+				// fait rendre 404.
 				'standards{page}'                           => 'standards',
 				'matches{page}'                             => 'matches',
 				'{id}/{url_title}'                          => '_event',
@@ -40,9 +50,21 @@ class Events extends Module
 				'ajax/{id}/{url_title}'                     => '_event',
 
 				//Admin
+				// Les trois onglets de filtre — « Standards », « Résultats », « Matchs à jouer » —
+				// sont rendus par la MÊME vue côté public et côté administration, et pointent donc
+				// vers `admin/events/standards` et compagnie. Ces routes n'existaient pas : les
+				// trois onglets menaient à un 404. Les méthodes, elles, étaient déjà écrites dans le
+				// contrôleur ET dans son checker. Déclarées AVANT `admin{pages}`, qui sinon les
+				// avale.
+				// Les cibles suivent les noms RÉELS des méthodes du checker — `_standards()`,
+				// `_matches()`, mais `upcoming()` sans tiret bas — et non une symétrie supposée.
+				'admin/standards{page}'                     => '_standards',
+				'admin/matches{page}'                       => '_matches',
+				'admin/upcoming{page}'                      => 'upcoming',
 				'admin{pages}'                              => 'index',
 				'admin/{id}/{url_title}'                    => '_edit',
 				'admin/delete/{id}/{url_title}'             => '_delete',
+				'admin/delete-series/{id}/{url_title}'      => '_delete_series',
 				'admin/types/add'                           => '_types_add',
 				'admin/types/{id}/{url_title}'              => '_types_edit',
 				'admin/types/delete/{id}/{url_title}'       => '_types_delete',
@@ -130,12 +152,17 @@ class Events extends Module
 			],
 			'type' => [
 				'get_all' => function(){
-					return NeoFrag()->db->select('type_id', 'CONCAT_WS(" ", "Type", title)')->from('nf_events_types')->get();
+					// Le libellé se compose en PHP, après la requête : écrit dans le SQL, le mot restait en
+					// français dans toutes les langues (même règle que modules/files/files.php).
+					return array_map(fn($ligne) => [
+						'type_id' => $ligne['type_id'],
+						'title'   => (string) $this->lang('Type %s', $ligne['title'])
+					], NeoFrag()->db->select('type_id', 'title')->from('nf_events_types')->get());
 				},
 				'check'   => function($type_id){
 					if (($type = NeoFrag()->db->select('title')->from('nf_events_types')->where('type_id', $type_id)->row()) !== [])
 					{
-						return 'Type '.$type;
+						return (string) $this->lang('Type %s', $type);
 					}
 				},
 				'init'    => [

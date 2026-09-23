@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — module newsletter (en)
@@ -104,4 +105,6 @@ return [
 	'209cc33f' => 'Target',
 	'96f7da00' => 'Members',
 	'03158917' => 'Group',
+	'79987719' => 'pending newsletter signup|pending newsletter signups',
+	'080b55ee' => 'Manage newsletter',
 ];

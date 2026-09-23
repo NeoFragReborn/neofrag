@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -40,4 +41,17 @@ return [
 	'3b7c3ac5' => 'Karte bearbeiten',
 	'f0b91828' => 'Karte löschen',
 	'52c9bbab' => 'Bearbeiten',
+	'9b5c5028' => 'Modi',
+	'706ddc6d' => 'Neue Karte',
+	'344f7b7d' => 'Karte bearbeiten',
+	'1bbaf0c0' => 'Karte löschen',
+	'6b18f6b3' => 'Neuer Modus',
+	'29307c20' => 'Modus bearbeiten',
+	'35cc8e91' => 'Modus löschen',
+	'8d43033f' => 'Kein Modus',
+	'caa44e1a' => 'Modus hinzufügen',
+	'baa9cb55' => 'Spiel',
+	'ff116db6' => 'Kartenname',
+	'04fc2b5b' => 'Bild',
+	'c8569b6a' => 'Name des Modus',
 ];

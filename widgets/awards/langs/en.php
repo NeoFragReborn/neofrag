@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  */
@@ -20,4 +21,5 @@ return [
 	// i18n 2026-06-11 (code strings)
 	'd0e2fd31' => 'Number of awards',
 	'042e2c3d' => 'Display in a panel',
+	'e2a147a0' => 'Yes',
 ];

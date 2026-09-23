@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -24,6 +25,36 @@ class Ajax_Checker extends Module_Checker
 		if ($this->url->request == 'robots.txt' && $this->config->nf_robots_txt)
 		{
 			$this->extension('txt');
+			return [];
+		}
+	}
+
+	public function favicon()
+	{
+		// Les navigateurs et certains robots demandent /favicon.ico à la racine quoi qu'annonce le gabarit.
+		if ($this->url->request == 'favicon.ico')
+		{
+			$this->extension('ico');
+			return [];
+		}
+	}
+
+	public function manifest()
+	{
+		if ($this->url->request == 'manifest.webmanifest')
+		{
+			$this->extension('webmanifest');
+			return [];
+		}
+	}
+
+	public function service_worker()
+	{
+		// Uniquement à la racine : un worker servi depuis un sous-dossier n'aurait pas la portée
+		// du site, et l'adresse n'aurait aucune raison d'exister ailleurs.
+		if ($this->url->request == 'service-worker.js')
+		{
+			$this->extension('js');
 			return [];
 		}
 	}

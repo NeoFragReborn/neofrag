@@ -127,7 +127,7 @@ function str_nat($a, $b, $data = NULL): int
 		};
 	}
 
-	return strnatcasecmp(url_title($data($a)), url_title($data($b)));
+	return strnatcasecmp((string) url_title($data($a)), (string) url_title($data($b)));
 }
 
 function escape_html_tags($string, $callback): string
@@ -289,7 +289,7 @@ function custom_emojis_map(): array
 				if (!empty($e['image_id']) && ($url = NeoFrag()->model2('file', (int)$e['image_id'])->path()))
 				{
 					$token       = ':'.$e['name'].':';
-					$map[$token] = '<img class="nf-emoji" src="'.$url.'" alt="'.htmlspecialchars($token, ENT_QUOTES).'" title="'.htmlspecialchars($token, ENT_QUOTES).'" style="height:1.4em;width:auto;vertical-align:text-bottom;">';
+					$map[$token] = '<img class="nf-emoji" src="'.$url.'" alt="'.htmlspecialchars((string) ($token), ENT_QUOTES).'" title="'.htmlspecialchars((string) ($token), ENT_QUOTES).'" style="height:1.4em;width:auto;vertical-align:text-bottom;">';
 				}
 			}
 		}
@@ -310,11 +310,83 @@ function custom_emojis($html, ?array $map = NULL): string
 	return $map ? strtr((string)$html, $map) : (string)$html;
 }
 
+/**
+ * Marque les mots cherchés dans un extrait, et cadre l'extrait sur la première occurrence.
+ *
+ * Deux défauts bien réels tenaient dans la dernière ligne, et ils rendaient une page d'ERREUR au
+ * visiteur qui cherchait un mot courant — `/fr/search?q=le` répondait 404 sur une installation de
+ * démonstration parfaitement saine :
+ *
+ *   - `strpos()` rend FALSE quand le mot ne figure pas dans CE champ-ci, ce qui arrive tout le
+ *     temps puisque la requête SQL cherche dans PLUSIEURS colonnes. Un sujet intitulé « Salut tout
+ *     le monde ! » répond à « le » par son TITRE, et le message affiché sous lui ne contient pas le
+ *     mot. `substr($s, FALSE)` lève alors une TypeError en PHP 8 ; le dispatcher l'attrape, vide la
+ *     sortie et rend une page d'erreur à la place des résultats ;
+ *   - MySQL compare **sans les accents**, PHP non : `'éléphant' LIKE '%ele%'` est VRAI côté base et
+ *     faux pour `/ele/i`. La ligne remontait donc dans les résultats sans qu'un seul mot n'y soit
+ *     marqué — et on retombait sur le même FALSE. Sur un site francophone, c'est la règle plus que
+ *     l'exception.
+ *
+ * Le second est corrigé à la source : le motif accepte les variantes accentuées de chaque lettre,
+ * ce qui aligne le marquage sur ce que la base a réellement trouvé. Le premier reste légitime — le
+ * mot peut n'être que dans le titre — et l'extrait commence alors au début du texte, ce qu'un
+ * lecteur comprend, plutôt que de faire échouer la page entière.
+ *
+ * @param string[] $keywords mots cherchés, tels que saisis
+ */
 function highlight($string, $keywords, $max_length = 256): string
 {
-	$string = nl2br(preg_replace($patern = '/'.implode('|', array_map(function($a){ return preg_quote($a, '/'); }, $keywords)).'/i', '<mark>\0</mark>', htmlspecialchars(utf8_html_entity_decode(strip_tags(bbcode($string))), ENT_COMPAT, 'UTF-8')));
+	// Équivalences de `utf8mb4_general_ci`, réduites aux lettres latines qu'un francophone tape.
+	// La table est indexée par CHAQUE variante : chercher « éléphant » doit marquer « elephant »
+	// aussi bien que l'inverse, exactement comme la base les confond.
+	static $classes = NULL;
 
-	return str_shortener(substr($string, strpos($string, '<mark>')), $max_length);
+	if ($classes === NULL)
+	{
+		$classes = [];
+
+		foreach (['aàáâãäå', 'cç', 'eèéêë', 'iìíîï', 'nñ', 'oòóôõö', 'uùúûü', 'yýÿ'] as $groupe)
+		{
+			foreach (preg_split('//u', $groupe, -1, PREG_SPLIT_NO_EMPTY) as $lettre)
+			{
+				$classes[$lettre] = $groupe;
+			}
+		}
+	}
+
+	$motifs = [];
+
+	foreach ((array)$keywords as $mot)
+	{
+		if (($mot = (string)$mot) === '')
+		{
+			continue;
+		}
+
+		$motif = '';
+
+		foreach (preg_split('//u', $mot, -1, PREG_SPLIT_NO_EMPTY) ?: [] as $lettre)
+		{
+			$bas    = mb_strtolower($lettre, 'UTF-8');
+			$motif .= isset($classes[$bas]) ? '['.$classes[$bas].']' : preg_quote($lettre, '/');
+		}
+
+		$motifs[] = $motif;
+	}
+
+	$texte = htmlspecialchars((string) (utf8_html_entity_decode(strip_tags(bbcode($string)))), ENT_COMPAT, 'UTF-8');
+
+	// Sans ce garde, une liste de mots vide produisait le motif `//i` — une alternance vide, qui
+	// marque CHAQUE position du texte.
+	if ($motifs)
+	{
+		$texte = preg_replace('/'.implode('|', $motifs).'/iu', '<mark>\0</mark>', $texte) ?? $texte;
+	}
+
+	$texte = nl2br($texte);
+	$debut = strpos($texte, '<mark>');
+
+	return str_shortener($debut === FALSE ? $texte : substr($texte, $debut), $max_length);
 }
 
 function version_format($version): string

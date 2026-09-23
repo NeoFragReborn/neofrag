@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Model du module Modération — wraps la lib core neofrag/libraries/moderation.php

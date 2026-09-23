@@ -75,9 +75,10 @@ window.confirm_deletion = function(anchor){
 				}
 			}
 			else {
-				var alert = anchor.closest('.alert');
-				if (alert){
-					alert.innerHTML = '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>' + data;
+				// `alertBox`, et non `alert` : ce nom-là masquait `window.alert` dans toute la fonction.
+				var alertBox = anchor.closest('.alert');
+				if (alertBox){
+					alertBox.innerHTML = '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>' + data;
 				}
 			}
 		}

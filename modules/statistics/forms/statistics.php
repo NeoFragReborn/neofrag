@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -56,5 +57,7 @@ foreach ($this->model()->get_statistics() as $name => $statistic)
 		$rules['modules']['checked'][$name] = TRUE;
 	}
 
-	$rules['modules']['values'][$name] = '<b style="color: '.$statistic['color'].'">'.$statistic['title'].'</b>';
+	// La couleur de la série est une pastille à côté du libellé, et non la couleur du texte : un
+	// libellé jaune ou vert pâle sur une carte blanche tombait sous 2:1 (check-mise-en-page, 2026-09-23).
+	$rules['modules']['values'][$name] = '<span class="nf-series-swatch" style="background-color: '.$statistic['color'].'"></span> '.$statistic['title'];
 }

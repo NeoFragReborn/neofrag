@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -10,5 +11,6 @@ return [
 	'b4888d81' => 'Aucun résultat trouvé pour <b>%s</b>',
 	'bc5f3ff3' => 'Rechercher',
 	'c11d9f28' => 'Tous les résultats',
-	'fadfe229' => 'Voir tous les résultats'
+	'fadfe229' => 'Voir tous les résultats',
+	'620fbadf' => 'Moteur de recherche transverse du site.',
 ];

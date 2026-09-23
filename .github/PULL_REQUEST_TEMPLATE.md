@@ -1,27 +1,34 @@
-<!-- Titre de la PR = format Conventional Commit, ex: feat(forum): support des sondages -->
+<!-- Titre de la PR au format Conventional Commit, ex. : feat(forum): sondages dans les sujets -->
 
 ## Résumé
 
-<!-- 1 à 3 puces : quoi et pourquoi. -->
+<!-- Une à trois puces : quoi, et surtout pourquoi. -->
 -
 
 ## Type
 
-- [ ] `fix` — correction de bug
+- [ ] `fix` — correction d'un défaut
 - [ ] `feat` — nouvelle fonctionnalité
 - [ ] `docs` — documentation
 - [ ] `refactor` / `perf` / `test` / `build` / `chore`
 
-## Checklist
+## Ce qui a été vérifié
 
-- [ ] Le code suit le style du fichier voisin (anglais, tabulations).
-- [ ] `composer test` est vert (PHPUnit).
-- [ ] `composer stan` est vert (PHPStan — pas de nouvelle erreur hors baseline).
-- [ ] Si flux runtime touché : `composer smoke` est vert (ou testé manuellement).
-- [ ] Pas de secret committé ; entrées validées, sorties échappées.
-- [ ] Une nouvelle table de module passe par `install/install.sql` ; un changement de schéma entre versions passe par `install/migrations/*.up.sql`.
-- [ ] Doc mise à jour si le comportement public change.
+- [ ] `vendor/bin/phpunit --fail-on-skipped` est vert **contre une base de test** (aucune suite sautée).
+- [ ] `composer stan` est vert (aucune nouvelle erreur hors baseline).
+- [ ] Les contrôles `tools/check-*.php` concernés passent (déclarations, couplages, contrats, JS, CSS, langues, liens).
+- [ ] Le changement est **prouvé** : test PHP, épreuve navigateur (`tests/Browser`), ou rejeu HTTP décrit ci-dessous.
+- [ ] Si une page est touchée : regardée dans un vrai navigateur, `check-js-console` sans erreur.
+
+## Règles du projet
+
+- [ ] Français dans les commentaires et le commit ; style du fichier voisin ; `strict_types` sur les fichiers neufs.
+- [ ] Pas de jQuery, grille avec point de rupture, aucun script depuis un CDN.
+- [ ] Addon : `core` / `presets` / `requires` déclarés ; couplage fatal déclaré ou annoté ; réglages de widget avec repli.
+- [ ] Une nouvelle table passe par `install/install.sql` ; un changement de schéma livré par `install/migrations/*.up.sql`.
+- [ ] Entrées validées, sorties échappées, jeton CSRF sur toute action mutante ; aucun secret committé.
+- [ ] Documentation mise à jour si le comportement visible change (`CHANGELOG.md`, guides).
 
 ## Notes pour la revue
 
-<!-- Points d'attention, décisions, captures si UI. -->
+<!-- Points d'attention, décisions, captures si l'interface change. -->

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -25,7 +26,11 @@ class Textarea extends Labelable
 							->attr('rows', $this->_rows)
 							->attr_if($this->_disabled,  'disabled')
 							->attr_if($this->_read_only, 'readonly')
-							->content($this->_value);
+							// Encodée, sans double encodage : une valeur brute qui contenait
+							// `</textarea>` fermait la zone et injectait la suite dans la page —
+							// même famille que form.php (2026-09-23). Le navigateur décode les
+							// entités d'une zone de texte : l'éditeur reçoit le même contenu.
+							->content(htmlspecialchars((string) $this->_value, ENT_QUOTES, 'UTF-8', FALSE));
 
 			$this->_placeholder($input);
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * Widget Vidéo — panneau de réglages (Live Editor).

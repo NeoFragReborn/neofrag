@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -106,4 +107,7 @@ return [
 	'62aefade' => '%s news',
 	'e50e7c03' => 'Latest news',
 	'93d0faf6' => 'A future date schedules publication: the news stays publicly hidden until that date (if "Published" is checked).',
+	'4c9e9abd' => 'Views',
+	'cf2e7bf8' => 'News from a category',
+	'32795d48' => 'Draft',
 ];

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -15,6 +16,7 @@ class Index extends Controller_Widget
 		$members = $this->db->select('id as user_id', 'username', 'registration_date')
 							->from('nf_user')
 							->where('deleted', FALSE)
+							->where('id !=', nf_compte_masque())
 							->order_by('registration_date DESC')
 							->limit(5)
 							->get();
@@ -46,6 +48,7 @@ class Index extends Controller_Widget
 							->join('nf_user         u',  'u.id = s.user_id AND u.deleted = "0"', 'INNER')
 							->join('nf_user_profile up', 'u.id = up.id')
 							->where('s.last_activity > DATE_SUB(NOW(), INTERVAL 5 MINUTE)')
+							->where('u.id !=', nf_compte_masque())
 							->group_by('u.id')
 							->order_by('u.username')
 							->get() as $user)

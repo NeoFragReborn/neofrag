@@ -3,7 +3,7 @@ $accent = $this->config->forge_theme_color ?: '#e2502b';
 ?>
 <div class="nf-le-style-section">
 	<h6 class="nf-le-style-grid-title"><?php echo icon('fas fa-square-full') ?> <?php echo $this->lang('Apparence de la ligne') ?></h6>
-	<div class="nf-le-style-grid" data-target="row">
+	<div class="nf-le-style-grid" data-nf-target="row">
 		<button type="button" class="nf-le-style-card live-editor-overview" data-style="row-default" data-label="<?php echo $this->lang('Fond transparent') ?>">
 			<span class="nf-le-style-thumb">
 				<svg viewBox="0 0 200 90" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

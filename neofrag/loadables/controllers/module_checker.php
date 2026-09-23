@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -36,6 +37,24 @@ abstract class Module_Checker extends Module
 	public function valid()
 	{
 		return $this->_extension_allowed;
+	}
+
+	/**
+	 * Ce checker refuse-t-il pour une raison ORDINAIRE ?
+	 *
+	 * Un refus de checker part aux journaux avec son motif : c'est ce qui rend diagnosticable une
+	 * requête rejetée, qui sinon ne serait qu'un `404` nu. Mais certains « non » ne sont pas des
+	 * anomalies — celui d'un routeur de repli, dont tout le rôle est de dire « aucune page à cette
+	 * adresse ». Chaque visiteur qui se trompe et chaque robot qui sonde écrivaient alors une ligne
+	 * d'erreur dans le journal de production.
+	 *
+	 * Un checker qui rend TRUE ici garde son diagnostic à l'écran en mode débogage, et ne pollue
+	 * plus le journal. À ne rendre TRUE que si le refus signifie **cette adresse n'existe pas** —
+	 * jamais pour masquer un rejet qu'on devrait expliquer.
+	 */
+	public function refus_ordinaire(): bool
+	{
+		return FALSE;
 	}
 
 	/**

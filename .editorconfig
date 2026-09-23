@@ -14,9 +14,10 @@ trim_trailing_whitespace = true
 [*.php]
 indent_style = tab
 
-# Outils CLI : 4 espaces. Écrits pour le fork, ils assument une convention distincte —
-# la règle est « ne pas mélanger dans un même fichier », pas « tout uniformiser ».
-[tools/*.php]
+# Outils CLI et leur bibliothèque : 4 espaces. Écrits pour le fork, ils assument une convention
+# distincte — la règle est « ne pas mélanger dans un même fichier », pas « tout uniformiser ».
+# `tools/check-tools.php` refuse une tabulation en tête de ligne dans tools/.
+[tools/**.php]
 indent_style = space
 indent_size = 4
 

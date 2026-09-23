@@ -65,16 +65,16 @@ class Label extends Html
 
 			if ($this->_tooltip)
 			{
-				$attrs['data-toggle'] = 'tooltip';
-				$attrs['data-html']   = 'true';
+				$attrs['data-bs-toggle'] = 'tooltip';
+				$attrs['data-bs-html']   = 'true';
 				$attrs['title']       = $this->lang($this->_tooltip);
 			}
 			else if ($this->_popover)
 			{
-				$attrs['data-toggle']  = 'popover';
-				$attrs['data-html']    = 'true';
+				$attrs['data-bs-toggle']  = 'popover';
+				$attrs['data-bs-html']    = 'true';
 				$attrs['title']        = $this->lang($this->_popover[1]);
-				$attrs['data-content'] = $this->lang($this->_popover[0]);
+				$attrs['data-bs-content'] = $this->lang($this->_popover[0]);
 			}
 
 			if ($color = $this->_color)
@@ -88,13 +88,18 @@ class Label extends Html
 						$attrs['style'] = '';
 					}
 
-					$attrs['style'] .= ';background-color: '.$color;
+					// Le texte suit le fond : blanc d'office, il tombait à 3,8:1 sur le rouge d'un type
+					// d'événement « Tournoi » (check-mise-en-page, 2026-09-23).
+					$attrs['style'] .= ';background-color: '.$color.';color: '.couleur_lisible_sur($color);
 
 					$attrs['style'] = ltrim($attrs['style'], ';');
 				}
-				else if (get_colors($color, FALSE))
+				// Tout autre nom passe par badge_class(), qui connaît les couleurs de Bootstrap et
+				// ramène les autres à une pastille lisible. Un nom inconnu n'ajoutait AUCUNE classe :
+				// la pastille gardait le texte blanc de `.badge`, sans fond — invisible sur une carte.
+				else
 				{
-					$attrs['class'] .= ' badge-'.$color;
+					$attrs['class'] .= ' '.badge_class($color);
 				}
 			}
 		};

@@ -4,26 +4,26 @@
 <div class="card-body">
 	<?php if (!empty($match['opponent']))://Matches ?>
 	<div class="text-center"<?php echo !$description ?: ' style="margin-bottom: 10px;"' ?>>
-		<div class="row no-gutters align-items-center">
-			<div class="text-end col-5">
+		<div class="row g-0 align-items-center">
+			<div class="text-end col-12 col-lg-5">
 				<h6 class="m-0">
 					<a href="<?php echo url('events/team/'.$match['team_id'].'/'.$match['team']['name']) ?>">
-					<?php if ($icon = NeoFrag()->model2('file', $match['team']['icon_id'])->path()) echo '<img src="'.NeoFrag()->model2('file', $icon)->path().'" style="margin-right: 10px;" alt="" />' ?>
+					<?php if ($icon = NeoFrag()->model2('file', $match['team']['icon_id'])->path()) echo '<img src="'.$icon.'" style="margin-right: 10px;" alt="" />' ?>
 					<?php echo $match['team']['title'].' '.$this->module('events')->model('matches')->display_scores($match['scores'], $color) ?>
 					</a>
 				</h6>
 			</div>
 			<?php if ($match['scores']): ?>
-				<div class="text-center col-2">
+				<div class="text-center col-12 col-lg-2">
 					<b class="<?php echo $color ?> m-0"><?php echo $match['scores'][0] ?>:<?php echo $match['scores'][1] ?></b>
 				</div>
 			<?php else: ?>
-				<div class="text-center col-2">
+				<div class="text-center col-12 col-lg-2">
 					<b>VS</b>
 				</div>
 			<?php endif ?>
 			<?php if ($match['opponent']['image_id']): ?>
-			<div class="text-end col-1">
+			<div class="text-end col-12 col-lg-1">
 				<img src="<?php echo NeoFrag()->model2('file', $match['opponent']['image_id'])->path() ?>" class="img-fluid" alt="" />
 			</div>
 			<?php endif ?>
@@ -52,7 +52,7 @@
 	</div>
 	<ul class="list-inline m-0">
 		<li class="list-inline-item">
-			<?php echo $this->label($type['title'], $type['icon'], $type['color'], 'events/type/'.$type['type_id'].'/'.url_title($type['title'])) ?>
+			<?php echo $this->label($this->no_translate($type['title']), $type['icon'], $type['color'], 'events/type/'.$type['type_id'].'/'.url_title($type['title'])) ?>
 			<?php echo '<small>'.icon('far fa-clock').timetostr('d/m/Y', $date).'</small>' ?>
 		</li>
 		<?php

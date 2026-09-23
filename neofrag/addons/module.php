@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,19 +11,105 @@ use NF\NeoFrag\Loadables\Addon;
 
 abstract class Module extends Addon
 {
-	static public $core = [
-		'access'      => FALSE,
-		'addons'      => FALSE,
-		'admin'       => FALSE,
-		'comments'    => TRUE,
-		'live_editor' => FALSE,
-		'monitoring'  => FALSE,
-		'pages'       => TRUE,
-		'search'      => TRUE,
-		'settings'    => FALSE,
-		'statistics'  => FALSE,
-		'user'        => FALSE
-	];
+	/**
+	 * Descripteurs de contenu — COLLECTES AUPRES DES MODULES (inversion du 2026-09-15).
+	 *
+	 * Avant, la meme connaissance (« quel type de contenu vit dans quelle table, sous quelle cle,
+	 * avec quelle colonne auteur ») etait recopiee CINQ fois, dans des modules qui n'ont aucune
+	 * raison de se connaitre : Notifications::OWNER_MAP, Notifications::SUB_TYPES, le
+	 * $content_tables de Notifications::content_url(), les trois constantes de Gamification
+	 * (OWNER_MAP, REACTION_SOURCES, CONTENT_SOURCES) et Reactions::ALLOWED_TYPES. Trois modules du
+	 * coeur nommaient donc en dur les tables de news, articles et forum — ce qui interdisait
+	 * d'alleger le paquet : ils les auraient reclames.
+	 *
+	 * Desormais chaque module de contenu declare `declare_content_types()` et le coeur collecte.
+	 * Un module absent ne declare rien : son type disparait, sans qu'aucun consommateur ne le sache.
+	 *
+	 * Forme d'un descripteur :
+	 *   'news' => [
+	 *       'table'        => 'nf_news',   // table portant le proprietaire
+	 *       'pk'           => 'news_id',   // clef primaire
+	 *       'author'       => 'user_id',   // colonne auteur (defaut : user_id)
+	 *       'reactable'    => TRUE,        // accepte les reactions / compte pour le karma
+	 *       'revisable'    => TRUE,        // porte un historique de revisions
+	 *       'subscribable' => TRUE,        // on peut s'y abonner (notifications)
+	 *       'aliases'      => ['article'], // autres cles designant le meme contenu
+	 *   ]
+	 *
+	 * Le module declarant peut aussi implementer `content_url($type, $id)` pour batir l'URL
+	 * publique du contenu ; sans elle, l'URL est simplement vide.
+	 */
+	static public function content_types()
+	{
+		static $types = NULL;
+
+		if ($types !== NULL)
+		{
+			return $types;
+		}
+
+		$types = [];
+
+		foreach (NeoFrag()->model2('addon')->get('module') as $module)
+		{
+			if (!method_exists($module, 'declare_content_types'))
+			{
+				continue;
+			}
+
+			foreach ($module->declare_content_types() as $key => $desc)
+			{
+				$desc += [
+					'module'       => $module->info()->name,
+					'author'       => 'user_id',
+					'reactable'    => FALSE,
+					'revisable'    => FALSE,
+					'subscribable' => FALSE,
+					'aliases'      => [],
+				];
+
+				$types[$key] = $desc;
+
+				// Les alias designent le MEME contenu (« article » et « articles » coexistent
+				// historiquement selon l'emetteur) : meme descripteur, cle differente.
+				foreach ($desc['aliases'] as $alias)
+				{
+					$types[$alias] = $desc;
+				}
+			}
+		}
+
+		return $types;
+	}
+
+	/**
+	 * URL publique d'un contenu, DELEGUEE au module qui le declare. Evite que les consommateurs
+	 * (notifications, widgets, gamification) ne portent la logique d'URL des autres modules.
+	 * Rend une chaine vide si le type est inconnu, sa table absente, ou le module sans `content_url()`.
+	 */
+	static public function content_url_of($type, $id)
+	{
+		$types = self::content_types();
+
+		if (!isset($types[$type]) || empty($types[$type]['table']))
+		{
+			return '';
+		}
+
+		$desc = $types[$type];
+
+		// Module non installe : sa table n'existe pas. On rend un lien vide plutot que de fataliser.
+		if (!NeoFrag()->db->table_exists($desc['table']))
+		{
+			return '';
+		}
+
+		$module = NeoFrag()->module($desc['module']);
+
+		return $module && method_exists($module, 'content_url')
+			? (string) $module->content_url($type, (int) $id)
+			: '';
+	}
 
 	static public function __class($name)
 	{

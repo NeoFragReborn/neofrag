@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -36,5 +37,33 @@ return [
 	'e03f8812' => 'Tablette paysage',
 	'eb2aa0ff' => 'Colonnes',
 	'ed7211c7' => 'Valider',
-	'f8875151' => 'Continuer'
+	'f8875151' => 'Continuer',
+	'd396a751' => 'Précédent',
+	'ebcb0841' => 'Suivant',
+	'2b0eb9a0' => 'Ce widget n\'a pas de variante.',
+	'2f2c6b6e' => 'Ce widget n\'a rien à régler.',
+	'3b542104' => 'Aucun widget ne correspond.',
+	'221f348b' => 'Filtrer les widgets…',
+	'c1efcb54' => 'Filtrer les widgets',
+	'9bc641af' => 'Laissez vide pour garder le titre par défaut du widget.',
+	'd9d7983f' => 'Page : %s',
+	'4e4fadfe' => 'La zone n\'a pas pu être détachée de la disposition commune',
+	'7ea4d2eb' => 'La ligne n\'a pas pu être ajoutée',
+	'ceca6766' => 'Le déplacement de la ligne n\'a pas été enregistré',
+	'79a7b4bb' => 'L\'apparence de la ligne n\'a pas été enregistrée',
+	'b9068b0f' => 'La ligne n\'a pas pu être supprimée',
+	'2dc09cba' => 'La colonne n\'a pas pu être ajoutée',
+	'33d97864' => 'Le déplacement de la colonne n\'a pas été enregistré',
+	'27fea8b0' => 'La largeur de la colonne n\'a pas été enregistrée',
+	'8bc2d8e9' => 'La colonne n\'a pas pu être supprimée',
+	'ceea4b71' => 'Le widget n\'a pas pu être ajouté',
+	'555f89b3' => 'Le déplacement du widget n\'a pas été enregistré',
+	'158c7404' => 'Les réglages du widget n\'ont pas été enregistrés',
+	'c1d9ee11' => 'L\'apparence du widget n\'a pas été enregistrée',
+	'04e895c2' => 'Le widget n\'a pas pu être supprimé',
+	'5aa02bd0' => 'La modification n\'a pas été enregistrée',
+	'0980709a' => 'erreur',
+	'9d433e55' => 'L\'affichage ne correspond plus à ce qui est enregistré : rechargez la page.',
+	'88a46340' => 'Éditeur visuel de mise en page : glisser-déposer des widgets dans les zones du thème.',
+	'dd3795ad' => 'Menu',
 ];

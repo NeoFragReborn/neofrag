@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -100,6 +101,6 @@ class Ajax extends Controller_Module
 									})
 					)
 					->cancel()
-					->submit('Déplacer');
+					->submit($this->lang('Déplacer'));
 	}
 }

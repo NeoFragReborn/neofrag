@@ -4,54 +4,51 @@ Comprendre ces cinq notions suffit à maîtriser NeoFrag Reborn.
 
 ## Modules
 
-Un **module** est une fonctionnalité complète : le forum, les actualités, la galerie,
-les membres, la boutique… Chaque module apporte ses **pages publiques** (ce que voient
-les visiteurs), son **interface d'administration**, ses **données** (tables) et ses
-**permissions**.
+Un **module** est une fonctionnalité complète : le forum, les actualités, la galerie, les membres, la
+boutique… Chaque module apporte ses **pages publiques**, son **interface d'administration**, ses
+**données** (tables) et ses **permissions**.
 
-Tu actives ou désactives les modules depuis **Admin → Thèmes & Addons**. Un module
-désactivé disparaît du site mais conserve ses données.
+Le paquet livre **54 modules**, mais tu ne les installes pas tous : à l'installation, un **profil de
+site** — *Complet*, *Gaming / eSport*, *Communauté* ou *Cœur seul* — pré-coche ce qui correspond, et tu
+peux décocher module par module. Ce qu'un module réclame est ajouté automatiquement (le palmarès a
+besoin des équipes). Les modules du **cœur** (comptes, permissions, paramètres, pages, outils…) sont
+toujours là et ne se désinstallent pas.
 
-L'installation fournit **tous les modules** du paquet (modèle « tout bundlé », comme
-WordPress) : ils sont installés et activés d'emblée, **sans choix de profil**. Tu règles
-ensuite leur visibilité via **Admin → Thèmes & Addons** (activer/désactiver) et
-**Admin → Permissions** (RBAC). D'autres addons, non livrés dans le paquet, s'ajoutent
-depuis le **marketplace**.
+Ensuite, depuis **Administration → Thèmes & Addons**, tu installes, actives, désactives ou désinstalles
+chaque module. Un module désactivé disparaît du site mais conserve ses données. Les adresses d'un module
+absent répondent par un **404 propre**, jamais par une erreur.
 
 ## Widgets
 
-Un **widget** est un petit bloc réutilisable : le menu de navigation, l'espace membre,
-les derniers commentaires, un compte à rebours, un lecteur Twitch… Un même widget peut
-être placé plusieurs fois, à des endroits différents, avec des réglages différents.
+Un **widget** est un petit bloc réutilisable : le menu de navigation, l'espace membre, les derniers
+commentaires, un compte à rebours, un lecteur Twitch… Un même widget peut être placé plusieurs fois, à
+des endroits différents, avec des réglages différents. Le paquet en livre **38**.
 
-Les widgets se posent dans les **zones** du thème via le **Live Editor** (éditeur
-visuel) ou via les **dispositions** définies par le thème.
+Les widgets se posent dans les **régions** du thème via l'**éditeur en direct** : un assistant en
+quatre étapes (widget, type, titre, configuration), du glisser-déposer pour les déplacer.
 
 ## Thèmes
 
-Un **thème** donne l'identité visuelle du site : couleurs, typographies, mise en page,
-navbar, footer. Le thème déclare des **zones** et organise le contenu via des
-**dispositions**.
+Un **thème** donne l'identité visuelle du site : couleurs, typographies, mise en page, navigation,
+pied de page, et le **mode clair ou sombre**. Il déclare des **zones**, leur donne des **noms de
+régions** stables (`header`, `content`, `footer`…), et pose ses **dispositions** par défaut.
 
-NeoFrag Reborn fournit deux thèmes cœur :
+Le paquet livre **Nebula**, un thème communautaire généraliste (navy et turquoise, glassmorphism),
+pensé pour une équipe, une guilde ou une communauté. Quatre autres thèmes — **Granite**, **Forge**,
+**Blockcraft**, **Extend** — s'installent depuis le [marketplace](marketplace.md). Le thème actif se
+choisit dans **Administration → Thèmes & Addons** ; si plusieurs thèmes publics sont installés, les
+visiteurs peuvent en changer via le sélecteur en pied de page.
 
-- **Vitrine** — le thème officiel (landing moderne, dédié au site de présentation).
-- **Nebula** — un thème communautaire généraliste (dark navy + teal), pensé pour ta
-  team, ta guilde ou ta communauté.
+Tous les thèmes parlent le **même vocabulaire de couleurs** (`--nf-accent`, `--nf-surface`…) : un widget
+prend automatiquement la charte du thème actif.
 
-D'autres thèmes (Granite, Forge, Blockcraft…) sont disponibles au téléchargement sur le
-marketplace. Le thème actif se choisit dans **Admin → Thèmes & Addons**, et les
-visiteurs peuvent en changer via le sélecteur en bas de page (si plusieurs sont
-installés).
+## Zones, régions et dispositions
 
-## Zones & dispositions
+Un thème découpe la page en **zones** : généralement *Header*, *Avant-contenu*, *Contenu*,
+*Post-contenu*, *Footer*, chacune connue sous un **nom de région** que les gabarits emploient.
 
-Un thème découpe la page en **zones** : généralement *Header*, *Avant-contenu*,
-*Contenu*, *Post-contenu*, *Footer*.
-
-Une **disposition** décrit, pour une page donnée (ou un motif de pages), quels widgets
-occupent quelle zone et dans quelle grille. Les motifs vont du plus général au plus
-précis :
+Une **disposition** décrit, pour une page donnée (ou un motif de pages), quels widgets occupent quelle
+zone et dans quelle grille. Les motifs vont du plus général au plus précis :
 
 | Motif | S'applique à |
 |---|---|
@@ -59,40 +56,42 @@ précis :
 | `/` | la page d'accueil uniquement |
 | `forum/*` | toutes les pages du forum |
 
-Le motif le plus précis l'emporte. Exemple : une disposition `*` met le contenu sur
-8 colonnes + une colonne latérale de widgets, tandis qu'une disposition `marketplace*`
-peut passer la même page en pleine largeur.
+Le motif le plus précis l'emporte : une disposition `*` met le contenu sur huit colonnes plus une
+colonne latérale, une disposition `marketplace*` peut passer la même page en pleine largeur.
 
-Tu modifies les dispositions à la souris avec le **Live Editor**.
+Tu modifies les dispositions à la souris avec l'**éditeur en direct**. Une page peut aussi porter des
+**blocs** : des instances de modules ordonnées et configurées, insérées par le shortcode `[block:…]`.
 
-## Addons & marketplace
+## Addons et marketplace
 
-**Addon** est le terme générique pour tout ce qui s'installe : modules, widgets,
-thèmes et connecteurs d'authentification (Discord, GitHub, Google…).
+**Addon** est le terme générique pour tout ce qui s'installe : modules, widgets, thèmes, connecteurs
+d'authentification (Discord, GitHub, Google) et packs de langue (six langues livrées).
 
-Le **[marketplace](marketplace.md)** est le catalogue public où tu trouves et
-télécharges des addons (`.zip`). L'installation se fait ensuite en deux clics depuis
-**Admin → Thèmes & Addons → Ajouter**.
+Le **[marketplace](marketplace.md)** est le catalogue du projet : il **détecte les mises à jour** des
+addons installés et permet d'**ajouter** ceux qui ne sont pas dans le paquet, avec vérification
+d'intégrité SHA-256. Le **cœur du CMS** se met à jour en un clic depuis **Monitoring**, avec sauvegarde
+avant écriture et retour arrière automatique en cas d'échec.
 
-Techniquement, un addon n'est qu'un **dossier de fichiers PHP** : tu peux le versionner,
-le partager, et le réinstaller sur n'importe quel site NeoFrag Reborn. C'est ce qui rend
-le CMS infiniment extensible — voir les guides développeur.
+Techniquement, un addon n'est qu'un **dossier de fichiers PHP** : tu peux le versionner, le partager, et
+le réinstaller sur n'importe quel site NeoFrag Reborn. C'est ce qui rend le CMS extensible — voir les
+guides développeur.
 
 ## En pratique : monter une communauté
 
-Pour une team gaming, concrètement : dans *Thèmes & Addons* tu actives les modules **forum**, **équipes**
-et **événements** (déjà installés) et tu passes sur le thème **Nebula** ; puis, avec le **Live Editor**, tu
-places le widget **navigation** dans le *Header* et un widget de contenu (derniers sujets, prochains
-matchs…) dans la colonne latérale de l'accueil. Tout se règle dans l'admin, **sans une ligne de code**.
+Pour une équipe de jeu : à l'installation, choisis le profil **Gaming / eSport** (forum, équipes,
+événements, recrutement, palmarès…) et le thème Nebula est en place ; puis, avec l'éditeur en direct,
+place le widget **navigation** dans la région `header` et un widget de contenu (derniers sujets,
+prochains matchs…) dans la colonne latérale de l'accueil. Tout se règle dans l'administration, **sans
+une ligne de code**.
 
 ## Surcharge sans forker
 
-Tout fichier livré (vue, classe, asset) peut être **surchargé** sans modifier le code
-d'origine. Le framework résout dans cet ordre (le premier trouvé gagne) :
+Tout fichier livré (vue, classe, asset) peut être **surchargé** sans modifier le code d'origine. Le
+framework résout dans cet ordre (le premier trouvé gagne) :
 
 1. `overrides/{type}/{fichier}` — surcharge globale
 2. `themes/{thème actif}/overrides/{type}/{fichier}` — surcharge par thème
 3. l'original livré
 
-Tu adaptes ainsi un module ou un widget à ton site (ou à un thème précis) sans jamais
-toucher au cœur — et sans casser les mises à jour.
+Tu adaptes ainsi un module ou un widget à ton site sans jamais toucher au cœur, et sans casser les mises
+à jour.

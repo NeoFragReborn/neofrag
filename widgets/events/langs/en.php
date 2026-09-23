@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  */
@@ -24,5 +25,7 @@ return [
 	'e617d4b1' => 'Events calendar',
 	'ea33acfc' => 'Standards',
 	'f6eae4f0' => 'No upcoming match...',
-	'fd283f69' => 'Calendar'
+	'fd283f69' => 'Calendar',
+	'1f88c31b' => 'Options',
+	'2cecf817' => 'Type',
 ];

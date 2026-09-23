@@ -1,9 +1,9 @@
-<div class="media<?php if ($comment->parent()) echo ' comments-child' ?>">
+<div class="nf-comment d-flex align-items-start<?php if ($comment->parent()) echo ' comments-child' ?>">
 	<?php echo $comment->user->avatar() ?>
-	<div class="media-body">
+	<div class="nf-comment-body flex-grow-1">
 		<?php
 			$actions = $this->array()
-							//->append_if($this->user() && !$comment->parent(), '<a class="btn btn-link btn-sm" href="#" data-comment-id="'.$comment->id.'">'.icon('fas fa-reply').' '.$this->lang('Répondre').'</a>')//TODO
+							->append_if($this->user() && !$comment->parent(), '<a class="btn btn-link btn-sm comment-reply" href="#comments" data-comment-id="'.$comment->id.'">'.icon('fas fa-reply').' '.$this->lang('Répondre').'</a>')
 							->append_if(!$comment->deleted_at && ($this->access->effective_admin() || ($this->user() && $this->user->id == $comment->user->id)), $this->button_delete('ajax/comments/delete/'.$comment->id)->compact());
 
 			// Bouton signaler (si user connecté et pas l'auteur du commentaire)

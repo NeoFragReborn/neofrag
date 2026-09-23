@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -47,7 +48,10 @@ class Admin_Ajax extends Controller_Module
 			}
 
 			array_walk($data, function(&$a, $b) use ($period){
-				$date = $period[1] == 'o-W' ? date_create()->setISODate(substr($b, 0, 4), substr($b, 5)) : date_create_from_format($period[1], $b);
+				// `substr()` rend une chaine, `setISODate()` attend des entiers (annee, semaine).
+				$date = $period[1] == 'o-W'
+					? date_create()->setISODate((int) substr((string) $b, 0, 4), (int) substr((string) $b, 5))
+					: date_create_from_format($period[1], (string) $b);
 				$a = [$date->getTimestamp() * 1000, $a];
 			});
 

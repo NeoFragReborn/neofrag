@@ -1,6 +1,6 @@
-# NeoFrag Reborn 1.1.0
+# NeoFrag Reborn 1.2.0
 
-> **Version archivée.** Le code de la version 1.1.0, tel qu'il était, aux commentaires près :
+> **Version archivée.** Le code de la version 1.2.0, tel qu'il était, aux commentaires près :
 > ceux qui renvoyaient au travail interne du projet ont été réécrits, et quelques fichiers de travail
 > retirés. Les paquets de l'époque ne sont pas republiés.
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -53,7 +54,7 @@ return [
 	'7a9e99e6' => 'Sei sicuro di voler eliminare la categoria <b>%s</b>? <br /> Tutti gli album associati a questa categoria verranno eliminati.',
 	'7f9392da' => 'Clicca nel riquadro per selezionare le tue immagini',
 	'86c33902' => 'Modifica',
-	'86e02610' => '%d immagine',
+	'86e02610' => '%d immagine|%d immagini',
 	'87bf30f1' => 'Nuovo album fotografico',
 	'9caeb208' => 'L\'icona deve essere quadrata',
 	'a026ae67' => 'Categoria',
@@ -100,4 +101,23 @@ return [
 	// i18n 2026-06-11 (code strings)
 	'b914f016' => 'Immagini galleria',
 	'7f1f539c' => 'Una data futura programma la pubblicazione: l\'album resta nascosto pubblicamente fino a quella data (se visibile). Vuoto = immediato.',
+	'398d8489' => 'Integrazione <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Codice da integrare per mostrare questa galleria in un contenuto libero html/bbcode"></i>',
+	'b9b71e8e' => 'Titolo dell\'immagine',
+	'517c0b2c' => 'Programmata per il %s',
+	'f0b7b5b5' => 'Data di pubblicazione',
+	'afccc23b' => 'Crea',
+	'ff1485d1' => 'Rilascia le tue immagini in quest\'area oppure fai clic qui',
+	'017c90f5' => 'Il tuo browser non supporta il caricamento dei file tramite trascinamento.',
+	'01081a31' => 'Usa il modulo qui sotto per caricare i tuoi file.',
+	'572556ef' => 'File troppo grande ({{filesize}} MiB). Dimensione massima: {{maxFilesize}} MiB.',
+	'37bb0291' => 'Questo tipo di file non è consentito.',
+	'9e1bbb9b' => 'Il server ha risposto con il codice {{statusCode}}.',
+	'de35108a' => 'Vuoi davvero annullare questo caricamento?',
+	'ca977443' => 'Rimuovi',
+	'ebe0e1da' => 'Non puoi caricare altri file.',
+	'f8291e95' => 'Caricamento in corso...',
+	'1b08248b' => 'Ancora un attimo...',
+	'cb9a08b2' => 'Attendi...',
+	'd9035f7e' => 'MB',
+	'73ae9de7' => 'Torna all\'album %s',
 ];

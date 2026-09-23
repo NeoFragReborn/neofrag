@@ -5,7 +5,7 @@
 	<?php if (($gam = $this->module('gamification'))): $karma = $gam->get($user->id); $tier = $gam->tier($karma); ?>
 		<div class="user-profile-karma mb-3">
 			<?php if ($gam->is_vip($user->id)): ?><?php echo $gam->vip_badge($user->id) ?> <?php endif ?>
-			<span class="badge" style="background-color:<?php echo $tier['color'] ?>;color:#fff;"><?php echo icon($tier['icon']).' '.htmlspecialchars($tier['name']) ?></span>
+			<span class="badge" style="background-color:<?php echo $tier['color'] ?>;color:<?php echo couleur_lisible_sur($tier['color']) ?>;"><?php echo icon($tier['icon']).' '.htmlspecialchars($tier['name']) ?></span>
 			<small class="text-muted"><?php echo $karma.' '.$this->lang('karma') ?></small>
 			<span class="badge text-bg-secondary"><?php echo icon('fas fa-coins').' '.$gam->get_points($user->id).' '.$this->lang('points') ?></span>
 			<?php if ($gam->is_vip($user->id)): ?><small class="text-muted"><?php echo $this->lang('VIP — %d j restants', $gam->vip_days_left($user->id)) ?></small><?php endif ?>
@@ -45,9 +45,13 @@
 											return $this->no_translate($date->short_date());
 										});
 						})
-						->append_if($profile->location || $profile->country, function() use ($profile){
-							$country = $profile->country;
-							return $this->label($this->no_translate($profile->location) ?: get_countries()[$country], $country && ($flag = image('flags/'.$country.'.png', $this->theme('default'))) ? '<img src="'.$flag.'" alt="" />' : 'fas fa-map-marker-alt');
+						// Le drapeau n'est posé que pour un code pays CONNU : `image()` rend une adresse même
+						// pour un fichier absent, et un pays saisi en toutes lettres (« France ») donnait
+						// un drapeau introuvable à côté d'un libellé vide (2026-09-23).
+						->append_if($profile->location || country_name($profile->country) !== '', function() use ($profile){
+							$country = strtolower(trim((string) $profile->country));
+							$nom     = country_name($country);
+							return $this->label($this->no_translate($profile->location) ?: $nom, $nom !== '' ? '<img src="'.image('flags/'.$country.'.png', $this->theme('default')).'" alt="" />' : 'fas fa-map-marker-alt');
 						})
 						->filter()
 						->each(function($a){

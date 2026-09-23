@@ -38,11 +38,11 @@ if (!empty($user_id))
 <div class="forum-profile<?php echo $has_extras ? ' forum-profile-has-popover' : '' ?>"
 	<?php if ($has_extras): ?>
 		data-bs-toggle="popover"
-		data-trigger="hover focus"
-		data-placement="right"
-		data-html="true"
-		data-delay='{"show":2000,"hide":150}'
-		data-content="<?php echo htmlspecialchars($popover_html, ENT_QUOTES) ?>"
+		data-bs-trigger="hover focus"
+		data-bs-placement="right"
+		data-bs-html="true"
+		data-bs-delay='{"show":2000,"hide":150}'
+		data-bs-content="<?php echo htmlspecialchars($popover_html, ENT_QUOTES) ?>"
 	<?php endif ?>
 >
 	<div class="forum-profile-avatar">

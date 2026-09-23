@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: FoxLey
@@ -8,7 +9,7 @@
 return [
 	'0ae333a4' => 'Last members',
 	'1ccc3a46' => 'No members at the moment',
-	'1ee0d939' => 'Admin',
+	'1ee0d939' => 'Admin|Admins',
 	'359cc583' => 'left',
 	'400c350f' => 'right',
 	'df542860' => 'Latest registered or connected members.',
@@ -23,4 +24,5 @@ return [
 	'eaf3aad0' => 'Who is online?',
 	'96f7da00' => 'Members',
 	'1ea90f79' => 'Close',
+	'1f88c31b' => 'Options',
 ];

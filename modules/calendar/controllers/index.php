@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace NF\Modules\Calendar\Controllers;
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 use NF\Modules\Calendar\Calendar;
@@ -37,14 +38,14 @@ class Index extends Controller_Module
 			{
 				$slug = url_title($e['title']);
 				$color = $e['color'] ? $e['color'] : '#03c1a2';
-				$body .= '<a href="'.url('calendar/'.$e['id'].'/'.$slug).'" class="list-group-item list-group-item-action" style="border-left:4px solid '.htmlspecialchars($color).'">';
+				$body .= '<a href="'.url('calendar/'.$e['id'].'/'.$slug).'" class="list-group-item list-group-item-action" style="border-left:4px solid '.htmlspecialchars((string) ($color)).'">';
 				$body .= '<div class="d-flex justify-content-between mb-1">';
-				$body .= '<strong>'.htmlspecialchars($e['title']).'</strong>';
+				$body .= '<strong>'.htmlspecialchars((string) ($e['title'])).'</strong>';
 				$body .= '<small class="text-muted">'.Calendar::format_dt($e['start_at'], (bool)$e['all_day'], $e['end_at']).'</small>';
 				$body .= '</div>';
 				if (!empty($e['location']))
 				{
-					$body .= '<small class="text-muted"><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars($e['location']).'</small>';
+					$body .= '<small class="text-muted"><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars((string) ($e['location'])).'</small>';
 				}
 				$body .= '</a>';
 			}
@@ -58,21 +59,30 @@ class Index extends Controller_Module
 	{
 		$this->title($e['title'])->icon('far fa-calendar')->breadcrumb();
 
-		$body = '<div class="mb-3"><h2>'.htmlspecialchars($e['title']).'</h2>';
+		$body = '<div class="mb-3"><h2>'.htmlspecialchars((string) ($e['title'])).'</h2>';
 		$body .= '<p class="text-muted"><i class="far fa-clock"></i> '.Calendar::format_dt($e['start_at'], (bool)$e['all_day'], $e['end_at']).'</p>';
 		if (!empty($e['location']))
 		{
-			$body .= '<p><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars($e['location']).'</p>';
+			$body .= '<p><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars((string) ($e['location'])).'</p>';
 		}
 		if ($e['user_id'])
 		{
 			$body .= '<p class="text-muted"><i class="far fa-user"></i> '.$this->lang('Organisé par %s', $this->user->link($e['user_id'], $e['username'])).'</p>';
 		}
+		// Suivre l'événement : c'est l'abonnement qui décide qui recevra le rappel.
+		/** @var \NF\Modules\Notifications\Notifications|null $notifications */
+		$notifications = $this->module('notifications');
+
+		if ($notifications && ($suivre = $notifications->follow_button('calendar-event', (int) $e['id'])))
+		{
+			$body .= '<p>'.$suivre.'</p>';
+		}
+
 		$body .= '</div>';
 
 		if (!empty($e['description']))
 		{
-			$body .= '<div class="card"><div class="card-body">'.nl2br(htmlspecialchars($e['description'])).'</div></div>';
+			$body .= '<div class="card"><div class="card-body">'.nl2br(htmlspecialchars((string) ($e['description']))).'</div></div>';
 		}
 
 		$body .= '<div class="mt-3"><a class="btn btn-secondary btn-sm" href="'.url('calendar').'"><i class="fas fa-arrow-left"></i> '.$this->lang('Retour au calendrier').'</a></div>';

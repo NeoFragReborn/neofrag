@@ -1,8 +1,8 @@
 <div class="card mb-3">
 	<div class="card-body">
-		<form method="get" action="<?php echo url('talks/search') ?>" class="form-inline">
+		<form method="get" action="<?php echo url('talks/search') ?>" class="nf-form-inline">
 			<input type="text" name="q" class="form-control flex-grow-1 me-2 mb-2" placeholder="<?php echo $this->lang('Rechercher (min 3 caractères)') ?>" value="<?php echo htmlspecialchars($query) ?>" />
-			<select name="talk_id" class="form-control me-2 mb-2">
+			<select name="talk_id" class="form-select me-2 mb-2">
 				<option value=""><?php echo $this->lang('Toutes mes conversations') ?></option>
 				<?php foreach ($my_convs as $c): ?>
 					<option value="<?php echo (int)$c['talk_id'] ?>" <?php echo $talk_id == $c['talk_id'] ? 'selected' : '' ?>><?php echo htmlspecialchars($c['name']) ?></option>

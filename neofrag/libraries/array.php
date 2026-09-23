@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -430,7 +431,13 @@ class Array_ extends Library implements \Iterator, \ArrayAccess
 	#[\ReturnTypeWillChange]
 	public function valid()
 	{
-		return array_key_exists($this->key(), $this->_array);
+		// `key()` rend NULL dès que le curseur a dépassé la fin du tableau — c'est-à-dire à chaque
+		// fin de parcours. Passer ce NULL à `array_key_exists()` est déprécié depuis PHP 8.5, et
+		// la production journalisait donc un avertissement par boucle, plusieurs par page.
+		//
+		// La réponse est de toute façon « non valide » : une clé NULL ne peut désigner aucun
+		// élément, PHP convertissant `$t[NULL]` en `$t['']` à l'écriture.
+		return ($cle = $this->key()) !== NULL && array_key_exists($cle, $this->_array);
 	}
 
 	#[\ReturnTypeWillChange]

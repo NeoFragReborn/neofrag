@@ -1,17 +1,24 @@
 <ul class="nav nav-pills" id="pills-tab" role="tablist">
-	<li class="nav-item"><a class="nav-link active" id="pills-options-tab" data-bs-toggle="pill" href="#pills-options" role="tab" aria-controls="pills-options" aria-selected="true"><?php echo icon('fas fa-cogs').' Options' ?></a></li>
+	<li class="nav-item"><a class="nav-link active" id="pills-options-tab" data-bs-toggle="pill" href="#pills-options" role="tab" aria-controls="pills-options" aria-selected="true"><?php echo icon('fas fa-cogs').' '.$this->lang('Options') ?></a></li>
 </ul>
 <div class="tab-content border-light" id="pills-tabContent">
 	<div class="tab-pane fade show active" id="pills-options" role="tabpanel" aria-labelledby="pills-options-tab">
-		<div class="form-group row">
-			<label for="settings-title" class="col-3 col-form-label"><?php echo $this->lang('Alignement') ?></label>
-			<div class="col-4">
-				<label class="radio-inline">
-					<input type="radio" name="settings[align]" value="justify-content-start"<?php if (!isset($align) || $align != 'justify-content-start') echo ' checked="checked"' ?> /> <?php echo $this->lang('à gauche') ?>
-				</label>
-				<label class="radio-inline">
-					<input type="radio" name="settings[align]" value="justify-content-end"<?php if (isset($align) && $align == 'justify-content-end') echo ' checked="checked"' ?> /> <?php echo $this->lang('à droite') ?>
-				</label>
+		<?php
+		// Balisage Bootstrap 5 : `radio-inline` est une classe de Bootstrap 3, définie nulle part
+		// dans le projet — les deux boutons sortaient donc collés l'un à l'autre, sans style.
+		$a_gauche = !isset($align) || $align != 'justify-content-end';
+		?>
+		<div class="nf-field row">
+			<label class="col-12 col-lg-3 col-form-label"><?php echo $this->lang('Alignement') ?></label>
+			<div class="col-12 col-lg-9">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" id="widget-user-align-start" name="settings[align]" value="justify-content-start"<?php echo $a_gauche ? ' checked="checked"' : '' ?> />
+					<label class="form-check-label" for="widget-user-align-start"><?php echo $this->lang('à gauche') ?></label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" id="widget-user-align-end" name="settings[align]" value="justify-content-end"<?php echo $a_gauche ? '' : ' checked="checked"' ?> />
+					<label class="form-check-label" for="widget-user-align-end"><?php echo $this->lang('à droite') ?></label>
+				</div>
 			</div>
 		</div>
 	</div>

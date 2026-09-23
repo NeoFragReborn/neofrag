@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'43c58e8e' => 'Revisiones',

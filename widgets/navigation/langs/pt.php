@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — traduções PT (auto-geradas 2026-05-03)
@@ -44,4 +45,10 @@ return [
 	'6db60ef7' => 'Menu gerido',
 	'26db591e' => '— Ligações manuais (abaixo) —',
 	'571ec895' => 'Apresenta um menu criado em «Menus» (substitui as ligações manuais abaixo).',
+	'98420d15' => 'Menu de navegação horizontal ou vertical configurável.',
+	'1c5e079e' => 'Horizontal',
+	'510016ca' => 'Vertical',
+	'92df285e' => 'Ligação para um módulo',
+	'f2a3fffd' => 'Ligação para uma página',
+	'dd3795ad' => 'Menu',
 ];

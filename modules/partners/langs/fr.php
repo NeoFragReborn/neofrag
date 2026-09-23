@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -40,4 +41,7 @@ return [
 	'f11bfc56' => 'Pour être affiché sur un fond foncé <i>(suivant le thème utilisé)</i>',
 	'e230fd60' => 'Pour être affiché sur un fond clair <i>(suivant le thème utilisé)</i>',
 	'be53bc1a' => 'Indiquez le code promotionnel que vos utilisateurs peuvent utiliser pour profiter de promotions grâce à votre partenaire',
+	'8b8988ac' => 'Supprimer ?',
+	'39e91bd5' => 'partenaire|partenaires',
+	'8a8bad0b' => 'À propos de %s',
 ];

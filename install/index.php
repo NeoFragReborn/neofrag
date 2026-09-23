@@ -43,14 +43,23 @@ if (empty($_SESSION['nf_install_csrf'])) {
 }
 $CSRF = $_SESSION['nf_install_csrf'];
 
-// Modèle « tout bundlé » : l'install massive (tous les modules/widgets/thèmes locaux) se fait dans
-// l'étape « Base de données » via Installer::install_complete() — il n'y a plus d'étape « Modules ».
-const NF_STEPS = [
-	'requirements' => 'Prérequis',
-	'database'     => 'Base de données',
-	'admin'        => 'Administrateur',
-	'finish'       => 'Terminé',
-];
+// L'étape « Profil » choisit ce que l'installation embarque en plus du cœur ; l'installation
+// proprement dite se fait à l'étape « Base de données » (Installer::install_complete), à laquelle
+// on passe la sélection retenue. Sans sélection en session, le profil « Complet » s'applique —
+// c'est le comportement historique du modèle « tout bundlé ».
+//
+// Une FONCTION et non une constante : les libellés passent par lang(), qu'une constante ne peut
+// pas appeler. La langue se choisit dès la première requête (install/lib/langue.php).
+function nf_steps(): array
+{
+	return [
+		'requirements' => lang('Prérequis'),
+		'modules'      => lang('Profil du site'),
+		'database'     => lang('Base de données'),
+		'admin'        => lang('Administrateur'),
+		'finish'       => lang('Terminé'),
+	];
+}
 
 function nf_e(?string $s): string
 {
@@ -69,12 +78,16 @@ function nf_current_step(string $config_dir): string
 	$step       = $_GET['step'] ?? '';
 	$has_config = Installer::read_db_config($config_dir) !== null;
 
-	if (!isset(NF_STEPS[$step])) {
+	if (!isset(nf_steps()[$step])) {
 		return $has_config ? 'admin' : 'requirements';
 	}
 	// Garde-fou de cohérence : pas d'admin sans config DB (schéma + modules importés).
 	if ($step === 'admin' && !$has_config) {
 		return 'database';
+	}
+	// Ni de base de données sans profil choisi : l'installation a besoin de savoir quoi installer.
+	if ($step === 'database' && !isset($_SESSION['nf_install_preset'])) {
+		return 'modules';
 	}
 
 	return $step;
@@ -88,7 +101,12 @@ $step   = nf_current_step($NF_CONFIG);
 // --- Traitement des soumissions ---------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if (!hash_equals($CSRF, $_POST['csrf'] ?? '')) {
-		$errors[] = 'Session expirée, merci de recommencer l\'étape.';
+		$errors[] = lang('Session expirée, merci de recommencer l\'étape.');
+	} elseif ($step === 'modules') {
+		$errors = nf_handle_modules($NF_ROOT);
+		if (!$errors) {
+			nf_redirect('database');
+		}
 	} elseif ($step === 'database') {
 		$errors = nf_handle_database($NF_CONFIG, $NF_ROOT);
 		if (!$errors) {
@@ -101,6 +119,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$step = 'finish';
 		}
 	}
+}
+
+/**
+ * Étape « profil » : retient le profil choisi et les modules cochés, ferme la sélection sur les
+ * dépendances déclarées, et range le tout en session jusqu'à l'installation.
+ *
+ * On ne fait CONFIANCE À RIEN de ce qui arrive : seuls les modules appartenant réellement au profil
+ * choisi sont retenus (un POST forgé ne peut pas faire installer autre chose), et les dépendances
+ * manquantes sont ajoutées d'office — cocher « Palmarès » sans « Équipes » produirait sinon le 500
+ * qui a fait abandonner le paquet allégé en juin 2026.
+ */
+function nf_handle_modules(string $root): array
+{
+	$presets = Installer::presets($root);
+	$choisi  = (string) ($_POST['preset'] ?? '');
+
+	if (!isset($presets[$choisi])) {
+		return [lang('Profil inconnu — choisissez-en un dans la liste.')];
+	}
+
+	$profil  = $presets[$choisi];
+	$coches  = array_values(array_intersect(
+		array_map('strval', (array) ($_POST['modules'] ?? [])),
+		$profil['module']
+	));
+
+	[$modules, $ajoutes] = Installer::close_requires($coches, $root);
+
+	// Les widgets et thèmes du profil suivent, mais un widget dont le module est décoché
+	// n'a rien à faire là : il s'afficherait vide, ou chercherait une table absente.
+	$widgets = array_values(array_filter(
+		$profil['widget'],
+		static fn (string $w): bool => !in_array($w, $profil['module'], TRUE) || in_array($w, $modules, TRUE)
+	));
+
+	$_SESSION['nf_install_preset']    = $choisi;
+	$_SESSION['nf_install_selection'] = [
+		'module' => $modules,
+		'widget' => $widgets,
+		'theme'  => $profil['theme'],
+	];
+	$_SESSION['nf_install_added']     = $ajoutes;
+
+	return [];
 }
 
 /**
@@ -119,12 +181,12 @@ function nf_handle_database(string $config_dir, string $root): array
 	];
 
 	if ($cfg['hostname'] === '' || $cfg['username'] === '' || $cfg['database'] === '') {
-		return ['Hôte, utilisateur et nom de la base sont obligatoires.'];
+		return [lang('Hôte, utilisateur et nom de la base sont obligatoires.')];
 	}
 
 	$test = Installer::test_db($cfg);
 	if (!$test['ok']) {
-		return ['Connexion impossible : ' . $test['error']];
+		return [lang('Connexion impossible : %s', $test['error'])];
 	}
 
 	try {
@@ -132,7 +194,7 @@ function nf_handle_database(string $config_dir, string $root): array
 		Installer::ensure_database($server, $cfg['database']);
 
 		if (Installer::table_has_rows($server, 'nf_user')) {
-			return ['La base « ' . $cfg['database'] . ' » contient déjà une installation NeoFrag. Choisissez une base vierge.'];
+			return [lang('La base « %s » contient déjà une installation NeoFrag. Choisissez une base vierge.', $cfg['database'])];
 		}
 
 		Installer::write_config($config_dir, $cfg);
@@ -143,20 +205,22 @@ function nf_handle_database(string $config_dir, string $root): array
 		Installer::import_sql_file($db, $root . '/install/seed.sql');
 		Installer::run_migrations($db, $root . '/migrations', null);
 
-		// Modèle « tout bundlé » : installe TOUS les modules/widgets/thèmes locaux (aucun choix, aucun
-		// marketplace requis). Le résumé est gardé en session pour l'écran final.
-		$summary = Installer::install_complete($db, $root);
+		// Installe le cœur (toujours) plus la sélection du profil. Sans sélection en session — cas
+		// d'un accès direct — on retombe sur TOUT, le comportement historique « tout bundlé ».
+		$summary = Installer::install_complete($db, $root, $_SESSION['nf_install_selection'] ?? NULL);
 		$_SESSION['nf_install_summary'] = [
 			'modules'  => $summary['installed_modules'],
 			'widgets'  => $summary['installed_widgets'],
 			'themes'   => $summary['installed_themes'],
 			'homepage' => $summary['default_page'],
 			'errors'   => $summary['errors'],
+			'preset'   => $_SESSION['nf_install_preset'] ?? 'complete',
+			'added'    => $_SESSION['nf_install_added'] ?? [],
 		];
 
 		$db->close();
 	} catch (\Throwable $e) {
-		return ['Échec de l\'initialisation de la base : ' . $e->getMessage()];
+		return [lang('Échec de l\'initialisation de la base : %s', $e->getMessage())];
 	}
 
 	return [];
@@ -175,27 +239,27 @@ function nf_handle_admin(string $config_dir, string $lock): array
 
 	$errors = [];
 	if ($site === '') {
-		$errors[] = 'Le nom du site est obligatoire.';
+		$errors[] = lang('Le nom du site est obligatoire.');
 	}
 	if ($username === '') {
-		$errors[] = 'Le pseudo administrateur est obligatoire.';
+		$errors[] = lang('Le pseudo administrateur est obligatoire.');
 	}
 	if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-		$errors[] = 'Adresse email invalide.';
+		$errors[] = lang('Adresse email invalide.');
 	}
 	if (strlen($pass) < 8) {
-		$errors[] = 'Le mot de passe doit faire au moins 8 caractères.';
+		$errors[] = lang('Le mot de passe doit faire au moins 8 caractères.');
 	}
 	if ($pass !== $pass2) {
-		$errors[] = 'Les deux mots de passe ne correspondent pas.';
+		$errors[] = lang('Les deux mots de passe ne correspondent pas.');
 	}
 	// Mot de passe webmaster : facultatif ici (peut être défini plus tard depuis Monitoring), mais
 	// s'il est fourni il doit être valide et confirmé.
 	if ($wm !== '' && strlen($wm) < 8) {
-		$errors[] = 'Le mot de passe webmaster doit faire au moins 8 caractères.';
+		$errors[] = lang('Le mot de passe webmaster doit faire au moins 8 caractères.');
 	}
 	if ($wm !== '' && $wm !== $wm2) {
-		$errors[] = 'Les deux mots de passe webmaster ne correspondent pas.';
+		$errors[] = lang('Les deux mots de passe webmaster ne correspondent pas.');
 	}
 	if ($errors) {
 		return $errors;
@@ -203,7 +267,7 @@ function nf_handle_admin(string $config_dir, string $lock): array
 
 	$cfg = Installer::read_db_config($config_dir);
 	if ($cfg === null) {
-		return ['Configuration de base de données introuvable, reprenez l\'étape précédente.'];
+		return [lang('Configuration de base de données introuvable, reprenez l\'étape précédente.')];
 	}
 
 	try {
@@ -217,8 +281,10 @@ function nf_handle_admin(string $config_dir, string $lock): array
 
 		// Email « De » par défaut sur le DOMAINE d'installation (sinon le défaut noreply@neofrag.com
 		// est rejeté par le MTA : un serveur n'envoie pas « au nom de » un domaine qu'il ne possède pas).
+		// Jamais depuis une IP : « noreply@203.0.113.7 » est une adresse invalide que PHPMailer refuse,
+		// et c'est exactement ce qu'une installation faite par IP — DNS pas encore posé — inscrivait.
 		$host = preg_replace(['/:\d+$/', '/^www\./'], '', strtolower($_SERVER['HTTP_HOST'] ?? ''));
-		if ($host !== '' && strpos($host, '.') !== false && !str_contains($host, 'localhost')) {
+		if ($host !== '' && strpos($host, '.') !== false && !str_contains($host, 'localhost') && !filter_var($host, FILTER_VALIDATE_IP)) {
 			Installer::set_setting($db, 'nf_contact', 'noreply@' . $host);
 		}
 
@@ -230,8 +296,8 @@ function nf_handle_admin(string $config_dir, string $lock): array
 		}
 
 		// Mise en page de la VITRINE (paquet PRINCIPAL uniquement) : dispositions + thème vitrine actif.
-		// Le code du thème/widget landing et la doc (wiki.sql) sont bundlés à part ; ce fichier ne porte
-		// que la mise en page, perdue à la réinstallation. Best-effort : un échec ne bloque pas l'install
+		// Le code du thème vitrine (accueil ancré dans le thème) et la doc (wiki.sql) sont bundlés à part ;
+		// ce fichier ne porte que la mise en page, perdue à la réinstallation. Best-effort : un échec ne bloque pas l'install
 		// (le site reste fonctionnel sur nebula). Appliqué APRÈS le seed (override nf_default_theme).
 		if (is_file($vitrine_sql = __DIR__ . '/vitrine.sql')) {
 			try {
@@ -253,7 +319,7 @@ function nf_handle_admin(string $config_dir, string $lock): array
 
 		$db->close();
 	} catch (\Throwable $e) {
-		return ['Création du compte impossible : ' . $e->getMessage()];
+		return [lang('Création du compte impossible : %s', $e->getMessage())];
 	}
 
 	@file_put_contents($lock, gmdate('c') . "\n");

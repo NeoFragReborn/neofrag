@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -104,4 +105,33 @@ return [
 	'0213838b' => 'Max 2000 characters.',
 	'e4c1464f' => 'Files: %s · max %s',
 	'52025860' => 'Conversation admin',
+	'5f649bfd' => 'Private messages',
+	'2cecf817' => 'Type',
+	'afccc23b' => 'Create',
+	'c627cc86' => 'Exit',
+	'1b148e6f' => 'Archives',
+	'94b735a4' => 'Trash',
+	'36d699e5' => 'Search',
+	'0dede4b4' => 'Conversations',
+	'0aac9844' => 'Date',
+	'02f6b476' => 'Author',
+	'790009e3' => 'Message',
+	'406089a4' => 'Action',
+	'e3202498' => 'All',
+	'4788f138' => '%d participant|%d participants',
+	'594ae39c' => 'members',
+	'0cbbe048' => 'Type at least 3 characters to search.',
+	'4c4aec08' => 'No results for "%s"',
+	'18874ad9' => 'System',
+	'6958ab6a' => 'Participants',
+	'66d26b7f' => 'Restore',
+	'3d83137a' => 'New topic',
+	'99a8bf5e' => '<b>GIF</b>: copy the link of a GIF from %s or %s and paste it here. It will be shown as an image.',
+	'b8124b7d' => 'Unreadable file',
+	'f6638f8a' => 'Empty file',
+	'396d3773' => 'File too large',
+	'64010e83' => 'Unable to detect the file type',
+	'bf8bf003' => 'File type not allowed: %s',
+	'584e9133' => 'Suspicious file (executable content detected)',
+	'215a962f' => 'Shortened link — be careful',
 ];

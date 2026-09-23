@@ -41,8 +41,13 @@ class Button extends Label
 			}
 			else
 			{
+				// Le groupe « à droite » est rendu en PREMIER. Le flottement le range à droite dans un
+				// bloc ordinaire ; mais les thèmes affichent l'en-tête d'un panneau en boîte flexible, où
+				// un flottement ne fait rien : le compteur des commentaires passait DEVANT le titre
+				// (« 💬 2 💬 Commentaires », signalé le 2026-09-23). `ms-auto order-last`
+				// rend la même disposition dans une boîte flexible.
 				$footers->each(function($buttons, $align){
-					return NeoFrag()->html()->attr('class', 'float-'.$align)->content($buttons);
+					return NeoFrag()->html()->attr('class', nf_bs_align($align, 'float').($align == 'right' ? ' ms-auto order-last' : ''))->content($buttons);
 				});
 			}
 
@@ -70,7 +75,8 @@ class Button extends Label
 				$class[] = $this->array()
 								->append('btn')
 								->append_if($this->_outline, 'outline')
-								->append($this->_color ?: 'secondary')
+								// « default » est un nom de Bootstrap 3 : `btn-default` n'existe plus.
+								->append($this->_color && $this->_color !== 'default' ? $this->_color : 'secondary')
 								->implode('-');
 
 				if ($this->_compact)
@@ -99,6 +105,24 @@ class Button extends Label
 			}
 
 			$attrs['class'] = implode(' ', $class);
+		};
+
+		return $this;
+	}
+
+	/**
+	 * Rend ce bouton comme un VRAI `<button type="button">`.
+	 *
+	 * Par defaut, un bouton sans adresse sort en `<span class="btn">` : il en a l'apparence, mais
+	 * il n'est ni focusable ni actionnable au clavier, et aucune technologie d'assistance ne
+	 * l'annonce comme un bouton. Le pied de CHAQUE modale du produit n'en contenait que de
+	 * ceux-la. Trouve le 2026-09-22 en ecrivant le parcours qui clique sur « Fermer ».
+	 */
+	public function bouton()
+	{
+		$this->_template[] = function(&$content, &$attrs, &$tag){
+			$attrs['type'] = 'button';
+			$tag           = 'button';
 		};
 
 		return $this;
@@ -154,10 +178,12 @@ class Button extends Label
 	{
 		$modal = is_a($title, 'NF\NeoFrag\Libraries\Modal') ? $title : parent::modal($title, $icon);
 
+		// `bs-toggle` / `bs-target` : Bootstrap 5 n'ecoute plus `data-toggle` ni `data-target`.
+		// Un attribut inconnu est ignore sans bruit, et le bouton n'ouvre alors rien du tout.
 		return $this->url('#')
 					->data([
-						'toggle' => 'modal',
-						'target' => '#'.$modal->id
+						'bs-toggle' => 'modal',
+						'bs-target' => '#'.$modal->id
 					]);
 	}
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -12,7 +13,7 @@ class Checker extends Module_Checker
 {
 	public function index($page = '')
 	{
-		return [$this->module('user')->collection('user')->where('deleted', FALSE)->order_by('username')->paginate($page, 24)];
+		return [$this->module('user')->collection('user')->where('deleted', FALSE)->where('_.id !=', nf_compte_masque())->order_by('username')->paginate($page, 24)];
 	}
 
 	public function _group()
@@ -22,7 +23,7 @@ class Checker extends Module_Checker
 
 		if (($group = $this->groups->check_group($args)) && $group['users'])
 		{
-			return [$group['title'], $this->module('user')->collection('user')->where('id', $group['users'])->where('deleted', FALSE)->order_by('username')->paginate($page, 24)];
+			return [$group['title'], $this->module('user')->collection('user')->where('id', $group['users'])->where('deleted', FALSE)->where('_.id !=', nf_compte_masque())->order_by('username')->paginate($page, 24)];
 		}
 	}
 }

@@ -1,6 +1,9 @@
 (function () {
 	'use strict';
 
+	var EPINGLER    = '<?php echo addslashes($this->lang('Épingler')) ?>';
+	var DESEPINGLER = '<?php echo addslashes($this->lang('Désépingler')) ?>';
+
 	/* ---- Accordéon des sections -------------------------------------- */
 	document.querySelectorAll('.nf-sb-sec-head').forEach(function (head) {
 		head.addEventListener('click', function () {
@@ -35,8 +38,8 @@
 		document.querySelectorAll('.nf-sb-pin').forEach(function (p) {
 			var on = pinned.indexOf(p.dataset.pin) !== -1;
 			p.classList.toggle('pinned', on);
-			p.setAttribute('title', on ? 'Désépingler' : 'Épingler');
-			p.setAttribute('aria-label', on ? 'Désépingler' : 'Épingler');
+			p.setAttribute('title', on ? DESEPINGLER : EPINGLER);
+			p.setAttribute('aria-label', on ? DESEPINGLER : EPINGLER);
 		});
 	}
 

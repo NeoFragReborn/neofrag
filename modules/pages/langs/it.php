@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -41,4 +42,16 @@ return [
 	'f2100516' => 'Pagina nuda (larghezza piena)',
 	'78b7cadc' => '«Pagina nuda» mostra il contenuto senza cornice né titolo — ideale per una pagina composta da blocchi.',
 	'42bd0172' => 'Una data futura programma la pubblicazione: la pagina resta nascosta pubblicamente fino a quella data (se pubblicata). Vuoto = immediato.',
+	'0adc6e30' => 'Salva prima la pagina: potrai poi comporre blocchi di modulo modificandola.',
+	'b2299bb6' => 'Blocchi della pagina',
+	'92a243f3' => 'Aggiungi blocchi di modulo sotto il contenuto, riordinali con il trascinamento e configura le loro opzioni. Equivalente visivo degli shortcode [block:…].',
+	'7fb14f71' => 'Salva i blocchi',
+	'517c0b2c' => 'Programmata per il %s',
+	'afccc23b' => 'Crea',
+	'f0b7b5b5' => 'Data di pubblicazione',
+	'08ce3a09' => 'Blocchi salvati',
+	'ce6fa2e6' => 'Errore di salvataggio',
+	'9cdcd1f0' => 'Pagine CMS statiche: chi siamo, note legali, condizioni, ecc.',
+	'4349f0db' => 'Pagina %s',
+	'1bf841b2' => 'Accesso al contenuto',
 ];

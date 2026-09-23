@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -93,8 +94,8 @@ class Admin extends Controller_Module
 			$html .= '<a class="settings-hub-card settings-hub-card--'.$s['color'].'" href="'.url($s['url']).'">';
 			$html .= '<div class="settings-hub-icon"><i class="'.$s['icon'].'"></i></div>';
 			$html .= '<div class="settings-hub-text">';
-			$html .= '<div class="settings-hub-title">'.htmlspecialchars($s['title']).'</div>';
-			$html .= '<div class="settings-hub-desc">'.htmlspecialchars($s['desc']).'</div>';
+			$html .= '<div class="settings-hub-title">'.htmlspecialchars((string) ($s['title'])).'</div>';
+			$html .= '<div class="settings-hub-desc">'.htmlspecialchars((string) ($s['desc'])).'</div>';
 			$html .= '</div>';
 			$html .= '<div class="settings-hub-arrow"><i class="fas fa-arrow-right"></i></div>';
 			$html .= '</a>';
@@ -134,7 +135,7 @@ class Admin extends Controller_Module
 				{
 					if ($page['published'])
 					{
-						$pages['pages/'.$page['name']] = 'Page : '.$page['title'];
+						$pages['pages/'.$page['name']] = $this->lang('Page : %s', $page['title']);
 					}
 				}
 			}
@@ -165,7 +166,7 @@ class Admin extends Controller_Module
 						'check'  => function($filename, $ext){
 							if (!in_array($ext, ['gif', 'jpeg', 'jpg', 'png', 'ico']))
 							{
-								return $this->lang('Veuiller choisir un fichier d\'image');
+								return $this->lang('Veuillez choisir un fichier d\'image');
 							}
 
 							list($w, $h) = getimagesize($filename);
@@ -193,9 +194,37 @@ class Admin extends Controller_Module
 						'type'   => 'select',
 						'rules'  => 'required'
 					],
+					'font' => [
+						'label'       => $this->lang('Police du site'),
+						'description' => $this->lang('Remplace la police de tous les thèmes. Les polices sont servies par Google Fonts ; « %s » ne fait appel à aucun service extérieur.', $this->lang('Police du thème')),
+						'values'      => ['' => $this->lang('Police du thème')] + polices_disponibles(),
+						'value'       => $this->config->nf_font,
+						'type'        => 'select'
+					],
+					// Le menu « thème » du pied de page (cf. helpers/theme.php). Fermé, il disparaît, et un
+					// choix déjà fait par un visiteur n'est plus honoré : c'est le cas du site vitrine.
+					'theme_visiteur' => [
+						'label'       => $this->lang('Choix du thème'),
+						'type'        => 'checkbox',
+						'values'      => ['on' => $this->lang('Laisser les visiteurs choisir le thème du site, dans le pied de page')],
+						'checked'     => ['on' => nf_theme_choix_permis()],
+						'description' => $this->lang('Le choix est gardé dans le navigateur du visiteur, pour ce site seulement. Décocher impose le thème par défaut à tous.')
+					],
+					'session_history_days' => [
+						'label'       => $this->lang('Historique des connexions'),
+						'description' => $this->lang('Nombre de jours de conservation des connexions (adresse IP, agent, date). 0 pour ne jamais purger.'),
+						'value'       => (int) $this->config->nf_session_history_days,
+						'type'        => 'number',
+						'check'       => function($jours){
+							if ($jours !== '' && (!ctype_digit((string) $jours) || (int) $jours > 3650))
+							{
+								return $this->lang('Indiquez un nombre de jours entre 0 et 3650.');
+							}
+						}
+					],
 					'analytics' => [
 						'label'       => '<a href="https://analytics.google.com" target="_blank">'.$this->lang('Code Google Analytics').'</a>',
-						'description' => 'Format UA-XXXXXXXXX-Y',
+						'description' => $this->lang('Format UA-XXXXXXXXX-Y'),
 						'value'       => $this->config->nf_analytics,
 						'check'       => function($code){
 							if (!is_empty($code) && !preg_match('/^UA-\d+-\d+$/', $code))
@@ -213,6 +242,18 @@ class Admin extends Controller_Module
 						'label'  => '<a href="http://www.robotstxt.org" target="_blank">robots.txt</a>',
 						'type'   => 'textarea',
 						'value'  => $this->config->nf_robots_txt
+					],
+					/*
+					 * L'interrupteur du service worker. La description dit ce que l'on gagne ET ce que
+					 * l'on engage : c'est le seul réglage du produit dont l'effet survit à sa propre
+					 * désactivation côté serveur, et l'administrateur doit le savoir avant de cocher.
+					 */
+					'pwa' => [
+						'label'       => $this->lang('Application installable'),
+						'type'        => 'checkbox',
+						'values'      => ['on' => $this->lang('Garder les images, les styles et les scripts dans le navigateur des visiteurs')],
+						'checked'     => ['on' => (bool) $this->config->nf_pwa],
+						'description' => $this->lang('Les pages, elles, ne sont jamais gardées : un déploiement se voit tout de suite. Décocher désinstalle réellement chez les visiteurs, à leur prochaine visite.')
 					]
 				])
 				->add_submit($this->lang('Valider'))
@@ -222,8 +263,18 @@ class Admin extends Controller_Module
 		{
 			foreach ($post as $var => $value)
 			{
+				if ($var === 'pwa' || $var === 'theme_visiteur')
+				{
+					continue;
+				}
+
 				$this->config('nf_'.$var, $value);
 			}
+
+			// Hors de la boucle : une case DÉCOCHÉE n'arrive pas dans le POST, et la boucle ne
+			// l'éteindrait donc jamais. C'est l'extinction qui compte le plus ici.
+			$this->config('nf_pwa', empty($post['pwa']) ? '0' : '1', 'bool');
+			$this->config('nf_theme_visiteur', empty($post['theme_visiteur']) ? '0' : '1', 'bool');
 
 			$this->_audit('general');
 			notify($this->lang('Préférences générales sauvegardées avec succès'));
@@ -232,8 +283,8 @@ class Admin extends Controller_Module
 		}
 
 		// Live preview values
-		$site_name        = htmlspecialchars($this->config->nf_name ?: 'NeoFrag');
-		$site_description = htmlspecialchars($this->config->nf_description ?: '');
+		$site_name        = htmlspecialchars((string) ($this->config->nf_name ?: 'NeoFrag'));
+		$site_description = htmlspecialchars((string) ($this->config->nf_description ?: ''));
 		$favicon_url      = $this->config->nf_favicon
 			? url(NeoFrag()->model2('file', $this->config->nf_favicon)->path())
 			: '';
@@ -276,7 +327,7 @@ class Admin extends Controller_Module
 			.'<i class="fas fa-times identity-preview-tab-close"></i>'
 			.'</div>'
 			.'<div class="identity-preview-url">'
-			.'<i class="fas fa-lock"></i> '.htmlspecialchars($site_url)
+			.'<i class="fas fa-lock"></i> '.htmlspecialchars((string) ($site_url))
 			.'</div>'
 			.'</div>';
 
@@ -418,15 +469,15 @@ class Admin extends Controller_Module
 						'type'        => 'text'
 					],
 					'team_logo' => [
-						'label'       => 'Logo',
+						'label'       => $this->lang('Logo'),
 						'value'       => $this->config->nf_team_logo,
 						'type'        => 'file',
 						'upload'      => 'logos',
-						'info'        => ' d\'image (max. '.(file_upload_max_size() / 1024 / 1024).' Mo)',
+						'info'        => $this->lang(' d\'image (max. %d Mo)', file_upload_max_size() / 1024 / 1024),
 						'check'       => function($filename, $ext){
 							if (!in_array($ext, ['gif', 'jpeg', 'jpg', 'png']))
 							{
-								return 'Veuiller choisir un fichier d\'image';
+								return $this->lang('Veuillez choisir un fichier d\'image');
 							}
 						},
 						'description' => $this->lang('Le logo pourra être affiché dans le widget type <b>header</b> <i>(en remplacement du titre et slogan)</i>.')
@@ -541,13 +592,13 @@ class Admin extends Controller_Module
 				.'<div class="social-card-icon" style="background:'.$color.'"><i class="'.$icon.'"></i></div>'
 				.'<div class="social-card-name">'.$label.'</div>';
 			if ($has_value) {
-				$grid_html .= '<a href="'.htmlspecialchars($current).'" target="_blank" rel="noopener" class="social-card-visit" title="'.$this->lang('Ouvrir le profil').'"><i class="fas fa-external-link-alt"></i></a>';
+				$grid_html .= '<a href="'.htmlspecialchars((string) ($current)).'" target="_blank" rel="noopener" class="social-card-visit" title="'.$this->lang('Ouvrir le profil').'"><i class="fas fa-external-link-alt"></i></a>';
 			}
 			$grid_html .= '</div>'
 				.'<input type="url" class="form-control social-card-input" '
 				.'name="'.$token.'[social_'.$key.']" '
-				.'value="'.htmlspecialchars($current).'" '
-				.'placeholder="'.htmlspecialchars($placeholder).'" />'
+				.'value="'.htmlspecialchars((string) ($current)).'" '
+				.'placeholder="'.htmlspecialchars((string) ($placeholder)).'" />'
 				.'</div>';
 		}
 		$grid_html .= '</div>';
@@ -689,7 +740,7 @@ class Admin extends Controller_Module
 		return $this->_layout(function($col){
 			$col->append($this	->panel()
 								->heading($this->lang('Serveur d\'envoi des emails'), 'fas fa-envelope')
-								->body('<div class="alert alert-info">'.$this->lang('NeoFrag envoie les emails <b>tout seul</b> sur la plupart des hébergements (rien à régler). Renseigne un serveur SMTP <b>uniquement si l\'envoi échoue</b> : celui de ton hébergeur (souvent <code>mail.ton-domaine</code>, port 465/SSL ou 587/TLS) ou un service externe (Brevo, Mailgun…). Teste ensuite un envoi depuis la page <a href="'.url('admin/emails').'">Emails</a>.').'</div>'.$this->form()->display())
+								->body('<div class="alert alert-info">'.$this->lang('NeoFrag envoie les emails <b>tout seul</b> sur la plupart des hébergements (rien à régler). Renseigne un serveur SMTP <b>uniquement si l\'envoi échoue</b> : celui de ton hébergeur (souvent <code>mail.ton-domaine</code>, port 465/SSL ou 587/TLS) ou un service externe (Brevo, Mailgun…). Teste ensuite un envoi depuis la page <a href="%s">Emails</a>.', url('admin/emails')).'</div>'.$this->form()->display())
 			);
 		});
 	}
@@ -701,15 +752,21 @@ class Admin extends Controller_Module
 				->css('admin/maintenance')
 				->js('admin/status_toggle');
 
+		// Pas de `fast_mode()` ici : il centre le bouton d'envoi alors que le formulaire voisin
+		// aligne le sien sur la colonne des champs. Deux boutons d'envoi à deux endroits
+		// différents sur un même écran — exactement l'incohérence à supprimer. Le champ reçoit
+		// aussi un libellé : il n'en avait aucun, et se présentait comme une case vide.
 		$form_opening = $this->form()
 			->add_rules([
 				'opening' => [
-					'type'  => 'datetime',
-					'value' => $this->config->nf_maintenance_opening
+					'label'       => $this->lang('Date de réouverture'),
+					'type'        => 'datetime',
+					'value'       => $this->config->nf_maintenance_opening,
+					'description' => $this->lang('Affichée aux visiteurs sur la page de maintenance. Laisse vide pour ne pas annoncer de date.')
 				]
 			])
-			->fast_mode()
-			->add_submit($this->lang('Valider'))
+			->display_required(FALSE)
+			->add_submit($this->lang('Programmer'), 'far fa-clock')
 			->save();
 
 		// array_filter : une config vide -> explode(' ', '') renvoie [''] (et non []), ce qui
@@ -737,7 +794,7 @@ class Admin extends Controller_Module
 					'check'  => function($filename, $ext){
 						if (!in_array($ext, ['gif', 'jpeg', 'jpg', 'png']))
 						{
-							return $this->lang('Veuiller choisir un fichier d\'image');
+							return $this->lang('Veuillez choisir un fichier d\'image');
 						}
 					}
 				],
@@ -750,7 +807,7 @@ class Admin extends Controller_Module
 					'check'  => function($filename, $ext){
 						if (!in_array($ext, ['gif', 'jpeg', 'jpg', 'png']))
 						{
-							return $this->lang('Veuiller choisir un fichier d\'image');
+							return $this->lang('Veuillez choisir un fichier d\'image');
 						}
 					}
 				],
@@ -788,13 +845,13 @@ class Admin extends Controller_Module
 					'label' => $this->lang('Couleur de fond'),
 					'value' => $this->config->nf_maintenance_background_color ?: '#343a40',
 					'type'  => 'colorpicker',
-					'size'  => 'col-4'
+					'size'  => 'col-md-6 col-xl-4'
 				],
 				'text_color' => [
 					'label' => $this->lang('Couleur du texte'),
 					'value' => $this->config->nf_maintenance_text_color ?: '#fff',
 					'type'  => 'colorpicker',
-					'size'  => 'col-4'
+					'size'  => 'col-md-6 col-xl-4'
 				]
 			])
 			->add_submit($this->lang('Valider'))
@@ -857,8 +914,10 @@ class Admin extends Controller_Module
 		$text_color  = $this->config->nf_maintenance_text_color ?: '#ffffff';
 		$bg_repeat   = $this->config->nf_maintenance_background_repeat ?: 'no-repeat';
 		$bg_position = $this->config->nf_maintenance_background_position ?: 'center top';
-		$title       = htmlspecialchars($this->config->nf_maintenance_title ?: 'Site en maintenance');
-		$content     = htmlspecialchars($this->config->nf_maintenance_content ?: 'Le site est temporairement indisponible. Merci de votre patience.');
+		$title       = htmlspecialchars((string) ($this->config->nf_maintenance_title ?: $this->lang('Site en maintenance')));
+		// Le même texte par défaut que la page de maintenance elle-même (views/maintenance.tpl.php) : l'aperçu
+		// montrait une autre phrase que celle que le visiteur lit.
+		$content     = htmlspecialchars((string) ($this->config->nf_maintenance_content ?: $this->lang('Le site est momentanément indisponible, le temps d’une mise à jour. Merci de revenir dans quelques instants.')));
 
 		$preview_styles = 'background-color:'.$bg_color.';';
 		if ($bg_url) {

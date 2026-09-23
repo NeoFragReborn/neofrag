@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -66,7 +67,7 @@ class Table_Col extends Library
 	public function display($table, $i, $data)
 	{
 		return $this->html('td')
-					->attr_if($this->_align, 'class', 'text-'.$this->_align)
+					->attr_if($this->_align, 'class', nf_bs_align((string) $this->_align))
 					->append_attr_if($this->_style, 'class', implode(' ', $this->_style))
 					->content($this->execute($table, $i, $data));
 	}
@@ -159,7 +160,7 @@ class Table_Col extends Library
 		}
 
 		return $this->html('th')
-					->attr_if($this->_align,        'class', 'text-'.$this->_align)
+					->attr_if($this->_align,        'class', nf_bs_align((string) $this->_align))
 					->append_attr_if($this->_size,  'class', $this->_size)
 					->append_attr_if($this->_style, 'class', implode(' ', $this->_style))
 					->content($header);

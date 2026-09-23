@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -56,5 +57,16 @@ return [
 	'eb78cff1' => 'Description',
 	'f630d83e' => 'Le logo doit être carré',
 	'f6f08efc' => 'Présentation',
-	'faddacf3' => 'Joueur'
+	'faddacf3' => 'Joueur',
+	'25e975ef' => 'Cette équipe recrute — Postuler',
+	'49a80df0' => 'En ligne',
+	'48b614a4' => 'Hors ligne',
+	'52c9bbab' => 'Modifier',
+	'78ee8be4' => 'Modifier un rôle',
+	'dc7fea54' => 'Supprimer un rôle',
+	'0aac9844' => 'Date',
+	'3c19f7aa' => 'Adversaire',
+	'a415f66e' => 'Événement',
+	'f3581855' => 'Score',
+	'f4cbbafe' => 'Équipes et clans — module gaming.',
 ];

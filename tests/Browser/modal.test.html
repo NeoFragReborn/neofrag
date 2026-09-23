@@ -1,0 +1,270 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Modales AJAX — contrat de la réponse et du cache</title>
+
+<!--
+  `modal.exec()` est le point de passage de TOUTE réponse d'administration : chaque formulaire en
+  modale, chaque suppression, chaque assistant y repasse. Il interprète une réponse normalisée —
+  `css`, `js`, `notify`, `redirect`, `success: refresh` — puis rend la main à l'appelant.
+
+  Deux propriétés s'y jouent, et aucune n'est visible depuis PHP :
+
+    - **un script déjà chargé ne doit pas l'être deux fois.** Réexécuter un script d'administration
+      rebranche ses écouteurs : un bouton de suppression finit par envoyer deux requêtes, un
+      formulaire par se soumettre en double. Le dédoublonnage se fait contre les `<script>` DÉJÀ
+      présents dans le document, puis contre ceux chargés en route ;
+    - **l'appelant ne doit reprendre la main qu'APRÈS le chargement des scripts.** Sinon le code de
+      la modale s'exécute avant la bibliothèque dont il dépend, et échoue une fois sur deux selon la
+      vitesse du réseau — le pire des symptômes à diagnostiquer.
+
+  S'y ajoute le cache de `modal.load()` : rouvrir la même modale ne doit pas refaire l'aller-retour
+  serveur, sous peine d'empiler des copies du même formulaire dans le document.
+
+  NON COUVERT, et volontairement : les branches `success: refresh` et `redirect`. Elles font
+  naviguer la page, ce qui emporterait l'épreuve elle-même. Leur contrat — ne jamais appeler le
+  callback, ne jamais résoudre — reste vérifié par lecture.
+
+  `NF.ajax`, `NF.loadScript`, `notify` et `bootstrap` sont remplacés par des doubles : on éprouve le
+  CONTRAT, sans réseau ni serveur. Le fichier visé est le VRAI (`/src/js/modal.js`).
+-->
+
+<script src="/harness.js"></script>
+<script src="/nf.js"></script>
+
+<body>
+
+<!--
+  `href="#"` et non une vraie adresse, DÉLIBÉRÉMENT. Avec une vraie adresse, un `preventDefault()`
+  disparu fait naviguer le navigateur hors de l'épreuve : le contrôle échoue bien — le harnais compte
+  une page sans verdict comme un échec — mais il ne dit alors que « aucun verdict rendu », sans
+  nommer ce qui a lâché. Un dièse garde la page en place et laisse l'assertion ci-dessous nommer le
+  défaut. Contre-éprouvé dans les deux formes.
+-->
+<a href="#" id="declencheur" data-modal-ajax="/fr/ajax/user/login">Ouvrir</a>
+
+<script>
+// ── Les doubles ──────────────────────────────────────────────────────────────
+var scriptsCharges  = [];
+var notifications   = [];
+var appelsAjax      = [];
+var modalesMontrees = 0;
+
+NF.loadScript = function (src) {
+	scriptsCharges.push(src);
+	return Promise.resolve();
+};
+
+window.notify = function (message, type) {
+	notifications.push({ message: message, type: type });
+};
+
+window.bootstrap = {
+	Modal: {
+		getOrCreateInstance: function () {
+			return {
+				show: function () { modalesMontrees++; },
+				hide: function () {}
+			};
+		}
+	}
+};
+
+NF.ajax = function (options) {
+	appelsAjax.push(options.url);
+
+	return Promise.resolve({
+		content: '<div class="modal" id="modale-eprouvee"><div class="modal-body">contenu</div></div>'
+	});
+};
+
+// L'URL ABSOLUE d'un script réellement présent dans le document : c'est sous cette forme que
+// `s.src` la rend, et donc sous cette forme que le dédoublonnage la compare.
+var urlDejaPresente = document.querySelector('script[src$="harness.js"]').src;
+</script>
+
+<!-- Le vrai fichier des modales. Chargé APRÈS les doubles. -->
+<script src="/src/js/modal.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+	var etapes = [];
+
+	function etape(fn) { etapes.push(fn); }
+
+	function derouler(i) {
+		if (i >= etapes.length) { NFTest.fini(); return; }
+
+		var suite = function () { derouler(i + 1); };
+
+		try {
+			var r = etapes[i]();
+
+			if (r && typeof r.then === 'function') {
+				r.then(suite, function (e) {
+					NFTest.verifie('étape ' + i + ' : aucune exception', 'aucune', String(e));
+					suite();
+				});
+			}
+			else {
+				suite();
+			}
+		}
+		catch (e) {
+			NFTest.verifie('étape ' + i + ' : aucune exception', 'aucune', String(e));
+			suite();
+		}
+	}
+
+	// ── 1. Le CSS de la réponse est posé dans l'en-tête ──────────────────────
+	etape(function () {
+		var avant = document.head.querySelectorAll('style').length;
+
+		return modal.exec(function (d) { return d; })({
+			css: '<style id="css-eprouve">.nf-eprouve{color:red}</style>'
+		}).then(function () {
+			NFTest.verifie('le CSS de la réponse entre dans <head>',
+				avant + 1, document.head.querySelectorAll('style').length);
+			NFTest.verifie('et c\'est bien celui de la réponse',
+				true, document.getElementById('css-eprouve') !== null);
+		});
+	});
+
+	// ── 2. Un script DÉJÀ dans le document n'est pas rechargé ────────────────
+	//
+	// C'est le premier des deux dédoublonnages, et le plus facile à perdre : il compare la réponse
+	// aux `<script>` que la page portait au départ.
+	etape(function () {
+		scriptsCharges = [];
+
+		return modal.exec(function (d) { return d; })({ js: [urlDejaPresente] }).then(function () {
+			NFTest.verifie('un script déjà présent dans la page n\'est pas rechargé',
+				0, scriptsCharges.length);
+		});
+	});
+
+	// ── 3. Un script nouveau est chargé, une seule fois ──────────────────────
+	etape(function () {
+		scriptsCharges = [];
+
+		return modal.exec(function (d) { return d; })({ js: ['/src/js/help.js'] }).then(function () {
+			NFTest.verifie('un script nouveau est chargé', ['/src/js/help.js'], scriptsCharges);
+		});
+	});
+
+	etape(function () {
+		scriptsCharges = [];
+
+		return modal.exec(function (d) { return d; })({ js: ['/src/js/help.js'] }).then(function () {
+			NFTest.verifie('le même script n\'est pas rechargé à la réponse suivante',
+				0, scriptsCharges.length);
+		});
+	});
+
+	// ── 4. Plusieurs scripts partent dans l'ORDRE de la réponse ──────────────
+	etape(function () {
+		scriptsCharges = [];
+
+		return modal.exec(function (d) { return d; })({
+			js: ['/src/js/table.js', '/src/js/notify.js']
+		}).then(function () {
+			NFTest.verifie('les scripts sont chargés dans l\'ordre annoncé',
+				['/src/js/table.js', '/src/js/notify.js'], scriptsCharges);
+		});
+	});
+
+	// ── 5. La main n'est rendue qu'APRÈS les scripts ─────────────────────────
+	//
+	// Un callback qui part avant ses dépendances échoue selon la vitesse du réseau : une panne qui
+	// ne se reproduit pas sur le poste du développeur.
+	etape(function () {
+		var journal = [];
+
+		NF.loadScript = function (src) {
+			return new Promise(function (resolve) {
+				setTimeout(function () { journal.push('script:' + src); resolve(); }, 30);
+			});
+		};
+
+		return modal.exec(function (d) { journal.push('callback'); return d; })({
+			js: ['/src/js/knob.js']
+		}).then(function () {
+			NFTest.verifie('le callback passe APRÈS le chargement des scripts',
+				['script:/src/js/knob.js', 'callback'], journal);
+
+			NF.loadScript = function (src) { scriptsCharges.push(src); return Promise.resolve(); };
+		});
+	});
+
+	// ── 6. Les notifications de la réponse sont émises ───────────────────────
+	etape(function () {
+		notifications = [];
+
+		return modal.exec(function (d) { return d; })({
+			notify: [
+				{ message: 'Enregistré', type: 'success' },
+				{ message: 'Attention',  type: 'warning' }
+			]
+		}).then(function () {
+			NFTest.verifie('chaque notification de la réponse est émise', 2, notifications.length);
+			NFTest.verifie('avec son message et sa couleur',
+				{ message: 'Enregistré', type: 'success' }, notifications[0]);
+		});
+	});
+
+	// ── 7. Le callback reçoit la réponse, telle quelle ───────────────────────
+	etape(function () {
+		return modal.exec(function (d) { return d.marqueur; })({ marqueur: 'porte-jusqu-au-bout' })
+			.then(function (rendu) {
+				NFTest.verifie('la valeur du callback est celle que rend la promesse',
+					'porte-jusqu-au-bout', rendu);
+			});
+	});
+
+	// ── 8. Ouvrir une modale : un aller-retour, puis le cache ────────────────
+	etape(function () {
+		appelsAjax      = [];
+		modalesMontrees = 0;
+
+		modal.load('/fr/ajax/eprouve/modale');
+
+		// `load` n'est pas une promesse : on laisse la micro-tâche se dérouler.
+		return new Promise(function (resolve) { setTimeout(resolve, 60); }).then(function () {
+			NFTest.verifie('ouvrir une modale interroge le serveur une fois', 1, appelsAjax.length);
+			NFTest.verifie('la modale est insérée dans le document',
+				true, document.getElementById('modale-eprouvee') !== null);
+			NFTest.verifie('et elle est montrée', 1, modalesMontrees);
+		});
+	});
+
+	etape(function () {
+		appelsAjax = [];
+
+		modal.load('/fr/ajax/eprouve/modale');
+
+		return new Promise(function (resolve) { setTimeout(resolve, 60); }).then(function () {
+			NFTest.verifie('rouvrir la MÊME modale ne réinterroge pas le serveur', 0, appelsAjax.length);
+			NFTest.verifie('une seule copie de la modale dans le document',
+				1, document.querySelectorAll('#modale-eprouvee').length);
+			NFTest.verifie('et elle est montrée de nouveau', 2, modalesMontrees);
+		});
+	});
+
+	// ── 9. Le clic sur [data-modal-ajax] ─────────────────────────────────────
+	etape(function () {
+		var demandees = [];
+
+		modal.load = function (url) { demandees.push(url); };
+
+		var lien    = document.getElementById('declencheur');
+		var clic    = new MouseEvent('click', { bubbles: true, cancelable: true });
+		var defaut  = !lien.dispatchEvent(clic);
+
+		NFTest.verifie('un clic sur [data-modal-ajax] demande cette modale',
+			['/fr/ajax/user/login'], demandees);
+		NFTest.verifie('et la navigation du lien est empêchée', true, defaut);
+	});
+
+	derouler(0);
+});
+</script>

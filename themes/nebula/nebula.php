@@ -20,11 +20,26 @@ class Nebula extends Theme
 			'link'        => 'https://neofr.ag',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'Creative Commons CC BY-NC-SA 4.0',
+			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
+			'core'        => TRUE,
+			'presets'     => [],
+			'requires'    => [],
 			'version'     => '1.0.0',
 			'depends' => [
 				'neofrag' => '0.2.1'
 			],
-			'zones'       => ['Header', 'Avant-contenu', 'Contenu', 'Post-contenu', 'Footer']
+			// « Navigation » est declaree EN DERNIER a dessein : le numero d'une zone est son rang
+			// dans cette liste (cf. Output::region), et l'inserer ailleurs renumeroterait toutes les
+			// dispositions deja en base. Elle est rendue DANS la barre vitree, pas sous l'en-tete.
+			'zones'       => ['Header', 'Avant-contenu', 'Contenu', 'Post-contenu', 'Footer', 'Navigation'],
+			'regions'     => [
+				'header'         => 'Header',
+				'before_content' => 'Avant-contenu',
+				'content'        => 'Contenu',
+				'after_content'  => 'Post-contenu',
+				'footer'         => 'Footer',
+				'navigation'     => 'Navigation',
+			]
 		];
 	}
 
@@ -33,6 +48,10 @@ class Nebula extends Theme
 		$this	->css('bootstrap.min')->css('nf-bs5-bridge')
 				->css('icons/fontawesome.min')
 				->css('style')
+				// APRES la feuille du theme, et jamais avant : elle retablit ce que le theme
+				// ecrase sans le vouloir — cadre des boutons « contour », coins des cartes.
+				// Voir css/nf-apres-theme.css.
+				->css('nf-apres-theme')
 				->js('bootstrap.bundle.min')
 				->js('modal')
 				->js('notify')
@@ -55,25 +74,17 @@ class Nebula extends Theme
 	{
 		$dispositions = $this->array();
 
-		// Header : logo + navigation (liens core uniquement, robustes après découplage).
-		$dispositions->set('*', 'Header', $this->array([
-			$this->row(
-					$this->col(
-						$this->widget($this->db->insert('nf_widgets', [
-							'widget'   => 'header',
-							'type'     => 'index',
-							'settings' => serialize([
-								'display'           => 'logo',
-								'align'             => 'text-start',
-								'title'             => '',
-								'description'       => '',
-								'color_title'       => '#ffffff',
-								'color_description' => '#8593a6'
-							])
-						]))
-					)
-				)
-				->style('row-default'),
+		// LA BARRE DU HAUT. Le gabarit dessine sa propre barre vitree — logo, menu, boutons de
+		// compte — et rend la zone « Navigation » A L'INTERIEUR. Le menu du site est donc CE
+		// widget : l'administrateur le configure comme n'importe quel autre, et il n'apparait
+		// qu'une fois.
+		//
+		// L'en-tete (zone « Header ») reste VIDE a l'installation, et c'est delibere : la barre
+		// porte deja le nom du site et la navigation. Jusqu'au 2026-09-22 cette zone recevait un
+		// widget « header » et un widget « navigation », ce qui affichait le nom du site DEUX fois
+		// et le menu DEUX fois sur toute installation neuve. La zone reste disponible pour qui
+		// veut y placer quelque chose.
+		$dispositions->set('*', 'Navigation', $this->array([
 			$this->row(
 					$this->col(
 						$this	->widget($this->db->insert('nf_widgets', [
@@ -92,7 +103,7 @@ class Nebula extends Theme
 								]))
 					)
 				)
-				->style('row-dark')
+				->style('row-default')
 		]));
 
 		// Home : slider en avant-contenu (mise en avant).

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -62,7 +63,7 @@ return [
 	'9d73409b' => '<i>Mensaje eliminado</i>',
 	'a026ae67' => 'Categoría',
 	'a47f60e2' => '%d respuesta|%d respuestas',
-	'a7320cf6' => '%d vista',
+	'a7320cf6' => '%d vista|%d vistas',
 	'a9368b0c' => 'tema bloqueado o no...',
 	'a939fb96' => 'Todos los mensajes están ahora marcados como leídos',
 	'ab2b6b9e' => 'Estadísticas',
@@ -75,7 +76,7 @@ return [
 	'bac23b09' => '<b>%d</b> tema|<b>%d</b> temas',
 	'c3773d94' => 'Editar tema / mensaje',
 	'c5db4c8a' => 'Confirmación de eliminación',
-	'c69b96e4' => '%d redirección',
+	'c69b96e4' => '%d redirección|%d redirecciones',
 	'c78d2252' => 'Por favor, elija un foro diferente',
 	'cccdc6fa' => '<b>%d</b> visualización|<b>%d</b> visualizaciones',
 	'ce22e79a' => 'Sin respuesta',
@@ -86,7 +87,7 @@ return [
 	'd6d935b8' => 'Editar categoría',
 	'd7f78423' => 'Promover un tema a anuncio',
 	'e0b79a88' => 'Por favor rellena un mensaje',
-	'e16d51e5' => '%d tema',
+	'e16d51e5' => '%d tema|%d temas',
 	'e1892b4c' => 'Seleccione un foro al que mover',
 	'e1b27a21' => 'Sin categoría de foro.<br>Cree una categoría con el botón superior para comenzar.',
 	'e7831cbd' => 'Lista de foros',
@@ -229,7 +230,7 @@ return [
 	'913bc47c' => 'Índices full-text reconstruidos',
 	// i18n 2026-06-11
 	'5628aaf6' => '%s te ha mencionado en «%s»',
-	90203601 => '%s ha respondido a «%s»',
+	'90203601' => '%s ha respondido a «%s»',
 	// i18n 2026-06-11 (code strings)
 	'6b8d8fc3' => 'Volver al tema',
 	'dfbb200e' => '%d mención(es) marcada(s) como leída(s)',
@@ -258,4 +259,18 @@ return [
 	'558ba8aa' => 'Adjunto (opcional)',
 	'9b317b7c' => 'Tipos permitidos: %s',
 	'4f90a869' => 'Tamaño máx.: %s',
+	'2d8f3501' => 'Ninguna categoría de foro.',
+	'b2f3db89' => 'Cree una categoría desde la barra de herramientas para empezar.',
+	'7e6a9dc0' => '%d foro|%d foros',
+	'ad5a03cb' => '%d mensaje|%d mensajes',
+	'93714304' => 'Seleccionar todo',
+	'7b076dac' => 'Mover',
+	'596092e9' => 'Mover un tema',
+	'3387b5c7' => 'Mensaje del foro',
+	'8982eb68' => 'No hay ningún foro en esta categoría.',
+	'52442e0e' => 'Arrastra y suelta para reordenar',
+	'a52ad554' => 'Foro de redirección',
+	'50cb8cb5' => 'tema|temas',
+	'695864e1' => 'mensaje|mensajes',
+	'13f1a5c1' => 'Arrastrar y soltar',
 ];

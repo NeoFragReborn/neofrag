@@ -54,7 +54,7 @@ class Modal extends Library
 
 		$content = '<div class="modal-header">
 						<h5 class="modal-title">'.$this->_header.'</h5>
-						<button type="button" class="close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'"><span aria-hidden="true">&times;</span></button>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'"></button>
 					</div>
 					'.$content.'
 					'.($this->_buttons ? $this->button->static_footer($this->_buttons, 'right')->append_attr('class', 'modal-footer') : '');
@@ -116,13 +116,23 @@ class Modal extends Library
 		return $this;
 	}
 
+	/**
+	 * Le bouton de fermeture du PIED de la modale (« Fermer », « Annuler »).
+	 *
+	 * `bs-dismiss` et non `dismiss` : Bootstrap 5 a renomme tous ses attributs de comportement
+	 * en `data-bs-*`, et n'ecoute plus `data-dismiss`. Un attribut inconnu n'est pas une erreur
+	 * pour un navigateur : il est ignore EN SILENCE. Le bouton s'affichait donc normalement et
+	 * ne faisait rien, tandis que la croix de l'en-tete — ecrite en dur, correctement — fermait
+	 * bien. Signale le 2026-09-22.
+	 */
 	public function dismiss($title)
 	{
 		array_unshift($this->_buttons, parent	::button()
 												->title($title)
 												->color('secondary')
 												->align('right')
-												->data('dismiss', 'modal'));
+												->bouton()
+												->data('bs-dismiss', 'modal'));
 
 		return $this;
 	}

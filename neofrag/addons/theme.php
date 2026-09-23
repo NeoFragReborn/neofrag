@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -10,11 +11,6 @@ use NF\NeoFrag\Loadables\Addon;
 
 abstract class Theme extends Addon
 {
-	static public $core = [
-		'admin'   => FALSE,
-		'default' => TRUE
-	];
-
 	static public function __class($name)
 	{
 		return 'Themes\\'.$name.'\\'.$name;

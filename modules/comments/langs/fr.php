@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -21,5 +22,12 @@ return [
 	'6c57e7dd' => 'Supprimer les commentaires sélectionnés ?',
 	'ad59e4ea' => '%d commentaire supprimé.|%d commentaires supprimés.',
 	'6f01ddb4' => '%s a commenté votre publication',
-	'd6ee3cdc' => 'Nouveau commentaire sur un contenu que vous suivez'
+	'd6ee3cdc' => 'Nouveau commentaire sur un contenu que vous suivez',
+	'6714db33' => 'Supprimer ce commentaire ?',
+	'6bec17f1' => 'Aucun commentaire',
+	'245e9606' => 'commentaire|commentaires',
+	'06272c15' => 'Trop de commentaires récents. Réessaye dans %d minute(s).',
+	'93ac18cc' => '%s n°%d',
+	'016d7125' => 'Système de commentaires réutilisable par les modules (news, articles, etc.).',
+	'e16ce76b' => 'Commentaire',
 ];

@@ -1,9 +1,9 @@
 <?php if ($images): ?>
-<div class="card-columns">
+<div class="nf-card-grid">
 	<?php foreach ($images as $image): ?>
 	<div class="card">
 		<a href="#" data-modal-ajax="<?php echo url('ajax/gallery/image/'.$image['image_id'].'/'.url_title($image['title'])) ?>">
-			<img class="img-fluid" src="<?php echo NeoFrag()->model2('file', $image['thumbnail_file_id'])->path() ?>" alt="" />
+			<img class="card-img" src="<?php echo NeoFrag()->model2('file', $image['thumbnail_file_id'])->path() ?>" alt="<?php echo htmlspecialchars((string) $image['title']) ?>" />
 		</a>
 	</div>
 	<?php endforeach ?>

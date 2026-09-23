@@ -1,0 +1,16 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>document d'accueil (tient lieu d'iframe du Live Editor)</title>
+
+<!-- Son propre nonce : c'est tout l'objet de l'épreuve — deux réponses HTTP, deux nonces. -->
+<script>window.__nfNonce = 'NONCE-IFRAME';</script>
+
+<body>
+  <div id="cible">
+    <p id="deja-la">contenu existant</p>
+    <!-- Sert à vérifier qu'on ne REJOUE pas les scripts déjà en place en insérant à côté. -->
+    <script>window.compteurDejaLa = (window.compteurDejaLa || 0) + 1;</script>
+  </div>
+
+  <div id="remplacable" data-role="ancien"><span>ancien</span></div>
+</body>

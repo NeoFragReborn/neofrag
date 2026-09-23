@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 return [
 	'bffca9a3' => 'Número por slider',
@@ -6,4 +7,9 @@ return [
 	'a8e9757a' => 'Logo claro',
 	'7237648c' => 'Logo oscuro',
 	'2b9c33c7' => 'Socios y patrocinadores con logos — widget gaming.',
+	'54ac9ff9' => 'Socios',
+	'1f88c31b' => 'Opciones',
+	'dfcd9918' => 'Estilo de los logos',
+	'd396a751' => 'Anterior',
+	'ebcb0841' => 'Siguiente',
 ];

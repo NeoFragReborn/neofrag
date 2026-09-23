@@ -46,6 +46,7 @@ trait Forum_Mentions
 							->from('nf_user')
 							->where('username', $usernames)
 							->where('deleted', '0')
+							->where('id !=', nf_compte_masque())
 							->where('id !=', (int)$mentioner_user_id)
 							->get();
 
@@ -105,5 +106,86 @@ trait Forum_Mentions
 		$this->db	->where('mentioned_user_id', (int)$user_id)
 					->where('read_at', NULL)
 					->update('nf_forum_mentions', 'read_at = CURRENT_TIMESTAMP');
+	}
+
+	// ── Administration ────────────────────────────────────────────────────────────
+	//
+	// Vue d'ensemble, marquage, suppression, et l'autocomplétion qui alimente la saisie
+	// d'une mention. Même sujet que ci-dessus, donc même fichier.
+
+	public function get_all_mentions($limit = 500, array $filters = [])
+	{
+		$q = $this->db	->select(	'mn.mention_id',
+									'mn.message_id',
+									'mn.mentioned_user_id',
+									'mn.mentioner_user_id',
+									'mn.created_at',
+									'mn.read_at',
+									'um.username as mentioned_username',
+									'umr.username as mentioner_username',
+									'm.topic_id',
+									't.title as topic_title'
+								)
+						->from('nf_forum_mentions mn')
+						->join('nf_user um',           'um.id = mn.mentioned_user_id')
+						->join('nf_user umr',          'umr.id = mn.mentioner_user_id')
+						->join('nf_forum_messages m',  'm.message_id = mn.message_id')
+						->join('nf_forum_topics t',    't.topic_id = m.topic_id');
+
+		if (!empty($filters['status']) && in_array($filters['status'], ['read', 'unread'], TRUE))
+		{
+			$q->where($filters['status'] === 'read' ? 'mn.read_at IS NOT NULL' : 'mn.read_at IS NULL');
+		}
+
+		if (!empty($filters['user']))
+		{
+			$user = trim((string)$filters['user']);
+			$q->where('um.username LIKE', $user.'%', 'OR', 'umr.username LIKE', $user.'%');
+		}
+
+		return $q	->order_by('mn.created_at DESC')
+					->limit((int)$limit)
+					->get();
+	}
+
+	public function mark_mentions_read(array $mention_ids)
+	{
+		$ids = array_filter(array_map('intval', $mention_ids));
+		if (empty($ids))
+		{
+			return 0;
+		}
+		return (int)$this->db	->where('mention_id', $ids)
+								->where('read_at', NULL)
+								->update('nf_forum_mentions', ['read_at' => date('Y-m-d H:i:s')]);
+	}
+
+	public function delete_mentions(array $mention_ids)
+	{
+		$ids = array_filter(array_map('intval', $mention_ids));
+		if (empty($ids))
+		{
+			return 0;
+		}
+		return (int)$this->db	->where('mention_id', $ids)
+								->delete('nf_forum_mentions');
+	}
+
+	public function search_users_for_autocomplete($prefix, $limit = 10)
+	{
+		$prefix = trim((string)$prefix);
+		if (strlen($prefix) < 1)
+		{
+			return [];
+		}
+
+		return $this->db->select('id', 'username')
+						->from('nf_user')
+						->where('username LIKE', $prefix.'%')
+						->where('deleted', '0')
+						->where('id !=', nf_compte_masque())
+						->order_by('username')
+						->limit((int)$limit)
+						->get();
 	}
 }

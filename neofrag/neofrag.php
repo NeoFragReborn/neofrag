@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -54,7 +55,18 @@ namespace NF\NeoFrag;
  * @method bool                             access(string $module, string $action, int $id = 0, ?int $group_id = null, ?int $user_id = null)
  * @method \NF\NeoFrag\Libraries\Button     button(mixed ...$args)
  * @method \NF\NeoFrag\Libraries\Html       html(mixed ...$args)
+ * @method \NF\NeoFrag\Libraries\No_Translate no_translate(mixed $value)
  * @method \NF\NeoFrag\Libraries\Error      error(mixed ...$args)
+ * @property \NF\NeoFrag\Libraries\Error    $error
+ *
+ * Les méthodes ci-dessous passent par __call vers une bibliothèque ou le cœur : l'analyse statique ne
+ * pouvait pas les voir, et la liste d'exceptions en portait des centaines d'occurrences (2026-09-23).
+ * Leur type de retour dépend de l'appelant : `mixed`, ce qui est la vérité.
+ *
+ * @method mixed                            css(mixed ...$args)
+ * @method mixed                            js(mixed ...$args)
+ * @method mixed                            user(mixed ...$args)
+ * @property mixed                          $user
  */
 #[\AllowDynamicProperties]
 class NeoFrag

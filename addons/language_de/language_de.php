@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -13,10 +14,11 @@ class Language_De extends Language
 	protected function __info()
 	{
 		return [
-			'title'   => 'Deutsch',
-			'icon'    => '🇩🇪',
-			'version' => '1.0',
-			'depends' => [
+			'title'       => 'Deutsch',
+			'description' => $this->lang('Langue allemande : locales, formats de date et d’heure, et lecture des dates saisies.'),
+			'icon'        => '🇩🇪',
+			'version'     => '1.0',
+			'depends'     => [
 				'neofrag' => '0.2.0'
 			]
 		];
@@ -39,7 +41,7 @@ class Language_De extends Language
 			'short_date'      => 'd.m.Y',
 			'long_date'       => 'l,j. F Y',
 			'long_time'       => 'H:i:s',
-			'time_short'      => 'H:i',
+			'short_time'      => 'H:i',
 			'short_date_time' => 'd.m.Y H:i',
 			'long_date_time'  => 'l, j. F Y H:i'
 		];

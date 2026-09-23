@@ -1,0 +1,79 @@
+/*
+ * Champ de fichier — habillage francophone.
+ *
+ * Le widget natif du navigateur écrit son libellé dans la langue de L'INTERFACE DU NAVIGATEUR,
+ * pas dans celle de la page : « Choose File / No file chosen » s'affichait donc en anglais au
+ * milieu d'une administration entièrement en français, et aucune propriété CSS ne permet d'en
+ * changer le texte. On superpose donc l'input natif, rendu transparent, au-dessus d'une vitrine
+ * que l'on écrit nous-mêmes (cf. js/file.js).
+ *
+ * L'input reste le vrai champ, à sa place dans le formulaire : le clic l'atteint et ouvre le
+ * dialogue du système. Rien n'est simulé, donc rien ne peut casser l'envoi du fichier. Si le JS
+ * ne s'exécute pas, l'input garde sa classe `form-control` et reste utilisable tel quel.
+ *
+ * Les couleurs passent par les jetons du thème quand ils existent (--nf-* en administration,
+ * --fg-* sur le site public) avec un repli neutre, pour que le composant tienne dans les sept
+ * thèmes sans être dupliqué sept fois.
+ */
+
+.nf-file {
+	position: relative;
+	display: block;
+}
+
+.nf-file input[type="file"],
+.nf-file input[type="file"].form-control {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	opacity: 0;
+	cursor: pointer;
+	z-index: 2;
+}
+
+.nf-file-vitrine {
+	display: flex;
+	align-items: stretch;
+	overflow: hidden;
+	border: 1px solid var(--nf-border, var(--fg-border, rgba(127, 127, 127, .35)));
+	border-radius: 6px;
+	background: var(--nf-surface, var(--fg-surface, transparent));
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.nf-file-bouton {
+	flex: 0 0 auto;
+	padding: 7px 14px;
+	background: var(--nf-surface-2, var(--fg-surface-2, rgba(127, 127, 127, .12)));
+	border-right: 1px solid var(--nf-border, var(--fg-border, rgba(127, 127, 127, .35)));
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.nf-file-nom {
+	flex: 1 1 auto;
+	min-width: 0;
+	padding: 7px 12px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.nf-file-nom.is-vide {
+	color: var(--nf-muted, var(--fg-muted, rgba(127, 127, 127, .9)));
+}
+
+.nf-file:hover .nf-file-bouton {
+	background: var(--nf-surface-3, var(--fg-surface-3, rgba(127, 127, 127, .2)));
+}
+
+/* Le focus clavier porte sur l'input transparent : c'est la vitrine qui doit le montrer. */
+.nf-file input[type="file"]:focus-visible + .nf-file-vitrine {
+	outline: 2px solid var(--nf-accent, var(--fg-accent, #0d9488));
+	outline-offset: 1px;
+}

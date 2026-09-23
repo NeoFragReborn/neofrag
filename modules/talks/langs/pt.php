@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://translate.neofr.ag
  * @author: NeoFrag — i18n sync 2026-05-03
@@ -104,4 +105,33 @@ return [
 	'0213838b' => 'Máx. 2000 caracteres.',
 	'e4c1464f' => 'Ficheiros: %s · máx %s',
 	'52025860' => 'Admin da conversa',
+	'5f649bfd' => 'Mensagens privadas',
+	'2cecf817' => 'Tipo',
+	'afccc23b' => 'Criar',
+	'c627cc86' => 'Sair',
+	'1b148e6f' => 'Arquivos',
+	'94b735a4' => 'Lixo',
+	'36d699e5' => 'Pesquisa',
+	'0dede4b4' => 'Conversas',
+	'0aac9844' => 'Data',
+	'02f6b476' => 'Autor',
+	'790009e3' => 'Mensagem',
+	'406089a4' => 'Ação',
+	'e3202498' => 'Todas',
+	'4788f138' => '%d participante|%d participantes',
+	'594ae39c' => 'membros',
+	'0cbbe048' => 'Escreve pelo menos 3 caracteres para pesquisar.',
+	'4c4aec08' => 'Sem resultados para "%s"',
+	'18874ad9' => 'Sistema',
+	'6958ab6a' => 'Participantes',
+	'66d26b7f' => 'Restaurar',
+	'3d83137a' => 'Novo tópico',
+	'99a8bf5e' => '<b>GIF</b>: copia o link de um GIF do %s ou do %s e cola-o aqui. Será apresentado como imagem.',
+	'b8124b7d' => 'Ficheiro ilegível',
+	'f6638f8a' => 'Ficheiro vazio',
+	'396d3773' => 'Ficheiro demasiado grande',
+	'64010e83' => 'Não é possível detetar o tipo de ficheiro',
+	'bf8bf003' => 'Tipo de ficheiro não permitido: %s',
+	'584e9133' => 'Ficheiro suspeito (conteúdo executável detetado)',
+	'215a962f' => 'Link encurtado — cuidado',
 ];

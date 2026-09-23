@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  *
@@ -10,6 +11,16 @@ namespace NF\Modules\Talks;
 
 class Security
 {
+	/**
+	 * Traduit un message montré à l'utilisateur, dans le domaine du module talks. Hors du CMS — les
+	 * tests unitaires chargent cette classe seule, sans NeoFrag() —, rend le texte source mis en forme.
+	 * Le nom `lang` n'est pas un hasard : check-langs et check-textes-en-dur reconnaissent ses appels.
+	 */
+	private static function lang(string $texte, ...$args): string
+	{
+		return function_exists('NeoFrag') ? (string) NeoFrag()->module('talks')->lang($texte, ...$args) : vsprintf($texte, $args);
+	}
+
 	/**
 	 * Magic bytes check : lit les premiers octets du fichier pour détecter
 	 * son vrai type, peu importe l'extension ou le MIME header HTTP.
@@ -28,8 +39,8 @@ class Security
 			$finfo = finfo_open(FILEINFO_MIME_TYPE);
 			if ($finfo)
 			{
+				// Pas de `finfo_close()` : déprécié depuis PHP 8.5, où l'objet est libéré seul.
 				$mime = finfo_file($finfo, $filepath);
-				finfo_close($finfo);
 				return $mime ?: FALSE;
 			}
 		}
@@ -37,7 +48,11 @@ class Security
 		// Fallback magic bytes manuel
 		$fh = @fopen($filepath, 'rb');
 		if (!$fh) return FALSE;
-		$head = fread($fh, 16);
+		// `fread()` rend FALSE en cas d'échec de lecture, et tout ce qui suit découpe cette valeur.
+		// Sous `strict_types`, `substr(false, …)` lèverait une TypeError — sur un chemin qui ne
+		// s'emprunte que si `finfo` est absent de l'installation, donc jamais chez nous, et
+		// précisément pour cela jamais exercé.
+		$head = (string) fread($fh, 16);
 		fclose($fh);
 
 		// Quelques signatures connues
@@ -55,34 +70,34 @@ class Security
 	 * Check si un fichier uploadé est sécurisé pour acceptation.
 	 * Vérifie : MIME whitelist + magic bytes match.
 	 *
-	 * Returns TRUE ou un message d'erreur (string).
+	 * Returns TRUE ou un message d'erreur (string), traduit : il est montré à l'expéditeur.
 	 */
 	public static function validate_file($filepath, array $allowed_mimes, $max_size_bytes = 5242880)
 	{
 		if (!is_readable($filepath))
 		{
-			return 'Fichier illisible';
+			return self::lang('Fichier illisible');
 		}
 
 		$size = filesize($filepath);
 		if ($size === FALSE || $size <= 0)
 		{
-			return 'Fichier vide';
+			return self::lang('Fichier vide');
 		}
 		if ($size > $max_size_bytes)
 		{
-			return 'Fichier trop volumineux';
+			return self::lang('Fichier trop volumineux');
 		}
 
 		$real_mime = self::detect_real_mime($filepath);
 		if (!$real_mime)
 		{
-			return 'Impossible de détecter le type de fichier';
+			return self::lang('Impossible de détecter le type de fichier');
 		}
 
 		if (!in_array($real_mime, $allowed_mimes, TRUE))
 		{
-			return 'Type de fichier non autorisé : '.$real_mime;
+			return self::lang('Type de fichier non autorisé : %s', $real_mime);
 		}
 
 		// Détection des polyglotes/exécutables potentiels
@@ -102,7 +117,7 @@ class Security
 			{
 				if (preg_match($pattern, $content))
 				{
-					return 'Fichier suspect (contenu exécutable détecté)';
+					return self::lang('Fichier suspect (contenu exécutable détecté)');
 				}
 			}
 		}
@@ -242,7 +257,7 @@ class Security
 						if ($tag !== 'iframe' && !self::is_safe_url($value)) continue;
 					}
 
-					$safe_attrs .= ' '.$name.'="'.htmlspecialchars($value, ENT_QUOTES, 'UTF-8').'"';
+					$safe_attrs .= ' '.$name.'="'.htmlspecialchars((string) ($value), ENT_QUOTES, 'UTF-8').'"';
 				}
 			}
 
@@ -297,7 +312,7 @@ class Security
 		$text = (string)$text;
 
 		// Step 1: escape HTML strict
-		$escaped = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+		$escaped = htmlspecialchars((string) ($text), ENT_QUOTES, 'UTF-8');
 
 		// Step 2: auto-link URLs avec checks
 		$escaped = preg_replace_callback(
@@ -313,17 +328,17 @@ class Security
 				// GIF whitelisté → render <img>
 				if (self::is_trusted_gif_host($url) && preg_match('/\.(gif|webp|mp4)(\?|$)/i', $url))
 				{
-					return '<img src="'.htmlspecialchars($url, ENT_QUOTES, 'UTF-8').'" alt="GIF" style="max-width:200px;max-height:150px;border-radius:6px;display:inline-block;" loading="lazy" />';
+					return '<img src="'.htmlspecialchars((string) ($url), ENT_QUOTES, 'UTF-8').'" alt="GIF" style="max-width:200px;max-height:150px;border-radius:6px;display:inline-block;" loading="lazy" />';
 				}
 
-				$attrs = 'href="'.htmlspecialchars($url, ENT_QUOTES, 'UTF-8').'" target="_blank" rel="noopener nofollow"';
+				$attrs = 'href="'.htmlspecialchars((string) ($url), ENT_QUOTES, 'UTF-8').'" target="_blank" rel="noopener nofollow"';
 
 				if (self::is_url_shortener($url))
 				{
-					return '<a '.$attrs.' title="Lien raccourci — prudence" style="border-bottom: 1px dotted #d57700;"><i class="fas fa-exclamation-triangle text-warning"></i> '.htmlspecialchars($url, ENT_QUOTES, 'UTF-8').'</a>';
+					return '<a '.$attrs.' title="'.htmlspecialchars(self::lang('Lien raccourci — prudence'), ENT_QUOTES, 'UTF-8').'" style="border-bottom: 1px dotted #d57700;"><i class="fas fa-exclamation-triangle text-warning"></i> '.htmlspecialchars((string) ($url), ENT_QUOTES, 'UTF-8').'</a>';
 				}
 
-				return '<a '.$attrs.'>'.htmlspecialchars($url, ENT_QUOTES, 'UTF-8').'</a>';
+				return '<a '.$attrs.'>'.htmlspecialchars((string) ($url), ENT_QUOTES, 'UTF-8').'</a>';
 			},
 			$escaped
 		);

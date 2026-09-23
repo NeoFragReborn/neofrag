@@ -4,10 +4,10 @@
 </ul>
 <div class="tab-content border-light" id="gs-tabContent">
 	<div class="tab-pane fade show active" id="gs-options" role="tabpanel">
-		<div class="form-group row">
-			<label for="settings-gs-engine" class="col-4 col-form-label"><?php echo $this->lang('Type de serveur') ?></label>
-			<div class="col-7">
-				<select class="form-control" name="settings[engine]" id="settings-gs-engine">
+		<div class="nf-field row">
+			<label for="settings-gs-engine" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Type de serveur') ?></label>
+			<div class="col-12 col-lg-7">
+				<select class="form-select" name="settings[engine]" id="settings-gs-engine">
 					<option value="mc-java"<?php if ($engine === 'mc-java') echo ' selected="selected"' ?>>Minecraft Java</option>
 					<option value="mc-bedrock"<?php if ($engine === 'mc-bedrock') echo ' selected="selected"' ?>>Minecraft Bedrock</option>
 					<option value="source"<?php if ($engine === 'source') echo ' selected="selected"' ?>>Source (CS2, CS:GO, GMod, ARMA, Rust, TF2, L4D2…)</option>
@@ -15,23 +15,23 @@
 				</select>
 			</div>
 		</div>
-		<div class="form-group row">
-			<label for="settings-gs-host" class="col-4 col-form-label"><i class="fas fa-server"></i> <?php echo $this->lang('Adresse') ?></label>
-			<div class="col-7">
+		<div class="nf-field row">
+			<label for="settings-gs-host" class="col-12 col-lg-4 col-form-label"><i class="fas fa-server"></i> <?php echo $this->lang('Adresse') ?></label>
+			<div class="col-12 col-lg-7">
 				<input type="text" class="form-control" name="settings[host]" id="settings-gs-host" value="<?php echo htmlspecialchars($host) ?>" placeholder="ex: play.example.com OU 88.123.45.67" autocomplete="off" />
 				<small class="form-text text-muted"><?php echo $this->lang('Nom de domaine ou adresse IP du serveur (sans le port).') ?></small>
 			</div>
 		</div>
-		<div class="form-group row">
-			<label for="settings-gs-port" class="col-4 col-form-label"><?php echo $this->lang('Port') ?></label>
-			<div class="col-3">
+		<div class="nf-field row">
+			<label for="settings-gs-port" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Port') ?></label>
+			<div class="col-12 col-lg-3">
 				<input type="number" class="form-control" name="settings[port]" id="settings-gs-port" value="<?php echo (int)$port ?: '' ?>" min="1" max="65535" placeholder="auto" />
 				<small class="form-text text-muted"><?php echo $this->lang('Auto : 25565 (MC Java), 19132 (Bedrock), 27015 (Source/GoldSrc).') ?></small>
 			</div>
 		</div>
-		<div class="form-group row">
-			<label for="settings-gs-label" class="col-4 col-form-label"><?php echo $this->lang('Titre personnalisé') ?></label>
-			<div class="col-7">
+		<div class="nf-field row">
+			<label for="settings-gs-label" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Titre personnalisé') ?></label>
+			<div class="col-12 col-lg-7">
 				<input type="text" class="form-control" name="settings[label]" id="settings-gs-label" value="<?php echo htmlspecialchars($label) ?>" placeholder="<?php echo $this->lang('Optionnel : remplace le nom du serveur') ?>" maxlength="60" />
 			</div>
 		</div>

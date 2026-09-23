@@ -83,7 +83,8 @@ $CM = dirname(js('codemirror/5.65.16/codemirror.min.js'));
 			newdir:<?php echo json_encode((string) $this->lang('Nom du nouveau dossier :')) ?>,
 			rename:<?php echo json_encode((string) $this->lang('Nouveau nom :')) ?>,
 			del:<?php echo json_encode((string) $this->lang('Supprimer définitivement ?')) ?>,
-			saved:<?php echo json_encode((string) $this->lang('Enregistré.')) ?>, done:<?php echo json_encode((string) $this->lang('Fait.')) ?>
+			saved:<?php echo json_encode((string) $this->lang('Enregistré.')) ?>, done:<?php echo json_encode((string) $this->lang('Fait.')) ?>,
+			error:<?php echo json_encode((string) $this->lang('Erreur')) ?>
 		};
 
 		var sel = null;          // {path, type, dir}
@@ -113,7 +114,7 @@ $CM = dirname(js('codemirror/5.65.16/codemirror.min.js'));
 				function submit(){
 					post(U.sudo, {password:passEl.value}).then(function(r){
 						if (r && r.ok){ bootstrap.Modal.getOrCreateInstance(modalEl).hide(); cleanup(); resolve(); }
-						else { errEl.textContent = (r && r.error) || 'Erreur'; errEl.style.display = ''; }
+						else { errEl.textContent = (r && r.error) || L.error; errEl.style.display = ''; }
 					});
 				}
 				function cleanup(){
@@ -133,7 +134,7 @@ $CM = dirname(js('codemirror/5.65.16/codemirror.min.js'));
 		// ----- Arbre -------------------------------------------------------------
 		function loadDir(path, ul){
 			post(U.list, {dir:path}).then(function(r){
-				if (!r || r.error){ fmNotify((r && r.error) || 'Erreur', 'danger'); return; }
+				if (!r || r.error){ fmNotify((r && r.error) || L.error, 'danger'); return; }
 				ul.innerHTML = '';
 				r.entries.forEach(function(e){
 					var li = document.createElement('li');
@@ -187,7 +188,7 @@ $CM = dirname(js('codemirror/5.65.16/codemirror.min.js'));
 		// ----- Éditeur -----------------------------------------------------------
 		function openFile(path){
 			post(U.read, {path:path}).then(function(r){
-				if (!r || r.error){ fmNotify((r && r.error) || 'Erreur', 'danger'); return; }
+				if (!r || r.error){ fmNotify((r && r.error) || L.error, 'danger'); return; }
 				setContent(r.content, r.mode);
 				var cur = document.getElementById('fm-current');
 				if (cur){ cur.textContent = r.path; }

@@ -30,8 +30,34 @@ final class FileJailTest extends TestCase
 
 	protected function tearDown(): void
 	{
-		// nettoyage best-effort
-		@array_map('unlink', glob($this->root . '/**/*') ?: []);
+		/*
+		 * L'ancienne version faisait `glob($root.'/**' . '/*')` puis `unlink()` : ce motif ne
+		 * descend que d'un niveau et ne rend aucun DOSSIER. Les trois arborescences creees par
+		 * `setUp()` et la racine elle-meme survivaient donc a chaque test.
+		 *
+		 * Le 2026-09-21, l'atelier portait 1 043 dossiers `nf_jail_*` abandonnes dans /tmp. Ils
+		 * ne pesaient pas grand-chose, mais ils ont contribue a remplir un tmpfs de 2 Go — et un
+		 * /tmp plein fait echouer PHPStan sans un mot : il rend zero ligne, ce qui se lit comme
+		 * un verdict vert.
+		 */
+		self::effacer($this->root);
+	}
+
+	/** Supprime une arborescence entiere : les fichiers d'abord, les dossiers a la remontee. */
+	private static function effacer(string $chemin): void
+	{
+		if (!is_dir($chemin))
+		{
+			@unlink($chemin);
+			return;
+		}
+
+		foreach (array_diff(scandir($chemin) ?: [], ['.', '..']) as $entree)
+		{
+			self::effacer($chemin . '/' . $entree);
+		}
+
+		@rmdir($chemin);
 	}
 
 	public function test_resolves_a_legit_path_inside_the_root(): void

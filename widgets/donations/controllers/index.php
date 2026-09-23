@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  */
@@ -28,7 +29,7 @@ class Index extends Controller_Widget
 		$this->css('donations');
 
 		return $this->panel()
-					->heading($campaign['title'], 'fas fa-hand-holding-heart')
+					->heading($this->no_translate($campaign['title']), 'fas fa-hand-holding-heart') // titre saisi en base
 					->body($this->view('progress', [
 						'c'           => $campaign,
 						'top_donor'   => $show_top && !empty($top) ? $top[0] : NULL,

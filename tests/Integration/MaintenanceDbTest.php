@@ -25,7 +25,7 @@ final class MaintenanceDbTest extends IntegrationTestCase
 		$this->exec("INSERT INTO nf_comment (user_id, module_id, module, content, deleted_at) VALUES (?, 1, 'news', 'outside', ?)", [$uid, $outside]);
 		$this->exec("INSERT INTO nf_comment (user_id, module_id, module, content, deleted_at) VALUES (?, 1, 'news', 'live', NULL)", [$uid]);
 
-		// Requête exacte de purge_trash() — tools/maintenance.php:95
+		// Requête exacte de purge_trash() — tools/maintenance.php, purge du trash
 		// $where = "`deleted_at` IS NOT NULL AND `deleted_at` < (NOW() - INTERVAL {$days} DAY)"
 		$count = (int) $this->scalar(
 			"SELECT COUNT(*) FROM nf_comment WHERE deleted_at IS NOT NULL AND deleted_at < (NOW() - INTERVAL ? DAY) AND user_id = ?",
@@ -44,7 +44,7 @@ final class MaintenanceDbTest extends IntegrationTestCase
 		$old = date('Y-m-d H:i:s', time() - 30 * 86400);
 		$this->exec("UPDATE nf_user SET last_activity_date = NULL, admin = '1', registration_date = ? WHERE id = ?", [$old, $uid]);
 
-		// Requête exacte de purge_unconfirmed() — tools/maintenance.php:118
+		// Requête exacte de purge_unconfirmed() — tools/maintenance.php, purge des comptes non confirmés
 		// $where = "`last_activity_date` IS NULL AND `admin` = '0' AND `registration_date` < (NOW() - INTERVAL {$days} DAY)"
 		$count = (int) $this->scalar(
 			"SELECT COUNT(*) FROM nf_user WHERE last_activity_date IS NULL AND admin = '0' AND registration_date < (NOW() - INTERVAL ? DAY) AND id = ?",
@@ -62,7 +62,7 @@ final class MaintenanceDbTest extends IntegrationTestCase
 		$now = date('Y-m-d H:i:s');
 		$this->exec("UPDATE nf_user SET last_activity_date = ?, admin = '0', registration_date = ? WHERE id = ?", [$now, $old, $uid]);
 
-		// Requête exacte de purge_unconfirmed() — tools/maintenance.php:118
+		// Requête exacte de purge_unconfirmed() — tools/maintenance.php, purge des comptes non confirmés
 		// $where = "`last_activity_date` IS NULL AND `admin` = '0' AND `registration_date` < (NOW() - INTERVAL {$days} DAY)"
 		$count = (int) $this->scalar(
 			"SELECT COUNT(*) FROM nf_user WHERE last_activity_date IS NULL AND admin = '0' AND registration_date < (NOW() - INTERVAL ? DAY) AND id = ?",
@@ -88,7 +88,7 @@ final class MaintenanceDbTest extends IntegrationTestCase
 		$this->assertSame(1, (int) $this->scalar($inner, [7, $uid]), 'Pré-condition : le compte matche le WHERE interne de la purge.');
 
 		// Décision RÉELLE de purge_unconfirmed() : si !nf_registration_validation → return tôt
-		// (tools/maintenance.php:113-116), donc la suppression n'a JAMAIS lieu, quel que soit le WHERE interne.
+		// (tools/maintenance.php, garde sur nf_registration_validation), donc la suppression n'a JAMAIS lieu, quel que soit le WHERE interne.
 		// On teste donc la décision composée (gate ET where), pas un setting isolé.
 		$this->exec("DELETE FROM nf_settings WHERE name = 'nf_registration_validation'");
 		$this->exec("INSERT INTO nf_settings (name, site, lang, value, type) VALUES ('nf_registration_validation', '', '', '0', 'int')");

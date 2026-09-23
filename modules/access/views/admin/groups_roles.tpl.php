@@ -17,7 +17,7 @@
 					<?php foreach ($roles as $role): ?>
 						<th class="text-center matrix-role-col" data-role-id="<?php echo (int)$role['role_id'] ?>">
 							<i class="<?php echo htmlspecialchars($role['icon']) ?>"></i>
-							<div class="role-name"><?php echo htmlspecialchars($role['title']) ?></div>
+							<div class="role-name"><?php echo htmlspecialchars((string) $this->lang($role['title'])) ?></div>
 						</th>
 					<?php endforeach ?>
 				</tr>
@@ -26,7 +26,7 @@
 				<?php foreach ($groups as $g): ?>
 					<tr data-group-id="<?php echo (int)$g['group_id'] ?>">
 						<td class="matrix-perm-cell">
-							<span class="badge badge-<?php echo htmlspecialchars($g['color']) ?>">
+							<span class="badge <?php echo badge_class($g['color']) ?>">
 								<i class="<?php echo htmlspecialchars($g['icon']) ?>"></i>
 								<?php echo htmlspecialchars($g['title']) ?>
 							</span>

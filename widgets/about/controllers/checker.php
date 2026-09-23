@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
@@ -12,6 +13,10 @@ class Checker extends Controller
 {
 	public function index($settings = [])
 	{
+		// Reglages absents : un widget peut etre pose sans passer par son formulaire (install()
+		// d'un theme, ajout en Live Editor, disposition ancienne). Cf. tools/check-widget-reglages.php.
+		$settings = (array) $settings + ['biographie_align' => '', 'display_biographie' => '', 'display_date' => '', 'display_logo' => '', 'display_panel' => '', 'display_teamname' => '', 'display_type' => '', 'logo_align' => '', 'logo_width' => '', 'margin_bottom' => '', 'margin_left' => '', 'margin_right' => '', 'margin_top' => '', 'padding_bottom' => '', 'padding_left' => '', 'padding_right' => '', 'padding_top' => '', 'style_text' => '', 'style_title' => '', 'teamname_align' => ''];
+
 		return [
 			'display_panel'      => in_array($settings['display_panel'], ['oui', 'non']) ? $settings['display_panel'] : 'oui',
 			'display_teamname'   => in_array($settings['display_teamname'], ['oui', 'non']) ? $settings['display_teamname'] : 'oui',

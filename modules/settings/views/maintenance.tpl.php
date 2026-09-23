@@ -47,12 +47,21 @@
 		</div>
 	</header>
 	<main role="main" class="inner cover">
-		<?php if ($page_title = $this->config->nf_maintenance_title): ?>
+		<?php
+		/*
+		 * Le titre et le texte ont un DÉFAUT, et c'est là toute la correction du 2026-09-22.
+		 * Sans lui, une installation neuve — et tout site dont l'administrateur n'a pas rempli ces
+		 * deux champs, qui sont livrés VIDES — sert une page de maintenance entièrement blanche :
+		 * le visiteur n'y lit ni ce qui se passe, ni s'il doit revenir. L'aperçu de
+		 * l'administration, lui, montrait bien un titre et un texte. Signalé.
+		 *
+		 * Le réglage l'emporte dès qu'il est rempli : le défaut ne fait que combler le vide.
+		 */
+		$page_title = $this->config->nf_maintenance_title ?: $this->lang('Site en maintenance');
+		$content    = $this->config->nf_maintenance_content ?: $this->lang('Le site est momentanément indisponible, le temps d’une mise à jour. Merci de revenir dans quelques instants.');
+		?>
 		<h1 class="cover-heading"><?php echo $page_title ?></h1>
-		<?php endif ?>
-		<?php if ($content = $this->config->nf_maintenance_content): ?>
-		<p class="lead"><?php echo bbcode($content) ?></p>
-		<?php endif ?>
+		<p class="lead"><?php echo bbcode((string) $content) ?></p>
 		<?php if ($this->config->nf_maintenance_opening): ?>
 			<div id="countdown" class="countdownHolder" data-timestamp="<?php echo $this->date($this->config->nf_maintenance_opening)->timestamp() ?>"></div>
 		<?php endif ?>

@@ -1,0 +1,15 @@
+<?php
+
+/*
+ * GABARIT — ce fichier n'est jamais lu.
+ *
+ * La vraie clé est tirée au hasard par l'installateur, à CHAQUE installation : 99 octets, encodés
+ * en base64. Elle chiffre les secrets stockés en base — mot de passe SMTP, secret TOTP — et elle
+ * ne se recopie JAMAIS d'un site à un autre : deux sites qui la partageraient pourraient déchiffrer
+ * les secrets l'un de l'autre.
+ *
+ * Si tu déplaces un site, ce fichier suit SA base de données. Le perdre rend les secrets stockés
+ * illisibles — il n'existe aucun moyen de les récupérer.
+ */
+
+$crypt['key'] = 'remplacé à l\'installation par 99 octets aléatoires';

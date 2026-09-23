@@ -30,7 +30,7 @@ function notify(message, type) {
 	el.setAttribute('aria-atomic', 'true');
 	el.innerHTML = '<div class="d-flex">'
 		+ '<div class="toast-body">' + message + '</div>'
-		+ '<button type="button" class="' + closeClass + ' me-2 m-auto" data-bs-dismiss="toast" aria-label="Fermer"></button>'
+		+ '<button type="button" class="' + closeClass + ' me-2 m-auto" data-bs-dismiss="toast" aria-label="<?php echo addslashes($this->lang('Fermer')) ?>"></button>'
 		+ '</div>';
 
 	container.appendChild(el);

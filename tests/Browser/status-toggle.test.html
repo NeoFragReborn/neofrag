@@ -1,0 +1,123 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cartes d'état — basculer la maintenance et les inscriptions</title>
+
+<!--
+  Les pages « Maintenance » et « Inscriptions » de l'administration offrent chacune une carte avec
+  deux boutons, Ouvert / Fermé. Depuis juin 2026, ces boutons ne faisaient rien : leur script
+  (modules/settings/js/admin/status_toggle.js) plantait au chargement sur « $ is not defined ».
+  Fermer le site pour maintenance depuis cette carte était donc impossible — sans aucune erreur
+  visible, le bouton ressemblant simplement à un lien mort.
+
+  Ici, `window.fetch` est remplacé par un double : on éprouve le CONTRAT du script — ce qu'il POSTe
+  pour chaque bouton, et comment il repeint la carte d'après la réponse — sur le VRAI fichier
+  (/src/modules/settings/js/admin/status_toggle.js). Le balisage est repris de
+  views/admin/maintenance.tpl.php.
+-->
+
+<script src="/harness.js"></script>
+<script src="/nf.js"></script>
+
+<body>
+
+<div class="nf-status-card is-on" id="carte"
+     data-toggle-endpoint="/ajax/settings/maintenance.json"
+     data-on-title="Site ouvert au public" data-off-title="Site fermé — Mode maintenance"
+     data-on-desc="Tout le monde entre." data-off-desc="Seuls les administrateurs entrent."
+     data-on-icon="fas fa-check-circle" data-off-icon="fas fa-power-off">
+	<div class="nf-status-info">
+		<div class="nf-status-icon"><i class="fas fa-check-circle"></i></div>
+		<div class="nf-status-text">
+			<div class="nf-status-title">Site ouvert au public</div>
+			<div class="nf-status-desc">Tout le monde entre.</div>
+		</div>
+	</div>
+	<div class="nf-status-toggle">
+		<div class="btn-group switch" role="group">
+			<a href="#" class="btn btn-success active" id="ouvert">Ouvert</a>
+			<a href="#" class="btn btn-secondary" id="ferme">Fermé</a>
+		</div>
+	</div>
+</div>
+
+<!-- Une carte sans point d'entrée : le script doit la laisser tranquille. -->
+<div class="nf-status-card is-on" id="inerte">
+	<div class="btn-group switch"><a href="#" class="btn btn-success active" id="inerte-btn">Ouvert</a><a href="#" class="btn btn-secondary">Fermé</a></div>
+</div>
+
+<script>
+var appels  = [];
+var reponse = { status: true };
+
+window.fetch = function (url, init) {
+	appels.push({ url: url, init: init });
+	var json = reponse;
+	return Promise.resolve({ ok: true, status: 200, json: function () { return Promise.resolve(json); }, text: function () { return Promise.resolve(''); } });
+};
+
+function clic(el) {
+	var e = new MouseEvent('click', { bubbles: true, cancelable: true });
+	return !el.dispatchEvent(e); // true si preventDefault()
+}
+
+function corps(appel) {
+	var b = appel.init && appel.init.body;
+	return b instanceof URLSearchParams ? b.toString() : String(b);
+}
+
+function attendre() { return new Promise(function (r) { setTimeout(r, 0); }); }
+</script>
+
+<script src="/src/modules/settings/js/admin/status_toggle.js"></script>
+
+<script>
+NF.ready(async function () {
+	try {
+		var carte = document.getElementById('carte');
+		var ouvert = document.getElementById('ouvert');
+		var ferme  = document.getElementById('ferme');
+
+		// 1. Fermer : le second bouton POSTe closed=1 ; la réponse { status: true } repeint en « fermé ».
+		reponse = { status: true };
+		var empeche = clic(ferme);
+		NFTest.verifie('le clic est intercepté (preventDefault)', true, empeche);
+		NFTest.verifie('un appel réseau, vers le point d\'entrée de la carte', ['/ajax/settings/maintenance.json'], appels.map(function (a) { return a.url; }));
+		NFTest.verifie('… en POST avec X-Requested-With', ['POST', 'XMLHttpRequest'], [appels[0].init.method, appels[0].init.headers['X-Requested-With']]);
+		NFTest.verifie('… closed=1 pour le bouton « Fermé »', 'closed=1', corps(appels[0]));
+
+		await attendre();
+		NFTest.verifie('la carte passe en is-off', ['is-off', false], [carte.classList.contains('is-off') ? 'is-off' : 'is-on', carte.classList.contains('is-on')]);
+		NFTest.verifie('le bouton « Fermé » devient rouge et actif', true, ferme.classList.contains('btn-danger') && ferme.classList.contains('active'));
+		NFTest.verifie('le bouton « Ouvert » redevient neutre (gris, ni vert ni actif)', [true, false, false], [ouvert.classList.contains('btn-secondary'), ouvert.classList.contains('btn-success'), ouvert.classList.contains('active')]);
+		NFTest.verifie('titre, description et icône prennent les valeurs « off »', ['Site fermé — Mode maintenance', 'Seuls les administrateurs entrent.', 'fas fa-power-off'],
+			[carte.querySelector('.nf-status-title').textContent, carte.querySelector('.nf-status-desc').textContent, carte.querySelector('.nf-status-icon i').className]);
+
+		// 2. Rouvrir : le premier bouton POSTe closed=0 ; la réponse { status: false } repeint en « ouvert ».
+		reponse = { status: false };
+		clic(ouvert);
+		NFTest.verifie('closed=0 pour le bouton « Ouvert »', 'closed=0', corps(appels[1]));
+
+		await attendre();
+		NFTest.verifie('la carte repasse en is-on', [true, false], [carte.classList.contains('is-on'), carte.classList.contains('is-off')]);
+		NFTest.verifie('le bouton « Ouvert » redevient vert et actif', true, ouvert.classList.contains('btn-success') && ouvert.classList.contains('active'));
+		NFTest.verifie('titre et icône reprennent les valeurs « on »', ['Site ouvert au public', 'fas fa-check-circle'],
+			[carte.querySelector('.nf-status-title').textContent, carte.querySelector('.nf-status-icon i').className]);
+
+		// 3. La réponse fait foi, pas le bouton cliqué : si le serveur répond « toujours ouvert », la carte le dit.
+		reponse = { status: false };
+		clic(ferme);
+		await attendre();
+		NFTest.verifie('le serveur a le dernier mot sur l\'état affiché', true, carte.classList.contains('is-on'));
+
+		// 4. Une carte sans point d'entrée n'appelle rien.
+		var avant = appels.length;
+		clic(document.getElementById('inerte-btn'));
+		NFTest.verifie('une carte sans data-toggle-endpoint n\'appelle pas le serveur', avant, appels.length);
+	}
+	catch (e) {
+		NFTest.echec('exception : ' + (e && e.message || e));
+	}
+
+	NFTest.fini();
+});
+</script>
