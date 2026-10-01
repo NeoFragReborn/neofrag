@@ -39,6 +39,21 @@ class Checker extends Module_Checker
 		return [NeoFrag()->collection('session_history')->where('_.user_id', $this->user->id)->order_by('_.date DESC')->paginate($page)];
 	}
 
+	/** Délier un compte externe : seulement l'un des siens. */
+	public function _auth_unlink($lien_id)
+	{
+		$this->error->unconnected();
+
+		$lien = $this->db	->select('a.id', 'ad.name')
+							->from('nf_user_auth a')
+							->join('nf_addon ad', 'ad.id = a.authenticator_id', 'INNER')
+							->where('a.id', (int) $lien_id)
+							->where('a.user_id', (int) $this->user->id)
+							->row();
+
+		return is_array($lien) && $lien ? [$lien] : NULL;
+	}
+
 	public function _session_delete($session_id)
 	{
 		$this->error->unconnected();

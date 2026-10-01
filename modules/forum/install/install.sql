@@ -47,6 +47,20 @@ CREATE TABLE IF NOT EXISTS `nf_forum_categories_lang` (
   CONSTRAINT `nf_forum_categories_lang_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `nf_forum_categories` (`category_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `nf_forum_identities` (
+  `identity_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `provider` varchar(20) NOT NULL,
+  `external_id` varchar(64) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
+  `mode` enum('public','guest','custom') NOT NULL DEFAULT 'public',
+  `custom_name` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`identity_id`),
+  UNIQUE KEY `uk_provider_external` (`provider`,`external_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS `nf_forum_prefixes` (
   `prefix_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(50) NOT NULL,
@@ -91,6 +105,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum_messages` (
   `topic_id` int(11) unsigned NOT NULL,
   `parent_id` int(11) unsigned DEFAULT NULL,
   `user_id` int(11) unsigned DEFAULT NULL,
+  `identity_id` int(10) unsigned DEFAULT NULL,
   `message` mediumtext DEFAULT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp(),
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -102,6 +117,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum_messages` (
   KEY `idx_topic_date` (`topic_id`,`date`),
   KEY `idx_parent` (`parent_id`),
   KEY `idx_deleted_at` (`deleted_at`),
+  KEY `idx_identity` (`identity_id`),
   FULLTEXT KEY `ft_message` (`message`),
   CONSTRAINT `nf_forum_messages_ibfk_1` FOREIGN KEY (`topic_id`) REFERENCES `nf_forum_topics` (`topic_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_forum_messages_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,

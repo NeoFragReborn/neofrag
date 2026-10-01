@@ -7101,7 +7101,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:append\(\)\.$#'
 			identifier: method.notFound
-			count: 5
+			count: 4
 			path: modules/user/controllers/index.php
 
 		-

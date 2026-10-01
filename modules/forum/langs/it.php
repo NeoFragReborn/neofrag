@@ -305,4 +305,7 @@ return [
 	'4ab48d65' => 'Prefisso (facoltativo)',
 	'5a4b25c1' => 'La risposta di %s risolve questo argomento.',
 	'e229fd08' => 'Un prefisso classifica un argomento: «Domanda», «Tutorial», «Importante»… Il membro lo sceglie aprendo il suo argomento, e l\'elenco di un forum si filtra in base ad esso.',
+	'd699908b' => 'Scritto da Discord',
+	'7642b2d9' => 'Ospite %s',
+	'816f205c' => 'Discord',
 ];

@@ -39,6 +39,7 @@ class User extends Module
 				'security/export'                            => 'security_export',
 				'security/delete'                            => 'security_delete',
 				'auth{pages}'                                => '_auth',
+				'auth/unlink/{id}'                           => '_auth_unlink',
 				'sessions/delete/{key_id}'                   => '_session_delete',
 				'{id}/{url_title}'                           => '_member',
 				'ajax/{id}/{url_title}'                      => '_member',

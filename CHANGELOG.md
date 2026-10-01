@@ -10,6 +10,30 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.10] — 2026-10-01
+
+### Ajouté
+
+- **Une API REST** (module **API**, optionnel), pour les programmes qui parlent au site sans
+  navigateur — en premier lieu le futur bot Discord. Un administrateur crée des **clés d'accès** avec
+  les seuls droits voulus ; une clé n'est montrée qu'une fois, le site n'en garde que l'empreinte, et
+  elle se révoque d'un clic. Les adresses `/api/v1/…` rendent du JSON : l'état du site, un membre (par
+  identifiant ou par compte Discord lié), les groupes, le forum (arborescence, sujets, messages) et un
+  **fil d'événements** (nouveau sujet, nouveau message, changement de groupe…). Elle **écrit** aussi
+  sur le forum au nom d'un membre, ou d'un compte Discord non lié — publié sous son pseudo Discord,
+  marqué du logo Discord. Débit limité à 120 requêtes par minute et par clé ; les erreurs ont des codes
+  stables. Guide : « L'API REST » dans le wiki.
+- **Mes comptes liés** (espace membre) : voir ses comptes Discord, GitHub ou Google liés, en lier un, en
+  délier un — sauf s'il est le seul moyen de se connecter.
+- **S'inscrire avec Discord** (ou GitHub, Google) : un compte que personne n'a lié crée un membre, lié
+  d'emblée, quand les inscriptions sont ouvertes. Il recevait jusqu'ici « Compte inconnu ».
+
+### Corrigé
+
+- **Lier son compte Discord connectait au compte d'un autre membre** quand ce Discord était déjà lié à
+  ce dernier : la session basculait sur lui. La liaison est désormais refusée, avec un message clair, et
+  un même compte externe ne peut plus être lié à deux membres.
+
 ## [1.2.9] — 2026-10-01
 
 ### Corrigé

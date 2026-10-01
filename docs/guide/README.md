@@ -26,6 +26,7 @@ quand tu en as envie.
 | [Créer un module](create-a-module.md) | Une fonctionnalité complète : déclarations, routes, checker, données et migrations, dépendances, carrefours, permissions, administration |
 | [Créer un widget](create-a-widget.md) | Un bloc réutilisable : réglages avec valeurs de repli, vocabulaire CSS partagé, JavaScript vanilla |
 | [Créer un thème](create-a-theme.md) | Zones et régions, squelette, dispositions par défaut, le vocabulaire `--nf-*` complet, vignette, migrations de thème |
+| [L'API REST](api.md) | Faire parler un programme au site — un bot, une intégration : clés d'accès, droits, adresses, erreurs, limite de débit |
 
 ## En bref
 

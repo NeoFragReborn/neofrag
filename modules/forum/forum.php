@@ -270,6 +270,19 @@ class Forum extends Module
 			$this->js('mentions');
 		}
 
+		// Le fil d'événements de l'API : le module api n'est pas chargé pendant une action
+		// du forum, il ne peut donc pas écouter lui-même — le forum lui confie ses événements.
+		// couplage(api): facultatif — sans le module api, `Module::__load` rend NULL et rien n'est inscrit.
+		foreach (['forum.topic.created', 'forum.post.created', 'forum.post.edited', 'forum.post.deleted', 'forum.topic.split', 'forum.topics.merged'] as $evenement)
+		{
+			$this->events->on($evenement, static function ($charge) use ($evenement) {
+				if (is_array($charge) && ($api = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['api'])) instanceof \NF\Modules\Api\Api)
+				{
+					$api->consigner($evenement, $charge);
+				}
+			});
+		}
+
 		// Listener : notifier les @mentions par email (priorité sur subscriptions)
 		$this->events->on('forum.post.created', function($payload){
 			$this->_notify_mentions($payload);
@@ -331,6 +344,9 @@ class Forum extends Module
 		{
 			return;
 		}
+
+		// Un auteur venu de Discord sans compte lié n'a pas de nom de membre : celui de son identité.
+		$topic['actor'] = $topic['actor'] ?: (string) ($payload['author_name'] ?? '');
 
 		$actor     = (int)$payload['user_id'];
 		$base      = 'forum/topic/'.(int)$payload['topic_id'].'/'.\url_title($topic['title']);
@@ -456,6 +472,9 @@ class Forum extends Module
 		{
 			return;
 		}
+
+		// Un auteur venu de Discord sans compte lié : le nom de son identité (cf. _notify_bell).
+		$topic['author'] = $topic['author'] ?: (string) ($payload['author_name'] ?? '');
 
 		$topic_url = \url('forum/topic/'.$payload['topic_id'].'/'.\url_title($topic['title']));
 
@@ -595,8 +614,31 @@ class Forum extends Module
 		return $html;
 	}
 
-	public function get_profile($user_id = NULL, &$data = [])
+	/**
+	 * L'auteur d'un message qui n'est pas un membre : le nom de son identité externe (un compte
+	 * Discord non lié), marqué de son logo — ou « Visiteur » s'il n'en a pas.
+	 */
+	public function auteur_sans_compte(?string $nom_identite): string
 	{
+		if ($nom_identite === NULL || trim($nom_identite) === '')
+		{
+			return '<i>'.$this->lang('Visiteur').'</i>';
+		}
+
+		return '<span class="forum-auteur-externe" title="'.$this->lang('Écrit depuis Discord').'">'.icon('fab fa-discord').' '.htmlspecialchars($nom_identite).'</span>';
+	}
+
+	/**
+	 * La carte de l'auteur sous chaque message. `$identite` : l'identité externe d'un message écrit
+	 * depuis Discord par quelqu'un qui n'a pas lié son compte (cf. `get_messages()`).
+	 */
+	public function get_profile($user_id = NULL, &$data = [], ?array $identite = NULL)
+	{
+		if (!$user_id && $identite)
+		{
+			return $this->view('profile', $data = ['identite' => $identite]);
+		}
+
 		static $profiles = [];
 
 		$user_id = (int)$user_id;

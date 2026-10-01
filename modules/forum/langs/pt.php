@@ -305,4 +305,7 @@ return [
 	'4ab48d65' => 'Prefixo (opcional)',
 	'5a4b25c1' => 'A resposta de %s resolve este tópico.',
 	'e229fd08' => 'Um prefixo classifica um tópico: «Pergunta», «Tutorial», «Importante»… O membro escolhe-o ao abrir o seu tópico, e a lista de um fórum filtra-se por ele.',
+	'd699908b' => 'Escrito a partir do Discord',
+	'7642b2d9' => 'Convidado %s',
+	'816f205c' => 'Discord',
 ];

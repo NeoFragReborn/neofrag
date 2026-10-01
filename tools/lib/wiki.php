@@ -33,8 +33,8 @@ function nf_wiki_sections(): array
         ],
         'guide-developpeur' => [
             'title' => 'Guide développeur',
-            'intro' => "# Guide développeur\n\nÉtends NeoFrag Reborn : crée tes **thèmes**, **widgets** et **modules**, et maîtrise le framework.",
-            'pages' => ['create-a-theme' => 'Créer un thème', 'create-a-widget' => 'Créer un widget', 'create-a-module' => 'Créer un module', 'framework' => 'Le framework'],
+            'intro' => "# Guide développeur\n\nÉtends NeoFrag Reborn : crée tes **thèmes**, **widgets** et **modules**, maîtrise le framework, et fais parler tes programmes au site par son **API**.",
+            'pages' => ['create-a-theme' => 'Créer un thème', 'create-a-widget' => 'Créer un widget', 'create-a-module' => 'Créer un module', 'framework' => 'Le framework', 'api' => 'L’API REST'],
         ],
     ];
 }

@@ -305,4 +305,7 @@ return [
 	'4ab48d65' => 'Prefijo (opcional)',
 	'5a4b25c1' => 'La respuesta de %s resuelve este tema.',
 	'e229fd08' => 'Un prefijo clasifica un tema: «Pregunta», «Tutorial», «Importante»… El miembro lo elige al abrir su tema, y la lista de un foro se filtra por él.',
+	'd699908b' => 'Escrito desde Discord',
+	'7642b2d9' => 'Invitado %s',
+	'816f205c' => 'Discord',
 ];

@@ -23,7 +23,14 @@ class Session extends Core
 			 - asset / ajax
 		*/
 
-		if ($this->url->cli || is_crawler() || (isset($config['avoid']) && is_a($config['avoid'], 'closure') && $config['avoid']()))
+		/*
+		 * L'API (`api/…`) s'authentifie par clé, à chaque requête : elle n'a pas de
+		 * session. Sans cette exception, chaque appel en créait une, avec son cookie — un bot à
+		 * 120 requêtes par minute aurait laissé quelque 170 000 sessions par jour (mesuré le 2026-10-01).
+		 */
+		$api = (bool) preg_match('_^([a-z]{2}/)?api/_', (string) $this->url->request);
+
+		if ($this->url->cli || is_crawler() || $api || (isset($config['avoid']) && is_a($config['avoid'], 'closure') && $config['avoid']()))
 		{
 			$this->_session = $this->model2('session');
 			$this->_data    = $this->array;

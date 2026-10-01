@@ -20,7 +20,7 @@
 		<?php $est_solution = !empty($solution_id) && (int) $message['message_id'] === (int) $solution_id && $message['message'] !== NULL ?>
 		<div data-message-id="<?php echo (int)$message['message_id'] ?>" data-depth="<?php echo (int)($message['depth'] ?? 0) ?>" class="forum-message-row<?php echo !empty($message['depth']) ? ' forum-message-nested forum-message-depth-'.min(5, (int)$message['depth']) : '' ?><?php echo $est_solution ? ' forum-message-solution' : '' ?>">
 			<div class="forum-user-cell">
-				<?php echo $this->output->module()->get_profile($message['user_id'], $profile) ?>
+				<?php echo $this->output->module()->get_profile($message['user_id'], $profile, $message['identite'] ?? NULL) ?>
 			</div>
 			<div class="forum-message-cell">
 				<div class="actions float-end">

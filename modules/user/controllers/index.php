@@ -706,7 +706,15 @@ class Index extends Controller_Module
 
 			if (($auth = $this->collection('auth')->where('authenticator_id', $authenticator->__addon->id)->where('key', $data['id'])->row()) && $auth->key == $data['id'])
 			{
-				if ($this->user->id != $auth->user->id)
+				// Connecté, et ce compte externe appartient à un AUTRE membre : on refuse. On basculait
+				// jusqu'ici la session sur cet autre membre — lier son Discord connectait alors au
+				// compte de quelqu'un d'autre (relevé le 2026-10-01).
+				if ($this->user() && $this->user->id != $auth->user->id)
+				{
+					notify($this->lang('Ce compte %s est déjà lié à un autre membre.', $authenticator->info()->title), 'danger');
+					redirect('user/auth');
+				}
+				else if ($this->user->id != $auth->user->id)
 				{
 					$auth	->set_if($data['username'], 'username', $data['username'])
 							->set_if($data['avatar'],   'avatar',   $data['avatar'])
@@ -744,13 +752,16 @@ class Index extends Controller_Module
 						->set_if($data['avatar'],   'avatar',   $data['avatar'])
 						->create();
 
-				notify($this->lang('Connexion établie via %s', $authenticator->info()->title));
+				notify($this->lang('Votre compte %s est lié : vous pourrez vous connecter avec lui.', $authenticator->info()->title));
+				redirect('user/auth');
+			}
+			else if ($this->config->nf_registration_status)
+			{
+				$this->_inscription_externe($authenticator, $data);
 			}
 			else
 			{
-				$this->session->append('auth', 'providers', $authenticator->__addon->id.'-'.$data['id'], [$authenticator->__addon->id, $data]);
-
-				notify($this->lang('Compte %s inconnu', $authenticator->info()->title), 'danger');
+				notify($this->lang('Aucun membre n’a lié ce compte %s, et les inscriptions sont fermées.', $authenticator->info()->title), 'danger');
 			}
 
 			redirect();
@@ -759,9 +770,132 @@ class Index extends Controller_Module
 		$this->url->redirect($provider->makeAuthUrl());
 	}
 
+	/**
+	 * S'inscrire par un compte externe (2026-10-01) : un compte Discord que personne n'a
+	 * lié crée un membre, lié d'emblée, et le connecte. Le pseudo vient du compte externe, rendu
+	 * unique au besoin ; ni mot de passe ni adresse : le membre se connecte par ce compte, et peut
+	 * ajouter les deux dans son profil. Mêmes limites que l'inscription par formulaire : inscriptions
+	 * ouvertes, trois par adresse IP par demi-heure.
+	 *
+	 * Jusqu'ici, un compte externe inconnu recevait « Compte inconnu », et ses données, rangées en
+	 * session, n'étaient relues par rien.
+	 */
+	private function _inscription_externe($authenticator, array $data): void
+	{
+		$limite = new \NF\NeoFrag\Libraries\Rate_Limit($this);
+		$cle    = 'register:ip:'.\NF\NeoFrag\Libraries\Rate_Limit::client_ip();
+
+		if (!($etat = $limite->check($cle))['allowed'])
+		{
+			notify($this->lang('Trop d\'inscriptions récentes depuis cette IP. Réessaye dans %d minute(s).', ceil($etat['retry_after'] / 60)), 'danger');
+			return;
+		}
+
+		$limite->hit($cle, 3, 1800, 1800);
+
+		$base = mb_substr(trim((string) preg_replace('/[^\p{L}\p{N}_.\-]+/u', '', (string) $data['username'])), 0, 90) ?: 'membre';
+		$nom  = $base;
+
+		for ($n = 2; !$this->db->from('nf_user')->where('username', $nom)->where('deleted', FALSE)->empty(); $n++)
+		{
+			$nom = $base.$n;
+		}
+
+		$user = $this->model2('user')
+					->set('username', $nom)
+					->set('email', '')
+					->set('password', '')
+					->set('salt', '')
+					->create();
+
+		$this->model2('auth')
+			->set('user',          $user)
+			->set('authenticator', $authenticator->__addon)
+			->set('key',           $data['id'])
+			->set_if($data['username'], 'username', $data['username'])
+			->set_if($data['avatar'],   'avatar',   $data['avatar'])
+			->create();
+
+		if (($wh = $this->module('webhooks')) instanceof \NF\Modules\Webhooks\Webhooks)
+		{
+			$wh->trigger('user.registered', ['user_id' => (int) $user->id, 'username' => $nom]);
+		}
+
+		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('user.registered.external', ['user_id' => (int) $user->id, 'username' => $nom, 'details' => $authenticator->info()->name]);
+
+		$this->session->login($user);
+
+		notify($this->lang('Votre compte a été créé avec %s, bienvenue ! Ajoutez une adresse e-mail et un mot de passe dans votre profil pour pouvoir aussi vous connecter sans lui.', $authenticator->info()->title));
+	}
+
+	/**
+	 * Mes comptes liés : ceux que j'ai liés, à délier, et ceux du site que je peux lier.
+	 * Cette page rendait jusqu'ici le texte brut « auth ».
+	 */
 	public function _auth($auths)
 	{
-		return 'auth';
+		$this->title($this->lang('Mes comptes liés'))->icon('fas fa-link')->breadcrumb();
+
+		$lies = (array) $this->db	->select('a.id', 'a.key', 'a.username', 'a.avatar', 'ad.name')
+									->from('nf_user_auth a')
+									->join('nf_addon ad', 'ad.id = a.authenticator_id', 'INNER')
+									->where('a.user_id', (int) $this->user->id)
+									->order_by('a.id')
+									->get();
+
+		$fournisseurs = [];
+
+		foreach (NeoFrag()->model2('addon')->get('authenticator')->filter('is_setup') as $a)
+		{
+			$fournisseurs[(string) $a->info()->name] = ['titre' => (string) $a->info()->title, 'icone' => (string) $a->info()->icon, 'couleur' => (string) $a->info()->color, 'lier' => url('user/auth/'.url_title((string) $a->info()->name))];
+		}
+
+		$lignes = [];
+
+		foreach ($lies as $l)
+		{
+			// Un compte lié garde le nom et l'icône de son fournisseur même si celui-ci n'est plus
+			// configuré (clés retirées) : on ne peut plus s'y connecter, mais on doit le reconnaître.
+			$a = \NF\NeoFrag\Addons\Authenticator::__load(\NeoFrag(), [(string) $l['name']]);
+
+			$lignes[] = [
+				'fournisseur' => $fournisseurs[(string) $l['name']] ?? ($a instanceof \NF\NeoFrag\Addons\Authenticator ? ['titre' => (string) $a->info()->title, 'icone' => (string) $a->info()->icon, 'couleur' => '', 'lier' => ''] : ['titre' => ucfirst((string) $l['name']), 'icone' => 'fas fa-link', 'couleur' => '', 'lier' => '']),
+				'pseudo'      => (string) ($l['username'] ?? ''),
+				'avatar'      => (string) ($l['avatar'] ?? ''),
+				'delier'      => $this->csrf_url('user/auth/unlink/'.(int) $l['id']),
+			];
+
+			unset($fournisseurs[(string) $l['name']]);
+		}
+
+		return $this->panel()
+					->heading($this->lang('Mes comptes liés'), 'fas fa-link')
+					->body($this->view('auth', [
+						'lignes'       => $lignes,
+						'a_lier'       => $fournisseurs,
+						'sans_secours' => (string) $this->user->password === '',
+					]));
+	}
+
+	/** Délier un compte externe — sauf s'il est le seul moyen de se connecter. */
+	public function _auth_unlink($lien)
+	{
+		$this->check_csrf('user/auth');
+
+		$autres = (int) $this->db->select('COUNT(*)')->from('nf_user_auth')->where('user_id', (int) $this->user->id)->where('id <>', (int) $lien['id'])->row();
+
+		if ((string) $this->user->password === '' && !$autres)
+		{
+			notify($this->lang('Ce compte est votre seul moyen de connexion : définissez d’abord un mot de passe dans votre profil.'), 'danger');
+			redirect('user/auth');
+		}
+
+		$this->db->where('id', (int) $lien['id'])->where('user_id', (int) $this->user->id)->delete('nf_user_auth');
+
+		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('user.auth.unlinked', ['details' => (string) $lien['name']]);
+
+		notify($this->lang('Compte délié.'));
+		redirect('user/auth');
 	}
 
 	public function lost_password($token)
@@ -845,6 +979,7 @@ class Index extends Controller_Module
 		$navigation_links = array_merge($navigation_links, [
 			['title' => $this->lang('Gérer mes sessions'), 'icon' => 'fas fa-globe',         'url' => 'user/sessions'],
 			['title' => $this->lang('Sécurité (2FA)'),     'icon' => 'fas fa-shield-alt',    'url' => 'user/security'],
+			['title' => $this->lang('Mes comptes liés'),   'icon' => 'fas fa-link',          'url' => 'user/auth'],
 			['title' => $this->lang('Déconnexion'),        'icon' => 'fas fa-times',         'url' => 'user/logout']
 		]);
 

@@ -55,6 +55,24 @@ if (!empty($user_id))
 </div>
 <?php
 }
+else if (!empty($identite))
+{
+	// Un message écrit depuis Discord par quelqu'un qui n'a pas lié son compte : le nom de
+	// son identité, son avatar Discord en mode public, et aucun lien vers un profil du site.
+?>
+<div class="forum-profile forum-profile-externe">
+	<div class="forum-profile-avatar">
+		<?php if (!empty($identite['avatar'])): ?>
+		<img class="forum-profile-avatar-img avatar" src="<?php echo htmlspecialchars((string) $identite['avatar']) ?>" alt="" loading="lazy" referrerpolicy="no-referrer" />
+		<?php else: ?>
+		<?php echo $this->module('user')->model2('user')->avatar()->append_attr('class', 'forum-profile-avatar-img') ?>
+		<?php endif ?>
+	</div>
+	<div class="forum-profile-username"><?php echo htmlspecialchars((string) $identite['nom']) ?></div>
+	<div class="forum-profile-role"><span class="badge text-bg-secondary"><?php echo icon('fab fa-discord').' '.$this->lang('Discord') ?></span></div>
+</div>
+<?php
+}
 else
 {
 ?>

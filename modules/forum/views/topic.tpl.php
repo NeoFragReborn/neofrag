@@ -19,7 +19,7 @@
 	<div class="forum-thread-body">
 		<div class="forum-message-row">
 			<div class="forum-user-cell">
-				<?php echo $this->output->module()->get_profile($user_id, $profile) ?>
+				<?php echo $this->output->module()->get_profile($user_id, $profile, $identite ?? NULL) ?>
 			</div>
 			<div class="forum-message-cell">
 				<div class="actions float-end">

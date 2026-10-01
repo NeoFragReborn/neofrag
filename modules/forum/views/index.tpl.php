@@ -66,7 +66,7 @@
 				<?php if (!$forum['url']): ?>
 				<?php if ($forum['last_title']): ?>
 					<div><a href="<?php echo url('forum/topic/'.$forum['topic_id'].'/'.url_title($forum['last_title']).($forum['last_count_messages'] > $this->config->forum_messages_per_page ? '/page/'.ceil($forum['last_count_messages'] / $this->config->forum_messages_per_page) : '').'#'.$forum['last_message_id']) ?>"><?php echo icon('far fa-comment').' '.str_shortener($forum['last_title'], 40) ?></a></div>
-					<div><small><?php echo icon('fas fa-user').' '.($forum['user_id'] ? $this->user->link($forum['user_id'], $forum['username']) : '<i>'.$this->lang('Visiteur').'</i>').' '.icon('far fa-clock').' '.time_span($forum['last_message_date']) ?></small></div>
+					<div><small><?php echo icon('fas fa-user').' '.($forum['user_id'] ? $this->user->link($forum['user_id'], $forum['username']) : $this->output->module()->auteur_sans_compte($forum['identity_name'] ?? NULL)).' '.icon('far fa-clock').' '.time_span($forum['last_message_date']) ?></small></div>
 				<?php else: ?>
 					<?php echo $this->lang('Aucun message') ?>
 				<?php endif; endif ?>

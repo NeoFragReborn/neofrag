@@ -305,4 +305,7 @@ return [
 	'4ab48d65' => 'Prefix (optional)',
 	'5a4b25c1' => '%s\'s reply solves this topic.',
 	'e229fd08' => 'A prefix classifies a topic: “Question”, “Tutorial”, “Important”… Members choose it when opening their topic, and a forum list can be filtered by it.',
+	'd699908b' => 'Written from Discord',
+	'7642b2d9' => 'Guest %s',
+	'816f205c' => 'Discord',
 ];

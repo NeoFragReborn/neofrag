@@ -178,6 +178,74 @@ class Forum extends Model
 	}
 
 	/**
+	 * L'identité externe (un compte Discord qui n'est lié à aucun membre) pour ce fournisseur et cet
+	 * identifiant : créée au premier message, et son pseudo et son avatar tenus à jour ensuite.
+	 */
+	public function identite_externe(string $fournisseur, string $id_externe, string $pseudo, ?string $avatar = NULL): int
+	{
+		$this->db->execute('INSERT INTO nf_forum_identities (provider, external_id, username, avatar) VALUES ("'
+			.$this->db->escape_string($fournisseur).'", "'.$this->db->escape_string($id_externe).'", "'
+			.$this->db->escape_string(mb_substr($pseudo, 0, 100)).'", '.($avatar !== NULL ? '"'.$this->db->escape_string(mb_substr($avatar, 0, 255)).'"' : 'NULL')
+			.') ON DUPLICATE KEY UPDATE username = VALUES(username), avatar = VALUES(avatar)');
+
+		return (int) $this->db->select('identity_id')->from('nf_forum_identities')->where('provider', $fournisseur)->where('external_id', $id_externe)->row();
+	}
+
+	/**
+	 * Le nom AFFICHÉ d'une identité externe, selon son mode : son pseudo (public), un nom anonyme et
+	 * stable (invité), ou le pseudo qu'elle a choisi (personnalisé). Calculé à chaque lecture : changer
+	 * de mode change tous ses messages sans les réécrire.
+	 *
+	 * @param array{provider?: string, external_id?: string, username?: string, mode?: string, custom_name?: ?string} $identite
+	 */
+	public function nom_identite(array $identite): string
+	{
+		$mode = (string) ($identite['mode'] ?? 'public');
+
+		if ($mode === 'custom' && trim((string) ($identite['custom_name'] ?? '')) !== '')
+		{
+			return (string) $identite['custom_name'];
+		}
+
+		if ($mode === 'guest')
+		{
+			return (string) $this->lang('Invité %s', strtoupper(substr(hash('sha256', ($identite['provider'] ?? '').':'.($identite['external_id'] ?? '')), 0, 4)));
+		}
+
+		return (string) ($identite['username'] ?? '');
+	}
+
+	/**
+	 * Les identités externes de ces identifiants, prêtes à afficher : `nom`, `avatar`, `provider`.
+	 *
+	 * @param list<int> $ids
+	 * @return array<int, array{nom: string, avatar: ?string, provider: string}>
+	 */
+	public function identites(array $ids): array
+	{
+		$ids = array_values(array_unique(array_filter(array_map('intval', $ids))));
+
+		if (!$ids)
+		{
+			return [];
+		}
+
+		$identites = [];
+
+		foreach ($this->db->select('identity_id', 'provider', 'external_id', 'username', 'avatar', 'mode', 'custom_name')->from('nf_forum_identities')->where('identity_id', $ids)->get() as $i)
+		{
+			$identites[(int) $i['identity_id']] = [
+				'nom'      => $this->nom_identite($i),
+				// L'avatar n'est montré qu'en mode public : les autres modes sont faits pour ne pas reconnaître la personne.
+				'avatar'   => ($i['mode'] ?? 'public') === 'public' && !empty($i['avatar']) ? (string) $i['avatar'] : NULL,
+				'provider' => (string) $i['provider'],
+			];
+		}
+
+		return $identites;
+	}
+
+	/**
 	 * La solution d'un sujet telle qu'on l'affiche : la réponse marquée, si elle est encore là et
 	 * encore dans ce sujet. Une réponse supprimée, mise à la corbeille ou déplacée par une scission
 	 * ne laisse pas un sujet « Résolu » ; restaurée, elle redevient la solution sans rien resynchroniser.
@@ -360,6 +428,7 @@ class Forum extends Model
 										'f.last_message_id',
 										'u.id as user_id',
 										'u.username',
+										'm.identity_id',
 										't.topic_id',
 										't.title as last_title',
 										'm.date as last_message_date',
@@ -380,9 +449,13 @@ class Forum extends Model
 									->order_by('f.order', 'f.forum_id')
 									->get();
 
+		// L'auteur du dernier message, s'il vient de Discord sans compte lié (cf. get_messages).
+		$identites = $this->identites(array_column($forums, 'identity_id'));
+
 		foreach ($forums as &$forum)
 		{
-			$forum['has_unread'] = $forum['url'] ? FALSE : $this->_has_unread($forum);
+			$forum['identity_name'] = !$forum['user_id'] && $forum['identity_id'] ? ($identites[(int) $forum['identity_id']]['nom'] ?? NULL) : NULL;
+			$forum['has_unread']    = $forum['url'] ? FALSE : $this->_has_unread($forum);
 
 			if ($forum['subforums'])
 			{
@@ -395,7 +468,7 @@ class Forum extends Model
 
 					if ($subforum['last_message_id'] > $forum['last_message_id'])
 					{
-						foreach (['last_message_id', 'user_id', 'username', 'topic_id', 'last_title', 'last_message_date', 'last_count_messages'] as $var)
+						foreach (['last_message_id', 'user_id', 'username', 'identity_name', 'topic_id', 'last_title', 'last_message_date', 'last_count_messages'] as $var)
 						{
 							$forum[$var] = $subforum[$var];
 						}
@@ -433,9 +506,11 @@ class Forum extends Model
 									't.last_message_id',
 									'u1.id as user_id',
 									'u1.username',
+									'm1.identity_id',
 									'm1.date',
 									'u2.id as last_user_id',
 									'u2.username as last_username',
+									'm2.identity_id as last_identity_id',
 									'm2.date as last_message_date',
 									'm2.message',
 									't.status IN ("-2", "1") as announce',
@@ -473,8 +548,14 @@ class Forum extends Model
 
 		$count_read = $i = 0;
 
+		// Les auteurs venus de Discord sans compte lié : le nom de leur identité (cf. get_messages).
+		$identites = $this->identites(array_merge(array_column($topics, 'identity_id'), array_column($topics, 'last_identity_id')));
+
 		foreach ($topics as &$topic)
 		{
+			$topic['identity_name']      = !$topic['user_id'] && $topic['identity_id'] ? ($identites[(int) $topic['identity_id']]['nom'] ?? NULL) : NULL;
+			$topic['last_identity_name'] = !$topic['last_user_id'] && $topic['last_identity_id'] ? ($identites[(int) $topic['last_identity_id']]['nom'] ?? NULL) : NULL;
+
 			$last_message_date = strtotime($topic['last_message_date'] ?: $topic['date']);
 			$unread = $this->user() && $forum_read < $last_message_date && (!isset($topics_read[$topic['topic_id']]) || $topics_read[$topic['topic_id']] < $last_message_date);
 			$topic['icon'] = '	<span class="topic-icon">
@@ -502,11 +583,21 @@ class Forum extends Model
 
 	public function get_messages($topic_id, $forum_id)
 	{
-		$messages = $this->db	->select('message_id', 'parent_id', 'user_id', 'message', 'UNIX_TIMESTAMP(date) as date')
+		$messages = $this->db	->select('message_id', 'parent_id', 'user_id', 'identity_id', 'message', 'UNIX_TIMESTAMP(date) as date')
 								->from('nf_forum_messages')
 								->where('topic_id', $topic_id)
 								->order_by('message_id')
 								->get();
+
+		// Les auteurs venus de Discord sans compte lié : leur identité, prête à afficher.
+		$identites = $this->identites(array_column($messages, 'identity_id'));
+
+		foreach ($messages as &$m)
+		{
+			$m['identite'] = !$m['user_id'] && $m['identity_id'] ? ($identites[(int) $m['identity_id']] ?? NULL) : NULL;
+		}
+
+		unset($m);
 
 		// Calcul de la profondeur pour rendu nested (Phase 6)
 		$messages = \NF\Modules\Forum\Lib\Forum_Threading::assign_depths($messages);
@@ -524,7 +615,7 @@ class Forum extends Model
 			{
 				$parent = $by_id[$pid];
 				$parent_user = $this->db->select('username')->from('nf_user')->where('id', (int)$parent['user_id'])->row();
-				$m['parent_username'] = is_array($parent_user) ? $parent_user['username'] : (string)$parent_user;
+				$m['parent_username'] = !empty($parent['identite']) ? $parent['identite']['nom'] : (is_array($parent_user) ? $parent_user['username'] : (string)$parent_user);
 				$m['parent_excerpt']  = trim(strip_tags(str_replace(['<br>', '<br/>', '<br />'], ' ', (string)$parent['message'])));
 			}
 		}
@@ -652,8 +743,35 @@ class Forum extends Model
 		}
 	}
 
-	public function add_topic($forum_id, $title, $message, $announce)
+	/**
+	 * L'auteur d'une écriture : celui qu'on donne (l'API écrit au nom d'un membre, ou d'une identité
+	 * externe, sans session), sinon le membre connecté.
+	 *
+	 * @param array{user_id?: ?int, identity_id?: ?int, name?: string}|null $auteur
+	 * @return array{user_id: ?int, identity_id: ?int, name: string}
+	 */
+	private function _auteur(?array $auteur): array
 	{
+		if ($auteur === NULL)
+		{
+			return ['user_id' => $this->user() ? (int) $this->user->id : NULL, 'identity_id' => NULL, 'name' => ''];
+		}
+
+		return [
+			'user_id'     => !empty($auteur['user_id']) ? (int) $auteur['user_id'] : NULL,
+			'identity_id' => empty($auteur['user_id']) && !empty($auteur['identity_id']) ? (int) $auteur['identity_id'] : NULL,
+			'name'        => (string) ($auteur['name'] ?? ''),
+		];
+	}
+
+	/**
+	 * @param array{user_id?: ?int, identity_id?: ?int, name?: string}|null $auteur  l'auteur, si ce n'est pas le membre connecté
+	 */
+	public function add_topic($forum_id, $title, $message, $announce, ?array $auteur = NULL)
+	{
+		$auteur = $this->_auteur($auteur);
+		$uid    = $auteur['user_id'];
+
 		$this->db->transaction();
 
 		try
@@ -666,9 +784,10 @@ class Forum extends Model
 									]);
 
 			$message_id = $this->db	->insert('nf_forum_messages', [
-										'topic_id' => $topic_id,
-										'user_id'  => $this->user->id,
-										'message'  => $message
+										'topic_id'    => $topic_id,
+										'user_id'     => $uid,
+										'identity_id' => $auteur['identity_id'],
+										'message'     => $message
 									]);
 
 			$count_topics = $this->db->select('count_topics')->from('nf_forum')->where('forum_id', $forum_id)->row();
@@ -684,10 +803,13 @@ class Forum extends Model
 							'message_id' => $message_id
 						]);
 
-			$this->db	->insert('nf_forum_topics_read', [
-							'topic_id' => $topic_id,
-							'user_id'  => $this->user->id
-						]);
+			if ($uid)
+			{
+				$this->db	->insert('nf_forum_topics_read', [
+								'topic_id' => $topic_id,
+								'user_id'  => $uid
+							]);
+			}
 
 			$this->db->commit();
 		}
@@ -697,26 +819,34 @@ class Forum extends Model
 			throw $e;
 		}
 
-		// Auto-subscribe le créateur du topic
-		$this->subscribe($topic_id, $this->user->id);
+		// Auto-subscribe le créateur du topic ; les @mentions, seulement d'un membre (une identité
+		// externe n'a ni abonnement ni nom de membre à citer).
+		$mentioned_users = [];
 
-		// Enregistrer les @mentions
-		$mentioned_users = $this->record_mentions($message_id, $this->user->id, $message);
+		if ($uid)
+		{
+			$this->subscribe($topic_id, $uid);
+			$mentioned_users = $this->record_mentions($message_id, $uid, $message);
+		}
 
 		$this->events->fire('forum.topic.created', [
-			'topic_id'   => $topic_id,
-			'message_id' => $message_id,
-			'forum_id'   => (int)$forum_id,
-			'user_id'    => $this->user->id,
-			'title'      => $title,
-			'message'    => $message
+			'topic_id'    => $topic_id,
+			'message_id'  => $message_id,
+			'forum_id'    => (int)$forum_id,
+			'user_id'     => $uid,
+			'identity_id' => $auteur['identity_id'],
+			'author_name' => $auteur['name'],
+			'title'       => $title,
+			'message'     => $message
 		]);
 
 		$this->events->fire('forum.post.created', [
 			'message_id'      => $message_id,
 			'topic_id'        => $topic_id,
 			'forum_id'        => (int)$forum_id,
-			'user_id'         => $this->user->id,
+			'user_id'         => $uid,
+			'identity_id'     => $auteur['identity_id'],
+			'author_name'     => $auteur['name'],
 			'message'         => $message,
 			'is_starter'      => TRUE,
 			'mentioned_users' => $mentioned_users
@@ -728,7 +858,7 @@ class Forum extends Model
 				'topic_id' => $topic_id,
 				'forum_id' => (int)$forum_id,
 				'title'    => $title,
-				'user_id'  => (int)$this->user->id,
+				'user_id'  => (int)$uid,
 				'url'      => url('forum/topic/'.$topic_id.'/'.url_title($title))
 			]);
 		}
@@ -738,8 +868,13 @@ class Forum extends Model
 		return $topic_id;
 	}
 
-	public function add_message($topic_id, $message, $parent_id = NULL)
+	/**
+	 * @param array{user_id?: ?int, identity_id?: ?int, name?: string}|null $auteur  l'auteur, si ce n'est pas le membre connecté
+	 */
+	public function add_message($topic_id, $message, $parent_id = NULL, ?array $auteur = NULL)
 	{
+		$auteur = $this->_auteur($auteur);
+		$uid    = $auteur['user_id'];
 		$topic = $this->db->select('count_messages', 'forum_id')->from('nf_forum_topics')->where('topic_id', $topic_id)->row();
 		$count_messages = $this->db->select('count_messages')->from('nf_forum')->where('forum_id', $topic['forum_id'])->row();
 
@@ -750,9 +885,10 @@ class Forum extends Model
 		try
 		{
 			$insert = [
-				'topic_id' => (int)$topic_id,
-				'user_id'  => $this->user->id,
-				'message'  => $message
+				'topic_id'    => (int)$topic_id,
+				'user_id'     => $uid,
+				'identity_id' => $auteur['identity_id'],
+				'message'     => $message
 			];
 
 			if ($parent_id)
@@ -774,14 +910,17 @@ class Forum extends Model
 							'count_messages'  => $topic['count_messages'] + 1
 						]);
 
-			$this->db	->where('user_id', $this->user->id)
-						->where('topic_id', $topic_id)
-						->delete('nf_forum_topics_read');
+			if ($uid)
+			{
+				$this->db	->where('user_id', $uid)
+							->where('topic_id', $topic_id)
+							->delete('nf_forum_topics_read');
 
-			$this->db	->insert('nf_forum_topics_read', [
-							'topic_id' => $topic_id,
-							'user_id'  => $this->user->id
-						]);
+				$this->db	->insert('nf_forum_topics_read', [
+								'topic_id' => $topic_id,
+								'user_id'  => $uid
+							]);
+			}
 
 			$this->db->commit();
 		}
@@ -791,14 +930,16 @@ class Forum extends Model
 			throw $e;
 		}
 
-		// Enregistrer les @mentions
-		$mentioned_users = $this->record_mentions($message_id, $this->user->id, $message);
+		// Enregistrer les @mentions — d'un membre seulement (cf. add_topic)
+		$mentioned_users = $uid ? $this->record_mentions($message_id, $uid, $message) : [];
 
 		$this->events->fire('forum.post.created', [
 			'message_id'      => $message_id,
 			'topic_id'        => (int)$topic_id,
 			'forum_id'        => (int)$topic['forum_id'],
-			'user_id'         => $this->user->id,
+			'user_id'         => $uid,
+			'identity_id'     => $auteur['identity_id'],
+			'author_name'     => $auteur['name'],
 			'message'         => $message,
 			'is_starter'      => FALSE,
 			'mentioned_users' => $mentioned_users

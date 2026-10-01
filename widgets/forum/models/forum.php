@@ -15,7 +15,7 @@ class Forum extends Model
 	{
 		$forums = $this->_get_forum();
 
-		return $this->db->select('m.message_id', 'm.topic_id', 'm.message', 'm.date', 't.title as topic_title', 'u.id as user_id', 'u.username', 'up.avatar', 'up.sex')
+		return $this->_noms_externes($this->db->select('m.message_id', 'm.topic_id', 'm.message', 'm.date', 't.title as topic_title', 'u.id as user_id', 'u.username', 'm.identity_id', 'up.avatar', 'up.sex')
 						->from('nf_forum_messages m')
 						->join('nf_forum_topics t',  'm.topic_id = t.topic_id')
 						->join('nf_user u',          'u.id       = m.user_id AND u.deleted = "0"')
@@ -23,14 +23,14 @@ class Forum extends Model
 						->where('t.forum_id', $forums)
 						->order_by('m.date DESC')
 						->limit(3)
-						->get();
+						->get());
 	}
 
 	public function get_last_topics()
 	{
 		$forums = $this->_get_forum();
 
-		return $this->db->select('t.topic_id', 't.title', 'm.message_id', 'u.id as user_id', 'm.date', 'u.username', 'up.avatar', 'up.sex', 't.count_messages')
+		return $this->_noms_externes($this->db->select('t.topic_id', 't.title', 'm.message_id', 'u.id as user_id', 'm.date', 'u.username', 'm.identity_id', 'up.avatar', 'up.sex', 't.count_messages')
 						->from('nf_forum_messages m')
 						->join('nf_forum_topics t',  'm.topic_id = t.topic_id')
 						->join('nf_user u',          'u.id       = m.user_id AND u.deleted = "0"')
@@ -39,7 +39,7 @@ class Forum extends Model
 						->group_by('t.topic_id')
 						->order_by('m.date DESC')
 						->limit(3)
-						->get();
+						->get());
 	}
 
 	/**
@@ -63,6 +63,38 @@ class Forum extends Model
 		$membres  = (int) $this->db->select('COUNT(DISTINCT m.user_id)')->from('nf_forum_messages m')->join('nf_forum_topics t', 't.topic_id = m.topic_id', 'INNER')->where('t.forum_id', $forums)->where('m.deleted_at', NULL)->row();
 
 		return ['sujets' => $sujets, 'reponses' => max(0, $messages - $sujets), 'annonces' => $annonces, 'membres' => $membres];
+	}
+
+	/**
+	 * Un auteur venu de Discord sans compte lié : son nom d'identité à la place du pseudo
+	 * de membre qu'il n'a pas — sans quoi l'accueil de la vitrine l'affichait « Visiteur ».
+	 *
+	 * @param array<int, array<string, mixed>> $lignes
+	 * @return array<int, array<string, mixed>>
+	 */
+	private function _noms_externes($lignes): array
+	{
+		$lignes = array_values((array) $lignes);
+		$ids    = array_filter(array_map(static fn (array $l) => empty($l['user_id']) ? (int) ($l['identity_id'] ?? 0) : 0, $lignes));
+		$forum  = $ids ? \NeoFrag()->module('forum') : NULL;
+		$modele = $forum ? $forum->model('forum') : NULL;
+
+		if (!$modele instanceof \NF\Modules\Forum\Models\Forum)
+		{
+			return $lignes;
+		}
+
+		$identites = $modele->identites($ids);
+
+		foreach ($lignes as &$l)
+		{
+			if (empty($l['user_id']) && isset($identites[(int) ($l['identity_id'] ?? 0)]))
+			{
+				$l['username'] = $identites[(int) $l['identity_id']]['nom'];
+			}
+		}
+
+		return $lignes;
 	}
 
 	public function _get_forum()

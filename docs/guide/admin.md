@@ -20,7 +20,9 @@ L'administration se trouve sous **/admin**. Elle adopte la charte NeoFrag Reborn
 | Je veux… | J'y vais |
 |---|---|
 | Publier une actu / un article / une page | *Contenu* → le module concerné |
+| Ranger les billets du Blog en catégories et en séries (un billet en plusieurs parties) | *Contenu → Blog*, boutons « Catégories » et « Séries » ; la série et le rang d'un billet se choisissent dans son formulaire |
 | Gérer le forum, les commentaires, la modération | *Communauté* |
+| Créer les préfixes de sujet du forum (« Question », « Tutoriel »…), choisir l'icône d'un forum | *Communauté → Forum*, bouton « Préfixes » ; l'icône dans le formulaire du forum |
 | Gérer membres, groupes, sessions | *Système → Utilisateurs* |
 | Régler qui peut faire quoi | *Système → Permissions (matrice)* — grille rôle × action (vert = autorisé, gris = défaut, rouge = jamais) |
 | Changer le thème / installer un addon | *Système → Thèmes & Addons* |

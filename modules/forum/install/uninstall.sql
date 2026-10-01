@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS `nf_forum_messages`;
 DROP TABLE IF EXISTS `nf_forum_topics`;
 DROP TABLE IF EXISTS `nf_forum_prefixes_lang`;
 DROP TABLE IF EXISTS `nf_forum_prefixes`;
+DROP TABLE IF EXISTS `nf_forum_identities`;
 DROP TABLE IF EXISTS `nf_forum_categories_lang`;
 DROP TABLE IF EXISTS `nf_forum_categories`;
 DROP TABLE IF EXISTS `nf_forum_lang`;

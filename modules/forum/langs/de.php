@@ -305,4 +305,7 @@ return [
 	'4ab48d65' => 'Präfix (optional)',
 	'5a4b25c1' => 'Die Antwort von %s löst dieses Thema.',
 	'e229fd08' => 'Ein Präfix ordnet ein Thema ein: „Frage“, „Anleitung“, „Wichtig“… Das Mitglied wählt es beim Eröffnen seines Themas, und die Liste eines Forums lässt sich danach filtern.',
+	'd699908b' => 'Von Discord aus geschrieben',
+	'7642b2d9' => 'Gast %s',
+	'816f205c' => 'Discord',
 ];

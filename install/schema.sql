@@ -58,6 +58,7 @@ CREATE TABLE `nf_user_auth` (
   `avatar` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`,`authenticator_id`,`key`),
+  UNIQUE KEY `uk_authenticator_key` (`authenticator_id`,`key`),
   KEY `authenticator_id` (`authenticator_id`),
   CONSTRAINT `nf_user_auth_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_user_auth_ibfk_2` FOREIGN KEY (`authenticator_id`) REFERENCES `nf_addon` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -891,7 +892,11 @@ INSERT INTO `nf_migrations` (`id`, `name`, `batch`, `applied_at`) VALUES
 
 -- Ancien reglage du rattrapage des migrations : une installation neuve ne l'a jamais eu.
 -- Cf. migrations/2026_10_01_reglage_des_migrations.
-('54', '2026_10_01_reglage_des_migrations', '42', '2026-10-01 00:00:00');
+('54', '2026_10_01_reglage_des_migrations', '42', '2026-10-01 00:00:00'),
+
+-- Un compte externe ne se lie qu'a un membre : nf_user_auth ci-dessus porte deja uk_authenticator_key.
+-- Cf. migrations/2026_10_01_compte_externe_unique.
+('55', '2026_10_01_compte_externe_unique', '43', '2026-10-01 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

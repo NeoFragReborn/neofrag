@@ -126,6 +126,9 @@ $sensibles = [
     'nf_recaptcha_secret', 'nf_hcaptcha_secret',
     'nf_paypal_secret', 'nf_stripe_secret', 'nf_stripe_webhook_secret',
     'nf_twitch_client_secret', 'nf_youtube_api_key', 'nf_giphy_api_key',
+    // L'état de l'installation, pas un réglage : figé dans l'instantané, chaque remise à zéro le
+    // ramènerait à la version du jour de l'instantané (relevé le 2026-10-01).
+    'nf_migrations_version',
 ];
 
 $exclusion = "`name` NOT IN ('".implode("', '", array_map([$db, 'real_escape_string'], $sensibles))."')";

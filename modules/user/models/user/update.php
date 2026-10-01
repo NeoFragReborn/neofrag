@@ -62,6 +62,16 @@ class Update extends \NF\NeoFrag\Actions\Update
 				]);
 			}
 
+			// Le fil d'événements de l'API : un programme — le bot Discord — met à jour les
+			// rôles de ce membre. Les groupes eux-mêmes se relisent par l'API.
+			// couplage(api): facultatif — sans le module api, `Module::__load` rend NULL et rien n'est inscrit.
+			$this->events->fire('user.groups.changed', ['user_id' => (int) $user->id]);
+
+			if (($api = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['api'])) instanceof \NF\Modules\Api\Api)
+			{
+				$api->consigner('user.groups.changed', ['user_id' => (int) $user->id]);
+			}
+
 			notify($this->lang('Groupes du membre édités'));
 
 			redirect_back('admin/user');

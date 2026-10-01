@@ -303,4 +303,7 @@ return [
 	'4d8362df' => 'Aucun',
 	'5a4b25c1' => 'La réponse de %s résout ce sujet.',
 	'e229fd08' => 'Un préfixe classe un sujet : « Question », « Tutoriel », « Important »… Le membre le choisit en ouvrant son sujet, et la liste d’un forum se filtre dessus.',
+	'd699908b' => 'Écrit depuis Discord',
+	'7642b2d9' => 'Invité %s',
+	'816f205c' => 'Discord',
 ];

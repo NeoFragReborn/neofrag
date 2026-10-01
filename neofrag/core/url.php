@@ -236,7 +236,9 @@ class Url extends Core
 			// xml ou json, si bien qu'un moteur de recherche demandant /sitemap.xml recevait
 			// `{"redirect":"\/fr\/sitemap.xml"}` avec un code 200 — mesuré en production le 2026-09-20.
 			// Ils sont déjà routés vers ajax/settings/* plus haut : on les sert, sans détour.
-			else if (!defined('NEOFRAG_INSTALL') && !$this->cli && !preg_match('_^user/auth/_', $this->request)
+			// L'API (`api/…`) non plus : un programme ne suit pas une redirection de langue,
+			// et un POST redirigé perdrait son corps. Elle répond dans la langue par défaut du site.
+			else if (!defined('NEOFRAG_INSTALL') && !$this->cli && !preg_match('_^user/auth/|^api/_', $this->request)
 			                                     && !preg_match('_^(humans|robots)\.txt$|^sitemap\.xml$|^favicon\.ico$|^manifest\.webmanifest$|^service-worker\.js$_', $this->request))
 			{
 				$this->on('config_lang_selected', function(){
