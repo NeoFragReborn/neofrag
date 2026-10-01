@@ -41,10 +41,19 @@ test.describe('Le visiteur change de langue', () => {
             await bascule.click();
         }
 
-        const anglais = selecteur.locator('button[name="language"][value="en"]');
-        expect(await anglais.count(), 'le sélecteur doit proposer l\'anglais').toBeGreaterThan(0);
+        // Une langue où CE contenu n'existe pas : les hreflang de la page disent où il existe. Depuis le
+        // 2026-09-23, la démonstration a une version anglaise de ses actualités — l'anglais ne mesure
+        // donc plus le repli. On prend la première langue proposée par le sélecteur et absente des hreflang.
+        const disponibles = await page.locator('link[rel="alternate"][hreflang]').evaluateAll(
+            (liens) => liens.map((l) => l.getAttribute('hreflang'))
+        );
+        const proposees = await selecteur.locator('button[name="language"]').evaluateAll(
+            (boutons) => boutons.map((b) => b.getAttribute('value'))
+        );
+        const langue = proposees.find((code) => !disponibles.includes(code));
+        test.skip(!langue, 'ce contenu existe dans toutes les langues : aucun repli à mesurer');
 
-        await anglais.click({ force: true });
+        await selecteur.locator(`button[name="language"][value="${langue}"]`).click({ force: true });
         await page.waitForLoadState('domcontentloaded');
 
         // 1. La page répond. C'est le défaut d'origine : elle rendait 404.
@@ -52,7 +61,7 @@ test.describe('Le visiteur change de langue', () => {
         expect(page.url(), 'on doit rester sur une page d\'actualité').toContain('/news/');
 
         // 2. Elle le DIT. Servir une version française sans l'annoncer ferait passer une page pour
-        //    la version anglaise du site.
+        //    la version de l'autre langue.
         const bandeau = page.locator('.alert-info .fa-language, .alert-info i.fas.fa-language');
         await expect(bandeau.first(), 'un bandeau doit annoncer la langue réellement servie').toBeVisible();
 
@@ -61,6 +70,6 @@ test.describe('Le visiteur change de langue', () => {
             (liens) => liens.map((l) => l.getAttribute('hreflang'))
         );
 
-        expect(alternes, 'aucune langue annoncée ne doit mener à une page absente').not.toContain('en');
+        expect(alternes, 'aucune langue annoncée ne doit mener à une page absente').not.toContain(langue);
     });
 });

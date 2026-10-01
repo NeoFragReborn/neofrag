@@ -86,10 +86,19 @@ class Admin_Ajax extends Controller_Module
 
 			if ($checksum)
 			{
+				// Les fichiers qu'on ne compare pas : sources Sass, dépôt git, cartes de sources. La règle
+				// s'applique AUX DEUX CÔTÉS. Elle n'écartait que les fichiers locaux, alors que le manifeste
+				// publié liste les sources Sass livrées dans le paquet : le Monitoring les attendait sans
+				// jamais les lire, et les déclarait « manquantes » — quatre erreurs et « Le navire coule ! »
+				// dès la publication de la 1.2.0 (signalé le 2026-10-01).
+				$ignore = static fn (string $file): bool => in_string('/sass/', $file) || in_string('/.git/', $file) || (bool) preg_match('_\.css\.map$_', $file);
+
+				$checksum = array_filter($checksum, static fn ($md5, $file): bool => !$ignore((string) $file), ARRAY_FILTER_USE_BOTH);
+
 				// Mode officiel : comparer chaque fichier local au checksum upstream
 				foreach ($local_files as $file => $md5)
 				{
-					if (in_string('/sass/', $file) || in_string('/.git/', $file) || preg_match('_\.css\.map$_', $file))
+					if ($ignore((string) $file))
 					{
 						continue;
 					}
@@ -397,7 +406,14 @@ class Admin_Ajax extends Controller_Module
 					$this->_flush(3, $n / $total * 100);
 				});
 
-				error_log('[update] '.$applique['written'].' fichier(s) appliqué(s), '.$applique['removed'].' vestige(s) retiré(s)');
+				// Une mise à jour RÉUSSIE n'est pas une anomalie : elle va au journal d'audit de
+				// l'administration (qui, quand, quelle version), pas au journal d'erreurs, que
+				// check-journal veut muet. Seuls les échecs, plus bas, y écrivent (2026-09-23).
+				(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('core.updated', [
+					'target_type' => 'neofrag',
+					'target_id'   => (string) $version->version,
+					'details'     => ['de' => NEOFRAG_VERSION, 'fichiers' => $applique['written'], 'vestiges' => $applique['removed']],
+				]);
 
 				if (!$this->config->nf_version)
 				{

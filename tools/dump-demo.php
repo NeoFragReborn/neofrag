@@ -58,6 +58,16 @@ const CONTENT_TABLES = [
     'nf_pages', 'nf_pages_lang', 'nf_pages_instances',
     'nf_menus', 'nf_menus_items',
     'nf_custom_emojis', 'nf_slider_slides',
+
+    // ── Ajouté le 2026-09-23 : les modules installés sur la démo le 2026-09-22 pour les vignettes de
+    // la place de marché. Leur contenu avait été ajouté À LA MAIN à l'instantané ; la première
+    // régénération qui a suivi l'aurait perdu, et c'est le garde-fou « instantané plus pauvre » qui l'a
+    // refusée (77 INSERT contre 87). L'instantané redevient entièrement produit par cet outil.
+    'nf_glossary_categories', 'nf_glossary_terms',
+    'nf_places_categories', 'nf_places',
+    'nf_quotes_categories', 'nf_quotes',
+    'nf_recipes_categories', 'nf_recipes',
+    'nf_webradio_shows',
     // `nf_media` n'y est PAS, et le module `media` est verrouillé : c'est le seul endroit du
     // produit dont la suppression efface aussi le FICHIER sur le disque. Rétablir la ligne sans
     // le fichier donnerait une image cassée. Galerie et téléchargements, eux, ne suppriment que

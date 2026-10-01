@@ -22,8 +22,8 @@ declare(strict_types=1);
  *   3. il pointe ce site vers l'origine, ouvre une session d'administrateur et rejoue les deux
  *      requêtes du panneau : « actualiser » (le manifeste est téléchargé), puis « mettre à jour » ;
  *   4. il vérifie chaque promesse : la version annoncée est installée, CHAQUE fichier du paquet est
- *      identique à l'empreinte de `checksum.json`, l'accueil et l'administration répondent, et le
- *      journal du site ne porte que la ligne de l'updater.
+ *      identique à l'empreinte de `checksum.json`, l'accueil et l'administration répondent, la mise à
+ *      jour est inscrite au journal d'audit, et le journal d'erreurs du site est resté muet.
  *
  * Une origine de répétition (`--origine=https://neofrag-reborn.xyz/update/repetition`) permet
  * d'éprouver une version AVANT de la publier là où les sites la cherchent. Seuls les hôtes de
@@ -213,9 +213,14 @@ if (!$echecs)
     }
 }
 
-// Le journal : la ligne de l'updater est attendue, toute autre est un défaut.
+// Le journal d'erreurs doit rester MUET : une mise à jour réussie s'inscrit au journal d'audit.
 $lignes = array_values(array_filter(array_map('trim', explode("\n", (string) @file_get_contents($journal)))));
-$autres = array_values(array_filter($lignes, static fn (string $l): bool => !preg_match('/\[update\] \d+ fichier\(s\) appliqué\(s\)/', $l)));
+$autres = $lignes;
+
+if (!$echecs && (int) nf_scalar($db, "SELECT COUNT(*) FROM nf_audit_log WHERE action = 'core.updated' AND target_id = '".$db->real_escape_string($cible)."'") === 0)
+{
+    $echecs[] = "la mise à jour n'est pas inscrite au journal d'audit (action core.updated)";
+}
 
 foreach (array_slice($autres, 0, 5) as $ligne)
 {
@@ -251,7 +256,7 @@ if ($echecs)
     nf_echec(sprintf('la mise à jour %s → %s depuis %s ne tient pas ses promesses (%d point(s))', $depart, $cible, $origine, count($echecs)));
 }
 
-printf("\n  ✓ %s installée, %d fichier(s) du paquet identiques à checksum.json, accueil et administration en 200, journal propre.\n",
+printf("\n  ✓ %s installée, %d fichier(s) du paquet identiques à checksum.json, accueil et administration en 200, mise à jour inscrite à l'audit, journal muet.\n",
     $cible, count($empreintes));
 
 nf_ok("un site en {$depart} se met à jour en {$cible} par le bouton, depuis {$origine}");

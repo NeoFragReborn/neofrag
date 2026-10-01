@@ -1,10 +1,23 @@
 name: CI
 
+# Le dépôt est privé : chaque exécution consomme le quota de GitHub Actions (2 000 minutes par mois,
+# environ 21 par exécution complète). Septembre 2026 l'a épuisé en 84 exécutions, et la CI s'est
+# arrêtée le 23. D'où trois règles :
+#   - `push` sur main seulement : une branche de travail (Dependabot) passe par sa demande de fusion.
+#     Avant, elle déclenchait DEUX exécutions — `push` et `pull_request` ne portent pas la même
+#     référence, et la règle de concurrence ci-dessous ne les fusionnait pas, contrairement à ce
+#     que son commentaire affirmait ;
+#   - un envoi qui ne touche QUE de la documentation n'exécute pas ce workflow : docs.yml la vérifie
+#     en une minute ;
+#   - Dependabot regroupe ses mises à jour (.github/dependabot.yml).
 on:
   push:
+    branches: [main]
+    paths-ignore: ['docs/**', '**/*.md']
   pull_request:
+    paths-ignore: ['docs/**', '**/*.md']
 
-# push + pull_request sur la même branche = double run : on ne garde que le plus récent.
+# Une nouvelle exécution sur la même référence annule la précédente, devenue inutile.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

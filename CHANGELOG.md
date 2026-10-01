@@ -10,6 +10,27 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.1] — 2026-10-01
+
+### Sécurité
+
+- **Deux failles corrigées dans la bibliothèque Markdown** (`league/commonmark` 2.10.3) : un déni de
+  service par des tableaux construits pour ralentir le serveur (gravité élevée), et un contournement
+  du filtre qui retire le HTML interdit (gravité moyenne). Signalées le 30 septembre 2026. La
+  bibliothèque de nettoyage du HTML (`ezyang/htmlpurifier` 4.19.1) passe aussi à sa dernière version.
+
+### Corrigé
+
+- **Le Monitoring ne déclare plus « manquants » des fichiers présents** (2026-10-01). Depuis la
+  publication de la 1.2.0, il comparait le site au manifeste de la version publiée, mais ignorait les
+  sources Sass d'un seul côté : quatre fausses erreurs, et un état de santé « Le navire coule ! ».
+
+### Modifié
+
+- **Une mise à jour du cœur s'inscrit au journal d'audit** (2026-09-23) : qui l'a lancée, quand, de
+  quelle version vers quelle version, et combien de fichiers ont été remplacés. Elle s'écrivait
+  jusqu'ici dans le journal d'erreurs, où elle passait pour une anomalie.
+
 ## [1.2.0] — 2026-09-23
 
 ### Ajouté

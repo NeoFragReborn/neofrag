@@ -1,5 +1,7 @@
--- NeoFrag Reborn — instantané du site de DÉMO (config affichage + membres + contenu).
--- Généré par tools/dump-demo.php. Rechargé par l'auto-reset démo. NE PAS éditer à la main.
+-- NeoFrag Reborn — instantané du site de DÉMO (config affichage + membres + contenu), rechargé par l'auto-reset.
+-- Généré par tools/dump-demo.php depuis la base vive. NE PAS éditer à la main.
+-- Régénérer : php tools/dump-demo.php
+
 -- Ne touche pas le compte admin ni les secrets (verrouillés en mode démo).
 
 SET FOREIGN_KEY_CHECKS = 0;
@@ -46,7 +48,7 @@ INSERT INTO `nf_settings` (`name`, `site`, `lang`, `value`, `type`) VALUES
 ('blockcraft_text_color', '', '', '#2e2a25', 'string'),
 ('blockcraft_theme_color', '', '', '#6aa84f', 'string'),
 ('events_alert_mp', '', '', '1', 'string'),
-('events_per_page', '', '', '10', 'int'),
+('events_per_page', '', '', '10', 'string'),
 ('extend_background', '', '', '0', 'int'),
 ('extend_background_attachment', '', '', 'scroll', 'string'),
 ('extend_background_color', '', '', '#11171a', 'string'),
@@ -108,7 +110,6 @@ INSERT INTO `nf_settings` (`name`, `site`, `lang`, `value`, `type`) VALUES
 ('nf_cookie_expire', '', '', '1 hour', 'string'),
 ('nf_cookie_name', '', '', 'session', 'string'),
 ('nf_copyright', '', '', 'Copyright {copyright} {year} {name}, tous droits r&eacute;serv&eacute;s &lt;div class=&quot;float-end&quot;&gt;Propuls&eacute; par {neofrag}&lt;/div&gt;', 'string'),
-('nf_session_history_days', '', '', '395', 'int'),
 ('nf_default_page', '', '', 'news', 'string'),
 ('nf_default_theme', '', '', 'nebula', 'string'),
 ('nf_description', '', '', 'NeoFrag Reborn', 'string'),
@@ -143,9 +144,11 @@ INSERT INTO `nf_settings` (`name`, `site`, `lang`, `value`, `type`) VALUES
 ('nf_moderation_warning_window_days', '', '', '30', 'string'),
 ('nf_monitoring_last_check', '', '', '1781308707', 'int'),
 ('nf_name', '', '', 'NeoFrag Reborn', 'string'),
+('nf_pwa', '', '', '0', 'bool'),
 ('nf_registration_charte', '', '', '', 'string'),
 ('nf_registration_status', '', '', '0', 'int'),
 ('nf_robots_txt', '', '', 'User-agent: *\r\nDisallow:', 'string'),
+('nf_session_history_days', '', '', '395', 'int'),
 ('nf_social_behance', '', '', '', 'string'),
 ('nf_social_deviantart', '', '', '', 'string'),
 ('nf_social_dribble', '', '', '', 'string'),
@@ -176,7 +179,8 @@ INSERT INTO `nf_settings` (`name`, `site`, `lang`, `value`, `type`) VALUES
 ('recruits_hide_unavailable', '', '', '1', 'bool'),
 ('recruits_per_page', '', '', '5', 'int'),
 ('recruits_send_mail', '', '', '1', 'bool'),
-('recruits_send_mp', '', '', '1', 'bool')
+('recruits_send_mp', '', '', '1', 'bool'),
+('webradio_stream', '', '', 'https://example.com/stream/neofrag.mp3', 'string')
 ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);
 
 -- Membres démo — remis en état (upsert), jamais supprimés : une session vivante
@@ -239,8 +243,11 @@ INSERT INTO `nf_news_categories` (`category_id`, `image_id`, `icon_id`, `name`) 
 ('3', NULL, NULL, 'communaute');
 DELETE FROM `nf_news_categories_lang`;
 INSERT INTO `nf_news_categories_lang` (`category_id`, `lang`, `title`) VALUES
+('1', 'en', 'Announcements'),
 ('1', 'fr', 'Annonces'),
+('2', 'en', 'Competition'),
 ('2', 'fr', 'Compétition'),
+('3', 'en', 'Community'),
 ('3', 'fr', 'Communauté');
 DELETE FROM `nf_news`;
 INSERT INTO `nf_news` (`news_id`, `category_id`, `user_id`, `image_id`, `date`, `published`, `announced_at`, `views`, `vote`, `deleted_at`, `deleted_by`) VALUES
@@ -252,11 +259,17 @@ INSERT INTO `nf_news` (`news_id`, `category_id`, `user_id`, `image_id`, `date`, 
 ('6', '3', '333', NULL, '2026-09-11 11:46:28', '1', '2026-09-11 11:46:28', '115', '1', NULL, NULL);
 DELETE FROM `nf_news_lang`;
 INSERT INTO `nf_news_lang` (`news_id`, `lang`, `title`, `introduction`, `content`, `tags`) VALUES
+('1', 'en', 'Welcome to NeoFrag Reborn', 'The community\'s new website is live!', '<p>We are delighted to welcome you to our new platform, powered by <strong>NeoFrag Reborn</strong>. Forum, news, galleries, tournaments: it\'s all here. Sign up and join the adventure!</p>', ''),
 ('1', 'fr', 'Bienvenue sur NeoFrag Reborn', 'Le nouveau site de la communauté est en ligne !', '<p>Nous sommes ravis de vous accueillir sur notre nouvelle plateforme propulsée par <strong>NeoFrag Reborn</strong>. Forum, actualités, galeries, tournois : tout y est. Inscrivez-vous et rejoignez l\'aventure !</p>', ''),
+('2', 'en', 'Victory in the regional tournament final', 'Our main team wins the grand final 3-1.', '<p>After a flawless run, our players lifted the regional tournament trophy. Congratulations to the whole team on this performance!</p><p>Next goal: the national qualifiers.</p>', ''),
 ('2', 'fr', 'Victoire en finale du tournoi régional', 'Notre équipe principale s\'impose 3-1 en grande finale.', '<p>Après un parcours sans faute, nos joueurs ont décroché le trophée du tournoi régional. Félicitations à toute l\'équipe pour cette performance !</p><p>Prochain objectif : les qualifications nationales.</p>', ''),
+('3', 'en', 'Community night this Friday', 'Join us for a relaxed evening on the server.', '<p>This Friday at 9 pm, we all meet up for fun, friendly games. Beginners welcome!</p>', ''),
 ('3', 'fr', 'Soirée communautaire ce vendredi', 'Rejoignez-nous pour une soirée détente sur le serveur.', '<p>Ce vendredi à 21h, on se retrouve tous pour des parties fun et conviviales. Débutants bienvenus !</p>', ''),
+('4', 'en', 'New hardware partnership', 'Exclusive discounts for our members.', '<p>Thanks to our new partner, enjoy discounts on gaming gear. Details in the members\' area.</p>', ''),
 ('4', 'fr', 'Nouveau partenariat matériel', 'Des réductions exclusives pour nos membres.', '<p>Grâce à notre nouveau partenaire, profitez de réductions sur le matériel gaming. Détails dans l\'espace membre.</p>', ''),
+('5', 'en', 'This month\'s match schedule', 'All the competitive dates not to miss.', '<p>The schedule of upcoming matches is out. Come and cheer on your teams!</p>', ''),
 ('5', 'fr', 'Calendrier des matchs du mois', 'Tous les rendez-vous compétitifs à ne pas manquer.', '<p>Le calendrier des prochains matchs est disponible. Venez supporter vos équipes !</p>', ''),
+('6', 'en', 'Video editing contest', 'Show off your best highlights and earn points.', '<p>Enter our editing contest: the best videos will be rewarded with shop points.</p>', ''),
 ('6', 'fr', 'Concours de montage vidéo', 'Montrez vos plus beaux highlights et gagnez des points.', '<p>Participez à notre concours de montage : les meilleures vidéos seront récompensées en points boutique.</p>', '');
 DELETE FROM `nf_articles_categories`;
 INSERT INTO `nf_articles_categories` (`category_id`, `image_id`, `icon_id`, `name`) VALUES
@@ -264,7 +277,9 @@ INSERT INTO `nf_articles_categories` (`category_id`, `image_id`, `icon_id`, `nam
 ('2', NULL, NULL, 'tests');
 DELETE FROM `nf_articles_categories_lang`;
 INSERT INTO `nf_articles_categories_lang` (`category_id`, `lang`, `title`) VALUES
+('1', 'en', 'Guides'),
 ('1', 'fr', 'Guides'),
+('2', 'en', 'Reviews'),
 ('2', 'fr', 'Tests');
 DELETE FROM `nf_articles`;
 INSERT INTO `nf_articles` (`article_id`, `category_id`, `user_id`, `image_id`, `date`, `published`, `announced_at`, `views`, `deleted_at`, `deleted_by`) VALUES
@@ -274,9 +289,13 @@ INSERT INTO `nf_articles` (`article_id`, `category_id`, `user_id`, `image_id`, `
 ('4', '2', '334', NULL, '2026-09-10 11:46:28', '1', '2026-09-10 11:46:28', '106', NULL, NULL);
 DELETE FROM `nf_articles_lang`;
 INSERT INTO `nf_articles_lang` (`article_id`, `lang`, `title`, `excerpt`, `content`, `tags`) VALUES
+('1', 'en', 'Getting started in competitive play', 'Our tips to improve quickly.', '<h2>The basics</h2><p>Master your aim and positioning first. Consistency beats flashy plays.</p><h2>Team spirit</h2><p>Communication is the key to victory.</p>', ''),
 ('1', 'fr', 'Bien débuter en compétitif', 'Nos conseils pour progresser rapidement.', '<h2>Les bases</h2><p>Maîtrisez d\'abord votre visée et votre placement. La régularité prime sur les coups d\'éclat.</p><h2>L\'esprit d\'équipe</h2><p>La communication est la clé de la victoire.</p>', ''),
+('2', 'en', 'Optimising your setup', 'Settings and gear for a top-notch setup.', '<p>A good setup isn\'t everything, but it helps. Here are our recommended settings and peripherals.</p>', ''),
 ('2', 'fr', 'Optimiser sa configuration', 'Réglages et matériel pour un setup au top.', '<p>Un bon setup ne fait pas tout, mais il aide. Voici nos recommandations réglages et périphériques.</p>', ''),
+('3', 'en', 'Our take on the latest patch', 'What changes for the competitive meta.', '<p>The latest patch reshuffles the deck. An analysis of the nerfs, buffs and their impact on the meta.</p>', ''),
 ('3', 'fr', 'Notre avis sur le dernier patch', 'Ce qui change pour la méta compétitive.', '<p>Le dernier patch rebat les cartes. Analyse des nerfs, buffs et de leur impact sur la méta.</p>', ''),
+('4', 'en', 'Gaming headsets: the comparison', 'We tested the current models for you.', '<p>Comfort, sound, microphone: our full comparison to help you pick the right headset.</p>', ''),
 ('4', 'fr', 'Casque gaming : le comparatif', 'On a testé pour vous les modèles du moment.', '<p>Confort, son, micro : notre comparatif complet pour choisir le bon casque.</p>', '');
 DELETE FROM `nf_forum_categories`;
 INSERT INTO `nf_forum_categories` (`category_id`, `title`, `order`, `image_id`, `vip_only`) VALUES
@@ -324,7 +343,9 @@ INSERT INTO `nf_gallery_categories` (`category_id`, `image_id`, `icon_id`, `name
 ('2', NULL, NULL, 'highlights');
 DELETE FROM `nf_gallery_categories_lang`;
 INSERT INTO `nf_gallery_categories_lang` (`category_id`, `lang`, `title`) VALUES
+('1', 'en', 'Events'),
 ('1', 'fr', 'Événements'),
+('2', 'en', 'Highlights'),
 ('2', 'fr', 'Highlights');
 DELETE FROM `nf_gallery`;
 INSERT INTO `nf_gallery` (`gallery_id`, `category_id`, `image_id`, `name`, `published`, `date`, `deleted_at`, `deleted_by`) VALUES
@@ -333,8 +354,11 @@ INSERT INTO `nf_gallery` (`gallery_id`, `category_id`, `image_id`, `name`, `publ
 ('3', '2', '22', 'best-of-du-mois', '1', '2026-09-10 11:46:29', NULL, NULL);
 DELETE FROM `nf_gallery_lang`;
 INSERT INTO `nf_gallery_lang` (`gallery_id`, `lang`, `title`, `description`) VALUES
+('1', 'en', 'Summer LAN 2025', 'The best moments of our annual LAN.'),
 ('1', 'fr', 'LAN d\'été 2025', 'Les meilleurs moments de notre LAN annuelle.'),
+('2', 'en', 'Regional final', 'Our victory in pictures.'),
 ('2', 'fr', 'Finale régionale', 'Retour en images sur notre victoire.'),
+('3', 'en', 'Best of the month', 'A compilation of the finest plays.'),
 ('3', 'fr', 'Best of du mois', 'Compilation des plus belles actions.');
 DELETE FROM `nf_gallery_images`;
 INSERT INTO `nf_gallery_images` (`image_id`, `thumbnail_file_id`, `original_file_id`, `file_id`, `gallery_id`, `title`, `description`, `date`, `views`) VALUES
@@ -503,10 +527,10 @@ INSERT INTO `nf_recruits_fields` (`field_id`, `recruit_id`, `label`, `type`, `re
 ('5', '2', 'Quelles sont tes disponibilités en soirée ?', 'text', '1', '1'),
 ('6', '2', 'Décris une situation où tu as pris le lead.', 'textarea', '0', '2');
 DELETE FROM `nf_calendar_events`;
-INSERT INTO `nf_calendar_events` (`id`, `title`, `description`, `location`, `start_at`, `end_at`, `all_day`, `user_id`, `color`, `published`, `created_at`) VALUES
-('1', 'Entraînement CS2', 'Scrims du soir', 'Serveur communautaire', '2026-09-18 11:46:29', '2026-09-18 13:46:29', '0', '271', '#1abc9c', '1', '2026-09-16 11:46:29'),
-('2', 'Soirée détente', 'Parties fun ouvertes à tous', 'Discord', '2026-09-21 11:46:29', '2026-09-21 13:46:29', '0', '271', '#1abc9c', '1', '2026-09-16 11:46:29'),
-('3', 'Maintenance serveur', 'Indisponibilité prévue', '', '2026-09-25 11:46:29', '2026-09-25 13:46:29', '1', '271', '#1abc9c', '1', '2026-09-16 11:46:29');
+INSERT INTO `nf_calendar_events` (`id`, `title`, `description`, `location`, `start_at`, `end_at`, `all_day`, `user_id`, `color`, `published`, `created_at`, `reminder_sent_at`) VALUES
+('1', 'Entraînement CS2', 'Scrims du soir', 'Serveur communautaire', '2026-09-18 11:46:29', '2026-09-18 13:46:29', '0', '271', '#1abc9c', '1', '2026-09-16 11:46:29', NULL),
+('2', 'Soirée détente', 'Parties fun ouvertes à tous', 'Discord', '2026-09-21 11:46:29', '2026-09-21 13:46:29', '0', '271', '#1abc9c', '1', '2026-09-16 11:46:29', NULL),
+('3', 'Maintenance serveur', 'Indisponibilité prévue', '', '2026-09-25 11:46:29', '2026-09-25 13:46:29', '1', '271', '#1abc9c', '1', '2026-09-16 11:46:29', NULL);
 DELETE FROM `nf_bug_tickets`;
 INSERT INTO `nf_bug_tickets` (`id`, `title`, `description`, `type`, `priority`, `status`, `user_id`, `assigned_to`, `created_at`, `updated_at`) VALUES
 ('1', 'Bouton de connexion mal aligné sur mobile', 'Sur petit écran, le bouton dépasse légèrement.', 'bug', 'normal', 'resolved', '329', NULL, '2026-09-16 11:46:29', '2026-09-16 11:46:29'),
@@ -586,9 +610,13 @@ INSERT INTO `nf_pages` (`page_id`, `name`, `published`, `date`, `layout`) VALUES
 ('4', 'partenaires', '1', '2026-09-01 11:46:29', 'default');
 DELETE FROM `nf_pages_lang`;
 INSERT INTO `nf_pages_lang` (`page_id`, `lang`, `title`, `subtitle`, `content`) VALUES
+('1', 'en', 'About the community', 'Who we are', '<p>Founded in 2019 around Counter-Strike, our community now brings together a hundred or so players across four games. People come for the level and stay for the atmosphere.</p><p>Three competitive teams, weekly practice sessions, an annual LAN — and a Discord server open to everyone.</p>'),
 ('1', 'fr', 'À propos de la communauté', 'Qui sommes-nous', '<p>Fondée en 2019 autour de Counter-Strike, notre communauté réunit aujourd\'hui une centaine de joueurs sur quatre jeux. On y vient pour le niveau, on y reste pour l\'ambiance.</p><p>Trois équipes compétitives, des entraînements hebdomadaires, une LAN annuelle — et un serveur Discord ouvert à tous.</p>'),
+('2', 'en', 'House rules', 'What we expect from everyone', '<p>Respect above all: no insults, no discriminatory remarks, no cheating. A breach is first met with a warning, then with an exclusion.</p><ul><li>Microphone recommended in practice, mandatory in official matches.</li><li>Let us know if you will be absent, at least 24 hours in advance.</li><li>Staff settle disputes; their decisions are public.</li></ul>'),
 ('2', 'fr', 'Règlement intérieur', 'Ce qu\'on attend de chacun', '<p>Respect avant tout : pas d\'insultes, pas de propos discriminatoires, pas de triche. Un manquement se règle d\'abord par un avertissement, ensuite par une exclusion.</p><ul><li>Micro conseillé en entraînement, obligatoire en match officiel.</li><li>Prévenir en cas d\'absence, au moins 24 h à l\'avance.</li><li>Le staff tranche les litiges ; ses décisions sont publiques.</li></ul>'),
+('3', 'en', 'Join us', 'How to apply', '<p>Open recruitments are listed in the dedicated section. You can also introduce yourself on the forum: we look at every unsolicited application.</p>'),
 ('3', 'fr', 'Nous rejoindre', 'Comment postuler', '<p>Les recrutements ouverts sont listés dans la rubrique dédiée. Tu peux aussi te présenter sur le forum : on regarde toutes les candidatures spontanées.</p>'),
+('4', 'en', 'Our partners', 'They support us', '<p>Three partners support us with hosting, hardware and video branding. Their backing funds our trips to LAN events.</p>'),
 ('4', 'fr', 'Nos partenaires', 'Ils nous soutiennent', '<p>Trois partenaires nous accompagnent sur l\'hébergement, le matériel et l\'habillage vidéo. Leur présence finance nos déplacements en LAN.</p>');
 DELETE FROM `nf_pages_instances`;
 -- nf_pages_instances : aucune donnée.
@@ -614,6 +642,52 @@ INSERT INTO `nf_slider_slides` (`id`, `image_url`, `title`, `caption`, `link`, `
 ('1', 'upload/demo/demo-slide-0.jpg', 'Bienvenue sur la démo', 'Toutes les rubriques sont peuplées : navigue librement.', 'news', '0', '1', '2026-09-09 11:46:29', '2026-09-09 11:46:29'),
 ('2', 'upload/demo/demo-slide-1.jpg', 'LAN d\'été 2025', 'Retrouve les photos dans la galerie.', 'gallery', '1', '1', '2026-09-09 11:46:29', '2026-09-09 11:46:29'),
 ('3', 'upload/demo/demo-slide-2.jpg', 'Recrutement ouvert', 'Deux postes à pourvoir sur CS2 et Valorant.', 'recruits', '2', '1', '2026-09-09 11:46:29', '2026-09-09 11:46:29');
+DELETE FROM `nf_glossary_categories`;
+INSERT INTO `nf_glossary_categories` (`id`, `title`, `sort_order`) VALUES
+('1', 'Vocabulaire de jeu', '0'),
+('2', 'Communauté', '1');
+DELETE FROM `nf_glossary_terms`;
+INSERT INTO `nf_glossary_terms` (`id`, `category_id`, `term`, `initial`, `definition`, `synonyms`, `published`, `created_at`, `updated_at`) VALUES
+('103', '1', 'Clutch', 'C', 'Situation où un joueur reste seul face à plusieurs adversaires et remporte tout de même la manche.', 'clutcher', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('104', '1', 'Eco round', 'E', 'Manche jouée volontairement sans acheter d\'équipement, pour économiser de quoi s\'équiper à la suivante.', 'éco', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('105', '1', 'Peek', 'P', 'Action de se découvrir brièvement pour observer ou tirer, puis de se remettre à couvert.', 'peeker, jiggle peek', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('106', '2', 'Roster', 'R', 'Liste des joueurs qui composent une équipe à un moment donné.', 'effectif', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('107', '2', 'Scrim', 'S', 'Match d\'entraînement organisé entre deux équipes, sans enjeu de classement.', 'scrimmage', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('108', '2', 'Shoutcast', 'S', 'Commentaire en direct d\'une partie, assuré par un ou deux casteurs.', 'cast, casteur', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04');
+DELETE FROM `nf_places_categories`;
+INSERT INTO `nf_places_categories` (`id`, `title`, `icon`, `color`, `sort_order`) VALUES
+('1', 'Salles et LAN', 'fas fa-map-marker-alt', '', '0'),
+('2', 'Points de rencontre', 'fas fa-map-marker-alt', '', '1');
+DELETE FROM `nf_places`;
+INSERT INTO `nf_places` (`id`, `category_id`, `title`, `description`, `address`, `latitude`, `longitude`, `link`, `sort_order`, `published`, `created_at`, `updated_at`) VALUES
+('69', '1', 'Salle de la LAN d\'été', 'Deux cents postes, fibre dédiée, buvette ouverte toute la nuit.', '12 rue des Halles, 69002 Lyon', '45.760000', '4.832000', '', '0', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('70', '1', 'Gymnase du tournoi régional', 'Le tournoi d\'automne s\'y tient chaque année depuis trois saisons.', 'Avenue du Stade, 33000 Bordeaux', '44.837800', '-0.579100', '', '1', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('71', '2', 'Bar associatif Le Respawn', 'Rencontre mensuelle de la communauté, premier jeudi du mois.', '5 place Saint-Pierre, 31000 Toulouse', '43.604700', '1.443700', '', '0', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('72', '2', 'Espace jeu de la médiathèque', 'Initiations le samedi après-midi, ouvert à tous.', '2 quai de Seine, 75019 Paris', '48.883000', '2.373000', '', '1', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04');
+DELETE FROM `nf_quotes_categories`;
+INSERT INTO `nf_quotes_categories` (`id`, `title`, `sort_order`) VALUES
+('1', 'Sur le jeu', '0'),
+('2', 'Sur l\'équipe', '1');
+DELETE FROM `nf_quotes`;
+INSERT INTO `nf_quotes` (`id`, `category_id`, `quote`, `author`, `source`, `source_url`, `sort_order`, `published`, `created_at`, `updated_at`) VALUES
+('69', '1', 'On ne perd pas une manche parce qu\'on vise mal, on la perd parce qu\'on a arrêté de se parler.', 'Rekkles_FR', 'Débrief du tournoi régional', '', '0', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('70', '1', 'Le meilleur réglage de souris, c\'est celui qu\'on garde trois mois.', 'NovaStrike', 'Guide du débutant', '', '1', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('71', '2', 'Une équipe, c\'est cinq joueurs qui font la même erreur en même temps — et qui la corrigent ensemble.', 'ShadowFox', 'Interview d\'avant-saison', '', '0', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('72', '2', 'On recrute des gens, pas des statistiques.', 'LunaByte', 'Annonce de recrutement', '', '1', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04');
+DELETE FROM `nf_recipes_categories`;
+INSERT INTO `nf_recipes_categories` (`id`, `title`, `sort_order`) VALUES
+('1', 'Soirées LAN', '0'),
+('2', 'Boissons', '1');
+DELETE FROM `nf_recipes`;
+INSERT INTO `nf_recipes` (`id`, `category_id`, `title`, `intro`, `ingredients`, `steps`, `servings`, `prep_minutes`, `cook_minutes`, `sort_order`, `published`, `created_at`, `updated_at`) VALUES
+('52', '1', 'Wraps froids de la LAN', 'Se tiennent d\'une main, ne graissent pas le clavier.', '6 galettes de blé\n300 g de poulet rôti\n1 avocat\n2 tomates\n4 cuillères de fromage frais\nQuelques feuilles de salade', 'Émincer le poulet et les tomates.\nÉtaler le fromage frais sur chaque galette.\nGarnir, rouler serré, couper en deux.\nRéserver au frais jusqu\'au coup d\'envoi.', '6', '20', '0', '0', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('53', '1', 'Pop-corn au paprika fumé', 'Le bruit en moins : on n\'en mange pas pendant les phases silencieuses.', '100 g de maïs à éclater\n2 cuillères d\'huile\n1 cuillère de paprika fumé\nSel', 'Chauffer l\'huile dans une grande casserole.\nVerser le maïs, couvrir, secouer jusqu\'à la fin des éclatements.\nSaupoudrer de paprika et de sel, mélanger.', '4', '5', '10', '1', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('54', '2', 'Thé glacé menthe-citron', 'De quoi tenir une soirée sans finir électrique.', '1 l d\'eau\n3 sachets de thé vert\n1 citron\nUne dizaine de feuilles de menthe\nMiel selon le goût', 'Infuser le thé cinq minutes, laisser refroidir.\nAjouter le jus de citron et la menthe froissée.\nSucrer au miel, servir bien frais.', '4', '10', '5', '0', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04');
+DELETE FROM `nf_webradio_shows`;
+INSERT INTO `nf_webradio_shows` (`id`, `title`, `host`, `description`, `day`, `start_time`, `end_time`, `published`, `created_at`, `updated_at`) VALUES
+('52', 'Le réveil du serveur', 'LunaByte', 'Les actualités de la communauté et la playlist du matin.', '1', '08:00', '10:00', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('53', 'Débrief des scrims', 'ShadowFox', 'Retour sur les entraînements de la semaine, avec les joueurs.', '3', '20:00', '21:30', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04'),
+('54', 'Nuit blanche', 'NovaStrike', 'Musique et discussions jusqu\'au bout de la nuit, pendant les LAN.', '6', '22:00', '02:00', '1', '2026-09-23 07:52:04', '2026-09-23 07:52:04');
 DELETE FROM `nf_talks`;
 INSERT INTO `nf_talks` (`talk_id`, `name`, `type`, `audience`, `creator_id`, `description`, `created_at`, `updated_at`, `deleted_at`) VALUES
 ('1', 'Salon général', 'public', 'all', '271', 'Le salon ouvert à tous les membres.', '2026-08-22 11:46:29', '2026-09-16 10:46:29', NULL),
@@ -682,7 +756,6 @@ INSERT INTO `nf_wiki_revisions` (`id`, `page_id`, `content`, `title`, `user_id`,
 DELETE FROM `nf_dispositions`;
 INSERT INTO `nf_dispositions` (`disposition_id`, `theme`, `page`, `zone`, `disposition`) VALUES
 ('82', 'nebula', '*', '0', '[]'),
-('134', 'nebula', '*', '5', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":133,\"style\":null,\"size\":null}]}]}]'),
 ('83', 'nebula', '*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":\"col-md-8\",\"widgets\":[{\"id\":135,\"style\":null,\"size\":null}]},{\"size\":\"col-md-4\",\"widgets\":[{\"id\":136,\"style\":\"panel-color\",\"size\":null},{\"id\":137,\"style\":\"panel-default\",\"size\":null},{\"id\":138,\"style\":\"panel-default\",\"size\":null}]}]}]'),
 ('84', 'nebula', '*', '1', '[]'),
 ('85', 'nebula', '*', '3', '[]'),
@@ -733,7 +806,8 @@ INSERT INTO `nf_dispositions` (`disposition_id`, `theme`, `page`, `zone`, `dispo
 ('130', 'granite', 'forum/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9064,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9065,\"style\":null,\"size\":null}]}]}]'),
 ('131', 'granite', 'forum/*', '3', '[{\"style\":\"row-default\",\"cols\":[{\"size\":\"col-md-4\",\"widgets\":[{\"id\":9070,\"style\":\"panel-header\",\"size\":null}]},{\"size\":\"col-md-8\",\"widgets\":[{\"id\":9071,\"style\":\"panel-header\",\"size\":null}]}]}]'),
 ('132', 'granite', 'news/_news/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9066,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9067,\"style\":null,\"size\":null}]}]}]'),
-('133', 'granite', 'user/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9068,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9069,\"style\":null,\"size\":null}]}]}]');
+('133', 'granite', 'user/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9068,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9069,\"style\":null,\"size\":null}]}]}]'),
+('134', 'nebula', '*', '5', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":133,\"style\":null,\"size\":null}]}]}]');
 DELETE FROM `nf_widgets`;
 INSERT INTO `nf_widgets` (`widget_id`, `widget`, `type`, `title`, `settings`) VALUES
 ('133', 'navigation', 'index', NULL, '{\"links\":[{\"title\":\"Accueil\",\"url\":\"\"},{\"title\":\"Actualit&eacute;s\",\"url\":\"news\"},{\"title\":\"Forum\",\"url\":\"forum\"},{\"title\":\"Galerie\",\"url\":\"gallery\"},{\"title\":\"Membres\",\"url\":\"members\"},{\"title\":\"Contact\",\"url\":\"contact\"}]}'),
@@ -823,78 +897,3 @@ INSERT INTO `nf_widgets` (`widget_id`, `widget`, `type`, `title`, `settings`) VA
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS = 1;
-
--- ────────────────────────────────────────────────────────────────────────────────────────────
--- CONTENU D'EXEMPLE des cinq modules installés sur la démonstration le 2026-09-22.
---
--- Pourquoi il est ici : la démonstration sert aussi de plateau de photo pour les vignettes du
--- marketplace. Un module installé mais VIDE ne montre qu'un titre et un cadre — une vignette qui
--- n'apprend rien. Ce contenu est volontairement court et dans l'esprit du reste de la démo : une
--- communauté de joueurs.
--- ────────────────────────────────────────────────────────────────────────────────────────────
-
-DELETE FROM `nf_glossary_terms`;
-DELETE FROM `nf_glossary_categories`;
-
-INSERT INTO `nf_glossary_categories` (`id`, `title`, `sort_order`) VALUES
-(1, 'Vocabulaire de jeu', 0),
-(2, 'Communauté', 1);
-
-INSERT INTO `nf_glossary_terms` (`category_id`, `term`, `initial`, `definition`, `synonyms`, `published`) VALUES
-(1, 'Clutch', 'C', 'Situation où un joueur reste seul face à plusieurs adversaires et remporte tout de même la manche.', 'clutcher', 1),
-(1, 'Eco round', 'E', 'Manche jouée volontairement sans acheter d''équipement, pour économiser de quoi s''équiper à la suivante.', 'éco', 1),
-(1, 'Peek', 'P', 'Action de se découvrir brièvement pour observer ou tirer, puis de se remettre à couvert.', 'peeker, jiggle peek', 1),
-(2, 'Roster', 'R', 'Liste des joueurs qui composent une équipe à un moment donné.', 'effectif', 1),
-(2, 'Scrim', 'S', 'Match d''entraînement organisé entre deux équipes, sans enjeu de classement.', 'scrimmage', 1),
-(2, 'Shoutcast', 'S', 'Commentaire en direct d''une partie, assuré par un ou deux casteurs.', 'cast, casteur', 1);
-
-DELETE FROM `nf_quotes`;
-DELETE FROM `nf_quotes_categories`;
-
-INSERT INTO `nf_quotes_categories` (`id`, `title`, `sort_order`) VALUES
-(1, 'Sur le jeu', 0),
-(2, 'Sur l''équipe', 1);
-
-INSERT INTO `nf_quotes` (`category_id`, `quote`, `author`, `source`, `sort_order`, `published`) VALUES
-(1, 'On ne perd pas une manche parce qu''on vise mal, on la perd parce qu''on a arrêté de se parler.', 'Rekkles_FR', 'Débrief du tournoi régional', 0, 1),
-(1, 'Le meilleur réglage de souris, c''est celui qu''on garde trois mois.', 'NovaStrike', 'Guide du débutant', 1, 1),
-(2, 'Une équipe, c''est cinq joueurs qui font la même erreur en même temps — et qui la corrigent ensemble.', 'ShadowFox', 'Interview d''avant-saison', 0, 1),
-(2, 'On recrute des gens, pas des statistiques.', 'LunaByte', 'Annonce de recrutement', 1, 1);
-
-DELETE FROM `nf_recipes`;
-DELETE FROM `nf_recipes_categories`;
-
-INSERT INTO `nf_recipes_categories` (`id`, `title`, `sort_order`) VALUES
-(1, 'Soirées LAN', 0),
-(2, 'Boissons', 1);
-
-INSERT INTO `nf_recipes` (`category_id`, `title`, `intro`, `ingredients`, `steps`, `servings`, `prep_minutes`, `cook_minutes`, `sort_order`, `published`) VALUES
-(1, 'Wraps froids de la LAN', 'Se tiennent d''une main, ne graissent pas le clavier.', '6 galettes de blé\n300 g de poulet rôti\n1 avocat\n2 tomates\n4 cuillères de fromage frais\nQuelques feuilles de salade', 'Émincer le poulet et les tomates.\nÉtaler le fromage frais sur chaque galette.\nGarnir, rouler serré, couper en deux.\nRéserver au frais jusqu''au coup d''envoi.', 6, 20, 0, 0, 1),
-(1, 'Pop-corn au paprika fumé', 'Le bruit en moins : on n''en mange pas pendant les phases silencieuses.', '100 g de maïs à éclater\n2 cuillères d''huile\n1 cuillère de paprika fumé\nSel', 'Chauffer l''huile dans une grande casserole.\nVerser le maïs, couvrir, secouer jusqu''à la fin des éclatements.\nSaupoudrer de paprika et de sel, mélanger.', 4, 5, 10, 1, 1),
-(2, 'Thé glacé menthe-citron', 'De quoi tenir une soirée sans finir électrique.', '1 l d''eau\n3 sachets de thé vert\n1 citron\nUne dizaine de feuilles de menthe\nMiel selon le goût', 'Infuser le thé cinq minutes, laisser refroidir.\nAjouter le jus de citron et la menthe froissée.\nSucrer au miel, servir bien frais.', 4, 10, 5, 0, 1);
-
-DELETE FROM `nf_places`;
-DELETE FROM `nf_places_categories`;
-
-INSERT INTO `nf_places_categories` (`id`, `title`, `sort_order`) VALUES
-(1, 'Salles et LAN', 0),
-(2, 'Points de rencontre', 1);
-
-INSERT INTO `nf_places` (`category_id`, `title`, `description`, `address`, `latitude`, `longitude`, `sort_order`, `published`) VALUES
-(1, 'Salle de la LAN d''été', 'Deux cents postes, fibre dédiée, buvette ouverte toute la nuit.', '12 rue des Halles, 69002 Lyon', 45.760000, 4.832000, 0, 1),
-(1, 'Gymnase du tournoi régional', 'Le tournoi d''automne s''y tient chaque année depuis trois saisons.', 'Avenue du Stade, 33000 Bordeaux', 44.837800, -0.579100, 1, 1),
-(2, 'Bar associatif Le Respawn', 'Rencontre mensuelle de la communauté, premier jeudi du mois.', '5 place Saint-Pierre, 31000 Toulouse', 43.604700, 1.443700, 0, 1),
-(2, 'Espace jeu de la médiathèque', 'Initiations le samedi après-midi, ouvert à tous.', '2 quai de Seine, 75019 Paris', 48.883000, 2.373000, 1, 1);
-
-DELETE FROM `nf_webradio_shows`;
-
-INSERT INTO `nf_webradio_shows` (`title`, `host`, `description`, `day`, `start_time`, `end_time`, `published`) VALUES
-('Le réveil du serveur', 'LunaByte', 'Les actualités de la communauté et la playlist du matin.', 1, '08:00', '10:00', 1),
-('Débrief des scrims', 'ShadowFox', 'Retour sur les entraînements de la semaine, avec les joueurs.', 3, '20:00', '21:30', 1),
-('Nuit blanche', 'NovaStrike', 'Musique et discussions jusqu''au bout de la nuit, pendant les LAN.', 6, '22:00', '02:00', 1);
-
-INSERT INTO `nf_settings` (`name`, `site`, `lang`, `value`, `type`)
-SELECT 'webradio_stream', '', '', 'https://example.com/stream/neofrag.mp3', 'string'
- WHERE NOT EXISTS (SELECT 1 FROM `nf_settings` WHERE `name` = 'webradio_stream');
-
-UPDATE `nf_settings` SET `value` = 'https://example.com/stream/neofrag.mp3' WHERE `name` = 'webradio_stream';
