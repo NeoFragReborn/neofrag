@@ -10,6 +10,15 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.9] — 2026-10-01
+
+### Corrigé
+
+- **Blog : le sommaire d'un billet restait titré « Sommaire » dans les autres langues** (et l'écrivait au
+  journal). Un message de l'administration des membres avait le même défaut.
+- **Blog : la pastille de catégorie s'étirait sur toute la largeur des cartes** au lieu de rester une
+  petite étiquette.
+
 ## [1.2.8] — 2026-10-01
 
 ### Ajouté

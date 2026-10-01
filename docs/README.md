@@ -1,4 +1,4 @@
-# Documentation — NeoFrag Reborn 1.2.8
+# Documentation — NeoFrag Reborn 1.2.9
 
 Documentation **vérifiée contre le code réel** (60 modules · 40 widgets · 7 thèmes · 10 addons livrés).
 Ses chiffres, ses renvois et sa structure sont contrôlés en intégration continue par

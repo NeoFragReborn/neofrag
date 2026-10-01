@@ -62,7 +62,7 @@ class Update extends \NF\NeoFrag\Actions\Update
 				]);
 			}
 
-			notify(NeoFrag()->lang('Groupes du membre édités'));
+			notify($this->lang('Groupes du membre édités'));
 
 			redirect_back('admin/user');
 		}
