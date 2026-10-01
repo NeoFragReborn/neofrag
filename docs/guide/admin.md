@@ -5,9 +5,10 @@ L'administration se trouve sous **/admin**. Elle adopte la charte NeoFrag Reborn
 
 ## Repères
 
-- **Barre latérale** : les modules sont regroupés par catégories claires — *Contenu*,
-  *Communauté*, *Connaissance* (wiki, FAQ), *Média*, *Gaming*, *Monétisation* — plus *Système* et
-  *Monitoring*. Les sections se déplient en accordéon ; une catégorie vide est masquée.
+- **Barre latérale** : les modules sont regroupés par catégories — *Contenu*, *Communauté*,
+  *Connaissance* (wiki, FAQ), *Média*, *Gaming*, *Monétisation*, *Autres modules* — plus *Système*
+  (Paramètres, Utilisateurs, Permissions, Thèmes & Addons, Monitoring…). Les sections se déplient en
+  accordéon ; une catégorie vide est masquée.
 - **Épingles** : survole un module dans la sidebar et clique l'épingle pour l'ajouter à
   *Épinglé* (raccourcis en haut, mémorisés dans ton navigateur).
 - **Recherche rapide** : `Ctrl/Cmd + K` ouvre la palette de commandes pour sauter à
@@ -27,13 +28,14 @@ L'administration se trouve sous **/admin**. Elle adopte la charte NeoFrag Reborn
 | Régler qui peut faire quoi | *Système → Permissions (matrice)* — grille rôle × action (vert = autorisé, gris = défaut, rouge = jamais) |
 | Changer le thème / installer un addon | *Système → Thèmes & Addons* |
 | Réglages du site (nom, accueil, inscriptions, sécurité, copyright) | *Système → Paramètres* |
-| Composer les pages à la souris | *Système → Live Editor* |
-| Relier le site à un serveur Discord : rôles, pseudos, forum ↔ salon Forum | *Autres modules → Discord* — voir [Le bot Discord](bot-discord.md) |
-| Sauvegardes, mises à jour, état du site, journal d'audit | *Monitoring* |
+| Composer les pages à la souris | *Système → Éditeur en direct* |
+| Relier le site à un serveur Discord : rôles, pseudos, forum ↔ salon Forum, Bugtracker, rôles temporaires | *Autres modules → Discord* — voir [Le bot Discord](bot-discord.md) |
+| Sauvegardes, mises à jour, état du site | *Système → Monitoring* |
+| Relire les actions sensibles (réglages, addons, comptes, clés d'API) | *Système → Utilisateurs → Journal d'audit* |
 
 > **Monitoring** réunit la **santé du site** (vérifications d'intégrité des fichiers, espace disque, infos
-> serveur, état des tâches cron), les **sauvegardes** (créer / télécharger / restaurer) et le **journal
-> d'audit** des actions sensibles (réglages, addons, comptes).
+> serveur), les **mises à jour**, les **sauvegardes** (créer / télécharger / restaurer) et l'adresse de la
+> **tâche planifiée** (cron) qui publie les contenus programmés.
 
 ## Permissions
 

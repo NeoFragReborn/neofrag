@@ -59,14 +59,19 @@ if (!is_dir($racine.'/node_modules/eslint'))
     nf_refus('ESLint n\'est pas installé — lancer `npm install` à la racine du dépôt');
 }
 
-$npx = trim((string) @shell_exec(stripos(PHP_OS, 'WIN') === 0 ? 'where npx 2>NUL' : 'command -v npx 2>/dev/null'));
+/*
+ * ESLint est lancé par `node` sur son propre script, pas par `npx` : sous Windows, `where npx` rend
+ * d'abord le script shell `npx` (sans `.cmd`), que l'invite de commandes ne sait pas exécuter, et la
+ * redirection `2>/dev/null` y désigne un chemin qui n'existe pas — le contrôle refusait de conclure
+ * sur tout poste Windows (« Le chemin d'accès spécifié est introuvable », 2026-10-01).
+ */
+$windows = stripos(PHP_OS, 'WIN') === 0;
+$node    = (string) (getenv('NF_NODE') ?: strtok((string) @shell_exec($windows ? 'where node 2>NUL' : 'command -v node 2>/dev/null'), "\r\n"));
 
-if ($npx === '' || !is_file(explode("\n", $npx)[0]))
+if ($node === '' || !is_file($node))
 {
-    nf_refus('npx introuvable — installer Node.js');
+    nf_refus('node introuvable — installer Node.js, ou indiquer son chemin dans NF_NODE');
 }
-
-$npx = explode("\n", $npx)[0];
 
 // ── Les copies neutralisées ─────────────────────────────────────────────────────────────────
 /*
@@ -135,10 +140,12 @@ printf("%d fichier(s) JavaScript (%d contiennent du PHP interpolé).\n\n", count
 
 // ── ESLint, en JSON pour que le verdict ne dépende pas d'un format d'affichage ───────────────
 $commande = sprintf(
-    'cd %s && %s eslint --no-config-lookup -c eslint.config.js --format json %s 2>/dev/null',
+    'cd %s && %s %s --no-config-lookup -c eslint.config.js --format json %s %s',
     escapeshellarg($racine),
-    escapeshellarg($npx),
-    escapeshellarg('cache/js-lint')
+    escapeshellarg($node),
+    escapeshellarg('node_modules/eslint/bin/eslint.js'),
+    escapeshellarg('cache/js-lint'),
+    $windows ? '2>NUL' : '2>/dev/null'
 );
 
 $brut = (string) @shell_exec($commande);

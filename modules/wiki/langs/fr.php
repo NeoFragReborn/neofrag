@@ -64,4 +64,5 @@ return [
 	'2225b969' => 'Commentaire : %s',
 	'8d0eda24' => 'Comparaison : %s',
 	'd298327d' => 'Gérer les pages du wiki',
+	'032adbed' => 'Lire la page',
 ];

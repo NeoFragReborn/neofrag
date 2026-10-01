@@ -1,15 +1,24 @@
 # Le bot Discord
 
-Le bot Discord de NeoFrag Reborn relie ton site et ton serveur Discord :
+Le bot Discord de NeoFrag Reborn relie ton site et ton serveur Discord. Ses fonctionnalités
+s'allument une à une :
 
-- **les rôles et les pseudos** — un membre qui a lié son compte Discord reçoit sur le serveur les rôles
+- **rôles et pseudos** — un membre qui a lié son compte Discord reçoit sur le serveur les rôles
   reliés à ses groupes, et son pseudo du site si tu le veux ;
-- **le forum** — un forum du site et un salon Forum de Discord vivent ensemble : un sujet devient un
-  fil, un fil devient un sujet, et les réponses suivent dans les deux sens.
+- **forum et salons Forum** — un forum du site et un salon Forum de Discord vivent ensemble : un sujet
+  devient un fil, un fil devient un sujet, les réponses suivent dans les deux sens, et les préfixes du
+  forum deviennent les étiquettes du salon ;
+- **compte et apparence** — la commande `/forum` : relier son compte depuis Discord, et choisir
+  comment on paraît sur le forum sans compte relié ;
+- **Bugtracker** — chaque ticket devient un fil, son type et son statut en étiquettes ; `/bug` et
+  `/idee` ouvrent un ticket depuis Discord ;
+- **rôles temporaires** — la commande `/role` : donner un rôle pour un temps limité, que le bot retire
+  à la fin.
 
-Il se **règle entièrement depuis l'administration** du site : sa clé, son serveur, l'interrupteur
-marche / pause, le redémarrage, les correspondances. L'administration montre aussi son état et son
-journal, dans ta langue.
+Il se **règle entièrement depuis l'administration** du site : sa clé, son serveur, ses
+fonctionnalités et leurs réglages, l'interrupteur marche / pause, le redémarrage, les
+correspondances, et même la création des salons et des rôles sur le serveur. L'administration montre
+aussi son état et son journal, dans ta langue.
 
 Le bot est un **programme à part** qui tourne en permanence. Il lui faut une machine allumée — un
 VPS, un Raspberry Pi, un PC — avec **Node.js 22.9 ou plus**. Un hébergement mutualisé ne peut pas le
@@ -23,8 +32,9 @@ faire tourner ; le site, lui, n'en a pas besoin et reste où il est.
 3. Onglet *Bot* : *Reset Token*, et copie la **clé du bot** (le « token ») — elle n'est montrée
    qu'une fois.
 4. Toujours dans *Bot*, coche les deux **intents privilégiés** :
-   - **Server Members Intent** — pour les rôles et les pseudos ;
-   - **Message Content Intent** — pour recopier le texte des messages Discord sur le forum.
+   - **Server Members Intent** — pour les rôles, les pseudos et les rôles temporaires ;
+   - **Message Content Intent** — pour recopier le texte des messages Discord sur le site (forum,
+     Bugtracker).
 
    Sans eux, le bot fonctionne en mode réduit et le dit dans son journal : il ne demande jamais à
    Discord plus que ce que l'application a le droit de recevoir.
@@ -41,20 +51,20 @@ pour les installer).
 | Identifiant de l'application | l'*Application ID* de l'étape 1 |
 | Identifiant du serveur | dans Discord, mode développeur activé : clic droit sur le serveur → *Copier l'identifiant du serveur* |
 | Clé du bot | le token de l'étape 1. Il est **gardé chiffré** et n'est plus jamais affiché ; laisse le champ vide pour garder celui qui est enregistré |
-| Pseudos | donner aux membres liés leur pseudo du site sur le serveur |
 
-Puis **Inviter le bot** (même page d'accueil du module) : le lien ajoute le bot au serveur avec ses
-seules permissions — jamais « Administrateur » :
+Puis **Inviter le bot** (page d'accueil du module) : le lien ajoute le bot au serveur avec ses seules
+permissions — jamais « Administrateur » :
 
 | Permission | Pour |
 |---|---|
 | Voir les salons, Envoyer des messages, Lire l'historique | lire et écrire dans les salons reliés |
-| Envoyer des messages dans les fils, Créer des fils publics, Gérer les fils | recopier un sujet du site en fil, renommer ou supprimer le fil |
+| Envoyer des messages dans les fils, Créer des fils publics, Gérer les fils | recopier un sujet ou un ticket en fil, le renommer, l'archiver, poser ses étiquettes |
+| Gérer les salons | la mise en place du serveur : créer une catégorie, des salons Forum et leurs étiquettes |
 | Gérer les messages | reporter sur Discord une suppression faite sur le site |
 | Gérer les webhooks | poster les messages du site sous le nom et l'avatar de leur auteur |
 | Ajouter des réactions, Intégrer des liens, Joindre des fichiers | des messages complets |
-| Gérer les rôles, Gérer les pseudos | les rôles et les pseudos |
-| Utiliser les commandes de l'application | les commandes à venir |
+| Gérer les rôles, Gérer les pseudos | les rôles, les pseudos et les rôles temporaires |
+| Utiliser les commandes de l'application | `/forum`, `/bug`, `/idee`, `/role` |
 
 Dans les réglages du serveur (*Rôles*), place le rôle du bot **au-dessus** des rôles qu'il donne :
 Discord interdit à un bot de donner un rôle placé plus haut que le sien.
@@ -84,19 +94,45 @@ Pour qu'il tourne en service, démarre avec la machine et redémarre s'il tombe 
 
 Sur la machine, il ne reste que ces deux lignes. Tout le reste arrive par le site.
 
+**Mettre à jour le bot** : remplace le dossier par celui de la nouvelle archive en gardant `.env`,
+puis `npm ci --omit=dev` et redémarre le service. Une nouvelle version du bot qui a besoin de droits
+de plus sur le site le dit dans l'administration : crée alors une nouvelle clé d'accès.
+
 ## 4. Le piloter depuis l'administration
 
 *Administration → Discord* montre :
 
 - son **état** — *En ligne*, *En pause* (vivant, interrupteur coupé), *Connexion à Discord…*, ou
   *Hors ligne* (aucune nouvelle depuis une minute et demie) —, sa version, son dernier signe de vie ;
-- les boutons **Mettre en marche / Mettre en pause** et **Redémarrer**, qu'il applique dans la
-  minute ;
+- les boutons **Mettre en marche / Mettre en pause**, **Redémarrer** et **Resynchroniser** (remettre
+  tout d'accord : rôles et pseudos, et ce qui s'est écrit sur Discord pendant une absence du bot),
+  qu'il applique dans la minute ;
 - son **journal** : connexions, synchronisations, et ce qui l'empêche de fonctionner (intent non
-  coché, rôle mal placé, permission manquante), avec la marche à suivre.
+  coché, rôle mal placé, permission manquante, clé d'accès trop ancienne), avec la marche à suivre.
 
 **Changer la clé du bot** (fuite, régénération) : colle la nouvelle dans *Connexion*. Le bot la relit
 et se reconnecte tout seul ; la machine n'est pas touchée.
+
+### Les fonctionnalités
+
+*Discord → Fonctionnalités* liste ce que le bot sait faire — il les déclare lui-même à chaque signe de
+vie : une fonctionnalité ajoutée au bot y apparaît sans rien toucher au site. Chacune s'**allume** ou
+s'**éteint**, et ses **réglages** s'y changent ; le bot applique le changement dans la minute, sans
+redémarrer. Le Bugtracker et les rôles temporaires sont éteints au départ.
+
+### La mise en place du serveur
+
+*Discord → Mise en place du serveur* crée sur Discord ce qu'il faut pour relier le site, sans rien
+faire à la main :
+
+- une **catégorie** (reprise si elle existe déjà) ;
+- un **salon Forum par forum** choisi, avec les préfixes du forum en étiquettes ;
+- un **rôle par groupe** choisi, placé sous celui du bot pour qu'il puisse le donner.
+
+Un salon ou un rôle du même nom est repris au lieu d'être dédoublé. Un **aperçu** montre ce qui sera
+créé et repris ; **Appliquer** le fait, et les correspondances (salon ↔ forum, groupe ↔ rôle) se posent
+d'elles-mêmes. **Annuler la dernière mise en place** supprime ce qu'elle a créé — jamais ce qu'elle a
+repris.
 
 ## Les rôles et les pseudos
 
@@ -104,13 +140,32 @@ et se reconnecte tout seul ; la machine n'est pas touchée.
 
 - un membre lié qui est dans le groupe reçoit le rôle ; qui n'y est plus le perd ;
 - un rôle que rien ne relie n'est **jamais touché** ; un membre qui n'a pas lié son compte non plus ;
-- avec l'option *Pseudos*, le membre lié porte sur le serveur son pseudo du site (sauf le
+- avec le réglage *Pseudos*, le membre lié porte sur le serveur son pseudo du site (sauf le
   propriétaire du serveur, que Discord protège).
 
-Un membre lie son compte en se connectant au site par Discord, ou depuis *Mon compte → Mes comptes
-liés*. Le bot applique un changement de groupe dans la demi-minute, l'arrivée d'un membre lié sur le
-serveur aussitôt, et repasse sur tout le monde au démarrage, à chaque changement de réglage et toutes
-les dix minutes.
+Le bot applique un changement de groupe dans la demi-minute, l'arrivée d'un membre lié sur le serveur
+et la liaison d'un compte aussitôt, et repasse sur tout le monde au démarrage, à chaque changement de
+réglage et à l'intervalle choisi (dix minutes par défaut).
+
+## Le compte et l'apparence : `/forum`
+
+Un membre lie son compte en se connectant au site par Discord, depuis *Mon compte → Mes comptes liés*,
+ou **depuis Discord** :
+
+- `/forum account link` donne un lien à usage unique, valable quinze minutes. Sur le site, connecté,
+  le membre confirme la liaison — et peut reprendre à son nom ce qu'il avait publié depuis Discord ;
+- `/forum account unlink` délie, sauf si Discord est son seul moyen de se connecter au site.
+
+Quelqu'un qui n'a pas relié son compte choisit comment il paraît sur le forum du site :
+
+- `/forum visibility public` — sous son pseudo Discord ;
+- `/forum visibility guest` — sous un nom anonyme ;
+- `/forum visibility custom` — sous un pseudo de son choix (2 à 32 caractères, changeable tous les
+  sept jours, jamais celui d'un membre du site) ;
+- `/forum visibility status` — ce qui est en place.
+
+Ses messages déjà publiés suivent son choix. Toutes les réponses sont privées, dans la langue Discord
+de chacun.
 
 ## Le forum et les salons Forum
 
@@ -130,14 +185,57 @@ Ce qui suit, et comment :
 | Réponse | un message dans le fil | une réponse (la citation d'un message suit) |
 | Modification | le message est réécrit, le titre du fil suit | le message est réécrit |
 | Suppression | le message disparaît ; un sujet supprimé emporte son fil | le message passe à la corbeille du forum |
+| Préfixe / étiquette | l'étiquette correspondante est posée | le préfixe correspondant est posé |
 
+- **Préfixes et étiquettes** (bouton de chaque salon relié) : un préfixe du forum ↔ une étiquette du
+  salon. La mise en place les relie d'elle-même.
 - Un message venu de Discord est publié sous le **compte du membre** qui a lié son Discord ; sinon
-  sous son **identité Discord** : son pseudo, marqué du logo Discord.
+  sous son **identité Discord**, comme il l'a choisi avec `/forum visibility`, marquée du logo Discord.
 - Un message trop long pour Discord (2 000 caractères) y est coupé, avec un lien vers la suite.
 - Les pièces jointes de Discord sont signalées sur le site par un lien vers le message Discord.
+- Réglages : un lien vers le site sous chaque sujet recopié, et le **rattrapage** au démarrage de ce
+  qui s'est écrit sur Discord pendant que le bot était éteint.
 - Ne sont pas reportés : la suppression d'un fil entier sur Discord (le sujet reste, le journal le
   signale), celle de son message d'ouverture, et sur Discord la modification d'un message écrit sur
-  Discord (il appartient à son auteur).
+  Discord (il appartient à son auteur). La copie Discord d'un message du site, effacée par un
+  modérateur, n'efface pas l'original.
+
+## Le Bugtracker
+
+Dans les réglages de la fonctionnalité, choisis le **salon Forum des tickets** (pas un salon déjà relié
+à un forum). Le bot y crée les étiquettes des types (Bogue, Idée, Question, Autre) et des statuts
+(Ouvert, En cours, Résolu, Fermé, Ne sera pas fait, Doublon), dans la langue du site.
+
+- Chaque ticket devient un **fil**, sous le nom et l'avatar de son auteur, avec son numéro, son type,
+  sa priorité et un lien vers le site. Les tickets encore ouverts reçoivent leur fil quand tu choisis
+  le salon.
+- Quand le ticket change sur le site, le fil suit : étiquettes, titre, description. Il **s'archive**
+  quand le ticket est clos ; un doublon renvoie à son ticket d'origine ; un ticket supprimé emporte
+  son fil.
+- Les **commentaires** passent dans les deux sens. Sur Discord, celui qui n'a pas relié son compte
+  commente sous son pseudo Discord.
+- `/bug` et `/idee` ouvrent un ticket par une petite fenêtre (titre, description), et un fil ouvert à
+  la main dans le salon devient un ticket. Un ticket appartient à un membre : il faut avoir relié son
+  compte (le bot le rappelle sinon).
+- Le **site fait foi** : une étiquette changée à la main sur Discord est remise comme le dit le ticket.
+
+## Les rôles temporaires : `/role`
+
+Réservée à qui peut **gérer les rôles** sur le serveur :
+
+- `/role give` — donner un rôle à un membre pour une durée (minutes, heures, jours, semaines), avec
+  une raison si l'on veut. Donné de nouveau, il est prolongé ;
+- `/role remove` — le retirer tout de suite ;
+- `/role list` — ceux en cours, pour tout le serveur ou pour un membre.
+
+Le bot retire le rôle à l'échéance (vérifiée chaque minute), **même après un redémarrage** : la liste
+vit sur le site, dans *Discord → Rôles temporaires*, où **Retirer maintenant** avance l'échéance. Un
+membre qui quitte puis rejoint le serveur avant la fin retrouve son rôle (réglage *Redonner le rôle*).
+
+Sont refusés : `@everyone` et les rôles tenus par une intégration, les rôles **reliés à un groupe** du
+site (la synchronisation des groupes les gère), et — comme Discord le fait pour ce droit — un rôle
+placé au-dessus du bot, ou au niveau de celui qui le donne ou au-dessus. La durée est plafonnée par le
+réglage *Durée maximale* (90 jours par défaut, un an au plus).
 
 ## Sécurité
 
@@ -146,6 +244,8 @@ Ce qui suit, et comment :
   a le droit `discord:bot` peut la lire — celle que l'administration crée pour le bot, révocable à
   tout moment.
 - Le bot ne mentionne jamais personne : un message recopié ne peut pas notifier `@everyone`.
+- Ce qui arrive de Discord — un nom de fil, un pseudo, un commentaire — est rangé sur le site comme ce
+  qu'on y écrit soi-même : il s'affiche, il ne s'exécute pas.
 
 ## Écrire une fonctionnalité
 
@@ -156,15 +256,22 @@ respecte le contrat de `bot/src/fonctionnalites/types.ts` :
 ```ts
 import { GatewayIntentBits } from 'discord.js';
 import type { Evenement } from '../../site.js';
-import type { Contexte, Fonctionnalite } from '../types.js';
+import { TEXTES } from '../../textes.js';
+import type { Contexte, Fonctionnalite, Reglage } from '../types.js';
 
 export class Bienvenue implements Fonctionnalite {
     readonly nom = 'bienvenue';
+    readonly titre = 'Bienvenue';                                   // dans l'administration
+    readonly description = 'Accueille chaque nouveau membre.';
+    readonly defaut = false;                                        // éteinte au départ
+    readonly reglages = [
+        { cle: 'salon', type: 'salon', defaut: '', libelle: 'Salon de bienvenue' },
+    ] as const satisfies readonly Reglage[];
     readonly intents = [GatewayIntentBits.GuildMembers] as const;  // en plus de ceux de base
     readonly evenements = ['forum.topic.created'] as const;         // le fil d'événements du site
 
     demarrer(ctx: Contexte): void {
-        // ctx.client (discord.js, connecté), ctx.guilde, ctx.site (l'API), ctx.config, ctx.journal
+        // ctx.client, ctx.guilde, ctx.site (l'API), ctx.config, ctx.reglages, ctx.textes, ctx.journal
         ctx.journal.info('Bienvenue : prête sur « %s ».', ctx.guilde.name);
     }
 
@@ -175,11 +282,20 @@ export class Bienvenue implements Fonctionnalite {
 }
 ```
 
+- Les **réglages** déclarés (`bool`, `int`, `choix`, `salon`, `role`, `texte`) font d'eux-mêmes leur
+  formulaire dans l'administration, bornes vérifiées ; `ctx.reglages` donne la valeur choisie.
+- Une fonctionnalité qui a des **commandes** les déclare dans `commandes(textes)` et y répond dans
+  `surCommande()` ; boutons et fenêtres arrivent dans `surInteraction()`, si leur `customId` commence
+  par son nom (`bienvenue:…`).
 - Une fonctionnalité qui lève une erreur l'écrit au journal sans emporter le bot ni les autres.
+- **Tout ce qui s'affiche sur Discord** — messages, réponses, descriptions des commandes — vit dans
+  `bot/src/textes.ts` (`TEXTES`), en modèles français ; `ctx.textes.dans(locale, TEXTES.…, …)` le rend
+  dans la langue de chacun, `textes.localisations()` pour les descriptions des commandes.
 - **Le journal est traduit par le site** : écris un *modèle* et ses valeurs
   (`ctx.journal.warn('Le rôle « %s » est mal placé.', role.name)`), jamais une phrase assemblée.
-  Ajoute chaque nouveau modèle à `Discord::textes_du_bot()` (`modules/discord/discord.php`), puis
-  `php tools/check-langs.php --fix` et `php tools/fill-langs.php` : un test du bot échoue si un modèle
-  manque.
+- Chaque modèle — du journal comme de `TEXTES` — s'ajoute à `Discord::textes_du_bot()`
+  (`modules/discord/discord.php`), puis `php tools/check-langs.php --fix` et
+  `php tools/fill-langs.php` le traduisent : un test du bot échoue si un modèle manque.
 - `npm test` compile et lance les tests (`*.test.ts`, lanceur intégré de Node) ; la CI les joue à
-  chaque envoi.
+  chaque envoi. Une règle qui ne dépend pas de Discord gagne à vivre dans son propre fichier, testé
+  (`roles-temporaires/regles.ts`, `bugtracker/etiquettes.ts`).

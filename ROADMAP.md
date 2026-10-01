@@ -15,7 +15,7 @@ Le détail version par version est dans le [CHANGELOG](CHANGELOG.md) ; la façon
 ## Où en est le projet
 
 **Version 1.1.0**, bien au-delà de l'alpha 0.2.4 dont NeoFrag Reborn est la continuité. Le catalogue
-propose **34 modules, 24 widgets et 4 thèmes**, ajoutables en un clic depuis l'administration.
+propose **35 modules, 24 widgets et 4 thèmes**, ajoutables en un clic depuis l'administration.
 
 Le code est complet et éprouvé à chaque modification — tests automatisés, analyse statique, contrôles
 qui ouvrent un vrai navigateur. **Il n'est pas encore publié** : c'est le prochain jalon, et le seul

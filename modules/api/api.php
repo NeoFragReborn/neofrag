@@ -20,7 +20,7 @@ class Api extends Module
 	 * Les droits d'une clé : des identifiants techniques, stables, que les programmes connaissent.
 	 * Pour les AFFICHER : scope_labels().
 	 */
-	const SCOPES = ['members:read', 'forum:read', 'forum:write', 'events:read', 'discord:bot'];
+	const SCOPES = ['members:read', 'forum:read', 'forum:write', 'events:read', 'discord:bot', 'bugtracker:read', 'bugtracker:write'];
 
 	/** Requêtes permises par minute et par clé. */
 	const PAR_MINUTE = 120;
@@ -40,7 +40,18 @@ class Api extends Module
 		'forum.post.deleted'  => ['message_id', 'topic_id', 'forum_id', 'is_topic', 'hard_delete', 'deleted_by'],
 		'forum.topic.split'   => ['source_topic_id', 'new_topic_id', 'message_ids', 'forum_id'],
 		'forum.topics.merged' => ['source_topic_id', 'target_topic_id', 'forum_id'],
+		'forum.topic.prefixed' => ['topic_id', 'forum_id', 'prefix_id'],
+		// Le Bugtracker (point 7) : le bot Discord tient le fil de chaque ticket.
+		'bugtracker.ticket.created'  => ['ticket_id', 'user_id', 'type'],
+		'bugtracker.ticket.updated'  => ['ticket_id', 'status', 'type', 'fields'],
+		'bugtracker.ticket.deleted'  => ['ticket_id'],
+		'bugtracker.comment.created' => ['comment_id', 'ticket_id', 'user_id'],
+		'bugtracker.comment.edited'  => ['comment_id', 'ticket_id'],
+		'bugtracker.comment.deleted' => ['comment_id', 'ticket_id'],
 		'user.groups.changed' => ['user_id'],
+		// Un compte Discord lié ou délié (connexion par Discord, « Mes comptes liés », `/forum account`).
+		'user.discord.linked'   => ['user_id', 'discord_id'],
+		'user.discord.unlinked' => ['user_id', 'discord_id'],
 	];
 
 	/** Durée de vie d'un événement dans le journal, en jours. */
@@ -152,6 +163,8 @@ class Api extends Module
 			'forum:write'  => (string) $this->lang('Écrire sur le forum au nom d’un membre ou d’un compte Discord'),
 			'events:read'  => (string) $this->lang('Suivre le fil d’événements'),
 			'discord:bot'  => (string) $this->lang('Être le bot Discord du site (sa configuration, sa clé Discord comprise)'),
+			'bugtracker:read'  => (string) $this->lang('Lire le Bugtracker'),
+			'bugtracker:write' => (string) $this->lang('Écrire dans le Bugtracker : ouvrir un ticket, commenter, au nom d’un membre ou d’un compte Discord'),
 		];
 	}
 }

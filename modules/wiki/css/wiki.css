@@ -17,6 +17,11 @@
 .wiki-cat-list a:hover { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 10%, transparent); color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); text-decoration: none; }
 .wiki-cat-list a:hover > i:first-child, .wiki-cat-list a:hover .wiki-go { color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); }
 .wiki-cat-list a:hover .wiki-go { opacity: 1; transform: translateX(2px); }
+/* La carte d'une page sans sous-pages : le début de son texte, puis le lien. */
+.wiki-cat-resume { padding: 14px 18px 16px; color: var(--nf-muted, #8593a6); font-size: 14.5px; }
+.wiki-cat-resume p { margin: 0 0 10px; }
+.wiki-cat-resume a { color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); font-weight: 600; text-decoration: none; }
+.wiki-cat-resume a i { font-size: 11px; }
 
 /* ---- Contenu (prose) ---- */
 .wiki-content { font-size: 15.5px; line-height: 1.75; color: var(--nf-text, #e7eef6); }
@@ -52,6 +57,7 @@
 .wiki-nav-head i { color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); }
 .wiki-nav-cat { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--nf-muted, #8593a6); margin: 16px 0 6px; }
 .wiki-nav ul { list-style: none; margin: 0 0 6px; padding: 0; }
+.wiki-nav ul.wiki-nav-seule { margin-top: 12px; }
 .wiki-nav li a { display: block; padding: 7px 12px; border-radius: 8px; color: var(--nf-text, #e7eef6); text-decoration: none; transition: background .12s, color .12s; border-left: 2px solid transparent; }
 .wiki-nav li a:hover { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 8%, transparent); color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); }
 .wiki-nav li a.active { background: color-mix(in srgb, var(--nf-accent, #2dd4bf) 12%, transparent); color: var(--nf-accent-text, var(--nf-accent, #2dd4bf)); font-weight: 600; border-left-color: var(--nf-accent, #2dd4bf); }

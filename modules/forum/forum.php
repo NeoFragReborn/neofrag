@@ -273,7 +273,7 @@ class Forum extends Module
 		// Le fil d'événements de l'API : le module api n'est pas chargé pendant une action
 		// du forum, il ne peut donc pas écouter lui-même — le forum lui confie ses événements.
 		// couplage(api): facultatif — sans le module api, `Module::__load` rend NULL et rien n'est inscrit.
-		foreach (['forum.topic.created', 'forum.post.created', 'forum.post.edited', 'forum.post.deleted', 'forum.topic.split', 'forum.topics.merged'] as $evenement)
+		foreach (['forum.topic.created', 'forum.post.created', 'forum.post.edited', 'forum.post.deleted', 'forum.topic.split', 'forum.topics.merged', 'forum.topic.prefixed'] as $evenement)
 		{
 			$this->events->on($evenement, static function ($charge) use ($evenement) {
 				if (is_array($charge) && ($api = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['api'])) instanceof \NF\Modules\Api\Api)

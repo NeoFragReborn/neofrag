@@ -155,6 +155,37 @@ foreach ($controles as $nom => $c)
 // ── Exécution ─────────────────────────────────────────────────────────────────────────────────
 
 /** Lance une commande, borne sa durée, et rend [code de sortie, sortie mêlée, secondes]. */
+/**
+ * La commande qui lance Composer, ou NULL s'il est introuvable.
+ *
+ * Sous Windows, `composer` installé pour Git Bash n'est qu'un script shell posé à côté de
+ * `composer.phar` : l'invite de commandes — celle de `proc_open()` — ne sait pas le lancer, et
+ * l'audit échouait en un dixième de seconde en annonçant « 0 avis de sécurité » (2026-10-01). On
+ * lance alors `composer.phar` avec le PHP courant.
+ */
+function commande_composer(): ?string
+{
+    if (stripos(PHP_OS, 'WIN') !== 0)
+    {
+        return 'composer';
+    }
+
+    if (trim((string) @shell_exec('where composer.bat composer.cmd composer.exe 2>NUL')) !== '')
+    {
+        return 'composer';
+    }
+
+    foreach (explode(PATH_SEPARATOR, (string) getenv('PATH')) as $dossier)
+    {
+        if ($dossier !== '' && is_file($phar = rtrim($dossier, '\\/').DIRECTORY_SEPARATOR.'composer.phar'))
+        {
+            return escapeshellarg(PHP_BINARY).' '.escapeshellarg($phar);
+        }
+    }
+
+    return NULL;
+}
+
 function lancer(string $commande, int $secondes_max): array
 {
     $debut = microtime(TRUE);
@@ -226,13 +257,18 @@ echo str_repeat('─', 96)."\n";
 // composer audit d'abord : le contrôle qui n'avait aucun lanceur local, et il coûte deux secondes.
 if (!$seul && !in_array('audit', $sauf, TRUE) && is_file(nf_racine().'/composer.lock'))
 {
-    [$code, $sortie, $duree] = lancer('composer audit --locked --no-interaction 2>&1', 120);
+    $composer = commande_composer();
+    [$code, $sortie, $duree] = $composer !== NULL ? lancer($composer.' audit --locked --no-interaction 2>&1', 120) : [127, '', 0.0];
     $avis = substr_count($sortie, 'Package: ');
     $resultats['composer audit'] = [
         'ok'      => $code === 0,
         'duree'   => $duree,
-        'verdict' => $code === 0 ? 'aucun avis de sécurité sur les dépendances verrouillées'
-                                 : $avis.' avis de sécurité — détail : composer audit --locked',
+        'verdict' => match (TRUE) {
+            $code === 0     => 'aucun avis de sécurité sur les dépendances verrouillées',
+            $avis > 0       => $avis.' avis de sécurité — détail : composer audit --locked',
+            $composer === NULL => 'Composer introuvable — l\'installer, ou lancer composer audit --locked à la main',
+            default         => 'composer audit n\'a pas abouti : '.mb_substr(trim(strtok(trim($sortie), "\n") ?: ''), 0, 60),
+        },
         'sortie'  => $sortie,
     ];
     printf("%-1s %-26s %6.1fs  %s\n", $code === 0 ? '✓' : '✗', 'composer audit', $duree, $resultats['composer audit']['verdict']);

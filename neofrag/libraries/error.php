@@ -15,6 +15,8 @@ class Error extends Library
 	{
 		throw NeoFrag()->___load('', 'exception', [function(){
 			header('HTTP/1.0 404 Not Found');
+			// Le titre de l'onglet le dit aussi, plutôt que le nom du module qui n'a rien trouvé.
+			$this->output->data->set('module', 'title', (string) $this->lang('Page introuvable'));
 			return $this->view('errors/unfound');
 		}]);
 	}
@@ -33,6 +35,7 @@ class Error extends Library
 	{
 		throw NeoFrag()->___load('', 'exception', [function(){
 			header('HTTP/1.0 403 Forbidden');
+			$this->output->data->set('module', 'title', (string) $this->lang('Accès non autorisé'));
 			return $this->view('errors/unauthorized');
 		}]);
 	}

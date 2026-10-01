@@ -25,8 +25,13 @@ declare(strict_types=1);
  * `foreach` ouvert sur la requête, celle qui reçoit le résultat, ou celle d'un `foreach` ouvert sur
  * cette dernière. Une lecture gardée par `is_array($variable)` est acceptée.
  *
- * C'est un contrôle STATIQUE, et il cherche la forme qui s'écrit naturellement : celle des deux cas
- * trouvés. Il ne suit pas une valeur passée à une autre fonction.
+ * La requête peut aussi être construite en plusieurs temps — `$q = …->select('id')…;`, des
+ * conditions ajoutées, puis `$q->…->get()` —, et le résultat lu par `array_column(…, 'id')`, qui
+ * ne trouve alors rien et rend une liste vide sans un mot : la liste des tickets ouverts du
+ * Bugtracker revenait vide ainsi, et le bot Discord ne donnait de fil à aucun (2026-10-01).
+ *
+ * C'est un contrôle STATIQUE, et il cherche les formes qui s'écrivent naturellement : celles des
+ * cas trouvés. Il ne suit pas une valeur passée à une autre fonction.
  *
  * Usage
  * -----
@@ -75,7 +80,18 @@ function analyser_source(string $src): array
 
         if (!preg_match('/->(get|row)\(\s*\)/', $instruction))
         {
-            continue;   // `get(FALSE)` garde les lignes, et une requête sans résultat lu n'est pas en cause
+            // Une requête gardée dans une variable et terminée plus loin (`$q->…->get()`) : c'est là
+            // que son résultat est lu. Sinon — `get(FALSE)`, ou aucun résultat lu —, rien en cause.
+            if (preg_match('/\$(\w+)\s*=(?![=>])[^;{}]*$/', substr($src, max(0, $position - 400), min(400, $position)), $q)
+                && ($suite_requete = requete_terminee_plus_loin($src, $q[1], $position + $fin)) !== NULL)
+            {
+                [$position, $fin] = $suite_requete;
+                $instruction      = substr($src, $position, $fin);
+            }
+            else
+            {
+                continue;
+            }
         }
 
         $variables = [];
@@ -107,6 +123,21 @@ function analyser_source(string $src): array
             }
         }
 
+        // c. `array_column(…->get(), 'id')` : la colonne cherchée n'existe pas dans une liste de valeurs.
+        $debut_instruction = substr($src, max(0, $position - 400), min(400, $position));
+        $debut_instruction = substr($debut_instruction, max((int) strrpos($debut_instruction, ';'), (int) strrpos($debut_instruction, '{'), (int) strrpos($debut_instruction, '}')));
+
+        if (preg_match('/array_column\(\s*(?:\(array\)\s*)?(?:\$[\w>-]+|NeoFrag\(\)[\w>-]*)?\s*$/', $debut_instruction))
+        {
+            $fautes[] = [
+                'ligne'    => substr_count($src, "\n", 0, $position) + 1,
+                'colonne'  => $colonne,
+                'variable' => 'array_column',
+            ];
+
+            continue;
+        }
+
         $suite = substr($src, $position, PORTEE);
 
         foreach (array_unique($variables) as $variable)
@@ -136,6 +167,42 @@ function analyser_source(string $src): array
 }
 
 /**
+ * La suite d'une requête gardée dans `$variable` : la première instruction, après `$apres`, qui la
+ * termine par `->get()` ou `->row()`. Rend [position, longueur] de cette instruction, ou NULL si la
+ * requête est terminée en gardant les lignes (`get(FALSE)`) ou jamais dans la portée.
+ *
+ * @return array{0: int, 1: int}|null
+ */
+function requete_terminee_plus_loin(string $src, string $variable, int $apres): ?array
+{
+    $suite = substr($src, $apres, PORTEE);
+
+    if (!preg_match_all('/\$'.$variable.'\s*->/', $suite, $usages, PREG_OFFSET_CAPTURE))
+    {
+        return NULL;
+    }
+
+    foreach ($usages[0] as [, $decalage])
+    {
+        $position    = $apres + $decalage;
+        $fin         = strcspn($src, ';{', $position);
+        $instruction = substr($src, $position, $fin);
+
+        if (preg_match('/->(get|row)\(\s*\)/', $instruction))
+        {
+            return [$position, $fin];
+        }
+
+        if (preg_match('/->(get|row)\(/', $instruction))
+        {
+            return NULL;   // `get(FALSE)` : les lignes sont gardées
+        }
+    }
+
+    return NULL;
+}
+
+/**
  * L'ÉPREUVE À L'ENVERS : les deux défauts réels, dans leur forme d'origine, doivent être refusés ;
  * leurs corrections, et les lectures qui gardent les lignes, doivent passer en silence.
  */
@@ -147,6 +214,8 @@ function epreuve(): array
         'widget forum (foreach direct)' => "<?php foreach (\$this->db->select('category_id')->from('nf_forum_categories')->get() as \$category)\n{\n\t\$ids[] = \$category['category_id'];\n}",
         'sondages (variable puis boucle)' => "<?php \$rows = NeoFrag()->db->select('id')->from('o')->where('s', 1)->get();\nforeach (\$rows as \$row)\n{\n\tif (in_array((int)\$row['id'], \$x)) {}\n}",
         'row() à une colonne'            => "<?php \$u = \$this->db->select('username')->from('nf_user')->where('id', 1)->row();\necho \$u['username'];",
+        'requête en deux temps (Bugtracker)' => "<?php \$q = \$this->db->select('id')->from('t')->where('id >', 0);\nif (\$o)\n{\n\t\$q->where('status', ['open']);\n}\nreturn array_map('intval', array_column((array) \$q->order_by('id')->limit(5)->get(), 'id'));",
+        'array_column direct'            => "<?php \$ids = array_column(\$this->db->select('id')->from('t')->get(), 'id');",
     ];
 
     $propres = [
@@ -157,6 +226,9 @@ function epreuve(): array
         'select(*)'                      => "<?php \$r = \$this->db->select('*')->from('u')->row();\necho \$r['id'];",
         'affectation la plus proche'     => "<?php if ((\$check = post_check('forum_id')) && !is_array(\$is_sub = \$this->db->select('is_subforum')->from('f')->where('forum_id', \$check['forum_id'])->row())) {}",
         'row(FALSE) garde la ligne'      => "<?php \$current = \$this->db->select('parent_id')->from('m')->where('id', 1)->row(FALSE);\necho \$current['parent_id'];",
+        'deux temps, valeurs lues'       => "<?php \$q = \$this->db->select('id')->from('t');\nif (\$o)\n{\n\t\$q->where('a', 1);\n}\nreturn array_map('intval', (array) \$q->get());",
+        'deux temps, get(FALSE)'         => "<?php \$q = \$this->db->select('id')->from('t');\nforeach (\$q->get(FALSE) as \$r)\n{\n\techo \$r['id'];\n}",
+        'array_column à deux colonnes'   => "<?php \$ids = array_column(\$this->db->select('id', 'title')->from('t')->get(), 'title', 'id');",
     ];
 
     foreach ($defauts as $nom => $src)
@@ -218,6 +290,14 @@ echo "REQUÊTES À UNE COLONNE LUES COMME DES LIGNES — `get()` et `row()` rend
 
 foreach ($fautes as $faute)
 {
+    if ($faute['variable'] === 'array_column')
+    {
+        printf("  %s:%d\n      select('%s') puis array_column(…) — get() rend déjà la liste des valeurs : la lire directement\n\n",
+            $faute[0], $faute['ligne'], $faute['colonne']);
+
+        continue;
+    }
+
     printf("  %s:%d\n      select('%s') puis \$%s['…'] — lire \$%s directement, ou demander get(FALSE)\n\n",
         $faute[0], $faute['ligne'], $faute['colonne'], $faute['variable'], $faute['variable']);
 }

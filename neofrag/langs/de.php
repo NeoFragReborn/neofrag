@@ -494,4 +494,9 @@ return [
 	'6ad56e9f' => 'Dateien ausgewählt',
 	'2f4cbc68' => 'Ungültige Farbe',
 	'fe0c11f4' => 'Design der Website: %s',
+	'f68d9969' => 'Seite nicht gefunden',
+	'209f9ff8' => 'Ihr Konto hat nicht die nötigen Rechte, um diese Seite anzuzeigen.',
+	'dab88bfd' => 'Zurück zum Dashboard',
+	'cb789c2a' => 'Zurück zur Startseite',
+	'6f51e9bc' => 'Diese Adresse führt zu keiner Seite: Sie hat sich vielleicht geändert, oder die Seite wurde gelöscht.',
 ];

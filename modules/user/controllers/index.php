@@ -752,6 +752,8 @@ class Index extends Controller_Module
 						->set_if($data['avatar'],   'avatar',   $data['avatar'])
 						->create();
 
+				$this->_compte_externe_change('linked', (string) $authenticator->info()->name, (int) $this->user->id, (string) $data['id']);
+
 				notify($this->lang('Votre compte %s est lié : vous pourrez vous connecter avec lui.', $authenticator->info()->title));
 				redirect('user/auth');
 			}
@@ -815,6 +817,8 @@ class Index extends Controller_Module
 			->set_if($data['username'], 'username', $data['username'])
 			->set_if($data['avatar'],   'avatar',   $data['avatar'])
 			->create();
+
+		$this->_compte_externe_change('linked', (string) $authenticator->info()->name, (int) $user->id, (string) $data['id']);
 
 		if (($wh = $this->module('webhooks')) instanceof \NF\Modules\Webhooks\Webhooks)
 		{
@@ -890,12 +894,40 @@ class Index extends Controller_Module
 			redirect('user/auth');
 		}
 
+		$cle = (string) $this->db->select('key')->from('nf_user_auth')->where('id', (int) $lien['id'])->row();
+
 		$this->db->where('id', (int) $lien['id'])->where('user_id', (int) $this->user->id)->delete('nf_user_auth');
+		$this->_compte_externe_change('unlinked', (string) $lien['name'], (int) $this->user->id, $cle);
 
 		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('user.auth.unlinked', ['details' => (string) $lien['name']]);
 
 		notify($this->lang('Compte délié.'));
 		redirect('user/auth');
+	}
+
+	/**
+	 * Un compte Discord lié ou délié ici : le bot Discord du site l'apprend par le fil de
+	 * l'API, et donne ou retire aussitôt les rôles du membre. Les autres comptes externes (GitHub,
+	 * Google) ne concernent aucun bot.
+	 *
+	 * couplage(api): facultatif — sans le module api, `Module::__load` rend NULL et rien n'est inscrit.
+	 */
+	private function _compte_externe_change(string $quoi, string $authentificateur, int $user_id, string $cle): void
+	{
+		if ($authentificateur !== 'discord' || $cle === '')
+		{
+			return;
+		}
+
+		$evenement = 'user.discord.'.$quoi;
+		$charge    = ['user_id' => $user_id, 'discord_id' => $cle];
+
+		$this->events->fire($evenement, $charge);
+
+		if (($api = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['api'])) instanceof \NF\Modules\Api\Api)
+		{
+			$api->consigner($evenement, $charge);
+		}
 	}
 
 	public function lost_password($token)

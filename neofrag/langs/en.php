@@ -493,4 +493,9 @@ return [
 	'6ad56e9f' => 'files selected',
 	'2f4cbc68' => 'Invalid colour',
 	'fe0c11f4' => 'Site theme: %s',
+	'f68d9969' => 'Page not found',
+	'209f9ff8' => 'Your account does not have the rights needed to view this page.',
+	'dab88bfd' => 'Back to the dashboard',
+	'cb789c2a' => 'Back to the home page',
+	'6f51e9bc' => 'This address does not lead to any page: it may have changed, or the page may have been deleted.',
 ];

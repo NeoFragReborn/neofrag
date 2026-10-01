@@ -564,10 +564,15 @@ class Output extends Core
 			$this->data->merge_if($js,      'js',      $js);
 			$this->data->merge_if($js_load, 'js_load', $js_load);
 
-			if (!$error)
-			{
-				$this->data->set('module', 'content', $this->bandeau_langue().$output);
-			}
+			/*
+			 * Une page d'erreur (introuvable, interdite) prend la place du contenu du module.
+			 *
+			 * Jusqu'ici, seul le thème d'administration affichait l'erreur, en la lisant lui-même :
+			 * sur tous les thèmes publics, le bloc du module restait vide et un 404 n'était qu'une
+			 * page blanche entre l'en-tête et le pied de page, sans un mot (relevé le
+			 * 2026-10-01 sur un lien du bot Discord). Défaut hérité de NeoFrag 0.4.0.
+			 */
+			$this->data->set('module', 'content', $error ? $this->_error : $this->bandeau_langue().$output);
 
 			notifications();
 

@@ -76,4 +76,5 @@ return [
 	'2225b969' => 'Comment: %s',
 	'8d0eda24' => 'Comparison: %s',
 	'd298327d' => 'Manage wiki pages',
+	'032adbed' => 'Read the page',
 ];

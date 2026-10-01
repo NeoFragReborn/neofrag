@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum_identities` (
   `avatar` varchar(255) DEFAULT NULL,
   `mode` enum('public','guest','custom') NOT NULL DEFAULT 'public',
   `custom_name` varchar(100) DEFAULT NULL,
+  `custom_changed_at` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`identity_id`),

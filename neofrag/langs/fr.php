@@ -353,4 +353,9 @@ return [
 	'e59d0065' => 'Footer',
 	'e43b1037' => 'Bannière',
 	'fe0c11f4' => 'Thème du site : %s',
+	'f68d9969' => 'Page introuvable',
+	'209f9ff8' => 'Votre compte n’a pas les droits nécessaires pour voir cette page.',
+	'dab88bfd' => 'Retour au tableau de bord',
+	'cb789c2a' => 'Retour à l’accueil',
+	'6f51e9bc' => 'Cette adresse ne mène à aucune page : elle a peut-être changé, ou la page a été supprimée.',
 ];

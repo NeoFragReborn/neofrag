@@ -37,7 +37,7 @@ return [
 
         // ── Tier 2 — À la carte ──────────────────────────────────────────────
         'api'          => ['nf_api_tokens', 'nf_api_events'],
-        'discord'      => ['nf_discord_channels', 'nf_discord_links', 'nf_discord_logs', 'nf_discord_roles', 'nf_discord_state'],
+        'discord'      => ['nf_discord_channels', 'nf_discord_links', 'nf_discord_link_tokens', 'nf_discord_logs', 'nf_discord_roles', 'nf_discord_state', 'nf_discord_tags', 'nf_discord_timed_roles'],
         'articles'     => ['nf_articles', 'nf_articles_lang', 'nf_articles_categories', 'nf_articles_categories_lang', 'nf_articles_series', 'nf_articles_series_lang'],
         'wiki'         => ['nf_wiki_pages', 'nf_wiki_revisions'],
         'faq'          => ['nf_faq_categories', 'nf_faq_questions'],

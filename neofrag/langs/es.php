@@ -494,4 +494,9 @@ return [
 	'6ad56e9f' => 'archivos seleccionados',
 	'2f4cbc68' => 'Color no válido',
 	'fe0c11f4' => 'Tema del sitio: %s',
+	'f68d9969' => 'Página no encontrada',
+	'209f9ff8' => 'Tu cuenta no tiene los permisos necesarios para ver esta página.',
+	'dab88bfd' => 'Volver al panel',
+	'cb789c2a' => 'Volver al inicio',
+	'6f51e9bc' => 'Esta dirección no lleva a ninguna página: puede que haya cambiado o que la página se haya eliminado.',
 ];

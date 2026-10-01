@@ -101,23 +101,31 @@ if ($nf_og_image && strpos($nf_og_image, '://') === FALSE) {
 <script type="application/ld+json"><?php echo json_encode($nf_jsonld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
 <?php endif ?>
 <meta property="og:site_name" content="<?php echo htmlspecialchars((string)$this->config->nf_name, ENT_QUOTES) ?>">
-<meta property="og:title" content="<?php echo htmlspecialchars((string)$title, ENT_QUOTES) ?>">
+<meta property="og:title" content="<?php echo htmlspecialchars((string)$title, ENT_QUOTES, 'UTF-8', FALSE) ?>">
 <?php if ($nf_seo_desc): ?>
-<meta property="og:description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES) ?>">
+<meta property="og:description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES, 'UTF-8', FALSE) ?>">
 <?php endif ?>
 <meta property="og:url" content="<?php echo htmlspecialchars($nf_canonical, ENT_QUOTES) ?>">
 <?php if ($nf_og_image): ?>
 <meta property="og:image" content="<?php echo htmlspecialchars($nf_og_image, ENT_QUOTES) ?>">
 <?php endif ?>
 <meta name="twitter:card" content="<?php echo $nf_og_image ? 'summary_large_image' : 'summary' ?>">
-<meta name="twitter:title" content="<?php echo htmlspecialchars((string)$title, ENT_QUOTES) ?>">
+<meta name="twitter:title" content="<?php echo htmlspecialchars((string)$title, ENT_QUOTES, 'UTF-8', FALSE) ?>">
 <?php if ($nf_seo_desc): ?>
-<meta name="twitter:description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES) ?>">
+<meta name="twitter:description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES, 'UTF-8', FALSE) ?>">
 <?php endif ?>
 <?php if ($nf_og_image): ?>
 <meta name="twitter:image" content="<?php echo htmlspecialchars($nf_og_image, ENT_QUOTES) ?>">
 <?php endif ?>
-<title><?php echo $title ?></title>
+<?php
+/*
+ * Le titre, encodé sans réencoder ce qui l'est déjà. Les titres du site arrivent encodés (« r&eacute;agit »,
+ * écrit par un formulaire) ou non (écrit par l'API) : réencodés, les premiers s'affichaient
+ * « &amp;eacute; » dans les aperçus de partage — Discord compris ; laissés tels quels, les seconds
+ * auraient pu fermer la balise <title> (2026-10-01).
+ */
+?>
+<title><?php echo htmlspecialchars((string)$title, ENT_QUOTES, 'UTF-8', FALSE) ?></title>
 </head>
 <body>
 <?php if ($this->config->nf_maintenance && !$this->url->admin && isset($this->user) && $this->access->effective_admin() && $this->output->module()->name != 'live_editor'): ?>

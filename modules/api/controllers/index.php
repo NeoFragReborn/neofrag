@@ -6,6 +6,8 @@ declare(strict_types=1);
  * `module('forum')` ; sans le forum, l'adresse `forums` répond 404 « module_unavailable ».
  * couplage(discord): les adresses `discord/*` passent par `_modele_discord()`, qui répond 404
  * « module_unavailable » sans le module Discord.
+ * couplage(bugtracker): les adresses `bugtracker/*` passent par `_modele_bugtracker()`, qui répond 404
+ * « module_unavailable » sans le Bugtracker.
  */
 
 namespace NF\Modules\Api\Controllers;
@@ -80,12 +82,30 @@ class Index extends Controller_Module
 			['POST',   ['forum', 'topics', '#', 'messages'], 'forum:write', fn (array $p) => $this->_repondre_sujet((int) $p[0])],
 			['PATCH',  ['forum', 'messages', '#'],           'forum:write', fn (array $p) => $this->_modifier_message((int) $p[0])],
 			['DELETE', ['forum', 'messages', '#'],           'forum:write', fn (array $p) => $this->_supprimer_message((int) $p[0])],
+			['PATCH',  ['forum', 'topics', '#'],             'forum:write', fn (array $p) => $this->_modifier_sujet((int) $p[0])],
+			['GET',    ['bugtracker', 'tickets'],            'bugtracker:read',  fn () => $this->_tickets()],
+			['GET',    ['bugtracker', 'tickets', '#'],       'bugtracker:read',  fn (array $p) => $this->_ticket((int) $p[0])],
+			['GET',    ['bugtracker', 'comments', '#'],      'bugtracker:read',  fn (array $p) => $this->_commentaire_ticket((int) $p[0])],
+			['POST',   ['bugtracker', 'tickets'],            'bugtracker:write', fn () => $this->_ouvrir_ticket()],
+			['POST',   ['bugtracker', 'tickets', '#', 'comments'], 'bugtracker:write', fn (array $p) => $this->_commenter_ticket((int) $p[0])],
+			['PATCH',  ['bugtracker', 'comments', '#'],      'bugtracker:write', fn (array $p) => $this->_modifier_commentaire_ticket((int) $p[0])],
+			['DELETE', ['bugtracker', 'comments', '#'],      'bugtracker:write', fn (array $p) => $this->_supprimer_commentaire_ticket((int) $p[0])],
 			['GET',    ['discord', 'config'],                'discord:bot', fn () => $this->_discord_config()],
 			['POST',   ['discord', 'heartbeat'],             'discord:bot', fn () => $this->_discord_signe_de_vie()],
 			['POST',   ['discord', 'logs'],                  'discord:bot', fn () => $this->_discord_journal()],
 			['GET',    ['discord', 'members'],               'discord:bot', fn () => $this->_discord_membres()],
 			['GET',    ['discord', 'links'],                 'discord:bot', fn () => $this->_discord_lien()],
 			['POST',   ['discord', 'links'],                 'discord:bot', fn () => $this->_discord_lier()],
+			['POST',   ['discord', 'links', 'lookup'],       'discord:bot', fn () => $this->_discord_liens_connus()],
+			['POST',   ['discord', 'link-request'],          'discord:bot', fn () => $this->_discord_demande_de_liaison()],
+			['POST',   ['discord', 'unlink'],                'discord:bot', fn () => $this->_discord_deliaison()],
+			['GET',    ['discord', 'identity', '#'],         'discord:bot', fn (array $p) => $this->_discord_identite((string) $p[0])],
+			['PATCH',  ['discord', 'identity', '#'],         'discord:bot', fn (array $p) => $this->_discord_regler_identite((string) $p[0])],
+			['POST',   ['discord', 'setup'],                 'discord:bot', fn () => $this->_discord_mise_en_place()],
+			['POST',   ['discord', 'setup', 'undo'],         'discord:bot', fn () => $this->_discord_mise_en_place_annulee()],
+			['GET',    ['discord', 'timed-roles'],           'discord:bot', fn () => $this->_discord_roles_temporaires()],
+			['POST',   ['discord', 'timed-roles'],           'discord:bot', fn () => $this->_discord_donner_role_temporaire()],
+			['DELETE', ['discord', 'timed-roles', '#'],      'discord:bot', fn (array $p) => $this->_discord_retirer_role_temporaire((int) $p[0])],
 		];
 
 		$autorisees = [];
@@ -164,7 +184,7 @@ class Index extends Controller_Module
 
 		return [
 			'id'                => (int) $membre['id'],
-			'username'          => (string) $membre['username'],
+			'username'          => $this->_texte_brut($membre['username']),
 			'url'               => absolute_url('user/'.(int) $membre['id'].'/'.url_title((string) $membre['username'])),
 			'avatar'            => $avatar !== '' ? (strpos($avatar, '://') === FALSE ? site_origin().'/'.ltrim($avatar, '/') : $avatar) : NULL,
 			'registration_date' => date('c', (int) strtotime((string) $membre['registration_date'])),
@@ -204,7 +224,7 @@ class Index extends Controller_Module
 
 			$groupes[] = [
 				'key'     => (string) $cle,
-				'title'   => (string) ($groupe['title'] ?? $cle),
+				'title'   => $this->_texte_brut($groupe['title'] ?? $cle),
 				'color'   => (string) ($groupe['color'] ?? ''),
 				'icon'    => (string) ($groupe['icon'] ?? ''),
 				'hidden'  => !empty($groupe['hidden']),
@@ -232,7 +252,7 @@ class Index extends Controller_Module
 							->order_by('c.order', 'c.category_id')
 							->get() as $c)
 		{
-			$categories[(int) $c['category_id']] = ['id' => (int) $c['category_id'], 'title' => (string) $c['title'], 'forums' => []];
+			$categories[(int) $c['category_id']] = ['id' => (int) $c['category_id'], 'title' => $this->_texte_brut($c['title']), 'forums' => []];
 		}
 
 		$forums = [];
@@ -246,10 +266,10 @@ class Index extends Controller_Module
 			$forums[(int) $f['forum_id']] = $f + ['subforums' => []];
 		}
 
-		$rendu = static fn (array $f): array => [
+		$rendu = fn (array $f): array => [
 			'id'          => (int) $f['forum_id'],
-			'title'       => (string) $f['title'],
-			'description' => (string) $f['description'],
+			'title'       => $this->_texte_brut($f['title']),
+			'description' => $this->_texte_brut($f['description']),
 			'icon'        => (string) $f['icon'],
 			'topics'      => (int) $f['count_topics'],
 			'replies'     => (int) $f['count_messages'],
@@ -301,13 +321,13 @@ class Index extends Controller_Module
 		return [
 			'id'                  => (int) $sujet['topic_id'],
 			'forum_id'            => (int) $sujet['forum_id'],
-			'title'               => (string) $sujet['title'],
+			'title'               => $this->_texte_brut($sujet['title']),
 			'author'              => $this->_auteur($sujet),
 			'external_author'     => $this->_auteur_externe($sujet),
 			'created_at'          => $sujet['date'] ? date('c', (int) strtotime((string) $sujet['date'])) : NULL,
 			'announce'            => in_array((string) $sujet['status'], ['-2', '1'], TRUE),
 			'locked'              => in_array((string) $sujet['status'], ['-2', '-1'], TRUE),
-			'prefix'              => $prefixe ? ['id' => $prefixe['prefix_id'], 'title' => $prefixe['title'], 'color' => $prefixe['color']] : NULL,
+			'prefix'              => $prefixe ? ['id' => $prefixe['prefix_id'], 'title' => $this->_texte_brut($prefixe['title']), 'color' => $prefixe['color']] : NULL,
 			'first_message_id'    => $sujet['message_id'] ? (int) $sujet['message_id'] : NULL,
 			'last_message_id'     => $sujet['last_message_id'] ? (int) $sujet['last_message_id'] : NULL,
 			'solution_message_id' => $sujet['solution_message_id'] ? (int) $sujet['solution_message_id'] : NULL,
@@ -408,13 +428,22 @@ class Index extends Controller_Module
 			'nicknames' => $reglages['nicknames'],
 			'channels'  => array_map(static fn (array $s): array => ['channel_id' => $s['channel_id'], 'forum_id' => $s['forum_id'], 'mode' => $s['mode'], 'emoji' => $s['emoji']], $modele->salons()),
 			'roles'     => array_map(static fn (array $r): array => ['group_key' => $r['group_key'], 'role_id' => $r['role_id']], $modele->roles()),
+			'tags'      => array_map(static fn (array $t): array => ['channel_id' => $t['channel_id'], 'prefix_id' => $t['prefix_id'], 'tag_id' => $t['tag_id']], $modele->etiquettes()),
 			'version'   => $reglages['version'],
-			// Le dernier événement du fil : le bot qui (re)démarre lit le fil à partir d'ici — il vient
-			// de tout resynchroniser, le passé ne lui apprendrait rien.
-			'events_cursor' => (int) $this->db->select('IFNULL(MAX(event_id), 0)')->from('nf_api_events')->row(),
+			// Où reprendre le fil d'événements : là où le bot s'était arrêté — ce qui s'est écrit sur le
+			// site pendant qu'il était éteint part donc sur Discord à son retour —, ou, la toute première
+			// fois, au dernier événement.
+			'events_cursor' => $modele->curseur() ?? (int) $this->db->select('IFNULL(MAX(event_id), 0)')->from('nf_api_events')->row(),
 			// La clé qui lit cette configuration : ce que le bot écrit par l'API porte sa trace dans le
 			// fil (`source`), et il ne le recopie pas une seconde fois sur Discord.
 			'api_token_id'  => Api::$cle_courante,
+			// Les fonctionnalités : allumées ou non, et leurs réglages.
+			'features'      => (object) $modele->config_fonctionnalites(),
+			// Les textes que le bot poste sur Discord, dans les six langues : il répond à chacun dans la
+			// sienne, et écrit dans les salons dans celle du site (`lang`).
+			'lang'          => $this->_langue_du_site(),
+			'i18n'          => (object) $this->_module_discord()->traductions_discord($modele->textes_demandes()),
+			// Pour le bot 0.1.0 (site 1.2.11) : ses trois textes, dans la langue du site.
 			'texts'         => $modele->textes_affiches(),
 		];
 	}
@@ -429,19 +458,63 @@ class Index extends Controller_Module
 		$modele = $this->_modele_discord();
 		$corps  = $this->_corps();
 		$guilde = is_array($corps['guild'] ?? NULL) ? $corps['guild'] : [];
+		$texte  = static fn ($v, int $max): string => mb_substr((string) (is_scalar($v) ? $v : ''), 0, $max);
+		$id     = static fn ($v): string => is_scalar($v) && ctype_digit((string) $v) ? (string) $v : '';
+
+		// Le serveur tel que le bot le voit : salons (catégorie, étiquettes d'un salon Forum), rôles.
+		// Les listes de l'administration — correspondances, mise en place — en sont tirées.
+		$salons = [];
+
+		foreach (array_slice((array) ($guilde['channels'] ?? []), 0, 500) as $c)
+		{
+			if (is_array($c) && $id($c['id'] ?? '') !== '')
+			{
+				$salons[] = [
+					'id'        => $id($c['id']),
+					'name'      => $texte($c['name'] ?? '', 100),
+					'type'      => (int) ($c['type'] ?? -1),
+					'parent_id' => $id($c['parent_id'] ?? ''),
+					'tags'      => array_values(array_filter(array_map(static fn ($t) => is_array($t) && $id($t['id'] ?? '') !== '' ? ['id' => $id($t['id']), 'name' => $texte($t['name'] ?? '', 50)] : NULL, array_slice((array) ($c['tags'] ?? []), 0, 20)))),
+				];
+			}
+		}
+
+		$roles = [];
+
+		foreach (array_slice((array) ($guilde['roles'] ?? []), 0, 250) as $r)
+		{
+			if (is_array($r) && $id($r['id'] ?? '') !== '')
+			{
+				$roles[] = ['id' => $id($r['id']), 'name' => $texte($r['name'] ?? '', 100), 'managed' => !empty($r['managed'])];
+			}
+		}
 
 		$modele->poser_etat('heartbeat', (string) json_encode([
 			'at'        => time(),
-			'version'   => mb_substr((string) ($corps['version'] ?? ''), 0, 40),
+			'version'   => $texte($corps['version'] ?? '', 40),
 			'connected' => !empty($corps['connected']),
 			'intents'   => ['members' => !empty($corps['intents']['members']), 'content' => !empty($corps['intents']['content'])],
-			'guild'     => [
-				'id'       => (string) ($guilde['id'] ?? ''),
-				'name'     => mb_substr((string) ($guilde['name'] ?? ''), 0, 100),
-				'channels' => array_slice(array_values(array_filter(array_map(static fn ($c) => is_array($c) ? ['id' => (string) ($c['id'] ?? ''), 'name' => mb_substr((string) ($c['name'] ?? ''), 0, 100), 'type' => (int) ($c['type'] ?? -1)] : NULL, (array) ($guilde['channels'] ?? [])))), 0, 500),
-				'roles'    => array_slice(array_values(array_filter(array_map(static fn ($r) => is_array($r) ? ['id' => (string) ($r['id'] ?? ''), 'name' => mb_substr((string) ($r['name'] ?? ''), 0, 100), 'managed' => !empty($r['managed'])] : NULL, (array) ($guilde['roles'] ?? [])))), 0, 250),
-			],
+			'guild'     => ['id' => $id($guilde['id'] ?? ''), 'name' => $texte($guilde['name'] ?? '', 100), 'channels' => $salons, 'roles' => $roles],
 		], JSON_UNESCAPED_UNICODE));
+
+		// Les fonctionnalités que le bot déclare (l'administration en tire ses formulaires), et le
+		// dernier événement qu'il a traité (il en repartira au prochain démarrage).
+		if (is_array($corps['features'] ?? NULL))
+		{
+			$modele->declarer_fonctionnalites($corps['features']);
+		}
+
+		// Les textes que le bot poste sur Discord (bot/src/textes.ts) : la configuration lui en rend
+		// les traductions.
+		if (is_array($corps['texts'] ?? NULL))
+		{
+			$modele->demander_textes(array_values(array_filter($corps['texts'], 'is_string')));
+		}
+
+		if (isset($corps['events_cursor']) && is_int($corps['events_cursor']) && $corps['events_cursor'] >= 0)
+		{
+			$modele->poser_etat('cursor', (string) $corps['events_cursor']);
+		}
 
 		$reglages = $modele->reglages();
 
@@ -491,7 +564,7 @@ class Index extends Controller_Module
 			$membres[] = [
 				'discord_id' => (string) $m['key'],
 				'member_id'  => (int) $m['id'],
-				'username'   => (string) $m['username'],
+				'username'   => $this->_texte_brut($m['username']),
 				'groups'     => array_values(array_map('strval', (array) $coeur((int) $m['id']))),
 			];
 		}
@@ -499,14 +572,17 @@ class Index extends Controller_Module
 		return $membres;
 	}
 
-	/** Le lien d'un sujet ou d'un message : `type` (topic, message) et `site_id` ou `discord_id`. */
+	/** Ce qu'un lien relie : un sujet et son fil, un message et le sien, un ticket et son fil, un commentaire et son message. */
+	const TYPES_DE_LIEN = ['topic', 'message', 'ticket', 'comment'];
+
+	/** Le lien d'un sujet, d'un message, d'un ticket ou d'un commentaire : `type` et `site_id` ou `discord_id`. */
 	private function _discord_lien(): array
 	{
 		$type = (string) ($_GET['type'] ?? '');
 
-		if (!in_array($type, ['topic', 'message'], TRUE) || (empty($_GET['site_id']) && empty($_GET['discord_id'])))
+		if (!in_array($type, self::TYPES_DE_LIEN, TRUE) || (empty($_GET['site_id']) && empty($_GET['discord_id'])))
 		{
-			$this->_repondre(422, ['error' => ['code' => 'validation_failed', 'message' => (string) $this->lang('Certains champs sont invalides.'), 'fields' => ['type' => 'topic | message', 'site_id' => 'ou discord_id']]]);
+			$this->_repondre(422, ['error' => ['code' => 'validation_failed', 'message' => (string) $this->lang('Certains champs sont invalides.'), 'fields' => ['type' => implode(' | ', self::TYPES_DE_LIEN), 'site_id' => 'ou discord_id']]]);
 		}
 
 		$lien = $this->_modele_discord()->lien($type, !empty($_GET['site_id']) ? (int) $_GET['site_id'] : NULL, !empty($_GET['discord_id']) ? (string) $_GET['discord_id'] : NULL);
@@ -519,6 +595,149 @@ class Index extends Controller_Module
 		return $lien;
 	}
 
+	/**
+	 * Lesquels de ces éléments Discord ont déjà leur pendant sur le site : `type`, `discord_ids` (500 au
+	 * plus). Rend `found`, de l'identifiant Discord vers l'identifiant du site — pour rattraper d'un coup
+	 * ce qui s'est écrit sur Discord pendant que le bot était éteint.
+	 */
+	private function _discord_liens_connus(): array
+	{
+		$corps = $this->_corps();
+		$type  = (string) ($corps['type'] ?? '');
+		$ids   = array_values(array_unique(array_filter(array_map('strval', array_slice((array) ($corps['discord_ids'] ?? []), 0, 500)), 'ctype_digit')));
+
+		if (!in_array($type, self::TYPES_DE_LIEN, TRUE))
+		{
+			$this->_repondre(422, ['error' => ['code' => 'validation_failed', 'message' => (string) $this->lang('Certains champs sont invalides.'), 'fields' => ['type' => implode(' | ', self::TYPES_DE_LIEN)]]]);
+		}
+
+		$trouves = [];
+
+		if ($ids)
+		{
+			foreach ((array) $this->db->select('discord_id', 'site_id')->from('nf_discord_links')->where('type', $type)->where('discord_id', $ids)->get() as $l)
+			{
+				$trouves[(string) $l['discord_id']] = (int) $l['site_id'];
+			}
+		}
+
+		return ['found' => (object) $trouves];
+	}
+
+	// ── `/forum account` et `/forum visibility` ────────────────────────────
+
+	/**
+	 * `/forum account link` : un lien à usage unique (15 minutes) que le membre ouvre, connecté, pour
+	 * relier ce compte Discord au sien. Déjà lié : `linked` et le pseudo du membre.
+	 */
+	private function _discord_demande_de_liaison(): array
+	{
+		$corps   = $this->_corps();
+		$discord = $this->_auteur_discord_du_corps($corps);
+		$modele  = $this->_modele_discord();
+
+		if ($membre = $modele->membre_lie($discord['id']))
+		{
+			return ['linked' => TRUE, 'member' => $this->_texte_brut($membre['username'])];
+		}
+
+		$jeton = $modele->demander_liaison($discord['id'], $discord['username'], $discord['avatar']);
+
+		return ['linked' => FALSE, 'url' => absolute_url('discord/lier/'.$jeton), 'expires_in' => \NF\Modules\Discord\Models\Discord::LIAISON_MINUTES * 60];
+	}
+
+	/** `/forum account unlink` : délie ce compte Discord de son membre, sauf s'il est son seul moyen de se connecter. */
+	private function _discord_deliaison(): array
+	{
+		$discord  = $this->_auteur_discord_du_corps($this->_corps(), FALSE);
+		$resultat = $this->_modele_discord()->delier_compte($discord['id']);
+
+		if (!$resultat['ok'])
+		{
+			$this->_repondre(409, ['error' => ['code' => (string) $resultat['erreur'], 'message' => (string) ($resultat['erreur'] === 'not_linked' ? $this->lang('Ce compte Discord n’est lié à aucun membre.') : $this->lang('Ce compte Discord est le seul moyen de connexion de son membre.')), 'member' => isset($resultat['username']) ? $this->_texte_brut($resultat['username']) : NULL]]);
+		}
+
+		return ['unlinked' => TRUE, 'member' => $this->_texte_brut($resultat['username'] ?? '')];
+	}
+
+	/** `/forum visibility status` : comment ce compte Discord paraît sur le forum. */
+	private function _discord_identite(string $discord_id): array
+	{
+		if ($membre = $this->_modele_discord()->membre_lie($discord_id))
+		{
+			return ['linked' => TRUE, 'member' => $this->_texte_brut($membre['username'])];
+		}
+
+		$etat = $this->_modele_forum()->etat_identite('discord', $discord_id);
+
+		return ['linked' => FALSE] + ($etat ?? ['mode' => 'public', 'custom_name' => NULL, 'name' => NULL, 'custom_change_at' => NULL]);
+	}
+
+	/**
+	 * `/forum visibility public|guest|custom` : `mode`, `custom_name` (personnalisé), et `username`,
+	 * `avatar` pour tenir l'identité à jour. Un compte lié publie sous son membre : 409 `linked`.
+	 */
+	private function _discord_regler_identite(string $discord_id): array
+	{
+		$corps = $this->_corps();
+
+		if ($membre = $this->_modele_discord()->membre_lie($discord_id))
+		{
+			$this->_repondre(409, ['error' => ['code' => 'linked', 'message' => (string) $this->lang('Ce compte Discord est lié : il publie sous son membre.'), 'member' => $this->_texte_brut($membre['username'])]]);
+		}
+
+		$discord  = $this->_auteur_discord_du_corps(['discord_id' => $discord_id] + $corps);
+		$resultat = $this->_modele_forum()->regler_identite('discord', $discord_id, $discord['username'], $discord['avatar'], (string) ($corps['mode'] ?? ''), isset($corps['custom_name']) ? (string) $corps['custom_name'] : NULL);
+
+		if (!$resultat['ok'])
+		{
+			$etat = $this->_modele_forum()->etat_identite('discord', $discord_id);
+
+			$this->_repondre($resultat['erreur'] === 'too_soon' ? 409 : 422, ['error' => ['code' => (string) $resultat['erreur'], 'message' => (string) $this->lang('Certains champs sont invalides.'), 'custom_change_at' => $etat['custom_change_at'] ?? NULL]]);
+		}
+
+		return ['linked' => FALSE] + (array) $this->_modele_forum()->etat_identite('discord', $discord_id);
+	}
+
+	/**
+	 * Le compte Discord décrit dans un corps : `discord_id`, `username`, `avatar`. 422 si l'identifiant
+	 * n'est pas un nombre, ou si le pseudo manque alors qu'il est attendu.
+	 *
+	 * @return array{id: string, username: string, avatar: ?string}
+	 */
+	private function _auteur_discord_du_corps(array $corps, bool $pseudo_attendu = TRUE): array
+	{
+		$id     = (string) ($corps['discord_id'] ?? '');
+		$pseudo = trim((string) ($corps['username'] ?? ''));
+		$avatar = (string) ($corps['avatar'] ?? '');
+
+		if (!ctype_digit($id) || strlen($id) > 20 || ($pseudo_attendu && ($pseudo === '' || mb_strlen($pseudo) > 100)))
+		{
+			$this->_repondre(422, ['error' => ['code' => 'validation_failed', 'message' => (string) $this->lang('Certains champs sont invalides.'), 'fields' => ['discord_id' => 'digits', 'username' => '1-100']]]);
+		}
+
+		return ['id' => $id, 'username' => $pseudo, 'avatar' => $avatar !== '' && preg_match('#^https://(cdn|media)\.discordapp\.(com|net)/#', $avatar) ? $avatar : NULL];
+	}
+
+	/** Le compte rendu d'une mise en place du serveur : le site pose les correspondances (cf. bot/src/mise-en-place.ts). */
+	private function _discord_mise_en_place(): array
+	{
+		$this->_modele_discord()->appliquer_compte_rendu($this->_corps());
+
+		return ['recorded' => TRUE];
+	}
+
+	/** Ce qu'une annulation a supprimé : les correspondances vers ces salons et ces rôles disparaissent. */
+	private function _discord_mise_en_place_annulee(): array
+	{
+		$corps = $this->_corps();
+		$ids   = static fn ($liste): array => array_values(array_filter(array_map('strval', (array) $liste), 'ctype_digit'));
+
+		$this->_modele_discord()->annuler_compte_rendu($ids($corps['salons'] ?? []), $ids($corps['roles'] ?? []));
+
+		return ['recorded' => TRUE];
+	}
+
 	private function _discord_lier(): array
 	{
 		$corps = $this->_corps();
@@ -526,15 +745,111 @@ class Index extends Controller_Module
 		$site  = (int) ($corps['site_id'] ?? 0);
 		$disc  = (string) ($corps['discord_id'] ?? '');
 
-		if (!in_array($type, ['topic', 'message'], TRUE) || $site <= 0 || !ctype_digit($disc))
+		if (!in_array($type, self::TYPES_DE_LIEN, TRUE) || $site <= 0 || !ctype_digit($disc))
 		{
-			$this->_repondre(422, ['error' => ['code' => 'validation_failed', 'message' => (string) $this->lang('Certains champs sont invalides.'), 'fields' => ['type' => 'topic | message', 'site_id' => '> 0', 'discord_id' => 'nombre']]]);
+			$this->_repondre(422, ['error' => ['code' => 'validation_failed', 'message' => (string) $this->lang('Certains champs sont invalides.'), 'fields' => ['type' => implode(' | ', self::TYPES_DE_LIEN), 'site_id' => '> 0', 'discord_id' => 'digits']]]);
 		}
 
 		$this->_modele_discord()->lier($type, $site, $disc);
 		$this->_code = 201;
 
 		return ['type' => $type, 'site_id' => $site, 'discord_id' => $disc];
+	}
+
+	/**
+	 * Les rôles temporaires en cours : `discord_id=` ceux d'un membre, `due=1` ceux arrivés à échéance
+	 * (le bot les retire). `expires_at` est un horodatage Unix.
+	 */
+	private function _discord_roles_temporaires(): array
+	{
+		$membre = (string) ($_GET['discord_id'] ?? '');
+
+		return ['timed_roles' => $this->_modele_discord()->roles_temporaires(ctype_digit($membre) ? $membre : NULL, !empty($_GET['due']))];
+	}
+
+	/**
+	 * Donner un rôle temporaire (`/role give`) : `discord_id` et `username` du membre, `role_id`,
+	 * `duration` en secondes (d'une minute à un an), `given_by` et `given_by_name` (qui le donne),
+	 * `reason`. Un rôle relié à un groupe du site est refusé (`role_mapped`) : la synchronisation des
+	 * groupes le donne et le retire déjà, elle défairait le rôle temporaire.
+	 */
+	private function _discord_donner_role_temporaire(): array
+	{
+		$corps   = $this->_corps();
+		$membre  = (string) ($corps['discord_id'] ?? '');
+		$role    = (string) ($corps['role_id'] ?? '');
+		$duree   = (int) ($corps['duration'] ?? 0);
+		$par     = (string) ($corps['given_by'] ?? '');
+		$erreurs = [];
+
+		foreach (['discord_id' => $membre, 'role_id' => $role] as $champ => $valeur)
+		{
+			if (!ctype_digit($valeur) || strlen($valeur) > 20)
+			{
+				$erreurs[$champ] = 'digits';
+			}
+		}
+
+		if ($duree < 60 || $duree > \NF\Modules\Discord\Models\Discord::ROLE_TEMPORAIRE_MAX)
+		{
+			$erreurs['duration'] = '60-'.\NF\Modules\Discord\Models\Discord::ROLE_TEMPORAIRE_MAX;
+		}
+
+		if ($par !== '' && !ctype_digit($par))
+		{
+			$erreurs['given_by'] = 'digits';
+		}
+
+		$this->_valider($erreurs);
+
+		$modele = $this->_modele_discord();
+
+		if (in_array($role, array_column($modele->roles(), 'role_id'), TRUE))
+		{
+			$this->_erreur(409, 'role_mapped', $this->lang('Ce rôle est relié à un groupe du site : la synchronisation des groupes le donne et le retire déjà.'));
+		}
+
+		$id = $modele->donner_role_temporaire($membre, trim((string) ($corps['username'] ?? '')), $role, $duree, $par !== '' ? $par : NULL, trim((string) ($corps['given_by_name'] ?? '')), trim((string) ($corps['reason'] ?? '')));
+
+		$this->_code = 201;
+
+		foreach ($modele->roles_temporaires($membre) as $r)
+		{
+			if ($r['timed_id'] === $id)
+			{
+				return $r;
+			}
+		}
+
+		return ['timed_id' => $id];
+	}
+
+	private function _discord_retirer_role_temporaire(int $id): array
+	{
+		$this->_modele_discord()->retirer_role_temporaire($id);
+
+		return ['deleted' => TRUE, 'timed_id' => $id];
+	}
+
+	/** Le module Discord, typé — `_modele_discord()` a déjà vérifié qu'il est installé. */
+	private function _module_discord(): \NF\Modules\Discord\Discord
+	{
+		$discord = $this->module('discord');
+
+		if (!$discord instanceof \NF\Modules\Discord\Discord)
+		{
+			$this->_erreur(404, 'module_unavailable', $this->lang('Le module Discord n’est pas installé sur ce site.'));
+		}
+
+		return $discord;
+	}
+
+	/** Le code de la langue du site (celle d'une requête de l'API, qui n'en demande aucune). */
+	private function _langue_du_site(): string
+	{
+		$code = (string) $this->config->lang->info()->name;
+
+		return preg_match('/^[a-z]{2}$/', $code) ? $code : 'fr';
 	}
 
 	/** Le modèle du module Discord, s'il est installé ; sinon 404 « module_unavailable ». */
@@ -595,7 +910,7 @@ class Index extends Controller_Module
 
 		$this->_valider($erreurs);
 
-		$topic_id = (int) $modele->add_topic($forum, $titre, $contenu, '0', $auteur);
+		$topic_id = (int) $modele->add_topic($forum, $this->_texte_du_site($titre, 100), $contenu, '0', $auteur);
 
 		if ($prefixe)
 		{
@@ -635,6 +950,290 @@ class Index extends Controller_Module
 		$this->_code = 201;
 
 		return $this->_message($message_id);
+	}
+
+	/**
+	 * Modifier un sujet : son préfixe (`prefix_id`, NULL pour aucun). Un geste de rangement, pas
+	 * d'écriture : il ne demande pas d'auteur — le bot Discord y reporte l'étiquette posée sur le fil.
+	 */
+	private function _modifier_sujet(int $topic_id): array
+	{
+		$corps  = $this->_corps();
+		$modele = $this->_modele_forum();
+
+		if (!$this->db->select('topic_id')->from('nf_forum_topics')->where('topic_id', $topic_id)->row())
+		{
+			$this->_erreur(404, 'topic_not_found', $this->lang('Sujet introuvable.'));
+		}
+
+		if (array_key_exists('prefix_id', $corps))
+		{
+			$prefixe = $corps['prefix_id'] === NULL ? NULL : (int) $corps['prefix_id'];
+
+			if ($prefixe !== NULL && !isset($modele->prefixes()[$prefixe]))
+			{
+				$this->_valider(['prefix_id' => (string) $this->lang('Préfixe inconnu.')]);
+			}
+
+			$modele->set_prefix($topic_id, $prefixe);
+		}
+
+		return $this->_sujet($topic_id);
+	}
+
+	// ── Le Bugtracker (point 7) ─────────────────────────────────
+
+	/** Un ticket : son titre, sa description (texte), son type, sa priorité, son statut, son auteur. */
+	private function _ticket(int $id): array
+	{
+		$ticket = $this->_modele_bugtracker()->ticket($id);
+
+		if (!$ticket)
+		{
+			$this->_erreur(404, 'ticket_not_found', $this->lang('Ticket introuvable.'));
+		}
+
+		return [
+			'id'           => (int) $ticket['id'],
+			'title'        => $this->_texte_brut($ticket['title']),
+			'description'  => $this->_texte_brut($ticket['description']),
+			'type'         => (string) $ticket['type'],
+			'priority'     => (string) $ticket['priority'],
+			'status'       => (string) $ticket['status'],
+			'duplicate_of' => $ticket['duplicate_of'] !== NULL ? (int) $ticket['duplicate_of'] : NULL,
+			'author'       => $this->_auteur($ticket),
+			'created_at'   => date('c', (int) strtotime((string) $ticket['created_at'])),
+			'updated_at'   => date('c', (int) strtotime((string) $ticket['updated_at'])),
+			'url'          => absolute_url('bugtracker/'.(int) $ticket['id'].'/'.url_title((string) $ticket['title'])),
+		];
+	}
+
+	/**
+	 * Les tickets, dans l'ordre de leur numéro : ceux qui suivent `after`, par lots de `limit` (50 par
+	 * défaut, 100 au plus) ; les seuls tickets encore ouverts avec `open=1`. Comme le fil d'événements,
+	 * `next` est le curseur à redonner et `more` dit s'il en reste.
+	 */
+	private function _tickets(): array
+	{
+		$apres   = max(0, (int) ($_GET['after'] ?? 0));
+		$limite  = max(1, min(100, (int) ($_GET['limit'] ?? 50)));
+		$numeros = $this->_modele_bugtracker()->numeros($apres, $limite + 1, !empty($_GET['open']));
+		$encore  = count($numeros) > $limite;
+		$numeros = array_slice($numeros, 0, $limite);
+
+		return [
+			'tickets' => array_map(fn (int $id): array => $this->_ticket($id), $numeros),
+			'next'    => $numeros ? (int) end($numeros) : $apres,
+			'more'    => $encore,
+		];
+	}
+
+	/** Un commentaire de ticket : son auteur (membre, ou compte Discord non lié) et son texte. */
+	private function _commentaire_ticket(int $id): array
+	{
+		$commentaire = $this->_modele_bugtracker()->commentaire($id);
+
+		if (!$commentaire)
+		{
+			$this->_erreur(404, 'comment_not_found', $this->lang('Commentaire introuvable.'));
+		}
+
+		return [
+			'id'              => (int) $commentaire['id'],
+			'ticket_id'       => (int) $commentaire['ticket_id'],
+			'content'         => $this->_texte_brut($commentaire['content']),
+			'author'          => $this->_auteur($commentaire),
+			'external_author' => !empty($commentaire['author_name']) && empty($commentaire['user_id']) ? ['provider' => (string) $commentaire['author_provider'], 'external_id' => (string) $commentaire['author_external_id'], 'name' => $this->_texte_brut($commentaire['author_name'])] : NULL,
+			'status_change'   => (bool) $commentaire['is_status_change'],
+			'created_at'      => date('c', (int) strtotime((string) $commentaire['created_at'])),
+		];
+	}
+
+	/**
+	 * Ouvrir un ticket : `title`, `description`, `type` (bug, feature, question, other), `author`. Un
+	 * ticket appartient à un membre : un compte Discord doit être lié (`not_linked` sinon).
+	 */
+	private function _ouvrir_ticket(): array
+	{
+		$corps   = $this->_corps();
+		$erreurs = [];
+		$titre   = trim((string) ($corps['title'] ?? ''));
+		$texte   = trim((string) ($corps['description'] ?? ''));
+		$type    = (string) ($corps['type'] ?? 'bug');
+
+		if ($titre === '' || mb_strlen($titre) > 200)
+		{
+			$erreurs['title'] = (string) $this->lang('De 1 à %d caractères.', 200);
+		}
+
+		if ($texte === '' || mb_strlen($texte) > self::CONTENU_MAX)
+		{
+			$erreurs['description'] = (string) $this->lang('De 1 à %d caractères.', self::CONTENU_MAX);
+		}
+
+		if (!in_array($type, \NF\Modules\Bugtracker\Bugtracker::TYPES, TRUE))
+		{
+			$erreurs['type'] = 'bug | feature | question | other';
+		}
+
+		$auteur = $this->_auteur_ecriture_ticket($corps, $erreurs);
+
+		$this->_valider($erreurs);
+
+		if (!$auteur['user_id'])
+		{
+			$this->_erreur(409, 'not_linked', $this->lang('Un ticket appartient à un membre : ce compte Discord doit d’abord être lié.'));
+		}
+
+		$this->_code = 201;
+
+		return $this->_ticket($this->_modele_bugtracker()->creer_ticket($this->_texte_du_site($titre, 200), $this->_texte_du_site($texte), $type, 'normal', $auteur['user_id']));
+	}
+
+	/** Commenter un ticket : `content`, `author` — un membre, ou un compte Discord non lié (sous son pseudo). */
+	private function _commenter_ticket(int $ticket_id): array
+	{
+		$modele = $this->_modele_bugtracker();
+
+		if (!$modele->ticket($ticket_id))
+		{
+			$this->_erreur(404, 'ticket_not_found', $this->lang('Ticket introuvable.'));
+		}
+
+		$corps   = $this->_corps();
+		$erreurs = [];
+		$texte   = trim((string) ($corps['content'] ?? ''));
+
+		if ($texte === '' || mb_strlen($texte) > self::CONTENU_MAX)
+		{
+			$erreurs['content'] = (string) $this->lang('De 1 à %d caractères.', self::CONTENU_MAX);
+		}
+
+		$auteur = $this->_auteur_ecriture_ticket($corps, $erreurs);
+
+		$this->_valider($erreurs);
+
+		$this->_code = 201;
+
+		return $this->_commentaire_ticket($modele->commenter($ticket_id, $auteur['user_id'], $this->_texte_du_site($texte), $auteur['externe']));
+	}
+
+	private function _modifier_commentaire_ticket(int $id): array
+	{
+		$corps   = $this->_corps();
+		$texte   = trim((string) ($corps['content'] ?? ''));
+
+		$this->_commentaire_de_l_auteur($id, $corps);
+
+		if ($texte === '' || mb_strlen($texte) > self::CONTENU_MAX)
+		{
+			$this->_valider(['content' => (string) $this->lang('De 1 à %d caractères.', self::CONTENU_MAX)]);
+		}
+
+		$this->_modele_bugtracker()->modifier_commentaire($id, $this->_texte_du_site($texte));
+
+		return $this->_commentaire_ticket($id);
+	}
+
+	private function _supprimer_commentaire_ticket(int $id): array
+	{
+		$commentaire = $this->_commentaire_de_l_auteur($id, $this->_corps());
+
+		$this->_modele_bugtracker()->supprimer_commentaire($id);
+
+		return ['deleted' => TRUE, 'id' => $id, 'ticket_id' => (int) $commentaire['ticket_id']];
+	}
+
+	/**
+	 * Le commentaire, s'il est de l'auteur donné : le même membre, ou le même compte Discord (lié ou
+	 * non). 404 s'il n'existe pas, 403 sinon.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function _commentaire_de_l_auteur(int $id, array $corps): array
+	{
+		$commentaire = $this->_modele_bugtracker()->commentaire($id);
+
+		if (!$commentaire)
+		{
+			$this->_erreur(404, 'comment_not_found', $this->lang('Commentaire introuvable.'));
+		}
+
+		$erreurs = [];
+		$auteur  = $this->_auteur_ecriture_ticket($corps, $erreurs, FALSE);
+
+		$this->_valider($erreurs);
+
+		$meme = $auteur['user_id']
+			? (int) $commentaire['user_id'] === $auteur['user_id']
+			: ($auteur['externe'] && (string) $commentaire['author_provider'] === $auteur['externe']['provider'] && (string) $commentaire['author_external_id'] === $auteur['externe']['external_id']);
+
+		if (!$meme)
+		{
+			$this->_erreur(403, 'not_author', $this->lang('Seul l’auteur de ce commentaire peut le modifier ou le supprimer par l’API.'));
+		}
+
+		return $commentaire;
+	}
+
+	/**
+	 * L'auteur d'une écriture du Bugtracker : `author.member_id`, ou `author.discord` (`id`,
+	 * `username`). Un compte Discord lié écrit sous son membre ; sinon il reste un auteur externe.
+	 *
+	 * @param array<string, string> $erreurs
+	 * @return array{user_id: ?int, externe: ?array{provider: string, external_id: string, name: string}}
+	 */
+	private function _auteur_ecriture_ticket(array $corps, array &$erreurs, bool $pseudo_attendu = TRUE): array
+	{
+		$auteur = is_array($corps['author'] ?? NULL) ? $corps['author'] : [];
+
+		if (!empty($auteur['member_id']))
+		{
+			$membre = $this->db->select('id')->from('nf_user')->where('id', (int) $auteur['member_id'])->where('deleted', FALSE)->row();
+
+			if (!$membre)
+			{
+				$erreurs['author'] = (string) $this->lang('Membre introuvable.');
+			}
+
+			return ['user_id' => $membre ? (int) $membre : NULL, 'externe' => NULL];
+		}
+
+		$discord = is_array($auteur['discord'] ?? NULL) ? $auteur['discord'] : [];
+		$id      = (string) ($discord['id'] ?? '');
+		$pseudo  = trim((string) ($discord['username'] ?? ''));
+
+		if (!ctype_digit($id) || strlen($id) > 20 || ($pseudo_attendu && ($pseudo === '' || mb_strlen($pseudo) > 100)))
+		{
+			$erreurs['author'] = (string) $this->lang('Un auteur est attendu : author.member_id, ou author.discord avec son id (un nombre) et son username.');
+
+			return ['user_id' => NULL, 'externe' => NULL];
+		}
+
+		if (($authentificateur = $this->_authentificateur_discord()) && ($lie = $this->db	->select('a.user_id')
+																						->from('nf_user_auth a')
+																						->join('nf_user u', 'u.id = a.user_id AND u.deleted = "0"', 'INNER')
+																						->where('a.authenticator_id', $authentificateur)
+																						->where('a.key', $id)
+																						->row()))
+		{
+			return ['user_id' => (int) $lie, 'externe' => NULL];
+		}
+
+		return ['user_id' => NULL, 'externe' => ['provider' => 'discord', 'external_id' => $id, 'name' => $pseudo]];
+	}
+
+	/** Le modèle du Bugtracker, s'il est installé ; sinon l'API répond 404 « module_unavailable ». */
+	private function _modele_bugtracker(): \NF\Modules\Bugtracker\Models\Bugtracker
+	{
+		$bugtracker = $this->module('bugtracker');
+
+		if (!$bugtracker || !($modele = $bugtracker->model('bugtracker')) instanceof \NF\Modules\Bugtracker\Models\Bugtracker)
+		{
+			$this->_erreur(404, 'module_unavailable', $this->lang('Le Bugtracker n’est pas installé sur ce site.'));
+		}
+
+		return $modele;
 	}
 
 	/** Modifier un message : seulement au nom de son auteur — la personne qui l'a écrit le corrige. */
@@ -800,6 +1399,37 @@ class Index extends Controller_Module
 	 *
 	 * @param array<string, string> $erreurs
 	 */
+	/**
+	 * Un texte du site, rendu tel qu'un programme le lit. Le site range ses textes encodés pour le web
+	 * — un formulaire écrit « é » `&eacute;` — et les affiche tels quels ; un programme, lui, attend
+	 * « é » : le bot Discord recopiait « r&eacute;agit » dans ses fils (2026-10-01).
+	 */
+	private function _texte_brut(mixed $texte): string
+	{
+		return html_entity_decode((string) $texte, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+	}
+
+	/**
+	 * Un texte reçu, rangé comme le site range les siens : encodé pour le web. Rangé tel quel, un titre
+	 * qui contient une balise — un nom de fil Discord, par exemple — s'exécutait sur les pages qui
+	 * affichent les titres sans les réencoder, celle du forum la première (2026-10-01). Comme le site
+	 * (`utf8_htmlentities()`, ENT_COMPAT), l'apostrophe reste telle quelle : encodée, elle donnait des
+	 * adresses en « l-039-ete ». `$max` : la taille de la colonne, encodage compris ; le texte est
+	 * raccourci pour y tenir.
+	 */
+	private function _texte_du_site(string $texte, int $max = 0): string
+	{
+		$encode = htmlspecialchars($texte, ENT_COMPAT, 'UTF-8');
+
+		while ($max && mb_strlen($encode) > $max)
+		{
+			$texte  = mb_substr($texte, 0, -1);
+			$encode = htmlspecialchars($texte, ENT_COMPAT, 'UTF-8');
+		}
+
+		return $encode;
+	}
+
 	private function _contenu(array $corps, array &$erreurs): string
 	{
 		$texte  = (string) ($corps['content'] ?? '');
@@ -882,7 +1512,7 @@ class Index extends Controller_Module
 	/** L'auteur d'un sujet ou d'un message : son identifiant et son pseudo, ou NULL (membre supprimé, visiteur). */
 	private function _auteur(array $ligne): ?array
 	{
-		return !empty($ligne['user_id']) && !empty($ligne['username']) ? ['id' => (int) $ligne['user_id'], 'username' => (string) $ligne['username']] : NULL;
+		return !empty($ligne['user_id']) && !empty($ligne['username']) ? ['id' => (int) $ligne['user_id'], 'username' => $this->_texte_brut($ligne['username'])] : NULL;
 	}
 
 	/** Le modèle du forum, s'il est installé ; sinon l'API répond 404 « module_unavailable ». */
@@ -963,7 +1593,7 @@ class Index extends Controller_Module
 							->where('authenticator_id', $authentificateur)
 							->row();
 
-		return is_array($lien) && $lien ? ['id' => (string) $lien['key'], 'username' => (string) ($lien['username'] ?? '')] : NULL;
+		return is_array($lien) && $lien ? ['id' => (string) $lien['key'], 'username' => $this->_texte_brut($lien['username'] ?? '')] : NULL;
 	}
 
 	/** L'identifiant de l'authentificateur Discord dans `nf_addon`, ou NULL s'il n'est pas installé. */

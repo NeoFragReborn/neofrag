@@ -77,4 +77,5 @@ return [
 	'2225b969' => 'Comentario: %s',
 	'8d0eda24' => 'Comparación: %s',
 	'd298327d' => 'Gestionar las páginas del wiki',
+	'032adbed' => 'Leer la página',
 ];

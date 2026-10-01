@@ -77,4 +77,5 @@ return [
 	'2225b969' => 'Kommentar: %s',
 	'8d0eda24' => 'Vergleich: %s',
 	'd298327d' => 'Wiki-Seiten verwalten',
+	'032adbed' => 'Seite lesen',
 ];

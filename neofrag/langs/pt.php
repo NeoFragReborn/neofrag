@@ -494,4 +494,9 @@ return [
 	'6ad56e9f' => 'ficheiros selecionados',
 	'2f4cbc68' => 'Cor inválida',
 	'fe0c11f4' => 'Tema do site: %s',
+	'f68d9969' => 'Página não encontrada',
+	'209f9ff8' => 'A sua conta não tem as permissões necessárias para ver esta página.',
+	'dab88bfd' => 'Voltar ao painel',
+	'cb789c2a' => 'Voltar à página inicial',
+	'6f51e9bc' => 'Este endereço não leva a nenhuma página: talvez tenha mudado, ou a página foi eliminada.',
 ];

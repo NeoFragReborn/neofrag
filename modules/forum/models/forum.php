@@ -140,7 +140,10 @@ class Forum extends Model
 		$this->db->where('prefix_id', $prefix_id)->delete('nf_forum_prefixes');
 	}
 
-	/** Le préfixe d'un sujet : un identifiant inconnu vaut « aucun ». */
+	/**
+	 * Le préfixe d'un sujet : un identifiant inconnu vaut « aucun ». Un vrai changement émet
+	 * `forum.topic.prefixed` : le bot Discord reporte le préfixe en étiquette sur le fil du sujet.
+	 */
 	public function set_prefix(int $topic_id, ?int $prefix_id): void
 	{
 		if ($prefix_id && !isset($this->prefixes()[$prefix_id]))
@@ -148,7 +151,14 @@ class Forum extends Model
 			$prefix_id = NULL;
 		}
 
+		$sujet = $this->db->select('forum_id', 'prefix_id')->from('nf_forum_topics')->where('topic_id', $topic_id)->row();
+
 		$this->db->where('topic_id', $topic_id)->update('nf_forum_topics', ['prefix_id' => $prefix_id ?: NULL]);
+
+		if (is_array($sujet) && $sujet && (int) $sujet['prefix_id'] !== (int) $prefix_id)
+		{
+			$this->events->fire('forum.topic.prefixed', ['topic_id' => $topic_id, 'forum_id' => (int) $sujet['forum_id'], 'prefix_id' => $prefix_id ?: NULL]);
+		}
 	}
 
 	/**
@@ -213,6 +223,115 @@ class Forum extends Model
 		}
 
 		return (string) ($identite['username'] ?? '');
+	}
+
+	/** Jours entre deux changements du pseudo choisi d'une identité externe. */
+	const DELAI_PSEUDO_CHOISI = 7;
+
+	/**
+	 * L'état d'une identité externe : son mode, son pseudo choisi, le nom affiché, et quand son pseudo
+	 * choisi pourra de nouveau changer. NULL si cette personne n'a jamais rien publié ni réglé.
+	 *
+	 * @return array{mode: string, custom_name: ?string, name: string, custom_change_at: ?int}|null
+	 */
+	public function etat_identite(string $fournisseur, string $id_externe): ?array
+	{
+		$identite = $this->db->select('provider', 'external_id', 'username', 'mode', 'custom_name', 'custom_changed_at')->from('nf_forum_identities')->where('provider', $fournisseur)->where('external_id', $id_externe)->row();
+
+		if (!is_array($identite) || !$identite)
+		{
+			return NULL;
+		}
+
+		$prochain = $identite['custom_changed_at'] ? (int) strtotime((string) $identite['custom_changed_at']) + self::DELAI_PSEUDO_CHOISI * 86400 : NULL;
+
+		return [
+			'mode'             => (string) $identite['mode'],
+			'custom_name'      => $identite['custom_name'] !== NULL ? (string) $identite['custom_name'] : NULL,
+			'name'             => $this->nom_identite($identite),
+			'custom_change_at' => $prochain !== NULL && $prochain > time() ? $prochain : NULL,
+		];
+	}
+
+	/**
+	 * Choisir comment une identité externe paraît sur le forum (`/forum visibility`) :
+	 * son pseudo (public), un nom anonyme et stable (invité), ou un pseudo choisi (personnalisé). Tous
+	 * ses messages suivent, anciens compris, puisque le nom se calcule à l'affichage.
+	 *
+	 * Le pseudo choisi : de 2 à 32 caractères, pas le pseudo d'un membre du site (personne ne se fait
+	 * passer pour un autre), et il ne change qu'une fois tous les sept jours — reprendre le même, ou
+	 * changer seulement de mode, ne compte pas.
+	 *
+	 * @return array{ok: bool, erreur?: string}
+	 */
+	public function regler_identite(string $fournisseur, string $id_externe, string $pseudo, ?string $avatar, string $mode, ?string $nom_choisi = NULL): array
+	{
+		if (!in_array($mode, ['public', 'guest', 'custom'], TRUE))
+		{
+			return ['ok' => FALSE, 'erreur' => 'invalid_mode'];
+		}
+
+		$identite = $this->identite_externe($fournisseur, $id_externe, $pseudo, $avatar);
+		$actuel   = (array) $this->db->select('custom_name', 'custom_changed_at')->from('nf_forum_identities')->where('identity_id', $identite)->row();
+
+		if ($mode !== 'custom')
+		{
+			$this->db->where('identity_id', $identite)->update('nf_forum_identities', ['mode' => $mode]);
+
+			return ['ok' => TRUE];
+		}
+
+		$nom = trim((string) preg_replace('/\s+/u', ' ', (string) $nom_choisi));
+
+		if (mb_strlen($nom) < 2 || mb_strlen($nom) > 32)
+		{
+			return ['ok' => FALSE, 'erreur' => 'invalid_name'];
+		}
+
+		// La comparaison ignore la casse : la colonne est en interclassement *_ci.
+		if ($this->db->select('id')->from('nf_user')->where('username', $nom)->where('deleted', FALSE)->row())
+		{
+			return ['ok' => FALSE, 'erreur' => 'name_taken'];
+		}
+
+		$change = mb_strtolower($nom) !== mb_strtolower((string) ($actuel['custom_name'] ?? ''));
+
+		if ($change && !empty($actuel['custom_changed_at']) && (int) strtotime((string) $actuel['custom_changed_at']) + self::DELAI_PSEUDO_CHOISI * 86400 > time())
+		{
+			return ['ok' => FALSE, 'erreur' => 'too_soon'];
+		}
+
+		$this->db->where('identity_id', $identite)->update('nf_forum_identities', ['mode' => 'custom', 'custom_name' => $nom] + ($change ? ['custom_changed_at' => date('Y-m-d H:i:s')] : []));
+
+		return ['ok' => TRUE];
+	}
+
+	/**
+	 * Rattache à un membre ce qu'une identité externe a publié sur le forum — quand la personne lie
+	 * enfin son compte et choisit de reprendre ses messages. Rend le nombre de messages rattachés.
+	 */
+	public function rattacher_identite(string $fournisseur, string $id_externe, int $user_id): int
+	{
+		$identite = $this->db->select('identity_id')->from('nf_forum_identities')->where('provider', $fournisseur)->where('external_id', $id_externe)->row();
+
+		if (!$identite)
+		{
+			return 0;
+		}
+
+		$nombre = (int) $this->db->select('COUNT(*)')->from('nf_forum_messages')->where('identity_id', (int) $identite)->row();
+
+		$this->db->where('identity_id', (int) $identite)->update('nf_forum_messages', ['user_id' => $user_id, 'identity_id' => NULL]);
+
+		return $nombre;
+	}
+
+	/** Le nombre de messages du forum publiés sous une identité externe. */
+	public function messages_identite(string $fournisseur, string $id_externe): int
+	{
+		$identite = $this->db->select('identity_id')->from('nf_forum_identities')->where('provider', $fournisseur)->where('external_id', $id_externe)->row();
+
+		return $identite ? (int) $this->db->select('COUNT(*)')->from('nf_forum_messages')->where('identity_id', (int) $identite)->row() : 0;
 	}
 
 	/**

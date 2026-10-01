@@ -10,6 +10,73 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.12] — 2026-10-02
+
+Le bot Discord passe en **version 0.2.0** : remplace son dossier par celui de la nouvelle archive (en
+gardant `.env`), puis crée une nouvelle clé d'accès dans l'administration — la page le demande — pour
+qu'il reçoive les droits du Bugtracker.
+
+### Ajouté
+
+- **Bot Discord : des fonctionnalités qui s'allument une à une.** *Discord → Fonctionnalités* liste ce
+  que le bot sait faire — il le déclare lui-même — ; chacune s'allume, s'éteint et se règle depuis
+  l'administration, appliquée dans la minute sans redémarrer. Le bouton **Resynchroniser** remet tout
+  d'accord, et le forum rattrape au démarrage ce qui s'est écrit sur Discord pendant une absence du
+  bot.
+- **Bot Discord : la mise en place du serveur.** Depuis l'administration, le bot crée sur Discord une
+  catégorie, un salon Forum par forum choisi (ses préfixes en étiquettes) et un rôle par groupe, pose
+  les correspondances lui-même, et reprend au lieu de dédoubler ce qui existe déjà. Un aperçu précède,
+  et la dernière mise en place s'annule.
+- **Bot Discord : `/forum`.** `/forum account link` relie son compte Discord à son compte du site par
+  un lien à usage unique (et reprend à son nom ce qu'on avait publié depuis Discord) ; `/forum account
+  unlink` le délie. Sans compte relié, `/forum visibility` choisit comment on paraît sur le forum : son
+  pseudo Discord, un nom anonyme, ou un pseudo choisi, changeable tous les sept jours — les messages
+  déjà publiés suivent.
+- **Bot Discord : préfixes du forum ↔ étiquettes des salons Forum**, dans les deux sens : poser un
+  préfixe sur un sujet pose l'étiquette sur le fil, et l'inverse.
+- **Bot Discord : le Bugtracker dans un salon Forum** (fonctionnalité à allumer dans *Discord →
+  Fonctionnalités*). Chaque ticket devient un fil : son type et son statut en sont les étiquettes, que
+  le bot crée dans le salon et tient à jour. Le titre, la description et la priorité suivent ; le fil
+  s'archive quand le ticket est clos, et un doublon renvoie à son ticket d'origine. Les commentaires
+  passent dans les deux sens. Depuis Discord, `/bug` et `/idee` ouvrent un ticket par une petite
+  fenêtre (titre, description), et un fil ouvert à la main dans le salon devient un ticket — pour un
+  membre qui a relié son compte. Les tickets encore ouverts reçoivent leur fil quand on choisit le
+  salon. Le site fait foi : une étiquette changée à la main sur Discord est remise comme le dit le
+  ticket.
+- **Bot Discord : les rôles temporaires** (fonctionnalité à allumer). La commande `/role`, réservée à
+  qui peut gérer les rôles, donne un rôle à un membre pour une durée — une sanction, un accès d'essai,
+  un rôle d'événement —, le retire ou montre ceux en cours. Le bot le retire à l'échéance, même après
+  un redémarrage, et le redonne à un membre qui quitte puis rejoint le serveur pour y échapper. Les
+  rôles reliés à un groupe du site, ceux tenus par Discord et ceux placés au-dessus du bot ou de qui
+  les donne sont refusés. La page *Discord → Rôles temporaires* les liste, avec « Retirer maintenant ».
+- **API** : la liste des tickets (`GET bugtracker/tickets`, les seuls ouverts avec `open=1`), et les
+  rôles temporaires du bot (`discord/timed-roles`).
+
+### Sécurité
+
+- **Un titre écrit par l'API ne peut plus injecter de code dans les pages du site.** Le titre d'un
+  sujet créé par l'API — par exemple le nom d'un fil Discord recopié par le bot — était rangé tel
+  quel, alors que le forum affiche ses titres sans les réencoder : une balise dans ce titre
+  s'exécutait sur la page du forum. L'API range maintenant ses textes comme le site range les siens,
+  et le titre de l'onglet est toujours encodé.
+
+### Corrigé
+
+- **Les accents du Bugtracker** s'affichaient « r&eacute;agit » sur la page d'un ticket ouvert par le
+  formulaire, et la recherche « Déjà signalé ? » ne trouvait aucun mot accentué. Les textes que l'API
+  rend — pseudos, titres, descriptions, commentaires — sont aussi en clair : le bot Discord les
+  recopiait encodés. Les aperçus de partage d'un lien (Discord compris) ne montrent plus
+  « &amp;eacute; ».
+- **Bugtracker** : choisir le statut « Doublon » sans numéro de ticket valable gardait l'ancien
+  statut en annonçant « Ticket mis à jour » ; le message dit maintenant ce qui n'a pas été appliqué.
+- **Le wiki** : une page sans sous-pages s'affichait comme un dossier vide sur l'accueil du wiki ; elle
+  montre maintenant son sommaire.
+- **Les pages introuvables et interdites ne sont plus des pages vides.** Sur tous les thèmes publics, une
+  adresse qui ne mène à rien (404) ou une page réservée (403) n'affichait que l'en-tête et le pied de
+  page, sans un mot — défaut hérité de NeoFrag. Elles disent maintenant ce qui se passe, dans les six
+  langues, avec un bouton pour revenir à l'accueil (au tableau de bord en administration), et l'onglet
+  du navigateur porte « Page introuvable » au lieu du nom du module.
+
 ## [1.2.11] — 2026-10-01
 
 ### Ajouté

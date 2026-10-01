@@ -28,7 +28,7 @@ class Index extends Controller_Module
 				$children = $by_parent[$cat['id']] ?? [];
 				$body .= '<section class="wiki-cat">'
 					   .  '<a class="wiki-cat-head" href="'.url('wiki/'.$cat['slug']).'">'
-					   .  '<span class="wiki-cat-ico"><i class="fas fa-folder-open"></i></span>'
+					   .  '<span class="wiki-cat-ico"><i class="'.($children ? 'fas fa-folder-open' : 'far fa-file-lines').'"></i></span>'
 					   .  '<span class="wiki-cat-title">'.htmlspecialchars((string) ($cat['title'])).'</span>'
 					   .  ($children ? '<span class="wiki-cat-count">'.count($children).'</span>' : '')
 					   .  '</a>';
@@ -40,6 +40,13 @@ class Index extends Controller_Module
 						$body .= '<li><a href="'.url('wiki/'.$p['slug']).'"><i class="far fa-file-lines"></i><span>'.htmlspecialchars((string) ($p['title'])).'</span><i class="fas fa-chevron-right wiki-go"></i></a></li>';
 					}
 					$body .= '</ul>';
+				}
+				else
+				{
+					// Une page de premier niveau sans sous-pages n'est pas une rubrique : sa carte montre
+					// ses premières sections (ou le début de son texte), plutôt que de rester vide — le
+					// « Journal des versions » de la vitrine l'était (relevé le 2026-10-01).
+					$body .= $this->_apercu_de_page($cat);
 				}
 				$body .= '</section>';
 			}
@@ -61,6 +68,13 @@ class Index extends Controller_Module
 		$nav = '<nav class="wiki-nav"><a class="wiki-nav-head" href="'.url('wiki').'"><i class="fas fa-book"></i> '.$this->lang('Documentation').'</a>';
 		foreach (($kids[0] ?? []) as $cat)
 		{
+			// Une page de premier niveau sans sous-pages est un lien, pas un titre de rubrique.
+			if (empty($kids[$cat['id']]))
+			{
+				$nav .= '<ul class="wiki-nav-seule"><li><a href="'.url('wiki/'.$cat['slug']).'"'.($cat['slug'] === $page['slug'] ? ' class="active"' : '').'>'.htmlspecialchars((string) ($cat['title'])).'</a></li></ul>';
+				continue;
+			}
+
 			$nav .= '<div class="wiki-nav-cat">'.htmlspecialchars((string) ($cat['title'])).'</div><ul>';
 			foreach ($kids[$cat['id']] ?? [] as $c)
 			{
@@ -79,7 +93,7 @@ class Index extends Controller_Module
 		$meta .= ' &middot; <i class="far fa-clock"></i> '.date('Y-m-d H:i', $page['updated_ts']);
 		$meta .= '</small><a class="btn btn-sm btn-outline-secondary" href="'.url('wiki/history/'.$page['slug']).'"><i class="fas fa-history"></i> '.$this->lang('Historique').'</a></div>';
 
-		$main = $meta.'<div class="wiki-content">'.render_content($page['content']).'</div>';
+		$main = $meta.'<div class="wiki-content">'.self::ancres(render_content($page['content'])).'</div>';
 
 		$body = '<div class="wiki-layout">'.$nav.'<div class="wiki-main">'.$main.'</div></div>';
 
@@ -199,6 +213,46 @@ class Index extends Controller_Module
 			.'</div>';
 
 		return $this->css('wiki')->panel()->title($this->lang('Comparaison de versions'), 'fas fa-exchange-alt')->body($head.$title_diff.$diff_body.$back);
+	}
+
+	/**
+	 * La carte d'une page de premier niveau sans sous-pages : ses premières sections (titres de niveau
+	 * 2), chacune menant à son ancre, ou à défaut le début de son texte ; et le lien vers la page.
+	 */
+	private function _apercu_de_page(array $page): string
+	{
+		$contenu = (string) NeoFrag()->db->select('content')->from('nf_wiki_pages')->where('id', (int) $page['id'])->row();
+		$titres  = preg_match_all('#<h2\b[^>]*>(.*?)</h2>#is', $contenu, $m) ? array_slice(array_filter(array_map(static fn (string $t): string => trim(html_entity_decode(strip_tags($t), ENT_QUOTES | ENT_HTML5, 'UTF-8')), $m[1])), 0, 5) : [];
+		$lien    = url('wiki/'.$page['slug']);
+
+		if ($titres)
+		{
+			$html = '<ul class="wiki-cat-list">';
+
+			foreach ($titres as $t)
+			{
+				$html .= '<li><a href="'.$lien.'#'.self::ancre($t).'"><i class="fas fa-hashtag"></i><span>'.htmlspecialchars($t).'</span><i class="fas fa-chevron-right wiki-go"></i></a></li>';
+			}
+
+			return $html.'</ul>';
+		}
+
+		$texte = trim((string) preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) preg_replace('#<h1\b.*?</h1>#is', '', $contenu)), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+		$debut = mb_strlen($texte) > 200 ? rtrim(mb_substr($texte, 0, (int) (mb_strrpos(mb_substr($texte, 0, 200), ' ') ?: 200))).'…' : $texte;
+
+		return '<div class="wiki-cat-resume"><p>'.htmlspecialchars($debut).'</p><a href="'.$lien.'">'.$this->lang('Lire la page').' <i class="fas fa-chevron-right"></i></a></div>';
+	}
+
+	/** L'ancre d'un titre : son texte en minuscules, des tirets à la place du reste. */
+	private static function ancre(string $titre): string
+	{
+		return trim((string) preg_replace('/[^\p{L}\p{N}]+/u', '-', mb_strtolower($titre)), '-') ?: 'section';
+	}
+
+	/** Une ancre sur chaque titre de niveau 2 qui n'en a pas : les cartes de l'accueil y mènent. */
+	private static function ancres(string $html): string
+	{
+		return (string) preg_replace_callback('#<h2>(.*?)</h2>#is', static fn (array $m): string => '<h2 id="'.htmlspecialchars(self::ancre(trim(html_entity_decode(strip_tags($m[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8')))).'">'.$m[1].'</h2>', $html);
 	}
 
 	/** Contenu HTML -> lignes de texte lisibles (frontières de blocs = sauts de ligne). */
