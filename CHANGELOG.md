@@ -10,6 +10,12 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.7] — 2026-10-01
+
+### Corrigé
+
+- **Forum : un forum-lien affiche l'icône choisie** dans l'administration, au lieu du globe d'office.
+
 ## [1.2.6] — 2026-10-01
 
 ### Ajouté

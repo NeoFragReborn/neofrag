@@ -407,9 +407,10 @@ class Forum extends Model
 				$forum['subforums'] = [];
 			}
 
-			// L'icône choisie en administration, sinon celle d'origine ; un forum non lu se distingue
-			// par la couleur d'accent (classe `forum-non-lu`), quelle que soit l'icône.
-			$classe              = $forum['url'] ? 'fas fa-globe' : (!empty($forum['icon_class']) ? (string) $forum['icon_class'] : ($forum['has_unread'] ? 'fas fa-comments' : 'far fa-comments'));
+			// L'icône choisie en administration l'emporte, forum-lien compris ; à défaut, le globe pour un
+			// lien, la bulle sinon. Un forum non lu se distingue par la couleur d'accent (classe
+			// `forum-non-lu`), quelle que soit l'icône.
+			$classe              = !empty($forum['icon_class']) ? (string) $forum['icon_class'] : ($forum['url'] ? 'fas fa-globe' : ($forum['has_unread'] ? 'fas fa-comments' : 'far fa-comments'));
 			$forum['icon']       = '<span class="forum-icone'.($forum['has_unread'] ? ' forum-non-lu' : '').'">'.icon($classe.($mini ? '' : ' fa-2x')).'</span>';
 		}
 
