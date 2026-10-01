@@ -35,6 +35,15 @@ use NF\NeoFrag\Core;
  */
 class Url extends Core
 {
+	/*
+	 * L'adresse publique d'un module, quand elle diffère de son nom (2026-10-01). Le
+	 * module `articles` est le Blog : son nom reste la clé de ses droits, de ses commentaires, de son
+	 * widget et de la place de marché — le renommer casserait les sites qui l'ont installé —, mais il
+	 * se visite sous `/blog`. Les liens que produit `url('articles/…')` deviennent `/blog/…`, et une
+	 * ancienne adresse `/articles/…` redirige définitivement vers la nouvelle.
+	 */
+	public const ADRESSE_DE_MODULE = ['articles' => 'blog'];
+
 	protected $_const      = [];
 	protected $_external   = FALSE;
 	protected $_production = FALSE;
@@ -141,6 +150,20 @@ class Url extends Core
 				$this->_const['segments'] = call_user_func_array($config['segments'], [$this->_const]);
 			}
 
+			$this->_const['ancienne_adresse'] = FALSE;
+
+			if (!$this->cli && isset($this->_const['segments'][0]))
+			{
+				if (($module = array_search($this->_const['segments'][0], self::ADRESSE_DE_MODULE, TRUE)) !== FALSE)
+				{
+					$this->_const['segments'][0] = $module;
+				}
+				else if (isset(self::ADRESSE_DE_MODULE[$this->_const['segments'][0]]))
+				{
+					$this->_const['ancienne_adresse'] = TRUE;
+				}
+			}
+
 			$this->_const['admin'] = $this->segments[0] == 'admin';
 			$this->_const['ajax']  = isset($this->segments[(int)$this->admin]) && $this->segments[(int)$this->admin] == 'ajax';
 
@@ -151,6 +174,14 @@ class Url extends Core
 		};
 
 		$segments($request);
+
+		$this->on('config_lang_selected', function(){
+			if (!empty($this->_const['ancienne_adresse']))
+			{
+				header('Location: '.url($this->request.$this->query), TRUE, 301);
+				exit;
+			}
+		});
 
 		$this->on('config_init', function() use ($segments){
 			if (is_asset())
@@ -300,6 +331,13 @@ class Url extends Core
 			}
 
 			$url = implode('/', $url);
+		}
+
+		$premier = strtok($url, '/?#');
+
+		if ($premier !== FALSE && isset(self::ADRESSE_DE_MODULE[$premier]))
+		{
+			$url = self::ADRESSE_DE_MODULE[$premier].substr($url, strlen($premier));
 		}
 
 		if ($this->config->langs)

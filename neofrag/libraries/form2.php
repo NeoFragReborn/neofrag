@@ -216,13 +216,20 @@ class Form2 extends Library
 		return $_tokens[$id];
 	}
 
-	public function rule($rule, $title = '', $value = '', $type = 'text')
+	public function rule($rule, $title = '', $value = '', $type = 'text', array $data = [])
 	{
 		if (is_string($rule))
 		{
-			$rule = $this	->{'form_'.$type}($rule)
-							->title($title)
-							->value($value);
+			$rule = $this->{'form_'.$type}($rule)->title($title);
+
+			// Les choix d'une liste (`select`, `radio`, `checkbox`…), avant la valeur qui se choisit
+			// parmi eux : un module déclare ainsi une liste sans appel magique (2026-10-01).
+			if ($data)
+			{
+				$rule = $rule->data($data);
+			}
+
+			$rule = $rule->value($value);
 		}
 
 		$this->_rules[] = $rule;

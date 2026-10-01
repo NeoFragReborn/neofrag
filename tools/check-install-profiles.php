@@ -70,7 +70,7 @@ $routes_coeur  = ['/', '/fr', '/fr/contact', '/fr/members', '/fr/sitemap.xml', '
 $routes_module = [
     'news' => '/fr/news', 'forum' => '/fr/forum', 'gallery' => '/fr/gallery', 'teams' => '/fr/teams',
     'events' => '/fr/events', 'calendar' => '/fr/calendar', 'awards' => '/fr/awards', 'recruits' => '/fr/recruits',
-    'games' => '/fr/games', 'partners' => '/fr/partners', 'articles' => '/fr/articles', 'wiki' => '/fr/wiki',
+    'games' => '/fr/games', 'partners' => '/fr/partners', 'articles' => '/fr/blog', 'wiki' => '/fr/wiki',
     'faq' => '/fr/faq', 'downloads' => '/fr/downloads', 'shop' => '/fr/shop', 'guestbook' => '/fr/guestbook',
     'links' => '/fr/links', 'surveys' => '/fr/surveys', 'classifieds' => '/fr/classifieds', 'bugtracker' => '/fr/bugtracker',
 ];

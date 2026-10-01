@@ -10,6 +10,23 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.5] — 2026-10-01
+
+### Ajouté
+
+- **Un vrai Blog.** Le module Articles devient le Blog, sous `/blog` (les anciennes adresses `/articles/…`
+  redirigent définitivement). La liste s'ouvre sur un billet **à la une**, puis des cartes illustrées,
+  des filtres par catégorie et une barre latérale (recherche, les plus lus, catégories, tags, archives).
+  La fiche d'un billet a sa couverture titrée, une barre de progression de lecture, un sommaire qui suit
+  la partie en cours, l'auteur, les billets voisins et « à lire aussi ». L'administrateur choisit la
+  mise en page de la liste et de la fiche ; le visiteur passe de la grille aux lignes, et son choix est
+  retenu.
+- **Bugtracker : la liste se filtre par type** (bogue, demande de fonctionnalité, question, autre), et
+  « Nouveau ticket » garde le type choisi. On voit ce qui est déjà signalé avant d'ouvrir un ticket.
+- **Bugtracker : « Déjà signalé ? »** Pendant qu'on écrit le titre d'un nouveau ticket, les tickets
+  ouverts qui lui ressemblent s'affichent dessous, pour commenter l'existant plutôt qu'en ouvrir un
+  second. Un ticket peut aussi être marqué **doublon** d'un autre : sa page renvoie vers l'original.
+
 ## [1.2.4] — 2026-10-01
 
 ### Ajouté
