@@ -421,7 +421,7 @@ class Admin extends Controller_Module
 		try {
 			$rows = $this->db->select('a.article_id', 'al.title', 'a.date', 'u.username')
 				->from('nf_articles a')
-				->join('nf_articles_lang al', 'al.article_id = a.article_id', 'LEFT')
+				->join_lang('nf_articles_lang al', 'article_id', 'a.article_id', NULL, 'LEFT')
 				->join('nf_user u', 'u.id = a.user_id', 'LEFT')
 				->where('a.published', TRUE)
 				->order_by('a.date DESC')->limit(3)->get();

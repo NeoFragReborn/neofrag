@@ -17,8 +17,9 @@ declare(strict_types=1);
  * Ce que l'outil fait
  * -------------------
  *   1. il lit `version.json` à l'origine : la version annoncée, le nom et l'empreinte du paquet ;
- *   2. il monte un site NEUF (`lib/vierge.php`), recopié de ce dépôt, et le déclare à la version
- *      PRÉCÉDENTE — la dernière publiée avant la version annoncée, lue dans `CHANGELOG.md` ;
+ *   2. il monte un site NEUF (`lib/vierge.php`) et le RAMÈNE à la version PRÉCÉDENTE — la dernière
+ *      publiée avant la version annoncée, lue dans `CHANGELOG.md` : les fichiers de son paquet publié,
+ *      sans ceux apportés depuis, et sa base sans les migrations arrivées depuis ;
  *   3. il pointe ce site vers l'origine, ouvre une session d'administrateur et rejoue les deux
  *      requêtes du panneau : « actualiser » (le manifeste est téléchargé), puis « mettre à jour » ;
  *   4. il vérifie chaque promesse : la version annoncée est installée, CHAQUE fichier du paquet est
@@ -34,6 +35,7 @@ declare(strict_types=1);
  *   php tools/check-mise-a-jour.php                                             l'origine publiée
  *   php tools/check-mise-a-jour.php --origine=https://neofrag-reborn.xyz/update/repetition
  *   php tools/check-mise-a-jour.php --depart=1.1.0                              la version de départ
+ *   php tools/check-mise-a-jour.php --origine-depart=https://…/update           où lire son paquet
  */
 
 require __DIR__.'/lib/outil.php';
@@ -45,9 +47,10 @@ require_once __DIR__.'/../install/lib/installer.php';
 use NF\Install\Lib\Installer;
 
 [$o] = nf_options([
-    'origine' => 'https://neofrag-reborn.xyz/update',
-    'depart'  => '',
-    'port'    => 0,
+    'origine'        => 'https://neofrag-reborn.xyz/update',
+    'origine-depart' => 'https://neofrag-reborn.xyz/update',
+    'depart'         => '',
+    'port'           => 0,
 ]);
 
 $racine  = nf_racine();
@@ -96,21 +99,86 @@ if ($depart === '' || !version_compare($depart, $cible, '<'))
 
 printf("Origine : %s\nAnnoncée : %s (%s)\nDépart : %s\n\n", $origine, $cible, (string) ($annonce['neofrag']['file'] ?? '?'), $depart);
 
-// ── 3. Le site neuf, déclaré à la version de départ ─────────────────────────────────────────
+// ── 3. Le site neuf, ramené à la version de départ ──────────────────────────────────────────
+//
+// Jusqu'au 2026-10-01, c'était une copie de ce dépôt dont on rabaissait le numéro : sa base avait
+// déjà les migrations de la cible, et c'est le NOUVEAU code de mise à jour qui tournait. L'épreuve
+// prouvait le passage du neuf au neuf — et n'a donc jamais vu qu'une mise à jour n'appliquait aucune
+// migration. Le site est désormais ramené à la vraie version de départ : les fichiers de son paquet
+// publié, sans ceux apportés depuis, et sa base sans les migrations arrivées depuis.
 echo "Installation d'un site neuf…\n";
 $vierge = nf_site_vierge('neofrag_maj_install_test');
 $site   = $vierge['racine'];
 $db     = $vierge['db'];
 
-$index = (string) file_get_contents($site.'/index.php');
-$index = (string) preg_replace("/define\('NEOFRAG_VERSION', '[^']*'\);/", "define('NEOFRAG_VERSION', '{$depart}');", $index, 1, $remplacements);
+// Les versions publiées restent sur l'origine réelle, même quand la cible est en répétition.
+$url_depart = $o['origine-depart'].'/neofrag-reborn-update-'.$depart.'.zip';
+$paquet     = nf_http($url_depart, ['timeout' => 300]);
+$zip        = new ZipArchive();
+$fichier    = $site.'/../paquet-depart-'.$depart.'.zip';
 
-if ($remplacements !== 1)
+if ($paquet['code'] !== 200 || file_put_contents($fichier, $paquet['corps']) === FALSE || $zip->open($fichier) !== TRUE)
 {
-    nf_refus('NEOFRAG_VERSION introuvable dans index.php de la copie');
+    nf_refus("le paquet de départ {$depart} est introuvable ({$url_depart} : HTTP {$paquet['code']}) — le donner avec --origine-depart= ou --depart=");
 }
 
-file_put_contents($site.'/index.php', $index);
+$du_depart = [];
+
+for ($i = 0; $i < $zip->numFiles; $i++)
+{
+    $entree = (string) $zip->getNameIndex($i);
+
+    // Ce que l'updater écrit, et rien d'autre : ni dossiers, ni fichiers de racine hors index.php,
+    // ni config/ et install/ déjà en place.
+    if (str_ends_with($entree, '/') || !preg_match('#/|^index\.php$#', $entree) || (preg_match('#^(config|install)/#', $entree) && file_exists($site.'/'.$entree)))
+    {
+        continue;
+    }
+
+    $du_depart[$entree] = TRUE;
+    @mkdir(dirname($site.'/'.$entree), 0775, TRUE);
+    file_put_contents($site.'/'.$entree, (string) $zip->getFromIndex($i));
+}
+
+$zip->close();
+@unlink($fichier);
+
+// Ce que la cible apporte et que le départ n'avait pas : retiré, et ses migrations défaites, de la
+// plus récente à la plus ancienne.
+$apportees = [];
+
+foreach (array_keys($empreintes) as $chemin)
+{
+    $chemin = (string) $chemin;
+
+    if (isset($du_depart[$chemin]) || preg_match('#^(config|install)/#', $chemin))
+    {
+        continue;
+    }
+
+    if (preg_match('#^migrations/(.+)\.up\.sql$#', $chemin, $m))
+    {
+        $apportees[] = $m[1];
+    }
+
+    @unlink($site.'/'.$chemin);
+}
+
+rsort($apportees);
+
+foreach ($apportees as $migration)
+{
+    Installer::import_sql_file($db, $racine.'/migrations/'.$migration.'.down.sql');
+    $db->query("DELETE FROM nf_migrations WHERE name = '".$db->real_escape_string($migration)."'");
+}
+
+if (!preg_match("/define\('NEOFRAG_VERSION', '([^']*)'\);/", (string) file_get_contents($site.'/index.php'), $m) || $m[1] !== $depart)
+{
+    nf_refus(sprintf('le site ramené au paquet %s annonce %s', $depart, $m[1] ?? '?'));
+}
+
+printf("  ramené à %s : %d fichier(s) du paquet publié, %d migration(s) de la cible défaite(s)%s\n",
+    $depart, count($du_depart), count($apportees), $apportees ? ' ('.implode(', ', $apportees).')' : '');
 
 // Le réglage n'existe pas forcément sur un site neuf : nf_reglage_poser() ne ferait rien.
 $db->query("INSERT INTO nf_settings (name, site, lang, value, type) VALUES ('nf_monitoring_check_url', '', '', '"
@@ -211,6 +279,25 @@ if (!$echecs)
             $echecs[] = "{$nom} répond {$statut} après la mise à jour";
         }
     }
+
+    // La base suit le code. Jusqu'au 2026-10-01, une mise à jour posait les fichiers et laissait la
+    // base telle quelle : les migrations n'étaient appliquées qu'à l'installation. Les deux pages
+    // ci-dessus ont fait passer le site par son rattrapage (index.php) : plus rien n'est en attente.
+    $appliquees = array_flip(array_map('strval', array_column($db->query('SELECT name FROM nf_migrations')->fetch_all(MYSQLI_ASSOC), 'name')));
+    $manquantes = array_values(array_filter(
+        array_map(static fn (string $f): string => basename($f, '.up.sql'), glob($site.'/migrations/*.up.sql') ?: []),
+        static fn (string $nom): bool => !isset($appliquees[$nom])
+    ));
+
+    if ($manquantes)
+    {
+        $echecs[] = sprintf('%d migration(s) livrée(s) mais pas appliquée(s) : %s', count($manquantes), implode(', ', array_slice($manquantes, 0, 5)));
+    }
+
+    if (($schema = nf_reglage($db, 'nf_schema_version')) !== $cible)
+    {
+        $echecs[] = 'le réglage nf_schema_version vaut '.($schema ?? '(absent)').", pas {$cible}";
+    }
 }
 
 // Le journal d'erreurs doit rester MUET : une mise à jour réussie s'inscrit au journal d'audit.
@@ -256,7 +343,7 @@ if ($echecs)
     nf_echec(sprintf('la mise à jour %s → %s depuis %s ne tient pas ses promesses (%d point(s))', $depart, $cible, $origine, count($echecs)));
 }
 
-printf("\n  ✓ %s installée, %d fichier(s) du paquet identiques à checksum.json, accueil et administration en 200, mise à jour inscrite à l'audit, journal muet.\n",
+printf("\n  ✓ %s installée, %d fichier(s) du paquet identiques à checksum.json, accueil et administration en 200, migrations livrées toutes appliquées, mise à jour inscrite à l'audit, journal muet.\n",
     $cible, count($empreintes));
 
 nf_ok("un site en {$depart} se met à jour en {$cible} par le bouton, depuis {$origine}");

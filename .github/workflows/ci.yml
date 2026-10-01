@@ -373,9 +373,6 @@ jobs:
       # par étape fait échouer vite, sous le nom de l'étape qui bloque.
       # Chrome est préinstallé sur les runners ubuntu-latest. L'outil démarre son propre serveur,
       # ouvre une session d'administrateur temporaire et fait le ménage derrière lui.
-      - name: Mesure du débordement horizontal (390 / 768 / 1400 px)
-        timeout-minutes: 8
-        run: php tools/check-responsive.php 390,768,1400
       # Sur une sous-page d'administration, il faut pouvoir remonter au module — par le fil d'Ariane
       # ou par un bouton « Retour ». Le comptage fait à la main annonçait 36 pages fautives sur 97 :
       # il ne voyait qu'un seul des deux chemins. Celui-ci ouvre les pages et regarde ce qu'elles
@@ -425,6 +422,17 @@ jobs:
         run: |
           php tools/seed-demo.php --sans-config-demo
           php tools/check-langues-contenu.php
+      # Un échantillon du passage visuel complet (26 672 rendus, quarante minutes, le 2026-09-23) :
+      # chaque modèle de page, dans chaque thème et ses deux modes, à 360 et 1 440 px, vu par le
+      # visiteur. La sonde mesure le débordement horizontal — ce que faisait `check-responsive` ici,
+      # sur onze pages d'un seul thème — et en plus les boutons en escalier, le texte tronqué ou
+      # chevauchant, les images cassées, le contraste, les cibles trop petites, les erreurs
+      # JavaScript. Environ 340 rendus. Après le pas précédent, parce qu'il lui faut du contenu.
+      - name: Outillage du pilote (Playwright, avec le Chrome du runner)
+        run: npm ci --no-audit --no-fund
+      - name: Mise en page — échantillon (tous les thèmes, deux modes, 360 et 1 440 px)
+        timeout-minutes: 10
+        run: php tools/check-mise-en-page.php --largeurs=360,1440 --profils=visiteur --max=80 --parallele=2
 
   js-browser:
     name: Épreuves JS (navigateur sans interface)
@@ -497,19 +505,19 @@ jobs:
         run: >-
           docker compose exec -T web
           php tools/check-widget-contract.php
-      # ATTENTION, ce commentaire a été faux longtemps. Il affirmait que les suites integration et
-      # headless « s'exécutent réellement contre la base » ICI, le job `test` tournant sans base.
-      # Mesuré le 2026-09-21 : ce pas saute 67 tests (509 tests, 1 320 assertions) faute de
-      # `config/db-test.php` dans le conteneur — les suites d'intégration ne s'y exécutent PAS.
-      # Depuis le même jour, c'est le job `test` qui les joue vraiment, sur les quatre versions de
-      # PHP : 509 tests, 1 513 assertions, aucun sauté. Ce pas garde sa valeur — il exerce les suites
-      # headless contre une installation Apache complète — mais il ne couvre pas ce qu'il disait.
-      # Reste à faire : préparer la base de test dans le conteneur, puis `--fail-on-skipped`.
+      # Jusqu'au 2026-10-01, ce pas sautait 67 tests en restant vert : il n'y avait pas de
+      # `config/db-test.php` dans le conteneur, et les suites d'intégration se sautent elles-mêmes
+      # sans base. Le pas précédent la prépare dans le service `db` de la pile, comme le job `test`
+      # le fait sur la machine ; `--fail-on-skipped` refuse désormais tout saut.
       # Placé APRÈS le smoke (certains tests d'intégration réécrivent des tables jetables).
+      - name: Prépare la base des tests d'intégration (dans le conteneur)
+        run: >-
+          docker compose exec -T web
+          php tools/prepare-test-db.php --host=db --root-user=root --root-pass=rootpass
       - name: PHPUnit complet contre la base installée (integration + headless)
         run: >-
           docker compose exec -T web
-          php vendor/phpunit/phpunit/phpunit --no-coverage
+          php vendor/phpunit/phpunit/phpunit --no-coverage --fail-on-skipped
       - name: Logs web (si échec)
         if: failure()
         run: docker compose logs web --tail 80

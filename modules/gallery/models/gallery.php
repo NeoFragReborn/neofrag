@@ -17,14 +17,13 @@ class Gallery extends Model
 					->from('nf_gallery g')
 					->join('nf_gallery_lang gl',            'g.gallery_id  = gl.gallery_id')
 					->join('nf_gallery_categories c',       'g.category_id = c.category_id')
-					->join('nf_gallery_categories_lang cl', 'c.category_id = cl.category_id')
+					->join_lang('nf_gallery_categories_lang cl', 'category_id', 'c.category_id')
 					// LEFT : cette table ne sert qu'au COMPTAGE des images. En jointure stricte, un
 					// album VIDE disparaissait de la liste — la page annonçait « Aucun album »
 					// alors que trois existaient et étaient publiés. Un album sans image doit
 					// s'afficher avec 0 image, pas s'effacer.
 					->join('nf_gallery_images gi',          'g.gallery_id  = gi.gallery_id', 'LEFT')
 					->where('gl.lang', $this->config->lang->info()->name)
-					->where('cl.lang', $this->config->lang->info()->name)
 					->where('g.deleted_at', NULL)
 					->group_by('g.gallery_id')
 					->order_by('g.gallery_id DESC');
@@ -56,11 +55,10 @@ class Gallery extends Model
 					->from('nf_gallery g')
 					->join('nf_gallery_lang gl',            'g.gallery_id  = gl.gallery_id')
 					->join('nf_gallery_categories c',       'g.category_id = c.category_id')
-					->join('nf_gallery_categories_lang cl', 'c.category_id = cl.category_id')
+					->join_lang('nf_gallery_categories_lang cl', 'category_id', 'c.category_id', $lang)
 					->where('g.gallery_id', $gallery_id)
 					->where('g.name', $name)
 					->where('gl.lang', $lang)
-					->where('cl.lang', $lang)
 					->where('g.deleted_at', NULL);
 
 		if (!$this->url->admin)
@@ -257,10 +255,9 @@ class Gallery extends Model
 
 		return $this->db->select('c.category_id', 'c.name', 'cl.title', 'c.image_id', 'c.icon_id')
 						->from('nf_gallery_categories c')
-						->join('nf_gallery_categories_lang cl', 'c.category_id = cl.category_id')
+						->join_lang('nf_gallery_categories_lang cl', 'category_id', 'c.category_id', $lang)
 						->where('c.category_id', $category_id)
 						->where('c.name', $name)
-						->where('cl.lang', $lang)
 						->row();
 	}
 
@@ -268,9 +265,8 @@ class Gallery extends Model
 	{
 		return $this->db->select('c.category_id', 'c.image_id', 'c.icon_id', 'c.name', 'cl.title', 'COUNT(g.gallery_id) as nb_gallery')
 						->from('nf_gallery_categories c')
-						->join('nf_gallery_categories_lang cl', 'c.category_id = cl.category_id')
+						->join_lang('nf_gallery_categories_lang cl', 'category_id', 'c.category_id')
 						->join('nf_gallery g', 'c.category_id = g.category_id')
-						->where('cl.lang', $this->config->lang->info()->name)
 						->group_by('c.category_id')
 						->order_by('cl.title')
 						->get();

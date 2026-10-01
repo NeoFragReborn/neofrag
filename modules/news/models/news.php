@@ -43,11 +43,10 @@ class News extends Model
 					->from('nf_news n')
 					->join('nf_news_lang nl',            'n.news_id     = nl.news_id')
 					->join('nf_news_categories c',       'n.category_id = c.category_id')
-					->join('nf_news_categories_lang cl', 'c.category_id = cl.category_id')
+					->join_lang('nf_news_categories_lang cl', 'category_id', 'c.category_id', $lang)
 					->join('nf_user u',                  'n.user_id     = u.id AND u.deleted = "0"')
 					->join('nf_user_profile up',         'up.id         = u.id')
 					->where('nl.lang', $lang)
-					->where('cl.lang', $lang)
 					->where('n.deleted_at', NULL)
 					->order_by('n.date DESC');
 
@@ -78,10 +77,9 @@ class News extends Model
 						->from('nf_news n')
 						->join('nf_news_lang nl',            'n.news_id     = nl.news_id')
 						->join('nf_news_categories c',       'n.category_id = c.category_id')
-						->join('nf_news_categories_lang cl', 'c.category_id = cl.category_id')
+						->join_lang('nf_news_categories_lang cl', 'category_id', 'c.category_id')
 						->where('n.published', TRUE)
 						->where('nl.lang', $this->config->lang->info()->name)
-						->where('cl.lang', $this->config->lang->info()->name)
 						->where('n.user_id', $user_id)
 						->where('n.news_id <>', $news_id)
 						->where('n.deleted_at', NULL)
@@ -103,7 +101,7 @@ class News extends Model
 						->from('nf_news n')
 						->join('nf_news_lang nl',            'n.news_id     = nl.news_id')
 						->join('nf_news_categories c',       'n.category_id = c.category_id')
-						->join('nf_news_categories_lang cl', 'c.category_id = cl.category_id')
+						->join_lang('nf_news_categories_lang cl', 'category_id', 'c.category_id', $lang)
 						->join('nf_user u',                  'u.id          = n.user_id AND u.deleted = "0"')
 						->join('nf_user_profile up',         'u.id          = up.id')
 						// LEFT, et non une jointure stricte : la table des sessions ne sert QU'À
@@ -115,7 +113,6 @@ class News extends Model
 						->join('nf_session        s',        'u.id          = s.user_id', 'LEFT')
 						->where('n.news_id', $news_id)
 						->where('nl.lang', $lang)
-						->where('cl.lang', $lang)
 						->where('n.deleted_at', NULL);
 
 		if (!$this->url->admin)

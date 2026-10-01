@@ -15,8 +15,7 @@ class Partners extends Model
 	{
 		return $this->db->select('p.partner_id', 'p.name', 'p.logo_light', 'p.logo_dark', 'p.website', 'p.facebook', 'p.twitter', 'p.count', 'p.code', 'p.order', 'pl.title', 'pl.description')
 						->from('nf_partners p')
-						->join('nf_partners_lang pl', 'p.partner_id  = pl.partner_id')
-						->where('pl.lang', $this->config->lang->info()->name)
+						->join_lang('nf_partners_lang pl', 'partner_id', 'p.partner_id')
 						->order_by('p.order', 'p.partner_id')
 						->get();
 	}
@@ -25,10 +24,9 @@ class Partners extends Model
 	{
 		return $this->db->select('p.partner_id', 'p.name', 'p.logo_light', 'p.logo_dark', 'p.website', 'p.facebook', 'p.twitter', 'p.count', 'p.code', 'pl.title', 'pl.description')
 						->from('nf_partners p')
-						->join('nf_partners_lang pl', 'p.partner_id  = pl.partner_id')
+						->join_lang('nf_partners_lang pl', 'partner_id', 'p.partner_id')
 						->where('p.partner_id', $partner_id)
 						->where('p.name', $name)
-						->where('pl.lang', $this->config->lang->info()->name)
 						->row();
 	}
 

@@ -20,10 +20,9 @@ class Games extends Model
 
 		return $this->db->select('g.game_id', 'g.parent_id', 'g.image_id', 'g.icon_id', 'gl.title', 'g.name')
 						->from('nf_games g')
-						->join('nf_games_lang gl', 'g.game_id = gl.game_id')
+						->join_lang('nf_games_lang gl', 'game_id', 'g.game_id', $lang)
 						->where('g.game_id', $game_id)
 						->where('g.name', $name)
-						->where('gl.lang', $lang)
 						->row();
 	}
 
@@ -31,10 +30,9 @@ class Games extends Model
 	{
 		return $this->db->select('g.*', 'gl.title')
 						->from('nf_games g')
-						->join('nf_games_lang gl',  'g.game_id = gl.game_id')
+						->join_lang('nf_games_lang gl', 'game_id', 'g.game_id')
 						->join('nf_games g2',       'g2.game_id = g.parent_id')
-						->join('nf_games_lang gl2', 'g2.game_id = gl2.game_id')
-						->where('gl.lang', $this->config->lang->info()->name)
+						->join_lang('nf_games_lang gl2', 'game_id', 'g2.game_id')
 						->order_by('If(g.parent_id IS NULL, gl.title, CONCAT(gl2.title, gl.title))')
 						->get();
 	}

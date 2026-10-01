@@ -235,6 +235,48 @@ class Db extends Core
 		return $this;
 	}
 
+	/*
+	 * Joint la MEILLEURE traduction d'un objet : celle de la langue demandée, sinon le français,
+	 * sinon la première qui existe. Toutes les colonnes viennent ainsi d'une même ligne.
+	 *
+	 * L'écriture habituelle — `join('nf_teams_lang tl', …)->where('tl.lang', $langue)` — rend la
+	 * jointure interne : une équipe, un jeu ou une catégorie saisis dans une seule langue
+	 * DISPARAISSAIENT des cinq autres, et un groupe d'équipe avec ses droits (relevé le 2026-10-01 :
+	 * trois équipes sur la démo en français, aucune en anglais). L'administration n'enregistre le
+	 * titre que dans la langue où l'on écrit : ce cas est le cas normal, pas une exception.
+	 *
+	 *   ->join_lang('nf_teams_lang tl', 'team_id', 't.team_id')
+	 *
+	 * Le texte d'un CONTENU (actualité, article, page) ne passe pas par ici : une liste de contenus
+	 * est dans la langue demandée, et un contenu monolingue est servi seul, dans sa langue.
+	 */
+	public function join_lang(string $table, string $cle, string $parent, ?string $langue = NULL, string $type = '')
+	{
+		[$nom, $alias] = array_pad(preg_split('/\s+/', trim($table)), 2, NULL);
+		$alias = $alias ?: $nom;
+		$autre = $alias.'_choix';
+
+		if ($langue === NULL)
+		{
+			$courante = NeoFrag()->config->lang;
+			$langue   = is_object($courante) ? (string) $courante->info()->name : '';
+		}
+
+		$ordre = [];
+
+		foreach (array_unique([$langue, 'fr']) as $code)
+		{
+			if (preg_match('/^[a-z]{2}$/', $code))
+			{
+				$ordre[] = $autre.'.lang = "'.$code.'" DESC';
+			}
+		}
+
+		$ordre[] = $autre.'.lang';
+
+		return $this->join($table, $alias.'.'.$cle.' = '.$parent.' AND '.$alias.'.lang = (SELECT '.$autre.'.lang FROM '.$nom.' '.$autre.' WHERE '.$autre.'.'.$cle.' = '.$parent.' ORDER BY '.implode(', ', $ordre).' LIMIT 1)', $type);
+	}
+
 	public function group_by()
 	{
 		$this->_request['group_by'] = func_get_args();

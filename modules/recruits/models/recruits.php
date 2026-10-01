@@ -20,7 +20,7 @@ class Recruits extends Model
 					// LEFT : ne sert qu'a COMPTER les candidatures. En stricte, un recrutement SANS
 					// candidature disparaissait — c'est-a-dire tout recrutement qui vient d'etre ouvert.
 					->join('nf_recruits_candidacies rc', 'rc.recruit_id = r.recruit_id', 'LEFT')
-					->join('nf_teams_lang tl',           'r.team_id     = tl.team_id')
+					->join_lang('nf_teams_lang tl', 'team_id', 'r.team_id')
 					->group_by('r.recruit_id')
 					->order_by('r.date DESC');
 
@@ -41,7 +41,7 @@ class Recruits extends Model
 					// LEFT : ne sert qu'a COMPTER les candidatures. En stricte, un recrutement SANS
 					// candidature disparaissait — c'est-a-dire tout recrutement qui vient d'etre ouvert.
 					->join('nf_recruits_candidacies rc', 'rc.recruit_id = r.recruit_id', 'LEFT')
-					->join('nf_teams_lang tl',           'r.team_id     = tl.team_id')
+					->join_lang('nf_teams_lang tl', 'team_id', 'r.team_id')
 					->group_by('r.recruit_id')
 					->where('r.recruit_id', $recruit_id);
 
@@ -88,8 +88,7 @@ class Recruits extends Model
 
 		foreach ($this->db	->select('t.team_id', 't.name', 'tl.title')
 							->from('nf_teams t')
-							->join('nf_teams_lang tl', 't.team_id = tl.team_id')
-							->where('tl.lang', $this->config->lang->info()->name)
+							->join_lang('nf_teams_lang tl', 'team_id', 't.team_id')
 							->order_by('tl.title')
 							->get() as $team)
 		{
@@ -241,7 +240,7 @@ class Recruits extends Model
 		$candidacy = $this->db	->select('rc.*', 'r.recruit_id', 'r.title', 'r.icon', 'r.role', 'r.team_id', 'tl.title as team_name', 'u.username', 'up.avatar', 'up.sex')
 								->from('nf_recruits_candidacies rc')
 								->join('nf_recruits r',        'rc.recruit_id = r.recruit_id')
-								->join('nf_teams_lang tl',     'r.team_id     = tl.team_id')
+								->join_lang('nf_teams_lang tl', 'team_id', 'r.team_id')
 								->join('nf_user u',            'rc.user_id    = u.id')
 								->join('nf_user_profile up',   'up.id         = u.id')
 								->where('rc.candidacy_id', $candidacy_id)
@@ -323,12 +322,11 @@ class Recruits extends Model
 	{
 		return $this->db->select('t.team_id', 't.name', 'tl.title', 't.image_id', 't.icon_id', 'tl.description', 't.game_id', 'gl.title as game', 'g.icon_id as game_icon')
 						->from('nf_teams t')
-						->join('nf_teams_lang tl', 't.team_id = tl.team_id')
+						->join_lang('nf_teams_lang tl', 'team_id', 't.team_id')
 						->join('nf_games g',       'g.game_id = t.game_id')
-						->join('nf_games_lang gl', 'g.game_id = gl.game_id')
+						->join_lang('nf_games_lang gl', 'game_id', 'g.game_id')
 						->where('t.team_id', $team_id)
 						->where('t.name', $name)
-						->where('tl.lang', $this->config->lang->info()->name)
 						->row();
 	}
 

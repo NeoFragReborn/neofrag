@@ -22,10 +22,9 @@ class Categories extends Model
 
 		return $this->db->select('c.category_id', 'cl.title', 'c.image_id', 'c.icon_id')
 						->from('nf_news_categories c')
-						->join('nf_news_categories_lang cl', 'c.category_id = cl.category_id')
+						->join_lang('nf_news_categories_lang cl', 'category_id', 'c.category_id', $lang)
 						->where('c.category_id', $category_id)
 						->where('c.name', $name)
-						->where('cl.lang', $lang)
 						->row();
 	}
 
@@ -33,11 +32,10 @@ class Categories extends Model
 	{
 		return $this->db->select('c.category_id', 'c.icon_id', 'c.name', 'cl.title', 'COUNT(n.news_id) as nb_news')
 						->from('nf_news_categories c')
-						->join('nf_news_categories_lang cl', 'c.category_id = cl.category_id')
+						->join_lang('nf_news_categories_lang cl', 'category_id', 'c.category_id')
 						// LEFT : cette jointure ne sert qu'a COMPTER les actualites. En stricte, une
 						// categorie VIDE disparaissait de la liste des categories.
 						->join('nf_news n', 'c.category_id = n.category_id', 'LEFT')
-						->where('cl.lang', $this->config->lang->info()->name)
 						->group_by('c.category_id')
 						->order_by('cl.title')
 						->get();

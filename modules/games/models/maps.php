@@ -21,8 +21,7 @@ class Maps extends Model
 		return $this->db->select('m.*', 'g.name', 'g.icon_id', 'gl.title as game_title')
 						->from('nf_games_maps m')
 						->join('nf_games g', 'g.game_id = m.game_id')
-						->join('nf_games_lang gl', 'gl.game_id = m.game_id')
-						->where('gl.lang', $this->config->lang->info()->name)
+						->join_lang('nf_games_lang gl', 'game_id', 'm.game_id')
 						->order_by('gl.title', 'm.title')
 						->get();
 	}

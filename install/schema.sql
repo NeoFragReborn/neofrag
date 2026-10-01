@@ -55,7 +55,7 @@ CREATE TABLE `nf_user_auth` (
   `authenticator_id` int(11) unsigned NOT NULL,
   `key` varchar(100) NOT NULL,
   `username` varchar(100) DEFAULT NULL,
-  `avatar` varchar(100) DEFAULT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`,`authenticator_id`,`key`),
   KEY `authenticator_id` (`authenticator_id`),
@@ -883,7 +883,11 @@ INSERT INTO `nf_migrations` (`id`, `name`, `batch`, `applied_at`) VALUES
 -- Choix du theme ferme sur le site vitrine : une installation neuve est en nebula, et
 -- install/vitrine.sql ferme lui-meme le choix quand il pose le theme vitrine.
 -- Cf. migrations/2026_09_23_choix_du_theme.
-('52', '2026_09_23_choix_du_theme', '40', '2026-09-23 00:00:00');
+('52', '2026_09_23_choix_du_theme', '40', '2026-09-23 00:00:00'),
+
+-- Avatar des comptes lies en 255 caracteres : nf_user_auth ci-dessus est deja a cette taille.
+-- Cf. migrations/2026_10_01_avatar_des_connexions.
+('53', '2026_10_01_avatar_des_connexions', '41', '2026-10-01 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

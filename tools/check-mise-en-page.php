@@ -277,8 +277,9 @@ function mesurer_site(string $nom, string $site, mysqli $db, int $port, string $
     printf("[%s] %d page(s), %d modèle(s) : %d d'administration, %d publique(s) × %d thème(s) (%s) × %d mode(s) × %d profil(s) × %d largeur(s)\n",
         $nom, count($chemins), $choix['modeles'], count($choix['admin']), count($choix['public']), count($publics), implode(', ', $publics), count($modes), count(explode(',', (string) $o['profils'])), count($largeurs));
 
-    $constats = [];
-    $muettes  = [];
+    $constats  = [];
+    $muettes   = [];
+    $reservees = [];
     $journaux = [];
     $rendus   = 0;
 
@@ -335,6 +336,15 @@ function mesurer_site(string $nom, string $site, mysqli $db, int $port, string $
 
                 foreach ($sortie as $r)
                 {
+                    // Une page de membre refusée au VISITEUR (401, 403) a répondu ce qu'il fallait :
+                    // ce n'est pas une page qu'on n'a pas pu mesurer. Comptées comme telles, les
+                    // discussions privées suffisaient à faire refuser un passage en visiteur seul.
+                    if ($profil === 'visiteur' && $r['erreur'] === '' && in_array((int) $r['code'], [401, 403], TRUE))
+                    {
+                        $reservees[$r['chemin']] = TRUE;
+                        continue;
+                    }
+
                     if ($r['erreur'] !== '' || $r['code'] >= 400 || count($r['mesures']) !== count($largeurs))
                     {
                         $muettes[] = sprintf('%s %s — %s', $etiquette, $r['chemin'], $r['erreur'] !== '' ? $r['erreur'] : 'HTTP '.$r['code']);
@@ -379,7 +389,7 @@ function mesurer_site(string $nom, string $site, mysqli $db, int $port, string $
         nf_reglage_poser($db, 'nf_default_theme', $theme_initial);
     }
 
-    return ['constats' => $constats, 'muettes' => $muettes, 'journal' => $journaux, 'pages' => count($chemins),
+    return ['constats' => $constats, 'muettes' => $muettes, 'reservees' => array_keys($reservees), 'journal' => $journaux, 'pages' => count($chemins),
             'modeles' => $choix['modeles'], 'rendus' => $rendus, 'themes' => $publics, 'absents' => $absents];
 }
 
@@ -610,6 +620,13 @@ foreach ($bilans as $nom => $b)
             $fautes_journal += nf_journal_montrer($classe, $sites[array_search($nom, array_column($sites, 0), TRUE)][1], 8);
         }
     }
+}
+
+$reservees = array_values(array_unique(array_merge(...array_values(array_map(fn (array $b): array => $b['reservees'], $bilans)))));
+
+if ($reservees)
+{
+    printf("\n%d page(s) réservée(s) aux membres, refusée(s) au visiteur comme il se doit : %s\n", count($reservees), implode(', ', array_slice($reservees, 0, 6)));
 }
 
 if ($muettes)

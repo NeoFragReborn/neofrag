@@ -110,3 +110,63 @@ function nf_demo_ecriture_permise(?string $module = NULL): bool
 	return $module !== NULL && $module !== '' && !in_array($module, NF_DEMO_MODULES_VERROUILLES, TRUE);
 }
 
+/**
+ * Les migrations du cœur arrivées avec un nouveau code — par le bouton de mise à jour comme par FTP.
+ * Jusqu'au 2026-10-01, seule l'INSTALLATION les appliquait : un site mis à jour gardait sa base
+ * ancienne sous un code neuf. Nos trois sites ne l'ont jamais vu, leurs déploiements lançant
+ * `tools/migrate.php up` à la main.
+ *
+ * Pourquoi ici et pas dans `Installer`. La mise à jour ne réécrit jamais `install/` : un site garde
+ * l'`install/lib/installer.php` du jour de son installation. Cette fonction, livrée avec le cœur, ne
+ * s'appuie donc que sur des méthodes présentes depuis la première version publiée (1.1.0).
+ *
+ * Retourne les migrations appliquées ; NULL si une autre requête les applique en ce moment (rien
+ * n'est alors conclu). Un site sans table de suivi — antérieur au runner — n'est pas touché :
+ * rejouer tout l'historique sur une base qui l'a déjà reçu casserait plus qu'il ne répare.
+ *
+ * @return string[]|null
+ */
+function nf_migrations_du_code(string $root): ?array
+{
+	require_once $root.'/install/lib/installer.php';
+
+	$installer = \NF\Install\Lib\Installer::class;
+
+	if (($cfg = $installer::read_db_config($root.'/config')) === NULL || !is_dir($root.'/migrations'))
+	{
+		return [];
+	}
+
+	$db = $installer::connect($cfg);
+
+	try
+	{
+		if (!$installer::table_exists($db, 'nf_migrations'))
+		{
+			return [];
+		}
+
+		// Deux visiteurs arrivent en même temps sur un site qui vient de changer de code : un seul
+		// applique, l'autre passe son tour sans attendre.
+		$verrou = $db->query("SELECT GET_LOCK('nf_migrations', 0)");
+
+		if (!$verrou instanceof \mysqli_result || (int) ($verrou->fetch_row()[0] ?? 0) !== 1)
+		{
+			return NULL;
+		}
+
+		try
+		{
+			return $installer::run_migrations($db, $root.'/migrations')['applied'];
+		}
+		finally
+		{
+			$db->query("SELECT RELEASE_LOCK('nf_migrations')");
+		}
+	}
+	finally
+	{
+		$db->close();
+	}
+}
+

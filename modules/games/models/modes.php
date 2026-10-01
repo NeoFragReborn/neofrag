@@ -30,8 +30,8 @@ class Modes extends Model
 		foreach ($this->db	->select('m.mode_id', 'm.title', 'gl.title as game_title', 'gl2.title as game_title2')
 							->from('nf_games_modes m')
 							->join('nf_games g',        'm.game_id = g.game_id')
-							->join('nf_games_lang gl',  'm.game_id = gl.game_id')
-							->join('nf_games_lang gl2', 'g.parent_id = gl2.game_id')
+							->join_lang('nf_games_lang gl', 'game_id', 'm.game_id')
+							->join_lang('nf_games_lang gl2', 'game_id', 'g.parent_id')
 							->order_by('If(g.parent_id IS NULL, gl.title, CONCAT(gl2.title, gl.title))', 'm.title')
 							->get() as $mode)
 		{

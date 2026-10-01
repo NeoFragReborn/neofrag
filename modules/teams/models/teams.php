@@ -15,15 +15,13 @@ class Teams extends Model
 	{
 		return $this->db->select('t.team_id', 't.name', 'tl.title', 't.image_id', 't.icon_id', 'COUNT(DISTINCT u.id) as users', 't.game_id', 'g.name as game', 'gl.title as game_title', 'g.icon_id as game_icon')
 						->from('nf_teams t')
-						->join('nf_teams_lang tl',  't.team_id  = tl.team_id')
+						->join_lang('nf_teams_lang tl', 'team_id', 't.team_id')
 						// LEFT : ces deux jointures ne servent qu'a COMPTER les joueurs. En stricte, une
 						// equipe sans joueur disparaissait de la liste des equipes.
 						->join('nf_teams_users tu', 't.team_id  = tu.team_id', 'LEFT')
 						->join('nf_user u',         'tu.user_id = u.id AND u.deleted = "0"', 'LEFT')
 						->join('nf_games g',        'g.game_id  = t.game_id')
-						->join('nf_games_lang gl',  'g.game_id  = gl.game_id')
-						->where('tl.lang', $this->config->lang->info()->name)
-						->where('gl.lang', $this->config->lang->info()->name)
+						->join_lang('nf_games_lang gl', 'game_id', 'g.game_id')
 						->group_by('t.team_id')
 						->order_by('t.order', 't.team_id')
 						->get();
@@ -35,8 +33,8 @@ class Teams extends Model
 
 		foreach ($this->db	->select('t.team_id', 'tl.title', 'gl.title as game_title')
 							->from('nf_teams t')
-							->join('nf_teams_lang tl', 't.team_id = tl.team_id')
-							->join('nf_games_lang gl', 't.game_id = gl.game_id')
+							->join_lang('nf_teams_lang tl', 'team_id', 't.team_id')
+							->join_lang('nf_games_lang gl', 'game_id', 't.game_id')
 							->order_by('gl.title', 'tl.title')
 							->get() as $team)
 		{
@@ -50,7 +48,7 @@ class Teams extends Model
 	{
 		$list = [];
 
-		foreach ($this->db->select('g.game_id', 'gl.title')->from('nf_games g')->join('nf_games_lang gl', 'gl.game_id = g.game_id')->where('g.parent_id', NULL)->where('gl.lang', $this->config->lang->info()->name)->get() as $game)
+		foreach ($this->db->select('g.game_id', 'gl.title')->from('nf_games g')->join_lang('nf_games_lang gl', 'game_id', 'g.game_id')->where('g.parent_id', NULL)->get() as $game)
 		{
 			$list[$game['game_id']] = $game['title'];
 		}
@@ -82,13 +80,12 @@ class Teams extends Model
 
 		return $this->db	->select('t.team_id', 't.name', 'tl.title', 't.image_id', 't.icon_id', 'tl.description', 't.game_id', 'gl.title as game', 'g.icon_id as game_icon')
 							->from('nf_teams t')
-							->join('nf_teams_lang tl', 't.team_id = tl.team_id')
+							->join_lang('nf_teams_lang tl', 'team_id', 't.team_id', $lang)
 							->join('nf_games g',       'g.game_id = t.game_id')
-							->join('nf_games_lang gl', 'g.game_id = gl.game_id')
+							->join_lang('nf_games_lang gl', 'game_id', 'g.game_id')
 							->where('t.team_id', $team_id)
 							->where('t.name', $name)
 							// Une équipe décrite dans une seule langue reste consultable dans les autres.
-							->where('tl.lang', $lang)
 							->row();
 	}
 

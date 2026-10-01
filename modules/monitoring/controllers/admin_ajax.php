@@ -406,13 +406,18 @@ class Admin_Ajax extends Controller_Module
 					$this->_flush(3, $n / $total * 100);
 				});
 
+				// Les migrations que la version apporte, DANS le bloc annulable : une migration en
+				// échec ramène les fichiers, au lieu de laisser un code neuf sur une base ancienne.
+				// (index.php les rattrape aussi au premier passage d'un code mis à jour par FTP.)
+				$migrations = nf_migrations_du_code(NEOFRAG_CMS) ?? [];
+
 				// Une mise à jour RÉUSSIE n'est pas une anomalie : elle va au journal d'audit de
 				// l'administration (qui, quand, quelle version), pas au journal d'erreurs, que
 				// check-journal veut muet. Seuls les échecs, plus bas, y écrivent (2026-09-23).
 				(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('core.updated', [
 					'target_type' => 'neofrag',
 					'target_id'   => (string) $version->version,
-					'details'     => ['de' => NEOFRAG_VERSION, 'fichiers' => $applique['written'], 'vestiges' => $applique['removed']],
+					'details'     => ['de' => NEOFRAG_VERSION, 'fichiers' => $applique['written'], 'vestiges' => $applique['removed'], 'migrations' => $migrations],
 				]);
 
 				if (!$this->config->nf_version)
@@ -450,6 +455,7 @@ class Admin_Ajax extends Controller_Module
 
 			$this	->config('nf_update_callback',       $patch_name)
 					->config('nf_version',               version_format($version->version))
+					->config('nf_schema_version',        (string) $version->version)
 					->config('nf_monitoring_last_check', 0);
 		});
 	}

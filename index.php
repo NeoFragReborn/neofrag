@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.2.1');
+define('NEOFRAG_VERSION', '1.2.2');
 
 error_reporting(E_ALL);
 
@@ -219,6 +219,30 @@ foreach ([
 }
 
 define('NEOFRAG_CORE', TRUE);
+
+/*
+ * La base suit le code. Un code neuf — posé par le bouton de mise à jour ou par FTP — applique ici,
+ * UNE fois, les migrations qu'il apporte : jusqu'au 2026-10-01, seule l'installation le faisait. En
+ * temps normal, cela coûte une comparaison avec un réglage déjà en mémoire. Un échec ne casse pas la
+ * page : il est journalisé, et la tentative suivante attend dix minutes.
+ */
+if (($schema = (string) NeoFrag()->config->nf_schema_version) !== NEOFRAG_VERSION
+	&& !(str_starts_with($schema, 'echec:') && time() - (int) substr($schema, 6) < 600)
+	&& is_file(NEOFRAG_CMS.'/install/lib/installer.php'))
+{
+	try
+	{
+		if (nf_migrations_du_code(NEOFRAG_CMS) !== NULL)
+		{
+			NeoFrag()->config('nf_schema_version', NEOFRAG_VERSION);
+		}
+	}
+	catch (\Throwable $e)
+	{
+		NeoFrag()->config('nf_schema_version', 'echec:'.time());
+		error_log('[migrations] '.$e->getMessage());
+	}
+}
 
 // CSP stricte : un nonce par requête, injecté sur TOUS les <script> du HTML final + dans l'en-tête CSP
 // (servie ici, plus dans .htaccess). Permet de retirer 'unsafe-inline' du script-src sans noncer chaque

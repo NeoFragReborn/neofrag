@@ -10,6 +10,31 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.2] — 2026-10-01
+
+### Corrigé
+
+- **Les équipes, jeux, catégories, partenaires et palmarès ne disparaissent plus dans les autres
+  langues.** L'administration n'enregistre un titre que dans la langue où l'on écrit, et ces objets
+  n'existaient que dans celle-là : sur la démonstration, trois équipes en français, aucune en anglais.
+  Le groupe d'une équipe, avec les droits qui en dépendent, disparaissait avec elle. Ils s'affichent
+  désormais dans la langue demandée, sinon en français, sinon dans celle qui existe. Les listes qui
+  rendaient une ligne par traduction (recrutements, matchs, fil d'activité de l'administration) n'en
+  rendent plus qu'une. Les listes de contenus (actualités, articles, pages) restent dans la langue
+  demandée.
+- **Une mise à jour applique enfin les changements de la base de données.** Jusqu'ici, seule
+  l'installation les appliquait : un site mis à jour gardait sa base ancienne sous un code neuf. Par le
+  bouton, ils s'appliquent pendant la mise à jour, qui est annulée s'ils échouent. Par FTP, ils
+  s'appliquent à la première page servie par le nouveau code.
+- **Connexion par Discord** : un avatar animé (102 caractères) ne tenait pas dans sa colonne, et la
+  connexion échouait. Un membre sans avatar recevait une image cassée.
+
+### Modifié
+
+- **L'envoi des e-mails passe à PHPMailer 7** (7.1.1). Sa seule rupture concerne les classes qui en
+  héritent, et NeoFrag n'en a pas. Éprouvé par un envoi réel avec les réglages d'un site,
+  en SMTP comme par `mail()`.
+
 ## [1.2.1] — 2026-10-01
 
 ### Sécurité

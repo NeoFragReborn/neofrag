@@ -43,7 +43,9 @@ class Authenticator_Discord extends Authenticator
 				return [
 					'id'       => $data->id,
 					'username' => $data->username,
-					'avatar'   => 'https://cdn.discordapp.com/avatars/'.$data->id.'/'.$data->avatar.'.png?size=512'
+					// Un membre Discord sans avatar n'a pas d'empreinte : l'adresse construite quand même
+					// (`…/<id>/.png`) donnait une image cassée. Sans avatar, on n'en enregistre aucun.
+					'avatar'   => !empty($data->avatar) ? 'https://cdn.discordapp.com/avatars/'.$data->id.'/'.$data->avatar.'.png?size=512' : NULL
 				];
 			};
 		}

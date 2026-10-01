@@ -54,9 +54,8 @@ class Gallery extends Model
 	{
 		return $this->db->select('c.category_id', 'c.image_id', 'c.icon_id', 'c.name', 'cl.title', 'COUNT(g.gallery_id) as nb_gallery')
 						->from('nf_gallery_categories c')
-						->join('nf_gallery_categories_lang cl', 'c.category_id = cl.category_id')
+						->join_lang('nf_gallery_categories_lang cl', 'category_id', 'c.category_id')
 						->join('nf_gallery g', 'c.category_id = g.category_id')
-						->where('cl.lang', $this->config->lang->info()->name)
 						->group_by('c.category_id')
 						->order_by('cl.title')
 						->get();
