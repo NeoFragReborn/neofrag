@@ -36,7 +36,7 @@ return [
         'gamification' => ['nf_user_points', 'nf_karma', 'nf_points_log', 'nf_vip'],
 
         // ── Tier 2 — À la carte ──────────────────────────────────────────────
-        'articles'     => ['nf_articles', 'nf_articles_lang', 'nf_articles_categories', 'nf_articles_categories_lang'],
+        'articles'     => ['nf_articles', 'nf_articles_lang', 'nf_articles_categories', 'nf_articles_categories_lang', 'nf_articles_series', 'nf_articles_series_lang'],
         'wiki'         => ['nf_wiki_pages', 'nf_wiki_revisions'],
         'faq'          => ['nf_faq_categories', 'nf_faq_questions'],
         'quotes'       => ['nf_quotes_categories', 'nf_quotes'],

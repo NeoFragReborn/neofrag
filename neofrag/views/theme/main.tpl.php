@@ -73,8 +73,17 @@ $nf_origin    = ($this->url->https ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST
 $nf_langue_page = (string) ($this->output->data->get('module', 'langue_servie') ?: $this->config->lang->info()->name);
 $nf_canonical = $nf_origin.$this->url->base.implode('/', array_merge([$nf_langue_page], $this->url->segments));
 $nf_seo_desc  = trim((string)($description ?? $this->config->nf_description));
-$nf_og_image  = '';
-if ($this->config->nf_logo && ($nf_img = NeoFrag()->model2('file', $this->config->nf_logo)->path())) {
+/*
+ * Une page de contenu peut fournir son image de partage, son type et ses données structurées
+ * (`module.og_image`, `module.og_type`, `module.jsonld`) : un billet du Blog partagé montre sa
+ * couverture, et non le logo du site (2026-10-01). À défaut, le logo puis le favicon.
+ */
+$nf_og_type   = (string) ($this->output->data->get('module', 'og_type') ?: 'website');
+$nf_jsonld    = $this->output->data->get('module', 'jsonld');
+$nf_og_image  = (string) ($this->output->data->get('module', 'og_image') ?: '');
+if ($nf_og_image) {
+	// Fournie par la page.
+} else if ($this->config->nf_logo && ($nf_img = NeoFrag()->model2('file', $this->config->nf_logo)->path())) {
 	$nf_og_image = $nf_img;
 } else if ($this->config->nf_favicon && ($nf_fav = NeoFrag()->model2('file', $this->config->nf_favicon)->path())) {
 	$nf_og_image = $nf_fav;
@@ -87,7 +96,10 @@ if ($nf_og_image && strpos($nf_og_image, '://') === FALSE) {
 <meta name="description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES) ?>">
 <?php endif ?>
 <link rel="canonical" href="<?php echo htmlspecialchars($nf_canonical, ENT_QUOTES) ?>">
-<meta property="og:type" content="website">
+<meta property="og:type" content="<?php echo htmlspecialchars($nf_og_type, ENT_QUOTES) ?>">
+<?php if (is_array($nf_jsonld) && $nf_jsonld): ?>
+<script type="application/ld+json"><?php echo json_encode($nf_jsonld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
+<?php endif ?>
 <meta property="og:site_name" content="<?php echo htmlspecialchars((string)$this->config->nf_name, ENT_QUOTES) ?>">
 <meta property="og:title" content="<?php echo htmlspecialchars((string)$title, ENT_QUOTES) ?>">
 <?php if ($nf_seo_desc): ?>

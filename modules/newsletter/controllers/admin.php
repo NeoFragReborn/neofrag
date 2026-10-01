@@ -249,9 +249,8 @@ class Admin extends Controller_Module
 	{
 		$this->check_csrf('admin/newsletter/subscribers');
 
-		NeoFrag()->db	->from('nf_newsletter_subscribers')
-						->where('id', $id)
-						->delete();
+		NeoFrag()->db	->where('id', $id)
+						->delete('nf_newsletter_subscribers');
 
 		notify($this->lang('Abonné supprimé.'));
 		redirect('admin/newsletter/subscribers');

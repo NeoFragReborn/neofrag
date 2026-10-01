@@ -120,9 +120,8 @@ class Index extends Controller_Module
 	{
 		$this->title($this->lang('Désinscription'))->icon('far fa-envelope')->breadcrumb();
 
-		NeoFrag()->db	->from('nf_newsletter_subscribers')
-						->where('id', $sub['id'])
-						->delete();
+		NeoFrag()->db	->where('id', $sub['id'])
+						->delete('nf_newsletter_subscribers');
 
 		$body = '<div class="alert alert-success">'
 			.'<i class="fas fa-check-circle"></i> '.$this->lang('Tu as bien été désinscrit de la newsletter. <strong>%s</strong> ne recevra plus de newsletters.', htmlspecialchars((string) ($sub['email'])))

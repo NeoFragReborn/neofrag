@@ -489,7 +489,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property NF\\Modules\\Articles\\Controllers\\Checker\:\:\$module\.$#'
 			identifier: property.notFound
-			count: 3
+			count: 1
 			path: modules/articles/controllers/checker.php
 
 		-
@@ -539,24 +539,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: modules/articles/models/articles.php
-
-		-
-			message: '#^Variable \$article might not be defined\.$#'
-			identifier: variable.undefined
-			count: 14
-			path: modules/articles/views/article.tpl.php
-
-		-
-			message: '#^Variable \$content might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: modules/articles/views/article.tpl.php
-
-		-
-			message: '#^Variable \$read_time might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: modules/articles/views/article.tpl.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:add_awards\(\)\.$#'

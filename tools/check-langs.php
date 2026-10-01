@@ -456,6 +456,7 @@ foreach ($domaines as $nom => $dossier)
  */
 const IDENTIQUES_PERMIS = [
     'it:palmarès', 'it:%d palmarès|%d palmarès',
+    'pt:Série', 'pt:Séries',
 ];
 
 foreach ($domaines as $nom => $dossier)

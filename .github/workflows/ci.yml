@@ -170,6 +170,11 @@ jobs:
       # avertissement, le douzieme (`partners`) employait la sienne comme DIVISEUR et plantait.
       - name: Garde réglages de widget (lus ↔ avec valeur de repli)
         run: php tools/check-widget-reglages.php
+      # Db::delete() exige sa table. L'ecriture heritee `->from('t')->…->delete()` levait une
+      # ArgumentCountError : la desinscription de la newsletter, la suppression de son compte et la
+      # desactivation de la double authentification tombaient sans rien supprimer (2026-10-01).
+      - name: Garde suppressions par le constructeur de requêtes (la table est nommée)
+        run: php tools/check-db-delete.php
       # Le site de démonstration ouvre son administration aux visiteurs. Ce qu'ils peuvent modifier
       # doit être exactement ce que la remise à zéro sait défaire — sans quoi la démo se dégrade
       # définitivement, une visite après l'autre.

@@ -10,6 +10,32 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.8] — 2026-10-01
+
+### Ajouté
+
+- **Blog : les séries.** Un billet en plusieurs parties : chaque partie affiche la liste des autres et
+  sa place (« Partie 2 sur 3 »), et la série a sa page. Les séries se gèrent dans l'administration du
+  Blog, à côté d'une nouvelle page qui liste enfin les catégories.
+- **Blog : une page par auteur** (ses billets) et **des archives par mois** cliquables.
+- **Blog : le partage montre la couverture.** Un billet partagé sur un réseau social affiche sa
+  couverture et non le logo du site ; les moteurs de recherche reçoivent ses données structurées
+  (titre, auteur, date, image).
+- **Six widgets Blog** : les derniers billets avec leur vignette, les plus lus, le billet à la une, les
+  catégories, les tags et les archives.
+
+### Corrigé
+
+- **Forum : la liste des forums disparaissait pour les membres connectés** dès qu'un forum n'avait
+  de sujets que dans ses sous-forums. Les visiteurs n'étaient pas touchés.
+- **La désinscription de la newsletter ne désinscrivait personne** : la page de désinscription tombait
+  en erreur. La suppression d'un abonné dans l'administration aussi.
+- **Supprimer son compte** marquait le compte supprimé, puis tombait en erreur avant de fermer ses
+  sessions et d'effacer ses codes de secours.
+- **Désactiver la double authentification** laissait les anciens codes de secours en base.
+- **Blog : une catégorie vide ne pouvait pas être supprimée** — le Blog la croyait toujours occupée —, et
+  sa suppression ne demandait pas de confirmation protégée.
+
 ## [1.2.7] — 2026-10-01
 
 ### Corrigé

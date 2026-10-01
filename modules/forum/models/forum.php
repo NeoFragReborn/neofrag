@@ -998,7 +998,14 @@ class Forum extends Model
 
 	public function _has_unread($forum)
 	{
-		if (!$forum['count_topics'] || !$this->user())
+		/*
+		 * Sans message à lui, un forum n'a rien de non lu. Ses compteurs peuvent pourtant ajouter ceux
+		 * de ses sous-forums : « Annonces de l'équipe », qui n'a de sujets que dans son sous-forum
+		 * « Changelog », arrivait ici sans date de dernier message, et `strtotime(NULL)` faisait tomber
+		 * la liste du forum pour tout membre connecté (2026-10-01). Le non-lu d'un sous-forum remonte
+		 * à son parent dans `get_forums()`.
+		 */
+		if (!$forum['count_topics'] || empty($forum['last_message_date']) || !$this->user())
 		{
 			return FALSE;
 		}

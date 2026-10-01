@@ -188,8 +188,8 @@ class Index extends Controller_Module
 				$this->user->update();
 
 				// Cleanup données liées
-				$this->db->from('nf_session')->where('user_id', $user_id)->delete();
-				$this->db->from('nf_user_totp_recovery')->where('user_id', $user_id)->delete();
+				$this->db->where('user_id', $user_id)->delete('nf_session');
+				$this->db->where('user_id', $user_id)->delete('nf_user_totp_recovery');
 
 				(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('user.account_deleted', ['user_id' => $user_id, 'username' => $username]);
 
@@ -349,9 +349,8 @@ class Index extends Controller_Module
 							->set('totp_enabled', 0)
 							->update();
 
-				$this->db	->from('nf_user_totp_recovery')
-							->where('user_id', $this->user->id)
-							->delete();
+				$this->db	->where('user_id', $this->user->id)
+							->delete('nf_user_totp_recovery');
 
 				(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('totp.disabled');
 
