@@ -462,11 +462,15 @@ function seed_forum(mysqli $db, array $users): void
             $count++;
         }
 
-        $db->query("UPDATE nf_forum_topics SET message_id = $first_id, last_message_id = $last_id, count_messages = $count WHERE topic_id = $tid");
+        // `count_messages` compte les RÉPONSES, comme le module : un sujet neuf part de 0 et chaque
+        // réponse ajoute 1, au sujet comme au forum. Le premier message n'en est pas une — le compter
+        // affichait « 4 réponses » dans la liste pour un sujet qui en a 3.
+        $reponses = $count - 1;
+        $db->query("UPDATE nf_forum_topics SET message_id = $first_id, last_message_id = $last_id, count_messages = $reponses WHERE topic_id = $tid");
 
         $forum_stats[$fid] ??= ['topics' => 0, 'messages' => 0, 'last' => 0];
         $forum_stats[$fid]['topics']++;
-        $forum_stats[$fid]['messages'] += $count;
+        $forum_stats[$fid]['messages'] += $reponses;
         $forum_stats[$fid]['last'] = $last_id;
         $t++;
     }

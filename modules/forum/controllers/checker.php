@@ -30,8 +30,9 @@ class Checker extends Module_Checker
 				else
 				{
 					$announces = $messages = [];
+					$prefixe   = max(0, (int) ($_GET['prefixe'] ?? 0));
 
-					foreach ($this->model()->get_topics($forum_id) as $topic)
+					foreach ($this->model()->get_topics($forum_id, $prefixe) as $topic)
 					{
 						if ($topic['announce'])
 						{
@@ -49,7 +50,8 @@ class Checker extends Module_Checker
 						$forum['category_id'],
 						$forum['subforums'] ? $this->model()->get_forums($forum_id) : [],
 						$announces,
-						$this->module->pagination->fix_items_per_page($this->config->forum_topics_per_page)->get_data($messages, $page)
+						$this->module->pagination->fix_items_per_page($this->config->forum_topics_per_page)->get_data($messages, $page),
+						$prefixe
 					];
 				}
 			}
@@ -93,13 +95,35 @@ class Checker extends Module_Checker
 					$topic['announce'],
 					$topic['locked'],
 					array_shift($messages),
-					$this->module->pagination->fix_items_per_page($this->config->forum_messages_per_page)->get_data($messages, $page)
+					$this->module->pagination->fix_items_per_page($this->config->forum_messages_per_page)->get_data($messages, $page),
+					(int) $topic['prefix_id'],
+					(int) $topic['solution_message_id'],
+					(int) $topic['topic_user_id']
 				];
 			}
 			else
 			{
 				$this->error->unauthorized();
 			}
+		}
+	}
+
+	/**
+	 * Marquer — ou retirer — la réponse qui résout un sujet : son auteur, ou un modérateur de la
+	 * catégorie. La première réponse d'un sujet est la question, elle ne peut pas être sa solution.
+	 */
+	public function _solution($message_id, $title)
+	{
+		if (($message = $this->_modele_forum()->check_message($message_id, $title)) && empty($message['is_topic']))
+		{
+			$auteur = (int) $this->db->select('m.user_id')->from('nf_forum_topics t')->join('nf_forum_messages m', 'm.message_id = t.message_id')->where('t.topic_id', $message['topic_id'])->row();
+
+			if (($this->user() && $auteur === (int) $this->user->id) || $this->access('forum', 'category_modify', $message['category_id']))
+			{
+				return [$message];
+			}
+
+			$this->error->unauthorized();
 		}
 	}
 
@@ -234,5 +258,18 @@ class Checker extends Module_Checker
 				$this->error->unauthorized();
 			}
 		}
+	}
+
+	/** Le modèle du forum, typé : pour l'analyse statique, `$this->model()` rend un modèle générique. */
+	private function _modele_forum(): \NF\Modules\Forum\Models\Forum
+	{
+		$modele = $this->model('forum');
+
+		if (!$modele instanceof \NF\Modules\Forum\Models\Forum)
+		{
+			throw new \LogicException('modèle du forum introuvable');
+		}
+
+		return $modele;
 	}
 }

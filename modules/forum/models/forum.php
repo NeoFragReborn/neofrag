@@ -42,9 +42,11 @@ class Forum extends Model
 	/** Les traductions d'un forum ou d'une catégorie : [lang => ['title' => …, 'description' => …]]. */
 	public function traductions(string $type, int $id): array
 	{
-		[$table, $cle, $colonnes] = $type === 'category'
-			? ['nf_forum_categories_lang', 'category_id', ['lang', 'title']]
-			: ['nf_forum_lang', 'forum_id', ['lang', 'title', 'description']];
+		[$table, $cle, $colonnes] = match ($type) {
+			'category' => ['nf_forum_categories_lang', 'category_id', ['lang', 'title']],
+			'prefix'   => ['nf_forum_prefixes_lang', 'prefix_id', ['lang', 'title']],
+			default    => ['nf_forum_lang', 'forum_id', ['lang', 'title', 'description']],
+		};
 
 		$traductions = [];
 
@@ -59,7 +61,11 @@ class Forum extends Model
 	/** Enregistre les traductions saisies : un champ vide retire la traduction de cette langue. */
 	public function enregistrer_traductions(string $type, int $id, array $saisies): void
 	{
-		[$table, $cle] = $type === 'category' ? ['nf_forum_categories_lang', 'category_id'] : ['nf_forum_lang', 'forum_id'];
+		[$table, $cle] = match ($type) {
+			'category' => ['nf_forum_categories_lang', 'category_id'],
+			'prefix'   => ['nf_forum_prefixes_lang', 'prefix_id'],
+			default    => ['nf_forum_lang', 'forum_id'],
+		};
 
 		foreach ($saisies as $langue => $valeurs)
 		{
@@ -75,9 +81,110 @@ class Forum extends Model
 
 			if ($titre !== '' || $description !== '')
 			{
-				$this->db->insert($table, array_merge([$cle => $id, 'lang' => $langue, 'title' => $titre], $type === 'category' ? [] : ['description' => $description]));
+				$this->db->insert($table, array_merge([$cle => $id, 'lang' => $langue, 'title' => $titre], $type === 'forum' ? ['description' => $description] : []));
 			}
 		}
+	}
+
+	/*
+	 * Les préfixes d'un sujet (2026-10-01) : « Question », « Tutoriel », « Important »… Une
+	 * liste commune au forum, réglée en administration, chaque préfixe avec sa couleur et ses
+	 * traductions. L'auteur d'un sujet ou un modérateur le pose ; la liste d'un forum se filtre dessus.
+	 * Les étiquettes des salons Forum de Discord s'y relieront.
+	 */
+
+	/** L'expression SQL du titre d'un préfixe, dans la langue affichée. */
+	public function titre_prefixe(string $alias): string
+	{
+		return 'COALESCE((SELECT NULLIF(tp.title, "") FROM nf_forum_prefixes_lang tp WHERE tp.prefix_id = '.$alias.'.prefix_id AND tp.lang = "'.$this->_langue_forum().'"), '.$alias.'.title)';
+	}
+
+	/** @return array<int, array{prefix_id: int, title: string, color: string, order: int}> */
+	public function prefixes(): array
+	{
+		$prefixes = [];
+
+		foreach ($this->db->select('p.prefix_id', $this->titre_prefixe('p').' AS title', 'p.color', 'p.order')->from('nf_forum_prefixes p')->order_by('p.order', 'p.prefix_id')->get() as $p)
+		{
+			$prefixes[(int) $p['prefix_id']] = ['prefix_id' => (int) $p['prefix_id'], 'title' => (string) $p['title'], 'color' => (string) $p['color'], 'order' => (int) $p['order']];
+		}
+
+		return $prefixes;
+	}
+
+	/** La pastille d'un préfixe, ou une chaîne vide. */
+	public static function pastille_prefixe(?array $prefixe): string
+	{
+		if (!$prefixe)
+		{
+			return '';
+		}
+
+		return '<span class="forum-prefixe badge '.badge_class((string) $prefixe['color']).'">'.htmlspecialchars((string) $prefixe['title']).'</span>';
+	}
+
+	public function add_prefix(string $title, string $color, int $order): int
+	{
+		return (int) $this->db->insert('nf_forum_prefixes', ['title' => $title, 'color' => $color, 'order' => $order]);
+	}
+
+	public function edit_prefix(int $prefix_id, string $title, string $color, int $order): void
+	{
+		$this->db->where('prefix_id', $prefix_id)->update('nf_forum_prefixes', ['title' => $title, 'color' => $color, 'order' => $order]);
+	}
+
+	/** Supprime un préfixe : les sujets qui le portaient n'en ont plus, ils ne disparaissent pas. */
+	public function delete_prefix(int $prefix_id): void
+	{
+		$this->db->where('prefix_id', $prefix_id)->update('nf_forum_topics', ['prefix_id' => NULL]);
+		$this->db->where('prefix_id', $prefix_id)->delete('nf_forum_prefixes');
+	}
+
+	/** Le préfixe d'un sujet : un identifiant inconnu vaut « aucun ». */
+	public function set_prefix(int $topic_id, ?int $prefix_id): void
+	{
+		if ($prefix_id && !isset($this->prefixes()[$prefix_id]))
+		{
+			$prefix_id = NULL;
+		}
+
+		$this->db->where('topic_id', $topic_id)->update('nf_forum_topics', ['prefix_id' => $prefix_id ?: NULL]);
+	}
+
+	/**
+	 * La réponse qui résout un sujet, ou NULL pour la retirer. Elle doit être une RÉPONSE de ce sujet,
+	 * encore là : ni le premier message (la question), ni un message supprimé.
+	 */
+	public function set_solution(int $topic_id, ?int $message_id): bool
+	{
+		if ($message_id)
+		{
+			$valide = $this->db	->select('m.message_id')
+								->from('nf_forum_messages m')
+								->where('m.message_id', $message_id)
+								->where('m.topic_id', $topic_id)
+								->where('m.deleted_at', NULL)
+								->row();
+
+			if (!$valide || (int) $this->db->select('message_id')->from('nf_forum_topics')->where('topic_id', $topic_id)->row() === $message_id)
+			{
+				return FALSE;
+			}
+		}
+
+		$this->db->where('topic_id', $topic_id)->update('nf_forum_topics', ['solution_message_id' => $message_id ?: NULL]);
+
+		return TRUE;
+	}
+
+	/**
+	 * La solution d'un sujet telle qu'on l'affiche : la réponse marquée, si elle est encore là et
+	 * encore dans ce sujet. Une réponse supprimée, mise à la corbeille ou déplacée par une scission
+	 * ne laisse pas un sujet « Résolu » ; restaurée, elle redevient la solution sans rien resynchroniser.
+	 */
+	public function solution_vivante(string $alias): string
+	{
+		return '(SELECT s.message_id FROM nf_forum_messages s WHERE s.message_id = '.$alias.'.solution_message_id AND s.topic_id = '.$alias.'.topic_id AND s.deleted_at IS NULL)';
 	}
 
 	/** Une adresse reste valable avec le titre par défaut ET avec chacune de ses traductions. */
@@ -247,6 +354,7 @@ class Forum extends Model
 										'f.parent_id',
 										$this->titre_forum('f').' AS title',
 										$this->titre_forum('f', 'description').' AS description',
+										'f.icon AS icon_class',
 										!$forum_id ? 'f.count_messages + SUM(IFNULL(f2.count_messages, 0)) as count_messages' : 'f.count_messages',
 										!$forum_id ? 'f.count_topics   + SUM(IFNULL(f2.count_topics, 0))   as count_topics'   : 'f.count_topics',
 										'f.last_message_id',
@@ -299,15 +407,25 @@ class Forum extends Model
 				$forum['subforums'] = [];
 			}
 
-			$forum['icon']       = icon(($forum['url'] ? 'fas fa-globe' : ($forum['has_unread'] ? 'fas fa-comments' : 'far fa-comments')).($mini ? '' : ' fa-2x'));
+			// L'icône choisie en administration, sinon celle d'origine ; un forum non lu se distingue
+			// par la couleur d'accent (classe `forum-non-lu`), quelle que soit l'icône.
+			$classe              = $forum['url'] ? 'fas fa-globe' : (!empty($forum['icon_class']) ? (string) $forum['icon_class'] : ($forum['has_unread'] ? 'fas fa-comments' : 'far fa-comments'));
+			$forum['icon']       = '<span class="forum-icone'.($forum['has_unread'] ? ' forum-non-lu' : '').'">'.icon($classe.($mini ? '' : ' fa-2x')).'</span>';
 		}
 
 		return $forums;
 	}
 
-	public function get_topics($forum_id)
+	public function get_topics($forum_id, int $prefixe = 0)
 	{
+		if ($prefixe)
+		{
+			$this->db->where('t.prefix_id', $prefixe);
+		}
+
 		$topics = $this->db->select('t.topic_id',
+									't.prefix_id',
+									$this->solution_vivante('t').' AS solution_message_id',
 									't.title',
 									't.views',
 									't.count_messages',
@@ -371,7 +489,9 @@ class Forum extends Model
 			$i++;
 		}
 
-		if ($count_read == $i)
+		// Une liste FILTRÉE par préfixe ne montre pas tous les sujets : elle ne peut pas conclure que
+		// tout le forum est lu.
+		if ($count_read == $i && !$prefixe)
 		{
 			$this->mark_all_as_read($forum_id);
 		}
@@ -482,10 +602,11 @@ class Forum extends Model
 
 	public function check_topic($topic_id, &$title)
 	{
-		$topic = $this->db	->select('t.title as topic_title', 't.forum_id', $this->titre_forum('f').' AS title', 'IFNULL(f2.parent_id, f.parent_id) as category_id', 't.views', 't.status IN ("-2", "1") as announce', 't.status IN ("-2", "-1") as locked')
+		$topic = $this->db	->select('t.title as topic_title', 't.forum_id', 't.message_id AS first_message_id', 't.prefix_id', $this->solution_vivante('t').' AS solution_message_id', 'mt.user_id AS topic_user_id', $this->titre_forum('f').' AS title', 'IFNULL(f2.parent_id, f.parent_id) as category_id', 't.views', 't.status IN ("-2", "1") as announce', 't.status IN ("-2", "-1") as locked')
 							->from('nf_forum_topics t')
 							->join('nf_forum        f',  't.forum_id  = f.forum_id')
 							->join('nf_forum        f2', 'f2.forum_id = f.parent_id AND f.is_subforum = "1"')
+							->join('nf_forum_messages mt', 'mt.message_id = t.message_id')
 							->where('t.topic_id', $topic_id)
 							->row();
 

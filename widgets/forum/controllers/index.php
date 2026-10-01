@@ -13,7 +13,7 @@ class Index extends Controller_Widget
 {
 	public function index($config = [])
 	{
-		$messages = $this->model()->get_last_messages();
+		$messages = $this->_modele()->get_last_messages();
 
 		if (!empty($messages))
 		{
@@ -34,7 +34,7 @@ class Index extends Controller_Widget
 
 	public function topics($config = [])
 	{
-		$topics = $this->model()->get_last_topics();
+		$topics = $this->_modele()->get_last_topics();
 
 		if (!empty($topics))
 		{
@@ -55,13 +55,17 @@ class Index extends Controller_Widget
 
 	public function statistics($config = [])
 	{
+		// Les forums que le visiteur peut lire seulement : une catégorie réservée à
+		// l'équipe ne gonfle pas les chiffres affichés en public.
+		$chiffres = $this->_modele()->statistiques_publiques();
+
 		return $this->panel()
 					->heading($this->lang('Statistiques'), 'fas fa-signal')
 					->body($this->view('statistics', [
-						'topics'    => $topics = $this->db->select('COUNT(topic_id)')->from('nf_forum_topics')->row(),
-						'messages'  => $this->db->select('COUNT(message_id)')->from('nf_forum_messages')->row() - $topics,
-						'announces' => $this->db->select('COUNT(topic_id)')->from('nf_forum_topics')->where('status', ['-2', '1'])->row(),
-						'users'     => $this->db->select('COUNT(DISTINCT user_id)')->from('nf_forum_messages')->row()
+						'topics'    => $chiffres['sujets'],
+						'messages'  => $chiffres['reponses'],
+						'announces' => $chiffres['annonces'],
+						'users'     => $chiffres['membres']
 					]), FALSE);
 	}
 
@@ -79,5 +83,18 @@ class Index extends Controller_Widget
 						'users'    => $users,
 						'visitors' => $this->db->from('nf_session')->where('user_id', NULL)->where('last_activity > DATE_SUB(NOW(), INTERVAL 5 MINUTE)')->count()
 					]));
+	}
+
+	/** Le modèle du widget, typé : pour l'analyse statique, `$this->model()` rend un modèle générique. */
+	private function _modele(): \NF\Widgets\Forum\Models\Forum
+	{
+		$modele = $this->model('forum');
+
+		if (!$modele instanceof \NF\Widgets\Forum\Models\Forum)
+		{
+			throw new \LogicException('modèle du widget forum introuvable');
+		}
+
+		return $modele;
 	}
 }

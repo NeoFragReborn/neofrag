@@ -10,6 +10,25 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.6] — 2026-10-01
+
+### Ajouté
+
+- **Forum : la réponse « solution ».** L'auteur d'un sujet (ou un modérateur) marque la réponse qui
+  le résout. Elle est mise en avant sous la question, signalée dans le fil, et le sujet s'affiche
+  « Résolu » dans la liste. Une solution supprimée ou déplacée ne laisse pas le sujet résolu.
+- **Forum : les préfixes de sujet** (« Question », « Tutoriel », « Important »…), créés par
+  l'administrateur avec leur couleur et traduits dans chaque langue. Le membre en choisit un en
+  ouvrant son sujet, et la liste d'un forum se filtre dessus.
+- **Forum : une icône par forum**, choisie dans l'administration.
+
+### Corrigé
+
+- **Le widget « Statistiques » du forum** comptait aussi les catégories que le visiteur ne peut pas
+  lire, et les messages supprimés : il ne compte plus que ce que le visiteur peut aller voir.
+- **Les données de démonstration du forum** comptaient le premier message comme une réponse (« 4
+  réponses » dans la liste pour un sujet qui en a 3).
+
 ## [1.2.5] — 2026-10-01
 
 ### Ajouté

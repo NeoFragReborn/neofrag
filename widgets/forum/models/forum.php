@@ -42,6 +42,29 @@ class Forum extends Model
 						->get();
 	}
 
+	/**
+	 * Les chiffres du forum que le visiteur peut lire (2026-10-01) : sujets, réponses
+	 * encore en ligne, annonces, membres qui y ont écrit — pour le widget « Statistiques » comme pour
+	 * l'accueil de la vitrine. Une catégorie réservée à l'équipe n'y entre pas — en
+	 * public, on n'annonce que ce que le visiteur peut aller voir.
+	 *
+	 * @return array{sujets: int, reponses: int, annonces: int, membres: int}
+	 */
+	public function statistiques_publiques(): array
+	{
+		if (!$forums = $this->_get_forum())
+		{
+			return ['sujets' => 0, 'reponses' => 0, 'annonces' => 0, 'membres' => 0];
+		}
+
+		$sujets   = (int) $this->db->select('COUNT(*)')->from('nf_forum_topics')->where('forum_id', $forums)->row();
+		$annonces = (int) $this->db->select('COUNT(*)')->from('nf_forum_topics')->where('forum_id', $forums)->where('status', ['-2', '1'])->row();
+		$messages = (int) $this->db->select('COUNT(*)')->from('nf_forum_messages m')->join('nf_forum_topics t', 't.topic_id = m.topic_id', 'INNER')->where('t.forum_id', $forums)->where('m.deleted_at', NULL)->row();
+		$membres  = (int) $this->db->select('COUNT(DISTINCT m.user_id)')->from('nf_forum_messages m')->join('nf_forum_topics t', 't.topic_id = m.topic_id', 'INNER')->where('t.forum_id', $forums)->where('m.deleted_at', NULL)->row();
+
+		return ['sujets' => $sujets, 'reponses' => max(0, $messages - $sujets), 'annonces' => $annonces, 'membres' => $membres];
+	}
+
 	public function _get_forum()
 	{
 		$categories = [];

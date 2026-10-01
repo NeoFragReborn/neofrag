@@ -24,7 +24,7 @@ return [
     'modules' => [
         // ── Tier 1 — Identité ────────────────────────────────────────────────
         'news'         => ['nf_news', 'nf_news_lang', 'nf_news_categories', 'nf_news_categories_lang'],
-        'forum'        => ['nf_forum', 'nf_forum_lang', 'nf_forum_categories', 'nf_forum_categories_lang', 'nf_forum_topics', 'nf_forum_messages', 'nf_forum_attachments', 'nf_forum_mentions', 'nf_forum_read', 'nf_forum_topics_read', 'nf_forum_track', 'nf_forum_url'],
+        'forum'        => ['nf_forum', 'nf_forum_lang', 'nf_forum_categories', 'nf_forum_categories_lang', 'nf_forum_prefixes', 'nf_forum_prefixes_lang', 'nf_forum_topics', 'nf_forum_messages', 'nf_forum_attachments', 'nf_forum_mentions', 'nf_forum_read', 'nf_forum_topics_read', 'nf_forum_track', 'nf_forum_url'],
         'gallery'      => ['nf_gallery', 'nf_gallery_lang', 'nf_gallery_categories', 'nf_gallery_categories_lang', 'nf_gallery_images'],
         'teams'        => ['nf_teams', 'nf_teams_lang', 'nf_teams_roles', 'nf_teams_users'],
         'events'       => ['nf_events', 'nf_events_types', 'nf_events_participants', 'nf_events_matches', 'nf_events_matches_opponents', 'nf_events_matches_rounds'],

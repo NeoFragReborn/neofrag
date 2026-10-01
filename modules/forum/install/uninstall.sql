@@ -13,6 +13,8 @@ DROP TABLE IF EXISTS `nf_forum_mentions`;
 DROP TABLE IF EXISTS `nf_forum_attachments`;
 DROP TABLE IF EXISTS `nf_forum_messages`;
 DROP TABLE IF EXISTS `nf_forum_topics`;
+DROP TABLE IF EXISTS `nf_forum_prefixes_lang`;
+DROP TABLE IF EXISTS `nf_forum_prefixes`;
 DROP TABLE IF EXISTS `nf_forum_categories_lang`;
 DROP TABLE IF EXISTS `nf_forum_categories`;
 DROP TABLE IF EXISTS `nf_forum_lang`;

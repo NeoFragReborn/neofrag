@@ -14,7 +14,7 @@
 			<?php endif ?>
 			<?php echo icon('far fa-eye').' '.$this->lang('%d vue|%d vues', $views, $views) ?>
 		</div>
-		<h5 class="m-0"><?php echo icon('far fa-file-alt').' '.$title ?></h5>
+		<h5 class="m-0"><?php echo icon('far fa-file-alt').' '.\NF\Modules\Forum\Models\Forum::pastille_prefixe($prefixe ?? NULL).' '.$title ?></h5>
 	</div>
 	<div class="forum-thread-body">
 		<div class="forum-message-row">
@@ -33,6 +33,13 @@
 				<hr />
 				<?php echo $this->output->module()->render_mentions($this->output->module()->forum_render($message)) ?>
 				<?php echo $this->output->module()->render_attachments($message_id) ?>
+				<?php if (!empty($solution)): ?>
+				<a class="forum-solution-encart" href="#<?php echo (int) $solution['message_id'] ?>">
+					<strong><?php echo icon('fas fa-check-circle').' '.$this->lang('Résolu') ?></strong>
+					<span><?php echo $this->lang('La réponse de %s résout ce sujet.', htmlspecialchars((string) ($this->db->select('username')->from('nf_user')->where('id', (int) $solution['user_id'])->row() ?: $this->lang('Visiteur')))) ?></span>
+					<em><?php echo htmlspecialchars(mb_strimwidth(trim(preg_replace('/\s+/', ' ', strip_tags(str_replace(['<br>', '<br/>', '<br />'], ' ', (string) $solution['message'])))), 0, 160, '…')) ?></em>
+				</a>
+				<?php endif ?>
 				<?php if (!empty($profile['signature'])): ?>
 				<hr />
 				<?php echo bbcode($profile['signature']) ?>

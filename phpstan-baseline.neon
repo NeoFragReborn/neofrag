@@ -2629,12 +2629,6 @@ parameters:
 			path: modules/forum/views/messages.tpl.php
 
 		-
-			message: '#^Variable \$title might not be defined\.$#'
-			identifier: variable.undefined
-			count: 4
-			path: modules/forum/views/messages.tpl.php
-
-		-
 			message: '#^Variable \$topic_id might not be defined\.$#'
 			identifier: variable.undefined
 			count: 2
@@ -2656,12 +2650,6 @@ parameters:
 			message: '#^Variable \$category_id might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
-			path: modules/forum/views/new.tpl.php
-
-		-
-			message: '#^Variable \$form_id might not be defined\.$#'
-			identifier: variable.undefined
-			count: 3
 			path: modules/forum/views/new.tpl.php
 
 		-
@@ -9341,24 +9329,6 @@ parameters:
 			identifier: variable.undefined
 			count: 1
 			path: widgets/events/views/upcoming.tpl.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_last_messages\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: widgets/forum/controllers/index.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_last_topics\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: widgets/forum/controllers/index.php
-
-		-
-			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
-			identifier: arguments.count
-			count: 2
-			path: widgets/forum/controllers/index.php
 
 		-
 			message: '#^Variable \$users might not be defined\.$#'

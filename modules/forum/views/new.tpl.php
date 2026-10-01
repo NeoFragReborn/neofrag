@@ -1,3 +1,4 @@
+<?php $form_id = $form_id ?? ''; ?>
 <form action="<?php echo url($this->url->request.(empty($forum_id) && empty($is_topic) ? '#reply' : '')) ?>" method="post" enctype="multipart/form-data">
 	<table class="table forum-reply-fullwidth">
 		<tbody class="forum-content">
@@ -5,6 +6,19 @@
 			<tr>
 				<td><input type="text" class="form-control form-control-lg" name="<?php echo $form_id ?>[title]" value="<?php echo isset($post['title']) ? $post['title'] : (isset($title) && !empty($is_topic) ? $title : '') ?>" placeholder="<?php echo $this->lang('Titre du sujet') ?>" /></td>
 			</tr>
+			<?php if (!empty($prefixes)): $choisi = (int) ($post['prefix'] ?? ($prefix ?? 0)); ?>
+			<tr>
+				<td>
+					<label class="form-label" for="forum-prefixe"><?php echo $this->lang('Préfixe (optionnel)') ?></label>
+					<select class="form-select" id="forum-prefixe" name="<?php echo $form_id ?>[prefix]">
+						<option value=""><?php echo $this->lang('Aucun') ?></option>
+						<?php foreach ($prefixes as $p): ?>
+						<option value="<?php echo (int) $p['prefix_id'] ?>"<?php echo $choisi === (int) $p['prefix_id'] ? ' selected="selected"' : '' ?>><?php echo htmlspecialchars($p['title']) ?></option>
+						<?php endforeach ?>
+					</select>
+				</td>
+			</tr>
+			<?php endif ?>
 			<?php endif ?>
 			<tr>
 				<td>

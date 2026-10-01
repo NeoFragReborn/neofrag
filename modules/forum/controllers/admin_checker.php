@@ -141,4 +141,32 @@ class Admin_Checker extends Module_Checker
 		}
 		return [];
 	}
+
+	public function _prefixes()
+	{
+		return [];
+	}
+
+	public function _prefixes_add()
+	{
+		return [];
+	}
+
+	public function _prefixes_edit($prefix_id, $title)
+	{
+		return ($prefix = $this->_prefixe((int) $prefix_id)) ? [$prefix] : NULL;
+	}
+
+	public function _prefixes_delete($prefix_id, $title)
+	{
+		return ($prefix = $this->_prefixe((int) $prefix_id)) ? [$prefix] : NULL;
+	}
+
+	/** Un préfixe, avec son titre PAR DÉFAUT (celui que l'administration édite). */
+	private function _prefixe(int $prefix_id): ?array
+	{
+		$prefix = $this->db->select('prefix_id', 'title', 'color', 'order')->from('nf_forum_prefixes')->where('prefix_id', $prefix_id)->row();
+
+		return is_array($prefix) && $prefix ? $prefix : NULL;
+	}
 }

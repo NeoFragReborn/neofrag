@@ -43,6 +43,7 @@ class Admin extends Controller_Module
 		$this->add_action($this->button($this->lang('Ajouter une catégorie'), 'fas fa-folder-plus', 'secondary')->url('admin/forum/categories/add'));
 
 		$outils = $this->admin_action_bar([
+			$this->button($this->lang('Préfixes'),       'fas fa-tags',      'secondary')->url('admin/forum/prefixes'),
 			$this->button($this->lang('Pièces jointes'), 'fas fa-paperclip', 'secondary')->url('admin/forum/attachments'),
 			$this->button($this->lang('Abonnements'),    'fas fa-bell',      'secondary')->url('admin/forum/subscriptions'),
 			$this->button($this->lang('Mentions'),       'fas fa-at',        'secondary')->url('admin/forum/mentions'),
@@ -93,6 +94,7 @@ class Admin extends Controller_Module
 													$post['url']);
 
 			$this->_modele_forum()->enregistrer_traductions('forum', (int) $forum_id, $this->_traductions($post));
+			$this->db->where('forum_id', (int) $forum_id)->update('nf_forum', ['icon' => (string) ($post['icon'] ?? '')]);
 
 			notify($this->lang('Forum ajouté avec succès'));
 
@@ -113,6 +115,7 @@ class Admin extends Controller_Module
 					'category_id'  => ($is_subforum ? 'f' : '').$parent_id,
 					'categories'   => $this->model()->get_categories_list($forum_id),
 					'url'          => $url,
+					'icon'         => (string) $this->db->select('icon')->from('nf_forum')->where('forum_id', (int) $forum_id)->row(),
 					'traductions'  => $this->_modele_forum()->traductions('forum', (int) $forum_id)
 				])
 				->add_submit($this->lang('Éditer'))
@@ -125,7 +128,8 @@ class Admin extends Controller_Module
 							'title'       => $post['title'],
 							'parent_id'   => $this->model()->get_parent_id($post['category'], $is_subforum),
 							'is_subforum' => $is_subforum,
-							'description' => $post['description']
+							'description' => $post['description'],
+							'icon'        => (string) ($post['icon'] ?? '')
 						]);
 
 			$this->_modele_forum()->enregistrer_traductions('forum', (int) $forum_id, $this->_traductions($post));
@@ -521,6 +525,92 @@ class Admin extends Controller_Module
 
 		return $this->admin_card('fas fa-trash-alt', $this->lang('Corbeille du forum'), $this->view('admin/trash', ['trashed' => $trashed]))
 			.(string)$this->module->pagination->get_pagination();
+	}
+
+	/** Les préfixes de sujet (2026-10-01). */
+	public function _prefixes()
+	{
+		$this	->title($this->lang('Préfixes'))
+				->icon('fas fa-tags')
+				->add_action($this->button($this->lang('Ajouter un préfixe'), 'fas fa-plus', 'primary')->url('admin/forum/prefixes/add'));
+
+		$prefixes = $this->_modele_forum()->prefixes();
+
+		if (!$prefixes)
+		{
+			return $this->admin_back('admin/forum').$this->admin_card('fas fa-tags', $this->lang('Préfixes'), $this->admin_empty('fas fa-tags', $this->lang('Aucun préfixe.'), $this->lang('Un préfixe classe un sujet : « Question », « Tutoriel », « Important »… Le membre le choisit en ouvrant son sujet, et la liste d’un forum se filtre dessus.')));
+		}
+
+		$lignes = '';
+
+		foreach ($prefixes as $p)
+		{
+			$lignes .= '<tr><td>'.\NF\Modules\Forum\Models\Forum::pastille_prefixe($p).'</td><td>'.(int) $p['order'].'</td><td class="text-end">'
+				.'<a class="btn btn-sm btn-primary" href="'.url('admin/forum/prefixes/'.$p['prefix_id'].'/'.url_title($p['title'])).'" title="'.$this->lang('Éditer').'">'.icon('fas fa-edit').'</a> '
+				.'<a class="btn btn-sm btn-danger" href="'.$this->csrf_url('admin/forum/prefixes/delete/'.$p['prefix_id'].'/'.url_title($p['title'])).'" title="'.$this->lang('Supprimer').'">'.icon('far fa-trash-alt').'</a>'
+				.'</td></tr>';
+		}
+
+		return $this->admin_back('admin/forum').$this->admin_card('fas fa-tags', $this->lang('Préfixes'),
+			'<div class="table-responsive"><table class="table table-sm align-middle mb-0"><thead><tr><th>'.$this->lang('Préfixe').'</th><th>'.$this->lang('Ordre').'</th><th></th></tr></thead><tbody>'.$lignes.'</tbody></table></div>');
+	}
+
+	public function _prefixes_add()
+	{
+		return $this->_formulaire_prefixe(NULL);
+	}
+
+	public function _prefixes_edit($prefix)
+	{
+		return $this->_formulaire_prefixe($prefix);
+	}
+
+	public function _prefixes_delete($prefix)
+	{
+		$this->check_csrf('admin/forum/prefixes');
+
+		$this->_modele_forum()->delete_prefix((int) $prefix['prefix_id']);
+
+		notify($this->lang('Préfixe supprimé.'));
+		redirect('admin/forum/prefixes');
+	}
+
+	private function _formulaire_prefixe(?array $prefix)
+	{
+		$this	->title($prefix ? $this->lang('Édition du préfixe') : $this->lang('Ajouter un préfixe'))
+				->icon('fas fa-tags')
+				->form()
+				->add_rules('prefix', $prefix ? [
+					'title'       => $prefix['title'],
+					'color'       => $prefix['color'],
+					'order'       => $prefix['order'],
+					'traductions' => $this->_modele_forum()->traductions('prefix', (int) $prefix['prefix_id'])
+				] : [])
+				->add_submit($prefix ? $this->lang('Éditer') : $this->lang('Ajouter'))
+				->add_back('admin/forum/prefixes');
+
+		if ($this->form()->is_valid($post))
+		{
+			$couleurs = ['primary', 'success', 'warning', 'danger', 'info', 'secondary', 'dark'];
+			$couleur  = in_array($post['color'] ?? '', $couleurs, TRUE) ? (string) $post['color'] : 'secondary';
+
+			if ($prefix)
+			{
+				$this->_modele_forum()->edit_prefix((int) $prefix['prefix_id'], (string) $post['title'], $couleur, (int) ($post['order'] ?? 0));
+				$id = (int) $prefix['prefix_id'];
+			}
+			else
+			{
+				$id = $this->_modele_forum()->add_prefix((string) $post['title'], $couleur, (int) ($post['order'] ?? 0));
+			}
+
+			$this->_modele_forum()->enregistrer_traductions('prefix', $id, $this->_traductions($post));
+
+			notify($prefix ? $this->lang('Préfixe modifié.') : $this->lang('Préfixe ajouté.'));
+			redirect('admin/forum/prefixes');
+		}
+
+		return $this->admin_card('fas fa-tags', $prefix ? $this->lang('Édition du préfixe') : $this->lang('Ajouter un préfixe'), $this->form()->display());
 	}
 
 	/** Le modèle du forum, typé : pour l'analyse statique, `$this->model()` rend un modèle générique. */

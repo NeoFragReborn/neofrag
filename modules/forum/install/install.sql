@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `nf_forum` (
   `is_subforum` enum('0','1') NOT NULL DEFAULT '0',
   `title` varchar(100) NOT NULL,
   `description` varchar(255) NOT NULL DEFAULT '',
+  `icon` varchar(60) NOT NULL DEFAULT '',
   `order` smallint(6) unsigned NOT NULL DEFAULT 0,
   `count_topics` int(11) unsigned NOT NULL DEFAULT 0,
   `count_messages` int(11) unsigned NOT NULL DEFAULT 0,
@@ -46,12 +47,30 @@ CREATE TABLE IF NOT EXISTS `nf_forum_categories_lang` (
   CONSTRAINT `nf_forum_categories_lang_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `nf_forum_categories` (`category_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `nf_forum_prefixes` (
+  `prefix_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(50) NOT NULL,
+  `color` varchar(20) NOT NULL DEFAULT 'secondary',
+  `order` smallint(6) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`prefix_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `nf_forum_prefixes_lang` (
+  `prefix_id` int(11) unsigned NOT NULL,
+  `lang` varchar(5) NOT NULL,
+  `title` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`prefix_id`,`lang`),
+  CONSTRAINT `nf_forum_prefixes_lang_ibfk_1` FOREIGN KEY (`prefix_id`) REFERENCES `nf_forum_prefixes` (`prefix_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS `nf_forum_topics` (
   `topic_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `forum_id` int(11) unsigned NOT NULL,
   `message_id` int(11) unsigned DEFAULT NULL,
   `title` varchar(255) NOT NULL,
   `status` enum('-2','-1','0','1') NOT NULL DEFAULT '0',
+  `prefix_id` int(11) unsigned DEFAULT NULL,
+  `solution_message_id` int(11) unsigned DEFAULT NULL,
   `views` int(11) unsigned NOT NULL DEFAULT 0,
   `count_messages` int(11) unsigned NOT NULL DEFAULT 0,
   `last_message_id` int(11) unsigned DEFAULT NULL,

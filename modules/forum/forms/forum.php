@@ -25,6 +25,12 @@ $rules = [
 		'value' => $this->form()->value('description'),
 		'type'  => 'text'
 	],
+	'icon' => [
+		'label'       => $this->lang('Icône'),
+		'value'       => $this->form()->value('icon'),
+		'type'        => 'iconpicker',
+		'description' => $this->lang('Laisser vide pour l’icône par défaut.')
+	],
 	'url' => [
 		'label' => $this->lang('Rediriger vers'),
 		'value' => $this->form()->value('url'),

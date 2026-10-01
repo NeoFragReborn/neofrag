@@ -19,7 +19,7 @@
 						echo '<div class="float-end">'.$this->pagination->display('forum/topic/'.$topic['topic_id'].'/'.url_title($topic['title']), ceil($topic['count_messages'] / $this->config->forum_messages_per_page), 'xs').'</div>';
 					}
 				?>
-				<h5 class="m-0"><a href="<?php echo url('forum/topic/'.$topic['topic_id'].'/'.url_title($topic['title'])) ?>"><?php echo $topic['title'] ?></a></h5>
+				<h5 class="m-0"><?php echo \NF\Modules\Forum\Models\Forum::pastille_prefixe(($prefixes ?? [])[(int) $topic['prefix_id']] ?? NULL) ?> <a href="<?php echo url('forum/topic/'.$topic['topic_id'].'/'.url_title($topic['title'])) ?>"><?php echo $topic['title'] ?></a><?php if (!empty($topic['solution_message_id'])): ?> <span class="forum-resolu" title="<?php echo $this->lang('Une réponse résout ce sujet') ?>"><?php echo icon('fas fa-check-circle').' '.$this->lang('Résolu') ?></span><?php endif ?></h5>
 				<div><?php echo icon('fas fa-user').' '.($topic['user_id'] ? $this->user->link($topic['user_id'], $topic['username']) : '<i>'.$this->lang('Visiteur').'</i>').' '.icon('far fa-clock').' '.time_span($topic['date']) ?></div>
 			</td>
 			<td>

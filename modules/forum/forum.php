@@ -84,6 +84,7 @@ class Forum extends Module
 				'message/edit/{id}/{url_title}'            => '_message_edit',
 				'message/delete/{id}/{url_title}'          => '_message_delete',
 				'mark-all-as-read/{id}/{url_title}'        => '_mark_all_as_read',
+				'solution/{id}/{url_title}'                => '_solution',
 
 				//Subscriptions (Phase 3)
 				'topic/subscribe/{id}/{url_title}'         => '_subscribe',
@@ -96,6 +97,10 @@ class Forum extends Module
 				//Admin
 				'admin/{id}/{url_title}'                   => '_edit',
 				'admin/categories/add'                     => '_categories_add',
+				'admin/prefixes'                           => '_prefixes',
+				'admin/prefixes/add'                       => '_prefixes_add',
+				'admin/prefixes/{id}/{url_title}'          => '_prefixes_edit',
+				'admin/prefixes/delete/{id}/{url_title}'   => '_prefixes_delete',
 				'admin/categories/{id}/{url_title}'        => '_categories_edit',
 				'admin/categories/delete/{id}/{url_title}' => '_categories_delete',
 				'admin/ajax/categories/move'               => '_categories_move',

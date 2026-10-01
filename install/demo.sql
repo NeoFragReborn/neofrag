@@ -303,10 +303,10 @@ INSERT INTO `nf_forum_categories` (`category_id`, `title`, `order`, `image_id`, 
 ('2', 'Jeux & Compétition', '1', NULL, '0');
 DELETE FROM `nf_forum`;
 INSERT INTO `nf_forum` (`forum_id`, `parent_id`, `is_subforum`, `title`, `description`, `order`, `count_topics`, `count_messages`, `last_message_id`) VALUES
-('1', '1', '0', 'Présentations', 'Présentez-vous à la communauté', '0', '2', '6', '6'),
-('2', '1', '0', 'Discussions générales', 'Pour parler de tout et de rien', '1', '1', '3', '9'),
-('3', '2', '0', 'Stratégies', 'Partagez vos tactiques', '0', '1', '4', '13'),
-('4', '2', '0', 'Recherche d\'équipe', 'Trouvez des coéquipiers', '1', '1', '2', '15');
+('1', '1', '0', 'Présentations', 'Présentez-vous à la communauté', '0', '2', '4', '6'),
+('2', '1', '0', 'Discussions générales', 'Pour parler de tout et de rien', '1', '1', '2', '9'),
+('3', '2', '0', 'Stratégies', 'Partagez vos tactiques', '0', '1', '3', '13'),
+('4', '2', '0', 'Recherche d\'équipe', 'Trouvez des coéquipiers', '1', '1', '1', '15');
 DELETE FROM `nf_forum_url`;
 INSERT INTO `nf_forum_url` (`forum_id`, `url`, `redirects`) VALUES
 ('1', '', '0'),
@@ -315,11 +315,11 @@ INSERT INTO `nf_forum_url` (`forum_id`, `url`, `redirects`) VALUES
 ('4', '', '0');
 DELETE FROM `nf_forum_topics`;
 INSERT INTO `nf_forum_topics` (`topic_id`, `forum_id`, `message_id`, `title`, `status`, `views`, `count_messages`, `last_message_id`, `is_announced`, `is_locked`) VALUES
-('1', '1', '1', 'Salut tout le monde !', '0', '10', '4', '4', '0', '0'),
-('2', '1', '5', 'Présentation rapide', '0', '19', '2', '6', '0', '0'),
-('3', '2', '7', 'Votre setup du moment ?', '0', '28', '3', '9', '0', '0'),
-('4', '3', '10', 'Gérer la pression en finale', '0', '37', '4', '13', '0', '0'),
-('5', '4', '14', 'Cherche support pour ranked', '0', '46', '2', '15', '0', '0');
+('1', '1', '1', 'Salut tout le monde !', '0', '10', '3', '4', '0', '0'),
+('2', '1', '5', 'Présentation rapide', '0', '19', '1', '6', '0', '0'),
+('3', '2', '7', 'Votre setup du moment ?', '0', '28', '2', '9', '0', '0'),
+('4', '3', '10', 'Gérer la pression en finale', '0', '37', '3', '13', '0', '0'),
+('5', '4', '14', 'Cherche support pour ranked', '0', '46', '1', '15', '0', '0');
 DELETE FROM `nf_forum_messages`;
 INSERT INTO `nf_forum_messages` (`message_id`, `topic_id`, `parent_id`, `user_id`, `message`, `date`, `deleted_at`, `deleted_by`, `deleted_reason`) VALUES
 ('1', '1', NULL, '271', 'Nouveau ici, hâte de jouer avec vous.', '2026-09-04 11:46:28', NULL, NULL, NULL),

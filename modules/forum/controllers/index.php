@@ -40,8 +40,9 @@ class Index extends Controller_Module
 		return $panels;
 	}
 
-	public function _forum($forum_id, $title, $category_id, $subforums, $announces, $topics)
+	public function _forum($forum_id, $title, $category_id, $subforums, $announces, $topics, $prefixe = 0)
 	{
+		$prefixes = $this->_modele_forum()->prefixes();
 		$this	->title($title)
 				->_breadcrumb($category_id, $forum_id);
 
@@ -56,21 +57,29 @@ class Index extends Controller_Module
 									]), FALSE));
 		}
 
+		// Les filtres portent sur les annonces ET sur les sujets : ils passent au-dessus des deux listes.
+		if ($filtres = $this->_filtres_prefixes($prefixes, (int) $prefixe, $forum_id, $title))
+		{
+			$panels->append($this->panel()->body($filtres, FALSE)->style('card-transparent'));
+		}
+
 		if (!empty($announces))
 		{
 			$panels->append($this	->panel()
 									->body($this->view('forum', [
-										'title'  => $this->lang('Annonces'),
-										'icon'   => 'fas fa-flag',
-										'topics' => $announces
+										'title'    => $this->lang('Annonces'),
+										'icon'     => 'fas fa-flag',
+										'topics'   => $announces,
+										'prefixes' => $prefixes
 									]), FALSE));
 		}
 
 		$panels->append($this	->panel()
 								->body($this->view('forum', [
-									'title'  => $title,
-									'icon'   => 'fas fa-bars',
-									'topics' => $topics
+									'title'    => $title,
+									'icon'     => 'fas fa-bars',
+									'topics'   => $topics,
+									'prefixes' => $prefixes
 								]), FALSE));
 
 		$content = '<a class="btn btn-light float-start" href="'.url(($this->url->back() ?: 'forum')).'">'.$this->lang('Retour').'</a>';
@@ -115,6 +124,10 @@ class Index extends Controller_Module
 					],
 					'attachment' => [
 						'type' => 'file'
+					],
+					'prefix' => [
+						'type'   => 'select',
+						'values' => ['' => ''] + array_column($this->_modele_forum()->prefixes(), 'title', 'prefix_id')
 					]
 				]);
 
@@ -143,6 +156,8 @@ class Index extends Controller_Module
 
 			$this->_attach_to_last_message($topic_id, $post);
 
+			$this->_modele_forum()->set_prefix((int) $topic_id, (int) ($post['prefix'] ?? 0) ?: NULL);
+
 			notify($this->lang('Sujet ajouté'));
 
 			redirect('forum/topic/'.$topic_id.'/'.url_title($post['title']));
@@ -164,14 +179,33 @@ class Index extends Controller_Module
 									'post'        => $post,
 									'forum_id'    => $forum_id,
 									'category_id' => $category_id,
-									'title'       => $title
+									'title'       => $title,
+									'prefixes'    => $this->_modele_forum()->prefixes()
 								]), FALSE));
 
 		return $panels;
 	}
 
-	public function _topic($topic_id, $title, $forum_id, $forum_title, $category_id, $views, $nb_users, $nb_messages, $is_announce, $is_locked, $topic, $messages)
+	public function _topic($topic_id, $title, $forum_id, $forum_title, $category_id, $views, $nb_users, $nb_messages, $is_announce, $is_locked, $topic, $messages, $prefix_id = 0, $solution_id = 0, $topic_user_id = 0)
 	{
+		$prefixes      = $this->_modele_forum()->prefixes();
+		$peut_resoudre = ($this->user() && (int) $topic_user_id === (int) $this->user->id) || $this->access('forum', 'category_modify', $category_id);
+		$solution      = NULL;
+
+		foreach ($messages as $m)
+		{
+			if ((int) $m['message_id'] === (int) $solution_id && $m['message'] !== NULL)
+			{
+				$solution = $m;
+			}
+		}
+
+		// La solution peut être sur une autre page que celle affichée : on va la chercher.
+		if ($solution_id && !$solution)
+		{
+			$solution = $this->db->select('message_id', 'user_id', 'message')->from('nf_forum_messages')->where('message_id', (int) $solution_id)->where('deleted_at', NULL)->row() ?: NULL;
+		}
+
 		$this	->title($title)
 				->_breadcrumb($category_id, $forum_id)
 				->breadcrumb()
@@ -302,7 +336,9 @@ class Index extends Controller_Module
 									'title'             => $title,
 									'views'             => $views,
 									'last_message_read' => $last_message_read,
-									'is_subscribed'     => $this->user() ? $this->model()->is_subscribed($topic_id, $this->user->id) : FALSE
+									'is_subscribed'     => $this->user() ? $this->model()->is_subscribed($topic_id, $this->user->id) : FALSE,
+									'prefixe'           => $prefixes[(int) $prefix_id] ?? NULL,
+									'solution'          => $solution
 								])), FALSE));
 
 		$actions = $this->panel()
@@ -322,7 +358,10 @@ class Index extends Controller_Module
 										'nb_messages'       => $nb_messages,
 										'messages'          => $messages,
 										'last_message_read' => $last_message_read,
-										'is_locked'         => $is_locked
+										'is_locked'         => $is_locked,
+										'solution_id'       => (int) $solution_id,
+										'peut_resoudre'     => $peut_resoudre,
+										'jeton'             => $peut_resoudre ? $this->csrf_token() : ''
 									]), FALSE));
 		}
 
@@ -542,6 +581,10 @@ class Index extends Controller_Module
 			$this->form()->add_rules([
 				'title' => [
 					'rules' => 'required'
+				],
+				'prefix' => [
+					'type'   => 'select',
+					'values' => ['' => ''] + array_column($this->_modele_forum()->prefixes(), 'title', 'prefix_id')
 				]
 			]);
 		}
@@ -554,6 +597,11 @@ class Index extends Controller_Module
 							->update('nf_forum_topics', [
 								'title' => $post['title']
 							]);
+			}
+
+			if ($is_topic)
+			{
+				$this->_modele_forum()->set_prefix((int) $topic_id, (int) ($post['prefix'] ?? 0) ?: NULL);
 			}
 
 			$this->db	->where('message_id', $message_id)
@@ -599,7 +647,9 @@ class Index extends Controller_Module
 									'is_topic' => $is_topic,
 									'title'    => $title,
 									'message'  => $message,
-									'user_id'  => $user_id
+									'user_id'  => $user_id,
+									'prefixes' => $is_topic ? $this->_modele_forum()->prefixes() : [],
+									'prefix'   => $is_topic ? (int) $this->db->select('prefix_id')->from('nf_forum_topics')->where('topic_id', $topic_id)->row() : 0
 								]), FALSE));
 
 		return $panels;
@@ -760,5 +810,42 @@ class Index extends Controller_Module
 		}
 
 		return $modele;
+	}
+
+	/** Marque, ou retire, la réponse qui résout le sujet. */
+	public function _solution($message)
+	{
+		$adresse = 'forum/topic/'.$message['topic_id'].'/'.url_title($message['title']);
+
+		$this->check_csrf($adresse);
+
+		$actuelle = (int) $this->db->select('solution_message_id')->from('nf_forum_topics')->where('topic_id', $message['topic_id'])->row();
+		$nouvelle = $actuelle === (int) $message['message_id'] ? NULL : (int) $message['message_id'];
+
+		if ($this->_modele_forum()->set_solution((int) $message['topic_id'], $nouvelle))
+		{
+			notify($nouvelle ? $this->lang('Réponse marquée comme solution.') : $this->lang('Solution retirée.'));
+		}
+
+		redirect($adresse.'#'.(int) $message['message_id']);
+	}
+
+	/** Les pastilles de préfixes au-dessus des listes d'un forum : « Tous », puis chaque préfixe. */
+	private function _filtres_prefixes(array $prefixes, int $actif, $forum_id, $title): string
+	{
+		if (!$prefixes)
+		{
+			return '';
+		}
+
+		$adresse = url('forum/'.$forum_id.'/'.url_title($title));
+		$html    = '<nav class="forum-filtres" aria-label="'.$this->lang('Préfixes').'"><a class="'.(!$actif ? 'actif' : '').'" href="'.$adresse.'">'.$this->lang('Tous').'</a>';
+
+		foreach ($prefixes as $p)
+		{
+			$html .= '<a class="'.($actif === $p['prefix_id'] ? 'actif' : '').'" href="'.$adresse.'?prefixe='.$p['prefix_id'].'">'.htmlspecialchars($p['title']).'</a>';
+		}
+
+		return $html.'</nav>';
 	}
 }
