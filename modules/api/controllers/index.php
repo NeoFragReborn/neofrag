@@ -4,6 +4,8 @@ declare(strict_types=1);
  * https://neofr.ag
  * couplage(forum): les tables du forum ne sont lues que par `_forums()`, après la garde
  * `module('forum')` ; sans le forum, l'adresse `forums` répond 404 « module_unavailable ».
+ * couplage(discord): les adresses `discord/*` passent par `_modele_discord()`, qui répond 404
+ * « module_unavailable » sans le module Discord.
  */
 
 namespace NF\Modules\Api\Controllers;
@@ -78,6 +80,12 @@ class Index extends Controller_Module
 			['POST',   ['forum', 'topics', '#', 'messages'], 'forum:write', fn (array $p) => $this->_repondre_sujet((int) $p[0])],
 			['PATCH',  ['forum', 'messages', '#'],           'forum:write', fn (array $p) => $this->_modifier_message((int) $p[0])],
 			['DELETE', ['forum', 'messages', '#'],           'forum:write', fn (array $p) => $this->_supprimer_message((int) $p[0])],
+			['GET',    ['discord', 'config'],                'discord:bot', fn () => $this->_discord_config()],
+			['POST',   ['discord', 'heartbeat'],             'discord:bot', fn () => $this->_discord_signe_de_vie()],
+			['POST',   ['discord', 'logs'],                  'discord:bot', fn () => $this->_discord_journal()],
+			['GET',    ['discord', 'members'],               'discord:bot', fn () => $this->_discord_membres()],
+			['GET',    ['discord', 'links'],                 'discord:bot', fn () => $this->_discord_lien()],
+			['POST',   ['discord', 'links'],                 'discord:bot', fn () => $this->_discord_lier()],
 		];
 
 		$autorisees = [];
@@ -378,6 +386,168 @@ class Index extends Controller_Module
 			'next'   => $suivant,
 			'more'   => $encore,
 		];
+	}
+
+	// ── Le bot Discord ─────────────────────────────────────────
+	//
+	// Le bot ne connaît que l'adresse du site et sa clé d'API : il lit ici sa configuration — sa clé
+	// Discord, déchiffrée pour lui seul, son serveur, les correspondances —, y rend compte de son état
+	// et de son journal, et y garde le lien entre un sujet et son fil, un message et le sien.
+
+	/** La configuration du bot. */
+	private function _discord_config(): array
+	{
+		$modele   = $this->_modele_discord();
+		$reglages = $modele->reglages();
+
+		return [
+			'token'     => $modele->jeton(),
+			'client_id' => $reglages['client_id'],
+			'guild_id'  => $reglages['guild_id'],
+			'running'   => $reglages['running'],
+			'nicknames' => $reglages['nicknames'],
+			'channels'  => array_map(static fn (array $s): array => ['channel_id' => $s['channel_id'], 'forum_id' => $s['forum_id'], 'mode' => $s['mode'], 'emoji' => $s['emoji']], $modele->salons()),
+			'roles'     => array_map(static fn (array $r): array => ['group_key' => $r['group_key'], 'role_id' => $r['role_id']], $modele->roles()),
+			'version'   => $reglages['version'],
+			// Le dernier événement du fil : le bot qui (re)démarre lit le fil à partir d'ici — il vient
+			// de tout resynchroniser, le passé ne lui apprendrait rien.
+			'events_cursor' => (int) $this->db->select('IFNULL(MAX(event_id), 0)')->from('nf_api_events')->row(),
+			// La clé qui lit cette configuration : ce que le bot écrit par l'API porte sa trace dans le
+			// fil (`source`), et il ne le recopie pas une seconde fois sur Discord.
+			'api_token_id'  => Api::$cle_courante,
+			'texts'         => $modele->textes_affiches(),
+		];
+	}
+
+	/**
+	 * Le signe de vie du bot : son état et la description de son serveur (salons, rôles — pour les
+	 * listes de l'administration). Il reçoit en retour l'interrupteur, le numéro de configuration et
+	 * les commandes en attente.
+	 */
+	private function _discord_signe_de_vie(): array
+	{
+		$modele = $this->_modele_discord();
+		$corps  = $this->_corps();
+		$guilde = is_array($corps['guild'] ?? NULL) ? $corps['guild'] : [];
+
+		$modele->poser_etat('heartbeat', (string) json_encode([
+			'at'        => time(),
+			'version'   => mb_substr((string) ($corps['version'] ?? ''), 0, 40),
+			'connected' => !empty($corps['connected']),
+			'intents'   => ['members' => !empty($corps['intents']['members']), 'content' => !empty($corps['intents']['content'])],
+			'guild'     => [
+				'id'       => (string) ($guilde['id'] ?? ''),
+				'name'     => mb_substr((string) ($guilde['name'] ?? ''), 0, 100),
+				'channels' => array_slice(array_values(array_filter(array_map(static fn ($c) => is_array($c) ? ['id' => (string) ($c['id'] ?? ''), 'name' => mb_substr((string) ($c['name'] ?? ''), 0, 100), 'type' => (int) ($c['type'] ?? -1)] : NULL, (array) ($guilde['channels'] ?? [])))), 0, 500),
+				'roles'    => array_slice(array_values(array_filter(array_map(static fn ($r) => is_array($r) ? ['id' => (string) ($r['id'] ?? ''), 'name' => mb_substr((string) ($r['name'] ?? ''), 0, 100), 'managed' => !empty($r['managed'])] : NULL, (array) ($guilde['roles'] ?? [])))), 0, 250),
+			],
+		], JSON_UNESCAPED_UNICODE));
+
+		$reglages = $modele->reglages();
+
+		return ['running' => $reglages['running'], 'version' => $reglages['version'], 'commands' => $modele->prendre_commandes()];
+	}
+
+	/**
+	 * Des lignes du journal du bot : `entries`, chacune `level` (info, warn, error), `message` (la
+	 * phrase en français) et, pour la traduire, `template` et `args`.
+	 */
+	private function _discord_journal(): array
+	{
+		$modele = $this->_modele_discord();
+		$lignes = array_slice((array) ($this->_corps()['entries'] ?? []), 0, 50);
+
+		foreach ($lignes as $l)
+		{
+			if (is_array($l) && trim((string) ($l['message'] ?? '')) !== '')
+			{
+				$valeurs = array_values(array_filter((array) ($l['args'] ?? []), 'is_scalar'));
+				$modele->journaliser((string) ($l['level'] ?? 'info'), (string) $l['message'], is_string($l['template'] ?? NULL) ? $l['template'] : '', array_map('strval', $valeurs));
+			}
+		}
+
+		return ['received' => count($lignes)];
+	}
+
+	/** Les membres qui ont lié leur compte Discord : leur pseudo et leurs groupes, pour les rôles et les pseudos. */
+	private function _discord_membres(): array
+	{
+		$this->_modele_discord();
+
+		if (!($authentificateur = $this->_authentificateur_discord()))
+		{
+			return [];
+		}
+
+		$membres = [];
+		$coeur   = $this->_groupes_coeur();
+
+		foreach ((array) $this->db	->select('a.key', 'u.id', 'u.username')
+									->from('nf_user_auth a')
+									->join('nf_user u', 'u.id = a.user_id AND u.deleted = "0"', 'INNER')
+									->where('a.authenticator_id', $authentificateur)
+									->get() as $m)
+		{
+			$membres[] = [
+				'discord_id' => (string) $m['key'],
+				'member_id'  => (int) $m['id'],
+				'username'   => (string) $m['username'],
+				'groups'     => array_values(array_map('strval', (array) $coeur((int) $m['id']))),
+			];
+		}
+
+		return $membres;
+	}
+
+	/** Le lien d'un sujet ou d'un message : `type` (topic, message) et `site_id` ou `discord_id`. */
+	private function _discord_lien(): array
+	{
+		$type = (string) ($_GET['type'] ?? '');
+
+		if (!in_array($type, ['topic', 'message'], TRUE) || (empty($_GET['site_id']) && empty($_GET['discord_id'])))
+		{
+			$this->_repondre(422, ['error' => ['code' => 'validation_failed', 'message' => (string) $this->lang('Certains champs sont invalides.'), 'fields' => ['type' => 'topic | message', 'site_id' => 'ou discord_id']]]);
+		}
+
+		$lien = $this->_modele_discord()->lien($type, !empty($_GET['site_id']) ? (int) $_GET['site_id'] : NULL, !empty($_GET['discord_id']) ? (string) $_GET['discord_id'] : NULL);
+
+		if (!$lien)
+		{
+			$this->_erreur(404, 'link_not_found', $this->lang('Aucun lien pour cet élément.'));
+		}
+
+		return $lien;
+	}
+
+	private function _discord_lier(): array
+	{
+		$corps = $this->_corps();
+		$type  = (string) ($corps['type'] ?? '');
+		$site  = (int) ($corps['site_id'] ?? 0);
+		$disc  = (string) ($corps['discord_id'] ?? '');
+
+		if (!in_array($type, ['topic', 'message'], TRUE) || $site <= 0 || !ctype_digit($disc))
+		{
+			$this->_repondre(422, ['error' => ['code' => 'validation_failed', 'message' => (string) $this->lang('Certains champs sont invalides.'), 'fields' => ['type' => 'topic | message', 'site_id' => '> 0', 'discord_id' => 'nombre']]]);
+		}
+
+		$this->_modele_discord()->lier($type, $site, $disc);
+		$this->_code = 201;
+
+		return ['type' => $type, 'site_id' => $site, 'discord_id' => $disc];
+	}
+
+	/** Le modèle du module Discord, s'il est installé ; sinon 404 « module_unavailable ». */
+	private function _modele_discord(): \NF\Modules\Discord\Models\Discord
+	{
+		$discord = $this->module('discord');
+
+		if (!$discord || !($modele = $discord->model('discord')) instanceof \NF\Modules\Discord\Models\Discord)
+		{
+			$this->_erreur(404, 'module_unavailable', $this->lang('Le module Discord n’est pas installé sur ce site.'));
+		}
+
+		return $modele;
 	}
 
 	// ── Écrire sur le forum (étape 3) ─────────────────────────

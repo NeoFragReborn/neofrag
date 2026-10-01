@@ -57,4 +57,7 @@ return [
 	'3eb6574b' => 'Le contenu est vide une fois nettoyé.',
 	'd5e9c4a6' => 'Le corps de la requête n’est pas un JSON valide.',
 	'b2ee4e4b' => 'Certains champs sont invalides.',
+	'7cb47b88' => 'Être le bot Discord du site (sa configuration, sa clé Discord comprise)',
+	'3a8dd48c' => 'Le module Discord n’est pas installé sur ce site.',
+	'a1a0582d' => 'Aucun lien pour cet élément.',
 ];

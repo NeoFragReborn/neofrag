@@ -57,4 +57,7 @@ return [
 	'3eb6574b' => 'O conteúdo fica vazio depois de limpo.',
 	'd5e9c4a6' => 'O corpo do pedido não é um JSON válido.',
 	'b2ee4e4b' => 'Alguns campos são inválidos.',
+	'7cb47b88' => 'Ser o bot do Discord do site (a sua configuração, incluindo a chave do Discord)',
+	'3a8dd48c' => 'O módulo Discord não está instalado neste site.',
+	'a1a0582d' => 'Nenhuma ligação para este elemento.',
 ];

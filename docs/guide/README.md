@@ -17,6 +17,7 @@ quand tu en as envie.
 | [Concepts](concepts.md) | Comment le CMS est organisé : modules, widgets, thèmes, zones et régions, dispositions, addons |
 | [Le panel d'administration](admin.md) | Piloter ton site : contenu, membres, permissions, réglages, monitoring |
 | [Le marketplace](marketplace.md) | Trouver et installer des addons, mettre à jour les addons et le cœur |
+| [Le bot Discord](bot-discord.md) | Relier ton site à ton serveur Discord : rôles et pseudos, forum ↔ salon Forum, le tout réglé depuis l'administration — et écrire une fonctionnalité du bot |
 
 ## Pour les développeurs
 

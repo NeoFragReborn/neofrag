@@ -60,3 +60,11 @@ install/db.txt
 # Graphify : graphe de connaissance genere depuis le code (graph.json, rapport, cache).
 # Artefact de generation, 42 Mo, reconstructible en ~55 s par `/graphify .` — pas versionne.
 graphify-out/
+
+# === Le bot Discord (bot/) ===
+# Ses dépendances et sa compilation se refont par `npm ci && npm run build` ; son `.env` porte sa
+# clé d'accès au site, en clair.
+/bot/node_modules
+/bot/dist
+/bot/.env
+/dist-bot

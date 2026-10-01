@@ -57,4 +57,7 @@ return [
 	'3eb6574b' => 'The content is empty once cleaned.',
 	'd5e9c4a6' => 'The request body is not valid JSON.',
 	'b2ee4e4b' => 'Some fields are invalid.',
+	'7cb47b88' => 'Be the site’s Discord bot (its configuration, including its Discord key)',
+	'3a8dd48c' => 'The Discord module is not installed on this site.',
+	'a1a0582d' => 'No link for this item.',
 ];

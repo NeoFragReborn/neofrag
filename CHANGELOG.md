@@ -10,6 +10,29 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.11] — 2026-10-01
+
+### Ajouté
+
+- **Le bot Discord** (version 0.1.0), qui relie un site et son serveur Discord :
+  - **rôles et pseudos** — un membre qui a lié son compte Discord reçoit sur le serveur les rôles reliés
+    à ses groupes et les perd en les quittant ; il y porte son pseudo du site si l'option est cochée.
+    Le site fait foi, et un rôle que rien ne relie n'est jamais touché ;
+  - **forum ↔ salon Forum de Discord**, dans les deux sens — un sujet du site devient un fil, un fil
+    devient un sujet ; réponses, modifications et suppressions suivent. Les messages venus du site
+    paraissent sous le nom et l'avatar de leur auteur ; ceux venus de Discord, sous le compte du membre
+    lié ou sous son pseudo Discord. Salon par salon : tout synchroniser, ou seulement les fils qu'un
+    modérateur marque d'une réaction.
+
+  C'est un programme à part (Node.js 22.9 ou plus, sur une machine allumée en permanence), livré dans
+  sa propre archive à chaque version. Il ne garde sur sa machine que l'adresse du site et une clé
+  d'accès. Guide : « Le bot Discord » dans le wiki.
+- **Le module Discord** (optionnel, demande le module API) : la clé du bot, **gardée chiffrée**, le
+  serveur, l'interrupteur marche / pause, le redémarrage, l'état du bot (en ligne, en pause, hors
+  ligne) et son **journal dans la langue de l'administrateur**, les correspondances salons ↔ forums et
+  groupes ↔ rôles, et le lien qui invite le bot avec ses seules permissions — jamais « Administrateur ».
+- **API** : le droit `discord:bot` et les adresses `discord/*` dont le bot a besoin.
+
 ## [1.2.10] — 2026-10-01
 
 ### Ajouté

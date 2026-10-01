@@ -28,6 +28,7 @@ L'administration se trouve sous **/admin**. Elle adopte la charte NeoFrag Reborn
 | Changer le thème / installer un addon | *Système → Thèmes & Addons* |
 | Réglages du site (nom, accueil, inscriptions, sécurité, copyright) | *Système → Paramètres* |
 | Composer les pages à la souris | *Système → Live Editor* |
+| Relier le site à un serveur Discord : rôles, pseudos, forum ↔ salon Forum | *Autres modules → Discord* — voir [Le bot Discord](bot-discord.md) |
 | Sauvegardes, mises à jour, état du site, journal d'audit | *Monitoring* |
 
 > **Monitoring** réunit la **santé du site** (vérifications d'intégrité des fichiers, espace disque, infos

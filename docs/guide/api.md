@@ -18,6 +18,7 @@ et ne coche que les **droits** dont le programme a besoin :
 | `forum:read` | Le forum : son arborescence, ses sujets, ses messages — catégories réservées comprises |
 | `forum:write` | Écrire sur le forum **au nom** d'un membre ou d'un compte Discord : créer un sujet, répondre, modifier ou supprimer un message de cet auteur |
 | `events:read` | Le fil d'événements (nouveau sujet, nouveau message, changement de groupe…) |
+| `discord:bot` | Être le bot Discord du site : sa configuration — **clé Discord comprise** —, son état, son journal. Le module Discord crée lui-même cette clé (voir [Le bot Discord](bot-discord.md)) |
 
 La clé (`nfr_` suivi de 40 caractères) n'est **affichée qu'une fois**, juste après sa création : le
 site n'en garde que l'empreinte. Une clé perdue ne se retrouve pas — on la **révoque** et on en crée
@@ -62,6 +63,14 @@ Les textes (titres de forums, de groupes) sont rendus dans la **langue par défa
 | `POST /api/v1/forum/topics/{id}/messages` | `forum:write` | Répond à un sujet et rend le message, en 201 |
 | `PATCH /api/v1/forum/messages/{id}` | `forum:write` | Modifie un message — au nom de son auteur seulement |
 | `DELETE /api/v1/forum/messages/{id}` | `forum:write` | Met un message à la corbeille du forum — au nom de son auteur ; pas le premier message d'un sujet |
+| `GET /api/v1/discord/config` | `discord:bot` | La configuration du bot : `token` (sa clé Discord, déchiffrée), `client_id`, `guild_id`, `running`, `nicknames`, `channels`, `roles`, `version` (le numéro qui change à chaque réglage), `events_cursor`, `api_token_id`, `texts` (les textes qu'il poste, dans la langue du site) |
+| `POST /api/v1/discord/heartbeat` | `discord:bot` | Le signe de vie du bot (`version`, `connected`, `intents`, `guild` : le serveur, ses salons et ses rôles) ; rend `running`, `version` et les `commands` en attente (`restart`) |
+| `POST /api/v1/discord/logs` | `discord:bot` | Des lignes de son journal : `entries`, chacune `level`, `message`, `template` et `args` (le modèle que l'administration traduit) |
+| `GET /api/v1/discord/members` | `discord:bot` | Les membres qui ont lié leur Discord : `discord_id`, `member_id`, `username`, `groups` |
+| `GET /api/v1/discord/links?type=topic\|message&site_id=…` (ou `discord_id=…`) | `discord:bot` | Le lien d'un sujet et de son fil, d'un message et du sien ; 404 `link_not_found` s'il n'y en a pas |
+| `POST /api/v1/discord/links` | `discord:bot` | Garde un lien : `type`, `site_id`, `discord_id` |
+
+Les adresses `discord/*` répondent 404 `module_unavailable` si le module Discord n'est pas installé.
 
 ## Écrire sur le forum
 

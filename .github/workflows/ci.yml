@@ -36,6 +36,31 @@ jobs:
       - name: composer audit --locked
         run: composer audit --locked --no-interaction
 
+  bot:
+    name: Bot Discord (compilation TypeScript, tests, audit npm)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: bot
+    steps:
+      - uses: actions/checkout@v7
+      # La version de Node la plus ancienne que le bot accepte (cf. bot/package.json, « engines ») :
+      # ce qui passe ici passe sur les machines des administrateurs.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22.9'
+          cache: npm
+          cache-dependency-path: bot/package-lock.json
+      - name: npm ci
+        run: npm ci --no-audit --no-fund
+      # Le test qui compare le lien d'invitation du bot à celui du module Discord lit
+      # modules/discord/discord.php : il juge ici, le dépôt entier étant présent.
+      - name: Compilation et tests
+        run: npm test
+      - name: npm audit (dépendances de production)
+        run: npm audit --omit=dev --audit-level=high
+
   lint:
     name: Lint PHP (php -l)
     runs-on: ubuntu-latest

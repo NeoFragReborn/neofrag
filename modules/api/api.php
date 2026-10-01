@@ -20,7 +20,7 @@ class Api extends Module
 	 * Les droits d'une clé : des identifiants techniques, stables, que les programmes connaissent.
 	 * Pour les AFFICHER : scope_labels().
 	 */
-	const SCOPES = ['members:read', 'forum:read', 'forum:write', 'events:read'];
+	const SCOPES = ['members:read', 'forum:read', 'forum:write', 'events:read', 'discord:bot'];
 
 	/** Requêtes permises par minute et par clé. */
 	const PAR_MINUTE = 120;
@@ -151,6 +151,7 @@ class Api extends Module
 			'forum:read'   => (string) $this->lang('Lire le forum'),
 			'forum:write'  => (string) $this->lang('Écrire sur le forum au nom d’un membre ou d’un compte Discord'),
 			'events:read'  => (string) $this->lang('Suivre le fil d’événements'),
+			'discord:bot'  => (string) $this->lang('Être le bot Discord du site (sa configuration, sa clé Discord comprise)'),
 		];
 	}
 }

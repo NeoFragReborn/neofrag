@@ -57,4 +57,7 @@ return [
 	'3eb6574b' => 'El contenido queda vacío una vez limpiado.',
 	'd5e9c4a6' => 'El cuerpo de la petición no es un JSON válido.',
 	'b2ee4e4b' => 'Algunos campos no son válidos.',
+	'7cb47b88' => 'Ser el bot de Discord del sitio (su configuración, incluida su clave de Discord)',
+	'3a8dd48c' => 'El módulo Discord no está instalado en este sitio.',
+	'a1a0582d' => 'No hay vínculo para este elemento.',
 ];

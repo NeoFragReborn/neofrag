@@ -70,3 +70,4 @@ docs/**            linguist-documentation
 /playwright.config.js  export-ignore
 /phpstan-baseline.neon export-ignore
 /phpstan-bootstrap.php export-ignore
+/bot                   export-ignore

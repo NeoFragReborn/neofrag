@@ -126,6 +126,7 @@ $sensibles = [
     'nf_recaptcha_secret', 'nf_hcaptcha_secret',
     'nf_paypal_secret', 'nf_stripe_secret', 'nf_stripe_webhook_secret',
     'nf_twitch_client_secret', 'nf_youtube_api_key', 'nf_giphy_api_key',
+    'nf_discord_token',            // la clé du bot Discord, chiffrée — mais une clé reste une clé
     // L'état de l'installation, pas un réglage : figé dans l'instantané, chaque remise à zéro le
     // ramènerait à la version du jour de l'instantané (relevé le 2026-10-01).
     'nf_migrations_version',

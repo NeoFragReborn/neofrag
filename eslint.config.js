@@ -38,6 +38,7 @@ module.exports = [
             '**/js/flatpickr/**',    // sélecteur de date
             '**/js/sortable.js',     // glisser-déposer
             '**/js/dropzone.js',     // téléversement (déjà listé par check-js-sources)
+            '**/bot/dist/**',        // le bot compilé : TypeScript juge sa source (bot/src)
         ],
     },
 

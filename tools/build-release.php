@@ -300,9 +300,10 @@ function excluded(string $rel, string $variant): bool
 
     // Dossiers exclus du paquet FTP : dev/repo (pas de runtime). docs/ et tools/ ne servent pas
     // au site déployé (tools/maintenance.php = cron optionnel, à ajouter à la main si besoin).
+    // bot/ : le bot Discord tourne ailleurs que le site — il a son archive à lui (cf. release.yml).
     static $dirs = ['.git/', '.github/', '.wf-out/', '.playwright-mcp/', '.claude/', '.idea/', '.vscode/',
         '.tmpshots/', 'node_modules/', 'tests/', 'backups/', 'cache/', 'logs/', 'dist/', 'docs/', 'tools/',
-        '.phpunit.cache/'];
+        '.phpunit.cache/', 'bot/'];
     foreach ($dirs as $d) {
         if (str_starts_with($rel . '/', $d) || str_starts_with($rel, $d)) {
             return true;

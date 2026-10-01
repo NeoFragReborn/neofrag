@@ -57,4 +57,7 @@ return [
 	'3eb6574b' => 'Der Inhalt ist nach der Bereinigung leer.',
 	'd5e9c4a6' => 'Der Anfragetext ist kein gültiges JSON.',
 	'b2ee4e4b' => 'Einige Felder sind ungültig.',
+	'7cb47b88' => 'Der Discord-Bot der Website sein (seine Konfiguration, einschließlich seines Discord-Schlüssels)',
+	'3a8dd48c' => 'Das Discord-Modul ist auf dieser Website nicht installiert.',
+	'a1a0582d' => 'Keine Verknüpfung für dieses Element.',
 ];

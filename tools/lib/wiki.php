@@ -29,7 +29,7 @@ function nf_wiki_sections(): array
         'guide-utilisateur' => [
             'title' => 'Guide utilisateur',
             'intro' => "# Guide utilisateur\n\nTout pour installer et piloter ton site **NeoFrag Reborn**.",
-            'pages' => ['installation' => 'Installation', 'concepts' => 'Concepts', 'admin' => 'Administration', 'marketplace' => 'Marketplace'],
+            'pages' => ['installation' => 'Installation', 'concepts' => 'Concepts', 'admin' => 'Administration', 'marketplace' => 'Marketplace', 'bot-discord' => 'Le bot Discord'],
         ],
         'guide-developpeur' => [
             'title' => 'Guide développeur',

@@ -1,6 +1,6 @@
 # Composants — NeoFrag Reborn 1.1.0
 
-Inventaire des **61 modules · 40 widgets · 7 thèmes**. L'état/bugs de chaque composant
+Inventaire des **62 modules · 40 widgets · 7 thèmes**. L'état/bugs de chaque composant
 est dans [historique.md](internal/archive/historique.md) ; l'architecture du framework dans [architecture.md](architecture.md).
 La pile gamification/boutique/monétisation a sa doc dédiée : [gamification.md](gamification.md).
 
@@ -35,9 +35,9 @@ obligatoire, `core` / `presets` / `requires`, + souvent un tableau `types` de va
 réglages, cf. `tools/check-widget-reglages.php`), `views/*.tpl.php`, `langs/`. Les feuilles n'emploient
 que le vocabulaire `--nf-*` que tous les thèmes définissent (`tools/check-css-variables.php`).
 
-## 61 modules (par domaine)
+## 62 modules (par domaine)
 
-**Système & core (20)** — `access` (RBAC : rôles/permissions, audit log) · `addons` (install/activation) ·
+**Système & core (21)** — `access` (RBAC : rôles/permissions, audit log) · `addons` (install/activation) ·
 `admin` (dashboard back-office) · `user` (inscription, login 2FA, profil, RGPD, export membres CSV/JSON) ·
 `settings` (config globale) · `search` (agrégateur cross-modules) · `statistics` (dashboard agrégé) ·
 `comments` (commentaires polymorphes) · `pages` (pages statiques + **routeur fallback** + injection de blocs
@@ -47,7 +47,7 @@ fichier/dossier, téléchargement public par slug) · `emails` (templates email)
 `:nom:` uploadés en admin, rendus partout via le helper `bbcode()` ; cœur, hors marketplace) · `revisions` (historique + restauration
 générique, news/articles) · `trash` (corbeille soft-delete cross-module : news/articles/galerie/commentaires/forum) ·
 `menu` (constructeur de menus nommés réutilisables, items hiérarchiques, rendu via widget `navigation`) ·
-`webhooks` (webhooks sortants signés HMAC déclenchés par les événements) · `api` (l'API REST `/api/v1` : clés d'accès hachées et révocables, droits par clé, débit limité ; pour le bot Discord et les intégrations — optionnel) · `marketplace` (catalogue public
+`webhooks` (webhooks sortants signés HMAC déclenchés par les événements) · `api` (l'API REST `/api/v1` : clés d'accès hachées et révocables, droits par clé, débit limité ; pour le bot Discord et les intégrations — optionnel) · `discord` (le bot Discord du site, réglé depuis l'administration : sa clé gardée chiffrée, marche/pause, redémarrage, état, journal, correspondances salons ↔ forums et groupes ↔ rôles — optionnel, demande `api`) · `marketplace` (catalogue public
 d'addons + téléchargement, miroir de la vitrine).
 
 **Contenu (15)** — `news` · `articles` (blog) · `wiki` (+ révisions) · `faq` · `downloads` · `links` ·
