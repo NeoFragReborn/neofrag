@@ -87,10 +87,12 @@ class Admin extends Controller_Module
 
 		if ($this->form()->is_valid($post))
 		{
-			$this->model()->add_forum(	$post['title'],
-										$post['category'],
-										$post['description'],
-										$post['url']);
+			$forum_id = $this->model()->add_forum(	$post['title'],
+													$post['category'],
+													$post['description'],
+													$post['url']);
+
+			$this->_modele_forum()->enregistrer_traductions('forum', (int) $forum_id, $this->_traductions($post));
 
 			notify($this->lang('Forum ajouté avec succès'));
 
@@ -110,7 +112,8 @@ class Admin extends Controller_Module
 					'description'  => $description,
 					'category_id'  => ($is_subforum ? 'f' : '').$parent_id,
 					'categories'   => $this->model()->get_categories_list($forum_id),
-					'url'          => $url
+					'url'          => $url,
+					'traductions'  => $this->_modele_forum()->traductions('forum', (int) $forum_id)
 				])
 				->add_submit($this->lang('Éditer'))
 				->add_back('admin/forum');
@@ -124,6 +127,8 @@ class Admin extends Controller_Module
 							'is_subforum' => $is_subforum,
 							'description' => $post['description']
 						]);
+
+			$this->_modele_forum()->enregistrer_traductions('forum', (int) $forum_id, $this->_traductions($post));
 
 			if ($post['url'])
 			{
@@ -173,6 +178,22 @@ class Admin extends Controller_Module
 		return $this->form()->display();
 	}
 
+	/** Les traductions saisies dans le formulaire : `title_en`, `description_en`… → ['en' => [...]]. */
+	private function _traductions(array $post): array
+	{
+		$saisies = [];
+
+		foreach ($post as $cle => $valeur)
+		{
+			if (preg_match('/^(title|description)_([a-z]{2})$/', (string) $cle, $m))
+			{
+				$saisies[$m[2]][$m[1]] = (string) $valeur;
+			}
+		}
+
+		return $saisies;
+	}
+
 	public function _categories_add()
 	{
 		$this	->subtitle($this->lang('Ajouter une catégorie'))
@@ -183,7 +204,9 @@ class Admin extends Controller_Module
 
 		if ($this->form()->is_valid($post))
 		{
-			$this->model()->add_category($post['title'], $post['image'], in_array('on', (array)$post['vip_only']));
+			$category_id = $this->model()->add_category($post['title'], $post['image'], in_array('on', (array)$post['vip_only']));
+
+			$this->_modele_forum()->enregistrer_traductions('category', (int) $category_id, $this->_traductions($post));
 
 			notify($this->lang('Catégorie ajoutée avec succès'));
 
@@ -202,8 +225,9 @@ class Admin extends Controller_Module
 				->form()
 				->add_rules('categories', [
 					'title'    => $title,
-					'image_id' => $cat['image_id'],
-					'vip_only' => $cat['vip_only']
+					'image_id'    => $cat['image_id'],
+					'vip_only'    => $cat['vip_only'],
+					'traductions' => $this->_modele_forum()->traductions('category', (int) $category_id)
 				])
 				->add_submit($this->lang('Éditer'))
 				->add_back('admin/forum');
@@ -211,6 +235,8 @@ class Admin extends Controller_Module
 		if ($this->form()->is_valid($post))
 		{
 			$this->model()->edit_category($category_id, $post['title'], $post['image'], in_array('on', (array)$post['vip_only']));
+
+			$this->_modele_forum()->enregistrer_traductions('category', (int) $category_id, $this->_traductions($post));
 
 			notify($this->lang('Catégorie éditée avec succès'));
 
@@ -495,5 +521,18 @@ class Admin extends Controller_Module
 
 		return $this->admin_card('fas fa-trash-alt', $this->lang('Corbeille du forum'), $this->view('admin/trash', ['trashed' => $trashed]))
 			.(string)$this->module->pagination->get_pagination();
+	}
+
+	/** Le modèle du forum, typé : pour l'analyse statique, `$this->model()` rend un modèle générique. */
+	private function _modele_forum(): \NF\Modules\Forum\Models\Forum
+	{
+		$modele = $this->model('forum');
+
+		if (!$modele instanceof \NF\Modules\Forum\Models\Forum)
+		{
+			throw new \LogicException('modèle du forum introuvable');
+		}
+
+		return $modele;
 	}
 }

@@ -273,4 +273,7 @@ return [
 	'50cb8cb5' => 'tema|temas',
 	'695864e1' => 'mensaje|mensajes',
 	'13f1a5c1' => 'Arrastrar y soltar',
+	'd88a9c3a' => 'Título — %s',
+	'7940dcb0' => 'Descripción — %s',
+	'b4edce1c' => 'Se muestra en todos los idiomas que no tienen su traducción abajo.',
 ];

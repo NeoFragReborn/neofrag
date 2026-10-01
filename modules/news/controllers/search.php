@@ -33,6 +33,8 @@ class Search extends Controller_Module
 					->join('nf_user u',                  'n.user_id     = u.id AND u.deleted = "0"')
 					->where('nl.lang', $this->config->lang->info()->name)
 					->where('n.published', TRUE)
+					->where('n.deleted_at', NULL)
+					->where('n.date <=', date('Y-m-d H:i:s'))
 					->order_by('n.date DESC');
 
 		return ['nl.title', 'nl.introduction', 'nl.content'];

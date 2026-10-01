@@ -309,6 +309,49 @@ final class InstallerDbTest extends TestCase
 		@rmdir($root);
 	}
 
+	/**
+	 * Migrations des addons INSTALLÉS, appliquées par la mise à jour du cœur (2026-10-01) : seule la
+	 * place de marché lançait le runner d'un addon, et un module livré avec le cœur ne recevait jamais
+	 * les siennes. Une migration en attente s'exécute et se marque ; une déjà marquée, ou celle d'un
+	 * addon absent de `nf_addon`, ne s'exécute pas ; rejouer ne fait rien.
+	 */
+	public function testAddonMigrationsUpForInstalledAddons(): void
+	{
+		$project_root = dirname(__DIR__, 2);
+		$root = $this->tempDir('addonup');
+		foreach (['fakeaddon', 'absent'] as $nom)
+		{
+			mkdir($root . '/modules/' . $nom . '/install/migrations', 0775, true);
+		}
+		$mig = $root . '/modules/fakeaddon/install/migrations';
+		file_put_contents($mig . '/2026_01_01_deja.up.sql', 'CREATE TABLE nf_it_deja_marquee (id INT);');
+		file_put_contents($mig . '/2026_01_02_neuve.up.sql', 'CREATE TABLE nf_it_addon_neuve (id INT);');
+		file_put_contents($root . '/modules/absent/install/migrations/2026_01_01_x.up.sql', 'CREATE TABLE nf_it_addon_absent (id INT);');
+
+		$db = $this->freshLeanDb('neofrag_install_test_addonmig', $project_root);
+		$db->query("INSERT INTO nf_addon (type_id, name, data) SELECT id, 'fakeaddon', NULL FROM nf_addon_type WHERE name = 'module'");
+		$db->query("INSERT INTO nf_addon_migrations (type, name, migration, batch) VALUES ('module', 'fakeaddon', '2026_01_01_deja', 0)");
+
+		$faites = Installer::run_addon_migrations($db, $root);
+
+		$this->assertSame(['module/fakeaddon/2026_01_02_neuve'], $faites);
+		$this->assertSame(1, $this->tableExists($db, 'nf_it_addon_neuve'), 'la migration en attente est exécutée');
+		$this->assertSame(0, $this->tableExists($db, 'nf_it_deja_marquee'), 'une migration déjà marquée ne se rejoue pas');
+		$this->assertSame(0, $this->tableExists($db, 'nf_it_addon_absent'), 'un addon non installé est ignoré');
+		$this->assertSame(1, (int) $this->scalar($db, "SELECT batch FROM nf_addon_migrations WHERE migration = '2026_01_02_neuve'"), 'marquée dans un lot réel');
+		$this->assertSame([], Installer::run_addon_migrations($db, $root), 'rejouer ne fait rien');
+
+		$db->close();
+		self::$root->query('DROP DATABASE IF EXISTS `neofrag_install_test_addonmig`');
+
+		$it = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
+		foreach ($it as $f)
+		{
+			$f->isDir() ? @rmdir($f->getPathname()) : @unlink($f->getPathname());
+		}
+		@rmdir($root);
+	}
+
 	/** Crée une base éphémère avec le cœur lean importé (schema + seed + migrations up-only). */
 	private function freshLeanDb(string $name, string $root): mysqli
 	{

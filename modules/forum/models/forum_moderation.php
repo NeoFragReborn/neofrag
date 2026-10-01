@@ -176,7 +176,7 @@ trait Forum_Moderation
 									'm.deleted_reason',
 									't.title as topic_title',
 									't.forum_id',
-									'f.title as forum_title',
+									$this->titre_forum('f').' AS forum_title',
 									'u.username',
 									'ud.username as deleter_username'
 								)

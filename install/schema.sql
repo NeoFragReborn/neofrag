@@ -887,7 +887,11 @@ INSERT INTO `nf_migrations` (`id`, `name`, `batch`, `applied_at`) VALUES
 
 -- Avatar des comptes lies en 255 caracteres : nf_user_auth ci-dessus est deja a cette taille.
 -- Cf. migrations/2026_10_01_avatar_des_connexions.
-('53', '2026_10_01_avatar_des_connexions', '41', '2026-10-01 00:00:00');
+('53', '2026_10_01_avatar_des_connexions', '41', '2026-10-01 00:00:00'),
+
+-- Ancien reglage du rattrapage des migrations : une installation neuve ne l'a jamais eu.
+-- Cf. migrations/2026_10_01_reglage_des_migrations.
+('54', '2026_10_01_reglage_des_migrations', '42', '2026-10-01 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

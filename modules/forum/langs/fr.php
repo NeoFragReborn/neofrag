@@ -271,4 +271,7 @@ return [
 	'50cb8cb5' => 'sujet|sujets',
 	'695864e1' => 'message|messages',
 	'13f1a5c1' => 'Glisser-déposer',
+	'd88a9c3a' => 'Titre — %s',
+	'7940dcb0' => 'Description — %s',
+	'b4edce1c' => 'Affiché dans toutes les langues qui n’ont pas leur traduction ci-dessous.',
 ];

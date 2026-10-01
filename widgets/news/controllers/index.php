@@ -38,7 +38,7 @@ class Index extends Controller_Widget
 
 	public function categories($config = [])
 	{
-		$categories = $this->module('news')->model('categories')->get_categories();
+		$categories = $this->module('news')->model('categories')->get_categories(TRUE);
 
 		if (!empty($categories))
 		{
@@ -64,6 +64,11 @@ class Index extends Controller_Widget
 								->from('nf_news_lang nl')
 								->join('nf_news n', 'nl.news_id = n.news_id')
 								->where('n.published', TRUE)
+								// Ni corbeille, ni parution future, et la langue affichée : le nuage
+								// comptait les tags de tout, dans toutes les langues (2026-10-01).
+								->where('n.deleted_at', NULL)
+								->where('n.date <=', date('Y-m-d H:i:s'))
+								->where('nl.lang', $this->config->lang->info()->name)
 								->get())
 		{
 			foreach ($tags as $tag)

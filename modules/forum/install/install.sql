@@ -1,6 +1,6 @@
 -- NeoFrag Reborn — install du module « forum » — tables propres au module.
 -- Généré par tools/extract-module-sql.php depuis la base vive. NE PAS éditer à la main.
--- Régénérer : docker compose exec -T web php tools/extract-module-sql.php
+-- Régénérer : php tools/extract-module-sql.php
 
 SET FOREIGN_KEY_CHECKS = 0;
 SET NAMES utf8mb4;
@@ -20,6 +20,15 @@ CREATE TABLE IF NOT EXISTS `nf_forum` (
   CONSTRAINT `nf_forum_ibfk_1` FOREIGN KEY (`last_message_id`) REFERENCES `nf_forum_messages` (`message_id`) ON DELETE SET NULL ON UPDATE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `nf_forum_lang` (
+  `forum_id` int(11) unsigned NOT NULL,
+  `lang` varchar(5) NOT NULL,
+  `title` varchar(100) NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`forum_id`,`lang`),
+  CONSTRAINT `nf_forum_lang_ibfk_1` FOREIGN KEY (`forum_id`) REFERENCES `nf_forum` (`forum_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS `nf_forum_categories` (
   `category_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
@@ -27,6 +36,14 @@ CREATE TABLE IF NOT EXISTS `nf_forum_categories` (
   `image_id` int(11) unsigned DEFAULT NULL,
   `vip_only` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`category_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `nf_forum_categories_lang` (
+  `category_id` int(11) unsigned NOT NULL,
+  `lang` varchar(5) NOT NULL,
+  `title` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`category_id`,`lang`),
+  CONSTRAINT `nf_forum_categories_lang_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `nf_forum_categories` (`category_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_forum_topics` (

@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.2.3');
+define('NEOFRAG_VERSION', '1.2.4');
 
 error_reporting(E_ALL);
 
@@ -225,8 +225,12 @@ define('NEOFRAG_CORE', TRUE);
  * UNE fois, les migrations qu'il apporte : jusqu'au 2026-10-01, seule l'installation le faisait. En
  * temps normal, cela coûte une comparaison avec un réglage déjà en mémoire. Un échec ne casse pas la
  * page : il est journalisé, et la tentative suivante attend dix minutes.
+ *
+ * Le réglage est `nf_migrations_version`, et non `nf_schema_version` qu'employait la 1.2.3 : le code
+ * de mise à jour d'une 1.2.3 marque `nf_schema_version` à la version cible sans appliquer les
+ * migrations des modules, et le rattrapage se serait cru à jour.
  */
-if (($schema = (string) NeoFrag()->config->nf_schema_version) !== NEOFRAG_VERSION
+if (($schema = (string) NeoFrag()->config->nf_migrations_version) !== NEOFRAG_VERSION
 	&& !(str_starts_with($schema, 'echec:') && time() - (int) substr($schema, 6) < 600)
 	&& is_file(NEOFRAG_CMS.'/neofrag/installer.php'))
 {
@@ -234,12 +238,12 @@ if (($schema = (string) NeoFrag()->config->nf_schema_version) !== NEOFRAG_VERSIO
 	{
 		if (nf_migrations_du_code(NEOFRAG_CMS) !== NULL)
 		{
-			NeoFrag()->config('nf_schema_version', NEOFRAG_VERSION);
+			NeoFrag()->config('nf_migrations_version', NEOFRAG_VERSION);
 		}
 	}
 	catch (\Throwable $e)
 	{
-		NeoFrag()->config('nf_schema_version', 'echec:'.time());
+		NeoFrag()->config('nf_migrations_version', 'echec:'.time());
 		error_log('[migrations] '.$e->getMessage());
 	}
 }

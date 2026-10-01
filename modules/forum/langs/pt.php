@@ -273,4 +273,7 @@ return [
 	'50cb8cb5' => 'tópico|tópicos',
 	'695864e1' => 'mensagem|mensagens',
 	'13f1a5c1' => 'Arrastar e largar',
+	'd88a9c3a' => 'Título — %s',
+	'7940dcb0' => 'Descrição — %s',
+	'b4edce1c' => 'Exibido em todos os idiomas que não têm a sua tradução abaixo.',
 ];

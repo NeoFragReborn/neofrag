@@ -455,7 +455,7 @@ class Admin_Ajax extends Controller_Module
 
 			$this	->config('nf_update_callback',       $patch_name)
 					->config('nf_version',               version_format($version->version))
-					->config('nf_schema_version',        (string) $version->version)
+					->config('nf_migrations_version',    (string) $version->version)
 					->config('nf_monitoring_last_check', 0);
 		});
 	}

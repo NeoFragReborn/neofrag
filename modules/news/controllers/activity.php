@@ -21,6 +21,7 @@ class Activity extends Controller_Module
 							->where('n.user_id', $user_id)
 							->where('n.published', '1')
 							->where('n.deleted_at IS NULL')
+							->where('n.date <=', date('Y-m-d H:i:s'))
 							->order_by('n.date DESC')
 							->limit($limit)
 							->get() as $row)

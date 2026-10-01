@@ -116,9 +116,8 @@ function nf_demo_ecriture_permise(?string $module = NULL): bool
  * ancienne sous un code neuf. Nos trois sites ne l'ont jamais vu, leurs déploiements lançant
  * `tools/migrate.php up` à la main.
  *
- * Elle ne s'appuie que sur des méthodes d'`Installer` présentes depuis la première version publiée
- * (1.1.0) : la mise à jour de transition qui l'apporte tourne encore avec le code de mise à jour de
- * l'ancienne version, déjà chargé en mémoire.
+ * Elle et `Installer` sont livrés ensemble dans `neofrag/`, réécrit à chaque mise à jour : dans une
+ * même requête, ils sont toujours de la même version.
  *
  * Retourne les migrations appliquées ; NULL si une autre requête les applique en ce moment (rien
  * n'est alors conclu). Un site sans table de suivi — antérieur au runner — n'est pas touché :
@@ -157,7 +156,9 @@ function nf_migrations_du_code(string $root): ?array
 
 		try
 		{
-			return $installer::run_migrations($db, $root.'/migrations')['applied'];
+			// Le cœur d'abord, puis chaque addon installé : un module livré avec le cœur reçoit son code
+			// neuf par la même mise à jour, et ses migrations doivent suivre (2026-10-01).
+			return array_merge($installer::run_migrations($db, $root.'/migrations')['applied'], $installer::run_addon_migrations($db, $root));
 		}
 		finally
 		{

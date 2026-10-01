@@ -48,7 +48,7 @@ trait Forum_Fulltext
 								't.title as topic_title',
 								't.count_messages',
 								'f.forum_id',
-								'f.title as forum_title',
+								$this->titre_forum('f').' AS forum_title',
 								'u.id as user_id',
 								'u.username',
 								$relevance_select

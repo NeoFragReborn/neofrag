@@ -18,11 +18,106 @@ class Forum extends Model
 	use Forum_Threading_Db;  // lecture et validation des réponses (forum_threading.php)
 	use Forum_Attachments;   // pièces jointes + leur administration (forum_attachments.php)
 
+	/*
+	 * Les titres traduits (2026-10-01). Une catégorie et un forum gardent leur titre par défaut —
+	 * `title`, `description` — et peuvent en recevoir un par langue (`nf_forum_lang`,
+	 * `nf_forum_categories_lang`). L'affichage prend celui de la langue du visiteur, sinon le titre
+	 * par défaut : un forum jamais traduit s'affiche comme avant, partout.
+	 */
+
+	/** L'expression SQL du titre (ou de la description) d'un forum, dans la langue affichée. */
+	public function titre_forum(string $alias, string $colonne = 'title'): string
+	{
+		$colonne = $colonne === 'description' ? 'description' : 'title';
+
+		return 'COALESCE((SELECT NULLIF(tf.'.$colonne.', "") FROM nf_forum_lang tf WHERE tf.forum_id = '.$alias.'.forum_id AND tf.lang = "'.$this->_langue_forum().'"), '.$alias.'.'.$colonne.')';
+	}
+
+	/** L'expression SQL du titre d'une catégorie du forum, dans la langue affichée. */
+	public function titre_categorie(string $alias): string
+	{
+		return 'COALESCE((SELECT NULLIF(tc.title, "") FROM nf_forum_categories_lang tc WHERE tc.category_id = '.$alias.'.category_id AND tc.lang = "'.$this->_langue_forum().'"), '.$alias.'.title)';
+	}
+
+	/** Les traductions d'un forum ou d'une catégorie : [lang => ['title' => …, 'description' => …]]. */
+	public function traductions(string $type, int $id): array
+	{
+		[$table, $cle, $colonnes] = $type === 'category'
+			? ['nf_forum_categories_lang', 'category_id', ['lang', 'title']]
+			: ['nf_forum_lang', 'forum_id', ['lang', 'title', 'description']];
+
+		$traductions = [];
+
+		foreach ($this->db->select(...$colonnes)->from($table)->where($cle, $id)->get() as $ligne)
+		{
+			$traductions[$ligne['lang']] = $ligne;
+		}
+
+		return $traductions;
+	}
+
+	/** Enregistre les traductions saisies : un champ vide retire la traduction de cette langue. */
+	public function enregistrer_traductions(string $type, int $id, array $saisies): void
+	{
+		[$table, $cle] = $type === 'category' ? ['nf_forum_categories_lang', 'category_id'] : ['nf_forum_lang', 'forum_id'];
+
+		foreach ($saisies as $langue => $valeurs)
+		{
+			if (!preg_match('/^[a-z]{2}$/', (string) $langue))
+			{
+				continue;
+			}
+
+			$this->db->where($cle, $id)->where('lang', $langue)->delete($table);
+
+			$titre       = trim((string) ($valeurs['title'] ?? ''));
+			$description = trim((string) ($valeurs['description'] ?? ''));
+
+			if ($titre !== '' || $description !== '')
+			{
+				$this->db->insert($table, array_merge([$cle => $id, 'lang' => $langue, 'title' => $titre], $type === 'category' ? [] : ['description' => $description]));
+			}
+		}
+	}
+
+	/** Une adresse reste valable avec le titre par défaut ET avec chacune de ses traductions. */
+	private function _titre_d_adresse(string $type, int $id, string $slug, string $titre_par_defaut): bool
+	{
+		if ($slug === url_title($titre_par_defaut))
+		{
+			return TRUE;
+		}
+
+		foreach ($this->traductions($type, $id) as $traduction)
+		{
+			if ($traduction['title'] !== '' && $slug === url_title($traduction['title']))
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
+	private function _langue_forum(): string
+	{
+		// L'administration édite le titre PAR DÉFAUT ; les traductions ont leurs propres champs.
+		if ($this->url->admin)
+		{
+			return 'xx';
+		}
+
+		$langue = $this->config->lang;
+		$code   = is_object($langue) ? (string) $langue->info()->name : '';
+
+		return preg_match('/^[a-z]{2}$/', $code) ? $code : 'xx';
+	}
+
 	public function get_categories_list($forum_id = NULL)
 	{
 		$categories = [];
 
-		foreach ($this->db	->select('c.category_id', 'c.title', 'f.forum_id', 'f.title as forum_title')
+		foreach ($this->db	->select('c.category_id', $this->titre_categorie('c').' AS title', 'f.forum_id', $this->titre_forum('f').' AS forum_title')
 							->from('nf_forum_categories c')
 							->join('nf_forum f', 'c.category_id = f.parent_id AND f.is_subforum = "0"')
 							->order_by('c.order', 'f.order')
@@ -48,9 +143,9 @@ class Forum extends Model
 		$forums     = $this->get_forums();
 		$count_read = $i = 0;
 
-		foreach ($this->db	->select('category_id', 'title', 'image_id')
-							->from('nf_forum_categories')
-							->order_by('order', 'category_id')
+		foreach ($this->db	->select('c.category_id', $this->titre_categorie('c').' AS title', 'c.image_id')
+							->from('nf_forum_categories c')
+							->order_by('c.order', 'c.category_id')
 							->get() as $category)
 		{
 			if ($this->access('forum', 'category_read', $category['category_id']) && !$this->_vip_locked($category['category_id']))
@@ -84,16 +179,16 @@ class Forum extends Model
 	{
 		$tree = [];
 
-		foreach ($this->db	->select('category_id', 'title')
-							->from('nf_forum_categories')
-							->order_by('order', 'category_id')
+		foreach ($this->db	->select('c.category_id', $this->titre_categorie('c').' AS title')
+							->from('nf_forum_categories c')
+							->order_by('c.order', 'c.category_id')
 							->get() as $category)
 		{
 			if ($this->access('forum', 'category_read', $category['category_id']) && !$this->_vip_locked($category['category_id']))
 			{
 				$forums = [];
 
-				foreach ($this->db	->select('f.forum_id', 'f.title')
+				foreach ($this->db	->select('f.forum_id', $this->titre_forum('f').' AS title')
 									->from('nf_forum f')
 									->join('nf_forum_url u', 'u.forum_id = f.forum_id')
 									->where('f.parent_id', $category['category_id'])
@@ -104,7 +199,7 @@ class Forum extends Model
 				{
 					$subforums = [];
 
-					foreach ($this->db	->select('f.forum_id', 'f.title')
+					foreach ($this->db	->select('f.forum_id', $this->titre_forum('f').' AS title')
 										->from('nf_forum f')
 										->join('nf_forum_url u', 'u.forum_id = f.forum_id')
 										->where('f.parent_id', $forum['forum_id'])
@@ -150,8 +245,8 @@ class Forum extends Model
 
 		$forums = $this->db	->select(	'f.forum_id',
 										'f.parent_id',
-										'f.title',
-										'f.description',
+										$this->titre_forum('f').' AS title',
+										$this->titre_forum('f', 'description').' AS description',
 										!$forum_id ? 'f.count_messages + SUM(IFNULL(f2.count_messages, 0)) as count_messages' : 'f.count_messages',
 										!$forum_id ? 'f.count_topics   + SUM(IFNULL(f2.count_topics, 0))   as count_topics'   : 'f.count_topics',
 										'f.last_message_id',
@@ -319,12 +414,12 @@ class Forum extends Model
 
 	public function check_category($category_id, $title)
 	{
-		$category = $this->db	->select('category_id', 'title')
-								->from('nf_forum_categories')
-								->where('category_id', $category_id)
+		$category = $this->db	->select('c.category_id', 'c.title AS titre_par_defaut', $this->titre_categorie('c').' AS title')
+								->from('nf_forum_categories c')
+								->where('c.category_id', $category_id)
 								->row();
 
-		if ($category && $title == url_title($category['title']))
+		if ($category && $this->_titre_d_adresse('category', (int) $category_id, (string) $title, (string) $category['titre_par_defaut']))
 		{
 			return $category;
 		}
@@ -358,7 +453,7 @@ class Forum extends Model
 
 	public function check_forum($forum_id, &$title)
 	{
-		$forum = $this->db	->select('f.forum_id', 'f.title', 'f.description', 'f.parent_id', 'f.is_subforum', 'u.url', 'IFNULL(f3.parent_id, f.parent_id) as category_id', 'COUNT(f2.forum_id) as subforums')
+		$forum = $this->db	->select('f.forum_id', 'f.title AS titre_par_defaut', $this->titre_forum('f').' AS title', $this->titre_forum('f', 'description').' AS description', 'f.parent_id', 'f.is_subforum', 'u.url', 'IFNULL(f3.parent_id, f.parent_id) as category_id', 'COUNT(f2.forum_id) as subforums')
 							->from('nf_forum f')
 							// LEFT sur les deux : `f2` ne sert qu'a COMPTER les sous-forums, et `f3` a
 							// retrouver le parent QUAND il y en a un. En stricte, un forum sans sous-forum
@@ -369,7 +464,7 @@ class Forum extends Model
 							->where('f.forum_id', $forum_id)
 							->row();
 
-		if ($forum && $title == url_title($forum['title']))
+		if ($forum && $this->_titre_d_adresse('forum', (int) $forum_id, (string) $title, (string) $forum['titre_par_defaut']))
 		{
 			if ($this->_vip_locked($forum['category_id']))
 			{
@@ -387,7 +482,7 @@ class Forum extends Model
 
 	public function check_topic($topic_id, &$title)
 	{
-		$topic = $this->db	->select('t.title as topic_title', 't.forum_id', 'f.title', 'IFNULL(f2.parent_id, f.parent_id) as category_id', 't.views', 't.status IN ("-2", "1") as announce', 't.status IN ("-2", "-1") as locked')
+		$topic = $this->db	->select('t.title as topic_title', 't.forum_id', $this->titre_forum('f').' AS title', 'IFNULL(f2.parent_id, f.parent_id) as category_id', 't.views', 't.status IN ("-2", "1") as announce', 't.status IN ("-2", "-1") as locked')
 							->from('nf_forum_topics t')
 							->join('nf_forum        f',  't.forum_id  = f.forum_id')
 							->join('nf_forum        f2', 'f2.forum_id = f.parent_id AND f.is_subforum = "1"')

@@ -10,6 +10,33 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.4] — 2026-10-01
+
+### Ajouté
+
+- **Forum : des catégories et des forums traduisibles.** Chacun garde son titre par défaut et peut
+  recevoir un titre (et une description) par langue active, dans son formulaire d'administration. Le
+  visiteur voit la traduction de sa langue, sinon le titre par défaut. Une adresse reste valable avec
+  le titre par défaut comme avec chaque traduction.
+
+### Corrigé
+
+- **Une migration déjà en place ne bloque plus la mise à jour.** Appliquée à la main sans être
+  enregistrée, elle échouait (« colonne déjà présente ») et aurait annulé la mise à jour entière. Les
+  migrations s'appliquent désormais instruction par instruction, en ignorant seulement ce qui est déjà
+  fait.
+
+- **Les modules livrés avec le cœur reçoivent enfin leurs changements de base de données.** Seule la
+  mise à jour d'un addon par la place de marché les appliquait : un module comme le forum ou le
+  calendrier recevait son code neuf par la mise à jour du cœur, jamais sa base. Ils s'appliquent
+  désormais avec ceux du cœur, par le bouton comme après un dépôt FTP.
+- **Articles** : les six droits du module (ajouter, modifier, supprimer, et leurs équivalents pour les
+  catégories) n'étaient vérifiés nulle part. Ils le sont, actions groupées comprises.
+- **Un contenu programmé n'apparaît plus avant sa date**, ni un contenu mis à la corbeille : le widget
+  « Articles récents », le plan du site envoyé aux moteurs, la recherche des actualités, l'activité
+  d'un membre et le bloc « derniers articles » les montraient. Le widget Tags des actualités ne mêle
+  plus les langues, et celui des catégories ne compte plus les brouillons.
+
 ## [1.2.3] — 2026-10-01
 
 ### Corrigé

@@ -273,4 +273,7 @@ return [
 	'50cb8cb5' => 'topic|topics',
 	'695864e1' => 'message|messages',
 	'13f1a5c1' => 'Drag and drop',
+	'd88a9c3a' => 'Title — %s',
+	'7940dcb0' => 'Description — %s',
+	'b4edce1c' => 'Shown in every language that has no translation below.',
 ];

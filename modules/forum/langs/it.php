@@ -273,4 +273,7 @@ return [
 	'50cb8cb5' => 'argomento|argomenti',
 	'695864e1' => 'messaggio|messaggi',
 	'13f1a5c1' => 'Trascina e rilascia',
+	'd88a9c3a' => 'Titolo — %s',
+	'7940dcb0' => 'Descrizione — %s',
+	'b4edce1c' => 'Mostrato in tutte le lingue che non hanno la loro traduzione qui sotto.',
 ];

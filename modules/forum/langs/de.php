@@ -273,4 +273,7 @@ return [
 	'50cb8cb5' => 'Thema|Themen',
 	'695864e1' => 'Nachricht|Nachrichten',
 	'13f1a5c1' => 'Ziehen und ablegen',
+	'd88a9c3a' => 'Titel — %s',
+	'7940dcb0' => 'Beschreibung — %s',
+	'b4edce1c' => 'Wird in allen Sprachen ohne Übersetzung unten angezeigt.',
 ];

@@ -53,7 +53,7 @@ trait Forum_Subscriptions
 									't.forum_id',
 									't.last_message_id',
 									't.count_messages',
-									'f.title as forum_title',
+									$this->titre_forum('f').' AS forum_title',
 									'tr.created_at as subscribed_at',
 									'tr.last_notified_at',
 									'um.username as last_username',
@@ -116,7 +116,7 @@ trait Forum_Subscriptions
 									'u.email',
 									't.title as topic_title',
 									't.forum_id',
-									'f.title as forum_title'
+									$this->titre_forum('f').' AS forum_title'
 								)
 						->from('nf_forum_track tr')
 						->join('nf_user u',         'u.id = tr.user_id')

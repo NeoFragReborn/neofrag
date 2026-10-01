@@ -28,14 +28,19 @@ class Categories extends Model
 						->row();
 	}
 
-	public function get_categories()
+	/**
+	 * @param bool $visibles ne compter que ce que le public voit — ni brouillon, ni corbeille, ni
+	 *                       parution future. L'administration compte tout ; le widget, jusqu'au
+	 *                       2026-10-01, comptait tout aussi.
+	 */
+	public function get_categories(bool $visibles = FALSE)
 	{
 		return $this->db->select('c.category_id', 'c.icon_id', 'c.name', 'cl.title', 'COUNT(n.news_id) as nb_news')
 						->from('nf_news_categories c')
 						->join_lang('nf_news_categories_lang cl', 'category_id', 'c.category_id')
 						// LEFT : cette jointure ne sert qu'a COMPTER les actualites. En stricte, une
 						// categorie VIDE disparaissait de la liste des categories.
-						->join('nf_news n', 'c.category_id = n.category_id', 'LEFT')
+						->join('nf_news n', 'c.category_id = n.category_id'.($visibles ? ' AND n.published = "1" AND n.deleted_at IS NULL AND n.date <= "'.date('Y-m-d H:i:s').'"' : ''), 'LEFT')
 						->group_by('c.category_id')
 						->order_by('cl.title')
 						->get();

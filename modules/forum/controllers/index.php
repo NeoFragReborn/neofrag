@@ -682,7 +682,7 @@ class Index extends Controller_Module
 
 			if ($is_topic)
 			{
-				redirect('forum/'.$forum_id.'/'.url_title($this->db()->select('title')->from('nf_forum')->where('forum_id', $forum_id)->row()));
+				redirect('forum/'.$forum_id.'/'.url_title($this->db()->select($this->_modele_forum()->titre_forum('f'))->from('nf_forum f')->where('f.forum_id', $forum_id)->row()));
 			}
 			else
 			{
@@ -731,14 +731,14 @@ class Index extends Controller_Module
 
 	private function _breadcrumb($category_id, $forum_id)
 	{
-		if ($category = $this->db->select('title')->from('nf_forum_categories')->where('category_id', $category_id)->row())
+		if ($category = $this->db->select($this->_modele_forum()->titre_categorie('c'))->from('nf_forum_categories c')->where('c.category_id', $category_id)->row())
 		{
 			$this->breadcrumb($category, 'forum');
 		}
 
-		if (list($title, $parent_forum_id) = array_values($this->db->select('title', 'IF(is_subforum = "1", parent_id, 0)')->from('nf_forum')->where('forum_id', $forum_id)->row()))
+		if (list($title, $parent_forum_id) = array_values($this->db->select($this->_modele_forum()->titre_forum('f'), 'IF(f.is_subforum = "1", f.parent_id, 0)')->from('nf_forum f')->where('f.forum_id', $forum_id)->row()))
 		{
-			if ($parent_forum_id && $parent_forum = $this->db->select('title')->from('nf_forum')->where('forum_id', $parent_forum_id)->row())
+			if ($parent_forum_id && $parent_forum = $this->db->select($this->_modele_forum()->titre_forum('f'))->from('nf_forum f')->where('f.forum_id', $parent_forum_id)->row())
 			{
 				$this->breadcrumb($parent_forum, 'forum/'.$parent_forum_id.'/'.url_title($parent_forum));
 			}
@@ -747,5 +747,18 @@ class Index extends Controller_Module
 		}
 
 		return $this;
+	}
+
+	/** Le modèle du forum, typé : pour l'analyse statique, `$this->model()` rend un modèle générique. */
+	private function _modele_forum(): \NF\Modules\Forum\Models\Forum
+	{
+		$modele = $this->model('forum');
+
+		if (!$modele instanceof \NF\Modules\Forum\Models\Forum)
+		{
+			throw new \LogicException('modèle du forum introuvable');
+		}
+
+		return $modele;
 	}
 }

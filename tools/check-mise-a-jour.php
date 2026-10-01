@@ -180,20 +180,39 @@ foreach ($de_cible as $chemin)
         continue;
     }
 
+    // Les migrations du cœur, et celles des modules, widgets et thèmes : une migration de module
+    // apportée par la cible doit, elle aussi, être absente du site de départ.
     if (preg_match('#^migrations/(.+)\.up\.sql$#', $chemin, $m))
     {
-        $apportees[] = $m[1];
+        $apportees[$m[1]] = ['migrations/'.$m[1].'.down.sql', NULL];
+    }
+    elseif (preg_match('#^(module|widget|theme)s/([a-z0-9_]+)/install/migrations/(.+)\.up\.sql$#', $chemin, $m))
+    {
+        $apportees[$m[3].' '.$m[1].'/'.$m[2]] = [$m[1].'s/'.$m[2].'/install/migrations/'.$m[3].'.down.sql', [$m[1], $m[2], $m[3]]];
     }
 
     @unlink($site.'/'.$chemin);
 }
 
-rsort($apportees);
+krsort($apportees);
 
-foreach ($apportees as $migration)
+foreach ($apportees as $migration => [$retour, $addon])
 {
-    Installer::import_sql_file($db, $racine.'/migrations/'.$migration.'.down.sql');
-    $db->query("DELETE FROM nf_migrations WHERE name = '".$db->real_escape_string($migration)."'");
+    if (!is_file($racine.'/'.$retour))
+    {
+        nf_refus("la migration {$migration} n'a pas de {$retour} : impossible de ramener le site à {$depart}");
+    }
+
+    Installer::import_sql_file($db, $racine.'/'.$retour);
+
+    if ($addon === NULL)
+    {
+        $db->query("DELETE FROM nf_migrations WHERE name = '".$db->real_escape_string($migration)."'");
+    }
+    else
+    {
+        $db->query("DELETE FROM nf_addon_migrations WHERE type = '".$db->real_escape_string($addon[0])."' AND name = '".$db->real_escape_string($addon[1])."' AND migration = '".$db->real_escape_string($addon[2])."'");
+    }
 }
 
 if (!preg_match("/define\('NEOFRAG_VERSION', '([^']*)'\);/", (string) file_get_contents($site.'/index.php'), $m) || $m[1] !== $depart)
@@ -202,7 +221,7 @@ if (!preg_match("/define\('NEOFRAG_VERSION', '([^']*)'\);/", (string) file_get_c
 }
 
 printf("  ramené à %s : %d fichier(s) du paquet publié, %d migration(s) de la cible défaite(s)%s\n",
-    $depart, count($du_depart), count($apportees), $apportees ? ' ('.implode(', ', $apportees).')' : '');
+    $depart, count($du_depart), count($apportees), $apportees ? ' ('.implode(', ', array_keys($apportees)).')' : '');
 
 // Le réglage n'existe pas forcément sur un site neuf : nf_reglage_poser() ne ferait rien.
 $db->query("INSERT INTO nf_settings (name, site, lang, value, type) VALUES ('nf_monitoring_check_url', '', '', '"
@@ -313,6 +332,22 @@ if (!$echecs)
         static fn (string $nom): bool => !isset($appliquees[$nom])
     ));
 
+    // Et celles de chaque module, widget ou thème installé : jusqu'au 2026-10-01, seule la place de
+    // marché les appliquait, et un module livré avec le cœur ne recevait jamais les siennes.
+    $addons_appliquees = array_flip(array_map(static fn (array $l): string => $l['type'].'/'.$l['name'].'/'.$l['migration'],
+        $db->query('SELECT type, name, migration FROM nf_addon_migrations')->fetch_all(MYSQLI_ASSOC)));
+
+    foreach ($db->query('SELECT t.name AS type, a.name FROM nf_addon a JOIN nf_addon_type t ON t.id = a.type_id')->fetch_all(MYSQLI_ASSOC) as $addon)
+    {
+        foreach (glob($site.'/'.$addon['type'].'s/'.$addon['name'].'/install/migrations/*.up.sql') ?: [] as $f)
+        {
+            if (!isset($addons_appliquees[$cle = $addon['type'].'/'.$addon['name'].'/'.basename($f, '.up.sql')]))
+            {
+                $manquantes[] = $cle;
+            }
+        }
+    }
+
     if ($manquantes)
     {
         $echecs[] = sprintf('%d migration(s) livrée(s) mais pas appliquée(s) : %s', count($manquantes), implode(', ', array_slice($manquantes, 0, 5)));
@@ -328,9 +363,9 @@ if (!$echecs)
         $echecs[] = sprintf('%d fichier(s) d\'install/ pas à la version %s, dont : %s', count($install_en_retard), $cible, implode(', ', array_slice($install_en_retard, 0, 5)));
     }
 
-    if (($schema = nf_reglage($db, 'nf_schema_version')) !== $cible)
+    if (($schema = nf_reglage($db, 'nf_migrations_version')) !== $cible)
     {
-        $echecs[] = 'le réglage nf_schema_version vaut '.($schema ?? '(absent)').", pas {$cible}";
+        $echecs[] = 'le réglage nf_migrations_version vaut '.($schema ?? '(absent)').", pas {$cible}";
     }
 }
 

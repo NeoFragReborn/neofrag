@@ -304,6 +304,8 @@ JS;
 								->from('nf_articles a')
 								->join('nf_articles_lang al', 'a.article_id = al.article_id')
 								->where('a.published', '1')
+								->where('a.deleted_at', NULL)
+								->where('a.date <=', date('Y-m-d H:i:s'))
 								->where('al.lang', $this->config->lang->info()->name)
 								->order_by('a.date DESC')
 								->get();
@@ -324,6 +326,8 @@ JS;
 							->from('nf_news n')
 							->join('nf_news_lang nl', 'n.news_id = nl.news_id')
 							->where('n.published', '1')
+							->where('n.deleted_at', NULL)
+							->where('n.date <=', date('Y-m-d H:i:s'))
 							->where('nl.lang', $this->config->lang->info()->name)
 							->order_by('n.date DESC')
 							->get();

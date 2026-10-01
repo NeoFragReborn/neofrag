@@ -104,7 +104,7 @@ use NF\NeoFrag\Core;
  * @property mixed $nf_translate_api
  * @property mixed $nf_pwa
  * @property mixed $nf_version
- * @property mixed $nf_schema_version
+ * @property mixed $nf_migrations_version
  *
  * Deux valeurs que Config pose lui-même (voir `_const`), pas des réglages : la langue courante
  * et la liste des langues installées. `mixed` et non `Language` : cet addon résout `date()`,

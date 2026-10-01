@@ -324,6 +324,39 @@ final class Installer
 	 * auto-commit : en cas d'erreur la base peut être partiellement créée — l'appelant
 	 * doit alors DROP/recréer la base avant de réessayer.
 	 */
+	/**
+	 * Les erreurs MySQL qui disent « c'est déjà fait » : table, colonne, index ou clé déjà présents,
+	 * élément déjà supprimé. Une migration appliquée à la main sans être enregistrée — ou une base
+	 * restaurée en partie — n'est pas une panne : relevé le 2026-10-01 sur l'atelier, où le rappel du
+	 * calendrier était dans le schéma sans être marqué, et sa migration rejouée échouait. Sur un site,
+	 * cela aurait annulé la mise à jour entière.
+	 */
+	private const DEJA_EN_PLACE = [1022, 1050, 1060, 1061, 1091, 1826];
+
+	/**
+	 * Applique une migration instruction par instruction, en ignorant seulement ce qui est déjà en
+	 * place ; toute autre erreur lève, comme import_sql_file(). Les migrations sont de simples
+	 * suites d'instructions séparées par `;` en fin de ligne, sans procédure ni délimiteur.
+	 */
+	private static function appliquer_migration(mysqli $db, string $path): void
+	{
+		$sql = (string) @file_get_contents($path);
+		$sql = (string) preg_replace('/^\s*--.*$/m', '', $sql);
+
+		foreach (preg_split('/;\s*$/m', $sql) ?: [] as $instruction)
+		{
+			if (trim($instruction) === '')
+			{
+				continue;
+			}
+
+			if (!$db->query($instruction) && !in_array($db->errno, self::DEJA_EN_PLACE, TRUE))
+			{
+				self::sql_import_error(basename($path), $db->error);
+			}
+		}
+	}
+
 	public static function import_sql_file(mysqli $db, string $path): void
 	{
 		$sql = @file_get_contents($path);
@@ -425,7 +458,7 @@ final class Installer
 
 		foreach ($pending as $name)
 		{
-			self::import_sql_file($db, $migrations_dir.'/'.$name.'.up.sql');
+			self::appliquer_migration($db, $migrations_dir.'/'.$name.'.up.sql');
 			self::mark_migration($db, $name, $batch);
 			$done[] = $name;
 		}
@@ -878,6 +911,78 @@ final class Installer
 			$stmt->bind_param('sss', $type, $name, $migration);
 			$stmt->execute() || self::throw_db("baseline migration {$migration}", $db);
 		}
+	}
+
+	/**
+	 * Les migrations en attente de chaque addon INSTALLÉ (`nf_addon`), dans l'ordre de leur préfixe
+	 * daté — ce que fait `Addon::migrate('up')`, pour tous à la fois.
+	 *
+	 * Jusqu'au 2026-10-01, seule la mise à jour d'un addon par la place de marché appelait son
+	 * runner. Les modules livrés avec le cœur — forum, actualités, calendrier… — recevaient leur code
+	 * neuf par la mise à jour du cœur, et jamais leurs migrations : nos sites les ont eues parce que
+	 * leurs déploiements les posaient à la main.
+	 *
+	 * S'arrête à la première erreur, en levant : la migration fautive et les suivantes ne sont pas
+	 * marquées, et la mise à jour qui l'appelle peut annuler.
+	 *
+	 * @return string[] `type/nom/migration` de chaque migration appliquée
+	 */
+	public static function run_addon_migrations(mysqli $db, string $root): array
+	{
+		if (!self::table_exists($db, 'nf_addon') || !self::table_exists($db, 'nf_addon_type'))
+		{
+			return [];
+		}
+
+		self::ensure_addon_migrations_table($db);
+
+		$res     = $db->query('SELECT t.name AS type, a.name FROM nf_addon a JOIN nf_addon_type t ON t.id = a.type_id ORDER BY t.name, a.name');
+		$faites  = [];
+
+		foreach ($res ? $res->fetch_all(MYSQLI_ASSOC) : [] as $addon)
+		{
+			$type = (string) $addon['type'];
+			$nom  = (string) $addon['name'];
+
+			if (!preg_match('/^[a-z0-9_]+$/', $type.$nom) || !($fichiers = glob($root.'/'.$type.'s/'.$nom.'/install/migrations/*.up.sql')))
+			{
+				continue;
+			}
+
+			$migrations = array_map(static fn (string $f): string => basename($f, '.up.sql'), $fichiers);
+			sort($migrations);
+
+			$appliquees = [];
+			$lot        = 0;
+			$stmt       = $db->prepare('SELECT migration, batch FROM nf_addon_migrations WHERE type = ? AND name = ?');
+			$stmt->bind_param('ss', $type, $nom);
+			$stmt->execute();
+
+			foreach ($stmt->get_result()->fetch_all(MYSQLI_ASSOC) as $ligne)
+			{
+				$appliquees[$ligne['migration']] = TRUE;
+				$lot = max($lot, (int) $ligne['batch']);
+			}
+
+			foreach ($migrations as $migration)
+			{
+				if (isset($appliquees[$migration]))
+				{
+					continue;
+				}
+
+				self::appliquer_migration($db, $root.'/'.$type.'s/'.$nom.'/install/migrations/'.$migration.'.up.sql');
+
+				$suivant = $lot + 1;
+				$marque  = $db->prepare('INSERT INTO nf_addon_migrations (type, name, migration, batch) VALUES (?, ?, ?, ?)');
+				$marque->bind_param('sssi', $type, $nom, $migration, $suivant);
+				$marque->execute() || self::throw_db("migration {$type}/{$nom}/{$migration}", $db);
+
+				$faites[] = $type.'/'.$nom.'/'.$migration;
+			}
+		}
+
+		return $faites;
 	}
 
 	private static function ensure_addon_migrations_table(mysqli $db): void
