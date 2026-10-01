@@ -42,9 +42,9 @@ require __DIR__.'/lib/outil.php';
 require __DIR__.'/lib/site.php';
 require __DIR__.'/lib/serveur.php';
 require __DIR__.'/lib/vierge.php';
-require_once __DIR__.'/../install/lib/installer.php';
+require_once __DIR__.'/../neofrag/installer.php';
 
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 
 [$o] = nf_options([
     'origine'        => 'https://neofrag-reborn.xyz/update',
@@ -128,9 +128,10 @@ for ($i = 0; $i < $zip->numFiles; $i++)
 {
     $entree = (string) $zip->getNameIndex($i);
 
-    // Ce que l'updater écrit, et rien d'autre : ni dossiers, ni fichiers de racine hors index.php,
-    // ni config/ et install/ déjà en place.
-    if (str_ends_with($entree, '/') || !preg_match('#/|^index\.php$#', $entree) || (preg_match('#^(config|install)/#', $entree) && file_exists($site.'/'.$entree)))
+    // Ce qu'a un vrai site de cette version : ni dossiers, ni fichiers de racine hors index.php, ni sa
+    // configuration et son verrou d'installation. Mais bien l'`install/` de la version de départ — un
+    // site le garde, et avant 1.2.3 la mise à jour n'y réécrivait rien.
+    if (str_ends_with($entree, '/') || !preg_match('#/|^index\.php$#', $entree) || str_starts_with($entree, 'config/') || $entree === 'install/db.txt')
     {
         continue;
     }
@@ -144,14 +145,37 @@ $zip->close();
 @unlink($fichier);
 
 // Ce que la cible apporte et que le départ n'avait pas : retiré, et ses migrations défaites, de la
-// plus récente à la plus ancienne.
+// plus récente à la plus ancienne. La liste vient du PAQUET cible, pas de `checksum.json` : celui-ci
+// ne couvre que les dossiers que surveille le Monitoring, sans `migrations/` ni `vendor/` — la
+// première version de cette étape n'a ainsi défait aucune migration, et s'est crue probante.
+$url_cible = $origine.'/'.(string) $annonce['neofrag']['file'];
+$paquet    = nf_http($url_cible, ['timeout' => 300]);
+$de_cible  = [];
+$install_cible = [];
+
+if ($paquet['code'] !== 200 || file_put_contents($fichier, $paquet['corps']) === FALSE || $zip->open($fichier) !== TRUE)
+{
+    nf_refus("le paquet cible est illisible ({$url_cible} : HTTP {$paquet['code']})");
+}
+
+for ($i = 0; $i < $zip->numFiles; $i++)
+{
+    $de_cible[] = $entree = (string) $zip->getNameIndex($i);
+
+    if (str_starts_with($entree, 'install/') && !str_ends_with($entree, '/') && $entree !== 'install/db.txt')
+    {
+        $install_cible[$entree] = md5((string) $zip->getFromIndex($i));
+    }
+}
+
+$zip->close();
+@unlink($fichier);
+
 $apportees = [];
 
-foreach (array_keys($empreintes) as $chemin)
+foreach ($de_cible as $chemin)
 {
-    $chemin = (string) $chemin;
-
-    if (isset($du_depart[$chemin]) || preg_match('#^(config|install)/#', $chemin))
+    if (str_ends_with($chemin, '/') || isset($du_depart[$chemin]) || !preg_match('#/|^index\.php$#', $chemin) || str_starts_with($chemin, 'config/') || $chemin === 'install/db.txt')
     {
         continue;
     }
@@ -241,7 +265,7 @@ if (!$echecs)
         $echecs[] = "le réglage nf_version vaut {$reglage}, pas {$cible}";
     }
 
-    // Le paquet ne réécrit jamais config/ ni install/ quand ils existent : ce sont les fichiers du site.
+    // checksum.json ne couvre ni config/ ni install/ ; on écarte quand même ce qui appartient au site.
     $differents = [];
     $absents    = [];
 
@@ -294,6 +318,16 @@ if (!$echecs)
         $echecs[] = sprintf('%d migration(s) livrée(s) mais pas appliquée(s) : %s', count($manquantes), implode(', ', array_slice($manquantes, 0, 5)));
     }
 
+    // `install/` suit la version depuis 1.2.3. Un départ plus ancien applique la mise à jour avec SON
+    // code, qui n'y réécrit rien : `install/` ne se rattrape qu'à la mise à jour suivante, et on le dit.
+    $install_en_retard = array_keys(array_filter($install_cible, static fn (string $md5, string $chemin): bool =>
+        !is_file($site.'/'.$chemin) || md5_file($site.'/'.$chemin) !== $md5, ARRAY_FILTER_USE_BOTH));
+
+    if ($install_en_retard && isset($du_depart['neofrag/installer.php']))
+    {
+        $echecs[] = sprintf('%d fichier(s) d\'install/ pas à la version %s, dont : %s', count($install_en_retard), $cible, implode(', ', array_slice($install_en_retard, 0, 5)));
+    }
+
     if (($schema = nf_reglage($db, 'nf_schema_version')) !== $cible)
     {
         $echecs[] = 'le réglage nf_schema_version vaut '.($schema ?? '(absent)').", pas {$cible}";
@@ -341,6 +375,11 @@ if ($echecs)
     }
 
     nf_echec(sprintf('la mise à jour %s → %s depuis %s ne tient pas ses promesses (%d point(s))', $depart, $cible, $origine, count($echecs)));
+}
+
+if ($install_en_retard ?? [])
+{
+    printf("\n  · install/ : %d fichier(s) gardent la version %s, comme attendu — son code de mise à jour n'y réécrivait rien ; la mise à jour suivante les rattrapera.\n", count($install_en_retard), $depart);
 }
 
 printf("\n  ✓ %s installée, %d fichier(s) du paquet identiques à checksum.json, accueil et administration en 200, migrations livrées toutes appliquées, mise à jour inscrite à l'audit, journal muet.\n",

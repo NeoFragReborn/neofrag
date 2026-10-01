@@ -30,9 +30,9 @@ require_once __DIR__.'/outil.php';
  * cœur, sous peine d'orphelins. C'est tools/check-addon-declarations.php qui garde cette propriété.
  */
 
-require_once dirname(__DIR__, 2).'/install/lib/installer.php';
+require_once dirname(__DIR__, 2).'/neofrag/installer.php';
 
-$nf_declarations = \NF\Install\Lib\Installer::addon_declarations(dirname(__DIR__, 2));
+$nf_declarations = \NF\NeoFrag\Installer::addon_declarations(dirname(__DIR__, 2));
 
 $nf_manifeste = [
     'identity' => ['module' => [], 'widget' => [], 'theme' => []],

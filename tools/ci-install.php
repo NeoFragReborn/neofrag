@@ -27,9 +27,9 @@ declare(strict_types=1);
  */
 
 require __DIR__.'/lib/outil.php';
-require nf_racine().'/install/lib/installer.php';
+require nf_racine().'/neofrag/installer.php';
 
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 
 $root  = nf_racine();
 $host  = getenv('NF_DB_HOST') ?: 'db';

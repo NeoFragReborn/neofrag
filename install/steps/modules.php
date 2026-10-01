@@ -14,7 +14,7 @@
  * Variables fournies par index.php : $CSRF, $NF_ROOT, nf_e(). Le titre est porté par le bandeau.
  */
 
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 
 $presets    = Installer::presets($NF_ROOT);
 $defaut     = (string) array_key_first($presets);

@@ -3,7 +3,7 @@ declare(strict_types=1);
 namespace NF\Modules\Marketplace\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module_Checker;
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 
 class Checker extends Module_Checker
 {
@@ -11,7 +11,7 @@ class Checker extends Module_Checker
 
 	public function index()
 	{
-		require_once NEOFRAG_CMS . '/install/lib/installer.php';
+		require_once NEOFRAG_CMS . '/neofrag/installer.php';
 
 		// Origine fixe validée contre l'allow-list (défaut neofrag-reborn.xyz) : un override
 		// nf_marketplace_url ne peut pointer que vers un hôte autorisé en HTTPS (anti-SSRF).

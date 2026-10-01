@@ -121,8 +121,8 @@ array_walk_recursive($map, static function ($valeur) use (&$proprietaire): void 
 });
 
 // ── 2. Addons présents et leurs déclarations ──────────────────────────────────
-require_once $racine . '/install/lib/installer.php';
-$declarations = \NF\Install\Lib\Installer::addon_declarations($racine);
+require_once $racine . '/neofrag/installer.php';
+$declarations = \NF\NeoFrag\Installer::addon_declarations($racine);
 
 /** nom d'addon → type, pour reconnaître module('x') / widget('x') / theme('x'). */
 $addons_par_type = ['module' => [], 'widget' => [], 'theme' => []];

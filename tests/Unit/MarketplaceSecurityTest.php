@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace NF\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 use ZipArchive;
 use RuntimeException;
 
-require_once __DIR__ . '/../../install/lib/installer.php';
+require_once __DIR__ . '/../../neofrag/installer.php';
 
 /**
  * Garde-fous SÉCURITÉ du marketplace distant (spec §7), sans réseau ni base : les rejets

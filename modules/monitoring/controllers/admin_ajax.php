@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace NF\Modules\Monitoring\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 
 class Admin_Ajax extends Controller_Module
 {
@@ -56,7 +56,7 @@ class Admin_Ajax extends Controller_Module
 			// Ce réglage était VIDE par défaut et déclaré nulle part : version.json n'était donc jamais
 			// téléchargé, le thème admin ne voyait jamais de nouvelle version, et le bouton de mise à
 			// jour n'apparaissait jamais. Il a maintenant un défaut valide.
-			require_once NEOFRAG_CMS.'/install/lib/installer.php';
+			require_once NEOFRAG_CMS.'/neofrag/installer.php';
 
 			$cfg       = $this->config->nf_monitoring_check_url;
 			$check_url = Installer::sanitize_update_url(is_string($cfg) ? trim($cfg) : NULL);
@@ -343,7 +343,7 @@ class Admin_Ajax extends Controller_Module
 			return;
 		}
 
-		require_once NEOFRAG_CMS.'/install/lib/installer.php';
+		require_once NEOFRAG_CMS.'/neofrag/installer.php';
 
 		if (!($version = $this->theme('admin')->update()))
 		{
@@ -532,7 +532,7 @@ class Admin_Ajax extends Controller_Module
 	 */
 	private function _backup()
 	{
-		require_once NEOFRAG_CMS.'/install/lib/installer.php';
+		require_once NEOFRAG_CMS.'/neofrag/installer.php';
 
 		dir_create('backups');
 

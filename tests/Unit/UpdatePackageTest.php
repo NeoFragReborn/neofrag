@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace NF\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 use ZipArchive;
 use RuntimeException;
 
-require_once __DIR__ . '/../../install/lib/installer.php';
+require_once __DIR__ . '/../../neofrag/installer.php';
 
 /**
  * Application d'un paquet de mise à jour du cœur, sans réseau ni base : le paquet est fabriqué de
@@ -123,25 +123,59 @@ final class UpdatePackageTest extends TestCase
 	public function test_la_configuration_d_un_site_en_service_n_est_jamais_reecrite(): void
 	{
 		$root = $this->site([
-			'index.php'          => 'x',
-			'config/db.php'      => 'SECRET EN PLACE',
-			'install/schema.sql' => 'schema en place',
+			'index.php'     => 'x',
+			'config/db.php' => 'SECRET EN PLACE',
+			'install/db.txt' => 'VERROU EN PLACE',
 		]);
 
 		$zip = $this->package([
-			'index.php'          => 'x',
-			'config/db.php'      => 'ECRASE',
-			'install/schema.sql' => 'ECRASE',
-			'install/nouveau.sql' => 'fichier neuf',
+			'index.php'      => 'x',
+			'config/db.php'  => 'ECRASE',
+			'install/db.txt' => 'ECRASE',
 		]);
 
 		Installer::apply_update_package($zip, $root);
 		@unlink($zip);
 
 		$this->assertSame('SECRET EN PLACE', file_get_contents($root . '/config/db.php'));
-		$this->assertSame('schema en place', file_get_contents($root . '/install/schema.sql'));
-		// … mais un fichier d'installation NOUVEAU doit bien arriver.
+		$this->assertSame('VERROU EN PLACE', file_get_contents($root . '/install/db.txt'));
+	}
+
+	/**
+	 * Le reste d'`install/` est du code du produit, et suit les versions. Jusqu'au 2026-10-01, la mise
+	 * à jour n'y réécrivait rien : un site gardait l'installeur — et avec lui le code même de la mise à
+	 * jour et de la place de marché — du jour de son installation.
+	 */
+	public function test_le_code_d_installation_suit_la_version(): void
+	{
+		$root = $this->site([
+			'index.php'                => 'x',
+			'install/lib/installer.php' => 'ancien',
+			'install/schema.sql'        => 'ancien schema',
+		]);
+
+		$zip = $this->package([
+			'index.php'                 => 'x',
+			'install/lib/installer.php' => 'nouveau',
+			'install/schema.sql'        => 'nouveau schema',
+			'install/nouveau.sql'       => 'fichier neuf',
+		]);
+
+		Installer::apply_update_package($zip, $root);
+		@unlink($zip);
+
+		$this->assertSame('nouveau', file_get_contents($root . '/install/lib/installer.php'));
+		$this->assertSame('nouveau schema', file_get_contents($root . '/install/schema.sql'));
 		$this->assertSame('fichier neuf', file_get_contents($root . '/install/nouveau.sql'));
+	}
+
+	/** Sans dossier `install/` (supprimé après l'installation), la bibliothèque reste utilisable. */
+	public function test_la_bibliotheque_ne_depend_pas_du_dossier_install(): void
+	{
+		$source = (string) file_get_contents(dirname(__DIR__, 2) . '/neofrag/installer.php');
+
+		$this->assertStringNotContainsString("require_once __DIR__.'/langue.php'", $source);
+		$this->assertMatchesRegularExpression("#if \\(is_file\\(\\\$nf_langue_installeur = dirname\\(__DIR__\\)\\.'/install/lib/langue\\.php'\\)\\)#", $source);
 	}
 
 	public function test_les_fichiers_de_racine_ne_sont_pas_superposes_sauf_index(): void

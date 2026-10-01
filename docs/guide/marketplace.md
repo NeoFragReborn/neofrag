@@ -76,7 +76,7 @@ Le marketplace est un **jeu de fichiers statiques** servi sur le domaine de la m
 2. Uploade le contenu de `marketplace/` à la racine du site → `https://<host>/marketplace/catalog.json`.
 3. Le CMS pointe vers ce catalogue via **`nf_marketplace_url`** (défaut : `https://neofrag-reborn.xyz/marketplace`,
    **sans `www`**). Origines autorisées (anti-SSRF, HTTPS:443) : `neofrag-reborn.xyz` et `www.neofrag-reborn.xyz` ;
-   pour un autre domaine, adapte `nf_marketplace_url` **et** `MARKETPLACE_HOSTS` dans `install/lib/installer.php`.
+   pour un autre domaine, adapte `nf_marketplace_url` **et** `MARKETPLACE_HOSTS` dans `neofrag/installer.php`.
 
 À refaire **à chaque changement d'addon** (version ou fichiers) : les SHA-256 du catalogue doivent
 correspondre aux zips publiés (même run).

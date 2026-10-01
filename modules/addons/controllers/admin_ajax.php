@@ -27,8 +27,8 @@ class Admin_Ajax extends Controller_Module
 						{
 							// Anti-zip-slip : REFUSER toute archive dont une entrée s'échappe du dossier
 							// d'extraction (chemin absolu / « .. » / antislash) AVANT d'extraire.
-							require_once NEOFRAG_CMS . '/install/lib/installer.php';
-							if (!\NF\Install\Lib\Installer::zip_entries_safe($zip))
+							require_once NEOFRAG_CMS . '/neofrag/installer.php';
+							if (!\NF\NeoFrag\Installer::zip_entries_safe($zip))
 							{
 								$zip->close();
 								@unlink($tmp_file);
@@ -222,14 +222,14 @@ class Admin_Ajax extends Controller_Module
 	 */
 	public function marketplace()
 	{
-		require_once NEOFRAG_CMS . '/install/lib/installer.php';
+		require_once NEOFRAG_CMS . '/neofrag/installer.php';
 
 		// nf_marketplace_url ne peut surcharger le défaut que vers un hôte autorisé (HTTPS, port 443) :
 		// une valeur injectée en base ne redirige pas les fetchs vers un hôte arbitraire.
 		$cfg = $this->config->nf_marketplace_url;
-		$url = \NF\Install\Lib\Installer::sanitize_marketplace_url(is_string($cfg) ? $cfg : NULL);
+		$url = \NF\NeoFrag\Installer::sanitize_marketplace_url(is_string($cfg) ? $cfg : NULL);
 
-		$catalog = \NF\Install\Lib\Installer::fetch_catalog($url);
+		$catalog = \NF\NeoFrag\Installer::fetch_catalog($url);
 
 		if ($catalog === NULL)
 		{
@@ -276,14 +276,14 @@ class Admin_Ajax extends Controller_Module
 		$types_catalogue = ['module' => $this->lang('Module'), 'theme' => $this->lang('Thème')];
 		foreach ($available as $key => $a)
 		{
-			$options[$key] = (\NF\Install\Lib\Installer::texte_catalogue($a, 'title') ?: $a['name']).' — '.($types_catalogue[$a['type']] ?? $a['type']).' · '.$this->lang('%d Ko', (int) round(($a['size'] ?? 0) / 1024));
+			$options[$key] = (\NF\NeoFrag\Installer::texte_catalogue($a, 'title') ?: $a['name']).' — '.($types_catalogue[$a['type']] ?? $a['type']).' · '.$this->lang('%d Ko', (int) round(($a['size'] ?? 0) / 1024));
 		}
 
 		return $this->form2()
 					->info('<div class="alert alert-primary" style="margin-bottom:1rem">'.$this->lang('%d addon(s) disponible(s) sur le marketplace. Téléchargés et vérifiés (SHA-256) à l\'installation.', count($available)).'</div>')
 					->rule($this->form_checkbox('addons')->data($options))
 					->success(function($data) use ($available, $widget_metas, $url){
-						require_once NEOFRAG_CMS . '/install/lib/installer.php';
+						require_once NEOFRAG_CMS . '/neofrag/installer.php';
 
 						foreach ((array) ($data['addons'] ?? []) as $key)
 						{
@@ -316,7 +316,7 @@ class Admin_Ajax extends Controller_Module
 
 							try
 							{
-								$r = \NF\Install\Lib\Installer::download_and_extract($meta, $url, NEOFRAG_CMS);
+								$r = \NF\NeoFrag\Installer::download_and_extract($meta, $url, NEOFRAG_CMS);
 							}
 							catch (\Throwable $e)
 							{
@@ -336,7 +336,7 @@ class Admin_Ajax extends Controller_Module
 								}
 								try
 								{
-									$wr = \NF\Install\Lib\Installer::download_and_extract($widget_metas[$w], $url, NEOFRAG_CMS);
+									$wr = \NF\NeoFrag\Installer::download_and_extract($widget_metas[$w], $url, NEOFRAG_CMS);
 									$this->_marketplace_register($wr['type'], $wr['name']);
 								}
 								catch (\Throwable $e)
@@ -369,12 +369,12 @@ class Admin_Ajax extends Controller_Module
 	 */
 	public function updates()
 	{
-		require_once NEOFRAG_CMS . '/install/lib/installer.php';
+		require_once NEOFRAG_CMS . '/neofrag/installer.php';
 
 		$cfg = $this->config->nf_marketplace_url;
-		$url = \NF\Install\Lib\Installer::sanitize_marketplace_url(is_string($cfg) ? $cfg : NULL);
+		$url = \NF\NeoFrag\Installer::sanitize_marketplace_url(is_string($cfg) ? $cfg : NULL);
 
-		$catalog = \NF\Install\Lib\Installer::fetch_catalog($url);
+		$catalog = \NF\NeoFrag\Installer::fetch_catalog($url);
 
 		if ($catalog === NULL)
 		{
@@ -455,7 +455,7 @@ class Admin_Ajax extends Controller_Module
 					->info($core_notice.'<div class="alert alert-primary" style="margin-bottom:1rem">'.$this->lang('%d mise(s) à jour disponible(s). Téléchargées et vérifiées (SHA-256) avant application.', count($available)).'</div>')
 					->rule($this->form_checkbox('addons')->data($options)->value(array_keys($options)))
 					->success(function($data) use ($available, $widget_metas, $url){
-						require_once NEOFRAG_CMS . '/install/lib/installer.php';
+						require_once NEOFRAG_CMS . '/neofrag/installer.php';
 
 						// Le client n'envoie que des clés type:name ; le meta (file/sha256…) vient du catalogue SERVEUR.
 						foreach ((array) ($data['addons'] ?? []) as $key)
@@ -468,7 +468,7 @@ class Admin_Ajax extends Controller_Module
 
 							try
 							{
-								$r = \NF\Install\Lib\Installer::download_and_extract($meta, $url, NEOFRAG_CMS);
+								$r = \NF\NeoFrag\Installer::download_and_extract($meta, $url, NEOFRAG_CMS);
 							}
 							catch (\Throwable $e)
 							{
@@ -488,7 +488,7 @@ class Admin_Ajax extends Controller_Module
 								}
 								try
 								{
-									$wr = \NF\Install\Lib\Installer::download_and_extract($widget_metas[$w], $url, NEOFRAG_CMS);
+									$wr = \NF\NeoFrag\Installer::download_and_extract($widget_metas[$w], $url, NEOFRAG_CMS);
 									$this->_apply_addon_update($wr['type'], $wr['name']);
 								}
 								catch (\Throwable $e)

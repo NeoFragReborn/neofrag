@@ -372,7 +372,17 @@ foreach ($domaines as $nom => $dossier)
         $lus[] = 'addons';
     }
 
-    foreach (nf_fichiers($lus, ['php', 'js'], array_merge(NF_EXCLUS, ['/langs/'])) as $fichier)
+    // La bibliothèque d'installation vit dans le cœur (`neofrag/installer.php`), mais ses textes
+    // passent par la `lang()` de l'assistant et se traduisent dans `install/langs/` : elle appartient
+    // au domaine `install`, pas au cœur.
+    $fichiers = nf_fichiers($lus, ['php', 'js'], array_merge(NF_EXCLUS, ['/langs/'], $nom === 'neofrag' ? ['/neofrag/installer.php'] : []));
+
+    if ($nom === 'install')
+    {
+        $fichiers['neofrag/installer.php'] = $racine.'/neofrag/installer.php';
+    }
+
+    foreach ($fichiers as $fichier)
     {
         foreach (textes_traduits((string) file_get_contents($fichier)) as $texte)
         {

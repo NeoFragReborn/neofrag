@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace NF\Modules\Monitoring\Models;
 
 use NF\NeoFrag\Loadables\Model;
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 
 class Monitoring extends Model
 {
@@ -34,7 +34,7 @@ class Monitoring extends Model
 	 */
 	public function restaurer(string $archive, ?callable $progress = NULL): array
 	{
-		require_once NEOFRAG_CMS.'/install/lib/installer.php';
+		require_once NEOFRAG_CMS.'/neofrag/installer.php';
 
 		// Le dump porte TOUTE la base en clair. Il ne sort donc pas de backups/, seul dossier dont
 		// l'accès HTTP est refusé, il porte un nom non devinable, et il est effacé quoi qu'il arrive.

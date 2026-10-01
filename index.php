@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.2.2');
+define('NEOFRAG_VERSION', '1.2.3');
 
 error_reporting(E_ALL);
 
@@ -228,7 +228,7 @@ define('NEOFRAG_CORE', TRUE);
  */
 if (($schema = (string) NeoFrag()->config->nf_schema_version) !== NEOFRAG_VERSION
 	&& !(str_starts_with($schema, 'echec:') && time() - (int) substr($schema, 6) < 600)
-	&& is_file(NEOFRAG_CMS.'/install/lib/installer.php'))
+	&& is_file(NEOFRAG_CMS.'/neofrag/installer.php'))
 {
 	try
 	{

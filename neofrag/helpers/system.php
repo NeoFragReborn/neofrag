@@ -116,9 +116,9 @@ function nf_demo_ecriture_permise(?string $module = NULL): bool
  * ancienne sous un code neuf. Nos trois sites ne l'ont jamais vu, leurs déploiements lançant
  * `tools/migrate.php up` à la main.
  *
- * Pourquoi ici et pas dans `Installer`. La mise à jour ne réécrit jamais `install/` : un site garde
- * l'`install/lib/installer.php` du jour de son installation. Cette fonction, livrée avec le cœur, ne
- * s'appuie donc que sur des méthodes présentes depuis la première version publiée (1.1.0).
+ * Elle ne s'appuie que sur des méthodes d'`Installer` présentes depuis la première version publiée
+ * (1.1.0) : la mise à jour de transition qui l'apporte tourne encore avec le code de mise à jour de
+ * l'ancienne version, déjà chargé en mémoire.
  *
  * Retourne les migrations appliquées ; NULL si une autre requête les applique en ce moment (rien
  * n'est alors conclu). Un site sans table de suivi — antérieur au runner — n'est pas touché :
@@ -128,9 +128,9 @@ function nf_demo_ecriture_permise(?string $module = NULL): bool
  */
 function nf_migrations_du_code(string $root): ?array
 {
-	require_once $root.'/install/lib/installer.php';
+	require_once $root.'/neofrag/installer.php';
 
-	$installer = \NF\Install\Lib\Installer::class;
+	$installer = \NF\NeoFrag\Installer::class;
 
 	if (($cfg = $installer::read_db_config($root.'/config')) === NULL || !is_dir($root.'/migrations'))
 	{

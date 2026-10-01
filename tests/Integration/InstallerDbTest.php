@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace NF\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 use mysqli;
 
-require_once __DIR__ . '/../../install/lib/installer.php';
+require_once __DIR__ . '/../../neofrag/installer.php';
 
 /**
  * Test d'INTÉGRATION de l'installeur sur une base JETABLE.

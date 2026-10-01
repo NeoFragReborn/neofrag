@@ -170,8 +170,8 @@ function build(string $root, string $dist, string $version, string $variant): ar
  *
  * `protected` : ce que la mise à jour ne doit JAMAIS écrire, même si le paquet en porte une version.
  * Ce sont les données et la configuration du site qui reçoit la mise à jour — sa base, ses fichiers
- * envoyés, ses journaux, ses sauvegardes. `apply_update_package()` protégeait déjà `config/` et
- * `install/` en dur ; les déclarer ici les rend lisibles, et permet d'en ajouter sans toucher au code
+ * envoyés, ses journaux, ses sauvegardes. `apply_update_package()` protège aussi `config/` en place et
+ * `install/db.txt` en dur ; les déclarer ici les rend lisibles, et permet d'en ajouter sans toucher au code
  * de l'installeur.
  *
  * `remove` : les fichiers que CETTE version retire. La liste se calcule en comparant l'inventaire
@@ -183,7 +183,7 @@ function update_manifest(string $root, string $version): string
 {
     $proteges = [
         'config/',      // identifiants de base, clés, réglages du site
-        'install/',     // db.txt et compagnie : l'état d'installation appartient au site
+        'install/db.txt', // le verrou d'installation : il appartient au site (le reste d'install/ suit les versions)
         'upload/',      // ce que les membres ont envoyé
         'logs/',        // le journal, qui sert justement à comprendre une mise à jour ratée
         'backups/',     // les sauvegardes, dont celle prise juste avant d'écrire

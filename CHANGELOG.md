@@ -10,6 +10,20 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.3] — 2026-10-01
+
+### Corrigé
+
+- **La mise à jour se met enfin à jour elle-même.** Son code — avec celui de la sauvegarde, de la
+  restauration et de la place de marché — vivait dans le dossier `install/`, que la mise à jour ne
+  réécrivait jamais : un site gardait celui du jour de son installation, et ses corrections ne
+  l'atteignaient pas. Il vit désormais dans le cœur (`neofrag/installer.php`), réécrit à chaque
+  version, et le Monitoring en vérifie l'intégrité. Le reste d'`install/` suit aussi les versions ;
+  seul le verrou `install/db.txt` reste propre au site. Sur un site existant, `install/` se met à
+  jour à partir de la mise à jour suivant celle-ci.
+- **Un site qui supprime son dossier `install/` après l'installation**, comme on le conseille
+  souvent, garde sa mise à jour et sa place de marché ; leurs messages restent alors en français.
+
 ## [1.2.2] — 2026-10-01
 
 ### Corrigé

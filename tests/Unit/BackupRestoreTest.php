@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace NF\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 use ZipArchive;
 use RuntimeException;
 
-require_once __DIR__ . '/../../install/lib/installer.php';
+require_once __DIR__ . '/../../neofrag/installer.php';
 
 /**
  * Remise en place d'une sauvegarde, sans HTTP ni base : l'archive est fabriquée de toutes pièces et

@@ -4,7 +4,7 @@ declare(strict_types=1);
  * NeoFrag Reborn — installeur en LIGNE DE COMMANDE.
  *
  * Alternative scriptable à l'assistant web (install/index.php), pratique pour un déploiement VPS
- * reproductible. Réutilise exactement la même lib d'installation (install/lib/installer.php) et la
+ * reproductible. Réutilise exactement la même lib d'installation (neofrag/installer.php) et la
  * même séquence « tout bundlé » que tools/ci-install.php — donc rigoureusement le même résultat que
  * l'assistant web, mais sans navigateur.
  *
@@ -30,9 +30,9 @@ if (PHP_SAPI !== 'cli')
 define('NF_CLI_ROOT', dirname(__DIR__));
 chdir(NF_CLI_ROOT);
 
-require NF_CLI_ROOT . '/install/lib/installer.php';
+require NF_CLI_ROOT . '/neofrag/installer.php';
 
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 
 exit(nf_cli_main($argv));
 

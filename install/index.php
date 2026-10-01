@@ -4,16 +4,16 @@
  *
  * Inclus très tôt par index.php racine tant que install/db.txt est absent. Tourne
  * AVANT le boot du CMS : aucune dépendance au service locator, juste mysqli + FS,
- * via install/lib/installer.php.
+ * via neofrag/installer.php.
  *
  * Garde « déjà installé » (double verrou) : sonde DB d'abord (robuste même si
  * db.txt a été perdu), fichier db.txt en complément. Si une install existe déjà,
  * on pose le verrou et on rend la main au boot — jamais de réinstallation.
  */
 
-require_once __DIR__ . '/lib/installer.php';
+require_once dirname(__DIR__) . '/neofrag/installer.php';
 
-use NF\Install\Lib\Installer;
+use NF\NeoFrag\Installer;
 
 $NF_ROOT   = dirname(__DIR__);
 $NF_CONFIG = $NF_ROOT . '/config';
