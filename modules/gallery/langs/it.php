@@ -120,4 +120,5 @@ return [
 	'cb9a08b2' => 'Attendi...',
 	'd9035f7e' => 'MB',
 	'73ae9de7' => 'Torna all\'album %s',
+	'8fd9c7ef' => 'Salva',
 ];

@@ -71,4 +71,5 @@ return [
 	'a415f66e' => 'Evento',
 	'f3581855' => 'Punteggio',
 	'f4cbbafe' => 'Squadre e clan — modulo gaming.',
+	'8fd9c7ef' => 'Salva',
 ];

@@ -71,4 +71,5 @@ return [
 	'a415f66e' => 'Event',
 	'f3581855' => 'Score',
 	'f4cbbafe' => 'Teams and clans — gaming module.',
+	'8fd9c7ef' => 'Save',
 ];

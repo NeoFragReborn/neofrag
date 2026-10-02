@@ -54,4 +54,5 @@ return [
 	'9cdcd1f0' => 'Páginas CMS estáticas: acerca de, aviso legal, condiciones, etc.',
 	'4349f0db' => 'Página %s',
 	'1bf841b2' => 'Acceso al contenido',
+	'8fd9c7ef' => 'Guardar',
 ];

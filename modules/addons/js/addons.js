@@ -2,40 +2,79 @@ NF.ready(function(){
 	var addons = document.getElementById('addons');
 	if (!addons){ return; }
 
-	var FILTER_KEY = 'nf-addons-filter';
+	/*
+	 * Le type, le statut et la recherche se combinent : « les modules inactifs », « les widgets qui
+	 * parlent de Discord ». La page s'ouvre sur les modules, en liste ; le dernier choix de chacun est
+	 * gardé pour la visite (type, statut) ou pour le navigateur (vue). Elle alignait jusqu'ici les
+	 * quelque 120 extensions en grandes cartes, sur plus de 10 000 pixels (relevé le 2026-10-02).
+	 */
+	var etat = { type: 'module', statut: '', q: '' };
+	var vue = 'liste';
 
-	var syncActive = function(filter){
-		document.querySelectorAll('.addons-filter-btn').forEach(function(btn){
-			btn.classList.remove('active', 'is-active', 'mixitup-control-active');
-		});
-		var active = document.querySelector('.addons-filter-btn[data-filter="' + filter + '"]');
-		if (active){ active.classList.add('active'); }
-	};
+	try {
+		etat.type = sessionStorage.getItem('nf-addons-type') || etat.type;
+		etat.statut = sessionStorage.getItem('nf-addons-statut') || '';
+		vue = localStorage.getItem('nf-addons-vue') || vue;
+	} catch (e) {}
+
+	// Un type disparu (aucun thème installé, par exemple) : on revient à tous.
+	if (!document.querySelector('.addons-filter-btn[data-type="' + etat.type + '"]')){ etat.type = 'all'; }
 
 	var mix = mixitup(addons, {
-		selectors: { control: '[data-filter]' },
+		controls: { enable: false },
 		animation: { enable: false }
 	});
 
-	// Sync de l'état actif au clic (même quand MixItUp pose sa propre classe) : on efface toutes les
-	// classes possibles puis on applique la classe active sur le bouton cliqué.
+	var cartes = Array.prototype.slice.call(addons.querySelectorAll('.addon-card'));
+	var recherche = document.querySelector('.addons-recherche');
+	var vide = document.querySelector('.addons-vide');
+
+	var appliquer = function(){
+		var q = etat.q.trim().toLowerCase();
+		var gardees = cartes.filter(function(c){
+			return (etat.type === 'all' || c.getAttribute('data-type') === etat.type)
+				&& (etat.statut === '' || c.classList.contains(etat.statut))
+				&& (q === '' || (c.getAttribute('data-texte') || '').indexOf(q) !== -1);
+		});
+
+		mix.filter(gardees.length ? gardees : 'none');
+		if (vide){ vide.hidden = gardees.length > 0; }
+
+		document.querySelectorAll('.addons-filter-btn[data-type]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-type') === etat.type); });
+		document.querySelectorAll('.addons-filter-btn[data-statut]').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-statut') === etat.statut); });
+
+		try {
+			sessionStorage.setItem('nf-addons-type', etat.type);
+			sessionStorage.setItem('nf-addons-statut', etat.statut);
+		} catch (e) {}
+	};
+
+	var afficher = function(){
+		addons.classList.toggle('is-liste', vue === 'liste');
+		document.querySelectorAll('.addons-vue-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-vue') === vue); });
+		try { localStorage.setItem('nf-addons-vue', vue); } catch (e) {}
+	};
+
 	document.addEventListener('click', function(e){
-		var btn = e.target.closest('.addons-filter-btn');
-		if (!btn){ return; }
-		var filter = btn.getAttribute('data-filter') || 'all';
-		syncActive(filter);
-		try { sessionStorage.setItem(FILTER_KEY, filter); } catch (err) {}
+		var type = e.target.closest('.addons-filter-btn[data-type]');
+		var statut = e.target.closest('.addons-filter-btn[data-statut]');
+		var bouton = e.target.closest('.addons-vue-btn');
+
+		if (type){ etat.type = type.getAttribute('data-type'); appliquer(); }
+		else if (statut){ var s = statut.getAttribute('data-statut'); etat.statut = etat.statut === s ? '' : s; appliquer(); }
+		else if (bouton){ vue = bouton.getAttribute('data-vue'); afficher(); }
 	});
 
-	// Restaure le dernier filtre au chargement.
-	try {
-		var saved = sessionStorage.getItem(FILTER_KEY);
-		if (saved && saved !== 'all'){
-			var btn = document.querySelector('.addons-filter-btn[data-filter="' + saved + '"]');
-			if (btn){
-				mix.filter(saved);
-				syncActive(saved);
-			}
-		}
-	} catch (err) {}
+	if (recherche){
+		recherche.addEventListener('input', function(){
+			etat.q = recherche.value;
+			// Une recherche porte sur toutes les extensions : un module qu'on cherche ne doit pas rester
+			// caché parce que le filtre montre les widgets.
+			if (etat.q.trim() !== '' && etat.type !== 'all'){ etat.type = 'all'; }
+			appliquer();
+		});
+	}
+
+	afficher();
+	appliquer();
 });

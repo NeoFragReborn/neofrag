@@ -26,10 +26,11 @@ return [
 	'777842ac' => 'Novos tópicos',
 	'61573422' => 'Novas respostas',
 	'6cd1f3e4' => 'Registros',
-	'a9c7e828' => 'Logins de membros',
 	'652ccf72' => 'Estatísticas de visita e tráfego do site.',
 	'c1fc5864' => '7 dias',
 	'f7573263' => '30 dias',
 	'66972eab' => '90 dias',
 	'87721081' => '1 ano',
+	'ab206f72' => 'Filtros',
+	'2c9c1323' => 'Séries apresentadas',
 ];

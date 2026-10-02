@@ -117,4 +117,5 @@ return [
 	'cb9a08b2' => 'Veuillez patienter...',
 	'd9035f7e' => 'Mo',
 	'73ae9de7' => 'Retour à l\'album %s',
+	'8fd9c7ef' => 'Enregistrer',
 ];

@@ -402,7 +402,7 @@ class Admin extends Controller_Module
 		{
 			foreach ($bans as $b)
 			{
-				$expires = empty($b['expires_at']) ? '<span class="badge text-bg-danger">'.$this->lang('Permanent').'</span>' : htmlspecialchars((string) ($b['expires_at']));
+				$expires = empty($b['expires_at']) ? '<span class="badge text-bg-danger">'.$this->lang('Permanent').'</span>' : nf_date_heure($b['expires_at']);
 				$by      = !empty($b['banned_by_username']) ? htmlspecialchars((string) ($b['banned_by_username'])) : '<em class="text-muted">'.$this->lang('Système').'</em>';
 
 				$body .= '<tr>';
@@ -410,9 +410,9 @@ class Admin extends Controller_Module
 				$body .= '<td>'.htmlspecialchars((string) ($b['reason'] ?? '')).'</td>';
 				$body .= '<td>'.$by.'</td>';
 				$body .= '<td>'.$expires.'</td>';
-				$body .= '<td>'.htmlspecialchars((string) ($b['created_at'])).'</td>';
+				$body .= '<td>'.nf_date_heure($b['created_at']).'</td>';
 				$body .= '<td class="text-end">';
-				$body .= '<a class="btn btn-sm btn-danger" href="'.$this->csrf_url('admin/moderation/banlist/delete/'.(int)$b['ban_id']).'" data-confirm="'.$this->lang('Supprimer le ban de cette IP ?').'" title="'.$this->lang('Supprimer le ban').'">'.icon('fas fa-trash').'</a>';
+				$body .= '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/moderation/banlist/delete/'.(int)$b['ban_id']).'" data-confirm="'.$this->lang('Supprimer le ban de cette IP ?').'" title="'.$this->lang('Supprimer le ban').'">'.icon('far fa-trash-alt').'</a>';
 				$body .= '</td>';
 				$body .= '</tr>';
 			}

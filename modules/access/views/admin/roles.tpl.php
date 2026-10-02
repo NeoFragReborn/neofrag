@@ -60,7 +60,7 @@
 					</td>
 					<td class="text-end">
 						<?php if ($r['name'] !== 'super_admin'): ?>
-							<a class="btn btn-sm btn-warning" href="<?php echo url('admin/access/preview/role/'.(int)$r['role_id']) ?>"
+							<a class="btn btn-sm btn-outline-warning" href="<?php echo url('admin/access/preview/role/'.(int)$r['role_id']) ?>"
 								data-confirm="<?php echo htmlspecialchars($this->lang('Activer le mode preview "voir comme %s" ? Tu verras le site avec les permissions de ce rôle (et non plus avec ton accès super-admin) jusqu\'à ce que tu cliques "Quitter".', $this->lang($r['title'])), ENT_QUOTES) ?>"
 								data-confirm-title="<?php echo htmlspecialchars($this->lang('Voir comme ce rôle'), ENT_QUOTES) ?>"
 								data-confirm-style="warning"
@@ -68,15 +68,15 @@
 								data-confirm-ok="<?php echo htmlspecialchars($this->lang('Activer'), ENT_QUOTES) ?>"
 								data-bs-toggle="tooltip" title="<?php echo $this->lang('Voir le site comme ce rôle') ?>"><i class="fas fa-eye"></i></a>
 						<?php endif ?>
-						<a class="btn btn-sm btn-secondary" href="<?php echo url('admin/access/roles/edit/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Éditer') ?>"><i class="fas fa-pen"></i></a>
-						<a class="btn btn-sm btn-info" href="<?php echo url('admin/access/roles/clone/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Cloner') ?>"><i class="fas fa-copy"></i></a>
+						<a class="btn btn-sm btn-outline-secondary" href="<?php echo url('admin/access/roles/edit/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Éditer') ?>"><i class="fas fa-pen"></i></a>
+						<a class="btn btn-sm btn-outline-secondary" href="<?php echo url('admin/access/roles/clone/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Cloner') ?>"><i class="fas fa-copy"></i></a>
 						<?php if (!$r['built_in']): ?>
-							<a class="btn btn-sm btn-danger" href="<?php echo url('admin/access/roles/delete/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>"
+							<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/access/roles/delete/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>"
 								data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer le rôle "%s" ? Tous ses %d utilisateurs perdront ces permissions.', $this->lang($r['title']), (int)$r['user_count']), ENT_QUOTES) ?>"
 								data-confirm-title="<?php echo htmlspecialchars($this->lang('Supprimer le rôle'), ENT_QUOTES) ?>"
 								data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>"><i class="far fa-trash-alt"></i></a>
 						<?php else: ?>
-							<button class="btn btn-sm btn-danger" disabled data-bs-toggle="tooltip" title="<?php echo $this->lang('Built-in non supprimable') ?>"><i class="far fa-trash-alt"></i></button>
+							<button class="btn btn-sm btn-outline-danger" disabled data-bs-toggle="tooltip" title="<?php echo $this->lang('Built-in non supprimable') ?>"><i class="far fa-trash-alt"></i></button>
 						<?php endif ?>
 					</td>
 				</tr>

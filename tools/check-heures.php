@@ -26,6 +26,12 @@ declare(strict_types=1);
  *
  * Un nouveau format de machine s'ajoute à FORMATS_MACHINE, avec son usage.
  *
+ * Il vérifie aussi que `timetostr()` ne reçoit pas un format chiffré écrit en dur : « d/m/Y H:i »
+ * ignore la langue (l'allemand écrit « 02.10.2026 ») et « Y-m-d H:i » montre une date de machine
+ * (2026-10-02, le livre d'or, le wiki, le Bugtracker). Une date et heure passe par `nf_date_heure()`,
+ * une date seule par `nf_date()`, qui lisent le format de la langue. Les formats qui nomment le mois
+ * (« j M Y ») se traduisent d'eux-mêmes et passent, comme « H:i » et « Y-m-d » (une comparaison).
+ *
  * Usage
  * -----
  *   php tools/check-heures.php             liste les affichages fautifs, code 1 s'il y en a
@@ -64,10 +70,12 @@ function analyser_source(string $src): array
 
     foreach ($jetons as $i => $jeton)
     {
-        if (!is_array($jeton) || $jeton[0] !== T_STRING || !in_array(strtolower($jeton[1]), ['date', 'gmdate'], TRUE))
+        if (!is_array($jeton) || $jeton[0] !== T_STRING || !in_array(strtolower($jeton[1]), ['date', 'gmdate', 'timetostr'], TRUE))
         {
             continue;
         }
+
+        $affichage = strtolower($jeton[1]) === 'timetostr';
 
         // Une méthode (`->date(`, `::date(`) ou une définition (`function date(`) n'est pas l'appel visé.
         $avant = $i - 1;
@@ -109,8 +117,16 @@ function analyser_source(string $src): array
             $suivant++;
         }
 
+        $en_clair = is_array($premier) && $premier[0] === T_CONSTANT_ENCAPSED_STRING && in_array($jetons[$suivant] ?? NULL, [',', ')'], TRUE);
+
+        // timetostr() avec un format calculé ($this->lang('d/m/Y')) : c'est la bonne façon.
+        if ($affichage && !$en_clair)
+        {
+            continue;
+        }
+
         // Le format doit être une chaîne écrite en clair, et elle seule (pas une concaténation).
-        if (!is_array($premier) || $premier[0] !== T_CONSTANT_ENCAPSED_STRING || !in_array($jetons[$suivant] ?? NULL, [',', ')'], TRUE))
+        if (!$en_clair)
         {
             $fautes[] = ['ligne' => $jeton[2], 'format' => '(format calculé)'];
             continue;
@@ -123,7 +139,14 @@ function analyser_source(string $src): array
             $format = str_replace(["\\'", '\\\\'], ["'", '\\'], substr($premier[1], 1, -1));
         }
 
-        if (!in_array($format, FORMATS_MACHINE, TRUE))
+        if ($affichage)
+        {
+            if (preg_match('#d[/.-]m|m[/.]d#', $format) || in_array($format, ['Y-m-d H:i', 'Y-m-d H:i:s'], TRUE))
+            {
+                $fautes[] = ['ligne' => $jeton[2], 'format' => $format.' (timetostr : nf_date_heure() ou nf_date())'];
+            }
+        }
+        else if (!in_array($format, FORMATS_MACHINE, TRUE))
         {
             $fautes[] = ['ligne' => $jeton[2], 'format' => $format];
         }
@@ -144,6 +167,9 @@ function epreuve(): array
         'gmdate affiché'           => "<?php echo gmdate('H:i');",
         'format calculé'           => "<?php echo date(\$this->lang('d/m/Y'), \$t);",
         'format concaténé'         => "<?php echo date('d/m/Y'.' H:i', \$t);",
+        'timetostr chiffré figé'   => "<?php echo timetostr('d/m/Y H:i', \$t);",
+        'timetostr de machine'     => "<?php echo '<td>'.timetostr('Y-m-d H:i', \$r['ts']).'</td>';",
+        'timetostr jour et mois'   => "<?php echo timetostr('d/m', \$t);",
     ];
 
     $propres = [
@@ -151,7 +177,11 @@ function epreuve(): array
         'nom de fichier'           => "<?php \$f = 'export-'.date('Ymd-His').'.json';",
         'ISO pour une API'         => "<?php return ['created_at' => date('c', \$t)];",
         'agenda en UTC'            => "<?php return gmdate('Ymd\\\\THis\\\\Z', \$ts);",
-        'passage par timetostr'    => "<?php echo timetostr('d/m/Y H:i', \$t);",
+        'timetostr, format traduit' => "<?php echo timetostr(\$this->lang('d/m/Y H:i'), \$t);",
+        'timetostr, mois nommé'    => "<?php echo timetostr('j M Y', \$t);",
+        'timetostr, heure seule'   => "<?php echo timetostr('H:i', \$t);",
+        'timetostr, comparaison'   => "<?php if (timetostr('Y-m-d', \$a) === timetostr('Y-m-d', \$b)) {}",
+        'nf_date_heure'            => "<?php echo nf_date_heure(\$r['created_at']);",
         'méthode date()'           => "<?php echo \$this->date(\$t)->short_date();",
         'méthode statique'         => "<?php \$d = Feed::date(\$e);",
         'définition'               => "<?php function date(\$x) {}",

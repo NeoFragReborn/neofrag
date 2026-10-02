@@ -187,4 +187,5 @@ return [
 	'cf821f2c' => 'Ainda não há votos...',
 	'602bea83' => 'A minha opinião sobre esta candidatura',
 	'350c98af' => 'Oferta %s',
+	'8fd9c7ef' => 'Guardar',
 ];

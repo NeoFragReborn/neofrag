@@ -190,7 +190,7 @@ NF.ready(function(){
 
 					var remove = document.createElement('button');
 					remove.type = 'button';
-					remove.className = 'btn btn-danger';
+					remove.className = 'btn btn-sm btn-outline-danger';
 					remove.title = <?php echo json_encode((string) $this->lang('Retirer')) ?>;
 					remove.setAttribute('aria-label', remove.title);
 					remove.innerHTML = '<i class="fas fa-times"></i>';

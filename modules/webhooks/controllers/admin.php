@@ -33,7 +33,7 @@ class Admin extends Controller_Module
 					.'<td class="text-end">'.(!empty($h['enabled']) ? '<span class="badge text-bg-success">'.$this->lang('Oui').'</span>' : '<span class="badge text-bg-secondary">'.$this->lang('Non').'</span>').'</td>'
 					.'<td class="text-end" style="white-space:nowrap;">'
 					.'<a class="btn btn-sm btn-outline-secondary" href="'.$this->csrf_url('admin/webhooks/test/'.$h['id'].'/'.$slug).'" title="'.$this->lang('Tester').'"><i class="fas fa-paper-plane"></i></a> '
-					.'<a class="btn btn-sm btn-outline-primary" href="'.url('admin/webhooks/edit/'.$h['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
+					.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/webhooks/edit/'.$h['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
 					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/webhooks/delete/'.$h['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce webhook ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 			}

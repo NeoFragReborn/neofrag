@@ -52,4 +52,5 @@ return [
 	'9cdcd1f0' => 'Pages CMS statiques : à propos, mentions légales, conditions, etc.',
 	'4349f0db' => 'Page %s',
 	'1bf841b2' => 'Accès au contenu',
+	'8fd9c7ef' => 'Enregistrer',
 ];

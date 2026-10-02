@@ -222,7 +222,6 @@ return [
 	'b6a189c8' => 'Meu espaço',
 	'cf84c44c' => 'Editar meu perfil',
 	'6cd1f3e4' => 'Registros',
-	'a9c7e828' => 'Logins de membros',
 	'cd247522' => 'Início',
 	'08c66025' => 'Notícias',
 	'44ea91c9' => 'Fórum',
@@ -316,4 +315,9 @@ return [
 	'41dd9c72' => 'A sua conta não tem palavra-passe: inicia sessão através de uma conta associada. Defina uma palavra-passe no seu perfil para não depender dela.',
 	'a4afc21b' => 'Associar uma conta',
 	'2778f267' => 'Automático: o do seu navegador',
+	'3bde7cd7' => 'Anónimo',
+	'8bb91639' => 'Logins de membros',
+	'92330b9f' => '%d entrada, guardada 365 dias|%d entradas, guardadas 365 dias',
+	'7ecafebb' => 'Nenhum membro corresponde a «%s».',
+	'f4f7e9a1' => 'Pesquisar um nome de utilizador ou um e-mail…',
 ];

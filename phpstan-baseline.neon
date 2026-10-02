@@ -343,12 +343,6 @@ parameters:
 			path: modules/addons/controllers/admin_checker.php
 
 		-
-			message: '#^Variable \$addons might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: modules/addons/views/admin.tpl.php
-
-		-
 			message: '#^Variable \$csrf might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
@@ -409,12 +403,6 @@ parameters:
 			path: modules/articles/articles.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Articles\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/articles/controllers/admin.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Articles\\Controllers\\Admin\:\:form_hidden\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -457,12 +445,6 @@ parameters:
 			path: modules/articles/controllers/admin.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Articles\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/articles/controllers/admin_checker.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_article\(\)\.$#'
 			identifier: method.notFound
 			count: 4
@@ -485,12 +467,6 @@ parameters:
 			identifier: arguments.count
 			count: 6
 			path: modules/articles/controllers/admin_checker.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Articles\\Controllers\\Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/articles/controllers/checker.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:follow_button\(\)\.$#'
@@ -575,12 +551,6 @@ parameters:
 			identifier: arguments.count
 			count: 7
 			path: modules/awards/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Awards\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/awards/controllers/admin_checker.php
 
 		-
 			message: '#^Call to an undefined method NF\\Modules\\Awards\\Controllers\\Admin_Checker\:\:ajax\(\)\.$#'
@@ -883,12 +853,6 @@ parameters:
 			path: modules/calendar/models/calendar.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Classifieds\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/classifieds/controllers/admin.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Classifieds\\Controllers\\Admin\:\:config\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -899,12 +863,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: modules/classifieds/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Classifieds\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/classifieds/controllers/admin_checker.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:push\(\)\.$#'
@@ -1151,18 +1109,6 @@ parameters:
 			identifier: variable.undefined
 			count: 1
 			path: modules/donations/views/index.tpl.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Downloads\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/downloads/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Downloads\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/downloads/controllers/admin_checker.php
 
 		-
 			message: '#^Access to an undefined property NF\\Modules\\Emails\\Controllers\\Admin\:\:\$email\.$#'
@@ -1453,12 +1399,6 @@ parameters:
 			path: modules/events/controllers/admin.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Events\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 4
-			path: modules/events/controllers/admin_checker.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Events\\Controllers\\Admin_Checker\:\:ajax\(\)\.$#'
 			identifier: method.notFound
 			count: 5
@@ -1519,12 +1459,6 @@ parameters:
 			path: modules/events/controllers/ajax_checker.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Events\\Controllers\\Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 6
-			path: modules/events/controllers/checker.php
-
-		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$events_per_page\.$#'
 			identifier: property.notFound
 			count: 6
@@ -1562,12 +1496,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property NF\\Modules\\Events\\Controllers\\Index\:\:\$array\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/events/controllers/index.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Events\\Controllers\\Index\:\:\$module\.$#'
 			identifier: property.notFound
 			count: 1
 			path: modules/events/controllers/index.php
@@ -1885,28 +1813,10 @@ parameters:
 			path: modules/events/views/participants.tpl.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Faq\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/faq/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Faq\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/faq/controllers/admin_checker.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Files\\Controllers\\Admin\:\:button_access\(\)\.$#'
 			identifier: method.notFound
 			count: 3
 			path: modules/files/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Forum\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 4
-			path: modules/forum/controllers/admin.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:add_category\(\)\.$#'
@@ -2041,12 +1951,6 @@ parameters:
 			path: modules/forum/controllers/admin.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Forum\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 4
-			path: modules/forum/controllers/admin_checker.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Forum\\Controllers\\Admin_Checker\:\:ajax\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -2161,12 +2065,6 @@ parameters:
 			path: modules/forum/controllers/ajax_checker.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Forum\\Controllers\\Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 3
-			path: modules/forum/controllers/checker.php
-
-		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$forum_messages_per_page\.$#'
 			identifier: property.notFound
 			count: 1
@@ -2242,12 +2140,6 @@ parameters:
 			message: '#^Access to an undefined property NF\\Modules\\Forum\\Controllers\\Index\:\:\$array\.$#'
 			identifier: property.notFound
 			count: 5
-			path: modules/forum/controllers/index.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Forum\\Controllers\\Index\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 10
 			path: modules/forum/controllers/index.php
 
 		-
@@ -2953,12 +2845,6 @@ parameters:
 			path: modules/gallery/controllers/admin_ajax_checker.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Gallery\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/gallery/controllers/admin_checker.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Gallery\\Controllers\\Admin_Checker\:\:ajax\(\)\.$#'
 			identifier: method.notFound
 			count: 3
@@ -3037,12 +2923,6 @@ parameters:
 			path: modules/gallery/controllers/ajax_checker.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Gallery\\Controllers\\Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/gallery/controllers/checker.php
-
-		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$images_per_page\.$#'
 			identifier: property.notFound
 			count: 1
@@ -3077,12 +2957,6 @@ parameters:
 			identifier: arguments.count
 			count: 4
 			path: modules/gallery/controllers/checker.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Gallery\\Controllers\\Index\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/gallery/controllers/index.php
 
 		-
 			message: '#^Call to an undefined method NF\\Modules\\Gallery\\Controllers\\Index\:\:array\(\)\.$#'
@@ -3355,12 +3229,6 @@ parameters:
 			path: modules/games/controllers/admin.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Games\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/games/controllers/admin_checker.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Games\\Controllers\\Admin_Checker\:\:ajax\(\)\.$#'
 			identifier: method.notFound
 			count: 3
@@ -3413,42 +3281,6 @@ parameters:
 			identifier: variable.undefined
 			count: 2
 			path: modules/gamification/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Glossary\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/glossary/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Glossary\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/glossary/controllers/admin_checker.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Guestbook\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/guestbook/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Guestbook\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/guestbook/controllers/admin_checker.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Links\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/links/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Links\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/links/controllers/admin_checker.php
 
 		-
 			message: '#^Call to an undefined method NF\\Modules\\Live_Editor\\Controllers\\Admin\:\:theme\(\)\.$#'
@@ -3641,18 +3473,6 @@ parameters:
 			identifier: variable.undefined
 			count: 1
 			path: modules/marketplace/views/index.tpl.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Media\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/media/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Media\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/media/controllers/admin_checker.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Collection\:\:where\(\)\.$#'
@@ -4051,12 +3871,6 @@ parameters:
 			path: modules/monitoring/controllers/admin_ajax.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Monitoring\\Controllers\\Admin_Ajax\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/monitoring/controllers/admin_ajax.php
-
-		-
 			message: '#^Access to an undefined property NF\\Modules\\Monitoring\\Controllers\\Admin_Ajax\:\:\$mysqldump\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4219,12 +4033,6 @@ parameters:
 			path: modules/monitoring/views/phpinfo.tpl.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\News\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/news/controllers/admin.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\News\\Controllers\\Admin\:\:button_delete\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -4339,12 +4147,6 @@ parameters:
 			path: modules/news/controllers/admin.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\News\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/news/controllers/admin_checker.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\News\\Controllers\\Admin_Checker\:\:ajax\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -4393,12 +4195,6 @@ parameters:
 			path: modules/news/controllers/block.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\News\\Controllers\\Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 3
-			path: modules/news/controllers/checker.php
-
-		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$news_per_page\.$#'
 			identifier: property.notFound
 			count: 3
@@ -4438,12 +4234,6 @@ parameters:
 			message: '#^Access to an undefined property NF\\Modules\\News\\Controllers\\Index\:\:\$array\.$#'
 			identifier: property.notFound
 			count: 2
-			path: modules/news/controllers/index.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\News\\Controllers\\Index\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
 			path: modules/news/controllers/index.php
 
 		-
@@ -4747,22 +4537,10 @@ parameters:
 			path: modules/newsletter/models/newsletter.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Notifications\\Controllers\\Ajax\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 4
-			path: modules/notifications/controllers/ajax.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Notifications\\Controllers\\Ajax_Checker\:\:ajax\(\)\.$#'
 			identifier: method.notFound
 			count: 3
 			path: modules/notifications/controllers/ajax_checker.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Notifications\\Controllers\\Index\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/notifications/controllers/index.php
 
 		-
 			message: '#^Call to an undefined method NF\\Modules\\Pages\\Controllers\\Admin\:\:button_access\(\)\.$#'
@@ -4847,12 +4625,6 @@ parameters:
 			identifier: arguments.count
 			count: 2
 			path: modules/pages/controllers/admin_ajax.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Pages\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/pages/controllers/admin_checker.php
 
 		-
 			message: '#^Call to an undefined method NF\\Modules\\Pages\\Controllers\\Admin_Checker\:\:ajax\(\)\.$#'
@@ -5131,30 +4903,6 @@ parameters:
 			path: modules/payments/views/index.tpl.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Places\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/places/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Places\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/places/controllers/admin_checker.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Quotes\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/quotes/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Quotes\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/quotes/controllers/admin_checker.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:content_owner\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -5183,18 +4931,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: modules/reactions/controllers/ajax_checker.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Recipes\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/recipes/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Recipes\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/recipes/controllers/admin_checker.php
 
 		-
 			message: '#^Access to an undefined property NF\\Modules\\Recruits\\Controllers\\Admin\:\:\$array\.$#'
@@ -5383,12 +5119,6 @@ parameters:
 			path: modules/recruits/controllers/admin.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Recruits\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/recruits/controllers/admin_checker.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Recruits\\Controllers\\Admin_Checker\:\:ajax\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -5423,12 +5153,6 @@ parameters:
 			identifier: arguments.count
 			count: 8
 			path: modules/recruits/controllers/admin_checker.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Recruits\\Controllers\\Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/recruits/controllers/checker.php
 
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$recruits_hide_unavailable\.$#'
@@ -5470,12 +5194,6 @@ parameters:
 			message: '#^Access to an undefined property NF\\Modules\\Recruits\\Controllers\\Index\:\:\$array\.$#'
 			identifier: property.notFound
 			count: 3
-			path: modules/recruits/controllers/index.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Recruits\\Controllers\\Index\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
 			path: modules/recruits/controllers/index.php
 
 		-
@@ -5935,12 +5653,6 @@ parameters:
 			path: modules/search/controllers/index.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Search\\Controllers\\Index\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/search/controllers/index.php
-
-		-
 			message: '#^Variable \$keywords might not be defined\.$#'
 			identifier: variable.undefined
 			count: 2
@@ -6163,18 +5875,6 @@ parameters:
 			path: modules/statistics/controllers/admin_ajax_checker.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Surveys\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/surveys/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Surveys\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/surveys/controllers/admin_checker.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Talks\\Controllers\\Admin\:\:button_access\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -6215,12 +5915,6 @@ parameters:
 			identifier: arguments.count
 			count: 3
 			path: modules/talks/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Talks\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/talks/controllers/admin_checker.php
 
 		-
 			message: '#^Call to an undefined method NF\\Modules\\Talks\\Controllers\\Admin_Checker\:\:ajax\(\)\.$#'
@@ -7261,18 +6955,6 @@ parameters:
 			path: modules/user/views/profile_mini.tpl.php
 
 		-
-			message: '#^Access to an undefined property NF\\Modules\\Webradio\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/webradio/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Webradio\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/webradio/controllers/admin_checker.php
-
-		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$webradio_name\.$#'
 			identifier: property.notFound
 			count: 1
@@ -7307,18 +6989,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: modules/webradio/webradio.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Wiki\\Controllers\\Admin\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 2
-			path: modules/wiki/controllers/admin.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\Wiki\\Controllers\\Admin_Checker\:\:\$module\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/wiki/controllers/admin_checker.php
 
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Action\:\:\$__caller\.$#'

@@ -35,7 +35,7 @@ class Access extends Library
 		return $this->button()
 					->tooltip($title ?: $this->lang('Permissions'))
 					->icon('fas fa-unlock-alt')
-					->color('success')
+					->color('secondary')
 					->compact()
 					->outline()
 					->modal_ajax('admin/ajax/access/matrix-modal/'.$module_name.$scope)

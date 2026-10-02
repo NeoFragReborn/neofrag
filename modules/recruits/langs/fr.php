@@ -183,4 +183,5 @@ return [
 	'58e4db34' => 'Offre complète !',
 	'cf821f2c' => 'Il n\'y a pas encore de vote...',
 	'602bea83' => 'Mon avis sur cette candidature',
+	'8fd9c7ef' => 'Enregistrer',
 ];

@@ -54,4 +54,5 @@ return [
 	'9cdcd1f0' => 'Statische CMS-Seiten: Über uns, Impressum, Nutzungsbedingungen usw.',
 	'4349f0db' => 'Seite %s',
 	'1bf841b2' => 'Zugriff auf den Inhalt',
+	'8fd9c7ef' => 'Speichern',
 ];

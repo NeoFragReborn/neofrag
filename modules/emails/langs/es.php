@@ -76,4 +76,8 @@ return [
 	'ef57084d' => 'Correo enviado a un usuario que recibe una sanción (aviso/restricción/baneo).',
 	'2a54700c' => 'Boletín: confirmación',
 	'3fd8686a' => 'Correo de doble confirmación para validar la suscripción al boletín.',
+	'de200fc5' => 'Idiomas',
+	'6aa35b89' => 'Plantilla',
+	'870c633c' => 'Asunto',
+	'e2c8f589' => 'Estado',
 ];

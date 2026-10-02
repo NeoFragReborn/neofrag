@@ -308,4 +308,5 @@ return [
 	'd699908b' => 'Escrito desde Discord',
 	'7642b2d9' => 'Invitado %s',
 	'816f205c' => 'Discord',
+	'8fd9c7ef' => 'Guardar',
 ];

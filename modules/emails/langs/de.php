@@ -76,4 +76,8 @@ return [
 	'ef57084d' => 'E-Mail an einen Benutzer, der eine Sanktion erhält (Verwarnung/Einschränkung/Sperre).',
 	'2a54700c' => 'Newsletter: Bestätigung',
 	'3fd8686a' => 'Double-Opt-in-E-Mail zur Bestätigung der Newsletter-Anmeldung.',
+	'de200fc5' => 'Sprachen',
+	'6aa35b89' => 'Vorlage',
+	'870c633c' => 'Betreff',
+	'e2c8f589' => 'Status',
 ];

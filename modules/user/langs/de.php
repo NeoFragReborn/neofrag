@@ -222,7 +222,6 @@ return [
 	'b6a189c8' => 'Mein Bereich',
 	'cf84c44c' => 'Profil bearbeiten',
 	'6cd1f3e4' => 'Registrierungen',
-	'a9c7e828' => 'Mitglieder-Anmeldungen',
 	'cd247522' => 'Startseite',
 	'08c66025' => 'Neuigkeiten',
 	'44ea91c9' => 'Forum',
@@ -316,4 +315,9 @@ return [
 	'41dd9c72' => 'Ihr Konto hat kein Passwort: Sie melden sich über ein verknüpftes Konto an. Legen Sie in Ihrem Profil ein Passwort fest, um nicht davon abhängig zu sein.',
 	'a4afc21b' => 'Ein Konto verknüpfen',
 	'2778f267' => 'Automatisch: die Ihres Browsers',
+	'3bde7cd7' => 'Anonym',
+	'8bb91639' => 'Mitglieder-Anmeldungen',
+	'92330b9f' => '%d Eintrag, 365 Tage aufbewahrt|%d Einträge, 365 Tage aufbewahrt',
+	'7ecafebb' => 'Kein Mitglied entspricht „%s“.',
+	'f4f7e9a1' => 'Benutzername oder E-Mail suchen…',
 ];

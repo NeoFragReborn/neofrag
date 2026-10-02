@@ -52,6 +52,14 @@ L'administration se trouve sous **/admin**. Elle adopte la charte NeoFrag Reborn
 > serveur), les **mises à jour**, les **sauvegardes** (créer / télécharger / restaurer) et l'adresse de la
 > **tâche planifiée** (cron) qui publie les contenus programmés.
 
+### Le Monitoring
+
+*Système → Monitoring* résume l'essentiel en haut de page — version et mise à jour, PHP, sauvegardes,
+outils de diagnostic allumés —, puis se lit en cinq onglets : *Vue d'ensemble* (alertes, santé du site,
+stockage, adresse du site), *Sauvegardes*, *Diagnostic*, *Serveur et sécurité* (configuration, mot de
+passe webmaster, tâche planifiée) et *Fichiers* (l'installation comparée à la version publiée). La page
+revient sur l'onglet où l'on était ; une adresse comme `admin/monitoring#diagnostic` ouvre le bon.
+
 ### Le journal des erreurs
 
 *Monitoring → Journal des erreurs* montre ce qui a échoué sur le site, sans passer par le FTP : les
@@ -68,7 +76,7 @@ dernières 24 heures, et un dossier `logs/` où le site ne peut plus écrire.
 
 ### Les outils de diagnostic
 
-La carte *Monitoring → Diagnostic* allume trois outils pour une heure ; chacun s'éteint tout seul, ou
+L'onglet *Monitoring → Diagnostic* allume trois outils pour une heure ; chacun s'éteint tout seul, ou
 d'un clic. Plus besoin de modifier `config/neofrag.php` par FTP.
 
 - **Mode débogage** : une barre apparaît en bas des pages (requêtes à la base, temps de calcul, mémoire,
@@ -90,7 +98,7 @@ Un outil allumé dans `config/neofrag.php` ne s'éteint que là ; la carte le si
 
 Les liens des courriels (mot de passe oublié, validation d'inscription), les retours des connexions
 externes et les partages se construisent sur l'adresse enregistrée à l'installation. Après un
-changement de domaine, la carte *Monitoring → Adresse du site* le signale : ouvrez l'administration par
+changement de domaine, la carte *Adresse du site* (Monitoring, onglet *Vue d'ensemble*) le signale : ouvrez l'administration par
 la nouvelle adresse, puis *Utiliser https://…* l'enregistre (mot de passe webmaster demandé s'il est
 défini).
 

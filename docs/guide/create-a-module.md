@@ -381,6 +381,40 @@ Pour un POST manuel, le jeton va en champ caché : `<input type="hidden" name="_
 `table2()` rend des listes paginées, triables par clic sur l'en-tête et filtrables (exemple :
 `modules/user/controllers/admin.php`). Le tri est géré par `js/table2.js`, en vanilla.
 
+### La charte de l'administration
+
+L'administration est **sobre** : le fond s'efface derrière les données, la couleur d'accent est rare, et
+les couleurs vives sont réservées à ce qui appelle une action ou signale un état. Une page de module se
+compose ainsi :
+
+- **Une carte par liste** : `admin_card(icône, titre, corps, sous-titre, actions)` — le sous-titre porte
+  le compte (« 3 publiées · 1 brouillon »), les actions le bouton qui crée.
+- **Le bouton qui crée** (« Nouvelle citation ») : `btn btn-primary btn-sm`, dans l'en-tête de la carte
+  de la liste qu'il alimente. La barre du haut garde les outils de la page — Permissions, Configuration,
+  Aide.
+- **Les actions d'une ligne** : des boutons à icône seule, petits. *Modifier* (crayon), *accès*
+  (cadenas), *trier* : `btn-outline-secondary`, neutres. *Supprimer* : `btn-outline-danger` avec
+  l'icône `far fa-trash-alt`. Jamais de bouton plein dans une ligne. `button_update()`,
+  `button_access()` et `button_delete()` les rendent ainsi ; un bouton écrit à la main suit la même
+  règle, que `tools/check-actions-admin.php` vérifie.
+- **Les autres actions d'une ligne** (aperçu, dupliquer, restaurer) : un contour, jamais un bouton
+  plein ; une teinte seulement si elle porte un sens (`btn-outline-warning` pour un aperçu qui change
+  le mode de navigation, `btn-outline-success` pour restaurer).
+- **Les pastilles d'état** : `badge text-bg-success` (publié, actif), `text-bg-secondary` (brouillon,
+  inactif), `text-bg-warning` (en attente), `text-bg-danger` (erreur) — le thème d'administration les
+  rend douces (fond pâle, texte appuyé), en clair comme en sombre.
+- **Un tableau** pour des données en colonnes (titre, compte, statut) ; **des cartes**
+  (`nf-content-card`) pour des contenus rédigés qu'on reconnaît à leur extrait. Une liste qui se range
+  par famille (Templates emails) reste **un seul tableau**, une ligne `<tr class="nf-table-groupe">` en
+  tête de chaque famille, plutôt qu'une carte par famille. Une date de la base s'y affiche avec
+  `nf_date_heure()`, jamais telle quelle.
+- **L'état vide** : `admin_empty(icône, titre, texte)`, qui dit quoi faire pour commencer.
+- **Le bouton qui envoie un formulaire** : « Enregistrer » pour une fiche qui existe — jamais
+  « Éditer », on est déjà en train de la modifier —, « Ajouter » ou « Créer » pour une nouvelle, comme
+  le titre de la page (« Ajouter un forum »).
+- **Plusieurs vues sur un même sujet** (Monitoring, Utilisateurs, Discord) : des onglets `nf-local-nav` /
+  `nf-local-tab` — en liens vers d'autres adresses, ou en boutons qui basculent des panneaux.
+
 ## 8. Éprouver le module
 
 Le projet a un filet, et un module neuf doit y entrer :

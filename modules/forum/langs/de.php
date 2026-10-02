@@ -308,4 +308,5 @@ return [
 	'd699908b' => 'Von Discord aus geschrieben',
 	'7642b2d9' => 'Gast %s',
 	'816f205c' => 'Discord',
+	'8fd9c7ef' => 'Speichern',
 ];

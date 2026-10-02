@@ -187,4 +187,5 @@ return [
 	'cf821f2c' => 'There are no votes yet...',
 	'602bea83' => 'My opinion on this application',
 	'350c98af' => 'Offer %s',
+	'8fd9c7ef' => 'Save',
 ];

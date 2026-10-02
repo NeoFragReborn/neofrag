@@ -37,7 +37,7 @@ $rules = [
 	],
 	[
 		'type'  => 'legend',
-		'label' => $this->lang('Statistiques')
+		'label' => $this->lang('Séries affichées')
 	],
 	'modules' => [
 		'type'   => 'checkbox',

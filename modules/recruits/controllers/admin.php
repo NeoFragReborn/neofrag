@@ -52,7 +52,7 @@ class Admin extends Controller_Module
 				$recruits_body .= '<div class="nf-content-card-foot">';
 				$recruits_body .= '<span class="nf-content-card-spacer"></span>';
 				if ($this->access->effective_admin()) $recruits_body .= (string)$this->button_access($r['recruit_id'], 'recruit');
-				if ($this->is_authorized('modify_recruit')) $recruits_body .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/recruits/'.$r['recruit_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
+				if ($this->is_authorized('modify_recruit')) $recruits_body .= '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/recruits/'.$r['recruit_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
 				if ($this->is_authorized('delete_recruit')) $recruits_body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/recruits/delete/'.$r['recruit_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$recruits_body .= '</div>';
 				$recruits_body .= '</div>';
@@ -69,9 +69,19 @@ class Admin extends Controller_Module
 
 		$add_btn = $this->is_authorized('add_recruit') ? '<a class="btn btn-sm btn-primary" href="'.url('admin/recruits/add').'"><i class="fas fa-plus"></i> '.$this->lang('Créer une offre').'</a>' : '';
 
+		// La liste est découpée par pages de 10 (le checker) : sans ces liens, les suivantes étaient
+		// inatteignables, et le compte ne disait que la page affichée.
+		$pagination = (string) $this->module->pagination->get_pagination();
+		$total      = $pagination !== '' ? (int) $this->module->pagination->count() : count($recruits);
+
+		if ($pagination !== '')
+		{
+			$recruits_body .= '<div class="d-flex justify-content-center mt-3">'.$pagination.'</div>';
+		}
+
 		return '<div class="nf-list-layout">'
 			.'<div class="nf-list-aside">'.$this->admin_card('fab fa-black-tie', $this->lang('Candidatures'), $candidacies_body).'</div>'
-			.'<div class="nf-list-main">'.$this->admin_card('fas fa-bullhorn', $this->lang('Offres de recrutement'), $recruits_body, $this->lang('%d offre|%d offres', count($recruits), count($recruits)), $add_btn).'</div>'
+			.'<div class="nf-list-main">'.$this->admin_card('fas fa-bullhorn', $this->lang('Offres de recrutement'), $recruits_body, $this->lang('%d offre|%d offres', $total, $total), $add_btn).'</div>'
 			.'</div>';
 	}
 
@@ -128,7 +138,7 @@ class Admin extends Controller_Module
 					'team_id'      => $team_id,
 					'image_id'     => $image_id
 				])
-				->add_submit($this->lang('Modifier'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/recruits');
 
 		if ($this->form()->is_valid($post))
@@ -634,7 +644,7 @@ class Admin extends Controller_Module
 						->color($statut_color)
 						->footer(icon('fas fa-arrow-circle-left').' '.$this->lang('Retour aux candidatures de cette offre')),
 				$this	->panel()
-						->heading($this->lang('Candidature de %s', '<b>'.htmlspecialchars((string) ($pseudo)).'</b>').' <a href="mailto:'.$email.'" class="btn btn-info btn-sm ms-2" data-bs-toggle="tooltip" title="'.$this->lang('Contacter par e-mail').'">'.icon('far fa-envelope').'</a>', 'fab fa-black-tie')
+						->heading($this->lang('Candidature de %s', '<b>'.htmlspecialchars((string) ($pseudo)).'</b>').' <a href="mailto:'.$email.'" class="btn btn-outline-secondary btn-sm ms-2" data-bs-toggle="tooltip" title="'.$this->lang('Contacter par e-mail').'">'.icon('far fa-envelope').'</a>', 'fab fa-black-tie')
 						->body($this->view('candidacy', [
 							'candidacy_id'  => $candidacy_id,
 							'custom'        => $this->model()->get_candidacy_custom($candidacy_id),

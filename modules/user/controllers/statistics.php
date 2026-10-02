@@ -24,7 +24,7 @@ class Statistics extends Controller_Module
 				}
 			],
 			'sessions' => [
-				'title'    => $this->lang('Connections de membres'),
+				'title'    => $this->lang('Connexions de membres'),
 				'group_by' => 'COUNT(DISTINCT user_id)',
 				'data'     => function(){
 					$this->db->from('nf_session_history');

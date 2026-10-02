@@ -118,7 +118,7 @@ class Admin extends Controller_Module
 					'icon'         => (string) $this->db->select('icon')->from('nf_forum')->where('forum_id', (int) $forum_id)->row(),
 					'traductions'  => $this->_modele_forum()->traductions('forum', (int) $forum_id)
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/forum');
 
 		if ($this->form()->is_valid($post))
@@ -233,7 +233,7 @@ class Admin extends Controller_Module
 					'vip_only'    => $cat['vip_only'],
 					'traductions' => $this->_modele_forum()->traductions('category', (int) $category_id)
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/forum');
 
 		if ($this->form()->is_valid($post))
@@ -546,8 +546,8 @@ class Admin extends Controller_Module
 		foreach ($prefixes as $p)
 		{
 			$lignes .= '<tr><td>'.\NF\Modules\Forum\Models\Forum::pastille_prefixe($p).'</td><td>'.(int) $p['order'].'</td><td class="text-end">'
-				.'<a class="btn btn-sm btn-primary" href="'.url('admin/forum/prefixes/'.$p['prefix_id'].'/'.url_title($p['title'])).'" title="'.$this->lang('Éditer').'">'.icon('fas fa-edit').'</a> '
-				.'<a class="btn btn-sm btn-danger" href="'.$this->csrf_url('admin/forum/prefixes/delete/'.$p['prefix_id'].'/'.url_title($p['title'])).'" title="'.$this->lang('Supprimer').'">'.icon('far fa-trash-alt').'</a>'
+				.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/forum/prefixes/'.$p['prefix_id'].'/'.url_title($p['title'])).'" title="'.$this->lang('Éditer').'">'.icon('fas fa-edit').'</a> '
+				.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/forum/prefixes/delete/'.$p['prefix_id'].'/'.url_title($p['title'])).'" title="'.$this->lang('Supprimer').'">'.icon('far fa-trash-alt').'</a>'
 				.'</td></tr>';
 		}
 

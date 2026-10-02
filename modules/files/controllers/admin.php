@@ -380,7 +380,7 @@ class Admin extends Controller_Module
 				}
 			}
 
-			notify($count ? $this->lang('%d fichier(s) ajoute(s)', $count) : $this->lang('Aucun fichier ajoute'), $count ? 'success' : 'warning');
+			notify($count ? $this->lang('%d fichier ajouté|%d fichiers ajoutés', $count, $count) : $this->lang('Aucun fichier ajouté'), $count ? 'success' : 'warning');
 			redirect($this->index_path($dir));
 		}
 
@@ -405,7 +405,7 @@ class Admin extends Controller_Module
 
 			$this->copy_access('read_directory', $this->directory_id($target_dir), 'read_directory', $this->directory_id($relative));
 
-			notify($this->lang('Dossier cree avec succes'));
+			notify($this->lang('Dossier créé'));
 			redirect($this->index_path($dir));
 		}
 
@@ -421,12 +421,12 @@ class Admin extends Controller_Module
 
 			if (!$full || !file_exists($full))
 			{
-				notify($this->lang('Element introuvable'), 'danger');
+				notify($this->lang('Élément introuvable'), 'danger');
 				redirect($this->index_path($dir));
 			}
 
 			is_dir($full) ? dir_remove($full) : unlink($full);
-			notify($this->lang('Element supprime avec succes'));
+			notify($this->lang('Élément supprimé'));
 			redirect($this->index_path($dir));
 		}
 
@@ -485,7 +485,7 @@ class Admin extends Controller_Module
 				}
 			}
 
-			notify($count ? $this->lang('%d element(s) supprime(s)', $count) : $this->lang('Aucun element supprime'), $count ? 'success' : 'warning');
+			notify($count ? $this->lang('%d élément supprimé|%d éléments supprimés', $count, $count) : $this->lang('Aucun élément supprimé'), $count ? 'success' : 'warning');
 			redirect($this->index_path($dir));
 		}
 
@@ -503,7 +503,7 @@ class Admin extends Controller_Module
 
 			if (!$source_full || !file_exists($source_full) || $target_dir === NULL || !is_dir($this->full_path($target_dir)) || $name === '')
 			{
-				notify($this->lang('Deplacement impossible'), 'danger');
+				notify($this->lang('Déplacement impossible'), 'danger');
 				redirect($this->index_path($dir));
 			}
 
@@ -511,7 +511,7 @@ class Admin extends Controller_Module
 
 			if (is_dir($source_full) && ($target === $source || strpos($target.'/', $source.'/') === 0))
 			{
-				notify($this->lang('Impossible de deplacer un dossier dans lui-meme'), 'danger');
+				notify($this->lang('Impossible de déplacer un dossier dans lui-même'), 'danger');
 				redirect($this->index_path($dir));
 			}
 
@@ -519,12 +519,12 @@ class Admin extends Controller_Module
 
 			if (!$target_full || file_exists($target_full))
 			{
-				notify($this->lang('Un element existe deja a cet emplacement'), 'danger');
+				notify($this->lang('Un élément existe déjà à cet emplacement'), 'danger');
 				redirect($this->index_path($dir));
 			}
 
 			rename($source_full, $target_full);
-			notify($this->lang('Element deplace avec succes'));
+			notify($this->lang('Élément déplacé'));
 			redirect($this->index_path($target_dir));
 		}
 
@@ -540,7 +540,7 @@ class Admin extends Controller_Module
 
 			if (empty($items) || $target_dir === NULL || !is_dir($this->full_path($target_dir)))
 			{
-				notify($this->lang('Deplacement impossible'), 'danger');
+				notify($this->lang('Déplacement impossible'), 'danger');
 				redirect($this->index_path($dir));
 			}
 
@@ -640,7 +640,7 @@ class Admin extends Controller_Module
 				}
 			}
 
-			notify($count ? $this->lang('%d element(s) deplace(s)', $count) : $this->lang('Aucun element deplace'), $count ? 'success' : 'warning');
+			notify($count ? $this->lang('%d élément déplacé|%d éléments déplacés', $count, $count) : $this->lang('Aucun élément déplacé'), $count ? 'success' : 'warning');
 			redirect($this->index_path($target_dir));
 		}
 	}
@@ -850,7 +850,7 @@ class Admin extends Controller_Module
 			$icon = $item['dir'] ? 'far fa-folder' : 'far fa-file';
 			$title = $item['dir'] ? '<a href="'.$this->index_url($item['path']).'">'.$name.'</a>' : '<a href="'.url('files/'.$item['slug']).'" target="_blank" rel="noopener">'.$name.'</a>';
 			$size = $item['dir'] ? '-' : human_size($item['size']);
-			$date = timetostr('d/m/Y H:i', $item['date']);
+			$date = nf_date_heure($item['date']);
 			$value = $item['type'] === 'file' ? 'file:'.$item['id'] : 'dir:'.$item['path'];
 			$access = $item['type'] === 'file' ? $this->button_access($item['id'], 'file', 'files', $this->lang('Permissions de lecture')) : $this->button_access($item['id'], 'directory', 'files', $this->lang('Permissions de lecture'));
 
@@ -888,20 +888,20 @@ class Admin extends Controller_Module
 
 		if ($this->is_authorized('modify_files'))
 		{
-			$buttons .= '<button class="btn btn-primary files-selection-action" type="button" data-bs-toggle="modal" data-bs-target="#files-move-modal" title="'.$this->lang('Deplacer').'" aria-label="'.$this->lang('Deplacer').'" disabled>'
-					.icon('fas fa-exchange-alt')
+			$buttons .= '<button class="btn btn-sm btn-outline-secondary files-selection-action" type="button" data-bs-toggle="modal" data-bs-target="#files-move-modal" disabled>'
+					.icon('fas fa-exchange-alt').' '.$this->lang('Déplacer')
 				.'</button>';
 		}
 
 		if ($this->is_authorized('delete_files'))
 		{
-			$buttons .= '<button class="btn btn-danger files-selection-action" type="button" data-bs-toggle="modal" data-bs-target="#files-delete-modal" title="'.$this->lang('Supprimer').'" aria-label="'.$this->lang('Supprimer').'" disabled>'
-					.icon('far fa-trash-alt')
+			$buttons .= '<button class="btn btn-sm btn-outline-danger files-selection-action" type="button" data-bs-toggle="modal" data-bs-target="#files-delete-modal" disabled>'
+					.icon('far fa-trash-alt').' '.$this->lang('Supprimer')
 				.'</button>';
 		}
 
 		return '<div class="files-selection-bar" data-files-selection>'
-				.'<span class="files-selection-count">'.$this->lang('Aucun element selectionne').'</span>'
+				.'<span class="files-selection-count">'.$this->lang('Aucun élément sélectionné').'</span>'
 				.$buttons
 			.'</div>';
 	}
@@ -913,12 +913,12 @@ class Admin extends Controller_Module
 
 		if ($this->is_authorized('add_files'))
 		{
-			$upload = '<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#files-upload-modal" title="'.$this->lang('Ajouter').'" aria-label="'.$this->lang('Ajouter').'">'
-					.icon('fas fa-upload')
+			$upload = '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#files-upload-modal">'
+					.icon('fas fa-upload').' '.$this->lang('Ajouter des fichiers')
 				.'</button>';
 
-			$mkdir = '<button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#files-mkdir-modal" title="'.$this->lang('Creer un dossier').'" aria-label="'.$this->lang('Creer un dossier').'">'
-					.icon('fas fa-folder-plus')
+			$mkdir = '<button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#files-mkdir-modal">'
+					.icon('fas fa-folder-plus').' '.$this->lang('Créer un dossier')
 				.'</button>';
 		}
 
@@ -940,7 +940,7 @@ class Admin extends Controller_Module
 					.'<form class="modal-content files-mkdir-form" method="post" action="'.$this->index_url($dir).'">'
 						.'<input type="hidden" name="files_action" value="mkdir">'
 						.'<div class="modal-header">'
-							.'<h5 class="modal-title">'.icon('fas fa-folder-plus').' '.$this->lang('Creer un dossier').'</h5>'
+							.'<h5 class="modal-title">'.icon('fas fa-folder-plus').' '.$this->lang('Créer un dossier').'</h5>'
 							.'<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'">'
 							.'</button>'
 						.'</div>'
@@ -956,8 +956,8 @@ class Admin extends Controller_Module
 							.'</div>'
 						.'</div>'
 						.'<div class="modal-footer">'
-							.'<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="'.$this->lang('Annuler').'" aria-label="'.$this->lang('Annuler').'">'.icon('fas fa-times').'</button>'
-							.'<button type="submit" class="btn btn-primary" title="'.$this->lang('Creer').'" aria-label="'.$this->lang('Creer').'">'.icon('fas fa-folder-plus').'</button>'
+							.'<button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">'.$this->lang('Annuler').'</button>'
+							.'<button type="submit" class="btn btn-sm btn-primary">'.icon('fas fa-folder-plus').' '.$this->lang('Créer').'</button>'
 						.'</div>'
 					.'</form>'
 				.'</div>'
@@ -984,14 +984,14 @@ class Admin extends Controller_Module
 							.'<input class="files-upload-input" type="file" name="files[]" multiple>'
 							.'<button class="files-upload-dropzone" type="button">'
 								.'<span class="files-upload-dropzone-icon">'.icon('fas fa-cloud-upload-alt').'</span>'
-								.'<strong>'.$this->lang('Glisser-deposer les fichiers ici').'</strong>'
+								.'<strong>'.$this->lang('Glissez-déposez les fichiers ici').'</strong>'
 								.'<small>'.$this->lang('ou cliquer pour choisir des fichiers').'</small>'
 							.'</button>'
 							.'<ul class="files-upload-list"></ul>'
 						.'</div>'
 						.'<div class="modal-footer">'
-							.'<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="'.$this->lang('Annuler').'" aria-label="'.$this->lang('Annuler').'">'.icon('fas fa-times').'</button>'
-							.'<button type="submit" class="btn btn-primary" title="'.$this->lang('Ajouter').'" aria-label="'.$this->lang('Ajouter').'">'.icon('fas fa-upload').'</button>'
+							.'<button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">'.$this->lang('Annuler').'</button>'
+							.'<button type="submit" class="btn btn-sm btn-primary">'.icon('fas fa-upload').' '.$this->lang('Ajouter').'</button>'
 						.'</div>'
 					.'</form>'
 				.'</div>'
@@ -1011,7 +1011,7 @@ class Admin extends Controller_Module
 						.'<input type="hidden" name="files_action" value="move_selected">'
 						.'<div class="files-selected-inputs"></div>'
 						.'<div class="modal-header">'
-							.'<h5 class="modal-title">'.icon('fas fa-exchange-alt').' '.$this->lang('Deplacer la selection').'</h5>'
+							.'<h5 class="modal-title">'.icon('fas fa-exchange-alt').' '.$this->lang('Déplacer la sélection').'</h5>'
 							.'<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'">'
 							.'</button>'
 						.'</div>'
@@ -1020,7 +1020,7 @@ class Admin extends Controller_Module
 							.'<div class="nf-field files-rename-field">'
 								.'<label>'.$this->lang('Nom').'</label>'
 								.'<input class="form-control" type="text" name="name">'
-								.'<small class="form-text text-muted">'.$this->lang('Disponible uniquement pour un seul element selectionne').'</small>'
+								.'<small class="form-text text-muted">'.$this->lang('Seulement quand un seul élément est sélectionné').'</small>'
 							.'</div>'
 							.'<div class="nf-field mb-0">'
 								.'<label>'.$this->lang('Chemin de destination').'</label>'
@@ -1028,8 +1028,8 @@ class Admin extends Controller_Module
 							.'</div>'
 						.'</div>'
 						.'<div class="modal-footer">'
-							.'<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="'.$this->lang('Annuler').'" aria-label="'.$this->lang('Annuler').'">'.icon('fas fa-times').'</button>'
-							.'<button type="submit" class="btn btn-primary" title="'.$this->lang('Deplacer').'" aria-label="'.$this->lang('Deplacer').'">'.icon('fas fa-exchange-alt').'</button>'
+							.'<button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">'.$this->lang('Annuler').'</button>'
+							.'<button type="submit" class="btn btn-sm btn-primary">'.icon('fas fa-exchange-alt').' '.$this->lang('Déplacer').'</button>'
 						.'</div>'
 					.'</form>'
 				.'</div>'
@@ -1049,17 +1049,17 @@ class Admin extends Controller_Module
 						.'<input type="hidden" name="files_action" value="delete_selected">'
 						.'<div class="files-selected-inputs"></div>'
 						.'<div class="modal-header">'
-							.'<h5 class="modal-title">'.icon('far fa-trash-alt').' '.$this->lang('Supprimer la selection').'</h5>'
+							.'<h5 class="modal-title">'.icon('far fa-trash-alt').' '.$this->lang('Supprimer la sélection').'</h5>'
 							.'<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="'.$this->lang('Fermer').'">'
 							.'</button>'
 						.'</div>'
 						.'<div class="modal-body">'
 							.'<p class="files-selected-summary text-muted"></p>'
-							.'<div class="alert alert-danger mb-0">'.$this->lang('Cette action est definitive.').'</div>'
+							.'<div class="alert alert-danger mb-0">'.$this->lang('Cette action est définitive.').'</div>'
 						.'</div>'
 						.'<div class="modal-footer">'
-							.'<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="'.$this->lang('Annuler').'" aria-label="'.$this->lang('Annuler').'">'.icon('fas fa-times').'</button>'
-							.'<button type="submit" class="btn btn-danger" title="'.$this->lang('Supprimer').'" aria-label="'.$this->lang('Supprimer').'">'.icon('far fa-trash-alt').'</button>'
+							.'<button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">'.$this->lang('Annuler').'</button>'
+							.'<button type="submit" class="btn btn-sm btn-danger">'.icon('far fa-trash-alt').' '.$this->lang('Supprimer').'</button>'
 						.'</div>'
 					.'</form>'
 				.'</div>'

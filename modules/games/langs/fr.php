@@ -53,4 +53,5 @@ return [
 	'ff116db6' => 'Nom de la carte',
 	'04fc2b5b' => 'Image',
 	'c8569b6a' => 'Nom du mode',
+	'8fd9c7ef' => 'Enregistrer',
 ];

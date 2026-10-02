@@ -54,4 +54,5 @@ return [
 	'ff116db6' => 'Nome della mappa',
 	'04fc2b5b' => 'Immagine',
 	'c8569b6a' => 'Nome della modalità',
+	'8fd9c7ef' => 'Salva',
 ];

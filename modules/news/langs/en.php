@@ -110,4 +110,5 @@ return [
 	'4c9e9abd' => 'Views',
 	'cf2e7bf8' => 'News from a category',
 	'32795d48' => 'Draft',
+	'8fd9c7ef' => 'Save',
 ];

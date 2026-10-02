@@ -76,4 +76,8 @@ return [
 	'ef57084d' => 'E-mail enviado a um utilizador que recebe uma sanção (aviso/restrição/banimento).',
 	'2a54700c' => 'Newsletter: confirmação',
 	'3fd8686a' => 'E-mail de dupla confirmação para validar a subscrição da newsletter.',
+	'de200fc5' => 'Idiomas',
+	'6aa35b89' => 'Modelo',
+	'870c633c' => 'Assunto',
+	'e2c8f589' => 'Estado',
 ];

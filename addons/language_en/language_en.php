@@ -37,14 +37,21 @@ class Language_En extends Language
 		];
 	}
 
+	/**
+	 * Les formats COURTS sont ceux du sélecteur de dates (flatpickr) et de la saisie : date2sql() et
+	 * datetime2sql() doivent les relire. En « m/d/Y g:i A », le 2 octobre se relisait 10 février, et
+	 * flatpickr, qui ne connaît ni « g » ni « A », écrivait « 10/02/2026 g:05 A » (2026-10-02). Ils
+	 * suivent ceux des traductions anglaises du produit (« d/m/Y H:i ») ; les formats longs, qui ne
+	 * servent qu'à l'affichage, gardent l'usage anglais.
+	 */
 	public function date()
 	{
 		return [
-			'short_date'      => 'm/d/Y',
+			'short_date'      => 'd/m/Y',
 			'long_date'       => 'F j, Y',
-			'short_time'      => 'g:i A',
+			'short_time'      => 'H:i',
 			'long_time'       => 'g:i:s A',
-			'short_date_time' => 'm/d/Y g:i A',
+			'short_date_time' => 'd/m/Y H:i',
 			'long_date_time'  => 'l, F j, Y g:i A'
 		];
 	}

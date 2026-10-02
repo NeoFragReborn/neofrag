@@ -148,7 +148,7 @@ class Admin extends Controller_Module
 				.'<td><input type="checkbox" name="selected[]" value="'.htmlspecialchars((string) ($it['type'].':'.(int)$it['id'])).'" class="nf-trash-cb"></td>'
 				.'<td><span class="badge text-bg-secondary">'.htmlspecialchars((string) ($it['label'])).'</span></td>'
 				.'<td>'.htmlspecialchars((string) (str_shortener(trim(strip_tags((string)$it['title'])), 80, '…'))).'</td>'
-				.'<td><small>'.htmlspecialchars((string)$it['deleted_at']).'</small></td>'
+				.'<td><small>'.nf_date_heure($it['deleted_at']).'</small></td>'
 				.'<td><small>'.($it['deleted_by'] ? htmlspecialchars((string)$it['deleted_by']) : '—').'</small></td>'
 				.'</tr>';
 		}
@@ -159,8 +159,8 @@ class Admin extends Controller_Module
 			.'<form method="post" action="'.url('admin/trash').'"><input type="hidden" name="_" value="'.$this->csrf_token().'">'
 			.'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">'
 				.'<label style="display:flex;align-items:center;gap:6px;font-size:13px;margin:0;cursor:pointer;"><input type="checkbox" id="nf-trash-all"> '.$this->lang('Tout sélectionner').'</label>'
-				.'<button type="submit" name="bulk_action" value="restore" class="btn btn-sm btn-success">'.icon('fas fa-trash-restore').' '.$this->lang('Restaurer').'</button>'
-				.'<button type="submit" name="bulk_action" value="purge" class="btn btn-sm btn-danger" data-confirm="'.$confirm_purge.'">'.icon('fas fa-times').' '.$this->lang('Purger').'</button>'
+				.'<button type="submit" name="bulk_action" value="restore" class="btn btn-sm btn-outline-success">'.icon('fas fa-trash-restore').' '.$this->lang('Restaurer').'</button>'
+				.'<button type="submit" name="bulk_action" value="purge" class="btn btn-sm btn-outline-danger" data-confirm="'.$confirm_purge.'">'.icon('far fa-trash-alt').' '.$this->lang('Purger').'</button>'
 			.'</div>'
 			.'<div class="table-responsive"><table class="table table-sm table-hover"><thead><tr>'
 			.'<th></th><th>'.$this->lang('Type').'</th><th>'.$this->lang('Titre').'</th><th>'.$this->lang('Supprimé le').'</th><th>'.$this->lang('Par').'</th>'

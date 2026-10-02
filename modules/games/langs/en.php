@@ -54,4 +54,5 @@ return [
 	'ff116db6' => 'Map name',
 	'04fc2b5b' => 'Image',
 	'c8569b6a' => 'Mode name',
+	'8fd9c7ef' => 'Save',
 ];

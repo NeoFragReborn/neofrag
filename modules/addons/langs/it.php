@@ -86,4 +86,11 @@ return [
 	'9ed642e7' => 'Aggiorna',
 	'30d19292' => 'autenticatore',
 	'9fa5be42' => 'Installa la selezione',
+	'2cecf817' => 'Tipo',
+	'430d09b2' => 'Cerca un’estensione',
+	'e2c8f589' => 'Stato',
+	'8088964a' => 'Visualizzazione',
+	'3d3305f0' => 'Elenco',
+	'd3fe1369' => 'Palinsesto',
+	'45002a02' => 'Nessuna estensione corrisponde.',
 ];

@@ -77,4 +77,5 @@ return [
 	'98ac0078' => 'Clasificación de nuestros equipos',
 	'4306ff8f' => 'Otro puesto',
 	'ff8ae8a6' => 'Ninguna clasificación',
+	'8fd9c7ef' => 'Guardar',
 ];

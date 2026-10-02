@@ -30,8 +30,16 @@ class Admin_Ajax_Checker extends Module_Checker
 				'year'  => [function($a){ return 'DATE_FORMAT('.$a.', "%Y")'; },                                              'Y',       new \DateInterval('P1Y'),  function(&$a) { $a = $a->modify('01 january'); }]
 			];
 
-			$start = date_create_from_format('d/m/Y', $check['start']);
-			$end = date_create_from_format('d/m/Y', $check['end']);
+			// Les dates arrivent dans le format de la langue (« 02.10.2026 » en allemand) : date2sql() les
+			// remet en Y-m-d. Une date illisible retombe sur la période par défaut (un an jusqu'à
+			// aujourd'hui) au lieu de faire tomber la requête.
+			$debut = (string) $check['start'];
+			$fin   = (string) $check['end'];
+			$this->config->lang->date2sql($debut);
+			$this->config->lang->date2sql($fin);
+
+			$start = date_create_from_format('!Y-m-d', $debut) ?: date_create('-1 year midnight');
+			$end   = date_create_from_format('!Y-m-d', $fin) ?: date_create('today');
 
 			$this->session	->set('statistics', 'period', $check['period'])
 							->set('statistics', 'start', $start->getTimestamp())

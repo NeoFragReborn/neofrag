@@ -191,6 +191,32 @@ function nf_fuseaux_liste(): array
 	return $cache[$locale] = $groupes;
 }
 
+/**
+ * Une date et heure de la base, à montrer : « 02/10/2026 14:03 » dans le format de la langue et le
+ * fuseau de celui qui regarde. Vide si la valeur l'est. Une vingtaine d'écrans (modération, corbeille,
+ * notifications, sauvegardes) affichaient la valeur brute, à l'heure du serveur (2026-10-02).
+ */
+function nf_date_heure($valeur): string
+{
+	if ($valeur === NULL || $valeur === '' || $valeur === '0000-00-00 00:00:00')
+	{
+		return '';
+	}
+
+	return timetostr(NeoFrag()->lang('d/m/Y H:i'), $valeur);
+}
+
+/** Une date seule, à montrer : « 02/10/2026 » dans le format de la langue (« 02.10.2026 » en allemand). */
+function nf_date($valeur): string
+{
+	if ($valeur === NULL || $valeur === '' || $valeur === '0000-00-00' || $valeur === '0000-00-00 00:00:00')
+	{
+		return '';
+	}
+
+	return timetostr(NeoFrag()->lang('d/m/Y'), $valeur);
+}
+
 /** L'instant `$timestamp` (maintenant par défaut), au format de la base, dans le fuseau d'enregistrement. */
 function now($timestamp = NULL): string
 {

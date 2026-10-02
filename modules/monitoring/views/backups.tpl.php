@@ -15,16 +15,19 @@ foreach ($backups as $b)
 				<?php if (count($backups)): ?> — <?php echo human_size($total_size) ?><?php endif ?>
 			</small>
 		</span>
+		<span class="d-flex gap-2">
 		<?php if ($old_count > 0): ?>
 		<a class="btn btn-sm btn-outline-warning" href="<?php echo url('admin/monitoring/purge') ?>?_=<?php echo $csrf ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer définitivement %d sauvegarde de plus de 30 jours ?|Supprimer définitivement %d sauvegardes de plus de 30 jours ?', $old_count, $old_count), ENT_QUOTES) ?>" data-confirm-style="warning">
 			<i class="fas fa-trash-alt"></i> <?php echo $this->lang('Purger > 30j (%d)', $old_count) ?>
 		</a>
 		<?php endif ?>
+		<a class="btn btn-primary btn-sm" href="#" data-bs-toggle="modal" data-bs-target="#modal-backup"><i class="far fa-save"></i> <?php echo $this->lang('Sauvegarder maintenant') ?></a>
+		</span>
 	</div>
 	<?php if (empty($backups)): ?>
 		<div class="card-body text-center text-muted py-4">
 			<?php echo icon('fas fa-archive fa-2x mb-2') ?><br>
-			<?php echo $this->lang('Aucune sauvegarde pour le moment. Utilise le bouton <i class="far fa-save"></i> du panneau Stockage pour créer la première.') ?>
+			<?php echo $this->lang('Aucune sauvegarde pour le moment : « Sauvegarder maintenant » crée la première.') ?>
 		</div>
 	<?php else: ?>
 		<div class="card-body p-0">
@@ -41,7 +44,7 @@ foreach ($backups as $b)
 				<tbody>
 					<?php foreach ($backups as $b): ?>
 					<tr>
-						<td><?php echo icon('far fa-clock').' '.htmlspecialchars($b['date']) ?></td>
+						<td><?php echo icon('far fa-clock').' '.nf_date_heure($b['date']) ?></td>
 						<td><code><?php echo htmlspecialchars($b['name']) ?></code></td>
 						<td class="text-end"><?php echo human_size($b['size']) ?></td>
 						<td class="text-end<?php echo $b['age_days'] > 30 ? ' text-warning' : '' ?>">
@@ -51,7 +54,7 @@ foreach ($backups as $b)
 							<a class="btn btn-sm btn-outline-primary" href="<?php echo url('admin/monitoring/download/'.urlencode($b['slug'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Télécharger') ?>">
 								<?php echo icon('fas fa-download') ?>
 							</a>
-							<a class="btn btn-sm btn-outline-warning" href="<?php echo url('admin/monitoring/restore/'.urlencode($b['slug'])) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Restaurer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Remettre le site dans l\'état du %s ? Les fichiers et la base seront remplacés par ceux de cette sauvegarde ; tout ce qui a été publié depuis sera perdu. La configuration, les journaux et le cache ne sont pas touchés.', $b['date']), ENT_QUOTES) ?>" data-confirm-style="danger">
+							<a class="btn btn-sm btn-outline-warning" href="<?php echo url('admin/monitoring/restore/'.urlencode($b['slug'])) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Restaurer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Remettre le site dans l\'état du %s ? Les fichiers et la base seront remplacés par ceux de cette sauvegarde ; tout ce qui a été publié depuis sera perdu. La configuration, les journaux et le cache ne sont pas touchés.', nf_date_heure($b['date'])), ENT_QUOTES) ?>" data-confirm-style="danger">
 								<?php echo icon('fas fa-undo') ?>
 							</a>
 							<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/monitoring/delete/'.urlencode($b['slug'])) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer définitivement cette sauvegarde ?'), ENT_QUOTES) ?>">

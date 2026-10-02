@@ -54,4 +54,5 @@ return [
 	'9cdcd1f0' => 'Pagine CMS statiche: chi siamo, note legali, condizioni, ecc.',
 	'4349f0db' => 'Pagina %s',
 	'1bf841b2' => 'Accesso al contenuto',
+	'8fd9c7ef' => 'Salva',
 ];

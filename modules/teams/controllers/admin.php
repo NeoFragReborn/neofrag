@@ -91,14 +91,14 @@ class Admin extends Controller_Module
 				$this	->panel()
 						->heading($this->lang('Rôles'), 'fas fa-sitemap')
 						->body($roles)
-						->footer_if($this->is_authorized('add_teams_roles'), $this->button_create('admin/teams/roles/add', $this->lang('Ajouter un rôle')))
+						->heading_if($this->is_authorized('add_teams_roles'), $this->button_create('admin/teams/roles/add', $this->lang('Ajouter un rôle'))->style('btn-sm')->align('right'))
 						->size('col-12 col-lg-4')
 			),
 			$this->col(
 				$this	->panel()
 						->heading($this->lang('Liste des équipes'), 'fas fa-headset')
 						->body($teams)
-						->footer_if($this->is_authorized('add_teams'), $this->button_create('admin/teams/add', $this->lang('Ajouter une équipe')))
+						->heading_if($this->is_authorized('add_teams'), $this->button_create('admin/teams/add', $this->lang('Ajouter une équipe'))->style('btn-sm')->align('right'))
 						->size('col-12 col-lg-8')
 			)
 		);
@@ -154,7 +154,7 @@ class Admin extends Controller_Module
 								'icon_id'      => $icon_id,
 								'description'  => $description
 							])
-							->add_submit($this->lang('Éditer'))
+							->add_submit($this->lang('Enregistrer'))
 							->add_back('admin/teams')
 							->save();
 
@@ -293,7 +293,7 @@ class Admin extends Controller_Module
 				->add_rules('roles', [
 					'title' => $title
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/teams');
 
 		if ($this->form()->is_valid($post))

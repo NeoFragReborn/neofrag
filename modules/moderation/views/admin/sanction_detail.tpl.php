@@ -26,17 +26,17 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 			<dd class="col-sm-9"><a href="<?php echo url($_modbase.'/users/'.(int)$sanction['user_id']) ?>">@<?php echo htmlspecialchars((string)$sanction['user_username']) ?></a></dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('Émise par') ?></dt>
-			<dd class="col-sm-9">@<?php echo htmlspecialchars((string)$sanction['issuer_username']) ?> <small class="text-muted">(<?php echo htmlspecialchars($sanction['created_at']) ?>)</small></dd>
+			<dd class="col-sm-9">@<?php echo htmlspecialchars((string)$sanction['issuer_username']) ?> <small class="text-muted">(<?php echo nf_date_heure($sanction['created_at']) ?>)</small></dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('Démarre le') ?></dt>
-			<dd class="col-sm-9"><?php echo htmlspecialchars($sanction['starts_at']) ?></dd>
+			<dd class="col-sm-9"><?php echo nf_date_heure($sanction['starts_at']) ?></dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('Expire le') ?></dt>
 			<dd class="col-sm-9">
 				<?php if (empty($sanction['expires_at'])): ?>
 					<span class="badge text-bg-dark"><?php echo $this->lang('Permanent') ?></span>
 				<?php else: ?>
-					<?php echo htmlspecialchars($sanction['expires_at']) ?>
+					<?php echo nf_date_heure($sanction['expires_at']) ?>
 					<?php if (!$is_expired && !$is_revoked): ?>
 						<small class="text-muted">(<?php echo time_span(strtotime($sanction['expires_at'])) ?>)</small>
 					<?php endif ?>
@@ -50,7 +50,7 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 			<dt class="col-sm-3"><?php echo $this->lang('Validation hiérarchique') ?></dt>
 			<dd class="col-sm-9">
 				<?php if (!empty($sanction['approved_at'])): ?>
-					<span class="badge text-bg-success"><i class="fas fa-check"></i> <?php echo $this->lang('Approuvée par @%s le %s', htmlspecialchars((string)$sanction['approver_username']), htmlspecialchars($sanction['approved_at'])) ?></span>
+					<span class="badge text-bg-success"><i class="fas fa-check"></i> <?php echo $this->lang('Approuvée par @%s le %s', htmlspecialchars((string)$sanction['approver_username']), nf_date_heure($sanction['approved_at'])) ?></span>
 				<?php else: ?>
 					<span class="badge text-bg-warning"><?php echo $this->lang('En attente d\'approbation') ?></span>
 				<?php endif ?>
@@ -60,7 +60,7 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 			<?php if ($is_revoked): ?>
 			<dt class="col-sm-3"><?php echo $this->lang('Levée') ?></dt>
 			<dd class="col-sm-9">
-				<small class="text-muted"><?php echo $this->lang('Par @%s le %s', htmlspecialchars((string)$sanction['revoker_username']), htmlspecialchars($sanction['revoked_at'])) ?></small><br>
+				<small class="text-muted"><?php echo $this->lang('Par @%s le %s', htmlspecialchars((string)$sanction['revoker_username']), nf_date_heure($sanction['revoked_at'])) ?></small><br>
 				<strong><?php echo $this->lang('Raison de la levée :') ?></strong> <?php echo htmlspecialchars($sanction['revoke_reason']) ?>
 			</dd>
 			<?php endif ?>

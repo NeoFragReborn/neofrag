@@ -7,7 +7,7 @@
 				<h5>@<?php echo htmlspecialchars($user['username']) ?></h5>
 				<dl class="row mb-0">
 					<dt class="col-sm-5"><?php echo $this->lang('ID') ?></dt><dd class="col-sm-7"><?php echo (int)$user['id'] ?></dd>
-					<dt class="col-sm-5"><?php echo $this->lang('Inscrit') ?></dt><dd class="col-sm-7"><small><?php echo htmlspecialchars((string)$user['registration_date']) ?></small></dd>
+					<dt class="col-sm-5"><?php echo $this->lang('Inscrit') ?></dt><dd class="col-sm-7"><small><?php echo nf_date_heure($user['registration_date']) ?></small></dd>
 					<dt class="col-sm-5"><?php echo $this->lang('Admin') ?></dt><dd class="col-sm-7"><?php echo $user['admin'] === '1' ? '<span class="badge text-bg-danger">'.$this->lang('Oui').'</span>' : $this->lang('Non') ?></dd>
 					<dt class="col-sm-5"><?php echo $this->lang('Supprimé') ?></dt><dd class="col-sm-7"><?php echo $user['deleted'] === '1' ? '<span class="badge text-bg-secondary">'.$this->lang('Oui').'</span>' : $this->lang('Non') ?></dd>
 				</dl>
@@ -31,7 +31,7 @@
 							<?php if (empty($s['expires_at'])): ?>
 								<?php echo $this->lang('Permanent') ?>
 							<?php else: ?>
-								<?php echo $this->lang('Jusqu\'au %s', htmlspecialchars($s['expires_at'])) ?>
+								<?php echo $this->lang('Jusqu\'au %s', nf_date_heure($s['expires_at'])) ?>
 							<?php endif ?>
 						</div>
 					</li>
@@ -81,7 +81,7 @@
 							<strong><?php echo $this->lang('Sanction') ?> :</strong>
 							<a href="<?php echo url($_modbase.'/sanctions/'.(int)$event['id']) ?>"><?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $event['type'])) ?> · <?php echo htmlspecialchars($this->module('moderation')->libelle('portee', $event['scope'])) ?></a>
 							<?php if (!empty($event['revoked_at'])): ?><span class="badge text-bg-secondary"><?php echo $this->lang('Levée') ?></span><?php endif ?>
-							<small class="float-end text-muted" title="<?php echo htmlspecialchars($event['created_at']) ?>"><?php echo time_span(strtotime($event['created_at'])) ?></small>
+							<small class="float-end text-muted" title="<?php echo nf_date_heure($event['created_at']) ?>"><?php echo time_span(strtotime($event['created_at'])) ?></small>
 							<?php if (!empty($event['reason'])): ?>
 							<div class="text-muted mt-1 small"><?php echo htmlspecialchars(mb_strimwidth((string)$event['reason'], 0, 200, '…')) ?></div>
 							<?php endif ?>

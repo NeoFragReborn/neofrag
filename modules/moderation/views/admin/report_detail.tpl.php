@@ -25,7 +25,7 @@ $status_class = [
 			<div class="card-body">
 				<dl class="row mb-0">
 					<dt class="col-sm-3"><?php echo $this->lang('Date') ?></dt>
-					<dd class="col-sm-9"><?php echo htmlspecialchars($report['created_at']) ?> <small class="text-muted">(<?php echo time_span(strtotime($report['created_at'])) ?>)</small></dd>
+					<dd class="col-sm-9"><?php echo nf_date_heure($report['created_at']) ?> <small class="text-muted">(<?php echo time_span(strtotime($report['created_at'])) ?>)</small></dd>
 
 					<dt class="col-sm-3"><?php echo $this->lang('Type cible') ?></dt>
 					<dd class="col-sm-9"><span class="badge text-bg-light"><?php echo htmlspecialchars($this->module('moderation')->libelle('cible', $report['target_type'])) ?></span> <code><?php echo htmlspecialchars($report['target_id']) ?></code></dd>
@@ -214,7 +214,7 @@ $status_class = [
 		<div class="alert alert-info">
 			<?php echo $this->lang('Ce signalement a déjà été traité (statut : <strong>%s</strong>).', htmlspecialchars($this->module('moderation')->libelle('statut', $report['status']))) ?>
 			<?php if ($report['handled_by']): ?>
-				<br><small><?php echo $this->lang('Traité le %s', htmlspecialchars((string)$report['handled_at'])) ?></small>
+				<br><small><?php echo $this->lang('Traité le %s', nf_date_heure($report['handled_at'])) ?></small>
 			<?php endif ?>
 			<?php if (!empty($report['handled_note'])): ?>
 				<br><strong><?php echo $this->lang('Note :') ?></strong> <?php echo htmlspecialchars($report['handled_note']) ?>
@@ -275,7 +275,7 @@ $status_class = [
 				<?php foreach ($target_history['active_sanctions'] as $s): ?>
 				<div class="badge text-bg-danger d-block mb-1 text-start p-2">
 					<?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $s['type'])) ?> · <?php echo htmlspecialchars($this->module('moderation')->libelle('portee', $s['scope'])) ?>
-					<?php if (!empty($s['expires_at'])): ?> · <?php echo $this->lang('jusqu\'au %s', htmlspecialchars($s['expires_at'])) ?><?php endif ?>
+					<?php if (!empty($s['expires_at'])): ?> · <?php echo $this->lang('jusqu\'au %s', nf_date_heure($s['expires_at'])) ?><?php endif ?>
 				</div>
 				<?php endforeach ?>
 				<?php endif ?>

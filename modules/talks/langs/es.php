@@ -134,4 +134,5 @@ return [
 	'bf8bf003' => 'Tipo de archivo no permitido: %s',
 	'584e9133' => 'Archivo sospechoso (contenido ejecutable detectado)',
 	'215a962f' => 'Enlace acortado — precaución',
+	'8fd9c7ef' => 'Guardar',
 ];

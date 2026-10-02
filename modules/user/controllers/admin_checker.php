@@ -13,11 +13,19 @@ class Admin_Checker extends Module_Checker
 {
 	public function index($page = '')
 	{
+		// La recherche de la liste : un bout de pseudo ou d'e-mail (GET, gardé par la pagination).
+		$recherche = trim((string) $this->input->get->get('q'));
+		$membres   = $this	->collection('user')
+							->where('deleted', FALSE)
+							->where('_.id !=', nf_compte_masque());
+
+		if ($recherche !== '')
+		{
+			$membres->where('_.username LIKE', '%'.$recherche.'%', 'OR', '_.email LIKE', '%'.$recherche.'%');
+		}
+
 		return [
-			$this	->collection('user')
-					->where('deleted', FALSE)
-					->where('_.id !=', nf_compte_masque())
-					->filters(
+			$membres->filters(
 						$this	->form2()
 								->rule($this->form_text('username')
 											->title('Pseudo')
@@ -30,7 +38,8 @@ class Admin_Checker extends Module_Checker
 											->filter('_.email LIKE')
 								)
 					)
-					->paginate($page)
+					->paginate($page),
+			$recherche
 		];
 	}
 
@@ -133,10 +142,11 @@ class Admin_Checker extends Module_Checker
 		$rows = NeoFrag()->db	->select('id', 'user_id', 'username', 'action', 'target_type', 'target_id', 'details', 'ip_address', 'success', 'UNIX_TIMESTAMP(created_at) AS created_ts')
 								->from('nf_audit_log')
 								->order_by('id DESC')
-								->limit(200)
+								->limit(2000)
 								->get();
 
-		return [$rows];
+		// 50 lignes par page : la page en alignait 200 d'un bloc, sur plus de 5 000 pixels.
+		return [$this->module->pagination->fix_items_per_page(50)->get_data($rows, $page), count($rows)];
 	}
 
 	public function _totp_reset($user_id, $url_title = NULL)

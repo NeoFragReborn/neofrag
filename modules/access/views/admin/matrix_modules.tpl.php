@@ -1,23 +1,49 @@
 <?php
-// R1.3 — Page de sélection : choix d'un module pour ouvrir sa matrice de permissions.
+// R1.3 — Page de sélection : choix d'un module pour ouvrir sa matrice de permissions, rangés par
+// rubrique comme dans la barre latérale.
+$modules   = $modules ?? [];
+$rubriques = nf_rubriques_admin();
+$groupes   = [];
+foreach ($modules as $m)
+{
+	$cle = 'autres';
+	foreach ($rubriques as $nom => $rubrique)
+	{
+		if (in_array($m['name'], $rubrique['modules'], TRUE))
+		{
+			$cle = $nom;
+			break;
+		}
+	}
+	$groupes[$cle][] = $m;
+}
 ?>
 <?php if (empty($modules)): ?>
-	<div class="alert alert-info text-center">
-		<?php echo icon('fas fa-info-circle').' '.$this->lang('Aucun module ne déclare de permissions.') ?>
+	<div class="nf-empty">
+		<i class="fas fa-th"></i>
+		<div class="nf-empty-title"><?php echo $this->lang('Aucun module ne déclare de permissions.') ?></div>
 	</div>
 <?php else: ?>
 	<p class="text-muted mb-3">
 		<?php echo $this->lang('Sélectionne un module pour gérer ses permissions par rôle :') ?>
 	</p>
-	<div class="row matrix-modules">
-		<?php foreach ($modules as $m): ?>
-			<div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
-				<a class="btn btn-outline-primary d-block w-100 matrix-module-btn" href="<?php echo url('admin/access/matrix/'.urlencode($m['name'])) ?>">
-					<i class="<?php echo htmlspecialchars($m['icon']) ?> me-2"></i>
-					<?php echo htmlspecialchars($m['title']) ?>
-					<small class="d-block text-muted mt-1"><?php echo htmlspecialchars($m['name']) ?></small>
-				</a>
+	<div class="matrix-rubriques">
+	<?php foreach ($rubriques as $nom => $rubrique): ?>
+		<?php if (empty($groupes[$nom])) continue ?>
+		<div class="matrix-rubrique">
+			<div class="matrix-rubrique-titre">
+				<i class="<?php echo $rubrique['icon'] ?>"></i> <?php echo htmlspecialchars($rubrique['title']) ?>
+				<span class="matrix-rubrique-compte"><?php echo count($groupes[$nom]) ?></span>
 			</div>
-		<?php endforeach ?>
+			<div class="matrix-modules">
+				<?php foreach ($groupes[$nom] as $m): ?>
+					<a class="matrix-module-btn" href="<?php echo url('admin/access/matrix/'.urlencode($m['name'])) ?>" title="<?php echo htmlspecialchars($m['name']) ?>">
+						<i class="<?php echo htmlspecialchars($m['icon']) ?> fa-fw"></i>
+						<span><?php echo htmlspecialchars($m['title']) ?></span>
+					</a>
+				<?php endforeach ?>
+			</div>
+		</div>
+	<?php endforeach ?>
 	</div>
 <?php endif ?>

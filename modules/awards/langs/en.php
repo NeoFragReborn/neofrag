@@ -77,4 +77,5 @@ return [
 	'98ac0078' => 'Ranking of our teams',
 	'4306ff8f' => 'Other place',
 	'ff8ae8a6' => 'No ranking',
+	'8fd9c7ef' => 'Save',
 ];

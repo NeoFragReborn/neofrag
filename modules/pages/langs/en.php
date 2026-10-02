@@ -54,4 +54,5 @@ return [
 	'9cdcd1f0' => 'Static CMS pages: about, legal notice, terms, etc.',
 	'4349f0db' => 'Page %s',
 	'1bf841b2' => 'Content access',
+	'8fd9c7ef' => 'Save',
 ];

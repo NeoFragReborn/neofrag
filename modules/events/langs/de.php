@@ -158,4 +158,5 @@ return [
 	'64eda44a' => 'Hier wird darüber berichtet',
 	'04fb541f' => 'Dauer',
 	'bbc46366' => 'Einladen',
+	'8fd9c7ef' => 'Speichern',
 ];

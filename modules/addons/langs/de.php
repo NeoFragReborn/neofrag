@@ -86,4 +86,11 @@ return [
 	'9ed642e7' => 'Aktualisieren',
 	'30d19292' => 'Authentifikator',
 	'9fa5be42' => 'Auswahl installieren',
+	'2cecf817' => 'Typ',
+	'430d09b2' => 'Erweiterung suchen',
+	'e2c8f589' => 'Status',
+	'8088964a' => 'Anzeige',
+	'3d3305f0' => 'Liste',
+	'd3fe1369' => 'Programm',
+	'45002a02' => 'Keine Erweiterung entspricht.',
 ];

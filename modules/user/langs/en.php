@@ -222,7 +222,6 @@ return [
 	'b6a189c8' => 'My space',
 	'cf84c44c' => 'Edit my profile',
 	'6cd1f3e4' => 'Registrations',
-	'a9c7e828' => 'Member logins',
 	'cd247522' => 'Home',
 	'08c66025' => 'News',
 	'44ea91c9' => 'Forum',
@@ -316,4 +315,9 @@ return [
 	'41dd9c72' => 'Your account has no password: you sign in through a linked account. Set a password in your profile so as not to depend on it.',
 	'a4afc21b' => 'Link an account',
 	'2778f267' => 'Automatic: your browser’s',
+	'3bde7cd7' => 'Anonymous',
+	'8bb91639' => 'Member logins',
+	'92330b9f' => '%d entry, kept for 365 days|%d entries, kept for 365 days',
+	'7ecafebb' => 'No member matches “%s”.',
+	'f4f7e9a1' => 'Search a username or an email…',
 ];

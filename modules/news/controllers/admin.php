@@ -74,11 +74,11 @@ class Admin extends Controller_Module
 			$news_html .= '<span class="nf-content-card-spacer"></span>';
 			if ($this->is_authorized('modify_news'))
 			{
-				$news_html .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/news/'.$n['news_id'].'/'.$slug).'" title="'.$this->lang('Modifier').'"><i class="fas fa-edit"></i></a>';
+				$news_html .= '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/news/'.$n['news_id'].'/'.$slug).'" title="'.$this->lang('Modifier').'"><i class="fas fa-edit"></i></a>';
 			}
 			if ($this->is_authorized('delete_news'))
 			{
-				$news_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/news/delete/'.$n['news_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer "%s" ?', $n['title']))).'" title="'.$this->lang('Supprimer').'"><i class="fas fa-trash"></i></a>';
+				$news_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/news/delete/'.$n['news_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer "%s" ?', $n['title']))).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 			}
 			$news_html .= '</div>';
 
@@ -242,7 +242,7 @@ class Admin extends Controller_Module
 					'published'    => $published,
 					'date'         => $date
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/news');
 
 		if ($this->form()->is_valid($post))
@@ -322,7 +322,7 @@ class Admin extends Controller_Module
 					'image' => $image_id,
 					'icon'  => $icon_id
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/news');
 
 		if ($this->form()->is_valid($post))

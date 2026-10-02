@@ -184,7 +184,7 @@ class Admin extends Controller_Module
 								'published'   => $published,
 								'gallery_id'  => $gallery_id
 							])
-							->add_submit($this->lang('Éditer'))
+							->add_submit($this->lang('Enregistrer'))
 							->add_back('admin/gallery')
 							->save();
 
@@ -351,7 +351,7 @@ class Admin extends Controller_Module
 					'image' => $image_id,
 					'icon'  => $icon_id
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/gallery');
 
 		if ($this->form()->is_valid($post))
@@ -400,7 +400,7 @@ class Admin extends Controller_Module
 					'title'       => $title,
 					'description' => $description
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				// Retour à l'ALBUM dans l'administration, là où mène aussi l'enregistrement : `gallery/<id>`
 				// est la route publique d'une CATÉGORIE, et l'identifiant d'un album y rendait 404.
 				->add_back('admin/gallery/'.$gallery_id.'/'.url_title($gallery_name));

@@ -158,4 +158,5 @@ return [
 	'64eda44a' => 'Se ne parla qui',
 	'04fb541f' => 'Durata',
 	'bbc46366' => 'Invita',
+	'8fd9c7ef' => 'Salva',
 ];

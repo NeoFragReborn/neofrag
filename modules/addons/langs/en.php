@@ -86,4 +86,11 @@ return [
 	'9ed642e7' => 'Update',
 	'30d19292' => 'authenticator',
 	'9fa5be42' => 'Install selection',
+	'2cecf817' => 'Type',
+	'430d09b2' => 'Search for an extension',
+	'e2c8f589' => 'Status',
+	'8088964a' => 'Display',
+	'3d3305f0' => 'List',
+	'd3fe1369' => 'Schedule',
+	'45002a02' => 'No extension matches.',
 ];

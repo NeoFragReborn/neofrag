@@ -110,4 +110,5 @@ return [
 	'4c9e9abd' => 'Aufrufe',
 	'cf2e7bf8' => 'Nachrichten einer Kategorie',
 	'32795d48' => 'Entwurf',
+	'8fd9c7ef' => 'Speichern',
 ];

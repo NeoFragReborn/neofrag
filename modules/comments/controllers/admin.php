@@ -54,7 +54,7 @@ class Admin extends Controller_Module
 			$body .= '</div>';
 			$body .= '<div class="nf-content-card-desc">'.htmlspecialchars((string) (strip_tags((string)$comment->content))).'</div>';
 			$body .= '<div class="nf-content-card-meta">';
-			$body .= '<span><i class="far fa-clock"></i> '.htmlspecialchars((string)$comment->date).'</span>';
+			$body .= '<span><i class="far fa-clock"></i> '.(string) $comment->date.'</span>';   // un objet Date : du HTML sûr (<time>), à ne pas encoder une seconde fois
 			$body .= '</div>';
 			$body .= '<div class="nf-content-card-foot">';
 			$body .= '<span class="nf-content-card-spacer"></span>';
@@ -63,6 +63,16 @@ class Admin extends Controller_Module
 			$body .= '</div>';
 		}
 		$body .= '</div>';
+
+		// Les liens des pages, après get() qui a posé la limite ; le total vient de la pagination, $count
+		// ne compte que la page affichée (la liste s'arrêtait aux 20 premiers, sans lien vers la suite).
+		$pagination = (string) $comments->pagination->get_pagination();
+		$total      = $pagination !== '' ? (int) $comments->pagination->count() : $count;
+
+		if ($pagination !== '')
+		{
+			$body .= '<div class="d-flex justify-content-center mt-3">'.$pagination.'</div>';
+		}
 
 		if ($count === 0)
 		{
@@ -79,7 +89,7 @@ class Admin extends Controller_Module
 				.'<script>(function(){var a=document.getElementById("nf-bulk-all");if(a){a.addEventListener("change",function(){document.querySelectorAll(".nf-bulk-cb").forEach(function(c){c.checked=a.checked;});});}})();</script>';
 		}
 
-		return $this->admin_card('far fa-comments', $this->lang('Commentaires'), $body, $count.' '.$this->lang('commentaire|commentaires', $count));
+		return $this->admin_card('far fa-comments', $this->lang('Commentaires'), $body, $total.' '.$this->lang('commentaire|commentaires', $total));
 	}
 
 	/**

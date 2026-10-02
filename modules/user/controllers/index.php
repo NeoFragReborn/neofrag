@@ -838,6 +838,7 @@ class Index extends Controller_Module
 	 */
 	public function _auth($auths)
 	{
+		// pagination : une ligne par fournisseur d'identité installé, la liste tient toujours sur une page.
 		$this->title($this->lang('Mes comptes liés'))->icon('fas fa-link')->breadcrumb();
 
 		$lies = (array) $this->db	->select('a.id', 'a.key', 'a.username', 'a.avatar', 'ad.name')

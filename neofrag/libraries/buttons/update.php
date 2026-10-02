@@ -17,7 +17,7 @@ class Update extends Library
 					->tooltip($title ?: $this->lang('Éditer'))
 					->url($url)
 					->icon('fas fa-pencil-alt')
-					->color('info')
+					->color('secondary')
 					->compact()
 					->outline();
 	}

@@ -28,7 +28,9 @@ class Checker extends Module_Checker
 
 		if (count_view('wiki', $page['id']))
 		{
-			NeoFrag()->db->execute('UPDATE nf_wiki_pages SET views = views + 1 WHERE id = '.(int)$page['id']);
+			// updated_at = updated_at : la colonne se met à jour d'elle-même (ON UPDATE), et la page
+			// affichait « modifiée le » à l'heure de la dernière visite.
+			NeoFrag()->db->execute('UPDATE nf_wiki_pages SET views = views + 1, updated_at = updated_at WHERE id = '.(int)$page['id']);
 		}
 
 		return [$page];

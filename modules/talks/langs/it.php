@@ -134,4 +134,5 @@ return [
 	'bf8bf003' => 'Tipo di file non consentito: %s',
 	'584e9133' => 'File sospetto (rilevato contenuto eseguibile)',
 	'215a962f' => 'Link abbreviato — attenzione',
+	'8fd9c7ef' => 'Salva',
 ];

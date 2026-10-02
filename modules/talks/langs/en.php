@@ -134,4 +134,5 @@ return [
 	'bf8bf003' => 'File type not allowed: %s',
 	'584e9133' => 'Suspicious file (executable content detected)',
 	'215a962f' => 'Shortened link — be careful',
+	'8fd9c7ef' => 'Save',
 ];

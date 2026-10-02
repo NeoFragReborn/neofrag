@@ -46,7 +46,7 @@ class Admin extends Controller_Module
 				$this	->panel()
 						->heading($this->lang('Liste des jeux'), 'fas fa-gamepad')
 						->body($games)
-						->footer_if($this->is_authorized('add_games'), $this->button_create('admin/games/add', $this->lang('Ajouter un jeu')))
+						->heading_if($this->is_authorized('add_games'), $this->button_create('admin/games/add', $this->lang('Ajouter un jeu'))->style('btn-sm')->align('right'))
 						->size('col-12 col-lg-4')
 			),
 			$this	->col($this->_panel_maps($maps))
@@ -93,7 +93,7 @@ class Admin extends Controller_Module
 					'image_id'  => $image_id,
 					'icon_id'   => $icon_id
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/games');
 
 		$modes = $this	->table()
@@ -143,9 +143,9 @@ class Admin extends Controller_Module
 			),
 			$this	->col(
 						$this	->panel()
-								->heading('Modes', 'fas fa-cog')
+								->heading($this->lang('Modes'), 'fas fa-cog')
 								->body($modes)
-								->footer($this->button_create('admin/games/modes/add/'.$game_id.'/'.url_title($title),  $this->lang('Ajouter un mode'))),
+								->heading($this->button_create('admin/games/modes/add/'.$game_id.'/'.url_title($title),  $this->lang('Ajouter un mode'))->style('btn-sm')->align('right')),
 						$this->_panel_maps($maps, $game_id, $title)
 					)
 					->size('col-12 col-lg-5')
@@ -204,7 +204,7 @@ class Admin extends Controller_Module
 					'title'    => $title,
 					'image_id' => $image_id
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back($back = 'admin/games/'.$game_id.'/'.$game);
 
 		if ($this->form()->is_valid($post))
@@ -267,7 +267,7 @@ class Admin extends Controller_Module
 				->add_rules('modes', [
 					'title' => $title
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back($back = 'admin/games/'.$game_id.'/'.$game);
 
 		if ($this->form()->is_valid($post))
@@ -334,6 +334,6 @@ class Admin extends Controller_Module
 		return $this->panel()
 					->heading($this->lang('Liste des cartes'), 'far fa-map')
 					->body($maps)
-					->footer_if($this->is_authorized('add_games_maps'), $this->button_create('admin/games/maps/add'.($game_id ? '/'.$game_id.'/'.url_title($title) : ''),  $this->lang('Ajouter une carte')));
+					->heading_if($this->is_authorized('add_games_maps'), $this->button_create('admin/games/maps/add'.($game_id ? '/'.$game_id.'/'.url_title($title) : ''),  $this->lang('Ajouter une carte'))->style('btn-sm')->align('right'));
 	}
 }

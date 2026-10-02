@@ -77,4 +77,5 @@ return [
 	'98ac0078' => 'Platzierung unserer Teams',
 	'4306ff8f' => 'Andere Platzierung',
 	'ff8ae8a6' => 'Keine Platzierung',
+	'8fd9c7ef' => 'Speichern',
 ];

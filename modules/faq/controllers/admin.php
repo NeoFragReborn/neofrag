@@ -20,7 +20,7 @@ class Admin extends Controller_Module
 					.'<td><strong>'.htmlspecialchars((string) ($c['title'])).'</strong></td>'
 					.'<td class="text-end">'.(int)$c['nb'].'</td>'
 					.'<td class="text-end" style="white-space:nowrap;">'
-					.'<a class="btn btn-sm btn-outline-primary" href="'.url('admin/faq/cat/'.$c['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
+					.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/faq/cat/'.$c['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
 					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/faq/cat/delete/'.$c['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer cette catégorie ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 			}
@@ -56,7 +56,7 @@ class Admin extends Controller_Module
 				$qs_body .= '</div>';
 				$qs_body .= '<div class="nf-content-card-foot">';
 				$qs_body .= '<span class="nf-content-card-spacer"></span>';
-				$qs_body .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/faq/q/'.$q['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
+				$qs_body .= '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/faq/q/'.$q['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
 				$qs_body .= '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/faq/q/delete/'.$q['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer cette question ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$qs_body .= '</div>';
 				$qs_body .= '</div>';

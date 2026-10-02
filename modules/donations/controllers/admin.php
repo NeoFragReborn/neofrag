@@ -16,7 +16,6 @@ class Admin extends Controller_Module
 				->icon('fas fa-hand-holding-heart')
 				->css('donations');
 
-		$this->add_action($this->button($this->lang('Nouvelle campagne'), 'fas fa-plus', 'primary')->url('admin/donations/new'));
 
 		$campaigns = $this->model()->get_campaigns();
 		foreach ($campaigns as &$c) {
@@ -36,7 +35,8 @@ class Admin extends Controller_Module
 		]);
 
 		return $this->admin_card('fas fa-bullseye', $this->lang('Campagnes de dons'), $corps,
-			$campaigns ? count($campaigns).' '.$this->lang(count($campaigns) > 1 ? 'campagnes' : 'campagne') : '');
+			$campaigns ? count($campaigns).' '.$this->lang(count($campaigns) > 1 ? 'campagnes' : 'campagne') : '',
+			$this->admin_create('admin/donations/new', $this->lang('Nouvelle campagne')));
 	}
 
 	public function _new()
@@ -161,7 +161,6 @@ class Admin extends Controller_Module
 		$this->breadcrumb($this->lang('Campagnes'), 'admin/donations');
 		$this->breadcrumb($campaign['title']);
 
-		$this->add_action($this->button($this->lang('Ajouter un don'), 'fas fa-plus', 'primary')->url('admin/donations/'.$id.'/donation/add'));
 
 		$donations = $this->model()->get_donations((int)$id, FALSE, FALSE);
 		$totals    = $this->model()->get_total((int)$id);
@@ -176,7 +175,8 @@ class Admin extends Controller_Module
 
 		return $this->admin_card('fas fa-list', $campaign['title'], $corps,
 			(int) $totals['count'].' '.$this->lang($totals['count'] > 1 ? 'dons' : 'don')
-			.' · '.number_format($totals['total'], 2, ',', ' ').' '.utf8_htmlentities($campaign['currency']));
+			.' · '.number_format($totals['total'], 2, ',', ' ').' '.utf8_htmlentities($campaign['currency']),
+			$this->admin_create('admin/donations/'.$id.'/donation/add', $this->lang('Ajouter un don')));
 	}
 
 	public function _donation_add($id)

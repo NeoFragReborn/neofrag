@@ -134,4 +134,5 @@ return [
 	'bf8bf003' => 'Tipo de ficheiro não permitido: %s',
 	'584e9133' => 'Ficheiro suspeito (conteúdo executável detetado)',
 	'215a962f' => 'Link encurtado — cuidado',
+	'8fd9c7ef' => 'Guardar',
 ];

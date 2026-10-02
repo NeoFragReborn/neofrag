@@ -120,4 +120,5 @@ return [
 	'cb9a08b2' => 'Bitte warten...',
 	'd9035f7e' => 'MB',
 	'73ae9de7' => 'Zurück zum Album %s',
+	'8fd9c7ef' => 'Speichern',
 ];

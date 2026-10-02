@@ -134,4 +134,5 @@ return [
 	'bf8bf003' => 'Dateityp nicht erlaubt: %s',
 	'584e9133' => 'Verdächtige Datei (ausführbarer Inhalt erkannt)',
 	'215a962f' => 'Gekürzter Link — Vorsicht',
+	'8fd9c7ef' => 'Speichern',
 ];

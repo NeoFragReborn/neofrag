@@ -36,7 +36,7 @@ class Admin extends Controller_Module
 		return $html;
 	}
 
-	public function index($members)
+	public function index($members, $recherche = '')
 	{
 		$this	->title($this->lang('Membres'))
 				->icon('fas fa-users');
@@ -69,7 +69,7 @@ class Admin extends Controller_Module
 				$groups_html .= '<span class="nf-group-hidden" title="'.$this->lang('Groupe caché').'"><i class="far fa-eye-slash"></i></span>';
 			}
 			$groups_html .= '<span class="nf-group-actions">';
-			$groups_html .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/user/groups/edit/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
+			$groups_html .= '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/user/groups/edit/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
 			if (!$is_auto)
 			{
 				$groups_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/user/groups/delete/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce groupe ?'))).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
@@ -142,12 +142,12 @@ class Admin extends Controller_Module
 
 			// Footer : actions
 			$members_html .= '<div class="nf-member-card-foot">';
-			$members_html .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/user/'.$user->id.'/'.url_title($user->username)).'" title="'.$this->lang('Modifier').'"><i class="fas fa-edit"></i></a>';
+			$members_html .= '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/user/'.$user->id.'/'.url_title($user->username)).'" title="'.$this->lang('Modifier').'"><i class="fas fa-edit"></i></a>';
 			if ($user->totp_enabled)
 			{
 				$members_html .= '<a class="btn btn-sm btn-outline-warning" href="'.url('admin/user/totp-reset/'.$user->id.'/'.url_title($user->username)).'" title="'.$this->lang('Réinitialiser le 2FA').'"><i class="fas fa-shield-alt"></i></a>';
 			}
-			$members_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/user/delete/'.$user->id.'/'.url_title($user->username)).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer %s ?', $user->username))).'" title="'.$this->lang('Supprimer').'"><i class="fas fa-trash"></i></a>';
+			$members_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/user/delete/'.$user->id.'/'.url_title($user->username)).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer %s ?', $user->username))).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 			$members_html .= '</div>';
 
 			$members_html .= '</div>';
@@ -155,10 +155,25 @@ class Admin extends Controller_Module
 
 		$members_html .= '</div>';
 
+		// Les liens des pages, après get() qui a posé la limite ; le total vient de la pagination, $count
+		// ne compte que la page affichée (la liste s'arrêtait aux 20 premiers, sans lien vers la suite).
+		$pagination = (string) $members->pagination->get_pagination();
+		$total      = $pagination !== '' ? (int) $members->pagination->count() : $count;
+
 		if ($count === 0)
 		{
-			$members_html = $this->admin_empty('fas fa-users', $this->lang('Aucun membre'));
+			$members_html = $recherche !== ''
+				? $this->admin_empty('fas fa-search', $this->lang('Aucun membre ne correspond à « %s ».', $recherche))
+				: $this->admin_empty('fas fa-users', $this->lang('Aucun membre'));
 		}
+
+		$recherche_html = '<form method="get" action="'.url($members->pagination->get_url()).'" class="d-flex gap-2 flex-wrap align-items-center mb-3">'
+			.'<input type="search" name="q" value="'.htmlspecialchars($recherche, ENT_QUOTES).'" class="form-control form-control-sm" style="max-width:280px;" placeholder="'.htmlspecialchars((string) $this->lang('Rechercher un pseudo ou un e-mail…'), ENT_QUOTES).'">'
+			.'<button type="submit" class="btn btn-sm btn-outline-secondary"><i class="fas fa-search"></i> '.$this->lang('Rechercher').'</button>'
+			.($recherche !== '' ? '<a href="'.url('admin/user').'" class="btn btn-sm btn-light"><i class="fas fa-times"></i> '.$this->lang('Réinitialiser').'</a>' : '')
+			.'</form>';
+
+		$members_html = $recherche_html.$members_html.($pagination !== '' ? '<div class="d-flex justify-content-center mt-3">'.$pagination.'</div>' : '');
 
 		// Card Groupes (aside)
 		$groups_actions = (string)$this->button_create('admin/user/groups/add', $this->lang('Ajouter un groupe'));
@@ -166,7 +181,7 @@ class Admin extends Controller_Module
 		$groups_card    = $this->admin_card('fas fa-users-cog', $this->lang('Groupes'), $groups_html, $groups_subtitle, $groups_actions);
 
 		// Card Membres (main)
-		$count_label  = $count === 1 ? $this->lang('%s membre', $count) : $this->lang('%s membres', $count);
+		$count_label  = $total === 1 ? $this->lang('%s membre', $total) : $this->lang('%s membres', $total);
 		$members_actions = $this->access->effective_admin()
 			? '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/user/export/csv').'" title="'.$this->lang('Exporter les membres (RGPD)').'"><i class="fas fa-file-csv"></i> CSV</a> '
 			 .'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/user/export/json').'" title="'.$this->lang('Exporter les membres (RGPD)').'"><i class="fas fa-file-code"></i> JSON</a>'
@@ -270,7 +285,7 @@ class Admin extends Controller_Module
 					? '<i class="fas fa-eye text-success" title="'.htmlspecialchars((string) ($this->lang('Visible sur la fiche publique'))).'"></i>'
 					: '<i class="fas fa-eye-slash text-muted" title="'.htmlspecialchars((string) ($this->lang('Privé'))).'"></i>').'</td>'
 				.'<td class="text-end">'
-				.'<a class="btn btn-sm btn-outline-primary" href="'.url('admin/user/fields/edit/'.$champ['field_id'].'/'.url_title($champ['label'])).'"><i class="fas fa-pen"></i></a> '
+				.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/user/fields/edit/'.$champ['field_id'].'/'.url_title($champ['label'])).'"><i class="fas fa-pen"></i></a> '
 				.'<a class="btn btn-sm btn-outline-danger" href="'.url('admin/user/fields/delete/'.$champ['field_id'].'/'.url_title($champ['label'])).'"><i class="far fa-trash-alt"></i></a>'
 				.'</td></tr>';
 		}
@@ -448,7 +463,7 @@ class Admin extends Controller_Module
 					'auto'   => $auto
 				])
 				->add_back('admin/user')
-				->add_submit($this->lang('Éditer'));
+				->add_submit($this->lang('Enregistrer'));
 
 		if ($this->form()->is_valid($post))
 		{
@@ -531,7 +546,7 @@ class Admin extends Controller_Module
 		return $this->form()->display();
 	}
 
-	public function _audit_log($rows)
+	public function _audit_log($rows, $total = 0)
 	{
 		$this->title($this->lang('Journal d\'audit'))
 			 ->icon('fas fa-clipboard-list')
@@ -554,7 +569,7 @@ class Admin extends Controller_Module
 					: '<span class="badge text-bg-danger">FAIL</span>';
 				$user_disp = $row['username']
 					? htmlspecialchars((string) ($row['username'])).' (#'.($row['user_id'] ?: '?').')'
-					: '<i class="text-muted">anonyme</i>';
+					: '<i class="text-muted">'.$this->lang('Anonyme').'</i>';
 				$target = $row['target_type']
 					? htmlspecialchars((string) ($row['target_type'])).':'.htmlspecialchars((string) ($row['target_id'] ?? ''))
 					: '<i class="text-muted">-</i>';
@@ -563,9 +578,9 @@ class Admin extends Controller_Module
 					: '<i class="text-muted">-</i>';
 
 				$body .= '<tr>'
-					.'<td>'.timetostr('Y-m-d H:i:s', $row['created_ts']).'</td>'
+					.'<td class="text-nowrap">'.nf_date_heure($row['created_ts']).'</td>'
 					.'<td>'.$user_disp.'</td>'
-					.'<td><code>'.htmlspecialchars((string) ($row['action'])).'</code></td>'
+					.'<td>'.htmlspecialchars((new \NF\NeoFrag\Libraries\Audit_Log($this))->libelle((string) $row['action'])).'<br><code class="small text-body-secondary">'.htmlspecialchars((string) ($row['action'])).'</code></td>'
 					.'<td>'.$target.'</td>'
 					.'<td><small>'.htmlspecialchars((string) ($row['ip_address'] ?? '-')).'</small></td>'
 					.'<td>'.$badge.'</td>'
@@ -576,7 +591,12 @@ class Admin extends Controller_Module
 
 		$body .= '</tbody></table>';
 
-		$subtitle = $this->lang('Affichage des 200 dernières entrées. Cleanup automatique > 365 jours.');
+		if ($pagination = (string) $this->module->pagination->get_pagination())
+		{
+			$body .= '<div class="d-flex justify-content-center mt-3">'.$pagination.'</div>';
+		}
+
+		$subtitle = $this->lang('%d entrée, conservée 365 jours|%d entrées, conservées 365 jours', $total, $total);
 
 		return $this->_user_subnav('audit-log')
 			.$this->admin_card('fas fa-clipboard-list', $this->lang('Journal d\'audit'), $body, $subtitle, '');

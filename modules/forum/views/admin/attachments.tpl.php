@@ -77,10 +77,10 @@
 					<td><?php echo htmlspecialchars($a['uploader_username']) ?></td>
 					<td><small><?php echo time_span(strtotime($a['uploaded_at'])) ?></small></td>
 					<td class="text-center">
-						<button type="submit" name="delete_attachment[]" value="<?php echo (int)$a['attachment_id'] ?>" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>"
+						<button type="submit" name="delete_attachment[]" value="<?php echo (int)$a['attachment_id'] ?>" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>"
 							data-confirm="<?php echo htmlspecialchars($this->lang('Confirmer la suppression de cette pièce jointe ?'), ENT_QUOTES) ?>"
 							data-confirm-title="<?php echo htmlspecialchars($this->lang('Supprimer la pièce jointe'), ENT_QUOTES) ?>"
-							data-confirm-icon="fas fa-paperclip"><?php echo icon('fas fa-times') ?></button>
+							data-confirm-icon="fas fa-paperclip"><?php echo icon('far fa-trash-alt') ?></button>
 					</td>
 				</tr>
 			<?php endforeach ?>

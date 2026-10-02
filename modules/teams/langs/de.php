@@ -71,4 +71,5 @@ return [
 	'a415f66e' => 'Event',
 	'f3581855' => 'Ergebnis',
 	'f4cbbafe' => 'Teams und Clans — Gaming-Modul.',
+	'8fd9c7ef' => 'Speichern',
 ];

@@ -10,6 +10,90 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.14] — 2026-10-02
+
+### Modifié
+
+- **La page Monitoring, en onglets** : un résumé toujours visible (version et mise à jour, PHP,
+  sauvegardes, outils de diagnostic), puis *Vue d'ensemble*, *Sauvegardes*, *Diagnostic*, *Serveur et
+  sécurité* et *Fichiers*. Elle empilait une dizaine de cartes dans une colonne étroite, sur près de
+  2 700 pixels ; chaque onglet tient maintenant sur un écran. La santé du site se dit sobrement (« Tout
+  va bien », « Des points à vérifier », « Des erreurs à corriger »).
+- **Les boutons d'action de l'administration, les mêmes partout** : modifier, accès et trier en gris
+  neutre ; supprimer en contour rouge, avec une corbeille. Ils changeaient d'une page à l'autre — bleu
+  ciel, teal, boutons pleins, croix ou corbeille. La charte de l'administration est décrite dans le guide
+  « Créer un module », et un contrôle la fait respecter.
+- **Les pastilles d'état, douces partout** : un fond pâle et un texte appuyé de la même couleur, comme
+  « Publié ». « Actif » s'écrivait blanc sur vert plein, « Built-in » en noir. Plus aucun bouton plein
+  de couleur dans une ligne (aperçu, dupliquer, restaurer…).
+- **Le bouton qui crée, au même endroit partout** : en haut de la carte de la liste qu'il alimente.
+  Huit pages le mettaient dans la barre du haut, au pied de la liste ou au-dessus de la carte
+  (publicités, boutique, dons, paiements, diaporama, équipes, jeux, sauvegardes du Monitoring).
+- **Thèmes & addons, compact** : une recherche, le nombre d'extensions de chaque type, les filtres de
+  type et de statut qui se combinent (« les modules inactifs »), et une vue en liste, par défaut, à côté
+  de la grille, plus dense. La page s'ouvre sur les modules ; elle alignait les quelque 120 extensions en
+  grandes cartes, sur plus de 10 000 pixels.
+- **Templates emails, en un seul tableau** : les modèles rangés par famille (comptes, forum,
+  messagerie, modération, newsletter), avec leur objet, leurs langues et leur statut sur une ligne. La
+  page empilait une carte par modèle, sur 2 000 pixels ; elle en fait la moitié.
+- **Discord, en onglets** : *Vue d'ensemble*, *Fonctionnalités*, *Mise en place du serveur*, *Salons et
+  forums*, *Groupes et rôles*, *Rôles temporaires* — on passe de l'un à l'autre sans revenir à la page
+  principale. Le journal du bot défile dans sa carte au lieu d'allonger la page.
+- **Statistiques, plus lisibles** : les dates et le pas tiennent sur une ligne. Le graphique ne répète
+  plus en légende les cases à cocher, qui portent déjà la couleur de chaque série. Ses courbes ne
+  plongent plus sous zéro et son axe s'arrête aux bornes de la période choisie. Ses dates suivent la
+  langue du site (« 2 oct. 2025 », et non « Oct 2, 2025 »). Au-delà de trois séries, des lignes seules
+  plutôt que des aires qui se recouvrent.
+- **Permissions → Vue matricielle** : les modules rangés par rubrique, comme dans la barre latérale, en
+  colonnes. Ils s'alignaient en une quarantaine de grandes tuiles, sans ordre.
+- **Le journal d'audit, par pages de 50** : il alignait 200 lignes d'un bloc, sur plus de 5 000 pixels.
+- **Utilisateurs : une recherche** par pseudo ou par e-mail, au-dessus de la liste des membres.
+- **Le gestionnaire de fichiers dit ce que font ses boutons** : « Ajouter des fichiers », « Créer un
+  dossier », « Déplacer », « Supprimer », au lieu de quatre pastilles de couleur à icône seule. Ses
+  fenêtres ont un « Annuler » neutre et une validation nommée.
+- **« Enregistrer » sur le bouton qui valide une modification**, partout. Vingt formulaires disaient
+  « Éditer » (forum, actualités, pages, événements, équipes, jeux, galeries…).
+
+### Corrigé
+
+- **Des listes de l'administration s'arrêtaient à leur première page**, sans lien vers la suite : les
+  membres et les commentaires au-delà des 20 premiers, les palmarès et les recrutements au-delà des 10
+  premiers, ainsi que « Mes abonnements » du forum côté membre. Le compteur de la carte ne disait que
+  la page affichée (« 20 membres » pour 25).
+- **Les dates saisies en anglais et en allemand.** En anglais, le sélecteur écrivait le 2 octobre
+  « 10/02/2026 g:05 A », pré-remplissait un événement du 30/09/2026 au « 06/09/2028 », et le 2 octobre
+  s'enregistrait 10 février. En allemand, une date affichée « 02.10.2026 » n'était pas relue à
+  l'enregistrement. Les formats courts de l'anglais suivent désormais ceux de ses traductions
+  (« 02/10/2026 14:05 ») ; un test vérifie, dans les six langues, qu'une date affichée se relit.
+- **Plus de fausses alertes « fichier corrompu » avant une mise à jour.** Le Monitoring comparait les
+  fichiers du site à la liste de contrôle de la dernière version publiée, même quand le site n'était
+  pas encore à son niveau : tout ce que la nouvelle version change y paraissait corrompu (102 alertes
+  sur un site juste avant son passage en 1.2.13). La vérification attend maintenant que le site
+  soit à jour, et le dit.
+- **Statistiques** : en allemand, le graphique ne se chargeait jamais ; les boutons « 7 jours »,
+  « 30 jours », « 90 jours » et « 1 an » ne faisaient rien, dans aucune langue.
+- **« Modifiée le », sur une page du wiki**, donnait l'heure de la dernière visite : le compteur de vues
+  réécrivait la date de modification. Même défaut sur les petites annonces.
+- **Dans la fenêtre de suppression du gestionnaire de fichiers**, « Annuler » et « Supprimer » étaient
+  deux corbeilles rouges identiques. Les textes du module avaient perdu leurs accents (« Dossier cree
+  avec succes », « Element deplace ») et comptaient en « élément(s) ».
+- **Le tableau de bord et le journal d'audit** montrent ce qui s'est passé (« Mode débogage allumé »,
+  « Paramètres enregistrés ») et non plus des identifiants techniques (`monitoring.debogage.allume`).
+- **La page Commentaires de l'administration** affichait du code à la place de la date de chaque
+  commentaire.
+- **Un titre accentué** (« journ&amp;eacute;e ») ne s'affiche plus en code dans l'en-tête des cartes
+  de l'administration.
+- **En mode sombre**, les textes colorés de l'administration (alertes, pastilles, `.text-success`)
+  restaient sombres sur fond sombre, presque illisibles.
+- **Les dates de la modération** (sanctions, signalements, historique d'un membre), **de la corbeille,
+  des sauvegardes, des notifications et du journal du bot Discord** s'affichent dans la langue et à
+  l'heure du visiteur (« 21/09/2026 22:54 »), et non plus telles qu'en base (« 2026-09-21 20:54:11 »).
+- **« Connexions de membres »**, dans les statistiques, s'écrivait « Connections ».
+- **Les dates suivent la langue du visiteur** : le wiki, le Bugtracker, les petites annonces, le livre
+  d'or, la newsletter, les conversations archivées, le gestionnaire de fichiers et le widget des
+  événements les écrivaient en dur — à l'anglaise (« 2026-09-20 22:54 ») ou à la française même en
+  allemand (« 02.10.2026 » attendu).
+
 ## [1.2.13] — 2026-10-02
 
 ### Ajouté

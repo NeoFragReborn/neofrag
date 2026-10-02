@@ -129,7 +129,7 @@ class Admin extends Controller_Module
 				->add_rules('talks', [
 					'title' => $title
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/talks');
 
 		if ($this->form()->is_valid($post))

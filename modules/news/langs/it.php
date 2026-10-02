@@ -110,4 +110,5 @@ return [
 	'4c9e9abd' => 'Visualizzazioni',
 	'cf2e7bf8' => 'Notizie di una categoria',
 	'32795d48' => 'Bozza',
+	'8fd9c7ef' => 'Salva',
 ];

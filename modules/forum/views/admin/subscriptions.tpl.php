@@ -24,7 +24,7 @@
 					<td><small><?php echo time_span(strtotime($s['created_at'])) ?></small></td>
 					<td><small><?php echo $s['last_notified_at'] ? time_span(strtotime($s['last_notified_at'])) : '<i class="text-muted">'.$this->lang('jamais').'</i>' ?></small></td>
 					<td class="text-center">
-						<button type="submit" name="unsub[]" value="<?php echo (int)$s['topic_id'].'_'.(int)$s['user_id'] ?>" class="btn btn-warning btn-sm" data-bs-toggle="tooltip" title="<?php echo $this->lang('Désabonner') ?>"><?php echo icon('fas fa-bell-slash') ?></button>
+						<button type="submit" name="unsub[]" value="<?php echo (int)$s['topic_id'].'_'.(int)$s['user_id'] ?>" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="<?php echo $this->lang('Désabonner') ?>"><?php echo icon('fas fa-bell-slash') ?></button>
 					</td>
 				</tr>
 			<?php endforeach ?>

@@ -110,4 +110,5 @@ return [
 	'4c9e9abd' => 'Visualizações',
 	'cf2e7bf8' => 'Notícias de uma categoria',
 	'32795d48' => 'Rascunho',
+	'8fd9c7ef' => 'Guardar',
 ];

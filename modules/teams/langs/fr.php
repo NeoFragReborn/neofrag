@@ -69,4 +69,5 @@ return [
 	'a415f66e' => 'Événement',
 	'f3581855' => 'Score',
 	'f4cbbafe' => 'Équipes et clans — module gaming.',
+	'8fd9c7ef' => 'Enregistrer',
 ];

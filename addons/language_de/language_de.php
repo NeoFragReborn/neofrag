@@ -47,9 +47,10 @@ class Language_De extends Language
 		];
 	}
 
+	/** Liest « 02.10.2026 », das Format der Datumsauswahl (short_date) — und weiterhin « 02/10/2026 ». */
 	public function date2sql(&$date)
 	{
-		if (preg_match('#^(\d{2})/(\d{2})/(\d{4})$#', $date, $match))
+		if (preg_match('#^(\d{2})[./](\d{2})[./](\d{4})$#', $date, $match))
 		{
 			$date = $match[3].'-'.$match[2].'-'.$match[1];
 		}
@@ -65,7 +66,7 @@ class Language_De extends Language
 
 	public function datetime2sql(&$datetime)
 	{
-		if (preg_match('#^(\d{2})/(\d{2})/(\d{4}) (\d{2}):(\d{2})$#', $datetime, $match))
+		if (preg_match('#^(\d{2})[./](\d{2})[./](\d{4}) (\d{2}):(\d{2})$#', $datetime, $match))
 		{
 			$datetime = $match[3].'-'.$match[2].'-'.$match[1].' '.$match[4].':'.$match[5].':00';
 		}

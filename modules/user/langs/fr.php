@@ -202,7 +202,6 @@ return [
 	'11db7719' => 'Avatar',
 	'bde12464' => 'Voir permissions effectives',
 	'6cd1f3e4' => 'Inscriptions',
-	'a9c7e828' => 'Connections de membres',
 	'35c0fe6e' => 'Compte supprimé',
 	'1b1fe4e2' => 'Ce compte est banni.',
 	'cf84c44c' => 'Éditer mon profil',
@@ -312,4 +311,9 @@ return [
 	'41dd9c72' => 'Votre compte n’a pas de mot de passe : vous vous connectez par un compte lié. Définissez un mot de passe dans votre profil pour ne pas en dépendre.',
 	'a4afc21b' => 'Lier un compte',
 	'2778f267' => 'Automatique : celui de votre navigateur',
+	'3bde7cd7' => 'Anonyme',
+	'8bb91639' => 'Connexions de membres',
+	'92330b9f' => '%d entrée, conservée 365 jours|%d entrées, conservées 365 jours',
+	'7ecafebb' => 'Aucun membre ne correspond à « %s ».',
+	'f4f7e9a1' => 'Rechercher un pseudo ou un e-mail…',
 ];

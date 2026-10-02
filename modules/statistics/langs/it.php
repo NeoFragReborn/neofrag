@@ -26,10 +26,11 @@ return [
 	'777842ac' => 'Nuovi argomenti',
 	'61573422' => 'Nuove risposte',
 	'6cd1f3e4' => 'Iscrizioni',
-	'a9c7e828' => 'Accessi membri',
 	'652ccf72' => 'Statistiche di visita e traffico del sito.',
 	'c1fc5864' => '7 giorni',
 	'f7573263' => '30 giorni',
 	'66972eab' => '90 giorni',
 	'87721081' => '1 anno',
+	'ab206f72' => 'Filtri',
+	'2c9c1323' => 'Serie visualizzate',
 ];

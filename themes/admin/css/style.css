@@ -93,6 +93,13 @@
 	--nf-danger-soft:  #2a0a0a;
 	--nf-warning-soft: #2c1e07;
 	--nf-info-soft:    #082234;
+	/* Les couleurs « emphasis » de Bootstrap, claires en mode sombre : les alertes, les pastilles d'état
+	   et `.text-success` s'en servent, et elles restaient sombres sur fond sombre (contraste de 1,1 à
+	   1,4 mesuré sur les pastilles, 2026-10-02). */
+	--bs-success-text-emphasis: #86efac;
+	--bs-danger-text-emphasis:  #fca5a5;
+	--bs-warning-text-emphasis: #fcd34d;
+	--bs-info-text-emphasis:    #7dd3fc;
 	--nf-shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.40);
 	--nf-shadow:       0 4px 14px -6px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.40);
 	--nf-shadow-md:    0 10px 30px -12px rgba(0, 0, 0, 0.65), 0 2px 6px -2px rgba(0, 0, 0, 0.45);
@@ -782,6 +789,19 @@ i.icon:only-child { margin: 0; }
 }
 
 .badge { white-space: nowrap; }
+
+/* Les pastilles d'état, douces, partout dans l'administration (charte, 2026-10-02) : un fond pâle et un
+   texte appuyé de la même couleur, comme les alertes. « Actif » s'écrivait blanc sur vert plein à côté
+   d'un « Publié » pâle, « Built-in » en noir : la couleur vive est réservée à ce qui appelle une action.
+   Bootstrap pose ses `text-bg-*` en !important, d'où celui-ci. */
+.badge.text-bg-success   { background-color: var(--nf-success-soft) !important; color: var(--bs-success-text-emphasis) !important; }
+.badge.text-bg-danger    { background-color: var(--nf-danger-soft) !important;  color: var(--bs-danger-text-emphasis) !important; }
+.badge.text-bg-warning   { background-color: var(--nf-warning-soft) !important; color: var(--bs-warning-text-emphasis) !important; }
+.badge.text-bg-info      { background-color: var(--nf-info-soft) !important;    color: var(--bs-info-text-emphasis) !important; }
+.badge.text-bg-primary   { background-color: var(--nf-accent-soft) !important;  color: var(--nf-accent-text) !important; }
+.badge.text-bg-secondary,
+.badge.text-bg-dark,
+.badge.text-bg-light     { background-color: var(--nf-surface-2) !important;    color: var(--nf-text) !important; box-shadow: inset 0 0 0 1px var(--nf-border); }
 
 /* Badges inline by default ; no force-wrap (which broke into char-per-line
    inside narrow table cells). Long labels are truncated with ellipsis. */
@@ -1678,6 +1698,29 @@ i.icon:only-child { margin: 0; }
 }
 
 .stats-presets { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+
+/* Le filtre : début, fin et pas sur une ligne, puis les séries ; les intertitres en petites capitales. */
+.stats-filter-body fieldset {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 10px 12px;
+}
+.stats-filter-body fieldset > legend {
+	grid-column: 1 / -1;
+	float: none;
+	margin: 0 0 6px;
+	color: var(--nf-muted);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+}
+.stats-filter-body fieldset > legend ~ legend { margin: 6px 0 0; }
+.stats-filter-body .nf-field { margin: 0; }
+.stats-filter-body .nf-field:has(.nf-check-grid) { grid-column: 1 / -1; }
+@media (max-width: 767.98px) {
+	.stats-filter-body fieldset { grid-template-columns: 1fr; }
+}
 
 .stats-chart-body { padding: 10px 14px 14px; }
 
@@ -2599,6 +2642,86 @@ i.icon:only-child { margin: 0; }
 
 .addon-card-action-btn.is-danger:hover { background: var(--nf-danger-soft); color: var(--nf-danger); border-color: color-mix(in srgb, var(--nf-danger) 30%, transparent); }
 
+/* Thèmes & addons : la recherche, les compteurs, la bascule liste / grille (2026-10-02). */
+/* Deux lignes franches plutôt qu'un retour à la ligne au hasard : les types et la vue, puis la
+   recherche et le statut. */
+.module-addons .addons-toolbar {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-areas: "types vue" "recherche statut";
+	align-items: center;
+}
+.module-addons .addons-filters-group { grid-area: types; }
+.module-addons .addons-vue-group { grid-area: vue; justify-self: end; }
+.module-addons .addons-status-group { grid-area: statut; margin-left: 0; justify-self: end; }
+.addons-recherche { grid-area: recherche; width: 100%; max-width: 420px; }
+
+@media (max-width: 767.98px) {
+	.module-addons .addons-toolbar { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "types types" "recherche recherche" "statut vue"; }
+	.addons-recherche { max-width: none; }
+	.module-addons .addons-status-group { justify-self: start; }
+}
+.addons-filter-count { font-size: 10.5px; font-weight: 700; opacity: .7; }
+.addons-vue-group { display: inline-flex; gap: 2px; padding: 2px; border: 1px solid var(--nf-border); border-radius: var(--nf-radius-sm); }
+.addons-vue-btn {
+	width: 28px;
+	height: 26px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 0;
+	border-radius: var(--nf-radius-xs);
+	background: transparent;
+	color: var(--nf-muted);
+	cursor: pointer;
+}
+.addons-vue-btn:hover { color: var(--nf-text); background: var(--nf-surface-2); }
+.addons-vue-btn.active { color: var(--nf-accent-text); background: var(--nf-accent-soft); }
+
+/* La grille, plus dense : quatre à cinq cartes par ligne, un aperçu moins haut. */
+.addons-grid:not(.is-liste) { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.addons-grid:not(.is-liste) .addon-card { min-height: 0; }
+.addons-grid:not(.is-liste) .addon-card-thumbnail { height: 72px; }
+.addons-grid:not(.is-liste) .addon-card-desc { -webkit-line-clamp: 2; min-height: calc(1.45em * 2); }
+
+/* La liste : une ligne par extension — aperçu, nom et description, type et statut, version, actions. */
+.addons-grid.is-liste { grid-template-columns: 1fr; gap: 0; border: 1px solid var(--nf-border); border-radius: var(--nf-radius); background: var(--nf-surface); overflow: visible; }
+.addons-grid.is-liste > .addon-card {
+	flex-direction: row;
+	align-items: center;
+	gap: 14px;
+	min-height: 0;
+	padding: 8px 14px;
+	border: 0;
+	border-bottom: 1px solid var(--nf-border);
+	border-radius: 0;
+	box-shadow: none;
+}
+.addons-grid.is-liste > .addon-card:last-child { border-bottom: 0; }
+.addons-grid.is-liste > .addon-card:hover { transform: none; box-shadow: none; background: var(--nf-surface-2); }
+.addons-grid.is-liste .addon-card-thumbnail { width: 64px; height: 36px; margin: 0; flex: 0 0 64px; }
+.addons-grid.is-liste .addon-card-icon-wrap { width: 26px; height: 26px; font-size: 12px; }
+.addons-grid.is-liste .addon-card-body {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto auto auto;
+	grid-template-areas: "titre etat version actions" "desc etat version actions";
+	align-items: center;
+	column-gap: 16px;
+	row-gap: 0;
+}
+.addons-grid.is-liste .addon-card-header { display: contents; }
+.addons-grid.is-liste .addon-card-title-wrap { grid-area: etat; flex-wrap: nowrap; justify-content: flex-end; }
+.addons-grid.is-liste .addon-card-actions { grid-area: actions; }
+.addons-grid.is-liste .addon-card-title { grid-area: titre; font-size: 13.5px; }
+.addons-grid.is-liste .addon-card-desc { grid-area: desc; -webkit-line-clamp: 1; min-height: 0; font-size: 12px; }
+.addons-grid.is-liste .addon-card-meta { grid-area: version; margin: 0; padding: 0; }
+
+@media (max-width: 767.98px) {
+	.addons-grid.is-liste .addon-card-body { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "titre actions" "desc actions" "etat etat"; }
+	.addons-grid.is-liste .addon-card-title-wrap { justify-content: flex-start; padding-top: 4px; }
+	.addons-grid.is-liste .addon-card-meta { display: none; }
+}
+
 /* =========================================================================
    Forum admin (modules/forum/views/admin.tpl.php)
    ======================================================================== */
@@ -3273,6 +3396,29 @@ i.icon:only-child { margin: 0; }
 
 .nf-local-tab i { font-size: 12px; }
 
+/* Un tableau regroupé : une ligne de groupe par module, discrète (charte de l'administration). */
+.table tr.nf-table-groupe > th {
+	background: var(--nf-surface-2);
+	color: var(--nf-muted);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+.table tr.nf-table-groupe > th i { margin-right: 4px; }
+.nf-table-groupe-compte { margin-left: 6px; font-weight: 500; text-transform: none; letter-spacing: 0; }
+
+/* Les mêmes onglets, en boutons, quand ils basculent des panneaux de la page (Monitoring) au lieu de
+   mener à une autre adresse. */
+button.nf-local-tab {
+	border: 0;
+	background: none;
+	font-family: inherit;
+	cursor: pointer;
+}
+
 /* =========================================================================
    Liste compacte de groupes / catégories (.nf-groups-list)
    Pattern réutilisable pour aside narrow : drag-handle + label + actions
@@ -3573,15 +3719,18 @@ i.icon:only-child { margin: 0; }
 		row-gap: 2px;
 	}
 
+	/* Les boutons passent à la ligne plutôt que de défiler : en défilement, rien ne disait qu'il en
+	   restait — « Marketplace » coupé net sur Thèmes & addons, à 390 px (2026-10-02). */
 	.nf-topbar-actions {
 		order: 3;
 		flex: 1 0 100%;
 		margin-left: 0;
-		overflow-x: auto;
-		scrollbar-width: thin;
+		flex-wrap: wrap;
+		row-gap: 6px;
 	}
 
 	.nf-topbar-actions > * { flex: 0 0 auto; }
+	.nf-topbar-actions .nf-actions { flex: 0 1 auto; max-width: 100%; flex-wrap: wrap; row-gap: 6px; }
 }
 
 /* =========================================================================

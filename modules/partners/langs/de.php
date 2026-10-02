@@ -45,4 +45,5 @@ return [
 	'39e91bd5' => 'Partner|Partner',
 	'8b8988ac' => 'Löschen?',
 	'8a8bad0b' => 'Über %s',
+	'8fd9c7ef' => 'Speichern',
 ];

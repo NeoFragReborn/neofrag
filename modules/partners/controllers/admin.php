@@ -39,7 +39,7 @@ class Admin extends Controller_Module
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-foot">';
 				$body .= '<span class="nf-content-card-spacer"></span>';
-				if ($this->is_authorized('modify_partners')) $body .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/partners/'.$p['partner_id'].'/'.$p['name']).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
+				if ($this->is_authorized('modify_partners')) $body .= '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/partners/'.$p['partner_id'].'/'.$p['name']).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
 				if ($this->is_authorized('delete_partners')) $body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/partners/delete/'.$p['partner_id'].'/'.$p['name']).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$body .= '</div>';
 				$body .= '</div>';
@@ -94,7 +94,7 @@ class Admin extends Controller_Module
 					'twitter'     => $twitter,
 					'code'        => $code
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/partners');
 
 		if ($this->form()->is_valid($post))

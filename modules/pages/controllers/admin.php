@@ -127,7 +127,7 @@ class Admin extends Controller_Module
 					'date'           => $date,
 					'published'      => $published
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/pages');
 
 		if ($this->form()->is_valid($post))

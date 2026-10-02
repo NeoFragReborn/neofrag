@@ -105,6 +105,22 @@ class Admin_Ajax extends Controller_Module
 				file_put_contents('cache/monitoring/checksum.json', json_encode($checksum));
 			}
 
+			/*
+			 * La liste de contrôle publiée est celle de la DERNIÈRE version. Un site qui n'est pas à son
+			 * niveau la comparait quand même à ses fichiers : tout ce que la version suivante change y
+			 * paraissait « corrompu », et ce qu'elle ajoute « manquant » — 102 alertes sur la vitrine en
+			 * 1.2.12, juste avant le clic qui passait en 1.2.13 (relevé le 2026-10-02). La comparaison
+			 * n'a de sens qu'à version égale : sinon, l'arbre local seul, et un mot pour le dire.
+			 */
+			$publiee = is_array($version) ? (string) ($version['neofrag']['version'] ?? '') : '';
+
+			if ($checksum && $publiee !== '' && version_compare(version_format($publiee), version_format(NEOFRAG_VERSION), '!='))
+			{
+				$this->_notify($this->lang('La vérification des fichiers reprendra une fois le site au niveau de la version publiée (%s) : la liste de contrôle disponible est la sienne.', htmlspecialchars($publiee)), 'info');
+				$checksum      = NULL;
+				$autre_version = TRUE;
+			}
+
 			// Scan local des md5
 			$local_files = array_merge(
 				dir_scan(array_diff($this->model()->folders, ['backups', 'cache', 'config', 'logs', 'overrides', 'upload']), 'md5_file'),
@@ -203,7 +219,7 @@ class Admin_Ajax extends Controller_Module
 			{
 				// Mode dégradé : pas de checksum officiel. Tree local sans comparaison. On n'alarme
 				// QUE si un miroir a été configuré mais est injoignable (sinon = comportement normal).
-				if ($check_url !== '')
+				if ($check_url !== '' && empty($autre_version))
 				{
 					$this->_notify($this->lang('Vérification d\'intégrité indisponible : impossible de joindre %s. Le tree affiche seulement les fichiers locaux.', $check_url), 'info');
 				}

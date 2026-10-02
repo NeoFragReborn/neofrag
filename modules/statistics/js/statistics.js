@@ -37,8 +37,9 @@ NF.ready(function(){
 		};
 	}
 
+	// Dans la langue de la page, et non celle du navigateur (« 2 oct. 2025 » sur le site en français).
 	function fmtDate(ms){
-		return new Date(ms).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+		return new Date(ms).toLocaleDateString(document.documentElement.lang || undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 	}
 
 	var update = function(){
@@ -57,6 +58,13 @@ NF.ready(function(){
 			var t = theme();
 			series = series || [];
 
+			// Au-delà de trois séries, les aires remplies se recouvrent : des lignes seules.
+			var remplir = series.length <= 3;
+			var minX = Infinity, maxX = -Infinity;
+			series.forEach(function(s){
+				(s.data || []).forEach(function(p){ minX = Math.min(minX, p[0]); maxX = Math.max(maxX, p[0]); });
+			});
+
 			var datasets = series.map(function(s, i){
 				var c = s.color || t.palette[i % t.palette.length];
 
@@ -65,8 +73,9 @@ NF.ready(function(){
 					data                  : (s.data || []).map(function(p){ return { x: p[0], y: p[1] }; }),
 					borderColor           : c,
 					borderWidth           : 2.5,
-					tension               : 0.4,   // courbe lissée (équivalent areaspline)
-					fill                  : true,
+					// Lissée sans dépasser les points : une courbe à 0 ne plonge pas sous l'axe.
+					cubicInterpolationMode : 'monotone',
+					fill                  : remplir,
 					pointRadius           : 0,
 					pointHoverRadius      : 4,
 					pointHoverBorderWidth : 2,
@@ -95,10 +104,8 @@ NF.ready(function(){
 					animation: { duration: 300 },
 					interaction: { mode: 'index', intersect: false },
 					plugins: {
-						legend: {
-							display: series.length > 1,
-							labels: { color: t.muted, usePointStyle: true, boxWidth: 8, font: { weight: '600' } }
-						},
+						// Les cases à cocher du filtre, avec leur pastille de couleur, font office de légende.
+						legend: { display: false },
 						tooltip: {
 							backgroundColor: t.surface,
 							borderColor: t.grid,
@@ -115,6 +122,9 @@ NF.ready(function(){
 					scales: {
 						x: {
 							type: 'linear',
+							// L'axe s'arrête aux bornes de la période, et non aux dates rondes d'à côté.
+							min: isFinite(minX) ? minX : undefined,
+							max: isFinite(maxX) ? maxX : undefined,
 							grid: { display: false },
 							border: { color: t.grid },
 							ticks: {

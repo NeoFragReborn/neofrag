@@ -85,4 +85,11 @@ return [
 	'9ed642e7' => 'Mettre à jour',
 	'30d19292' => 'authentificateur',
 	'9fa5be42' => 'Installer la sélection',
+	'2cecf817' => 'Type',
+	'430d09b2' => 'Rechercher une extension',
+	'e2c8f589' => 'Statut',
+	'8088964a' => 'Affichage',
+	'3d3305f0' => 'Liste',
+	'd3fe1369' => 'Grille',
+	'45002a02' => 'Aucune extension ne correspond.',
 ];

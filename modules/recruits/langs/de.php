@@ -187,4 +187,5 @@ return [
 	'cf821f2c' => 'Es gibt noch keine Stimmen...',
 	'602bea83' => 'Meine Meinung zu dieser Bewerbung',
 	'350c98af' => 'Angebot %s',
+	'8fd9c7ef' => 'Speichern',
 ];

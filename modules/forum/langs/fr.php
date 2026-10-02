@@ -306,4 +306,5 @@ return [
 	'd699908b' => 'Écrit depuis Discord',
 	'7642b2d9' => 'Invité %s',
 	'816f205c' => 'Discord',
+	'8fd9c7ef' => 'Enregistrer',
 ];

@@ -102,7 +102,9 @@ trait Admin_Helpers
 		$html .= '<div class="settings-section-header">';
 		$html .= '<div class="settings-section-icon"><i class="'.htmlspecialchars((string) ($icon)).'"></i></div>';
 		$html .= '<div class="settings-section-meta">';
-		$html .= '<div class="settings-section-title">'.htmlspecialchars((string) ($title)).'</div>';
+		// Sans double encodage : un titre venu d'un formulaire est déjà encodé (« journ&eacute;e »), et
+		// s'affichait tel quel — le titre d'une campagne de dons, d'un événement du calendrier.
+		$html .= '<div class="settings-section-title">'.htmlspecialchars((string) ($title), ENT_QUOTES, 'UTF-8', FALSE).'</div>';
 		if ($subtitle !== '')
 		{
 			$html .= '<div class="settings-section-subtitle">'.$subtitle.'</div>';
@@ -128,6 +130,15 @@ trait Admin_Helpers
 	 * @param string $main        HTML colonne principale (généralement form ou liste)
 	 * @param string $aside       HTML colonne secondaire (preview, sidebar) — vide = pas d'aside
 	 */
+	/**
+	 * Le bouton qui crée, pour l'en-tête de la carte de la liste qu'il alimente (charte de
+	 * l'administration, docs/guide/create-a-module.md) : `admin_card(…, $this->admin_create(…))`.
+	 */
+	protected function admin_create($url, $label): string
+	{
+		return '<a class="btn btn-primary btn-sm" href="'.url($url).'"><i class="fas fa-plus"></i> '.$label.'</a>';
+	}
+
 	protected function admin_split($back_url, $back_label, $main, $aside = '')
 	{
 		$html = $this->admin_back($back_url, $back_label);

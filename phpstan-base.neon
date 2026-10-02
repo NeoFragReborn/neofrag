@@ -24,9 +24,13 @@ parameters:
     ignoreErrors:
         # config/ n'est pas versionné : sur un dépôt nu (la CI), PHPStan ne trouve pas config/url.php,
         # que site_origin() n'inclut d'ailleurs qu'après avoir vérifié qu'il existe.
+        # Monitoring → Adresse du site fait de même (is_file() avant l'include). Gelée dans la baseline,
+        # l'entrée disparaissait à chaque régénération sur un poste qui a son config/ (2026-10-02).
         -
             identifier: include.fileNotFound
-            path: neofrag/helpers/location.php
+            paths:
+                - neofrag/helpers/location.php
+                - modules/monitoring/controllers/admin.php
         # Un gabarit, un formulaire, une table est INCLUS par la bibliothèque qui l'affiche, au sein de
         # l'objet appelant : `$this` y est toujours défini — PHPStan, lui, lit le fichier seul. Ces
         # entrées se comptaient par centaines dans la baseline, fichier par fichier, et chaque
@@ -43,4 +47,10 @@ parameters:
                 - */views/*
                 - */forms/*
                 - */tables/*
+        # `$this->module`, dans un contrôleur, est le module de la requête : NeoFrag::__get() le rend
+        # (NeoFrag()->module). Il n'est pas typé exprès (cf. l'en-tête de neofrag/neofrag.php : un
+        # module expose ses membres par magie, `->pagination`, `->info()`). La trentaine d'entrées gelées
+        # fichier par fichier grossissait à chaque liste paginée (2026-10-02, le journal d'audit).
+        -
+            message: '#^Access to an undefined property NF\\Modules\\\w+\\Controllers\\\w+\:\:\$module\.$#'
     reportUnmatchedIgnoredErrors: false

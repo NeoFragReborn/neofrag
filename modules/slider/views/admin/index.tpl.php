@@ -65,11 +65,11 @@
 							<a class="btn btn-sm btn-light" href="<?php echo url('admin/slider/toggle/'.(int)$slide['id']) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo !empty($slide['active']) ? $this->lang('Désactiver') : $this->lang('Activer') ?>">
 								<?php echo icon(!empty($slide['active']) ? 'fas fa-eye-slash' : 'fas fa-eye') ?>
 							</a>
-							<a class="btn btn-sm btn-primary" href="<?php echo url('admin/slider/edit/'.(int)$slide['id']) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Modifier') ?>">
+							<a class="btn btn-sm btn-outline-secondary" href="<?php echo url('admin/slider/edit/'.(int)$slide['id']) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Modifier') ?>">
 								<?php echo icon('fas fa-edit') ?>
 							</a>
-							<a class="btn btn-sm btn-danger" href="<?php echo url('admin/slider/delete/'.(int)$slide['id']) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Confirmer la suppression de cette slide ?'), ENT_QUOTES) ?>">
-								<?php echo icon('fas fa-times') ?>
+							<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/slider/delete/'.(int)$slide['id']) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Confirmer la suppression de cette slide ?'), ENT_QUOTES) ?>">
+								<?php echo icon('far fa-trash-alt') ?>
 							</a>
 						</td>
 					</tr>

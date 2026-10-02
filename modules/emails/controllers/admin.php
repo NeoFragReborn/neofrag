@@ -50,25 +50,19 @@ class Admin extends Controller_Module
 			return $pa <=> $pb;
 		});
 
-		$html = '<div class="settings-hub">';
+		// Une carte, un tableau : une ligne par modèle, regroupée par module. La page empilait une carte
+		// par module, chacune portant une ou deux petites cartes de modèle — près de 2 000 pixels pour
+		// sept modèles (relevé le 2026-10-02).
+		$lignes = '';
+		$total  = 0;
 
 		foreach ($by_module as $mod => $list)
 		{
-			$meta  = $module_meta[$mod] ?? ['icon' => 'fas fa-cube', 'color' => 'accent', 'label' => ucfirst($mod)];
-			$count = count($list);
+			$meta   = $module_meta[$mod] ?? ['icon' => 'fas fa-cube', 'color' => 'accent', 'label' => ucfirst($mod)];
+			$count  = count($list);
+			$total += $count;
 
-			// Section card avec header (titre groupe + compteur) et body (grid de templates)
-			$html .= '<div class="settings-section-card">';
-			$html .= '<div class="settings-section-header">';
-			$html .= '<div class="settings-section-icon"><i class="'.$meta['icon'].'"></i></div>';
-			$html .= '<div class="settings-section-meta">';
-			$html .= '<div class="settings-section-title">'.htmlspecialchars((string) ($meta['label'])).'</div>';
-			$html .= '<div class="settings-section-subtitle">'.$count.' '.($count > 1 ? $this->lang('templates') : $this->lang('template')).'</div>';
-			$html .= '</div>';
-			$html .= '</div>';
-
-			$html .= '<div class="settings-section-body">';
-			$html .= '<div class="settings-hub-grid">';
+			$lignes .= '<tr class="nf-table-groupe"><th colspan="5"><i class="'.$meta['icon'].'"></i> '.htmlspecialchars((string) ($meta['label'])).' <span class="nf-table-groupe-compte">'.$count.' '.($count > 1 ? $this->lang('templates') : $this->lang('template')).'</span></th></tr>';
 
 			foreach ($list as $t)
 			{
@@ -76,62 +70,39 @@ class Admin extends Controller_Module
 				$enabled = !empty($t['enabled']);
 				$subject = $t['current_subject'] ?: '';
 
-				$html .= '<div class="settings-hub-card settings-hub-card--'.$meta['color'].'">';
-
-				// Icône colorée
-				$html .= '<div class="settings-hub-icon"><i class="'.$meta['icon'].'"></i></div>';
-
-				// Texte (titre + key + desc + sujet preview + statut + actions)
-				$html .= '<div class="settings-hub-text">';
-				// Le titre et la description d'un modèle LIVRÉ sont en français dans la base : ils se
-				// traduisent à l'affichage (un modèle renommé par l'administrateur reste son texte).
-				$html .= '<div class="settings-hub-title">'.htmlspecialchars((string) $this->lang($t['title'])).'</div>';
-				$html .= '<div class="settings-hub-desc"><code style="font-size:11px;">'.htmlspecialchars((string) ($t['key'])).'</code></div>';
-
-				if (!empty($t['description']))
-				{
-					$html .= '<div class="settings-hub-desc" style="margin-top:6px;">'.htmlspecialchars((string) $this->lang($t['description'])).'</div>';
-				}
-
 				if ($subject)
 				{
 					// Le sujet tel que le membre le recevra, avec les valeurs d'exemple de l'aperçu :
 					// `{{site_name}}` ou `{{topic_title}}` affichés bruts ressemblaient à un gabarit
 					// cassé (check-mise-en-page, 2026-09-23).
 					$subject = \NF\Modules\Emails\Models\Emails::render_placeholders($subject, $exemples ??= $this->_exemples());
-					$html .= '<div class="settings-hub-desc" style="margin-top:8px;font-style:italic;">'.icon('fas fa-at').' '.htmlspecialchars((string) ($subject)).'</div>';
 				}
 
-				// Pied : badges + actions
-				$html .= '<div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap;">';
-				if ($enabled)
-				{
-					$html .= '<span class="badge text-bg-success">'.$this->lang('Actif').'</span>';
-				}
-				else
-				{
-					$html .= '<span class="badge text-bg-secondary">'.$this->lang('Désactivé').'</span>';
-				}
-				$html .= '<span class="badge text-bg-light">'.icon('fas fa-language').' '.(int)$t['lang_count'].'</span>';
-				$html .= '<div style="margin-left:auto;display:flex;gap:4px;">';
-				$html .= '<a class="btn btn-sm btn-primary" href="'.url('admin/emails/edit/'.$t['template_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'">'.icon('fas fa-edit').'</a>';
-				$html .= '<a class="btn btn-sm '.($enabled ? 'btn-outline-warning' : 'btn-outline-success').'" href="'.$this->csrf_url('admin/emails/toggle/'.$t['template_id'].'/'.$slug).'" title="'.$this->lang($enabled ? 'Désactiver' : 'Activer').'">'.icon($enabled ? 'fas fa-toggle-off' : 'fas fa-toggle-on').'</a>';
-				$html .= '<a class="btn btn-sm btn-outline-info" href="'.url('admin/emails/test/'.$t['template_id'].'/'.$slug).'" title="'.$this->lang('Envoi de test').'">'.icon('fas fa-paper-plane').'</a>';
-				$html .= '</div>';
-				$html .= '</div>';
-
-				$html .= '</div>'; // .settings-hub-text
-				$html .= '</div>'; // .settings-hub-card
+				// Le titre et la description d'un modèle LIVRÉ sont en français dans la base : ils se
+				// traduisent à l'affichage (un modèle renommé par l'administrateur reste son texte).
+				$lignes .= '<tr>'
+					.'<td>'
+						.'<div class="fw-semibold">'.htmlspecialchars((string) $this->lang($t['title'])).'</div>'
+						.'<code class="small">'.htmlspecialchars((string) ($t['key'])).'</code>'
+						.(!empty($t['description']) ? '<div class="small text-body-secondary">'.htmlspecialchars((string) $this->lang($t['description'])).'</div>' : '')
+					.'</td>'
+					.'<td class="small">'.($subject !== '' ? htmlspecialchars((string) $subject) : '<span class="text-body-secondary">—</span>').'</td>'
+					.'<td class="text-center"><span class="badge text-bg-light" title="'.$this->lang('Langues').'">'.icon('fas fa-language').' '.(int)$t['lang_count'].'</span></td>'
+					.'<td class="text-center">'.($enabled ? '<span class="badge text-bg-success">'.$this->lang('Actif').'</span>' : '<span class="badge text-bg-secondary">'.$this->lang('Désactivé').'</span>').'</td>'
+					.'<td class="text-end">'
+						.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/emails/edit/'.$t['template_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'">'.icon('fas fa-edit').'</a> '
+						.'<a class="btn btn-sm '.($enabled ? 'btn-outline-warning' : 'btn-outline-success').'" href="'.$this->csrf_url('admin/emails/toggle/'.$t['template_id'].'/'.$slug).'" title="'.$this->lang($enabled ? 'Désactiver' : 'Activer').'">'.icon($enabled ? 'fas fa-toggle-off' : 'fas fa-toggle-on').'</a> '
+						.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/emails/test/'.$t['template_id'].'/'.$slug).'" title="'.$this->lang('Envoi de test').'">'.icon('fas fa-paper-plane').'</a>'
+					.'</td>'
+					.'</tr>';
 			}
-
-			$html .= '</div>'; // .settings-hub-grid
-			$html .= '</div>'; // .settings-section-body
-			$html .= '</div>'; // .settings-section-card
 		}
 
-		$html .= '</div>'; // .settings-hub
+		$tableau = '<div class="table-responsive"><table class="table table-hover align-middle mb-0">'
+			.'<thead><tr><th>'.$this->lang('Modèle').'</th><th>'.$this->lang('Objet').'</th><th class="text-center">'.$this->lang('Langues').'</th><th class="text-center">'.$this->lang('Statut').'</th><th></th></tr></thead>'
+			.'<tbody>'.$lignes.'</tbody></table></div>';
 
-		return $html;
+		return $this->admin_card('fas fa-envelope-open-text', $this->lang('Templates emails'), $tableau, $total.' '.($total > 1 ? $this->lang('templates') : $this->lang('template')));
 	}
 
 	public function _edit($template)

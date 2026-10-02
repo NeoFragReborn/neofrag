@@ -174,18 +174,62 @@ table.table-access td.no-padding {
 	font-style: italic;
 }
 
-/* Page sélection module */
-.matrix-modules .matrix-module-btn {
-	min-height: 80px;
-	padding: 16px 12px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	transition: transform 0.15s;
+/* Page sélection module : les rubriques côte à côte, en colonnes, chacune une courte liste. */
+.matrix-rubriques {
+	columns: 4 220px;
+	column-gap: 16px;
 }
 
-.matrix-modules .matrix-module-btn:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.matrix-rubrique {
+	display: inline-block;
+	width: 100%;
+	margin-bottom: 16px;
+	break-inside: avoid;
+}
+
+.matrix-rubrique-titre {
+	color: var(--nf-muted, #6c757d);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	margin-bottom: 6px;
+}
+
+.matrix-rubrique-titre i {
+	margin-right: 4px;
+}
+
+.matrix-rubrique-compte {
+	margin-left: 6px;
+	font-weight: 500;
+}
+
+.matrix-modules {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.matrix-modules .matrix-module-btn {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	border: 1px solid var(--nf-border, #dee2e6);
+	border-radius: 8px;
+	color: var(--nf-text, inherit);
+	font-weight: 600;
+	text-decoration: none;
+	transition: border-color .15s, background-color .15s;
+}
+
+.matrix-modules .matrix-module-btn i {
+	color: var(--nf-accent, var(--bs-primary));
+}
+
+.matrix-modules .matrix-module-btn:hover,
+.matrix-modules .matrix-module-btn:focus-visible {
+	border-color: var(--nf-accent, var(--bs-primary));
+	background: var(--nf-surface-2, rgba(0, 0, 0, .03));
 }

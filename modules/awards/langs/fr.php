@@ -75,4 +75,5 @@ return [
 	'98ac0078' => 'Classement de nos équipes',
 	'4306ff8f' => 'Autre place',
 	'ff8ae8a6' => 'Aucun classement',
+	'8fd9c7ef' => 'Enregistrer',
 ];

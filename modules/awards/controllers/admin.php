@@ -41,7 +41,7 @@ class Admin extends Controller_Module
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-foot">';
 				$body .= '<span class="nf-content-card-spacer"></span>';
-				if ($this->is_authorized('modify_awards')) $body .= '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/awards/'.$a['award_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
+				if ($this->is_authorized('modify_awards')) $body .= '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/awards/'.$a['award_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
 				if ($this->is_authorized('delete_awards')) $body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/awards/delete/'.$a['award_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$body .= '</div>';
 				$body .= '</div>';
@@ -49,10 +49,20 @@ class Admin extends Controller_Module
 			$body .= '</div>';
 		}
 
+		// La liste est découpée par pages de 10 (le checker) : sans ces liens, les suivants étaient
+		// inatteignables, et le compte ne disait que la page affichée.
+		$pagination = (string) $this->module->pagination->get_pagination();
+		$total      = $pagination !== '' ? (int) $this->module->pagination->count() : count($awards);
+
+		if ($pagination !== '')
+		{
+			$body .= '<div class="d-flex justify-content-center mt-3">'.$pagination.'</div>';
+		}
+
 		$actions = $this->is_authorized('add_awards')
 			? '<a class="btn btn-sm btn-primary" href="'.url('admin/awards/add').'">'.icon('fas fa-plus').' '.$this->lang('Ajouter').'</a>'
 			: '';
-		return $this->admin_card('fas fa-trophy', $this->lang('Palmarès'), $body, $this->lang('%d palmarès|%d palmarès', count($awards), count($awards)), $actions);
+		return $this->admin_card('fas fa-trophy', $this->lang('Palmarès'), $body, $this->lang('%d palmarès|%d palmarès', $total, $total), $actions);
 	}
 
 	public function add()
@@ -106,7 +116,7 @@ class Admin extends Controller_Module
 					'description'  => $description,
 					'image'        => $image_id
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/awards');
 
 		if ($this->form()->is_valid($post))

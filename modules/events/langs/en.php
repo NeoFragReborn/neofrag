@@ -158,4 +158,5 @@ return [
 	'64eda44a' => 'Coverage here',
 	'04fb541f' => 'Duration',
 	'bbc46366' => 'Invite',
+	'8fd9c7ef' => 'Save',
 ];

@@ -71,7 +71,7 @@ NF.ready(function(){
 			});
 
 			var textEl = document.getElementById('monitoring-text');
-			if (textEl){ textEl.innerHTML = count.danger ? '<?php echo addslashes($this->lang('Le navire coule !')) ?>' : (count.warning ? '<?php echo addslashes($this->lang('Iceberg droit devant !')) ?>' : '<?php echo addslashes($this->lang('Tout est en ordre, capitaine !')) ?>'); }
+			if (textEl){ textEl.innerHTML = count.danger ? '<?php echo addslashes($this->lang('Des erreurs à corriger')) ?>' : (count.warning ? '<?php echo addslashes($this->lang('Des points à vérifier')) ?>' : '<?php echo addslashes($this->lang('Tout va bien')) ?>'); }
 			document.querySelectorAll('.panel-monitoring').forEach(function(el){ el.classList.remove('nf-sante-inconnue'); el.classList.add(count.danger ? 'nf-sante-erreur' : (count.warning ? 'nf-sante-alerte' : 'nf-sante-ok')); });
 			document.querySelectorAll('.monitoring-icon-status').forEach(function(el){ el.classList.add(count.danger ? 'beat-fast' : (count.warning ? 'beat-medium' : 'beat-slow')); });
 
@@ -200,6 +200,24 @@ NF.ready(function(){
 			}).catch(function(){
 				bootstrap.Modal.getOrCreateInstance(modalEl).hide();
 				nfEchecDuFlux('<?php echo addslashes($this->lang('La sauvegarde a échoué : %s')) ?>', null, '');
+			});
+		});
+	}
+
+	/* Les onglets : celui de l'adresse (#diagnostic), sinon le dernier ouvert — une action du Monitoring
+	   (allumer un outil, supprimer une sauvegarde) recharge la page, et l'on revient où l'on était. */
+	var onglets = document.querySelectorAll('.nf-monitoring-onglets [data-bs-toggle="tab"]');
+	if (onglets.length && window.bootstrap && bootstrap.Tab){
+		var cle = 'nf-monitoring-onglet';
+		var voulu = (location.hash || '').replace('#', '');
+		if (!voulu){ try { voulu = sessionStorage.getItem(cle) || ''; } catch (e){} }
+		var cible = voulu && document.getElementById('onglet-' + voulu);
+		if (cible){ bootstrap.Tab.getOrCreateInstance(cible).show(); }
+		onglets.forEach(function(o){
+			o.addEventListener('shown.bs.tab', function(){
+				var nom = o.id.replace('onglet-', '');
+				try { sessionStorage.setItem(cle, nom); } catch (e){}
+				if (history.replaceState){ history.replaceState(null, '', '#' + nom); }
 			});
 		});
 	}

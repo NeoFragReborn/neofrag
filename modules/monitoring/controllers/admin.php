@@ -11,6 +11,13 @@ use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 
 class Admin extends Controller_Module
 {
+	/**
+	 * La page Monitoring, en onglets (choisi par le mainteneur le 2026-10-02) : un résumé toujours visible, puis
+	 * une chose à la fois — l'essentiel, les sauvegardes, le diagnostic, le serveur, les fichiers. Elle
+	 * empilait jusque-là une dizaine de cartes dans une colonne étroite, sur près de 2 700 pixels, l'arbre
+	 * de tous les fichiers au milieu. Les éléments que remplit l'actualisation (monitoring.js) gardent
+	 * leurs identifiants : ils changent seulement d'onglet.
+	 */
 	public function index()
 	{
 		$this	->css('monitoring')
@@ -20,83 +27,114 @@ class Admin extends Controller_Module
 				->js('treeview')
 				->css('treeview');
 
-		// Stat cards row
+		$backups = $this->model()->get_backups();
+
+		// Le résumé : ce qu'on veut savoir d'un coup d'œil, et qui ne dépend pas de l'onglet.
 		$cards = '<div class="nf-stats-grid">';
-		$cards .= $this->_stat_card('PHP', PHP_VERSION, 'fab fa-php');
-		$cards .= $this->_stat_card($this->lang('Mémoire utilisée'), $this->_format_bytes(memory_get_peak_usage(true)), 'fas fa-memory', $this->lang('Pic d\'allocation'));
-		$cards .= $this->_stat_card($this->lang('NeoFrag'), NEOFRAG_VERSION, 'fas fa-cube', $this->lang('Version installée'));
-		$cards .= $this->_stat_card($this->lang('Serveur'), $this->_get_server_software(), 'fas fa-server', php_sapi_name());
+		$cards .= $this->_stat_card($this->lang('NeoFrag'), NEOFRAG_VERSION, 'fas fa-cube', $this->_etat_mise_a_jour());
+		$cards .= $this->_stat_card('PHP', PHP_VERSION, 'fab fa-php', $this->_get_server_software().' · '.php_sapi_name());
+		$cards .= $this->_stat_card($this->lang('Sauvegardes'), (string) count($backups), 'fas fa-archive', $backups ? $this->lang('La dernière : %s', strip_tags(time_span((int) max(array_column($backups, 'mtime') ?: [0])))) : $this->lang('Aucune pour le moment'));
+		$allumes = count(array_filter(array_keys(NF_DIAGNOSTICS), 'nf_diagnostic_actif'));
+		$cards .= $this->_stat_card($this->lang('Diagnostic'), (string) $allumes, 'fas fa-stethoscope', $this->lang('outil allumé sur 3|outils allumés sur 3', $allumes));
 		$cards .= '</div>';
 
-		// LEFT column: santé du site + infos serveur
-		$left = '<div class="card">'.$this->view('monitoring').'</div>';
+		$onglets = [
+			'ensemble'    => ['far fa-bell',          $this->lang('Vue d\'ensemble')],
+			'sauvegardes' => ['fas fa-archive',       $this->lang('Sauvegardes')],
+			'diagnostic'  => ['fas fa-stethoscope',   $this->lang('Diagnostic')],
+			'serveur'     => ['fas fa-server',        $this->lang('Serveur et sécurité')],
+			'fichiers'    => ['fas fa-folder-tree',   $this->lang('Fichiers')],
+		];
 
-		$left .= '<div class="card panel-infos">'
-			.'<div class="nf-card-header">'
-			.'<span><i class="fas fa-info-circle"></i> '.$this->lang('Informations serveur').'</span>'
-			.'<a class="btn btn-secondary btn-sm" href="#" data-modal-ajax="'.url('admin/ajax/monitoring/phpinfo').'" title="'.$this->lang('Détails').'"><i class="fas fa-info"></i></a>'
+		$nav = '<div class="nf-local-nav nav nf-monitoring-onglets" role="tablist">';
+
+		foreach ($onglets as $cle => [$icone, $titre])
+		{
+			$nav .= '<button type="button" class="nf-local-tab'.($cle === 'ensemble' ? ' active' : '').'" id="onglet-'.$cle.'" data-bs-toggle="tab" data-bs-target="#monitoring-'.$cle.'" role="tab" aria-controls="monitoring-'.$cle.'" aria-selected="'.($cle === 'ensemble' ? 'true' : 'false').'"><i class="'.$icone.'"></i> '.$titre.'</button>';
+		}
+
+		$nav .= '</div>';
+
+		// Vue d'ensemble : ce qui demande une action, l'état du site, la place, l'adresse.
+		$ensemble = '<div class="row g-3">'
+			.'<div class="col-12 col-xl-8">'
+				.'<div class="card panel-notifications">'
+				.'<div class="nf-card-header">'
+				.'<span><i class="far fa-bell"></i> '.$this->lang('Notifications').'</span>'
+				.'<span class="d-flex gap-2">'
+				.'<a class="btn btn-outline-secondary btn-sm" href="'.url('admin/monitoring/journal').'"><i class="fas fa-file-medical-alt"></i> '.$this->lang('Journal des erreurs').'</a>'
+				.'<a class="btn btn-secondary btn-sm refresh" href="#" title="'.$this->lang('Actualiser').'"><i class="fas fa-sync"></i></a>'
+				.'</span>'
+				.'</div>'
+				.'<table class="table table-notifications m-0"></table>'
+				.'</div>'
 			.'</div>'
-			.$this->view('infos', ['check' => $this->model()->check_server()])
+			.'<div class="col-12 col-xl-4">'
+				.'<div class="card">'.$this->view('monitoring').'</div>'
+				.'<div class="card panel-storage">'
+				.'<div class="nf-card-header">'
+				.'<span><i class="far fa-copy"></i> '.$this->lang('Stockage').'</span>'
+				.'<a class="btn btn-secondary btn-sm" href="#" data-bs-toggle="modal" data-bs-target="#modal-backup" title="'.$this->lang('Sauvegarder').'"><i class="far fa-save"></i></a>'
+				.'</div>'
+				.'<div class="card-body">'.$this->view('storage').'</div>'
+				.'<div class="card-footer">'.$this->view('storage-footer').'</div>'
+				.'</div>'
+				.$this->_adresse_card()
+			.'</div>'
 			.'</div>';
 
-		$left .= $this->_webmaster_card();
-		$left .= $this->_diagnostic_card();
-		$left .= $this->_adresse_card();
+		// Sauvegardes : les archives ; le bouton qui en crée une est dans l'en-tête de leur carte.
+		$sauvegardes = $this->view('backups', ['backups' => $backups, 'csrf' => $this->_csrf_token()]);
 
-		// RIGHT column: notifications + storage + tree
-		$right = '<div class="row">';
-
-		// Notifications card (8/12)
-		$right .= '<div class="col-12 col-lg-8">';
-		$right .= '<div class="card panel-notifications">'
-			.'<div class="nf-card-header">'
-			.'<span><i class="far fa-bell"></i> '.$this->lang('Notifications').'</span>'
-			.'<span class="d-flex gap-2">'
-			.'<a class="btn btn-outline-secondary btn-sm" href="'.url('admin/monitoring/journal').'"><i class="fas fa-file-medical-alt"></i> '.$this->lang('Journal des erreurs').'</a>'
-			.'<a class="btn btn-secondary btn-sm refresh" href="#" title="'.$this->lang('Actualiser').'"><i class="fas fa-sync"></i></a>'
-			.'</span>'
+		// Serveur et sécurité : la configuration, le mot de passe webmaster, la tâche planifiée.
+		$serveur = '<div class="row g-3">'
+			.'<div class="col-12 col-xl-6">'
+				.'<div class="card panel-infos h-100">'
+				.'<div class="nf-card-header">'
+				.'<span><i class="fas fa-info-circle"></i> '.$this->lang('Informations serveur').'</span>'
+				.'<a class="btn btn-secondary btn-sm" href="#" data-modal-ajax="'.url('admin/ajax/monitoring/phpinfo').'" title="'.$this->lang('Détails').'"><i class="fas fa-info"></i></a>'
+				.'</div>'
+				.$this->view('infos', ['check' => $this->model()->check_server()])
+				.'</div>'
 			.'</div>'
-			.'<table class="table table-notifications m-0"></table>'
-			.'</div>';
-		$right .= '</div>';
-
-		// Storage card (4/12)
-		$right .= '<div class="col-12 col-lg-4">';
-		$right .= '<div class="card panel-storage">'
-			.'<div class="nf-card-header">'
-			.'<span><i class="far fa-copy"></i> '.$this->lang('Stockage').'</span>'
-			.'<a class="btn btn-secondary btn-sm" href="#" data-bs-toggle="modal" data-bs-target="#modal-backup" title="'.$this->lang('Sauvegarder').'"><i class="far fa-save"></i></a>'
+			.'<div class="col-12 col-xl-6">'.$this->_webmaster_card().'</div>'
 			.'</div>'
-			.'<div class="card-body">'.$this->view('storage').'</div>'
-			.'<div class="card-footer">'.$this->view('storage-footer').'</div>'
-			.'</div>';
-		$right .= '</div>';
+			.$this->_cron_section();
 
-		$right .= '</div>'; // /row
-
-		// Tree
-		$right .= '<div class="card">'
+		// Fichiers : l'arbre de l'installation, comparé à la version publiée.
+		$fichiers = '<div class="card">'
 			.'<div class="nf-card-header">'
 			.'<span><i class="fas fa-heartbeat"></i> '.$this->lang('Votre installation NeoFrag').'</span>'
 			.'<a class="btn btn-secondary btn-sm" href="'.url('admin/monitoring/files').'" title="'.htmlspecialchars((string) ($this->lang('Gérer / éditer les fichiers')), ENT_QUOTES).'"><i class="fas fa-folder-tree"></i> '.$this->lang('Gérer les fichiers').'</a>'
 			.'</div>'
-			.'<div class="card-body" style="max-height:520px;overflow-y:auto;"><div id="tree"></div></div>'
+			.'<div class="card-body" style="max-height:640px;overflow-y:auto;"><div id="tree"></div></div>'
 			.'</div>';
 
-		// Backups list (full width sous le layout principal)
-		$backups_section = '<div class="row mt-3"><div class="col-12">'
-			.$this->view('backups', ['backups' => $this->model()->get_backups(), 'csrf' => $this->_csrf_token()])
-			.'</div></div>';
+		$panneaux = ['ensemble' => $ensemble, 'sauvegardes' => $sauvegardes, 'diagnostic' => $this->_diagnostic_card(), 'serveur' => $serveur, 'fichiers' => $fichiers];
+		$contenu  = '<div class="tab-content nf-monitoring-panneaux">';
 
-		// Final layout
-		return $cards
-			.'<div class="row">'
-			.'<div class="col-12 col-lg-3">'.$left.'</div>'
-			.'<div class="col-12 col-lg-9">'.$right.'</div>'
-			.'</div>'
-			.$backups_section
-			.$this->_cron_section()
-			.$this->_sudo_modal();
+		foreach ($panneaux as $cle => $html)
+		{
+			$contenu .= '<div class="tab-pane fade'.($cle === 'ensemble' ? ' show active' : '').'" id="monitoring-'.$cle.'" role="tabpanel" aria-labelledby="onglet-'.$cle.'">'.$html.'</div>';
+		}
+
+		$contenu .= '</div>';
+
+		return $cards.$nav.$contenu.$this->_sudo_modal();
+	}
+
+	/** L'état de la mise à jour, pour le résumé : « À jour », ou la version qui attend. */
+	private function _etat_mise_a_jour(): string
+	{
+		$manifeste = is_file($fichier = NEOFRAG_CMS.'/cache/monitoring/version.json') ? json_decode((string) @file_get_contents($fichier), TRUE) : NULL;
+		$publiee   = is_array($manifeste) ? (string) ($manifeste['neofrag']['version'] ?? '') : '';
+
+		if ($publiee !== '' && version_compare(version_format($publiee), version_format(NEOFRAG_VERSION), '>'))
+		{
+			return (string) $this->lang('%s disponible', $publiee);
+		}
+
+		return (string) ($publiee !== '' ? $this->lang('À jour') : $this->lang('Version installée'));
 	}
 
 	/**
@@ -466,23 +504,23 @@ class Admin extends Controller_Module
 			}
 
 			$lien = [
-				'debogage'    => '',
+				'debogage'    => '<a class="small" href="'.url('admin/monitoring/journal').'">'.$this->lang('Journal des erreurs').'</a>',
 				'trace'       => '<a class="small" href="'.url('admin/monitoring/trace').'">'.$this->lang('Lire la trace').'</a>',
 				'traductions' => '<a class="small" href="'.url('admin/monitoring/traductions').'">'.$this->lang('Traductions manquantes').' ('.$traductions.')</a>',
 			][$outil];
 
-			$lignes .= '<div'.($lignes !== '' ? ' class="border-top pt-3 mt-3"' : '').'>'
-				.'<div class="d-flex justify-content-between align-items-center gap-2 mb-1"><strong><i class="'.$icone.'"></i> '.$titre.'</strong>'.$etat.'</div>'
+			// Une carte par outil, côte à côte : l'onglet Diagnostic leur laisse toute la largeur.
+			$lignes .= '<div class="col-12 col-lg-4"><div class="card h-100 mb-0">'
+				.'<div class="nf-card-header"><span><i class="'.$icone.'"></i> '.$titre.'</span>'.$etat.'</div>'
+				.'<div class="card-body small d-flex flex-column">'
 				.'<p class="mb-2">'.$texte.'</p>'
 				.($note !== '' ? '<p class="text-body-secondary mb-2">'.$note.'</p>' : '')
-				.(($bouton.$lien) !== '' ? '<div class="d-flex flex-wrap align-items-center gap-2">'.$bouton.($lien !== '' ? '<span class="ms-auto">'.$lien.'</span>' : '').'</div>' : '')
-				.'</div>';
+				.'<div class="mt-auto pt-2 d-flex flex-wrap align-items-center gap-2">'.$bouton.'<span class="ms-auto">'.$lien.'</span></div>'
+				.'</div>'
+				.'</div></div>';
 		}
 
-		return '<div class="card">'
-			.'<div class="nf-card-header"><span><i class="fas fa-stethoscope"></i> '.$this->lang('Diagnostic').'</span></div>'
-			.'<div class="card-body small">'.$lignes.'</div>'
-			.'</div>';
+		return '<div class="row g-3">'.$lignes.'</div>';
 	}
 
 	/** @return array<string, array{0: string, 1: string, 2: string}> l'icône, le nom et ce que fait chaque outil */

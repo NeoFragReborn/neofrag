@@ -54,4 +54,5 @@ return [
 	'ff116db6' => 'Kartenname',
 	'04fc2b5b' => 'Bild',
 	'c8569b6a' => 'Name des Modus',
+	'8fd9c7ef' => 'Speichern',
 ];

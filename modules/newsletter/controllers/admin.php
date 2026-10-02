@@ -65,7 +65,7 @@ class Admin extends Controller_Module
 					.'<td style="font-family:\'JetBrains Mono\',monospace;font-size:12px;color:var(--nf-text-muted);">#'.(int)$s['id'].'</td>'
 					.'<td><strong>'.htmlspecialchars((string) ($s['email'])).'</strong></td>'
 					.'<td>'.$status.'</td>'
-					.'<td style="color:var(--nf-text-muted);font-feature-settings:\'tnum\';">'.timetostr('Y-m-d H:i', $s['ts']).'</td>'
+					.'<td style="color:var(--nf-text-muted);font-feature-settings:\'tnum\';">'.nf_date_heure($s['ts']).'</td>'
 					.'<td class="text-end"><a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/newsletter/subscribers/delete/'.$s['id']).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer cet abonné ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a></td>'
 					.'</tr>';
 			}
@@ -297,7 +297,7 @@ class Admin extends Controller_Module
 					.'<td><strong>'.htmlspecialchars((string) ($t['name'])).'</strong></td>'
 					.'<td><small class="text-muted">'.htmlspecialchars((string) ($t['subject'])).'</small></td>'
 					.'<td class="text-end" style="white-space:nowrap;">'
-					.'<a class="btn btn-sm btn-outline-primary" href="'.url('admin/newsletter/templates/edit/'.$t['id']).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
+					.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/newsletter/templates/edit/'.$t['id']).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
 					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/newsletter/templates/delete/'.$t['id']).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce modèle ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 			}

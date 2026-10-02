@@ -155,4 +155,5 @@ return [
 	'64eda44a' => 'On en parle ici',
 	'04fb541f' => 'Durée',
 	'bbc46366' => 'Inviter',
+	'8fd9c7ef' => 'Enregistrer',
 ];

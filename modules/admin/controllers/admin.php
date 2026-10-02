@@ -393,7 +393,8 @@ class Admin extends Controller_Module
 				$out[] = [
 					'kind'  => $kind,
 					'icon'  => $icon,
-					'title' => $author.' — '.htmlspecialchars((string) ($r['action'])).($cible !== '' ? ' <span style="color:var(--nf-text-muted)">'.htmlspecialchars((string) ($cible)).'</span>' : ''),
+					// Le libellé de l'action (« Mode débogage allumé »), et non son identifiant technique.
+					'title' => $author.' — '.htmlspecialchars((new \NF\NeoFrag\Libraries\Audit_Log($this))->libelle((string) $r['action'])).($cible !== '' ? ' <span style="color:var(--nf-text-muted)">'.htmlspecialchars((string) ($cible)).'</span>' : ''),
 					'meta'  => time_span($ts)
 				];
 			}

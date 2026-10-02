@@ -54,11 +54,11 @@
 					</td>
 					<td class="text-center">
 						<?php if (!$m['read_at']): ?>
-							<button type="submit" name="mark_read[]" value="<?php echo (int)$m['mention_id'] ?>" class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($this->lang('Marquer comme lue'), ENT_QUOTES) ?>"><?php echo icon('fas fa-check') ?></button>
+							<button type="submit" name="mark_read[]" value="<?php echo (int)$m['mention_id'] ?>" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($this->lang('Marquer comme lue'), ENT_QUOTES) ?>"><?php echo icon('fas fa-check') ?></button>
 						<?php endif ?>
-						<button type="submit" name="delete[]" value="<?php echo (int)$m['mention_id'] ?>" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($this->lang('Supprimer'), ENT_QUOTES) ?>"
+						<button type="submit" name="delete[]" value="<?php echo (int)$m['mention_id'] ?>" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($this->lang('Supprimer'), ENT_QUOTES) ?>"
 								data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer cette mention ?'), ENT_QUOTES) ?>"
-								data-confirm-icon="fas fa-at"><?php echo icon('fas fa-times') ?></button>
+								data-confirm-icon="fas fa-at"><?php echo icon('far fa-trash-alt') ?></button>
 					</td>
 				</tr>
 			<?php endforeach ?>

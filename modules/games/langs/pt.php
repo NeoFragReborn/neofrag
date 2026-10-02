@@ -54,4 +54,5 @@ return [
 	'ff116db6' => 'Nome do mapa',
 	'04fc2b5b' => 'Imagem',
 	'c8569b6a' => 'Nome do modo',
+	'8fd9c7ef' => 'Guardar',
 ];

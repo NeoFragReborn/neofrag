@@ -49,7 +49,7 @@
 				</td>
 				<td class="text-end">
 					<a class="btn btn-sm btn-outline-secondary" href="<?php echo url('admin/donations/'.$c['id'].'/donations') ?>" title="<?php echo $this->lang('Gérer les dons') ?>"><i class="fas fa-list"></i></a>
-					<a class="btn btn-sm btn-outline-primary" href="<?php echo url('admin/donations/edit/'.$c['id']) ?>" title="<?php echo $this->lang('Modifier') ?>"><i class="fas fa-pen"></i></a>
+					<a class="btn btn-sm btn-outline-secondary" href="<?php echo url('admin/donations/edit/'.$c['id']) ?>" title="<?php echo $this->lang('Modifier') ?>"><i class="fas fa-pen"></i></a>
 					<a class="btn btn-sm btn-outline-info" href="<?php echo url('donations/'.$c['name']) ?>" target="_blank" rel="noopener" title="<?php echo $this->lang('Voir la page publique') ?>"><i class="far fa-eye"></i></a>
 					<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/donations/delete/'.$c['id']) ?>?_=<?php echo $csrf ?>" data-confirm="<?php echo $this->lang('Supprimer cette campagne ET tous ses dons ?') ?>" title="<?php echo $this->lang('Supprimer') ?>"><i class="far fa-trash-alt"></i></a>
 				</td>

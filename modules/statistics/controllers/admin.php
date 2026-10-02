@@ -49,12 +49,12 @@ class Admin extends Controller_Module
 
 		$filter_card = '<div class="card stats-filter-card">'
 			.'<div class="nf-card-header">'
-			.'<span><i class="fas fa-filter"></i> '.$this->lang('Période').'</span>'
+			.'<span><i class="fas fa-filter"></i> '.$this->lang('Filtres').'</span>'
 			.'<span class="stats-presets">'
-			.'<button type="button" class="btn btn-secondary btn-sm" data-stats-preset="7">'.$this->lang('7 jours').'</button>'
-			.'<button type="button" class="btn btn-secondary btn-sm" data-stats-preset="30">'.$this->lang('30 jours').'</button>'
-			.'<button type="button" class="btn btn-secondary btn-sm" data-stats-preset="90">'.$this->lang('90 jours').'</button>'
-			.'<button type="button" class="btn btn-secondary btn-sm" data-stats-preset="365">'.$this->lang('1 an').'</button>'
+			.'<button type="button" class="btn btn-outline-secondary btn-sm" data-stats-preset="7">'.$this->lang('7 jours').'</button>'
+			.'<button type="button" class="btn btn-outline-secondary btn-sm" data-stats-preset="30">'.$this->lang('30 jours').'</button>'
+			.'<button type="button" class="btn btn-outline-secondary btn-sm" data-stats-preset="90">'.$this->lang('90 jours').'</button>'
+			.'<button type="button" class="btn btn-outline-secondary btn-sm" data-stats-preset="365">'.$this->lang('1 an').'</button>'
 			.'</span>'
 			.'</div>'
 			.'<div class="card-body stats-filter-body">'.$filter_form.'</div>'
@@ -77,15 +77,16 @@ class Admin extends Controller_Module
 			var days = parseInt(btn.getAttribute('data-stats-preset'), 10);
 			var to = new Date();
 			var from = new Date(); from.setDate(from.getDate() - days);
-			var fmt = function(d) {
-				return String(d.getDate()).padStart(2,'0') + '/' +
-					String(d.getMonth()+1).padStart(2,'0') + '/' +
-					d.getFullYear();
+			// Le sélecteur écrit la date dans le format de la langue (« 02.10.2026 » en allemand).
+			var poser = function(input, date) {
+				if (!input) return;
+				if (input._flatpickr) { input._flatpickr.setDate(date, false); }
+				else { input.value = String(date.getDate()).padStart(2,'0') + '/' + String(date.getMonth()+1).padStart(2,'0') + '/' + date.getFullYear(); }
 			};
-			var startIn = document.querySelector('input[name="start"]');
-			var endIn = document.querySelector('input[name="end"]');
-			if (startIn) startIn.value = fmt(from);
-			if (endIn) endIn.value = fmt(to);
+			var startIn = document.querySelector('input[name$="[start]"], input[name="start"]');
+			var endIn = document.querySelector('input[name$="[end]"], input[name="end"]');
+			poser(startIn, from);
+			poser(endIn, to);
 			// Rafraîchit le graphe (statistics.js écoute 'change' sur les champs du form).
 			if (startIn) startIn.dispatchEvent(new Event('change', {bubbles:true}));
 			if (endIn) endIn.dispatchEvent(new Event('change', {bubbles:true}));

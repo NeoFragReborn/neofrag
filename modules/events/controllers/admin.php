@@ -388,7 +388,7 @@ class Admin extends Controller_Module
 			]);
 		}
 
-		$form_default = $formulaire	->add_submit($this->lang('Éditer'))
+		$form_default = $formulaire	->add_submit($this->lang('Enregistrer'))
 									->add_back('admin/events')
 									->save();
 
@@ -718,7 +718,7 @@ class Admin extends Controller_Module
 					'color' => $color,
 					'icon'  => $icon
 				])
-				->add_submit($this->lang('Éditer'))
+				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/events');
 
 		if ($this->form()->is_valid($post))
@@ -848,7 +848,7 @@ class Admin extends Controller_Module
 					'website'  => $website
 				])
 				->add_back('admin/events/opponents')
-				->add_submit($this->lang('Éditer'));
+				->add_submit($this->lang('Enregistrer'));
 
 		if ($this->form()->is_valid($post))
 		{

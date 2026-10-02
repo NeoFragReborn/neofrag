@@ -3,22 +3,40 @@
  * Addons admin view — modern cards grid.
  */
 ?>
+<?php
+$addons = $addons ?? [];
+// Le nombre d'extensions de chaque type, pour les filtres.
+$comptes = ["all" => count($addons)];
+foreach ($addons as $a) { $t = $a->type ? $a->type->name : "addon"; $comptes[$t] = ($comptes[$t] ?? 0) + 1; }
+$filtres = [
+	"module"        => ["fas fa-cube",        $this->lang('Modules')],
+	"widget"        => ["fas fa-puzzle-piece", $this->lang('Widgets')],
+	"theme"         => ["fas fa-paint-brush",  $this->lang('Thèmes')],
+	"language"      => ["fas fa-globe",        $this->lang('Langues')],
+	"authenticator" => ["fas fa-key",          $this->lang('Authentificateurs')],
+];
+?>
+<?php /* La barre : le type, la recherche, le statut, la vue. Le type et le statut se combinent (les
+         modules inactifs) ; la page s'ouvre sur les modules, et en liste — elle alignait les quelque
+         120 extensions en grandes cartes, sur plus de 10 000 pixels (relevé le 2026-10-02). */ ?>
 <div class="addons-toolbar">
-	<div class="addons-filters-group">
-		<span class="addons-filters-label"><i class="fas fa-filter"></i> <?php echo $this->lang('Filtrer') ?></span>
-		<button type="button" class="addons-filter-btn active" data-filter="all"><?php echo $this->lang('Tous') ?></button>
-		<button type="button" class="addons-filter-btn" data-filter=".addon-module"><i class="fas fa-cube"></i> <?php echo $this->lang('Modules') ?></button>
-		<button type="button" class="addons-filter-btn" data-filter=".addon-theme"><i class="fas fa-paint-brush"></i> <?php echo $this->lang('Thèmes') ?></button>
-		<button type="button" class="addons-filter-btn" data-filter=".addon-widget"><i class="fas fa-puzzle-piece"></i> <?php echo $this->lang('Widgets') ?></button>
-		<button type="button" class="addons-filter-btn" data-filter=".addon-language"><i class="fas fa-globe"></i> <?php echo $this->lang('Langues') ?></button>
-		<button type="button" class="addons-filter-btn" data-filter=".addon-authenticator"><i class="fas fa-key"></i> <?php echo $this->lang('Authentificateurs') ?></button>
+	<div class="addons-filters-group" role="group" aria-label="<?php echo $this->lang('Type') ?>">
+		<button type="button" class="addons-filter-btn" data-type="all"><?php echo $this->lang('Tous') ?> <span class="addons-filter-count"><?php echo $comptes["all"] ?></span></button>
+		<?php foreach ($filtres as $type => [$icone, $libelle]): if (empty($comptes[$type])) continue; ?>
+		<button type="button" class="addons-filter-btn" data-type="<?php echo $type ?>"><i class="<?php echo $icone ?>"></i> <?php echo $libelle ?> <span class="addons-filter-count"><?php echo $comptes[$type] ?></span></button>
+		<?php endforeach ?>
 	</div>
-	<div class="addons-status-group">
-		<button type="button" class="addons-filter-btn" data-filter=".activated"><i class="fas fa-circle" style="color:#16a34a;font-size:8px;"></i> <?php echo $this->lang('Actifs') ?></button>
-		<button type="button" class="addons-filter-btn" data-filter=".deactivated"><i class="far fa-circle" style="font-size:8px;"></i> <?php echo $this->lang('Inactifs') ?></button>
+	<input type="search" class="form-control form-control-sm addons-recherche" placeholder="<?php echo $this->lang('Rechercher une extension') ?>" aria-label="<?php echo $this->lang('Rechercher une extension') ?>">
+	<div class="addons-status-group" role="group" aria-label="<?php echo $this->lang('Statut') ?>">
+		<button type="button" class="addons-filter-btn" data-statut="activated"><i class="fas fa-circle" style="color:#16a34a;font-size:8px;"></i> <?php echo $this->lang('Actifs') ?></button>
+		<button type="button" class="addons-filter-btn" data-statut="deactivated"><i class="far fa-circle" style="font-size:8px;"></i> <?php echo $this->lang('Inactifs') ?></button>
+	</div>
+	<div class="addons-vue-group" role="group" aria-label="<?php echo $this->lang('Affichage') ?>">
+		<button type="button" class="addons-vue-btn" data-vue="liste" title="<?php echo $this->lang('Liste') ?>" aria-label="<?php echo $this->lang('Liste') ?>"><i class="fas fa-list"></i></button>
+		<button type="button" class="addons-vue-btn" data-vue="grille" title="<?php echo $this->lang('Grille') ?>" aria-label="<?php echo $this->lang('Grille') ?>"><i class="fas fa-th-large"></i></button>
 	</div>
 </div>
-
+<p class="addons-vide text-body-secondary small" hidden><?php echo $this->lang('Aucune extension ne correspond.') ?></p>
 <div id="addons" class="addons-grid">
 	<?php foreach ($addons as $addon): ?>
 		<?php
@@ -53,7 +71,7 @@
 		$version    = $addon->addon()->info()->version ?? '';
 		$description = $addon->addon()->info()->description ?? '';
 		?>
-		<div class="addon-card mix addon-<?php echo $type_name ?> <?php echo $is_enabled ? 'activated' : 'deactivated' ?>">
+		<div class="addon-card mix addon-<?php echo $type_name ?> <?php echo $is_enabled ? 'activated' : 'deactivated' ?>" data-type="<?php echo $type_name ?>" data-texte="<?php echo htmlspecialchars(mb_strtolower(strip_tags($title.' '.$description.' '.($addon->addon()->info()->name ?? ''))), ENT_QUOTES) ?>">
 			<?php /* La bande d'apercu existe TOUJOURS, avec image ou avec l'icone au centre. Quand
 			         elle n'apparaissait que pour les themes — les seuls a livrer un thumbnail — les
 			         cartes d'une meme ligne differaient de 50 px de haut, et la grille etirait les

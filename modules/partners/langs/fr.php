@@ -44,4 +44,5 @@ return [
 	'8b8988ac' => 'Supprimer ?',
 	'39e91bd5' => 'partenaire|partenaires',
 	'8a8bad0b' => 'À propos de %s',
+	'8fd9c7ef' => 'Enregistrer',
 ];

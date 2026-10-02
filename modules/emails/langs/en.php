@@ -76,4 +76,8 @@ return [
 	'ef57084d' => 'Email sent to a user who receives a sanction (warn/restrict/ban).',
 	'2a54700c' => 'Newsletter: confirmation',
 	'3fd8686a' => 'Double opt-in email to confirm the newsletter subscription.',
+	'de200fc5' => 'Languages',
+	'6aa35b89' => 'Template',
+	'870c633c' => 'Subject',
+	'e2c8f589' => 'Status',
 ];

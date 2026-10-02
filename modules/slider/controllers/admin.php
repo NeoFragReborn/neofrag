@@ -17,12 +17,9 @@ class Admin extends Controller_Module
 
 		$slides = $this->model()->get_slides(FALSE);
 
-		// Une seule invitation à créer, jamais deux. Quand la liste est vide, c'est l'état vide qui
-		// la porte : c'étaient deux boutons pour exactement la même action. C'est la barre d'outils
-		// qui l'emporte, comme sur la régie publicitaire, les dons, les paiements et la boutique —
-		// quatre des six écrans concernés font déjà ainsi, et leur état vide se contente
-		// d'annoncer qu'il n'y a rien.
-		$this->add_action($this->button($this->lang('Ajouter une slide'), 'fas fa-plus', 'primary')->url('admin/slider/add'));
+		// Une seule invitation à créer, jamais deux : l'état vide se contente d'annoncer qu'il n'y a rien.
+		// Elle est dans l'en-tête de la carte de la liste qu'elle alimente, comme sur toutes les pages
+		// d'administration (charte, docs/guide/create-a-module.md) — elle était dans la barre du haut.
 
 		// Enveloppe partagée : même carte et même état vide que les autres écrans d'administration.
 		// L'écran d'édition du slider (plus bas) utilisait déjà admin_card() — la liste, elle, avait
@@ -38,7 +35,8 @@ class Admin extends Controller_Module
 		]);
 
 		return $this->admin_card('fas fa-images', $this->lang('Slider'), $corps,
-			$slides ? count($slides).' '.$this->lang(count($slides) > 1 ? 'slides' : 'slide') : '');
+			$slides ? count($slides).' '.$this->lang(count($slides) > 1 ? 'slides' : 'slide') : '',
+			$this->admin_create('admin/slider/add', $this->lang('Ajouter une slide')));
 	}
 
 	public function _add()

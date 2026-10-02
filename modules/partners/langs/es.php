@@ -45,4 +45,5 @@ return [
 	'39e91bd5' => 'socio|socios',
 	'8b8988ac' => '¿Eliminar?',
 	'8a8bad0b' => 'Acerca de %s',
+	'8fd9c7ef' => 'Guardar',
 ];

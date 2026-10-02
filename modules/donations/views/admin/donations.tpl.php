@@ -51,8 +51,8 @@ $cid = $campaign['id'];
 				</td>
 				<td><small><?php echo timetostr('j F Y H:i', $d['created_at']) ?></small></td>
 				<td class="text-end">
-					<a class="btn btn-sm btn-primary" href="<?php echo url('admin/donations/donation/edit/'.$d['id']) ?>"><i class="fas fa-edit"></i></a>
-					<a class="btn btn-sm btn-danger" href="<?php echo url('admin/donations/donation/delete/'.$d['id']) ?>?_=<?php echo $csrf ?>" data-confirm="<?php echo $this->lang('Supprimer ce don ?') ?>"><i class="far fa-trash-alt"></i></a>
+					<a class="btn btn-sm btn-outline-secondary" href="<?php echo url('admin/donations/donation/edit/'.$d['id']) ?>"><i class="fas fa-edit"></i></a>
+					<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/donations/donation/delete/'.$d['id']) ?>?_=<?php echo $csrf ?>" data-confirm="<?php echo $this->lang('Supprimer ce don ?') ?>"><i class="far fa-trash-alt"></i></a>
 				</td>
 			</tr>
 			<?php endforeach ?>

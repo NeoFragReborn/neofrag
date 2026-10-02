@@ -158,4 +158,5 @@ return [
 	'64eda44a' => 'Se habla de ello aquí',
 	'04fb541f' => 'Duración',
 	'bbc46366' => 'Invitar',
+	'8fd9c7ef' => 'Guardar',
 ];

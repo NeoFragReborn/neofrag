@@ -486,7 +486,8 @@ class Index extends Controller_Module
 				->breadcrumb($this->lang('Forum'), 'forum')
 				->breadcrumb($this->lang('Mes abonnements'));
 
-		return $this->view('subscriptions', ['subscriptions' => $subscriptions]);
+		// Découpée par pages de 20 (le checker) : les liens des pages suivent la liste.
+		return $this->view('subscriptions', ['subscriptions' => $subscriptions]).$this->module->pagination->get_pagination();
 	}
 
 	private function _attach_to_last_message($topic_id, $post)
