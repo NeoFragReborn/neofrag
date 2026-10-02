@@ -61,7 +61,7 @@ class Admin extends Controller_Module
 			],
 			[
 				'title' => $this->lang('Sécurité anti-bots'),
-				'desc'  => $this->lang('Captcha, reCAPTCHA, protection contre les spambots'),
+				'desc'  => $this->lang('Captcha : ALTCHA, Turnstile, hCaptcha, reCAPTCHA'),
 				'icon'  => 'fas fa-shield-alt',
 				'url'   => 'admin/settings/captcha',
 				'color' => 'danger'
@@ -635,17 +635,46 @@ class Admin extends Controller_Module
 		$this	->subtitle($this->lang('Sécurité anti-bots'))
 				->icon('fas fa-shield-alt');
 
+		$captcha      = \NF\NeoFrag\Libraries\Captcha::class;
+		$fournisseurs = [];
+		$consoles     = [];
+
+		foreach ($captcha::FOURNISSEURS as $cle => $classe)
+		{
+			$fournisseurs[$cle] = $classe::cles_requises() ? $classe::nom() : $classe::nom().' — '.$this->lang('sans clé, recommandé');
+
+			if ($classe::cles_requises())
+			{
+				$consoles[] = '<a href="'.$classe::console().'" target="_blank" rel="noopener">'.$classe::nom().'</a>';
+			}
+		}
+
+		$fournisseurs[$captcha::AUCUN] = $this->lang('Aucun (déconseillé)');
+
+		$secret = (string) $this->config->nf_captcha_private_key;
+		$choix  = (string) $this->config->nf_captcha_provider ?: $captcha::cle_active('', (string) $this->config->nf_captcha_public_key, $secret);
+
 		$this	->form()
 				->add_rules([
+					'captcha_provider' => [
+						'label'  => $this->lang('Fournisseur'),
+						'values' => $fournisseurs,
+						'value'  => $choix ?: $captcha::AUCUN,
+						'type'   => 'select'
+					],
 					'captcha_public_key' => [
-						'label' => $this->lang('Clé publique Google'),
-						'value' => $this->config->nf_captcha_public_key,
-						'type'  => 'text'
+						'label'       => $this->lang('Clé de site'),
+						'description' => $this->lang('Pour Turnstile, hCaptcha et reCAPTCHA. ALTCHA n\'en demande aucune.'),
+						'value'       => $this->config->nf_captcha_public_key,
+						'type'        => 'text'
 					],
 					'captcha_private_key' => [
-						'label' => $this->lang('Clé privée Google'),
-						'value' => $this->config->nf_captcha_private_key,
-						'type'  => 'text'
+						'label'       => $this->lang('Clé secrète'),
+						'description' => $secret !== ''
+							? $this->lang('Une clé secrète est déjà enregistrée (non affichée par sécurité) — laisse vide pour la conserver, ou saisis-en une nouvelle.')
+							: $this->lang('La clé secrète du fournisseur, qui ne quitte jamais le serveur.'),
+						'value'       => '',
+						'type'        => 'password'
 					]
 				])
 				->add_submit($this->lang('Valider'))
@@ -653,21 +682,45 @@ class Admin extends Controller_Module
 
 		if ($this->form()->is_valid($post))
 		{
-			foreach ($post as $var => $value)
+			// Un choix hors de la liste (un select scalaire n'est pas validé par le form) retombe sur ALTCHA.
+			$fournisseur = (string) $post['captcha_provider'];
+			$fournisseur = isset($captcha::FOURNISSEURS[$fournisseur]) || $fournisseur === $captcha::AUCUN ? $fournisseur : 'altcha';
+
+			$this	->config('nf_captcha_provider',   $fournisseur)
+					->config('nf_captcha_public_key', trim((string) $post['captcha_public_key']));
+
+			// La clé secrète, chiffrée au repos, n'est ré-écrite QUE si elle est renseignée : le form met les
+			// champs vides à NULL.
+			if (!empty($post['captcha_private_key']))
 			{
-				$this->config('nf_'.$var, $value);
+				$this->config('nf_captcha_private_key', $this->crypt->encrypt_secret(trim((string) $post['captcha_private_key'])));
 			}
 
 			$this->_audit('captcha');
-			notify($this->lang('Configuration de Google reCAPTCHA sauvegardée avec succès'));
+
+			$classe = $captcha::FOURNISSEURS[$fournisseur] ?? NULL;
+
+			if ($classe && $classe::cles_requises() && (trim((string) $post['captcha_public_key']) === '' || (empty($post['captcha_private_key']) && $secret === '')))
+			{
+				notify($this->lang('Réglages enregistrés — mais sans ses deux clés, ce fournisseur est remplacé par ALTCHA.'), 'warning');
+			}
+			else
+			{
+				notify($this->lang('Protection anti-robots enregistrée'));
+			}
 
 			refresh();
 		}
 
-		return $this->_layout(function($col){
+		$aide = '<div class="alert alert-info">'
+			.$this->lang('ALTCHA, le fournisseur par défaut, ne demande ni compte ni clé : il est hébergé par votre site et ne dépose aucun cookie.')
+			.' '.$this->lang('Les autres demandent une clé de site et une clé secrète, à créer dans leur console :')
+			.' '.implode(', ', $consoles).'.</div>';
+
+		return $this->_layout(function($col) use ($aide){
 			$col->append($this	->panel()
-								->heading('Configuration de Google reCAPTCHA', 'fas fa-shield-alt')
-								->body('<div class="alert alert-info"><a href="https://www.google.com/recaptcha/intro/index.html" target="_blank">https://www.google.com/recaptcha/intro/index.html</a></div>'.$this->form()->display())
+								->heading($this->lang('Protection anti-robots'), 'fas fa-shield-alt')
+								->body($aide.$this->form()->display())
 			);
 		});
 	}

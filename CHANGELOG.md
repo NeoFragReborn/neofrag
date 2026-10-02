@@ -10,6 +10,40 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.19] — 2026-10-02
+
+### Ajouté
+
+- **Un captcha moderne, actif dès l'installation : ALTCHA.** Il est hébergé par le site lui-même —
+  sans compte, sans clé, sans cookie ni service tiers. Le visiteur voit une case qui se coche d'elle-même
+  pendant qu'il remplit le formulaire : son navigateur fait un petit calcul, que le serveur vérifie. Il
+  protège le formulaire de contact, l'inscription et le recrutement. À la mise à jour, un site sans clés
+  reCAPTCHA passe sur ALTCHA ; un site qui en avait garde reCAPTCHA. ALTCHA rend l'envoi en masse coûteux
+  pour un robot ; contre un attaquant obstiné, les fournisseurs ci-dessous jugent davantage.
+- **Au choix, Cloudflare Turnstile, hCaptcha ou Google reCAPTCHA v2**, dans *Paramètres → Captcha*,
+  avec le lien vers la console de chacun. La clé secrète est chiffrée et n'est jamais réaffichée. Sans
+  ses deux clés, un fournisseur est remplacé par ALTCHA plutôt que de laisser le formulaire ouvert.
+- Le captcha et ses messages existent dans les six langues.
+
+### Corrigé
+
+- **reCAPTCHA** : la clé secrète partait dans l'adresse de vérification ; elle part désormais dans le
+  corps de la requête, comme Google le demande. Le lien vers sa console, périmé, est remplacé, et
+  l'adresse du visiteur transmise suit la règle du reste du site, qui tient compte d'un mandataire
+  déclaré de confiance.
+- Quand la vérification anti-robot manque, le message s'écrit en clair sous le captcha, au lieu d'une
+  icône seule dont la bulle n'apparaît pas sur un écran tactile.
+
+### Sécurité
+
+- **Réussir le captcha une fois ne dispense plus de le refaire.** Depuis NeoFrag, un captcha réussi
+  dispensait de le repasser pour tous les envois suivants du même formulaire, jusqu'à la fin de la
+  session : un robot qui résolvait un seul défi pouvait ensuite envoyer sans limite. La dispense ne
+  vaut plus que pour un seul renvoi, après une autre erreur dans le formulaire.
+- Une solution ALTCHA ne sert qu'une fois : la présenter de nouveau est refusé.
+- La politique de sécurité des pages n'ouvre plus Google par défaut : seulement les adresses du
+  fournisseur de captcha choisi, et aucune avec ALTCHA.
+
 ## [1.2.18] — 2026-10-02
 
 ### Corrigé

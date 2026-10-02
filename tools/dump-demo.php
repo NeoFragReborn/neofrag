@@ -134,9 +134,12 @@ $sensibles = [
     'nf_cron_key',                 // sans elle, la remise à zéro s'auto-détruit
     'nf_monitoring_check_url',     // origine des mises à jour du cœur
     'nf_smtp_password', 'nf_smtp_user', 'nf_smtp_host', 'nf_email_password',
-    'nf_recaptcha_secret', 'nf_hcaptcha_secret',
-    'nf_paypal_secret', 'nf_stripe_secret', 'nf_stripe_webhook_secret',
-    'nf_twitch_client_secret', 'nf_youtube_api_key', 'nf_giphy_api_key',
+    // Les noms RÉELS des réglages (vérifiés le 2026-10-02) : la liste citait nf_recaptcha_secret,
+    // nf_stripe_secret, nf_twitch_client_secret… qu'aucun code n'emploie, et laissait passer la vraie
+    // clé secrète du captcha. Les identifiants Twitch et YouTube vivent dans les réglages du widget
+    // (nf_widgets), pas ici.
+    'nf_captcha_private_key',
+    'pay_stripe_secret', 'pay_stripe_webhook_secret',
     'nf_discord_token',            // la clé du bot Discord, chiffrée — mais une clé reste une clé
     // L'état de l'installation, pas un réglage : figé dans l'instantané, chaque remise à zéro le
     // ramènerait à la version du jour de l'instantané (relevé le 2026-10-01).

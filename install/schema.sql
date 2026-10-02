@@ -896,7 +896,11 @@ INSERT INTO `nf_migrations` (`id`, `name`, `batch`, `applied_at`) VALUES
 
 -- Un compte externe ne se lie qu'a un membre : nf_user_auth ci-dessus porte deja uk_authenticator_key.
 -- Cf. migrations/2026_10_01_compte_externe_unique.
-('55', '2026_10_01_compte_externe_unique', '43', '2026-10-01 00:00:00');
+('55', '2026_10_01_compte_externe_unique', '43', '2026-10-01 00:00:00'),
+
+-- Le fournisseur du captcha : install/seed.sql pose deja nf_captcha_provider = altcha.
+-- Cf. migrations/2026_10_02_captcha_fournisseur.
+('56', '2026_10_02_captcha_fournisseur', '44', '2026-10-02 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -10,12 +10,17 @@ name: CI
 #   - un envoi qui ne touche QUE de la documentation n'exécute pas ce workflow : docs.yml la vérifie
 #     en une minute ;
 #   - Dependabot regroupe ses mises à jour (.github/dependabot.yml).
+# Ça n'a pas suffi : environ 1 100 minutes les 1er et 2 octobre. Depuis le 2026-10-02, un envoi ne
+# joue plus que la batterie RAPIDE (tout sauf Interface, et PHPUnit sur les deux bornes 8.2 et 8.5).
+# La batterie ENTIÈRE se lance à la main (workflow_dispatch) avant chaque version — étape 1 de
+# docs/RELEASING.md : `gh workflow run CI`.
 on:
   push:
     branches: [main]
     paths-ignore: ['docs/**', '**/*.md']
   pull_request:
     paths-ignore: ['docs/**', '**/*.md']
+  workflow_dispatch:
 
 # Une nouvelle exécution sur la même référence annule la précédente, devenue inutile.
 concurrency:
@@ -208,7 +213,7 @@ jobs:
       # La démonstration se remet à zéro en rejouant install/demo.sql. Une clé primaire écrite deux
       # fois fait refuser TOUT l'import : le 2026-09-22, la remise à zéro a échoué quatorze heures
       # sans que rien le dise.
-      - name: Garde instantanés SQL livrés (aucune clé primaire en double)
+      - name: Garde instantanés SQL livrés (aucune clé primaire en double, historique des migrations complet)
         run: php tools/check-instantanes.php
       # Les `.htaccess` du paquet ne sont exercés par personne : la production tourne sous Caddy.
       # Ils avaient divergé dans le mauvais sens — `/les notes du mainteneur` servi en texte sur toute
@@ -266,9 +271,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # NeoFrag Reborn supporte toutes les versions PHP >= 8.2 (cf. composer.json). On les teste
-        # toutes pour attraper les régressions spécifiques à une version (ex. comportements unserialize).
-        php: ['8.2', '8.3', '8.4', '8.5']
+        # NeoFrag Reborn supporte toutes les versions PHP >= 8.2 (cf. composer.json). La batterie
+        # entière les teste toutes (régressions propres à une version, ex. unserialize) ; un envoi
+        # ordinaire, les deux bornes seulement — le quota (cf. en-tête).
+        php: ${{ github.event_name == 'workflow_dispatch' && fromJSON('["8.2", "8.3", "8.4", "8.5"]') || fromJSON('["8.2", "8.5"]') }}
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
@@ -371,6 +377,8 @@ jobs:
 
   interface:
     name: Interface (responsive mesuré + navigation admin)
+    # Le job le plus long (7 à 8 minutes) : batterie entière seulement (cf. en-tête).
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     # Le responsive ne reposait que sur des captures regardées à la main. Une entrée du suivi

@@ -14,6 +14,7 @@ use NF\NeoFrag\Core;
  * @property mixed $nf_analytics
  * @property mixed $nf_captcha_private_key
  * @property mixed $nf_captcha_public_key
+ * @property mixed $nf_captcha_provider
  * @property mixed $nf_contact
  * @property mixed $nf_cookie_expire
  * @property mixed $nf_font

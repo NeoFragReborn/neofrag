@@ -67,8 +67,9 @@ qui sépare le projet de ses premiers utilisateurs.
   fuseau par défaut.
 - **Une administration repensée** : neuf rubriques, une recherche rapide, la même charte pour tous les
   écrans, et un Monitoring qui montre le journal des erreurs et règle les outils de diagnostic.
-- **Site installable (PWA)** : il s'installe sur un téléphone comme une application, et peut garder ses
-  pages pour fonctionner sans réseau.
+- **Site installable (PWA)** : il s'installe sur un téléphone comme une application. En option, il garde
+  ses images, ses styles et ses scripts pour s'ouvrir plus vite — jamais ses pages, qui restent toujours
+  à jour.
 
 ---
 

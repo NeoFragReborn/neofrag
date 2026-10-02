@@ -241,12 +241,6 @@ parameters:
 			path: modules/addons/controllers/addons/theme.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\Addons\\Controllers\\Addons\\Theme\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: modules/addons/controllers/addons/theme.php
-
-		-
 			message: '#^Access to an undefined property NF\\Modules\\Addons\\Controllers\\Addons\\Widget\:\:\$array\.$#'
 			identifier: property.notFound
 			count: 1
@@ -341,12 +335,6 @@ parameters:
 			identifier: variable.undefined
 			count: 12
 			path: modules/ads/controllers/admin.php
-
-		-
-			message: '#^Call to an undefined method NF\\Modules\\Articles\\Articles\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/articles/articles.php
 
 		-
 			message: '#^Call to an undefined method NF\\Modules\\Articles\\Articles\:\:form_number\(\)\.$#'
@@ -787,12 +775,6 @@ parameters:
 			path: modules/calendar/calendar.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\Calendar\\Calendar\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/calendar/calendar.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Calendar\\Calendar\:\:form_number\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -809,12 +791,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: modules/calendar/models/calendar.php
-
-		-
-			message: '#^Call to an undefined method NF\\Modules\\Classifieds\\Controllers\\Admin\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/classifieds/controllers/admin.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:push\(\)\.$#'
@@ -1525,12 +1501,6 @@ parameters:
 			path: modules/events/events.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\Events\\Events\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/events/events.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Events\\Events\:\:form_checkbox\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -2217,12 +2187,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$forum_topics_per_page\.$#'
 			identifier: property.notFound
-			count: 1
-			path: modules/forum/forum.php
-
-		-
-			message: '#^Call to an undefined method NF\\Modules\\Forum\\Forum\:\:config\(\)\.$#'
-			identifier: method.notFound
 			count: 1
 			path: modules/forum/forum.php
 
@@ -2935,12 +2899,6 @@ parameters:
 			path: modules/gallery/gallery.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\Gallery\\Gallery\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/gallery/gallery.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Gallery\\Gallery\:\:form_number\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -3185,12 +3143,6 @@ parameters:
 			identifier: arguments.count
 			count: 4
 			path: modules/games/controllers/admin_checker.php
-
-		-
-			message: '#^Call to an undefined method NF\\Modules\\Gamification\\Controllers\\Admin\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/gamification/controllers/admin.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:cfg\(\)\.$#'
@@ -3469,12 +3421,6 @@ parameters:
 			path: modules/menu/controllers/admin.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\Moderation\\Controllers\\Admin\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/moderation/controllers/admin.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Moderation\\Controllers\\Admin\:\:form_text\(\)\.$#'
 			identifier: method.notFound
 			count: 3
@@ -3539,12 +3485,6 @@ parameters:
 			identifier: method.notFound
 			count: 2
 			path: modules/moderation/controllers/ajax_checker.php
-
-		-
-			message: '#^Call to an undefined method NF\\Modules\\Moderation\\Controllers\\Index\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/moderation/controllers/index.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:dashboard_stats\(\)\.$#'
@@ -3727,12 +3667,6 @@ parameters:
 			path: modules/moderation/views/modal/report.tpl.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\Monitoring\\Controllers\\Admin\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/monitoring/controllers/admin.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Monitoring\\Controllers\\Admin\:\:session\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -3740,12 +3674,6 @@ parameters:
 
 		-
 			message: '#^Call to an undefined method NF\\Modules\\Monitoring\\Controllers\\Admin\:\:theme\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/monitoring/controllers/admin.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:destroy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: modules/monitoring/controllers/admin.php
@@ -3795,12 +3723,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Loadables\\Model\:\:\$folders\.$#'
 			identifier: property.notFound
-			count: 3
-			path: modules/monitoring/controllers/admin_ajax.php
-
-		-
-			message: '#^Call to an undefined method NF\\Modules\\Monitoring\\Controllers\\Admin_Ajax\:\:config\(\)\.$#'
-			identifier: method.notFound
 			count: 3
 			path: modules/monitoring/controllers/admin_ajax.php
 
@@ -4209,12 +4131,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$news_per_page\.$#'
 			identifier: property.notFound
-			count: 1
-			path: modules/news/news.php
-
-		-
-			message: '#^Call to an undefined method NF\\Modules\\News\\News\:\:config\(\)\.$#'
-			identifier: method.notFound
 			count: 1
 			path: modules/news/news.php
 
@@ -4675,12 +4591,6 @@ parameters:
 			path: modules/partners/partners.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\Partners\\Partners\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/partners/partners.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Partners\\Partners\:\:form_radio\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -4719,12 +4629,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$pay_stripe_webhook_secret\.$#'
 			identifier: property.notFound
-			count: 1
-			path: modules/payments/controllers/admin.php
-
-		-
-			message: '#^Call to an undefined method NF\\Modules\\Payments\\Controllers\\Admin\:\:config\(\)\.$#'
-			identifier: method.notFound
 			count: 1
 			path: modules/payments/controllers/admin.php
 
@@ -5191,12 +5095,6 @@ parameters:
 			path: modules/recruits/recruits.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\Recruits\\Recruits\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/recruits/recruits.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Recruits\\Recruits\:\:form_checkbox\(\)\.$#'
 			identifier: method.notFound
 			count: 3
@@ -5581,28 +5479,10 @@ parameters:
 			path: modules/search/views/results.tpl.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\Settings\\Controllers\\Admin\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 13
-			path: modules/settings/controllers/admin.php
-
-		-
 			message: '#^Undefined variable\: \$post$#'
 			identifier: variable.undefined
 			count: 23
 			path: modules/settings/controllers/admin.php
-
-		-
-			message: '#^Call to an undefined method NF\\Modules\\Settings\\Controllers\\Admin_Ajax\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: modules/settings/controllers/admin_ajax.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:destroy\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/settings/controllers/ajax.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:set\(\)\.$#'
@@ -6295,12 +6175,6 @@ parameters:
 			path: modules/teams/teams.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\Teams\\Teams\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/teams/teams.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Teams\\Teams\:\:db\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -6437,12 +6311,6 @@ parameters:
 			identifier: variable.undefined
 			count: 1
 			path: modules/teams/views/users.tpl.php
-
-		-
-			message: '#^Call to an undefined method NF\\Modules\\Tools\\Controllers\\Api\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/tools/controllers/api.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:types\(\)\.$#'
@@ -6667,12 +6535,6 @@ parameters:
 			path: modules/user/controllers/index.php
 
 		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:destroy\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: modules/user/controllers/index.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:set\(\)\.$#'
 			identifier: method.notFound
 			count: 7
@@ -6844,12 +6706,6 @@ parameters:
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$webradio_stream\.$#'
 			identifier: property.notFound
 			count: 1
-			path: modules/webradio/webradio.php
-
-		-
-			message: '#^Call to an undefined method NF\\Modules\\Webradio\\Webradio\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 4
 			path: modules/webradio/webradio.php
 
 		-
@@ -7093,12 +6949,6 @@ parameters:
 			path: neofrag/core/output.php
 
 		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:destroy\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: neofrag/core/output.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:set\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -7172,12 +7022,6 @@ parameters:
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:set\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: neofrag/core/url.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Url\:\:config\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: neofrag/core/url.php
@@ -7375,12 +7219,6 @@ parameters:
 			path: neofrag/libraries/email.php
 
 		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Email\:\:config\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: neofrag/libraries/email.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Email\:\:db\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -7507,40 +7345,16 @@ parameters:
 			path: neofrag/libraries/forms/captcha.php
 
 		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Forms\\Captcha\:\:network\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: neofrag/libraries/forms/captcha.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Forms\\Captcha\:\:session\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: neofrag/libraries/forms/captcha.php
 
 		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Forms\\Colorpicker\:\:label\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: neofrag/libraries/forms/colorpicker.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Forms\\Labelable\:\:label\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: neofrag/libraries/forms/labelable.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Forms\\Legend\:\:label\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: neofrag/libraries/forms/legend.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Forms\\Text\:\:label\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: neofrag/libraries/forms/text.php
 
 		-
 			message: '#^Call to an undefined static method NF\\NeoFrag\\Libraries\\Forms\\Labelable\:\:form_iconpicker\(\)\.$#'
@@ -7553,12 +7367,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: neofrag/libraries/forms/textarea.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:destroy\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: neofrag/libraries/json.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Json\:\:session\(\)\.$#'
@@ -7705,12 +7513,6 @@ parameters:
 			path: neofrag/libraries/table.php
 
 		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:destroy\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: neofrag/libraries/table.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:set\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -7739,12 +7541,6 @@ parameters:
 			identifier: variable.undefined
 			count: 1
 			path: neofrag/libraries/table.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:destroy\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: neofrag/libraries/table2.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:get\(\)\.$#'
@@ -7781,12 +7577,6 @@ parameters:
 			identifier: method.notFound
 			count: 2
 			path: neofrag/libraries/table_col.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:destroy\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: neofrag/libraries/webmaster.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:set\(\)\.$#'

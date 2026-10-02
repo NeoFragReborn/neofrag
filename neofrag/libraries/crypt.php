@@ -79,6 +79,16 @@ class Crypt extends Library
 		}, str_split($data, max(1, (int) ceil(strlen($data) / $length)))));
 	}
 
+	/**
+	 * Une clé propre à un usage, dérivée de la clé du site (HMAC-SHA256 de l'usage) : signer les défis du
+	 * captcha ALTCHA sans stocker un secret de plus, et sans que deux usages partagent la même clé.
+	 * Hexadécimale, 64 caractères ; stable tant que config/crypt.php ne change pas.
+	 */
+	public function derive(string $usage): string
+	{
+		return hash_hmac('sha256', 'neofrag:'.$usage, (string) $this->_key);
+	}
+
 	// Chiffrement AU REPOS (distinct de __invoke/decode qui sont scopés session) : pour
 	// stocker un secret en base (mot de passe SMTP, secret TOTP) qu'on doit pouvoir déchiffrer
 	// hors de la session qui l'a écrit. AES-256-GCM (authentifié), IV aléatoire stocké AVEC le

@@ -176,7 +176,7 @@ corbeille (`Trash::TYPES`), recherche et flux RSS par module.
 ## 11. Dette technique notable
 
 - **Service locator + méthodes magiques** partout → testabilité et IDE freinés (cf. §3).
-- **`strict_types`** : 1399 fichiers sur 1627 dans `neofrag`, `modules`, `widgets`, `addons` (2026-10-02) — tout le
+- **`strict_types`** : 1405 fichiers sur 1633 dans `neofrag`, `modules`, `widgets`, `addons` (2026-10-02) — tout le
   périmètre utile ; les 228 restants sont les gabarits `views/**.tpl.php`, où un `declare` ne protégerait rien.
   Le cliquet
   `tools/check-strict-types.php` interdit de reculer, la conversion se fait par petits lots éprouvés, la machinerie

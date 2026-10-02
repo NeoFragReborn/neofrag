@@ -13,6 +13,7 @@
         "ext-mysqli": "*",
         "ext-openssl": "*",
         "ext-zip": "*",
+        "altcha-org/altcha": "^2.2",
         "bacon/bacon-qr-code": "^3.1",
         "ezyang/htmlpurifier": "^4.19",
         "jdorn/sql-formatter": "^1.2",

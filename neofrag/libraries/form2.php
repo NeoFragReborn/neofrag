@@ -183,6 +183,15 @@ class Form2 extends Library
 							call_user_func_array($callback, [$data, $this]);
 						}
 					}
+
+					// Les champs qui accordent une dispense pour un renvoi (le captcha) la reprennent.
+					foreach ($this->_rules as $rule)
+					{
+						if ($rule && method_exists($rule, 'abouti'))
+						{
+							$rule->abouti();
+						}
+					}
 				}
 			}
 			else

@@ -22,7 +22,7 @@ require_once __DIR__.'/outil.php';
 /** Ce qui n'est jamais notre code : le code d'autrui et les artefacts. */
 const NF_EXCLUS = [
     '/vendor/', '/node_modules/', '/.git/', '/cache/', '/logs/', '/dist/', '/backups/',
-    '/js/tinymce/', '/js/codemirror/', '/.phpunit.cache/', '/graphify-out/',
+    '/js/tinymce/', '/js/codemirror/', '/js/altcha/', '/.phpunit.cache/', '/graphify-out/',
 ];
 
 /** Les dossiers où vit du code de produit. */

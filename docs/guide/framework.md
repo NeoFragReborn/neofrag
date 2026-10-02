@@ -122,6 +122,14 @@ return $this->form2()
 Les deux portent leur propre jeton CSRF. Une action déclenchée par un **lien** ou un **POST écrit à la
 main** doit le vérifier elle-même : `csrf_url()`, `check_csrf()`, `csrf_token()` (trait `Admin_Helpers`).
 
+**Le captcha** — `->captcha()` en `form2()`, `add_captcha()` en `form()` — affiche le fournisseur choisi
+dans *Paramètres → Captcha* et vérifie sa réponse côté serveur ; un membre connecté n'en voit pas. Le
+défaut est **ALTCHA** : hébergé par le site, sans clé ni cookie, il fait faire au navigateur un petit
+calcul (environ une seconde) que le serveur vérifie, et refuse qu'une même solution serve deux fois.
+Turnstile, hCaptcha et reCAPTCHA v2 demandent leurs deux clés ; sans elles, ALTCHA prend le relais.
+Ailleurs qu'un formulaire : `$this->captcha->element()` pour l'afficher, `$this->captcha->is_valid()`
+pour vérifier (`NF\NeoFrag\Libraries\Captcha`).
+
 ## Tables — `table2()`
 
 Rend des listes paginées, **triables par clic sur l'en-tête** (Maj + clic : tri multi-colonnes ;
@@ -182,9 +190,9 @@ membre (`nf_user_profile.timezone`, appliqué à l'ouverture de la session), sin
 - **Bootstrap 5.3**, **sans jQuery**. Les classes de grille portent toujours un point de rupture
   (`col-12 col-lg-8`) ; `tools/check-classes-bs4.php` refuse les classes de Bootstrap 4.
 - **CSP stricte à nonce** : chaque réponse HTML porte un nonce aléatoire, posé sur tous les `<script>`
-  inline par le filtre d'`index.php`, et `script-src` n'autorise que `'self'`, ce nonce, et les origines
-  de reCAPTCHA (plus Google Analytics **si** un identifiant est configuré). **Aucun script depuis un
-  CDN.** Le JS inséré dynamiquement passe par `NF.setHtml` / `NF.insertHtml` / `NF.replaceHtml`, qui
+  inline par le filtre d'`index.php`, et `script-src` n'autorise que `'self'`, ce nonce, les origines
+  du fournisseur de captcha **actif** — aucune avec ALTCHA, le défaut — et Google Analytics **si** un
+  identifiant est configuré. **Aucun script depuis un CDN.** Le JS inséré dynamiquement passe par `NF.setHtml` / `NF.insertHtml` / `NF.replaceHtml`, qui
   ré-exécutent les `<script>` ajoutés avec le bon nonce, y compris dans l'iframe de l'éditeur en direct.
 - **`window.NF`**, défini dans le gabarit principal, remplace les quelques primitives dont on avait
   besoin — et rien de plus (ce n'est pas un mini-jQuery) :

@@ -9,6 +9,12 @@ namespace NF\NeoFrag\Core;
 
 use NF\NeoFrag\Core;
 
+/**
+ * Les données de session passent par __call vers leur tableau (NF\NeoFrag\Libraries\Array_) : l'analyse
+ * statique ne voyait pas ses méthodes.
+ *
+ * @method mixed destroy(mixed ...$args)
+ */
 class Session extends Core
 {
 	protected $_session;

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 /**
- * check-instantanes — les fichiers SQL livrés s'importent : aucune clé primaire écrite deux fois.
+ * check-instantanes — les SQL livrés s'importent (aucune clé en double) ; l'historique des migrations est complet.
  *
  * Famille : statique
  *
@@ -28,6 +28,13 @@ declare(strict_types=1);
  *
  * L'épreuve à l'envers tourne à chaque lancement : un instantané fabriqué avec une clé en double
  * doit être refusé, le même sans doublon accepté.
+ *
+ * **L'historique des migrations** (2026-10-02) : une installation neuve importe `install/schema.sql`,
+ * déjà à jour, qui doit donc marquer chaque migration du dépôt comme appliquée dans `nf_migrations`
+ * — sinon le premier passage la rejouerait sur un schéma qui la contient déjà. Le test d'intégration
+ * de l'installateur le vérifiait, mais seulement avec une base : la migration du captcha est partie
+ * sans sa ligne, et seule la CI l'a vu. Ici, sans base : chaque `migrations/*.up.sql` a sa ligne,
+ * aucune ligne ne nomme une migration absente ni ne se répète.
  *
  * Usage
  * -----
@@ -210,10 +217,45 @@ foreach ($inconnues as $table => $fichiers)
     nf_avertir(sprintf('%s : clé primaire introuvable dans les schémas du dépôt — non vérifiée (%s)', $table, implode(', ', $fichiers)));
 }
 
+// ── L'historique des migrations dans le schéma d'installation ─────────────────────────────────
+// Lu par motif et non par nf_sql_tuples() : l'historique glisse un commentaire avant chaque ligne,
+// et la lecture générale s'arrête au premier.
+$schema    = (string) file_get_contents($racine.'/install/schema.sql');
+$debut     = strpos($schema, 'INSERT INTO `nf_migrations`');
+$fin       = $debut === FALSE ? FALSE : strpos($schema, "');\n", $debut);
+$inscrites = [];
+
+if ($debut !== FALSE && $fin !== FALSE && preg_match_all("/^\('\d+', '([^']+)'/m", substr($schema, $debut, $fin - $debut + 3), $m))
+{
+    $inscrites = $m[1];
+}
+
+$du_depot = array_map(static fn (string $f): string => basename($f, '.up.sql'), glob($racine.'/migrations/*.up.sql') ?: []);
+
+foreach (array_diff($du_depot, $inscrites) as $nom)
+{
+    printf("  install/schema.sql — la migration %s n'est pas inscrite dans nf_migrations : une installation neuve la rejouerait.\n", $nom);
+    $problemes++;
+}
+
+foreach (array_diff($inscrites, $du_depot) as $nom)
+{
+    printf("  install/schema.sql — nf_migrations inscrit %s, absente de migrations/.\n", $nom);
+    $problemes++;
+}
+
+foreach (array_keys(array_filter(array_count_values($inscrites), static fn (int $n): bool => $n > 1)) as $nom)
+{
+    printf("  install/schema.sql — nf_migrations inscrit %s plusieurs fois.\n", $nom);
+    $problemes++;
+}
+
+printf("Historique des migrations : %d dans migrations/, %d inscrite(s) dans install/schema.sql.\n", count($du_depot), count($inscrites));
+
 if ($problemes)
 {
     echo "\nUn instantané se régénère par son outil (tools/dump-demo.php pour la démonstration), il ne se retouche pas\nà la main. Pour une retouche inévitable, reprendre le numéro que porte la ligne dans la base.\n";
-    nf_echec(sprintf('%d clé(s) primaire(s) en double dans les fichiers SQL livrés', $problemes));
+    nf_echec(sprintf('%d défaut(s) dans les fichiers SQL livrés', $problemes));
 }
 
-nf_ok('les fichiers SQL livrés s\'importent : aucune clé primaire écrite deux fois');
+nf_ok('les fichiers SQL livrés s\'importent : aucune clé primaire écrite deux fois, historique des migrations complet');

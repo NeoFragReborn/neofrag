@@ -154,18 +154,18 @@ foreach ($vivants as $doc)
     foreach ($lignes as $i => $ligne)
     {
         // Ce qui énonce un inventaire : un titre (`## 54 modules`), une chaîne séparée par « · »
-        // (`**54 modules · 38 widgets · 7 thèmes**`), une énumération qui en nomme au moins deux
-        // (`54 modules, 38 widgets`), un compte en gras (`**54 modules**`), la ligne d'un tableau qui
-        // décrit le dossier lui-même (`| modules/ | 54 modules |`). Seules les deux premières étaient
-        // lues jusqu'au 2026-10-02 : le README annonçait 54 modules quand le code en comptait 62. Le
-        // reste est de la prose : « statistics (19 modules) » parle d'un sous-ensemble, et le
-        // contrôler crierait à tort. Une citation (« … ») rapporte ce qui était écrit — souvent le
-        // chiffre faux dont le journal raconte la correction — : elle n'affirme rien, et sort de la
-        // mesure, ici comme pour les contrôles, les fichiers stricts et la version.
+        // (`**54 modules · 38 widgets · 7 thèmes**`), un compte en gras (`**54 modules**`), la ligne
+        // d'un tableau qui décrit le dossier lui-même (`| modules/ | 54 modules |`). Seules les deux
+        // premières étaient lues jusqu'au 2026-10-02 : le README annonçait en gras 54 modules quand le
+        // code en comptait 62. Le reste est de la prose : « statistics (19 modules) » ou « le code de
+        // 23 modules, 10 widgets et 4 thèmes à la carte » parlent d'un sous-ensemble, et les contrôler
+        // crierait à tort — une règle « toute énumération » l'a fait le soir même. Une citation
+        // (« … ») rapporte ce qui était écrit — souvent le chiffre faux dont le journal raconte la
+        // correction — : elle n'affirme rien, et sort de la mesure, ici comme pour les contrôles, les
+        // fichiers stricts et la version.
         $affirme = (string) preg_replace('/«[^»]*»/u', '', $ligne);
 
         $inventaire = !$catalogue_seul && (preg_match('/^#{1,6}\s/u', $affirme) || str_contains($affirme, '·')
-            || preg_match_all('/\d+\s+(?:'.$alternation.')\b/ui', $affirme) >= 2
             || preg_match('/\*\*\d+\s+(?:'.$alternation.')\b/ui', $affirme)
             || preg_match('#^\|\s*`(?:modules|widgets|themes|addons)/`\s*\|#u', $affirme));
 

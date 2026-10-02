@@ -578,8 +578,8 @@ class Form extends Library
 
 		if ($this->_display_captcha)
 		{
-			NeoFrag()->js('https://www.google.com/recaptcha/api.js?hl='.$this->config->lang->info()->name.'&_=');
-			$output .= '<div class="nf-field row"><div class="'.($this->_fast_mode ? 'input-group' : 'offset-3 col-9').'">'.$this->captcha->display().'</div></div>';
+			// Le fournisseur (ALTCHA par défaut) demande lui-même ses scripts : cf. la façade Captcha.
+			$output .= '<div class="nf-field row"><div class="'.($this->_fast_mode ? 'input-group' : 'offset-3 col-9').'">'.$this->captcha->element().'</div></div>';
 		}
 
 		// La mention n'a de sens que s'il y a VRAIMENT une étoile à l'écran. Elle s'affichait sur

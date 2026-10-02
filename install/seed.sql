@@ -150,6 +150,7 @@ INSERT INTO `nf_settings` (`name`, `site`, `lang`, `value`, `type`) VALUES
 ('news_per_page', '', '', '5', 'int'),
 ('nf_analytics', '', '', '', 'string'),
 ('nf_captcha_private_key', '', '', '', 'string'),
+('nf_captcha_provider', '', '', 'altcha', 'string'),
 ('nf_captcha_public_key', '', '', '', 'string'),
 ('nf_contact', '', '', 'noreply@neofrag.com', 'string'),
 ('nf_cookie_expire', '', '', '1 hour', 'string'),

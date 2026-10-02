@@ -9,6 +9,9 @@ namespace NF\NeoFrag\Libraries\Forms;
 
 use NF\NeoFrag\Library;
 
+/**
+ * @method \NF\NeoFrag\Libraries\Label label(mixed ...$args) la bibliothèque Label, résolue par __call
+ */
 abstract class Labelable extends Library
 {
 	protected $_title;

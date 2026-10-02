@@ -34,7 +34,7 @@ module.exports = [
             // Les motifs commencent par `**/` : check-js-lint analyse des COPIES, sous un autre
             // préfixe, et un motif ancré à la racine n'y correspondrait pas.
             '**/node_modules/**', '**/vendor/**', '**/*.min.js',
-            '**/js/tinymce/**', '**/js/codemirror/**',
+            '**/js/tinymce/**', '**/js/codemirror/**', '**/js/altcha/**',
             '**/js/flatpickr/**',    // sélecteur de date
             '**/js/sortable.js',     // glisser-déposer
             '**/js/dropzone.js',     // téléversement (déjà listé par check-js-sources)

@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.2.18');
+define('NEOFRAG_VERSION', '1.2.19');
 
 error_reporting(E_ALL);
 
@@ -292,7 +292,7 @@ ob_start(function($html){
 	if (!headers_sent())
 	{
 		// script-src : plus de `https:` générique (n'importe quelle origine https). Allowlist précise —
-		// 'self' couvre tout le JS NeoFrag + TinyMCE/CodeMirror auto-hébergés ; google/gstatic = reCAPTCHA.
+		// 'self' couvre tout le JS NeoFrag + TinyMCE/CodeMirror/ALTCHA auto-hébergés.
 		// style-src garde 'unsafe-inline' (styles inline BS5/TinyMCE) + fonts.googleapis.com (@import des
 		// thèmes). img/font/connect gardent `https:` (avatars, fonts gstatic, widgets Steam/Twitch).
 		// googletagmanager.com n'entre dans l'allowlist QUE si un identifiant Analytics est configuré :
@@ -318,12 +318,25 @@ ob_start(function($html){
 			$media   = preg_match('#^https?://[a-z0-9.-]+(?::\d{1,5})?$#i', $origine) ? ' '.$origine : '';
 		} catch (\Throwable $e) {}
 
+		// Le captcha : seules les origines du fournisseur ACTIF. Google était ouvert à tout
+		// site, qu'il ait un captcha ou non ; ALTCHA, le fournisseur par défaut, n'en demande aucune.
+		$captcha = ['script' => '', 'frame' => '', 'style' => ''];
+		try {
+			$config = NeoFrag()->config;
+			$actif  = \NF\NeoFrag\Libraries\Captcha::cle_active((string) $config->nf_captcha_provider, (string) $config->nf_captcha_public_key, (string) $config->nf_captcha_private_key);
+
+			foreach (\NF\NeoFrag\Libraries\Captcha::csp($actif) as $directive => $origines)
+			{
+				$captcha[$directive] = ' '.implode(' ', $origines);
+			}
+		} catch (\Throwable $e) {}
+
 		header("Content-Security-Policy: default-src 'self'; object-src 'none'; ".
-			"script-src 'self' 'nonce-$nonce' https://www.google.com https://www.gstatic.com$analytics; ".
-			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; ".
+			"script-src 'self' 'nonce-$nonce'{$captcha['script']}$analytics; ".
+			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com{$captcha['style']}; ".
 			"img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https:; ".
 			"media-src 'self' data:$media; ".
-			"frame-src 'self' https://www.google.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
+			"frame-src 'self'{$captcha['frame']}; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
 	}
 
 	return preg_replace('/<script(?=[\s>])(?![^>]*\bnonce=)/i', '<script nonce="'.$nonce.'"', $html);

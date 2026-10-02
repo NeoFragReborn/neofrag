@@ -121,6 +121,21 @@ Dans **Paramètres** : titre et description du site, favicon, email de contact, 
 d'accueil, fuseau horaire, gestion des inscriptions, sécurité anti-bots (captcha), maintenance,
 copyright, réseaux sociaux. Ces réglages alimentent les thèmes et les widgets.
 
+### Le captcha
+
+Le formulaire de contact et l'inscription demandent aux visiteurs une vérification anti-robot. Dans
+**Paramètres → Captcha**, choisis le fournisseur :
+
+- **ALTCHA** (par défaut, recommandé) : rien à configurer. Il est hébergé par ton site, sans compte ni
+  cookie ; le visiteur voit une case qui se coche d'elle-même pendant qu'il remplit le formulaire.
+- **Cloudflare Turnstile**, **hCaptcha** ou **Google reCAPTCHA v2** : crée un site dans leur console
+  (liens sur la page), puis colle la **clé de site** et la **clé secrète**. La clé secrète est chiffrée
+  et n'est jamais réaffichée. Sans ses deux clés, le fournisseur est remplacé par ALTCHA.
+- **Aucun** : déconseillé, les robots écrivent alors librement.
+
+ALTCHA rend l'envoi en masse coûteux pour un robot ; contre un attaquant obstiné, Turnstile ou hCaptcha
+jugent davantage.
+
 ### Le fuseau horaire
 
 Chacun voit les heures du site dans son propre fuseau horaire :

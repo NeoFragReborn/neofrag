@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 namespace NF\NeoFrag\Libraries;
 
+/**
+ * @method $this icon_if(mixed $condition, mixed ...$args) icon() sous condition (suffixe _if, NeoFrag::__call)
+ */
 class Label extends Html
 {
 	protected $_title = '';
