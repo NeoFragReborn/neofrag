@@ -1,4 +1,4 @@
-# Composants — NeoFrag Reborn 1.1.0
+# Composants — NeoFrag Reborn
 
 Inventaire des **62 modules · 40 widgets · 7 thèmes**. L'état/bugs de chaque composant
 est dans [historique.md](internal/archive/historique.md) ; l'architecture du framework dans [architecture.md](architecture.md).

@@ -8,13 +8,14 @@ Le détail version par version est dans le [CHANGELOG](CHANGELOG.md) ; la façon
 
 > **Rien n'est annoncé ici comme livré sans l'être.** Un jalon reste « prévu » tant qu'on ne peut pas
 > le prendre en main. C'est pourquoi la première publication figure encore dans les jalons à venir,
-> alors même que la version 1.1.0 est prête.
+> alors même que le produit tourne en production sur le site officiel, version après version.
 
 ---
 
 ## Où en est le projet
 
-**Version 1.1.0**, bien au-delà de l'alpha 0.2.4 dont NeoFrag Reborn est la continuité. Le catalogue
+**Version 1.2** — le numéro exact est en tête du [CHANGELOG](CHANGELOG.md) —, bien au-delà de l'alpha
+0.2.4 dont NeoFrag Reborn est la continuité. Le catalogue
 propose **35 modules, 24 widgets et 4 thèmes**, ajoutables en un clic depuis l'administration.
 
 Le code est complet et éprouvé à chaque modification — tests automatisés, analyse statique, contrôles
@@ -50,6 +51,10 @@ qui sépare le projet de ses premiers utilisateurs.
   participants et rappels — une série entière se modifie ou se supprime d'un geste.
 - **Webhooks et statut live** : webhooks signés vers Discord, Zapier et vos outils à chaque événement
   du site ; statut en direct de plusieurs chaînes Twitch et YouTube, avec lecteur intégré.
+- **API REST et bot Discord** : une API pour que des programmes lisent le site et écrivent sur son forum
+  ou son Bugtracker ; le bot Discord s'en sert pour relier un serveur Discord au site — rôles, pseudos,
+  forum et salons Forum, tickets.
+- **Connexion par Discord, GitHub ou Google**, à côté du compte classique.
 
 ### L'apparence et l'administration
 - **Constructeur de menus** multi-niveaux, réutilisables partout.
@@ -58,6 +63,12 @@ qui sépare le projet de ses premiers utilisateurs.
 - **Documentation complète**, utilisateur et développeur, consultable sur le site — ce qui manquait à
   NeoFrag depuis toujours.
 - **Six langues complètes** : français, anglais, espagnol, italien, allemand, portugais.
+- **Les heures dans le fuseau de chacun** : chaque visiteur lit les dates à son heure, et le site a son
+  fuseau par défaut.
+- **Une administration repensée** : neuf rubriques, une recherche rapide, la même charte pour tous les
+  écrans, et un Monitoring qui montre le journal des erreurs et règle les outils de diagnostic.
+- **Site installable (PWA)** : il s'installe sur un téléphone comme une application, et peut garder ses
+  pages pour fonctionner sans réseau.
 
 ---
 
@@ -65,19 +76,16 @@ qui sépare le projet de ses premiers utilisateurs.
 
 ### Première publication
 La mise à disposition du code et des paquets d'installation, pour que n'importe qui puisse monter son
-site. Le paquet est construit et vérifié ; il reste à ouvrir le dépôt public et à publier le canal de
-mise à jour.
+site. Les paquets sont construits et vérifiés à chaque version, et le canal de mise à jour est en
+service sur le site officiel ; il reste à ouvrir le dépôt public.
 
 ### Personnalisation des thèmes
-Choisir les **polices** et les couleurs pour donner au site une identité propre. Le vocabulaire de
-couleurs partagé par tous les thèmes existe déjà ; les polices viennent ensuite.
+La **police** se choisit déjà dans les réglages ; viendra le choix des **couleurs**, pour donner au
+site une identité propre. Le vocabulaire de couleurs partagé par tous les thèmes existe déjà.
 
-### API REST et webhooks entrants
-Une API publique pour piloter le site depuis l'extérieur, et des webhooks entrants pour que vos
-outils agissent dessus. Les webhooks **sortants** sont déjà livrés.
-
-### Application mobile (PWA)
-Installation sur mobile, navigation rapide et notifications dans le navigateur.
+### Notifications push
+Des notifications dans le navigateur, même quand le site est fermé. Le site est déjà installable comme
+une application.
 
 ### Améliorations continues
 Performances, qualité du code et sécurité, renforcées au fil des versions **sans bouleverser votre
@@ -99,4 +107,4 @@ Ces choix ont été tranchés ; les rouvrir demanderait un fait nouveau.
 
 ---
 
-*Dernière mise à jour : 2026-09-20.*
+*Dernière mise à jour : 2026-10-02.*

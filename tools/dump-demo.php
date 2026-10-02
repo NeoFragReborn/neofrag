@@ -87,8 +87,8 @@ const CONTENT_TABLES = [
     // La modération est verrouillée ; ses deux tables sont rétablies quand même, par sûreté.
     'nf_sanctions', 'nf_ip_banlist',
 
-    // Les MISES EN PAGE : l'éditeur en direct est une des vitrines du produit, et il écrit ici.
-    // Sans ces deux tables, un visiteur qui déplace un bloc le déplace pour toujours.
+    // Les MISES EN PAGE, par sûreté : l'éditeur en direct, seul à les écrire, est verrouillé sur la
+    // démonstration (un widget HTML écrit par un visiteur exécuterait son script chez tous les autres).
     'nf_dispositions', 'nf_widgets',
 ];
 

@@ -265,7 +265,7 @@ export class Bienvenue implements Fonctionnalite {
     readonly description = 'Accueille chaque nouveau membre.';
     readonly defaut = false;                                        // éteinte au départ
     readonly reglages = [
-        { cle: 'salon', type: 'salon', defaut: '', libelle: 'Salon de bienvenue' },
+        { cle: 'salon', type: 'salon', defaut: '', salons: [0], libelle: 'Salon de bienvenue' },  // 0 : un salon texte
     ] as const satisfies readonly Reglage[];
     readonly intents = [GatewayIntentBits.GuildMembers] as const;  // en plus de ceux de base
     readonly evenements = ['forum.topic.created'] as const;         // le fil d'événements du site
@@ -278,12 +278,15 @@ export class Bienvenue implements Fonctionnalite {
     reconfigurer(ctx: Contexte): void { /* l'administration a changé un réglage */ }
     tour(ctx: Contexte): void { /* toutes les 30 secondes environ */ }
     surEvenement(ctx: Contexte, evenement: Evenement): void { /* un événement suivi */ }
+    resynchroniser(ctx: Contexte): void { /* « Resynchroniser » dans l'administration : rattraper ce qui manque */ }
     arreter(): void { /* retirer ses minuteries et ses écouteurs */ }
 }
 ```
 
 - Les **réglages** déclarés (`bool`, `int`, `choix`, `salon`, `role`, `texte`) font d'eux-mêmes leur
-  formulaire dans l'administration, bornes vérifiées ; `ctx.reglages` donne la valeur choisie.
+  formulaire dans l'administration, bornes vérifiées ; `ctx.reglages` donne la valeur choisie. Un
+  réglage `salon` dit quels types de salons Discord il accepte (`salons` : `0` texte, `15` Forum…).
+- Seul `demarrer()` est obligatoire ; les autres points d'entrée sont facultatifs.
 - Une fonctionnalité qui a des **commandes** les déclare dans `commandes(textes)` et y répond dans
   `surCommande()` ; boutons et fenêtres arrivent dans `surInteraction()`, si leur `customId` commence
   par son nom (`bienvenue:…`).

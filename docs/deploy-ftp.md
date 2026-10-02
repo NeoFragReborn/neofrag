@@ -1,15 +1,17 @@
 # Déploiement sur hébergement mutualisé (FTP)
 
 NeoFrag Reborn s'installe sur n'importe quel hébergement **Apache + PHP 8.2+ + MySQL/MariaDB**
-(type cPanel/Plesk), sans Docker ni Composer ni accès shell. Les paquets prêts à l'emploi sont
-générés par `tools/build-release.php` dans `dist/` :
+(type cPanel/Plesk), sans Docker ni Composer ni accès shell. Chaque version publie ses paquets prêts
+à l'emploi :
 
 | Paquet | Pour |
 |--------|------|
-| `neofrag-reborn-<v>.zip` | le **site principal** (vitrine) |
-| `neofrag-reborn-demo-<v>.zip` | le **site de démo** (admin lecture seule + auto-reset) |
+| `neofrag-reborn-public-<v>.zip` | **ton site** — la distribution à installer |
+| `neofrag-reborn-demo-<v>.zip` | un **site de démonstration** (actions sensibles verrouillées, remis à zéro par un cron) |
+| `neofrag-reborn-update-<v>.zip` | la **mise à jour**, que le bouton de l'administration télécharge seul — pas à décompresser à la main |
 
-Les deux embarquent `vendor/` (aucun `composer install` requis) et le `.htaccess` (réécriture d'URL).
+Les deux premiers embarquent `vendor/` (aucun `composer install` requis) et le `.htaccess` (réécriture
+d'URL).
 
 ## Prérequis hébergement
 
@@ -21,9 +23,9 @@ Les deux embarquent `vendor/` (aucun `composer install` requis) et le `.htaccess
   URLs vers `index.php` (sinon les appels AJAX en `.json` renvoient 404 : backup qui tourne sans fin,
   arbre d'intégrité du Monitoring vide…). Voir la note **« nginx / Plesk »** dans la section Notes.
 
-## Site principal — étapes
+## Installer un site — étapes
 
-1. **Décompresser** `neofrag-reborn-<v>.zip` et **uploader** le contenu du dossier `neofrag-reborn/`
+1. **Décompresser** `neofrag-reborn-public-<v>.zip` et **uploader** le contenu du dossier `neofrag-reborn/`
    à la racine web du domaine (ex. `public_html/` ou le docroot du sous-domaine).
 2. **Droits d'écriture** (chmod 755 dossiers / 644 fichiers, puis rendre **inscriptibles** par PHP) :
    `config/`, `cache/`, `logs/`, `upload/`, `backups/`. (Ces dossiers sont créés au besoin ; le seul
@@ -46,15 +48,14 @@ Les deux embarquent `vendor/` (aucun `composer install` requis) et le `.htaccess
 
 ## Site de démo — étapes
 
-Identique au site principal, avec en plus le **mode démo** (déjà activé : `config/neofrag.php`
+Identique à l'installation d'un site, avec en plus le **mode démo** (déjà activé : `config/neofrag.php`
 contient `NEOFRAG_DEMO=TRUE`) et les **données de démo**.
 
 1. Uploader le contenu de `neofrag-reborn-demo-<v>.zip` sur le **sous-domaine** (ex. `demo.<domaine>`).
 2. Droits d'écriture (idem).
 3. Visiter **`https://demo.<domaine>/install/`** → assistant (DB + compte admin). L'installeur **charge
    automatiquement `install/demo.sql`** à la fin : le site démarre **directement** sur le thème **nebula**,
-   peuplé (membres + contenu de tous les modules), thème/widget **vitrine** retiré, bandeau démo + compte
-   `demo`/`demo` actifs. Ton compte admin (créé à l'install) est préservé. **Aucune étape manuelle.**
+   peuplé (membres + contenu de tous les modules), bandeau démo + compte `demo`/`demo` actifs. Ton compte admin (créé à l'install) est préservé. **Aucune étape manuelle.**
 4. **Cron de reset** (recommandé : toutes les heures) — restaure l'état de démo, nettoie ce que les
    visiteurs ont posté. **Clé + URL exacte dans Admin → Monitoring** ; `-L` suit la redirection de
    langue (le préfixe `/fr/` ci-dessous dépend de la langue par défaut du site) :
@@ -64,9 +65,13 @@ contient `NEOFRAG_DEMO=TRUE`) et les **données de démo**.
 
 ### Comportement du mode démo
 
-- L'**administration est navigable mais en lecture seule** : toute écriture de configuration/installation
-  est bloquée (toast « Action désactivée sur le site de démonstration. »). L'admin du site (créé à
-  l'install) reste maître ; les secrets ne sont jamais touchés par le reset.
+- L'**administration est navigable**, mais les modules qui touchent à la configuration du site —
+  réglages, accès, fichiers, Monitoring, clés d'API, paiements, Discord, éditeur en direct… — sont
+  **verrouillés** : aucun envoi de formulaire, aucune action par lien (toast « Action désactivée sur le
+  site de démonstration. »), et des **exemples fictifs** à la place des fichiers, journaux et réglages
+  sensibles. Le **contenu** (actualités, forum, événements…) reste modifiable. L'envoi de fichiers est
+  refusé et la suppression d'une image ne supprime rien. L'admin du site (créé à l'install) reste
+  maître ; les secrets ne sont jamais touchés par le reset.
 - Le **front reste interactif** : inscription, forum, commentaires, réactions… Tout cela est **éphémère**
   (nettoyé au prochain reset).
 - Un **bandeau** « Démo — réinitialisée régulièrement · connexion : demo / demo » s'affiche partout.
@@ -74,23 +79,21 @@ contient `NEOFRAG_DEMO=TRUE`) et les **données de démo**.
 
 ## Mettre à jour un site déjà en ligne
 
-Une mise à jour **code-only** (sans nouvelle table) est réversible et ne touche pas la base.
-Régénérer les paquets depuis le dépôt de dev :
+**Par le bouton** (le plus simple) : quand une version sort, l'administration affiche « Mise à jour
+disponible » sous le logo et dans *Système → Monitoring*. Le bouton sauvegarde le site, télécharge le
+paquet de mise à jour, vérifie son empreinte, puis remplace le code.
 
-```bash
-docker compose exec -T web php tools/build-release.php
-```
+**Par FTP**, si le bouton ne peut pas écrire sur l'hébergement :
 
-Les paquets atterrissent dans `dist/` : `neofrag-reborn-<version>.zip` (vitrine),
-`neofrag-reborn-demo-<version>.zip` (démo, `NEOFRAG_DEMO=TRUE` inclus) et
-`neofrag-reborn-public-<version>.zip` (distribution générique). Le `vendor/` de prod est inclus ;
-les **secrets et `config/email.php` sont exclus**, donc un redéploiement n'écrase pas le SMTP configuré.
-
-1. **Sauvegarde** l'ancien code (renomme le dossier ou fais un backup FTP).
-2. **Décompresse** le zip et uploade le contenu de `neofrag-reborn/` par-dessus le site (écrase le code).
-3. `config/{db,crypt,password,email}.php` ne sont pas dans le paquet → ils sont **conservés**.
+1. **Sauvegarde** le site (*Système → Monitoring*, ou renomme l'ancien dossier).
+2. **Décompresse** `neofrag-reborn-public-<v>.zip` et uploade le contenu de `neofrag-reborn/` par-dessus
+   le site (écrase le code).
+3. `config/{db,crypt,password,email}.php` ne sont pas dans le paquet → ils sont **conservés**, et un
+   redéploiement n'écrase pas le SMTP configuré.
 4. `cache/`, `logs/` et `upload/` doivent rester **inscriptibles**.
-5. Si une migration est nécessaire, lance `php tools/migrate.php` (cf. [development.md](development.md)).
+5. **Visite le site** : à la première page vue avec un code neuf, les migrations qu'il apporte
+   s'appliquent seules, une fois. Un échec n'empêche pas la page de s'afficher : il est écrit dans le
+   journal des erreurs, et la tentative suivante a lieu dix minutes plus tard.
 
 **Vérification post-déploiement :**
 
@@ -116,8 +119,6 @@ les **secrets et `config/email.php` sont exclus**, donc un redéploiement n'écr
 - **Si l'install échoue à mi-chemin** : MySQL n'a pas de transaction sur les DDL (`CREATE TABLE`…) — en cas
   d'erreur d'import, **vider/supprimer la base puis recréer une base vierge** et relancer `/install/`
   (ne pas réessayer sur une base à moitié créée).
-- **Mises à jour** : remplacer les fichiers (hors `config/`, `upload/`, `backups/`) par la nouvelle version,
-  puis visiter le site (les migrations en attente s'appliquent). Sauvegarder d'abord (Admin → Monitoring).
 - **Sécurité** : CSP stricte déjà active par défaut — servie par `index.php` (nonce par requête, plus
   d'`unsafe-inline`/`unsafe-eval` ni de `https:` générique sur le `script-src`), en-têtes de sécurité dans
   `.htaccess`. Rien à durcir à la main.

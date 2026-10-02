@@ -8,7 +8,7 @@ Un **module** est une fonctionnalité complète : le forum, les actualités, la 
 boutique… Chaque module apporte ses **pages publiques**, son **interface d'administration**, ses
 **données** (tables) et ses **permissions**.
 
-Le paquet livre **54 modules**, mais tu ne les installes pas tous : à l'installation, un **profil de
+Le paquet livre **62 modules**, mais tu ne les installes pas tous : à l'installation, un **profil de
 site** — *Complet*, *Gaming / eSport*, *Communauté* ou *Cœur seul* — pré-coche ce qui correspond, et tu
 peux décocher module par module. Ce qu'un module réclame est ajouté automatiquement (le palmarès a
 besoin des équipes). Les modules du **cœur** (comptes, permissions, paramètres, pages, outils…) sont
@@ -35,7 +35,8 @@ régions** stables (`header`, `content`, `footer`…), et pose ses **disposition
 
 Le paquet livre **Nebula**, un thème communautaire généraliste (navy et turquoise, glassmorphism),
 pensé pour une équipe, une guilde ou une communauté. Quatre autres thèmes — **Granite**, **Forge**,
-**Blockcraft**, **Extend** — s'installent depuis le [marketplace](marketplace.md). Le thème actif se
+**Blockcraft**, **Extend** — sont dans le paquet et s'installent depuis **Administration → Thèmes &
+Addons** ; une installation qui ne les a pas les trouve dans le [marketplace](marketplace.md). Le thème actif se
 choisit dans **Administration → Thèmes & Addons** ; si plusieurs thèmes publics sont installés, les
 visiteurs peuvent en changer via le sélecteur en pied de page.
 

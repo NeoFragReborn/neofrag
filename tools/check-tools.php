@@ -29,11 +29,14 @@ declare(strict_types=1);
  *      produite depuis les en-têtes (`--catalogue`), et doit être à jour (`--ecrire` la met à jour) ;
  *   7. la SORTIE : jamais d'`exit("message")` ni de `die("message")` — une chaîne passée à `exit`
  *      s'affiche et rend le code ZÉRO ; la CI a enchaîné sur un refus ainsi masqué. On refuse par
- *      `nf_refus()` ou `nf_echec()`.
+ *      `nf_refus()` ou `nf_echec()` ;
+ *   8. la CI : tout contrôle de la famille `statique` est joué par `.github/workflows/ci.yml`, sauf
+ *      exception nommée avec sa raison (`NON_JOUES_EN_CI`). Cinq contrôles créés le 2026-10-02
+ *      n'étaient joués par personne : la CI restait verte sans les avoir lus.
  *
  * Usage
  * -----
- *   php tools/check-tools.php                les six règles, code 1 au premier écart
+ *   php tools/check-tools.php                toutes les règles, code 1 s'il y a un écart
  *   php tools/check-tools.php --catalogue    imprime le catalogue tel qu'il doit figurer dans le README
  *   php tools/check-tools.php --ecrire       réécrit le catalogue dans tools/README.md
  */
@@ -158,6 +161,24 @@ foreach ($outils as $nom => $chemin)
     foreach ($e['erreurs'] as $erreur)
     {
         $anomalies[] = [$nom, $erreur];
+    }
+}
+
+// ── Règle 8 : un contrôle statique se joue en CI ─────────────────────────────────────────────
+// La famille « statique » promet le job `lint` (tools/README.md, « Les familles »). Une exception se
+// nomme, avec ce qui empêche la CI de la jouer.
+const NON_JOUES_EN_CI = [
+    'check-marketplace' => "les archives des addons ne sont pas versionnées : il se joue sur l'atelier, après package-addons",
+];
+
+$ci = (string) @file_get_contents(nf_racine().'/.github/workflows/ci.yml');
+
+foreach ($entetes as $nom => $e)
+{
+    if ($e['famille'] === 'statique' && str_starts_with($nom, 'check-') && !isset(NON_JOUES_EN_CI[$nom])
+        && !str_contains($ci, 'tools/'.$nom.'.php'))
+    {
+        $anomalies[] = [$nom, "contrôle statique que la CI ne joue pas : l'ajouter au job `lint` de .github/workflows/ci.yml (ou à NON_JOUES_EN_CI, avec sa raison)"];
     }
 }
 

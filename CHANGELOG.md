@@ -10,6 +10,29 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.18] — 2026-10-02
+
+### Corrigé
+
+- **Réordonner par glisser-déposer fonctionne de nouveau** : les catégories et les forums du forum, les
+  équipes et leurs rôles, les partenaires, les groupes de membres, les langues et les connecteurs de
+  connexion, et les rangées, colonnes et widgets de l'éditeur en direct. La position arrivait du
+  navigateur en texte, et le déplacement s'arrêtait sur une erreur — repéré dans le journal de la
+  démonstration.
+- **Sur la démonstration, l'éditeur en direct** ouvre de nouveau les réglages d'un widget, et toute
+  modification y reçoit le message « Action désactivée sur le site de démonstration. » au lieu d'une
+  erreur muette. Les mises en page n'y sont pas modifiables : un widget HTML écrit par un visiteur
+  s'afficherait chez tous les autres.
+
+### Documentation
+
+- **Le guide d'installation par FTP** désigne le bon paquet (`neofrag-reborn-public-<version>.zip`),
+  décrit la mise à jour par le bouton, et ne demande plus de lancer un outil absent du paquet : les
+  migrations s'appliquent seules à la première visite, démonstration comprise.
+- **Les guides du développeur** décrivent les adresses saisies dans un lien (`nf_url_sure()`), le verrou
+  du site de démonstration, les listes découpées en pages, les compteurs et les dates ; les chiffres du
+  README et des guides suivent le code (62 modules, 40 widgets).
+
 ## [1.2.17] — 2026-10-02
 
 ### Sécurité

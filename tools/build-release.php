@@ -6,11 +6,15 @@ declare(strict_types=1);
  *
  * Famille : outil
  *
- *   - dist/neofrag-reborn-<v>.zip        : site PRINCIPAL (vitrine). config/neofrag.php standard.
  *   - dist/neofrag-reborn-demo-<v>.zip   : site DÉMO. + install/demo.sql + NEOFRAG_DEMO=TRUE.
  *   - dist/neofrag-reborn-public-<v>.zip : DISTRIBUTION générique FTP-ready (sans la vitrine).
  *   - dist/neofrag-reborn-update-<v>.zip : paquet de MISE À JOUR, à PLAT (aucun dossier racine).
  *   - dist/version.json, dist/checksum.json : manifestes servis avec le paquet de mise à jour.
+ *
+ * Aucun paquet ne porte la VITRINE (son thème, son widget d'accueil, sa mise en page) : elle n'existe
+ * que sur le site officiel, qui la reçoit par copie depuis le dépôt (docs/RELEASING.md, étape 3).
+ * Un paquet « principal » qui la contenait a été fabriqué jusqu'au 2026-10-02 ; il ne servait à rien
+ * et partait dans les artefacts de la CI — « le thème vitrine ne doit jamais être diffusé ».
  *
  * Le paquet de mise à jour est PLAT, et c'est la différence qui compte : l'auto-updater écrit chaque
  * entrée à son propre chemin. Un paquet d'installation, qui range tout sous `neofrag-reborn/`, aurait
@@ -68,7 +72,6 @@ if ($vcode !== 0) {
     nf_refus(implode("\n", $vout) . "\nABANDON : table-map périmé ou base injoignable — corrige puis relance.");
 }
 
-build($root, $dist, $version, 'principal'); // site vitrine (avec thème vitrine)
 build($root, $dist, $version, 'demo');      // site démo (+ demo.sql)
 build($root, $dist, $version, 'public');    // DISTRIBUTION générique FTP-ready (sans vitrine, vendor inclus)
 
@@ -110,7 +113,7 @@ function run_composer(string $root, array $args): bool
  */
 function build(string $root, string $dist, string $version, string $variant): array
 {
-    $suffix   = ['principal' => '', 'demo' => '-demo', 'public' => '-public', 'update' => '-update'][$variant] ?? '';
+    $suffix   = ['demo' => '-demo', 'public' => '-public', 'update' => '-update'][$variant];
     $demo     = $variant === 'demo';
     $name     = "neofrag-reborn{$suffix}-{$version}";
     // Paquet de mise à jour : AUCUN dossier racine (cf. en-tête). Les autres en gardent un, pour que
@@ -269,7 +272,7 @@ function manifests(string $dist, string $version, array $entries): void
     printf("  %-32s sha256 %s\n",      'version.json',  substr($manifest['neofrag']['sha256'], 0, 16).'…');
 }
 
-/** Exclusions communes + spécifiques au paquet (variant : principal | demo | public). */
+/** Exclusions communes + spécifiques au paquet (variant : demo | public | update). */
 function excluded(string $rel, string $variant): bool
 {
     // Le contenu démo n'est que dans le paquet démo.
@@ -277,23 +280,20 @@ function excluded(string $rel, string $variant): bool
         return $variant !== 'demo';
     }
 
-    // Paquet PUBLIC (distribution générique, à diffuser) : pas la vitrine (site spécifique, non générique).
-    // La vitrine (thème « vitrine » + widget « landing ») = le site spécifique de l'auteur. Elle n'est que
-    // dans le paquet PRINCIPAL ; la démo (qui a son propre contenu) et le public (générique) ne l'embarquent pas.
-    if ($variant !== 'principal') {
-        if ($rel === 'install/vitrine.sql') {
-            return true; // mise en page vitrine = site de l'auteur, jamais dans démo/public
-        }
-        foreach (['themes/vitrine/', 'widgets/landing/'] as $d) {
-            if (str_starts_with($rel . '/', $d)) {
-                return true;
-            }
+    // La vitrine (thème « vitrine », widget « landing », sa mise en page) est le site de l'auteur :
+    // aucun paquet ne la porte (cf. en-tête).
+    if ($rel === 'install/vitrine.sql') {
+        return true;
+    }
+    foreach (['themes/vitrine/', 'widgets/landing/'] as $d) {
+        if (str_starts_with($rel . '/', $d)) {
+            return true;
         }
     }
 
     // Modèle « tout bundlé » (option C) : TOUS les modules/widgets/thèmes (Tier 0/1/2) sont dans le paquet,
     // avec leur install.sql → installables HORS-LIGNE, sans marketplace. Le marketplace ne sert plus qu'aux
-    // mises à jour et aux addons tiers. (Seules les variantes overlay : public sans la vitrine, démo + demo.sql.)
+    // mises à jour et aux addons tiers. (Seule variante overlay : démo + demo.sql.)
 
     // NB : le vendor/ doit être un vendor de PROD cohérent (composer install --no-dev) — on ne
     // supprime PAS de dossiers dev ici (l'autoloader « files » require certains en dur au boot).
@@ -349,7 +349,7 @@ function neofrag_config(bool $demo): string
     ];
     if ($demo) {
         $lines[] = "";
-        $lines[] = "// Site de démonstration : administration en lecture seule, auto-reset via cron.";
+        $lines[] = "// Site de démonstration : actions sensibles verrouillées, remis à zéro par le cron.";
         $lines[] = "define('NEOFRAG_DEMO',       TRUE);";
     }
     return implode("\n", $lines) . "\n";

@@ -55,8 +55,9 @@ function nf_compte_masque(): int
  * Le critère : « est-ce que `install/demo.sql` le rétablit, et rien d'autre ne peut-il en sortir ».
  * La remise à zéro restaure le contenu, les mises en page, les menus, les membres et les réglages
  * ordinaires. Elle ne restaure NI les réglages SENSIBLES (serveur d'envoi, clés, clé du cron :
- * tools/dump-demo.php les exclut), NI les addons installés, NI les rôles et permissions : ce qui est
- * touché là l'est définitivement. D'où cette liste. Les réglages du site y sont aussi : la démo est
+ * tools/dump-demo.php les exclut), NI les addons installés, NI les rôles et leurs attributions : ce
+ * qui est touché là l'est définitivement. D'où cette liste. (Les PERMISSIONS des rôles, elles, sont
+ * restaurées depuis le 2026-10-02 : créer une galerie ou une page en écrit.) Les réglages du site y sont aussi : la démo est
  * partagée, et un visiteur qui la mettait en maintenance la fermait à tous (2026-10-02).
  *
  * Deux entrées ne relèvent pas de la base du tout et méritent leur mot :
@@ -66,14 +67,15 @@ function nf_compte_masque(): int
  *     de relais.
  */
 const NF_DEMO_MODULES_VERROUILLES = [
-	'access',      // rôles et permissions — non restaurés par l'instantané
+	'access',      // rôles et leurs attributions (nf_roles, nf_users_roles) — non restaurés par l'instantané
 	'addons',      // installe/désinstalle : écrit des fichiers
 	'api',         // des clés d'accès au site pour des programmes extérieurs
 	'discord',     // la clé d'un bot, et des actions sur un vrai serveur Discord (mise en place, rôles)
 	'emails',      // envoi de courrier
 	'donations',   // l'adresse PayPal des campagnes : un visiteur détournait les dons des autres
-	'files',       // écrit des permissions de rôles (droits d'accès aux dossiers) — non restaurées
+	'files',       // le gestionnaire de fichiers montre et touche les fichiers du serveur
 	'gamification', // le barème : des réglages créés à la volée, que la remise à zéro ne retire pas
+	'live_editor', // les mises en page : un widget HTML écrit par un visiteur exécuterait son script chez tous les autres
 	'marketplace', // télécharge et extrait des archives : écrit des fichiers
 	'media',       // la suppression efface aussi le FICHIER ; l'instantané ne restaure que la base
 	'moderation',  // liste noire d'IP et sanctions, non restaurées : un visiteur bloquait même la remise à zéro
@@ -93,6 +95,10 @@ const NF_DEMO_MODULES_VERROUILLES = [
  * jeton — est refusé avant le contrôleur (cf. nf_demo_requete_refusee()).
  */
 const NF_DEMO_LECTURES = [
+	'live_editor' => [
+		'admin_ajax::widget_admin',     // le formulaire d'un widget, pour le montrer
+		'admin_ajax::widget_settings',  // idem, à partir de sa place dans la disposition
+	],
 	'monitoring' => [
 		'admin_ajax::index',    // l'état du site (monitoring.json) : lecture, mise en cache du manifeste
 		'admin_ajax::fs_list',  // le gestionnaire de fichiers : une arborescence fictive en démo

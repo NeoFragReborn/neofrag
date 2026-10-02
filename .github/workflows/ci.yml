@@ -215,6 +215,18 @@ jobs:
       # installation Apache. Ce contrôle relit ce qu'Apache doit refuser, avec la raison de chaque ligne.
       - name: Garde .htaccess (Apache refuse tout ce que Caddy refuse)
         run: php tools/check-htaccess.php
+      # Cinq contrôles écrits le 2026-10-02 n'étaient joués par personne : check-tools refuse
+      # désormais un contrôle statique absent de ce fichier.
+      - name: Garde requêtes à une colonne (valeurs lues comme des lignes)
+        run: php tools/check-db-colonne.php
+      - name: Garde compteurs (la date de modification n'avance pas)
+        run: php tools/check-db-compteurs.php
+      - name: Garde heures affichées (fuseau de qui regarde, format de la langue)
+        run: php tools/check-heures.php
+      - name: Garde pagination (une liste découpée affiche ses pages)
+        run: php tools/check-pagination.php
+      - name: Garde charte des boutons de l'administration
+        run: php tools/check-actions-admin.php
 
   test:
     name: PHPUnit (PHP ${{ matrix.php }})

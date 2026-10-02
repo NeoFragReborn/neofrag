@@ -7,7 +7,7 @@ declare(strict_types=1);
  *
  * Pourquoi ce contrôle existe
  * ---------------------------
- * La charte de l'administration (docs/guide/create-a-module.md, « L'administration d'un module ») est
+ * La charte de l'administration (docs/guide/create-a-module.md, « La charte de l'administration ») est
  * sobre : la couleur est réservée à ce qui appelle une action. Les boutons d'action des lignes, eux,
  * variaient d'une page à l'autre — modifier en bleu ciel (les boutons communs), en teal (35 pages
  * écrites à la main) ou en bouton plein (le diaporama, les dons) ; supprimer en contour rouge, en rouge

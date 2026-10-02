@@ -200,7 +200,9 @@ class Array_ extends Library implements \Iterator, \ArrayAccess
 	public function move()
 	{
 		$args    = func_get_args();
-		$move_to = array_pop($args);
+		// La position vient souvent du navigateur, en texte (tri des langues, des connecteurs) ;
+		// array_slice() exige un entier (strict_types).
+		$move_to = (int) array_pop($args);
 
 		$this->_browse($args, -1, function(&$node, $name) use ($move_to){
 			$child = $node[$name];

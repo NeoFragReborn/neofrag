@@ -1,8 +1,7 @@
 # Le framework
 
 Référence des briques que tu manipules en écrivant des addons. Pour l'architecture interne complète,
-voir [`docs/architecture.md`](../architecture.md). Tout ce qui suit est vérifié contre le code de
-NeoFrag Reborn 1.1.0.
+voir [`docs/architecture.md`](../architecture.md). Tout ce qui suit est vérifié contre le code.
 
 ## Le service locator — `NeoFrag()`
 
@@ -50,8 +49,9 @@ Un module déclare ses routes dans `__info().routes` : `motif => méthode`.
 
 Quand un checker échoue — champ POST manquant, cible inexistante — le site répond **404** ; le motif
 (route, checker, méthode, champ absent et ce qui est arrivé à la place) est **toujours journalisé**
-(`[checker] …`). En mode debug, le motif est rendu au client et le statut est **400** : « ta requête est
-mal formée » plutôt que « cette adresse n'existe pas ». `post_check('a', 'b?')` : le suffixe `?`
+(`[checker] …`). Quand le débogage est visible — l'outil de débogage allumé, pour un administrateur
+connecté —, le motif est rendu au client et le statut est **400** : « ta requête est mal formée » plutôt
+que « cette adresse n'existe pas ». `post_check('a', 'b?')` : le suffixe `?`
 rend un champ facultatif (`NULL` s'il manque).
 
 ## Base de données
@@ -83,6 +83,10 @@ $this->db->transaction(); … $this->db->commit();   // ou ->rollback()
 - Une **jointure qui ne sert qu'à compter ou à décorer doit être `LEFT`** : sept listes faisaient
   disparaître tout contenu sans enfant (un forum sans message, un album sans image) par une jointure
   stricte.
+- Un **compteur** (vues, clics) sur une table dont `updated_at` porte `ON UPDATE current_timestamp()`
+  réécrit la date de modification à chaque visite : la page du wiki annonçait « modifiée le » à l'heure
+  du dernier lecteur. Écris la colonne sur elle-même — `SET views = views + 1, updated_at = updated_at`
+  — ; `check-db-compteurs` refuse l'oubli.
 - `MATCH … AGAINST` (FULLTEXT) **ne voit pas** une ligne insérée dans une transaction non validée :
   InnoDB n'indexe qu'au commit. Un test de recherche FULLTEXT ne peut pas s'envelopper dans la
   transaction annulée du socle de test.
@@ -124,6 +128,13 @@ Rend des listes paginées, **triables par clic sur l'en-tête** (Maj + clic : tr
 Ctrl + clic : retirer) et filtrables, à partir d'une requête. Exemple : la liste des membres,
 `modules/user/controllers/admin.php`. Le tri est servi par `js/table2.js` en vanilla.
 
+**Une liste découpée en pages affiche ses liens de pages.** Quand un checker découpe une liste —
+`->paginate($page)` sur une collection, `->pagination->get_data($lignes, $page)` sur un tableau —, la
+méthode du contrôleur qui la rend appelle `->pagination->get_pagination()` (ou passe par `table2()`,
+qui la rend lui-même). Sans cela, seuls les premiers éléments sont visibles et les autres
+inatteignables. Une liste qui tient toujours sur une page le dit par un commentaire
+`// pagination : <raison>` dans la méthode. `check-pagination` le vérifie.
+
 ## Traductions
 
 `$this->lang('Clé')` renvoie la traduction. Les fichiers `langs/fr.php` mappent le **crc32b de la
@@ -141,6 +152,30 @@ return [
 - **Ne traduis jamais du contenu de la base** (un titre écrit par l'administrateur) : `lang()` le
   cherche en vain et journalise un avertissement à chaque visite. Emballe-le dans
   `$this->no_translate(...)`.
+
+## Dates et fuseaux horaires
+
+Le produit **enregistre** ses dates dans le fuseau qu'a PHP au démarrage — l'heure universelle en
+production — et ne le change jamais : la base aligne sa session sur lui (`drivers/mysqli.php`).
+Il les **affiche** dans le fuseau de celui qui regarde, donné par `nf_fuseau()` : le choix du
+membre (`nf_user_profile.timezone`, appliqué à l'ouverture de la session), sinon son navigateur
+(cookie `nf_fuseau`, posé par `views/theme/main.tpl.php`), sinon le réglage du site
+(`nf_timezone`), sinon le fuseau d'enregistrement. Tout est dans `neofrag/helpers/time.php`.
+
+- **Écrire en base** : `date('Y-m-d H:i:s')`, `NOW()` ou `now()` — le fuseau d'enregistrement.
+- **Afficher** : `timetostr($format, $quand)` ou la bibliothèque Date (`$this->date($quand)`) ;
+  jamais `date()`, que `check-heures` refuse hors des formats de machine. Pour une colonne date et
+  heure lue telle quelle (une liste, une fiche) : `nf_date_heure($valeur)` — `d/m/Y H:i` dans la
+  langue et le fuseau du visiteur, une chaîne vide si la valeur l'est ; pour une date seule,
+  `nf_date($valeur)`. Jamais un format chiffré écrit en dur dans `timetostr()` (`'d/m/Y'`,
+  `'Y-m-d H:i'`) : l'allemand écrit `02.10.2026`, et `check-heures` le refuse.
+- **Lire une saisie** : les champs `datetime` des deux systèmes de formulaires convertissent
+  d'eux-mêmes ; à la main, `nf_heure_saisie()` (et `nf_heure_affichee()` pour l'inverse).
+- **Une date seule ou une heure seule** (`Y-m-d`, `H:i`) n'est pas un instant : `timetostr()` et
+  Date ne la convertissent pas. Une journée entière enregistrée dans une colonne date et heure se
+  passe en `Y-m-d` (cf. `Calendar::format_dt()`).
+- **Une heure à l'heure du site**, quel que soit le visiteur (une grille de programmes) :
+  `new \DateTime('now', nf_fuseau_site())`.
 
 ## Le front : Bootstrap 5, vanilla, CSP stricte
 
@@ -179,6 +214,32 @@ sensibles), `File_Jail` (chemins d'upload), `Moderation`, TOTP pour la double au
 `sanitize_html()` (HTMLPurifier) pour le HTML riche, `is_dangerous_upload()`, et le mode démo
 (`nf_demo()`) qui verrouille l'écriture des modules sensibles.
 
+**Une adresse saisie par quelqu'un et placée dans un `href` ou un `src`** passe par
+`nf_url_sure($url)` : elle rend `FALSE` pour un schéma autre que `http`, `https`, `mailto`, `tel` ou
+`geo` — un `javascript:` s'exécuterait au clic avec les droits de celui qui clique. Une adresse relative
+passe. `htmlspecialchars()` n'y suffit pas : il échappe les guillemets, pas le schéma. `url()` rend
+`#` pour une adresse absolue refusée.
+
+### Le site de démonstration
+
+La démonstration est partagée : son compte `demo` est administrateur. Le filet est dans
+`neofrag/helpers/system.php`, et tient devant tout contrôleur (`core/output.php`) :
+
+- **`NF_DEMO_MODULES_VERROUILLES`** — les modules dont aucune action ne passe en démo : tout POST,
+  tout lien porteur d'un jeton (`?_=`), toute méthode dont le nom contient un mot d'action
+  (`NF_DEMO_MOTS_D_ACTION` : export, test, toggle…) est refusé — un 403 en JSON pour un appel AJAX,
+  sinon une notification et un retour à la page précédente (`nf_demo_requete_refusee()`).
+  **Un module neuf qui touche à la configuration du site s'ajoute à cette liste** : c'est une liste de
+  refus, un module absent est ouvert. `check-demo-lock` le rappelle.
+- **`NF_DEMO_LECTURES`** — les rares lectures permises dans un module verrouillé
+  (`controleur::methode`), qui rendent alors des exemples fictifs.
+- **`nf_demo_ecriture_permise($module)`** — la question à poser dans un code qui écrit hors du filet ;
+  vraie hors démonstration.
+- **`nf_compte_masque()`** — le compte de secours de la démonstration, qu'aucune liste de membres ne
+  montre : `->where('u.id !=', nf_compte_masque())`. Hors démonstration, il vaut 0.
+- En démonstration, `File::delete()` ne supprime rien et l'envoi de fichiers est refusé. Une page qui
+  montrerait un fichier, un journal ou un réglage sensible montre un exemple à la place.
+
 ## Événements
 
 `$this->events->fire('forum.post.created', $message_id, $topic_id, $user_id)` côté émetteur ;
@@ -190,6 +251,8 @@ actifs pour toute la requête.
 - `url('forum/42')` — construit une URL routée (préfixe de langue inclus).
 - `notify('Message')` — notification à l'écran après redirection.
 - `htmlspecialchars(...)` / `sanitize_html(...)` — échappement / nettoyage anti-XSS.
+- `nf_url_sure($url)` — une adresse saisie peut-elle aller dans un lien (cf. Sécurité).
+- `nf_date_heure($valeur)` / `nf_date($valeur)` — une date de la base, à montrer (cf. Dates).
 - `nf_demo()` — vrai sur le site de démonstration.
 
 ## Migrations
@@ -206,8 +269,13 @@ php tools/migrate.php baseline --until=NAME   # adopter une base existante
 Fichiers : `migrations/AAAA_MM_JJ_nom.up.sql` (+ `.down.sql`). Le DDL MySQL est auto-commit →
 **sauvegarde avant `up` en production**. Les **addons** ont leurs propres migrations
 (`<addon>/install/migrations/`, suivies dans `nf_addon_migrations`) — voir
-[Créer un module](create-a-module.md). Le site de démonstration **ne joue aucune migration** : son état
-vient de son instantané.
+[Créer un module](create-a-module.md).
+
+**Un code neuf applique seul ses migrations**, une fois, à la première page vue après la mise à jour —
+par le bouton comme par FTP : celles du cœur, puis celles des addons installés (`nf_migrations_du_code()`,
+appelée par `index.php` quand le réglage `nf_migrations_version` diffère de `NEOFRAG_VERSION`). Cela vaut
+pour tout site, démonstration comprise. Un échec n'empêche pas la page de s'afficher : il est journalisé,
+et la tentative suivante attend dix minutes.
 
 ## Surcharge à trois niveaux
 

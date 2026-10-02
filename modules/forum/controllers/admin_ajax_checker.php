@@ -15,7 +15,8 @@ class Admin_Ajax_Checker extends Module_Checker
 	{
 		if (($check = post_check('category_id', 'position')) && !$this->db->from('nf_forum_categories')->where('category_id', $check['category_id'])->empty())
 		{
-			return $check;
+			// La position arrive du navigateur en texte ; array_slice() exige un entier (strict_types).
+			return array_merge($check, ['position' => (int) $check['position']]);
 		}
 	}
 
@@ -29,7 +30,7 @@ class Admin_Ajax_Checker extends Module_Checker
 				)
 			)
 		{
-			return array_merge($check, [$is_subforum]);
+			return array_merge($check, ['position' => (int) $check['position']], [$is_subforum]);
 		}
 	}
 }

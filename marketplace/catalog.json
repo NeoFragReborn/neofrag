@@ -1,8 +1,8 @@
 {
     "schema": 1,
     "project": "NeoFrag Reborn",
-    "base_version": "1.2.12",
-    "generated_at": "2026-10-01T22:26:02+00:00",
+    "base_version": "1.2.17",
+    "generated_at": "2026-10-02T16:51:52+00:00",
     "count": 63,
     "addons": [
         {
@@ -39,10 +39,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/ads.zip",
             "preview": "modules/ads.jpg",
-            "size": 31185,
-            "sha256": "f6afcd093ccbc5ac90f90a8818a96ceef1927917137bdbb63f6699b47cd77bce",
+            "size": 31174,
+            "sha256": "20af397a4b1e3862bfb4e172d3d5a232cfdf3567064e967a2b58e459ccf95d2b",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -85,9 +85,9 @@
             "file": "modules/api.zip",
             "preview": "",
             "size": 37333,
-            "sha256": "0db95f2e4899717e2246c454c6aeb83a47e0eb19a42f95756517bb1362838849",
+            "sha256": "7897e17ec056d72cfcd0914156a9d9b90a90ee7ee53305a25cf811dd8148f7b4",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -127,10 +127,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/articles.zip",
             "preview": "modules/articles.jpg",
-            "size": 86081,
-            "sha256": "0ee70193861d4c88e9a655786e5f6e62f06add0fea6ce03d31f1e9f4aceb0a29",
+            "size": 86082,
+            "sha256": "0146d3e47795fee9cc6ab1e80b8ec1931afabfc6f17c512718e1c03acd342a77",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -172,10 +172,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/awards.zip",
             "preview": "modules/awards.jpg",
-            "size": 46479,
-            "sha256": "1e3ce8a7cceeb427ef2b90d7bbccf4e58de55d523c4fb8662441b04b5216802c",
+            "size": 46770,
+            "sha256": "0e93a8ac63cf5b1aef3ffc0e4413fab37922f1f328dbf21412ba5d5c3dd00f07",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": [
                     "teams",
                     "games"
@@ -220,10 +220,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/bugtracker.zip",
             "preview": "modules/bugtracker.jpg",
-            "size": 58286,
-            "sha256": "073c4980d4ffbdc29ac273cdc6fd7f853212146ed0628097e452da21d62c3cdd",
+            "size": 58289,
+            "sha256": "ac7976411c1eaf53663ab244e0cb5d075b414a6e217637f2c1ee8efdd9c18979",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -263,10 +263,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/calendar.zip",
             "preview": "modules/calendar.jpg",
-            "size": 35703,
-            "sha256": "077915f56a5e771adef417e4c8247ce00a73be8e1882a80080105275539dbb87",
+            "size": 36648,
+            "sha256": "b4b3bb64e70a6588a905289d9c192b04de95fa821d4b183f80663187360a601f",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -308,10 +308,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/classifieds.zip",
             "preview": "modules/classifieds.jpg",
-            "size": 45604,
-            "sha256": "e133e19bcf236e9b78125e168dad7e52cfe87ea95e277941f16cc53373163035",
+            "size": 45731,
+            "sha256": "2494645e778780e81b27b46c71b528e779a21167e3ff5c94acbb7e9f99ee7b83",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -351,10 +351,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/discord.zip",
             "preview": "",
-            "size": 92341,
-            "sha256": "fde1792f1c91777500d9e1e62cde8d204079cc466fe68a1b85301836c11ec624",
+            "size": 92919,
+            "sha256": "c3a05b776c90dc9ce5ca7765a4bdd046de470d6a78d5bdaf75def05fbf5ee824",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": [
                     "api"
                 ]
@@ -396,10 +396,10 @@
             "license": "LGPLv3",
             "file": "modules/donations.zip",
             "preview": "modules/donations.jpg",
-            "size": 60466,
-            "sha256": "6ec39d4d1e7ef7e112fe4f40b4f5f6e69a0b76cca629aeb13714aa3572303682",
+            "size": 60452,
+            "sha256": "4bef54ba4f5a3027c6b3408cb30079eb7ff7a8c508e6aa4b909e989292cb915a",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -441,10 +441,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/downloads.zip",
             "preview": "modules/downloads.jpg",
-            "size": 48842,
-            "sha256": "fd65bd40ed8d4fa158d28d10d9357ed79165a05f2b68c9a5718048045ff5a267",
+            "size": 48847,
+            "sha256": "e38d7ec7418aa04da7006abf114d8f6f4808246dca8b461aa247f3c2156df7ae",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -487,9 +487,9 @@
             "file": "modules/emojis.zip",
             "preview": "modules/emojis.jpg",
             "size": 30528,
-            "sha256": "db26a0b7c1194a6df6a120b150be067730768e25c59a6cfa48a5586c4f6390a8",
+            "sha256": "d7d83846946de9a79b8e3af830813b83dd2db7c980b7853a059122d637a3ef4c",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -529,10 +529,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/events.zip",
             "preview": "modules/events.jpg",
-            "size": 192117,
-            "sha256": "5f8700b3fbe6075a03868e5c06fb1586f939f8f83891e83815e1165aad224685",
+            "size": 192192,
+            "sha256": "cbb82005cc935b2edb3858b99b7a3a75427cb78c8e812b905178fa5c40cd415e",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": [
                     "games",
                     "teams"
@@ -577,10 +577,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/faq.zip",
             "preview": "modules/faq.jpg",
-            "size": 32381,
-            "sha256": "a40b057aee080665b9b59ebe982e90e53b23b0610011ee82d438ad2cfd350b50",
+            "size": 32384,
+            "sha256": "0a04e719483fcce0decd91976a4815550353ede6085216e013c37c987330a027",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -621,9 +621,9 @@
             "file": "modules/feeds.zip",
             "preview": "modules/feeds.jpg",
             "size": 28398,
-            "sha256": "dc0559807f8b8ab2fe1ae918b65dc1d7ef29216eeb6dc939f725c2f31e595183",
+            "sha256": "aee30de5bafee66526b43bbe64d9cdb8ec75e2389fa8619d4e2d356bf73f5d30",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": [
                     "news",
                     "articles"
@@ -666,10 +666,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/forum.zip",
             "preview": "modules/forum.jpg",
-            "size": 149352,
-            "sha256": "6e5db2cbed8ca36ba736c8237d2d299d107f90ee0896b6c5842af4d1a33b1073",
+            "size": 149614,
+            "sha256": "5e4ce5edd04ee13c37523b639e37f6da17d479bea3805395f3db27b4d472cb73",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -711,10 +711,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/gallery.zip",
             "preview": "modules/gallery.jpg",
-            "size": 92368,
-            "sha256": "1be76eb8f5def050763099dbae52727bfd120f9bc9c1ddd3199f03880e79640c",
+            "size": 92444,
+            "sha256": "2acace5f9e575898c84830925ad8ac7126577c1797b3c29cd4f29dbeca3e1da1",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -756,10 +756,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/games.zip",
             "preview": "modules/games.jpg",
-            "size": 62429,
-            "sha256": "fc9278d11e00515296a9dc66016b3661d48262847ac19eb79a24969319a5f867",
+            "size": 62531,
+            "sha256": "38f556a6b1c2ee4c2ec0c6a8c0c00b5ffcdeffa846b2feee56d04daee07fd30e",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -800,9 +800,9 @@
             "file": "modules/gamification.zip",
             "preview": "modules/gamification.jpg",
             "size": 40732,
-            "sha256": "b9089f3a72ebcb7dd3b4dd8075eaf6c5af97209571ca697c681c6749f85a8412",
+            "sha256": "548eb683b384e5834c6e0cee33f38e4a56da6496f6d777a303f553592d5aab72",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -842,10 +842,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/glossary.zip",
             "preview": "modules/glossary.jpg",
-            "size": 55504,
-            "sha256": "813776647ab77169208147cb3f4f8996a61b0bf6c08d812eb38cedd6d416ae5d",
+            "size": 55506,
+            "sha256": "7c1be25682a5c6035e3d371ddf028ee446bb348cadd9db0b77982283bbd1aec1",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -885,10 +885,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/guestbook.zip",
             "preview": "modules/guestbook.jpg",
-            "size": 26516,
-            "sha256": "9a3017e3a42068e29f744b54c4a190dbda10fc998c544abbc7b99a5cbaa6f9de",
+            "size": 26510,
+            "sha256": "ab3cc8900b8f05b866ea4d25861a81acdbac20361fb0fa38a4a19a64ab5b0267",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -930,10 +930,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/links.zip",
             "preview": "modules/links.jpg",
-            "size": 36983,
-            "sha256": "7f77e19265c055a048d3f2fc737b3672f205d73223f74391def6f38e752aed27",
+            "size": 37401,
+            "sha256": "69cc67c2027630505d49100211047a9d13932a9749c985dfe593960db9f1113a",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -975,10 +975,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/news.zip",
             "preview": "modules/news.jpg",
-            "size": 74876,
-            "sha256": "5aafb92c29a35df22702ad8048d18ddfa6818d3e45b1c33a8acb736a0054d33d",
+            "size": 74961,
+            "sha256": "766f69d84c8897c5c9e4f4a1c21578d6fd821977b751aedd4a9b4299bded77df",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -1020,10 +1020,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/newsletter.zip",
             "preview": "modules/newsletter.jpg",
-            "size": 58122,
-            "sha256": "b39785f6d77de4d5bb0bf94d6bc8f45c8bf28e656680a9cdd7ce7ce097dc803e",
+            "size": 58117,
+            "sha256": "dcc95034c5a312631217f0dfd9d8346d88e230638f9e845784d782ae5f668551",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -1065,10 +1065,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/partners.zip",
             "preview": "modules/partners.jpg",
-            "size": 44871,
-            "sha256": "5c2dcbc0b95ac785d21b589d9761afc7480b4089e40dc950ad6dc4a6ab9180a2",
+            "size": 44998,
+            "sha256": "6136639fa469c6b6ee9034a8fa45fbcfde1e3f4ace9f680eb1b5bbdc3e8a467f",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -1110,10 +1110,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/payments.zip",
             "preview": "modules/payments.jpg",
-            "size": 45742,
-            "sha256": "df197a8711c1793bb02fb34d1838fd360303676b3405dd1e0178526a17992e65",
+            "size": 45725,
+            "sha256": "b6434bf85f3719ce573e8ada54f388c1639350871cb7f116540bd937b14561b0",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1153,10 +1153,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/places.zip",
             "preview": "modules/places.jpg",
-            "size": 178079,
-            "sha256": "776ddef6d7f024179a4cf8dcdca04ed0d18b5d99f0aa6166a9ba2e90bc07e048",
+            "size": 178082,
+            "sha256": "d71eca3541f4fe8dc6184fca1e774b6be371223520ea02b10063dbd991b0e875",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1196,10 +1196,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/quotes.zip",
             "preview": "modules/quotes.jpg",
-            "size": 60012,
-            "sha256": "11584dc26f968fb0886b6ec96449a627202e16da35374d281616098392d1024a",
+            "size": 60015,
+            "sha256": "63e452264b0009d4a79b0bd3fbfc039f108f7719d1569b7ba5a97b94a01222c5",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1239,10 +1239,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/recipes.zip",
             "preview": "modules/recipes.jpg",
-            "size": 53021,
-            "sha256": "58c2adebe7fb40f7f16baa71173c92469c3acda6d0ccbef6642a60c1c8f6cf37",
+            "size": 53024,
+            "sha256": "14998e0171edf92511ce827f09a70442fec70dee4649891b2bbd17ccab981aed",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1282,10 +1282,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/recruits.zip",
             "preview": "modules/recruits.jpg",
-            "size": 73826,
-            "sha256": "e1a9778bb8318b6e0a08dec226d451e6b294707b33c74ef3e4bf006d31918bdc",
+            "size": 74083,
+            "sha256": "c81ceeb5cbf6e4041c93b43737f3cc0dc464e7f1eacfc1ae2420bcebacb95602",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": [
                     "teams",
                     "games"
@@ -1331,9 +1331,9 @@
             "file": "modules/sandbox.zip",
             "preview": "modules/sandbox.jpg",
             "size": 50350,
-            "sha256": "877928db2c0b5e48c069ca1e1fe8b589ab8ca274b8164752d748c79353efac8f",
+            "sha256": "ae101f4d825ea0b3276391ad1ed5aae677ebaa489e10733ef5b834e8fef551e2",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1373,10 +1373,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/shop.zip",
             "preview": "modules/shop.jpg",
-            "size": 44773,
-            "sha256": "f21ee3ba77f26ba243dddd58aca14c6be19caeaf277fbb57a6fb8cc5c9cde88c",
+            "size": 44764,
+            "sha256": "1791df23921a14c1c14e1bf4005b9241d37fa3e3567dad8a689b280cbfc161b4",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1416,10 +1416,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/surveys.zip",
             "preview": "modules/surveys.jpg",
-            "size": 46721,
-            "sha256": "501939e148c89330260045db37f6b18dbb0b6ba14d08c0dda439c1c1bde196c5",
+            "size": 46723,
+            "sha256": "c56dab0fa74bc597151448443b2fd66dea0143d7205f6f92194da3138ac7c337",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [
@@ -1461,10 +1461,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/teams.zip",
             "preview": "modules/teams.jpg",
-            "size": 54631,
-            "sha256": "b9b0b01684cc8af3a83b1db673cb2cafd80c69a37d52288b223e645bd905253b",
+            "size": 54790,
+            "sha256": "494e589a4344ecadef1793c154a9b046100a84844c218a9333ba277c3651cc2f",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": [
                     "games"
                 ]
@@ -1508,10 +1508,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/webradio.zip",
             "preview": "modules/webradio.jpg",
-            "size": 62105,
-            "sha256": "7c5b4824b1aff1187033d21fc7a2aa750b14022c31838a9f85941d8a0581c3cf",
+            "size": 62351,
+            "sha256": "5b6d7f442595c168c003ca0dae10f52655d1d65326396fa1d489feca85ad2326",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1551,10 +1551,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "modules/wiki.zip",
             "preview": "modules/wiki.jpg",
-            "size": 37608,
-            "sha256": "d7586f3e31478721813c2e36f669182f8a05c6df0ce5f8d42e17d2eff61c5c79",
+            "size": 37857,
+            "sha256": "3081477008e7f359482a8c8b37d61c76086fcf54f25b5c45948ce8729421d263",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1589,10 +1589,10 @@
             "license": "Creative Commons CC BY-NC-SA 4.0",
             "file": "themes/blockcraft.zip",
             "preview": "themes/blockcraft.jpg",
-            "size": 45011,
-            "sha256": "d513602cf5e9fada52464b4e9aeeaecd0c505e937a111742581bc117b0eead65",
+            "size": 45073,
+            "sha256": "94ae0aa4b5111e37981f1a4c53038262a97f928c8e0d27f7001d99c47b3e2746",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1627,10 +1627,10 @@
             "license": "Creative Commons CC BY-NC-SA 4.0",
             "file": "themes/extend.zip",
             "preview": "themes/extend.jpg",
-            "size": 42841,
-            "sha256": "5a787536ed98831adacf010c1063ef94d0aaa4fb97a216845882a5399dcce3b4",
+            "size": 42902,
+            "sha256": "50d32189f06635733484e51e99d4f5bcd9a58fb91cf109e76899fae530424d2b",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1665,10 +1665,10 @@
             "license": "Creative Commons CC BY-NC-SA 4.0",
             "file": "themes/forge.zip",
             "preview": "themes/forge.jpg",
-            "size": 41913,
-            "sha256": "7e2cf1f36dc69e109a449e54b3d4e194fad75e3ee83e4cf884468e9b9e2a2dea",
+            "size": 41965,
+            "sha256": "f573fbf9bf2f55842548850660402386563414aeb3157c1ab91d93b2b827d903",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1703,10 +1703,10 @@
             "license": "Creative Commons CC BY-NC-SA 4.0",
             "file": "themes/granite.zip",
             "preview": "themes/granite.jpg",
-            "size": 43577,
-            "sha256": "db60055af1cfe114ea24332b29d3acc3ed0d399f453d1b76672da1319c4a8ed7",
+            "size": 43634,
+            "sha256": "54c1a83fbe02c703cd1a9414e262d08ac19f0730e2c1ab731543dbbc3b0240d6",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1747,9 +1747,9 @@
             "file": "widgets/about.zip",
             "preview": "widgets/about.jpg",
             "size": 32297,
-            "sha256": "b2645b7d85bab344ee0713ff089ed67eb5f488fdf2fac5c787667bef8f86c9cd",
+            "sha256": "35625caa4fa9613e125fa23f573340b342be52dd27feee58eef35ccfc201edef",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1790,9 +1790,9 @@
             "file": "widgets/ads.zip",
             "preview": "widgets/ads.jpg",
             "size": 22269,
-            "sha256": "e5d6e9a9bff1873bcd100112e256dadaaff46e8525000801ecf29d6bffdf8eb3",
+            "sha256": "58188cc7b32871ed44120c3e730d018f138232bd663105793621657c4c41fa41",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1833,9 +1833,9 @@
             "file": "widgets/articles.zip",
             "preview": "widgets/articles.jpg",
             "size": 37472,
-            "sha256": "00fd8e8cb1b4cd842067fa4744a32627150d6a44024811bec9dd730b2d47de29",
+            "sha256": "a8a29ae7a00fd9e0e745807f575c3d794d42dd4144bfe450a8f39bfeb1c64c61",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1876,9 +1876,9 @@
             "file": "widgets/awards.zip",
             "preview": "widgets/awards.jpg",
             "size": 19477,
-            "sha256": "39da2fc5db49881cf92ee808fd86a6e640c0bd2491eee175968f612d6f11a2bb",
+            "sha256": "493dc2c5d38e87167393715412d5cb542f9fd5a191318045c03e1b5320d4c99d",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1918,10 +1918,10 @@
             "license": "LGPLv3",
             "file": "widgets/calendar.zip",
             "preview": "widgets/calendar.jpg",
-            "size": 27983,
-            "sha256": "3be086499f75e6286a9c78e0e56a83c6186f354b1850a491c21ba9be9f51953f",
+            "size": 28005,
+            "sha256": "4cd65447630096b7edf8fa3cf3ddc50786ed4b98db28c9d0ec26531d73cc9ee8",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1962,9 +1962,9 @@
             "file": "widgets/donations.zip",
             "preview": "widgets/donations.jpg",
             "size": 29694,
-            "sha256": "4e10931eca705e85ef9ddc9dfa3ddc2c0abd0d81517762cfcfe20ec4ca71c3d9",
+            "sha256": "4aac8f6f8d64e9d418602672193f729c9711c1a4b349fd83a8ee335f46c8b733",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2005,9 +2005,9 @@
             "file": "widgets/downloads.zip",
             "preview": "widgets/downloads.jpg",
             "size": 33049,
-            "sha256": "0a63c84da3dcf0e26c190d30f21d8177970a703c71f0628cdaa9d2657d34fafa",
+            "sha256": "10ca43f54c5d37dee98791717f8f3017737e6f7365609db8a35028b5ec88b6b0",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2047,10 +2047,10 @@
             "license": "LGPLv3 <https://neofr.ag/license>",
             "file": "widgets/events.zip",
             "preview": "widgets/events.jpg",
-            "size": 34573,
-            "sha256": "eb6facc3ba92defab32b3959555e726902c08fd176cc63f38142725c77db6b9a",
+            "size": 34553,
+            "sha256": "33c57497f874189e900b216fd0ee473e55998c7b7de2de60636c1f12ea51209f",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2091,9 +2091,9 @@
             "file": "widgets/forum.zip",
             "preview": "widgets/forum.jpg",
             "size": 32898,
-            "sha256": "705a5340901a39ff32ffd349a0154968c87ad7d5dd47e5a8bb62dc8142ec0c91",
+            "sha256": "5ccec112bd6f63f2e768278702c7d47247b421740fd58892708e076d325f9bda",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2134,9 +2134,9 @@
             "file": "widgets/gallery.zip",
             "preview": "widgets/gallery.jpg",
             "size": 28881,
-            "sha256": "000090e61385d46d55b88d360ca103e88f3a8940d92fea907445129488c497c2",
+            "sha256": "bccedaa22c7778c50b68375c8ad45eac8127d827369018e83c93ae8d4d72171a",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2177,9 +2177,9 @@
             "file": "widgets/gameserver.zip",
             "preview": "widgets/gameserver.jpg",
             "size": 44601,
-            "sha256": "797b158c9ea814ed64e05afdbb025f834576d56da0b8d903e64c0b7f53da9b1a",
+            "sha256": "a247346df59c0e37badc7093e7d366775c3f966291f044eddc78e64cddffc8f0",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2220,9 +2220,9 @@
             "file": "widgets/guestbook.zip",
             "preview": "widgets/guestbook.jpg",
             "size": 28585,
-            "sha256": "5164f7b3f5f727467fbc213404a9daefa12b3530fb7112e1039eb1a1c2fffae2",
+            "sha256": "f1de54a9408dd7ca5314d23c3cd4ee24e9bf02526d270eef49581848daf648a2",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2263,9 +2263,9 @@
             "file": "widgets/links.zip",
             "preview": "widgets/links.jpg",
             "size": 23304,
-            "sha256": "dd59fda737683b64e230e790064b7b5487ef52cecf194e88cda6ab9480b1de82",
+            "sha256": "2c30c467447421a6f6b9d9ebefaf821b18c3a1cd2e374d738b5bc5d044af8694",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2306,9 +2306,9 @@
             "file": "widgets/news.zip",
             "preview": "widgets/news.jpg",
             "size": 26286,
-            "sha256": "b185bc9cff4549edb47dccc7808723b155ca3153198985e74690328766fafb33",
+            "sha256": "7399176c43b0c85d0364ef36b659a64a7e12d43766299d283a34c8c9881173ce",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2349,9 +2349,9 @@
             "file": "widgets/newsletter.zip",
             "preview": "widgets/newsletter.jpg",
             "size": 27501,
-            "sha256": "052ec17545eac0ad1024e28a267c2d259553054c65a0e85147475b414459bf97",
+            "sha256": "82b55b9c7d6d9b8685f683fcb5f468c411977bced3a06cf1f809b1eb6102fc59",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2392,9 +2392,9 @@
             "file": "widgets/partners.zip",
             "preview": "widgets/partners.jpg",
             "size": 23822,
-            "sha256": "e028270c4f4a73d4b093f6b546577d00f6152a9f5ea5fd1121fd14acf91c3101",
+            "sha256": "7175d0046e5a1f29aaf6d68f03d7bc10fc0709ec51a7c31620351f6bb34c43d5",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2435,9 +2435,9 @@
             "file": "widgets/recruits.zip",
             "preview": "widgets/recruits.jpg",
             "size": 35402,
-            "sha256": "49a8fdfd577bc9b449dde9ba0a5f00f76f24d1fcdc9bf95f2fdd342c6c24b235",
+            "sha256": "a1902e0cbf2cce117fcc44011a261d37b4bea5c67195c4be3dbfc26d2f3b7eec",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": [
                     "teams"
                 ]
@@ -2479,10 +2479,10 @@
             "license": "LGPLv3",
             "file": "widgets/rss.zip",
             "preview": "widgets/rss.jpg",
-            "size": 56551,
-            "sha256": "6e82956f22303364b1537f6e5e0fc462f636fe9c185454d1ca3b8d01803900bf",
+            "size": 56574,
+            "sha256": "d0d3b9cefa874295379c58c5a4f64c863000a751ddfc26017b565a6c5f1ada86",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2523,9 +2523,9 @@
             "file": "widgets/seasonal.zip",
             "preview": "widgets/seasonal.jpg",
             "size": 46435,
-            "sha256": "991ff9d4d71d9c6fedf9226b400b0af140f983ad05fbc17f3535ef4507e4810b",
+            "sha256": "b2a9051d3c236521c8f20acbd9d8a4e7b0f6351f8ae5b6acd60741b614965462",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2566,9 +2566,9 @@
             "file": "widgets/steam.zip",
             "preview": "widgets/steam.jpg",
             "size": 39718,
-            "sha256": "94edce70682333d698452ccade6b082625e9f611d2245a1229e9a48791619a6f",
+            "sha256": "1fc0e4d285cc75b77fb3ed2ada2547a4f7570aba1a9b01745caecd6b19ddbd13",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2609,9 +2609,9 @@
             "file": "widgets/surveys.zip",
             "preview": "widgets/surveys.jpg",
             "size": 26474,
-            "sha256": "23fb572ff2bfd5bd3a74154105079ff7c6e77e5942dea998172b4efa9c15cb95",
+            "sha256": "8ba889170cbe6adb834d6c54cb595a7c4c93ccb3c626696062c151f61610d8cf",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2652,9 +2652,9 @@
             "file": "widgets/teams.zip",
             "preview": "widgets/teams.jpg",
             "size": 26163,
-            "sha256": "5dba19c944727abe472f8682b49cd9d23ac9d8429a8ce71a9f20baf259bdfbf5",
+            "sha256": "1eb6c0944c2e636cbd15c3ed315e923e8ed18edbde2fc27420664716eb8dd051",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2695,9 +2695,9 @@
             "file": "widgets/teamspeak.zip",
             "preview": "widgets/teamspeak.jpg",
             "size": 44440,
-            "sha256": "d5f5a4566c7c596f71fbdf4b889871b77f48e19ed5241c6f701990555386cd3e",
+            "sha256": "e849ebee49016dd150d68c62907c12f79a05a0476d56c13aed0a53dfb7e4f3d2",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2738,9 +2738,9 @@
             "file": "widgets/twitch.zip",
             "preview": "widgets/twitch.jpg",
             "size": 52650,
-            "sha256": "77868c469ecb7cf03a482db88a0dcc63b756a62af1f89c341c6bc3fc6455aee6",
+            "sha256": "2db24f002e97edadcff665bbf1ef79f3f753464503535e9ca19f92ab39d46f77",
             "requires": {
-                "base": ">=1.2.12",
+                "base": ">=1.2.17",
                 "addons": []
             },
             "provides_widgets": [],

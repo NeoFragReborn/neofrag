@@ -4,7 +4,7 @@ Un **widget** est un bloc réutilisable plaçable dans n'importe quelle zone d'u
 en direct. C'est l'addon le plus simple à écrire : une classe, un contrôleur, une vue.
 
 Nous allons créer un widget `hello` qui affiche un message de bienvenue paramétrable. Tout est vérifié
-contre le code de NeoFrag Reborn 1.1.0 ; `widgets/html` et `widgets/about` sont de bons exemples réels.
+contre le code ; `widgets/html` et `widgets/about` sont de bons exemples réels.
 
 ## Structure des fichiers
 

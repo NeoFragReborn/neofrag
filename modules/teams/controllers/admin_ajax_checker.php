@@ -15,7 +15,8 @@ class Admin_Ajax_Checker extends Module_Checker
 	{
 		if (($check = post_check('id', 'position')) && !$this->db->from('nf_teams')->where('team_id', $check['id'])->empty())
 		{
-			return $check;
+			// La position arrive du navigateur en texte ; array_slice() exige un entier (strict_types).
+			return array_merge($check, ['position' => (int) $check['position']]);
 		}
 	}
 
@@ -23,7 +24,8 @@ class Admin_Ajax_Checker extends Module_Checker
 	{
 		if (($check = post_check('id', 'position')) && !$this->db->from('nf_teams_roles')->where('role_id', $check['id'])->empty())
 		{
-			return $check;
+			// La position arrive du navigateur en texte ; array_slice() exige un entier (strict_types).
+			return array_merge($check, ['position' => (int) $check['position']]);
 		}
 	}
 }

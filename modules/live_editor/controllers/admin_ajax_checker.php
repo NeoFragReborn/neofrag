@@ -58,7 +58,7 @@ class Admin_Ajax_Checker extends Module_Checker
 
 	public function widget_add()
 	{
-		if ($args = list(,,,,, $widget_name, $type) = $this->_check_disposition('disposition_id', 'row_id', 'col_id', 'title', 'widget', 'type', 'settings?'))
+		if (($args = $this->_check_disposition('disposition_id', 'row_id', 'col_id', 'title', 'widget', 'type', 'settings?')) && (list(,,,,, $widget_name, $type) = $args))
 		{
 			$this->model()->get_widgets($widgets, $types);
 
@@ -101,7 +101,7 @@ class Admin_Ajax_Checker extends Module_Checker
 
 	public function widget_settings()
 	{
-		if ((list($disposition_id, $disposition, $row_id, $col_id, $widget_id) = $this->_check_disposition('disposition_id', 'row_id', 'col_id', 'widget_id')))
+		if (($args = $this->_lire_disposition('disposition_id', 'row_id', 'col_id', 'widget_id')) && (list($disposition_id, $disposition, $row_id, $col_id, $widget_id) = $args))
 		{
 			if ($widget_id == -1)
 			{
@@ -116,7 +116,8 @@ class Admin_Ajax_Checker extends Module_Checker
 
 	public function widget_update()
 	{
-		if ((list($disposition_id, $disposition, $row_id, $col_id, $widget_id, $title, $widget_name, $type, $settings) = $this->_check_disposition('disposition_id', 'row_id', 'col_id', 'widget_id', 'title', 'widget', 'type', 'settings?')) &&
+		if (($args = $this->_check_disposition('disposition_id', 'row_id', 'col_id', 'widget_id', 'title', 'widget', 'type', 'settings?')) &&
+			(list($disposition_id, $disposition, $row_id, $col_id, $widget_id, $title, $widget_name, $type, $settings) = $args) &&
 			($widget = $this->model()->check_widget($disposition->get($row_id, $col_id, $widget_id)->widget_id())))
 		{
 			$this->model()->get_widgets($widgets, $types);
@@ -138,18 +139,30 @@ class Admin_Ajax_Checker extends Module_Checker
 		return $this->_check_disposition('disposition_id', 'row_id', 'col_id', 'widget_id');
 	}
 
+	/**
+	 * Une ÉCRITURE dans une disposition. Toutes les modifications de l'éditeur en direct passent par
+	 * ici, et aucune n'est permise sur la démonstration : le module y est verrouillé
+	 * (NF_DEMO_MODULES_VERROUILLES), le filet d'Output les refuse avant ce checker, et ce refus-ci
+	 * reste en second rideau. Un widget HTML rend son contenu tel quel : écrit par un visiteur, son
+	 * script s'exécuterait chez tous les autres.
+	 */
 	private function _check_disposition()
 	{
-		// Site de démo : édition des dispositions/widgets verrouillée (toutes les mutations du
-		// live editor passent par ici). Sinon les changements persistent après le reset démo, qui
-		// ne touche pas nf_dispositions. Les lectures (widget_admin/widget_settings) ne passent
-		// pas par ce gate → consultation toujours possible.
 		if (nf_demo())
 		{
 			return FALSE;
 		}
 
-		if ($this->access->effective_admin() && $check = post_check(func_get_args()))
+		return $this->_lire_disposition(...func_get_args());
+	}
+
+	/**
+	 * Une LECTURE dans une disposition (les réglages d'un widget, pour les montrer) : permise partout.
+	 * Rend la disposition et les champs demandés, ou NULL si la requête ne les porte pas.
+	 */
+	private function _lire_disposition(string ...$champs)
+	{
+		if ($this->access->effective_admin() && $check = post_check($champs))
 		{
 			array_splice($check, 1, 0, [$this->model()->get_disposition($check['disposition_id'], $theme, $page, $zone)]);
 

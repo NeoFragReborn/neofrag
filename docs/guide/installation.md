@@ -19,7 +19,8 @@ Composer, ni accès shell ne sont nécessaires — le paquet embarque ses dépen
 L'assistant se déroule en **cinq étapes** : *Prérequis* → *Profil du site* → *Base de données* →
 *Administrateur* → *Terminé*.
 
-1. **Téléverse** les fichiers de NeoFrag Reborn à la racine web (FTP, ou décompression du paquet).
+1. **Téléverse** les fichiers de NeoFrag Reborn à la racine web : le contenu du dossier `neofrag-reborn/`
+   du paquet `neofrag-reborn-public-<version>.zip` (par FTP, ou en le décompressant sur le serveur).
 2. Ouvre ton domaine : l'assistant se lance et affiche les **prérequis** avec la valeur constatée
    (version de PHP, extensions présentes).
 3. Choisis le **profil du site** :

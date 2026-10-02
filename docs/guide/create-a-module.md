@@ -4,7 +4,7 @@ Un **module** est une fonctionnalité complète : ses pages publiques, ses route
 ses données et ses permissions. C'est l'addon le plus riche.
 
 Nous allons créer un module `notes` qui affiche une liste de notes publiques. Tout ce qui suit est
-vérifié contre le code de NeoFrag Reborn 1.1.0 ; les modules livrés (`modules/contact`, `modules/news`)
+vérifié contre le code ; les modules livrés (`modules/contact`, `modules/news`)
 sont les meilleurs exemples à lire ensuite.
 
 ## Structure des fichiers
@@ -132,7 +132,8 @@ Pour un point d'entrée qui reçoit un **POST** (AJAX, formulaire écrit à la m
 champs avec `post_check('titre', 'corps', 'options?')` : chaque nom est **obligatoire**, sauf s'il porte
 le suffixe `?`, auquel cas il vaut `NULL` s'il manque. Un champ obligatoire absent fait échouer le
 checker : réponse **404** en production (le motif exact — quel champ, ce qui est arrivé à la place —
-est **journalisé**) et **400 avec le motif** en mode debug. Ce comportement vient de dix widgets qu'on
+est **journalisé**) et **400 avec le motif** quand le débogage est visible (un administrateur connecté,
+l'outil de débogage allumé). Ce comportement vient de dix widgets qu'on
 ne pouvait plus ajouter dans l'éditeur en direct parce qu'un champ facultatif était exigé.
 
 ## 3. Le contrôleur public — `controllers/index.php`
@@ -180,7 +181,9 @@ ou un panneau via `$this->panel()->title()->body($html)` pour du HTML construit 
 ```
 
 Les variables passées à `view()` sont disponibles directement. **Échappe toujours** ce qui vient de la
-base (`htmlspecialchars`) ; pour du HTML riche saisi par un membre, `sanitize_html()` (HTMLPurifier).
+base (`htmlspecialchars`) ; pour du HTML riche saisi par un membre, `sanitize_html()` (HTMLPurifier). Une
+**adresse** saisie qui finit dans un `href` passe en plus par `nf_url_sure()`, qui refuse `javascript:`
+et les autres schémas exécutables (cf. [Le framework](framework.md#sécurité--ce-qui-existe-déjà)).
 
 **Le front est Bootstrap 5, sans jQuery, sous une CSP stricte.**
 - Les classes de grille s'écrivent `col-12 col-lg-8`, jamais `col-8` seul (qui s'applique dès 0 px et
@@ -227,11 +230,13 @@ ALTER TABLE nf_notes ADD COLUMN pinned TINYINT(1) NOT NULL DEFAULT 0;
 - Suivi dans `nf_addon_migrations` : chaque migration ne s'exécute **qu'une fois**.
 - À l'installation neuve (`install.sql` porte déjà le schéma à jour), les migrations sont
   **baselinées** — marquées sans être jouées. À la mise à jour (marketplace → « Mises à jour »),
-  seules les nouvelles sont **exécutées** (`Addon::update()`).
+  seules les nouvelles sont **exécutées** (`Addon::update()`). Un module livré avec le cœur reçoit les
+  siennes au premier passage du code neuf (`nf_migrations_du_code()`, cf. [le framework](framework.md#migrations)).
 - Règle d'or : une migration pour une vraie évolution d'un schéma **déjà livré** ; une nouvelle table
   va dans `install.sql`, jamais dans une migration.
-- Le site de démonstration **ne joue aucune migration** (`Addon::migrate()` sort quand `nf_demo()`
-  est vrai) : son état vient de son instantané `install/demo.sql`.
+- Sur le site de démonstration, une mise à jour d'addon lancée depuis l'administration ne joue rien
+  (`Addon::migrate()` sort quand `nf_demo()` est vrai) ; les migrations arrivées avec un code neuf s'y
+  appliquent comme ailleurs.
 
 Le dossier `migrations/` **à la racine** du projet est réservé aux évolutions transverses du cœur.
 
@@ -350,9 +355,9 @@ class Admin extends Controller_Module
 C'est **`form()`** (`add_rules()` / `is_valid()` / `display()`) qui est l'API de formulaire des écrans
 d'administration ; `form2()` (cf. [Le framework](framework.md)) sert aux formulaires publics, riches ou
 de confirmation seule. Le trait `Admin_Helpers`, disponible sur tout contrôleur de module, habille le
-contenu : `admin_card()`, `admin_back()`, `admin_split()`, `admin_action_bar()`, `admin_empty()`,
-`admin_stats()`, `sort_select()`. Toute sous-page doit offrir un retour (`admin_back()` ou le fil
-d'Ariane) : `tools/check-admin-back.php` le vérifie sur les 99 pages d'administration.
+contenu : `admin_card()`, `admin_create()`, `admin_back()`, `admin_split()`, `admin_action_bar()`,
+`admin_empty()`, `admin_stats()`, `sort_select()`. Toute sous-page doit offrir un retour (`admin_back()`
+ou le fil d'Ariane) : `tools/check-admin-back.php` le vérifie sur chaque page d'administration.
 
 ### Actions mutantes : exiger un jeton CSRF
 
@@ -379,7 +384,9 @@ Pour un POST manuel, le jeton va en champ caché : `<input type="hidden" name="_
 ### Tables d'administration
 
 `table2()` rend des listes paginées, triables par clic sur l'en-tête et filtrables (exemple :
-`modules/user/controllers/admin.php`). Le tri est géré par `js/table2.js`, en vanilla.
+`modules/user/controllers/admin.php`). Le tri est géré par `js/table2.js`, en vanilla. Une liste que le
+checker découpe à la main (`->paginate()`) rend ses liens de pages : le contrat est dans
+[Le framework](framework.md#tables--table2), et `check-pagination` le vérifie.
 
 ### La charte de l'administration
 
@@ -389,8 +396,8 @@ compose ainsi :
 
 - **Une carte par liste** : `admin_card(icône, titre, corps, sous-titre, actions)` — le sous-titre porte
   le compte (« 3 publiées · 1 brouillon »), les actions le bouton qui crée.
-- **Le bouton qui crée** (« Nouvelle citation ») : `btn btn-primary btn-sm`, dans l'en-tête de la carte
-  de la liste qu'il alimente. La barre du haut garde les outils de la page — Permissions, Configuration,
+- **Le bouton qui crée** (« Nouvelle citation ») : `admin_create(url, libellé)`, un `btn btn-primary
+  btn-sm` dans l'en-tête de la carte de la liste qu'il alimente. La barre du haut garde les outils de la page — Permissions, Configuration,
   Aide.
 - **Les actions d'une ligne** : des boutons à icône seule, petits. *Modifier* (crayon), *accès*
   (cadenas), *trier* : `btn-outline-secondary`, neutres. *Supprimer* : `btn-outline-danger` avec
@@ -424,7 +431,10 @@ Le projet a un filet, et un module neuf doit y entrer :
   (miroir SQL), `tests/Browser/*.test.html` (contrat d'un script dans un vrai navigateur, via
   `tools/check-js.php`). `vendor/bin/phpunit --fail-on-skipped`.
 - **Contrôles** à faire passer avant de livrer : `check-addon-declarations`, `check-addon-coupling`,
-  `check-addon-contracts`, `check-js-sources`, `check-langs --toutes`,
+  `check-addon-contracts`, `check-js-sources`, `check-langs --toutes`, `check-textes-en-dur` (aucun
+  texte visible hors de `lang()`), `check-actions-admin` (la charte des boutons), `check-pagination`,
+  `check-heures` (aucune date affichée sans fuseau), `check-db-compteurs`, `check-demo-lock` (un module
+  qui touche à la configuration est verrouillé en démonstration),
   `check-strict-types` (le compteur ne doit jamais baisser — déclare `declare(strict_types=1)` dans tes
   fichiers neufs), puis `check-install-profiles` (installe chaque profil pour de vrai et frappe les
   routes des modules absents, qui doivent rendre un **404 propre**, jamais un 500) et

@@ -106,13 +106,14 @@ quatre garanties de nature :
 3. l'empreinte **SHA-256** est vérifiée **avant** qu'un seul fichier du site ne soit touché ;
 4. l'archive est contrôlée **entrée par entrée** (anti-zip-slip, symlinks refusés).
 
-`config/` et `install/` ne sont jamais réécrits quand ils existent déjà : la configuration d'un site en
-service est préservée.
+Les fichiers de `config/` déjà présents et le verrou `install/db.txt` ne sont jamais réécrits : la
+configuration d'un site en service est préservée. Le reste d'`install/` est du code du produit, et suit
+les versions.
 
 ### À la main
 
-Télécharge la release et remplace les fichiers (hors `config/`, `upload/`, `backups/`), puis visite le
-site — les migrations s'appliquent.
+Télécharge `neofrag-reborn-public-<version>.zip` et remplace les fichiers (hors `config/`, `upload/`,
+`backups/`), puis visite le site — les migrations s'appliquent ([guide de déploiement](../deploy-ftp.md#mettre-à-jour-un-site-déjà-en-ligne)).
 
 ### Publier une mise à jour (opérateur)
 

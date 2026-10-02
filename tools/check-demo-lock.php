@@ -23,9 +23,10 @@ declare(strict_types=1);
  *
  * Ce qu'il vérifie
  * ----------------
- *   1. tout module d'administration qui touche `nf_addon`, `nf_addon_type` ou `nf_role_permissions`
- *      est verrouillé — ces tables ne sont PAS dans l'instantané, et les addons écrivent en plus
- *      des fichiers sur le disque ;
+ *   1. tout module d'administration qui touche `nf_addon`, `nf_addon_type`, `nf_roles` ou
+ *      `nf_users_roles` est verrouillé — ces tables ne sont PAS dans l'instantané, et les addons
+ *      écrivent en plus des fichiers sur le disque. (`nf_role_permissions` y figurait jusqu'au
+ *      2026-10-02 : l'instantané la rétablit depuis, parce que créer une galerie ou une page en écrit) ;
  *   2. si un module NON verrouillé écrit des réglages, alors `nf_settings` doit être restauré par
  *      l'instantané ;
  *   3. tout module verrouillé existe réellement — sinon la liste protège un fantôme et laisse
@@ -96,7 +97,7 @@ foreach ($modules as $module => $fichiers)
     // Tables dont la modification n'est jamais rattrapée.
     $intouchables = [];
 
-    foreach (['nf_addon', 'nf_addon_type', 'nf_role_permissions'] as $table)
+    foreach (['nf_addon', 'nf_addon_type', 'nf_roles', 'nf_users_roles'] as $table)
     {
         // `nf_addons_xxx` ne doit pas déclencher `nf_addon` : on exige une fin de mot.
         if (preg_match('/\b'.preg_quote($table, '/').'\b(?!_)/', $source))
@@ -147,4 +148,4 @@ if ($anomalies)
     nf_echec(count($anomalies).' anomalie(s) entre le verrou de la démo et sa remise à zéro');
 }
 
-nf_ok(sprintf('les %d module(s) qui touchent aux addons ou aux permissions sont verrouillés, et ce que les autres écrivent est rétabli par la remise à zéro', count($verrouilles)));
+nf_ok(sprintf('les %d module(s) qui touchent aux addons ou aux rôles sont verrouillés, et ce que les autres écrivent est rétabli par la remise à zéro', count($verrouilles)));

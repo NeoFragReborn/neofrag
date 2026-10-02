@@ -1,12 +1,12 @@
-# Architecture — NeoFrag Reborn 1.1.0
+# Architecture — NeoFrag Reborn
 
-Document technique de référence (**vérifié contre le code le 2026-08-28**). Pour le reste à faire,
+Document technique de référence (**vérifié contre le code ; dernière relecture d'ensemble le 2026-10-02**). Pour le reste à faire,
 voir [internal/reste-a-faire.md](internal/reste-a-faire.md) ; pour l'inventaire des composants, [components.md](components.md).
 
 ## 1. Identité & pile
 
 CMS PHP **monolithique modulaire** pour communautés gaming/esport, fork local de NeoFrag.
-Version **1.1.0** (`NEOFRAG_VERSION`, [index.php](../index.php)).
+La version courante est `NEOFRAG_VERSION`, dans [index.php](../index.php).
 
 - **PHP ≥ 8.2** (intégration continue sur 8.2 → 8.5 ; production sur PHP 8.5-FPM derrière Caddy)
 - **MariaDB 11**, driver **mysqli** (seul driver implémenté : `neofrag/drivers/mysqli.php`)
@@ -18,7 +18,7 @@ Version **1.1.0** (`NEOFRAG_VERSION`, [index.php](../index.php)).
 
 ```
 index.php
- ├─ define NEOFRAG_VERSION 1.1.0 ; require vendor/autoload.php ; config/neofrag.php
+ ├─ define NEOFRAG_VERSION ; require vendor/autoload.php ; config/neofrag.php
  ├─ spl_autoload_register pour le préfixe NF\ (NF\Foo\Bar → foo/bar.php, minuscule)
  ├─ NeoFrag('NF\NeoFrag\NeoFrag')  → instancie le SINGLETON global (fonction globale NeoFrag())
  ├─ enregistre le callback __path() (mécanisme d'override 3 niveaux)
@@ -29,25 +29,26 @@ index.php
 
 Le dispatch (`neofrag/addons/module.php::get_method`) préfixe l'URL selon `admin`/`ajax`, filtre le
 tableau `routes` du manifeste, puis matche par regex les placeholders `{id}/{key_id}/{url_title}/{url_title*}/{page}/{pages}`
-(définis dans `neofrag/neofrag.php:49-56`).
+(définis par `NeoFrag::$route_patterns`, dans `neofrag/neofrag.php`).
 
 ## 3. Le pattern réel : service locator implicite + méthodes magiques
 
-Tout repose sur la fonction globale **`NeoFrag()`** (index.php:54) qui retourne un singleton. La classe
+Tout repose sur la fonction globale **`NeoFrag()`** (définie dans `index.php`) qui retourne un singleton. La classe
 de base `NF\NeoFrag\NeoFrag` (`neofrag/neofrag.php`) donne à toute classe un accès magique aux services
 et libraries :
 
-- **`__get($name)`** (neofrag/neofrag.php:114) : lazy-load des services `core_*` et des libraries, avec
+- **`__get($name)`** : lazy-load des services `core_*` et des libraries, avec
   injection de la config `config/{name}.php`.
 - **`__call($name, $args)`** : route dynamiquement vers displayables / addons / loadables / libraries.
 - **`__path()` / `___load()`** : résolution de fichiers avec l'override 3 niveaux.
 
-Détail PHP 8.2 : l'attribut `#[\AllowDynamicProperties]` (neofrag/neofrag.php:45) ré-autorise
+Détail PHP 8.2 : l'attribut `#[\AllowDynamicProperties]`, posé sur cette classe, ré-autorise
 explicitement les propriétés dynamiques (dépréciées en 8.2).
 
 **Conséquence (dette) :** pas de DI container ; la résolution dynamique casse l'autocomplétion IDE,
-rend l'analyse statique et le mocking difficiles → **c'est ce qui bloque les tests et une API REST
-native** (voir roadmap).
+rend l'analyse statique et le mocking difficiles. Elle freine, elle ne bloque plus : les objets du
+framework se testent par `HeadlessTestCase` (le framework démarré), le PhpDoc a rendu le locator
+analysable par PHPStan, et l'API REST v1 existe depuis la 1.2.10 (`modules/api`).
 
 ## 4. Loadables & Displayables
 
@@ -82,10 +83,10 @@ pas les tables** (aucun DDL dans l'ORM ; le schéma vient de `schema.sql` + migr
   `social_connect_session`, `moderation`, `mysqldump`, `disposition`, `json`, `collection`,
   `file_jail`… Accédées magiquement
   (`$this->form2`, `$this->rate_limit`, etc.).
-- **21 helpers** (`neofrag/helpers/`, fonctions globales pures) : `array`, `string`, `color`,
+- **24 helpers** (`neofrag/helpers/`, fonctions globales pures) : `array`, `string`, `color`,
   `countries`, `time`, `file`, `dir`, `fonts`, `input`, `location`, `markdown`, `notify`, `remote`,
   `sanitize`, `statistics`, `system`, `user_agent`, `assets`, `geolocalisation`, `debug`,
-  `bootstrap`. Ce sont les **seuls éléments testables sans bootstrapper le singleton** (cf. tests
+  `bootstrap`, `erreurs`, `journal`, `theme`. Ce sont les **seuls éléments testables sans bootstrapper le singleton** (cf. tests
   pilotes). `sanitize` expose `sanitize_html()` (HTMLPurifier, anti XSS stocké) ; `bootstrap` expose
   `nf_bs_align()`, le point unique qui traduit un alignement en classe Bootstrap 5 — les
   bibliothèques du cœur fabriquaient la leur par concaténation, et émettaient donc des noms de
@@ -174,7 +175,7 @@ corbeille (`Trash::TYPES`), recherche et flux RSS par module.
 
 ## 11. Dette technique notable
 
-- **Service locator + méthodes magiques** partout → testabilité/IDE/API REST bloqués.
+- **Service locator + méthodes magiques** partout → testabilité et IDE freinés (cf. §3).
 - **`strict_types`** : 1399 fichiers sur 1627 dans `neofrag`, `modules`, `widgets`, `addons` (2026-10-02) — tout le
   périmètre utile ; les 228 restants sont les gabarits `views/**.tpl.php`, où un `declare` ne protégerait rien.
   Le cliquet
@@ -182,8 +183,8 @@ corbeille (`Trash::TYPES`), recherche et flux RSS par module.
   magique `__get` / `__call` pouvant révéler des coercitions à l'exécution.
 - **`forum/models/forum.php`** : ramené de 1797 à **826 lignes** (six traits, trois bibliothèques pures) ; ce n'est plus
   un objet-dieu.
-- **Tests** : **504 tests, 1507 assertions, 0 sauté** (2026-09-20) — `tests/Unit` (31 classes, sans base),
-  `tests/Integration` (19 classes, base réelle en transaction annulée), `tests/Headless` (15 classes : le
+- **Tests** : **569 tests, 0 sauté** (2026-10-02) — `tests/Unit` (36 classes, sans base),
+  `tests/Integration` (18 classes, base réelle en transaction annulée), `tests/Headless` (20 classes : le
   framework booté, de vrais modèles), `tests/Browser` (12 épreuves dans un vrai navigateur via
   `tools/check-js.php`). `--fail-on-skipped` : une suite qui se saute est un échec. Tester les *objets*
   du framework passe par `HeadlessTestCase`.

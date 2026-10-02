@@ -122,15 +122,6 @@ trait Admin_Helpers
 	}
 
 	/**
-	 * Layout 2 colonnes (.settings-section-row : grid 1.4fr/1fr responsive built-in à 992px).
-	 * Le bouton retour est généré et inclus en tête.
-	 *
-	 * @param string $back_url    URL pour le bouton retour
-	 * @param string $back_label  Libellé du bouton retour
-	 * @param string $main        HTML colonne principale (généralement form ou liste)
-	 * @param string $aside       HTML colonne secondaire (preview, sidebar) — vide = pas d'aside
-	 */
-	/**
 	 * Le bouton qui crée, pour l'en-tête de la carte de la liste qu'il alimente (charte de
 	 * l'administration, docs/guide/create-a-module.md) : `admin_card(…, $this->admin_create(…))`.
 	 */
@@ -139,6 +130,15 @@ trait Admin_Helpers
 		return '<a class="btn btn-primary btn-sm" href="'.url($url).'"><i class="fas fa-plus"></i> '.$label.'</a>';
 	}
 
+	/**
+	 * Layout 2 colonnes (.settings-section-row : grid 1.4fr/1fr responsive built-in à 992px).
+	 * Le bouton retour est généré et inclus en tête.
+	 *
+	 * @param string $back_url    URL pour le bouton retour
+	 * @param string $back_label  Libellé du bouton retour
+	 * @param string $main        HTML colonne principale (généralement form ou liste)
+	 * @param string $aside       HTML colonne secondaire (preview, sidebar) — vide = pas d'aside
+	 */
 	protected function admin_split($back_url, $back_label, $main, $aside = '')
 	{
 		$html = $this->admin_back($back_url, $back_label);

@@ -15,7 +15,8 @@ class Admin_Ajax_Checker extends Module_Checker
 	{
 		if (($check = post_check('id', 'position')) && ($group = NeoFrag('NF\NeoFrag\Core\Groups')->check_group([$check['id']])) && $group['auto'] != 'neofrag')
 		{
-			return $check;
+			// La position arrive du navigateur en texte ; array_slice() exige un entier (strict_types).
+			return array_merge($check, ['position' => (int) $check['position']]);
 		}
 	}
 }

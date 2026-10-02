@@ -18,7 +18,8 @@ declare(strict_types=1);
  * Ce qu'il vérifie
  * ----------------
  *   1. les CHIFFRES d'inventaire (modules, widgets, thèmes, addons, contrôles, fichiers stricts)
- *      annoncés dans une forme d'inventaire correspondent au code — jamais la prose ;
+ *      annoncés dans une forme d'inventaire correspondent au code — jamais la prose —, et la
+ *      version citée (« NeoFrag Reborn X.Y.Z ») hors des documents de travail est celle du code ;
  *   2. les RENVOIS entre documents : tout lien vers un `.md` relatif pointe vers un fichier qui
  *      existe, et son ancre vers un titre qui existe ;
  *   3. aucun document ORPHELIN : tout `.md` sous `docs/` est la cible d'au moins un renvoi ;
@@ -79,18 +80,28 @@ foreach (['identity', 'optional'] as $tier)
     }
 }
 
+/*
+ * Thèmes distribués : tous, sauf ceux qui se déclarent `'distributed' => FALSE` — la vitrine, propre
+ * au site officiel, qu'aucun paquet ne porte. Le README disait « le paquet livre 7 thèmes » : le
+ * dépôt en a 7, le paquet 6.
+ */
+$themes_distribues = count(array_filter(nf_addons('theme'), static fn (string $dossier, string $nom): bool
+    => !preg_match("/'distributed'\s*=>\s*FALSE/i", (string) @file_get_contents($dossier.'/'.$nom.'.php')), ARRAY_FILTER_USE_BOTH));
+
 $attendus = [
     'modules'              => $compter('module'),
     'widgets'              => $compter('widget'),
     'themes'               => $compter('theme'),
+    'themes distribues'    => $themes_distribues,
     'addons'               => $compter('addon'),
     'addons distribuables' => $distribuables,
 ];
 
 // L'ordre compte : « addons distribuables » doit être tenté AVANT « addons », sinon la seconde
-// alternative capturerait le préfixe et comparerait 52 zips à 10 dossiers.
+// alternative capturerait le préfixe et comparerait 52 zips à 10 dossiers. De même pour les thèmes.
 $libelles = [
     'addons distribuables' => 'addons?\s+distribuables?',
+    'themes distribues'    => 'th[èe]mes?\s+distribu[ée]s?',
     'modules'              => 'modules?',
     'widgets'              => 'widgets?',
     'themes'               => 'th[èe]mes?',
@@ -130,18 +141,37 @@ foreach (nf_fichiers(['neofrag', 'modules', 'widgets', 'addons'], ['php'], [], F
     $php_stricts += str_contains((string) file_get_contents($chemin), 'declare(strict_types=1)') ? 1 : 0;
 }
 
+// La version du code, pour les documents qui la citent.
+$version = preg_match("/NEOFRAG_VERSION',\s*'([^']+)'/", (string) @file_get_contents($root.'/index.php'), $mv) ? $mv[1] : '';
+
 foreach ($vivants as $doc)
 {
     $lignes = file($doc, FILE_IGNORE_NEW_LINES) ?: [];
 
+    // La feuille de route parle au visiteur avec les chiffres du CATALOGUE, contrôlés plus bas.
+    $catalogue_seul = str_ends_with($doc, '/ROADMAP.md');
+
     foreach ($lignes as $i => $ligne)
     {
-        // Seules deux formes énoncent un inventaire : un titre (`## 54 modules`) et une chaîne
-        // séparée par « · » (`**54 modules · 38 widgets · 7 thèmes**`). Le reste est de la prose :
-        // « statistics (19 modules) » parle d'un sous-ensemble, et le contrôler crierait à tort.
-        if (preg_match('/^#{1,6}\s/u', $ligne) || str_contains($ligne, '·'))
+        // Ce qui énonce un inventaire : un titre (`## 54 modules`), une chaîne séparée par « · »
+        // (`**54 modules · 38 widgets · 7 thèmes**`), une énumération qui en nomme au moins deux
+        // (`54 modules, 38 widgets`), un compte en gras (`**54 modules**`), la ligne d'un tableau qui
+        // décrit le dossier lui-même (`| modules/ | 54 modules |`). Seules les deux premières étaient
+        // lues jusqu'au 2026-10-02 : le README annonçait 54 modules quand le code en comptait 62. Le
+        // reste est de la prose : « statistics (19 modules) » parle d'un sous-ensemble, et le
+        // contrôler crierait à tort. Une citation (« … ») rapporte ce qui était écrit — souvent le
+        // chiffre faux dont le journal raconte la correction — : elle n'affirme rien, et sort de la
+        // mesure, ici comme pour les contrôles, les fichiers stricts et la version.
+        $affirme = (string) preg_replace('/«[^»]*»/u', '', $ligne);
+
+        $inventaire = !$catalogue_seul && (preg_match('/^#{1,6}\s/u', $affirme) || str_contains($affirme, '·')
+            || preg_match_all('/\d+\s+(?:'.$alternation.')\b/ui', $affirme) >= 2
+            || preg_match('/\*\*\d+\s+(?:'.$alternation.')\b/ui', $affirme)
+            || preg_match('#^\|\s*`(?:modules|widgets|themes|addons)/`\s*\|#u', $affirme));
+
+        if ($inventaire)
         {
-            if (preg_match_all('/(\d+)\s+('.$alternation.')/ui', $ligne, $m, PREG_SET_ORDER))
+            if (preg_match_all('/(\d+)\s+('.$alternation.')/ui', $affirme, $m, PREG_SET_ORDER))
             {
                 foreach ($m as $match)
                 {
@@ -163,7 +193,7 @@ foreach ($vivants as $doc)
         }
 
         // « N contrôles », hors qualificatif qui restreint le sens (« 21 contrôles HTTP »).
-        if (preg_match_all('/(?:\*\*)?(\d[\d\x{202F}\x{00A0}\x{2009} \']*)(?:\*\*)?\s+contrôles?\b(?!\s*\*{0,2}\s*(?:HTTP|lourds?|légers?|ponctuels?|de\s+la\s+CI|statiques?|en\s+navigateur|à\s+cible))/ui', $ligne, $m, PREG_SET_ORDER))
+        if (preg_match_all('/(?:\*\*)?(\d[\d\x{202F}\x{00A0}\x{2009} \']*)(?:\*\*)?\s+contrôles?\b(?!\s*\*{0,2}\s*(?:HTTP|lourds?|légers?|ponctuels?|de\s+la\s+CI|statiques?|en\s+navigateur|à\s+cible))/ui', $affirme, $m, PREG_SET_ORDER))
         {
             foreach ($m as $match)
             {
@@ -182,8 +212,8 @@ foreach ($vivants as $doc)
         }
 
         // « N fichiers sur M » sur une ligne qui parle de strict_types.
-        if (str_contains($ligne, 'strict_types')
-            && preg_match('/(?:\*\*)?(\d[\d\x{202F}\x{00A0}\x{2009} \']*?)(?:\*\*)?\s+fichiers?\s+sur\s+(?:\*\*)?(\d[\d\x{202F}\x{00A0}\x{2009} \']*)/u', $ligne, $m))
+        if (str_contains($affirme, 'strict_types')
+            && preg_match('/(?:\*\*)?(\d[\d\x{202F}\x{00A0}\x{2009} \']*?)(?:\*\*)?\s+fichiers?\s+sur\s+(?:\*\*)?(\d[\d\x{202F}\x{00A0}\x{2009} \']*)/u', $affirme, $m))
         {
             $verifie += 2;
 
@@ -191,6 +221,23 @@ foreach ($vivants as $doc)
             {
                 $erreurs[] = sprintf("%s:%d — annonce %d fichiers stricts sur %d, le code en compte %d sur %d\n      > %s",
                     $rel($doc), $i + 1, nombre_francais($m[1]), nombre_francais($m[2]), $php_stricts, $php_total, trim($ligne));
+            }
+        }
+
+        // « NeoFrag Reborn X.Y.Z » dans un document qui décrit le présent : la version du code. Six
+        // documents se disaient « vérifiés contre la 1.1.0 » à la 1.2.17 (2026-10-02). Les documents
+        // de travail (`les notes du mainteneur`) racontent les versions passées et en sont dispensés.
+        if (!str_contains($doc, '/docs/internal/') && $version !== ''
+            && preg_match_all('/NeoFrag Reborn (\d+\.\d+\.\d+)/u', $affirme, $m))
+        {
+            foreach ($m[1] as $citee)
+            {
+                $verifie++;
+
+                if ($citee !== $version)
+                {
+                    $erreurs[] = sprintf("%s:%d — cite NeoFrag Reborn %s, le code est en %s\n      > %s", $rel($doc), $i + 1, $citee, $version, trim($ligne));
+                }
             }
         }
     }

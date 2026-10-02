@@ -4,7 +4,7 @@ Un **thème** donne au site son identité visuelle complète : la mise en page (
 de page), la charte (couleurs, typographies) et les **dispositions** par défaut (quels widgets, où).
 
 Nous esquissons un thème `aurora`. Le plus simple pour démarrer est de **cloner `themes/nebula/`** (le
-thème public livré) puis d'adapter. Tout ce qui suit est vérifié contre le code de NeoFrag Reborn 1.1.0.
+thème public livré) puis d'adapter. Tout ce qui suit est vérifié contre le code.
 
 ## Structure des fichiers
 
