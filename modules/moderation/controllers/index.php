@@ -215,6 +215,8 @@ class Index extends Controller_Module
 
 	public function _settings()
 	{
+		$this->_demo_refuse();
+
 		$this->css('moderation');
 		$this	->title($this->lang('Réglages modération'))
 				->icon('fas fa-cogs')
@@ -259,6 +261,8 @@ class Index extends Controller_Module
 
 	public function _report_dismiss($id)
 	{
+		$this->_demo_refuse();
+
 		$this->check_csrf('moderation/reports');
 
 		$report = $this->moderation->get_report($id);
@@ -272,6 +276,8 @@ class Index extends Controller_Module
 
 	public function _report_sanction($id)
 	{
+		$this->_demo_refuse();
+
 		$this->check_csrf('moderation/reports');
 
 		$report = $this->moderation->get_report($id);
@@ -320,6 +326,8 @@ class Index extends Controller_Module
 
 	public function _sanction_approve($id)
 	{
+		$this->_demo_refuse();
+
 		$this->check_csrf('moderation/sanctions');
 
 		if ($this->moderation->approve($id, (int)$this->user->id))
@@ -335,6 +343,8 @@ class Index extends Controller_Module
 
 	public function _sanction_revoke($id)
 	{
+		$this->_demo_refuse();
+
 		$this->check_csrf('moderation/sanctions');
 
 		$reason = trim((string)($_POST['reason'] ?? ''));
@@ -356,6 +366,8 @@ class Index extends Controller_Module
 
 	public function _snapshot_download($id)
 	{
+		$this->_demo_refuse();
+
 		self::serve_snapshot_download($this, (int)$id);
 	}
 
@@ -447,5 +459,19 @@ class Index extends Controller_Module
 		header('Cache-Control: private, no-cache, no-store, must-revalidate');
 		readfile($file_path);
 		exit;
+	}
+
+	/**
+	 * Sur la démonstration, le panneau des modérateurs se consulte sans agir : une sanction, un
+	 * réglage ou un instantané touchaient des tables et des fichiers que la remise à zéro ne restaure
+	 * pas — un visiteur bannissait un compte de démo pour de bon (audit du 2026-10-02).
+	 */
+	private function _demo_refuse(): void
+	{
+		if (nf_demo())
+		{
+			notify($this->lang('Action désactivée sur le site de démonstration.'), 'warning');
+			redirect('moderation');
+		}
 	}
 }

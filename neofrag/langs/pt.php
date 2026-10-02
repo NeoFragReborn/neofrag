@@ -587,4 +587,5 @@ return [
 	'310f6d4a' => 'Palavra-passe de webmaster recusada',
 	'83ebb393' => 'Acesso de webmaster desbloqueado',
 	'a93536c8' => 'Permissões alteradas',
+	'dc2bca2b' => 'O envio de ficheiros está desativado no site de demonstração.',
 ];

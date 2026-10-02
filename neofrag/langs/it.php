@@ -587,4 +587,5 @@ return [
 	'310f6d4a' => 'Password webmaster rifiutata',
 	'83ebb393' => 'Accesso webmaster sbloccato',
 	'a93536c8' => 'Permessi modificati',
+	'dc2bca2b' => 'Il caricamento dei file è disattivato sul sito demo.',
 ];

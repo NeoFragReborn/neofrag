@@ -65,7 +65,7 @@ class Admin extends Controller_Module
 
 		$add_btn = '<a class="btn btn-sm btn-primary" href="'.url('admin/access/roles/add').'">'.icon('fas fa-plus').' '.$this->lang('Créer un rôle').'</a>';
 
-		return $this->admin_card('fas fa-user-shield', $this->lang('Liste des rôles'), $this->view('admin/roles', ['roles' => $roles_data]), '', $add_btn);
+		return $this->admin_card('fas fa-user-shield', $this->lang('Liste des rôles'), $this->view('admin/roles', ['roles' => $roles_data, 'jeton' => $this->csrf_token()]), '', $add_btn);
 	}
 
 	public function _roles_add()
@@ -152,6 +152,10 @@ class Admin extends Controller_Module
 
 	public function _roles_delete($role)
 	{
+		// Un lien d'action : sans jeton, un lien piégé supprimait un rôle chez un administrateur
+		// connecté (et sur la démo, définitivement : les rôles ne sont pas restaurés). 2026-10-02.
+		$this->check_csrf('admin/access/roles');
+
 		if ($role['built_in'])
 		{
 			notify($this->lang('Impossible de supprimer un rôle built-in (super_admin, member, visitor)'), 'danger');

@@ -270,4 +270,12 @@ return [
 	'ed40c461' => 'Punti da verificare',
 	'2aa571c1' => 'Tutto a posto',
 	'43f0122b' => 'Nessun backup per ora: «Esegui backup ora» crea il primo.',
+	'7592a511' => 'Strumenti di diagnostica',
+	'3f8c23cc' => 'Non disponibile nella demo',
+	'a2d890b9' => 'La modalità debug, la traccia delle pagine e il registro delle traduzioni si impostano qui, sul tuo sito.',
+	'62900acd' => 'Sul tuo sito, questa schermata mostra ciò che il server ha registrato. Essendo la demo pubblica, qui resta chiusa.',
+	'9c39e0fa' => 'Non disponibile nella demo.',
+	'c5bc2c51' => 'Password del webmaster',
+	'e6fff20f' => 'Sul tuo sito, questa password protegge la modifica dei file e le azioni sensibili.',
+	'2fbd5770' => 'File di esempio: nella demo, il gestore file non mostra alcun file reale del server. Sul tuo sito, qui leggi e modifichi i tuoi file, protetti dalla password del webmaster.',
 ];

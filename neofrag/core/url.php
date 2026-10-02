@@ -320,7 +320,9 @@ class Url extends Core
 		}
 		else if (is_valid_url($url))
 		{
-			return $url;
+			// filter_var() juge valide « javascript://%0Aalert(1) » : une adresse absolue ne sort que si
+			// son schéma est sans danger (nf_url_sure) — les liens des menus passent par ici (2026-10-02).
+			return nf_url_sure((string) $url) ? $url : '#';
 		}
 
 		if (!$domain && $this->subdomain)

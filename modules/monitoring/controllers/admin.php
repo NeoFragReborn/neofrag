@@ -184,8 +184,8 @@ class Admin extends Controller_Module
 	/** Carte d'aide listant l'URL + la ligne crontab de l'endpoint de parution programmée. */
 	private function _cron_section()
 	{
-		$key   = (string)$this->config->nf_cron_key;
-		$reset = '<a class="btn btn-secondary btn-sm" href="'.url('admin/monitoring/cron/reset').'?_='.$this->_csrf_token().'" data-confirm="'.htmlspecialchars((string) ($this->lang('Générer une nouvelle clé ? L\'ancienne URL de cron cessera de fonctionner.')), ENT_QUOTES).'"><i class="fas fa-key"></i> '.$this->lang('Régénérer la clé').'</a>';
+		$key   = nf_demo() ? 'demonstration' : (string)$this->config->nf_cron_key;
+		$reset = nf_demo() ? '' : '<a class="btn btn-secondary btn-sm" href="'.url('admin/monitoring/cron/reset').'?_='.$this->_csrf_token().'" data-confirm="'.htmlspecialchars((string) ($this->lang('Générer une nouvelle clé ? L\'ancienne URL de cron cessera de fonctionner.')), ENT_QUOTES).'"><i class="fas fa-key"></i> '.$this->lang('Régénérer la clé').'</a>';
 
 		$header = '<div class="nf-card-header"><span><i class="far fa-clock"></i> '.$this->lang('Parution programmée (cron)').'</span>'.$reset.'</div>';
 
@@ -198,7 +198,8 @@ class Admin extends Controller_Module
 		}
 
 		$origin = ($this->url->https ? 'https' : 'http').'://'.($_SERVER['HTTP_HOST'] ?? '');
-		$url    = $origin.url('monitoring/cron').'?key='.rawurlencode($key);
+		// Sur la démonstration, la vraie clé ne s'affiche pas : la remise à zéro en dépend.
+		$url    = $origin.url('monitoring/cron').'?key='.(nf_demo() ? '••••••••' : rawurlencode($key));
 		$esc    = htmlspecialchars((string) ($url), ENT_QUOTES);
 
 		$body = '<div class="card-body">'
@@ -352,6 +353,11 @@ class Admin extends Controller_Module
 	{
 		$this->_administrateur_seulement();
 
+		if (nf_demo())
+		{
+			return $this->_demo_ferme($this->lang('Journal des erreurs'), 'fas fa-file-medical-alt');
+		}
+
 		require_once NEOFRAG_CMS.'/neofrag/helpers/journal.php';
 
 		$this->title($this->lang('Journal des erreurs'))->icon('fas fa-file-medical-alt');
@@ -430,6 +436,7 @@ class Admin extends Controller_Module
 	public function _journal_telecharger()
 	{
 		$this->_administrateur_seulement();
+		$this->_demo_refuse();
 
 		$fichier = NEOFRAG_CMS.'/logs/php.log';
 
@@ -476,6 +483,12 @@ class Admin extends Controller_Module
 	 */
 	private function _diagnostic_card(): string
 	{
+		if (nf_demo())
+		{
+			return $this->admin_card('fas fa-stethoscope', $this->lang('Outils de diagnostic'), $this->admin_empty('fas fa-lock', $this->lang('Indisponible sur la démonstration'),
+				$this->lang('Le mode débogage, la trace des pages et le relevé des traductions se règlent ici, sur votre site.')));
+		}
+
 		$traductions = (int) $this->db->select('COUNT(*)')->from('nf_log_i18n')->row();
 		$lignes      = '';
 
@@ -537,6 +550,7 @@ class Admin extends Controller_Module
 	public function _diagnostic($outil, $action)
 	{
 		$this->_administrateur_seulement();
+		$this->_demo_refuse();
 		$this->check_csrf('admin/monitoring');
 
 		$outils = $this->_diagnostics();
@@ -578,6 +592,11 @@ class Admin extends Controller_Module
 	public function _trace()
 	{
 		$this->_administrateur_seulement();
+
+		if (nf_demo())
+		{
+			return $this->_demo_ferme($this->lang('Trace des pages'), 'fas fa-shoe-prints');
+		}
 
 		require_once NEOFRAG_CMS.'/neofrag/helpers/journal.php';
 
@@ -646,6 +665,7 @@ class Admin extends Controller_Module
 	public function _trace_telecharger()
 	{
 		$this->_administrateur_seulement();
+		$this->_demo_refuse();
 
 		$fichier = NEOFRAG_CMS.'/logs/neofrag.log';
 
@@ -689,6 +709,11 @@ class Admin extends Controller_Module
 	public function _traductions()
 	{
 		$this->_administrateur_seulement();
+
+		if (nf_demo())
+		{
+			return $this->_demo_ferme($this->lang('Traductions manquantes'), 'fas fa-language');
+		}
 
 		$this->title($this->lang('Traductions manquantes'))->icon('fas fa-language');
 
@@ -847,6 +872,30 @@ class Admin extends Controller_Module
 		redirect('admin/monitoring');
 	}
 
+	/**
+	 * Sur la démonstration, un écran qui montrerait les entrailles du serveur (journal, trace,
+	 * fichiers, clés) est remplacé par cet avis : la démo est publique, et ce qu'elle montre, tout le
+	 * monde le voit (2026-10-02).
+	 */
+	private function _demo_ferme($titre, string $icone): string
+	{
+		$this->title($titre)->icon($icone);
+
+		return $this->admin_back('admin/monitoring', $this->lang('Monitoring'))
+			.$this->admin_card($icone, $titre, $this->admin_empty('fas fa-lock', $this->lang('Indisponible sur la démonstration'),
+				$this->lang('Sur votre site, cet écran montre ce que le serveur a enregistré. La démonstration étant publique, il y reste fermé.')));
+	}
+
+	/** Refuse l'action sur la démonstration (téléchargements, outils). */
+	private function _demo_refuse(): void
+	{
+		if (nf_demo())
+		{
+			notify($this->lang('Indisponible sur la démonstration.'), 'warning');
+			redirect('admin/monitoring');
+		}
+	}
+
 	private function _administrateur_seulement(): void
 	{
 		if (!$this->access->effective_admin())
@@ -859,6 +908,14 @@ class Admin extends Controller_Module
 	/** Carte « Sécurité webmaster » : état + formulaire définir/changer le mot de passe sudo. */
 	private function _webmaster_card()
 	{
+		// Sur la démonstration, le mot de passe webmaster ne se définit pas (la garde de webmaster()) :
+		// sans lui, aucune écriture de fichier n'est possible. La carte le dit au lieu d'un formulaire.
+		if (nf_demo())
+		{
+			return $this->admin_card('fas fa-user-shield', $this->lang('Mot de passe webmaster'), $this->admin_empty('fas fa-lock', $this->lang('Indisponible sur la démonstration'),
+				$this->lang('Sur votre site, ce mot de passe garde l’édition des fichiers et les actions sensibles.')));
+		}
+
 		$wm         = new \NF\NeoFrag\Libraries\Webmaster($this);
 		$configured = $wm->is_configured();
 		$csrf       = htmlspecialchars((string) ($this->_csrf_token()), ENT_QUOTES);
@@ -901,6 +958,9 @@ class Admin extends Controller_Module
 
 	public function _backup_download($filename)
 	{
+		// Une sauvegarde contient la base entière, comptes et empreintes de mots de passe compris.
+		$this->_demo_refuse();
+
 		// L'URL porte le timestamp seul (le placeholder {url_title} = [a-z0-9-] n'accepte pas le point
 		// de « .zip ») ; on reconstruit le vrai nom de fichier .zip côté serveur.
 		$slug = basename((string)$filename);

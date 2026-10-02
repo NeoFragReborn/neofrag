@@ -288,11 +288,11 @@ class Index extends Controller_Module
 		{
 			if ($is_locked)
 			{
-				$content .= '<a class="float-end btn btn-light ms-1" href="'.url('forum/lock/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Déverrouiller le sujet').'">'.icon('fas fa-unlock').'</a>';
+				$content .= '<a class="float-end btn btn-light ms-1" href="'.$this->csrf_url('forum/lock/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Déverrouiller le sujet').'">'.icon('fas fa-unlock').'</a>';
 			}
 			else
 			{
-				$content .= '<a class="float-end btn btn-light ms-1" href="'.url('forum/lock/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Verrouiller le sujet').'">'.icon('fas fa-lock').'</a>';
+				$content .= '<a class="float-end btn btn-light ms-1" href="'.$this->csrf_url('forum/lock/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Verrouiller le sujet').'">'.icon('fas fa-lock').'</a>';
 			}
 		}
 
@@ -555,6 +555,9 @@ class Index extends Controller_Module
 
 	public function _topic_lock($topic_id, $title, $is_announce, $is_locked)
 	{
+		// Un lien d'action : il porte le jeton de session, sans quoi un lien piégé verrouillait le sujet.
+		$this->check_csrf('forum/topic/'.$topic_id.'/'.url_title($title));
+
 		$this->db	->where('topic_id', $topic_id)
 					->update('nf_forum_topics', [
 						'status' => (string)($is_locked ? ($is_announce ? 1 : 0) : ($is_announce ? -2 : -1))

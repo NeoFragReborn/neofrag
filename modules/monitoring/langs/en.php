@@ -270,4 +270,12 @@ return [
 	'ed40c461' => 'Points to check',
 	'2aa571c1' => 'All good',
 	'43f0122b' => 'No backups yet: “Back up now” creates the first one.',
+	'7592a511' => 'Diagnostic tools',
+	'3f8c23cc' => 'Not available on the demo',
+	'a2d890b9' => 'Debug mode, page tracing and the missing-translation log are set here, on your own site.',
+	'62900acd' => 'On your site, this screen shows what the server has recorded. The demo being public, it stays closed here.',
+	'9c39e0fa' => 'Not available on the demo.',
+	'c5bc2c51' => 'Webmaster password',
+	'e6fff20f' => 'On your site, this password guards file editing and sensitive actions.',
+	'2fbd5770' => 'Example file: on the demo, the file manager shows no real server file. On your site, you read and edit your files here, protected by the webmaster password.',
 ];

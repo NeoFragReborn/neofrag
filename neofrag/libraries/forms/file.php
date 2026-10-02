@@ -68,7 +68,15 @@ class File extends Labelable
 					{
 						$data[$this->_name] = NeoFrag()->model2('file')->static_uploaded_file($_FILES[$this->_name], $upload_dir, $this->_value ? $this->_value->id : NULL);
 
-						if ($data[$this->_name]->path())
+						// La réception rend FALSE quand elle refuse (démonstration, extension interdite) : un
+						// appel de méthode dessus faisait tomber la page (erreur 500), l'avatar d'un visiteur
+						// de la démo par exemple (2026-10-02).
+						if (!is_object($data[$this->_name]))
+						{
+							$data[$this->_name] = NULL;
+							$this->_errors[]    = nf_demo() ? NeoFrag()->lang('Envoi de fichiers désactivé sur le site de démonstration.') : NeoFrag()->lang('Erreur de transfert');
+						}
+						else if ($data[$this->_name]->path())
 						{
 							if ($this->_uploaded)
 							{

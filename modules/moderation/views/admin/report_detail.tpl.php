@@ -17,7 +17,7 @@ $status_class = [
 			<div class="nf-card-header">
 				<span><i class="fas fa-flag"></i> <?php echo $this->lang('Signalement #%d', (int)$report['id']) ?> <span class="badge <?php echo badge_class($status_class) ?>"><?php echo htmlspecialchars($this->module('moderation')->libelle('statut', $report['status'])) ?></span></span>
 				<?php if (!empty($report['url'])): ?>
-				<a class="btn btn-sm btn-outline-secondary" href="<?php echo htmlspecialchars($report['url']) ?>" target="_blank"><i class="fas fa-external-link-alt"></i> <?php echo $this->lang('Voir le contenu en contexte') ?></a>
+				<a class="btn btn-sm btn-outline-secondary" href="<?php echo htmlspecialchars(nf_url_sure((string) $report['url']) ? (string) $report['url'] : '#') ?>" target="_blank"><i class="fas fa-external-link-alt"></i> <?php echo $this->lang('Voir le contenu en contexte') ?></a>
 				<?php else: ?>
 				<span class="badge text-bg-light" title="<?php echo htmlspecialchars($this->lang('Aucune URL de contexte fournie. Voir le commentaire du reporter pour situer le contenu.')) ?>"><i class="fas fa-unlink"></i> <?php echo $this->lang('Pas de contexte URL') ?></span>
 				<?php endif ?>
@@ -40,7 +40,7 @@ $status_class = [
 
 					<?php if (!empty($report['url'])): ?>
 					<dt class="col-sm-3"><?php echo $this->lang('URL') ?></dt>
-					<dd class="col-sm-9"><a href="<?php echo htmlspecialchars($report['url']) ?>" target="_blank"><?php echo htmlspecialchars($report['url']) ?></a></dd>
+					<dd class="col-sm-9"><a href="<?php echo htmlspecialchars(nf_url_sure((string) $report['url']) ? (string) $report['url'] : '#') ?>" target="_blank"><?php echo htmlspecialchars($report['url']) ?></a></dd>
 					<?php endif ?>
 				</dl>
 			</div>

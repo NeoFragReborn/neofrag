@@ -586,4 +586,5 @@ return [
 	'310f6d4a' => 'Webmaster password refused',
 	'83ebb393' => 'Webmaster access unlocked',
 	'a93536c8' => 'Permissions changed',
+	'dc2bca2b' => 'File uploads are disabled on the demo site.',
 ];

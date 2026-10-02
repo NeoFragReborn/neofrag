@@ -225,11 +225,12 @@ class Admin extends Controller_Module
 			$columns = ['id', 'username', 'email', 'registration_date', 'last_activity_date', 'admin'];
 
 			$out = fopen('php://temp', 'r+');
-			fputcsv($out, $columns);
+			// Séparateur, guillemet et échappement explicites : PHP 8.4 déprécie l'échappement implicite.
+			fputcsv($out, $columns, ',', '"', '\\');
 
 			foreach ($members as $m)
 			{
-				fputcsv($out, array_map(static fn($c) => $m[$c] ?? '', $columns));
+				fputcsv($out, array_map(static fn($c) => $m[$c] ?? '', $columns), ',', '"', '\\');
 			}
 
 			rewind($out);

@@ -268,4 +268,12 @@ return [
 	'ed40c461' => 'Des points à vérifier',
 	'2aa571c1' => 'Tout va bien',
 	'43f0122b' => 'Aucune sauvegarde pour le moment : « Sauvegarder maintenant » crée la première.',
+	'7592a511' => 'Outils de diagnostic',
+	'3f8c23cc' => 'Indisponible sur la démonstration',
+	'a2d890b9' => 'Le mode débogage, la trace des pages et le relevé des traductions se règlent ici, sur votre site.',
+	'62900acd' => 'Sur votre site, cet écran montre ce que le serveur a enregistré. La démonstration étant publique, il y reste fermé.',
+	'9c39e0fa' => 'Indisponible sur la démonstration.',
+	'c5bc2c51' => 'Mot de passe webmaster',
+	'e6fff20f' => 'Sur votre site, ce mot de passe garde l’édition des fichiers et les actions sensibles.',
+	'2fbd5770' => 'Fichier d’exemple : sur la démonstration, le gestionnaire de fichiers ne montre aucun vrai fichier du serveur. Sur votre site, vous lisez et modifiez ici vos fichiers, protégés par le mot de passe webmaster.',
 ];

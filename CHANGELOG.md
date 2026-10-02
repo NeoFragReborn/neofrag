@@ -10,6 +10,41 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.16] — 2026-10-02
+
+### Sécurité
+
+- **Un lien piégé ne s'exécute plus depuis l'adresse d'un signalement.** Le membre qui signale fournit
+  cette adresse, montrée ensuite au modérateur : un « javascript: » s'exécutait chez lui au clic. Même
+  garde sur les liens d'un flux RSS (widget), d'un diaporama, de l'annuaire de liens, des partenaires et
+  de toute adresse que le site fabrique : seules passent les adresses web, de courriel, de téléphone ou
+  internes au site.
+- **Supprimer un rôle, créer la clé du bot Discord, clôturer une petite annonce ou verrouiller un sujet
+  du forum** se faisaient par un simple lien : un lien piégé suffisait à déclencher l'action chez un
+  administrateur, un auteur ou un modérateur connecté. Ces liens portent désormais un jeton de sécurité.
+- **La démonstration verrouillée.** Son compte partagé (demo / demo) est administrateur : il pouvait
+  allumer le mode débogage pour tous les visiteurs, parcourir et lire ses fichiers, le journal des
+  erreurs et le phpinfo, voir la clé de la tâche planifiée, modifier les réglages du site, créer des
+  clés d'API, bannir des adresses IP ou des membres pour de bon, détourner l'adresse PayPal des dons, et
+  effacer des images que la remise à zéro ne savait pas rendre. Sur une démonstration, toute action vers
+  une partie verrouillée est refusée avant d'atteindre son écran, les écrans sensibles affichent un
+  avis, le gestionnaire de fichiers ne montre qu'une arborescence d'exemple, aucun fichier n'est
+  supprimé, et la remise à zéro rétablit aussi les cartes et modes de jeu, les rôles d'équipe, les
+  notifications, les points et les permissions.
+
+### Corrigé
+
+- **Un fichier refusé à l'envoi** (extension interdite, ou démonstration) faisait tomber la page
+  (erreur 500), par exemple en changeant d'avatar : le champ dit maintenant pourquoi.
+- **Les statistiques sur une période démesurée** (des siècles, heure par heure) épuisaient la mémoire
+  du serveur : la période et le nombre de points sont bornés.
+- **L'export des membres** écrivait un avertissement PHP 8.5 par ligne au journal.
+- **Sur la démonstration**, la bannière verte recouvrait les notifications, et le compte de secours
+  apparaissait dans la liste des joueurs d'une équipe et l'activité du tableau de bord.
+- **Un liseré blanc longeait le bord droit de l'éditeur de texte en mode sombre** (commentaires,
+  messagerie, administration) : l'éditeur peignait son cadre de saisie en blanc, et ce blanc dépassait
+  d'une fraction de pixel.
+
 ## [1.2.15] — 2026-10-02
 
 ### Modifié

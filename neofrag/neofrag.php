@@ -66,6 +66,8 @@ namespace NF\NeoFrag;
  * @method mixed                            css(mixed ...$args)
  * @method mixed                            js(mixed ...$args)
  * @method mixed                            user(mixed ...$args)
+ * @method mixed                            json(mixed ...$args)
+ * @method mixed                            modal(mixed ...$args)
  * @property mixed                          $user
  */
 #[\AllowDynamicProperties]

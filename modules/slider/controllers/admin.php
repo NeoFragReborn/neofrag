@@ -131,6 +131,14 @@ class Admin extends Controller_Module
 				'active'    => in_array('on', (array)$post['active']) ? 1 : 0
 			];
 
+			if (!nf_url_sure($data['link']))
+			{
+				notify($this->lang('Le lien doit être une adresse web (http ou https) ou une page du site.'), 'danger');
+				return $this->panel()
+							->heading($id ? $this->lang('Modifier la slide') : $this->lang('Nouvelle slide'), 'fas fa-image')
+							->body($form->display());
+			}
+
 			if ($id)
 			{
 				$this->model()->update_slide($id, $data);

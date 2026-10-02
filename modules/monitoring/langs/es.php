@@ -270,4 +270,12 @@ return [
 	'ed40c461' => 'Puntos por revisar',
 	'2aa571c1' => 'Todo va bien',
 	'43f0122b' => 'Todavía no hay copias: «Hacer copia ahora» crea la primera.',
+	'7592a511' => 'Herramientas de diagnóstico',
+	'3f8c23cc' => 'No disponible en la demostración',
+	'a2d890b9' => 'El modo de depuración, el registro de páginas y el registro de traducciones se ajustan aquí, en su propio sitio.',
+	'62900acd' => 'En su sitio, esta pantalla muestra lo que el servidor ha registrado. Al ser pública la demostración, aquí permanece cerrada.',
+	'9c39e0fa' => 'No disponible en la demostración.',
+	'c5bc2c51' => 'Contraseña de webmaster',
+	'e6fff20f' => 'En su sitio, esta contraseña protege la edición de archivos y las acciones sensibles.',
+	'2fbd5770' => 'Archivo de ejemplo: en la demostración, el gestor de archivos no muestra ningún archivo real del servidor. En su sitio, aquí lee y modifica sus archivos, protegidos por la contraseña de webmaster.',
 ];

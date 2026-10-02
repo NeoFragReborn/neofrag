@@ -45,4 +45,5 @@ return [
 	'b0d653e1' => 'Inaktiv',
 	'eb6693d4' => 'Deaktivieren',
 	'52c9bbab' => 'Bearbeiten',
+	'287e1fcc' => 'Der Link muss eine Webadresse (http oder https) oder eine Seite der Website sein.',
 ];

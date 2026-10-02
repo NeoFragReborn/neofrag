@@ -313,6 +313,23 @@ class Output extends Core
 				$checker     = NULL;
 				$has_checker = FALSE;
 
+				// Le filet de la démonstration (nf_demo_requete_refusee) : sur un module verrouillé, une
+				// requête qui agit est refusée ici, avant le checker comme le contrôleur.
+				if ($this->url->admin && nf_demo_requete_refusee((string) $module->info()->name, (string) $controller, (string) $method))
+				{
+					$refus = (string) NeoFrag()->lang('Action désactivée sur le site de démonstration.');
+
+					if ($this->url->ajax || $this->url->extension !== '')
+					{
+						http_response_code(403);
+						header('Content-Type: application/json; charset=utf-8');
+						exit(json_encode(['error' => $refus, 'demo' => TRUE], JSON_UNESCAPED_UNICODE));
+					}
+
+					notify($refus, 'warning');
+					redirect_back('admin/'.$module->info()->name);
+				}
+
 				// Une adresse à laquelle il manque un segment (`user/lost-password` sans son jeton) fait
 				// lever au checker une ArgumentCountError : ce n'est pas une panne, c'est un 404.
 				$adresse_incomplete = FALSE;
@@ -605,7 +622,9 @@ class Output extends Core
 
 			if (nf_demo())
 			{
-				NeoFrag()->js_load("(function(){var d=document;if(d.getElementById('nf-demo-bar'))return;var b=d.createElement('div');b.id='nf-demo-bar';b.innerHTML=".json_encode((string) $this->lang('Démo %s — réinitialisée régulièrement · connexion : %s', '<strong>NeoFrag Reborn</strong>', '<strong>demo / demo</strong>')).";b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#1abc9c;color:#fff;text-align:center;padding:6px 12px;font:600 13px/1.5 system-ui,Segoe UI,sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.25)';d.body.insertBefore(b,d.body.firstChild);d.body.style.paddingTop='32px';})();");
+				NeoFrag()->js_load("(function(){var d=document;if(d.getElementById('nf-demo-bar'))return;var b=d.createElement('div');b.id='nf-demo-bar';b.innerHTML=".json_encode((string) $this->lang('Démo %s — réinitialisée régulièrement · connexion : %s', '<strong>NeoFrag Reborn</strong>', '<strong>demo / demo</strong>')).";b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#1abc9c;color:#fff;text-align:center;padding:6px 12px;font:600 13px/1.5 system-ui,Segoe UI,sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.25)';d.body.insertBefore(b,d.body.firstChild);var s=d.createElement('style');s.textContent='#nf-toast-container{top:var(--nf-demo-bar,32px)!important}';d.head.appendChild(s);var h=function(){var px=b.offsetHeight+'px';d.documentElement.style.setProperty('--nf-demo-bar',px);d.body.style.paddingTop=px;};h();window.addEventListener('resize',h);})();");
+			// La bannière mesure sa hauteur (deux lignes sur un téléphone) et décale d'autant la page et
+			// les notifications, qu'elle recouvrait (relevé le 2026-10-02).
 			}
 
 			if (!$error && $this->_module->info()->name == 'live_editor')

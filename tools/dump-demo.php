@@ -68,13 +68,24 @@ const CONTENT_TABLES = [
     'nf_quotes_categories', 'nf_quotes',
     'nf_recipes_categories', 'nf_recipes',
     'nf_webradio_shows',
-    // `nf_media` n'y est PAS, et le module `media` est verrouillé : c'est le seul endroit du
-    // produit dont la suppression efface aussi le FICHIER sur le disque. Rétablir la ligne sans
-    // le fichier donnerait une image cassée. Galerie et téléchargements, eux, ne suppriment que
-    // la ligne — leurs fichiers survivent, donc ils restent modifiables.
+    // `nf_media` n'y est PAS, et le module `media` est verrouillé : il efface ses fichiers lui-même.
+    // Partout ailleurs, sur une démonstration, File::delete() ne supprime plus rien — ni le fichier
+    // ni sa ligne `nf_file`, que l'instantané ne porte pas (audit du 2026-10-02 : la galerie, qu'on
+    // disait ne supprimer « que la ligne », effaçait bel et bien le fichier).
     'nf_talks', 'nf_talks_messages', 'nf_talks_participants', 'nf_talks_attachments',
     'nf_revisions',
     'nf_wiki_pages', 'nf_wiki_revisions',
+
+    // ── Ajouté le 2026-10-02, après l'audit de sécurité de la démo : des tables que les modules
+    // OUVERTS écrivent, et que l'instantané ne rétablissait pas. Un rôle d'équipe renommé ou une
+    // carte de jeu supprimée l'étaient pour toujours, et publiquement ; les notifications et les
+    // points d'une publication s'accumulaient ; créer une galerie ou une page écrit des permissions.
+    'nf_games_maps', 'nf_games_modes', 'nf_teams_roles',
+    'nf_articles_series', 'nf_articles_series_lang',
+    'nf_notifications', 'nf_points_log',
+    'nf_role_permissions',
+    // La modération est verrouillée ; ses deux tables sont rétablies quand même, par sûreté.
+    'nf_sanctions', 'nf_ip_banlist',
 
     // Les MISES EN PAGE : l'éditeur en direct est une des vitrines du produit, et il écrit ici.
     // Sans ces deux tables, un visiteur qui déplace un bloc le déplace pour toujours.

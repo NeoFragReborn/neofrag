@@ -446,4 +446,5 @@ return [
 	'310f6d4a' => 'Mot de passe webmaster refusé',
 	'83ebb393' => 'Accès webmaster déverrouillé',
 	'a93536c8' => 'Permissions modifiées',
+	'dc2bca2b' => 'Envoi de fichiers désactivé sur le site de démonstration.',
 ];

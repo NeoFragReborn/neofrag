@@ -587,4 +587,5 @@ return [
 	'310f6d4a' => 'Contraseña de webmaster rechazada',
 	'83ebb393' => 'Acceso de webmaster desbloqueado',
 	'a93536c8' => 'Permisos modificados',
+	'dc2bca2b' => 'El envío de archivos está desactivado en el sitio de demostración.',
 ];

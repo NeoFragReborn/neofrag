@@ -139,6 +139,7 @@ class Admin extends Controller_Module
 							->join('nf_teams_users tu', 'tu.user_id = u.id AND tu.team_id = '.$team_id)
 							->join('nf_teams_roles r',  'r.role_id  = tu.role_id')
 							->where('u.deleted', FALSE)
+							->where('u.id !=', nf_compte_masque())   // le compte de secours d'une démonstration
 							->order_by('r.order', 'r.role_id', 'u.username')
 							->get();
 

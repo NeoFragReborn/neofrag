@@ -270,4 +270,12 @@ return [
 	'ed40c461' => 'Pontos a verificar',
 	'2aa571c1' => 'Está tudo bem',
 	'43f0122b' => 'Ainda não há cópias: «Fazer cópia agora» cria a primeira.',
+	'7592a511' => 'Ferramentas de diagnóstico',
+	'3f8c23cc' => 'Indisponível na demonstração',
+	'a2d890b9' => 'O modo de depuração, o registo de páginas e o registo de traduções definem-se aqui, no seu próprio site.',
+	'62900acd' => 'No seu site, este ecrã mostra o que o servidor registou. Sendo a demonstração pública, aqui permanece fechado.',
+	'9c39e0fa' => 'Indisponível na demonstração.',
+	'c5bc2c51' => 'Palavra-passe de webmaster',
+	'e6fff20f' => 'No seu site, esta palavra-passe protege a edição de ficheiros e as ações sensíveis.',
+	'2fbd5770' => 'Ficheiro de exemplo: na demonstração, o gestor de ficheiros não mostra nenhum ficheiro real do servidor. No seu site, aqui lê e modifica os seus ficheiros, protegidos pela palavra-passe de webmaster.',
 ];

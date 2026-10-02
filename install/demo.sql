@@ -538,10 +538,10 @@ INSERT INTO `nf_bug_tickets` (`id`, `title`, `description`, `type`, `priority`, 
 ('2', 'Ajouter un mode sombre au profil', 'Ce serait agréable d\'avoir le thème sombre partout.', 'feature', 'low', 'open', NULL, '330', NULL, '2026-09-16 11:46:29', '2026-09-16 11:46:29'),
 ('3', 'Comment changer mon avatar ?', 'Je ne trouve pas l\'option dans les réglages.', 'question', 'normal', 'closed', NULL, '331', NULL, '2026-09-16 11:46:29', '2026-09-16 11:46:29');
 DELETE FROM `nf_bug_comments`;
-INSERT INTO `nf_bug_comments` (`id`, `ticket_id`, `user_id`, `content`, `is_status_change`, `created_at`) VALUES
-('1', '1', '271', 'Merci pour le retour, on regarde ça.', '0', '2026-09-16 10:46:29'),
-('2', '2', '271', 'Merci pour le retour, on regarde ça.', '0', '2026-09-16 09:46:29'),
-('3', '3', '271', 'Merci pour le retour, on regarde ça.', '0', '2026-09-16 08:46:29');
+INSERT INTO `nf_bug_comments` (`id`, `ticket_id`, `user_id`, `content`, `is_status_change`, `author_provider`, `author_external_id`, `author_name`, `created_at`) VALUES
+('1', '1', '271', 'Merci pour le retour, on regarde ça.', '0', NULL, NULL, NULL, '2026-09-16 10:46:29'),
+('2', '2', '271', 'Merci pour le retour, on regarde ça.', '0', NULL, NULL, NULL, '2026-09-16 09:46:29'),
+('3', '3', '271', 'Merci pour le retour, on regarde ça.', '0', NULL, NULL, NULL, '2026-09-16 08:46:29');
 DELETE FROM `nf_donations_campaigns`;
 INSERT INTO `nf_donations_campaigns` (`id`, `name`, `title`, `description`, `goal_amount`, `currency`, `paypal_email`, `paypal_button_id`, `deadline`, `status`, `created_at`, `updated_at`) VALUES
 ('1', 'serveur-2025', 'Financement du serveur 2025', 'Aidez-nous à financer l\'hébergement de nos serveurs de jeu.', '500.00', 'EUR', '', '', '2026-11-15', 'active', '2026-09-16 11:46:29', '2026-09-16 11:46:29');
@@ -756,6 +756,117 @@ DELETE FROM `nf_wiki_revisions`;
 INSERT INTO `nf_wiki_revisions` (`id`, `page_id`, `content`, `title`, `user_id`, `comment`, `created_at`) VALUES
 ('1', '24', '<h1>Guide utilisateur</h1>\n<p>Tout pour installer et piloter ton site <strong>NeoFrag Reborn</strong>.</p>\n', 'Guide utilisateur', '271', 'Première rédaction', '2026-09-11 11:46:29'),
 ('2', '25', '<h1>Installation</h1>\n<p>NeoFrag Reborn s\'installe sur un hébergement web classique, <strong>mutualisé compris</strong>.</p>\n<h2>Prérequis</h2>\n<ul>\n<li><strong>PHP 8.2+</strong> avec les extensions <code>mysqli</code>, <code>gd</code>, <code>intl</code>, <code>mbstring</code>, <code>zip</code>, <code>curl</code>.</li>\n<li><strong>MySQL 5.7+</strong> ou <strong>MariaDB 10.5+</strong>.</li>\n<li><strong>Apache</strong> avec <code>mod_rewrite</code> (un <code>nginx.conf</code> est fourni en alternative).</li>\n<li>Une base de données vide + ses identifiants (panel de l\'hébergeur).</li>\n</ul>\n<h2>Mise en ligne</h2>\n<p>L\'assistant d\'installation se déroule en <strong>4 étapes</strong> : Prérequis → Base de données →\nAdministrateur → Terminé.</p>\n<ol>\n<li><strong>Téléverse</strong> les fichiers de NeoFrag Reborn à la racine web (FTP ou Git).</li>\n<li>Visite ton domaine : l\'<strong>assistant d\'installation</strong> se lance automatiquement et vérifie les prérequis.</li>\n<li>Renseigne la <strong>connexion base de données</strong> (une base vide) — l\'assistant importe le schéma, les migrations\n<strong>et installe tous les modules, widgets et thèmes</strong> livrés dans le paquet (modèle « tout bundlé »).</li>\n<li>Crée le <strong>compte administrateur</strong>. C\'est fini — supprime/replie l\'accès à l\'installeur si l\'hébergeur ne le fait pas.</li>\n</ol>\n<h2>Installation en ligne de commande (CLI)</h2>\n<p>Pour un déploiement <strong>scriptable et reproductible</strong> (VPS, provisioning), une alternative à l\'assistant\nweb : <code>install/cli.php</code>. Elle fait exactement la même chose (même lib, même modèle « tout bundlé »),\nsans navigateur.</p>\n<pre><code class=\"language-bash\"># Mot de passe admin via variable d\'environnement (invisible dans la liste des process) :\nexport NF_ADMIN_PASS=\'mon-mot-de-passe-fort\'\nphp install/cli.php \\\n  --db-name=neofrag --db-user=neofrag --db-pass=secret \\\n  --admin-user=admin --admin-email=admin@site.tld --admin-pass-env=NF_ADMIN_PASS \\\n  --site-name=&quot;Ma communauté&quot; --site-url=https://site.tld --yes\n</code></pre>\n<p>Sans arguments, elle passe en <strong>mode interactif</strong> (elle demande ce qui manque, mot de passe masqué).\nOptions utiles : <code>--create-db</code> (crée la base), <code>--demo</code> (contenu de démo), <code>--dry-run</code> (valide la config\net teste la connexion sans rien écrire), <code>--force</code> (réinstalle), <code>--no-lock</code> (ne pose pas le verrou).\nAide complète : <code>php install/cli.php --help</code>.</p>\n<blockquote>\n<p>Comme pour l\'assistant web, <strong>supprime (ou renomme) le dossier <code>install/</code></strong> après coup en production.</p>\n</blockquote>\n<h2>Modules : tout est déjà là</h2>\n<p>NeoFrag Reborn s\'installe <strong>complet</strong> : tous les modules (actualités, forum, galerie, équipes, événements,\nwiki, boutique…), widgets et thèmes du paquet sont installés et activés d\'emblée — il n\'y a <strong>pas de choix\nde profil</strong> à l\'installation (modèle WordPress).</p>\n<p>Tu <strong>actives/désactives</strong> ensuite chaque addon depuis <strong>Admin → Thèmes &amp; Addons</strong>. Les <strong>mises à jour</strong> des\naddons (et l\'ajout d\'addons tiers) se font depuis le <a href=\"marketplace\">marketplace</a>, avec intégrité vérifiée\npar empreinte SHA-256.</p>\n<blockquote>\n<p>La page d\'accueil rend toujours quelque chose (jamais d\'écran vide) : les actualités par défaut.</p>\n</blockquote>\n<h2>Premiers réglages</h2>\n<ol>\n<li><strong>Admin → Paramètres</strong> : nom du site, description, favicon, page d\'accueil.</li>\n<li><strong>Admin → Thèmes &amp; Addons</strong> : choisis ton thème (Nebula pour une communauté) et\n<strong>active ou désactive</strong> les modules selon tes besoins — tout est déjà installé (modèle « tout bundlé »).</li>\n<li><strong>Admin → Live Editor</strong> : compose tes pages (place tes widgets dans les zones).</li>\n<li><strong>Admin → Utilisateurs / Permissions</strong> : crée tes rôles et règle les accès.</li>\n</ol>\n<h2>Sécuriser l\'accès après l\'installation</h2>\n<p>À la fin, l\'assistant pose un <strong>verrou</strong> (<code>install/db.txt</code>) : revisiter <code>/install/</code> n\'affiche plus rien\nd\'exploitable. Par précaution, <strong>supprime (ou renomme) le dossier <code>install/</code></strong> de ton serveur — il n\'est\nplus nécessaire au fonctionnement du site. Pense aussi à activer <strong>HTTPS</strong> (Let\'s Encrypt) si l\'hébergeur\nne l\'a pas fait.</p>\n<h2>Dépannage</h2>\n<ul>\n<li><strong>« Connexion à la base impossible »</strong> : vérifie l\'hôte (souvent <code>localhost</code>, parfois une adresse dédiée\nsur les mutualisés), le port (<code>3306</code>), le nom de la base — <strong>elle doit exister et être vide</strong> — et les\nidentifiants (panel de l\'hébergeur).</li>\n<li><strong>« Extension PHP manquante »</strong> (étape Prérequis) : active l\'extension signalée (<code>mysqli</code>, <code>gd</code>, <code>intl</code>,\n<code>mbstring</code>, <code>zip</code>, <code>curl</code>) depuis le panel de l\'hébergeur, ou demande au support. En ligne de commande : <code>php -m</code>.</li>\n<li><strong>Dossier <code>config/</code> non inscriptible</strong> : l\'assistant doit y écrire <code>db.php</code> + les secrets. Donne les droits\nd\'écriture à <code>config/</code> (et à <code>cache/</code>, <code>logs/</code>, <code>upload/</code>, <code>backups/</code>).</li>\n<li><strong>Installation interrompue en cours de route</strong> : MySQL ne sait pas annuler un <code>CREATE TABLE</code> à moitié joué\n→ <strong>vide ou recrée une base vierge</strong> avant de relancer <code>/install/</code> (ne réessaie pas sur une base déjà entamée).</li>\n<li><strong>URLs en 404 / AJAX cassés sous nginx ou Plesk</strong> : le <code>.htaccess</code> n\'est lu que par Apache. Voir la note\n« nginx / Plesk » du guide de déploiement.</li>\n</ul>\n<h2>Développement local</h2>\n<p>Pour développer ou tester, une stack <strong>Docker</strong> est fournie (Apache + PHP 8.3, MariaDB,\nphpMyAdmin, Mailpit) :</p>\n<pre><code class=\"language-bash\">docker compose up -d        # http://localhost:8080\n</code></pre>\n<p>Détails (bootstrap d\'une base, migrations, tests, déploiement) :\n<code>docs/development.md</code>.</p>\n', 'Installation', '271', 'Première rédaction', '2026-09-11 11:46:29');
+DELETE FROM `nf_games_maps`;
+INSERT INTO `nf_games_maps` (`map_id`, `game_id`, `image_id`, `title`) VALUES
+('1', '1', NULL, 'Mirage'),
+('2', '1', NULL, 'Inferno'),
+('3', '1', NULL, 'Nuke'),
+('4', '1', NULL, 'Ancient'),
+('5', '1', NULL, 'Anubis'),
+('6', '2', NULL, 'Ascent'),
+('7', '2', NULL, 'Bind'),
+('8', '2', NULL, 'Haven'),
+('9', '2', NULL, 'Lotus'),
+('10', '3', NULL, 'Faille de l\'invocateur'),
+('11', '3', NULL, 'ARAM — Abîme hurlant'),
+('12', '4', NULL, 'Champions Field'),
+('13', '4', NULL, 'Mannfield'),
+('14', '4', NULL, 'Urban Central');
+DELETE FROM `nf_games_modes`;
+INSERT INTO `nf_games_modes` (`mode_id`, `game_id`, `title`) VALUES
+('1', '1', 'Compétitif 5v5'),
+('2', '1', 'Wingman 2v2'),
+('3', '1', 'Premier'),
+('4', '2', 'Compétitif 5v5'),
+('5', '2', 'Swiftplay'),
+('6', '3', 'Faille classée 5v5'),
+('7', '3', 'ARAM'),
+('8', '4', 'Duo 2v2'),
+('9', '4', 'Standard 3v3');
+DELETE FROM `nf_teams_roles`;
+INSERT INTO `nf_teams_roles` (`role_id`, `title`, `order`) VALUES
+('1', 'Capitaine', '0'),
+('2', 'Titulaire', '1'),
+('3', 'Remplaçant', '2'),
+('4', 'Coach', '3');
+DELETE FROM `nf_articles_series`;
+-- nf_articles_series : aucune donnée.
+DELETE FROM `nf_articles_series_lang`;
+-- nf_articles_series_lang : aucune donnée.
+DELETE FROM `nf_notifications`;
+INSERT INTO `nf_notifications` (`id`, `user_id`, `actor_id`, `type`, `title`, `url`, `is_read`, `created_at`) VALUES
+('1', '271', '329', 'comment', 'ShadowFox a commenté « Notre équipe CS2 se qualifie »', 'news', '1', '2026-09-16 10:46:29'),
+('2', '271', '330', 'forum_reply', 'NovaStrike a répondu dans « Vos réglages CS2 »', 'forum', '1', '2026-09-16 09:46:29'),
+('3', '271', '331', 'event', 'Rappel : Tournoi régional CS2 dans 5 jours', 'events', '1', '2026-09-16 08:46:29'),
+('4', '271', '332', 'reaction', 'LunaByte a réagi à ton message', 'forum', '1', '2026-09-16 07:46:29'),
+('5', '271', NULL, 'event-reminder', 'Rappel : l\'événement « Tournoi régional CS2 » commence bientôt', 'events/1/tournoi-regional-cs2', '0', '2026-09-20 11:50:01'),
+('6', '330', NULL, 'event-reminder', 'Rappel : l\'événement « Tournoi régional CS2 » commence bientôt', 'events/1/tournoi-regional-cs2', '0', '2026-09-20 11:50:01'),
+('7', '332', NULL, 'event-reminder', 'Rappel : l\'événement « Tournoi régional CS2 » commence bientôt', 'events/1/tournoi-regional-cs2', '0', '2026-09-20 11:50:01'),
+('8', '333', NULL, 'event-reminder', 'Rappel : l\'événement « Tournoi régional CS2 » commence bientôt', 'events/1/tournoi-regional-cs2', '0', '2026-09-20 11:50:01'),
+('9', '336', NULL, 'event-reminder', 'Rappel : l\'événement « Tournoi régional CS2 » commence bientôt', 'events/1/tournoi-regional-cs2', '0', '2026-09-20 11:50:01'),
+('10', '337', NULL, 'event-reminder', 'Rappel : l\'événement « Tournoi régional CS2 » commence bientôt', 'events/1/tournoi-regional-cs2', '0', '2026-09-20 11:50:01'),
+('11', '271', NULL, 'event-reminder', 'Rappel : l\'événement « Coupe Valorant communautaire » commence bientôt', 'events/2/coupe-valorant-communautaire', '0', '2026-09-27 11:50:01'),
+('12', '330', NULL, 'event-reminder', 'Rappel : l\'événement « Coupe Valorant communautaire » commence bientôt', 'events/2/coupe-valorant-communautaire', '0', '2026-09-27 11:50:01'),
+('13', '332', NULL, 'event-reminder', 'Rappel : l\'événement « Coupe Valorant communautaire » commence bientôt', 'events/2/coupe-valorant-communautaire', '0', '2026-09-27 11:50:01'),
+('14', '333', NULL, 'event-reminder', 'Rappel : l\'événement « Coupe Valorant communautaire » commence bientôt', 'events/2/coupe-valorant-communautaire', '0', '2026-09-27 11:50:01'),
+('15', '336', NULL, 'event-reminder', 'Rappel : l\'événement « Coupe Valorant communautaire » commence bientôt', 'events/2/coupe-valorant-communautaire', '0', '2026-09-27 11:50:01'),
+('16', '337', NULL, 'event-reminder', 'Rappel : l\'événement « Coupe Valorant communautaire » commence bientôt', 'events/2/coupe-valorant-communautaire', '0', '2026-09-27 11:50:01');
+DELETE FROM `nf_points_log`;
+INSERT INTO `nf_points_log` (`id`, `user_id`, `amount`, `type`, `reason`, `created_at`) VALUES
+('1', '271', '5', 'forum_message', 'Message publié sur le forum', '2026-09-15 11:46:29'),
+('2', '271', '2', 'comment', 'Commentaire publié', '2026-09-15 10:46:29'),
+('3', '271', '25', 'event', 'Participation à un événement', '2026-09-15 08:46:29'),
+('4', '329', '5', 'forum_message', 'Message publié sur le forum', '2026-09-14 11:46:29'),
+('5', '329', '10', 'daily', 'Connexion quotidienne', '2026-09-14 09:46:29'),
+('6', '329', '25', 'event', 'Participation à un événement', '2026-09-14 08:46:29'),
+('7', '330', '2', 'comment', 'Commentaire publié', '2026-09-13 10:46:29'),
+('8', '330', '10', 'daily', 'Connexion quotidienne', '2026-09-13 09:46:29'),
+('9', '331', '5', 'forum_message', 'Message publié sur le forum', '2026-09-12 11:46:29'),
+('10', '331', '2', 'comment', 'Commentaire publié', '2026-09-12 10:46:29'),
+('11', '331', '25', 'event', 'Participation à un événement', '2026-09-12 08:46:29'),
+('12', '332', '5', 'forum_message', 'Message publié sur le forum', '2026-09-11 11:46:29'),
+('13', '332', '10', 'daily', 'Connexion quotidienne', '2026-09-11 09:46:29'),
+('14', '332', '25', 'event', 'Participation à un événement', '2026-09-11 08:46:29'),
+('15', '333', '2', 'comment', 'Commentaire publié', '2026-09-10 10:46:29'),
+('16', '333', '10', 'daily', 'Connexion quotidienne', '2026-09-10 09:46:29'),
+('17', '334', '5', 'forum_message', 'Message publié sur le forum', '2026-09-09 11:46:29'),
+('18', '334', '2', 'comment', 'Commentaire publié', '2026-09-09 10:46:29'),
+('19', '334', '25', 'event', 'Participation à un événement', '2026-09-09 08:46:29'),
+('20', '335', '5', 'forum_message', 'Message publié sur le forum', '2026-09-08 11:46:29'),
+('21', '335', '10', 'daily', 'Connexion quotidienne', '2026-09-08 09:46:29'),
+('22', '335', '25', 'event', 'Participation à un événement', '2026-09-08 08:46:29'),
+('23', '336', '2', 'comment', 'Commentaire publié', '2026-09-07 10:46:29'),
+('24', '336', '10', 'daily', 'Connexion quotidienne', '2026-09-07 09:46:29'),
+('25', '337', '5', 'forum_message', 'Message publié sur le forum', '2026-09-06 11:46:29'),
+('26', '337', '2', 'comment', 'Commentaire publié', '2026-09-06 10:46:29'),
+('27', '337', '25', 'event', 'Participation à un événement', '2026-09-06 08:46:29'),
+('28', '271', '20', 'news', '', '2026-09-16 17:47:15'),
+('29', '271', '20', 'news', '', '2026-09-16 17:51:18'),
+('30', '1', '5', 'login', 'Connexion quotidienne', '2026-09-22 14:01:30');
+DELETE FROM `nf_role_permissions`;
+INSERT INTO `nf_role_permissions` (`role_id`, `permission`, `scope_id`, `authorized`) VALUES
+('1', '*.*', '0', 'allow'),
+('3', 'events.access_events_type', '0', 'allow'),
+('3', 'files.read_directory', '1', 'allow'),
+('3', 'forum.category_read', '0', 'allow'),
+('3', 'gallery.gallery_see', '0', 'allow'),
+('3', 'pages.access_page', '0', 'allow'),
+('3', 'talks.read', '0', 'allow'),
+('4', 'moderation.handle_reports', '0', 'allow'),
+('4', 'moderation.mediation', '0', 'allow'),
+('4', 'moderation.mute', '0', 'allow'),
+('4', 'moderation.restrict', '0', 'allow'),
+('4', 'moderation.view_reports', '0', 'allow'),
+('4', 'moderation.warn', '0', 'allow'),
+('5', 'moderation.access_private', '0', 'allow'),
+('5', 'moderation.approve', '0', 'allow'),
+('5', 'moderation.ban_temp', '0', 'allow');
+DELETE FROM `nf_sanctions`;
+INSERT INTO `nf_sanctions` (`id`, `user_id`, `type`, `scope`, `reason`, `duration_seconds`, `starts_at`, `expires_at`, `issued_by`, `requires_approval`, `approved_by`, `approved_at`, `revoked_at`, `revoked_by`, `revoke_reason`, `related_report_id`, `notify_user`, `created_at`) VALUES
+('1', '332', 'warning', 'global', 'Premier rappel à l\'ordre — propos déplacés sur le forum.', NULL, '2026-09-15 11:46:29', NULL, '271', '0', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2026-09-15 11:46:29'),
+('2', '333', 'mute', 'talks', 'Spam répété dans le salon général.', '86400', '2026-09-14 11:46:29', '2026-09-15 11:46:29', '271', '0', NULL, NULL, NULL, NULL, NULL, NULL, '1', '2026-09-14 11:46:29');
+DELETE FROM `nf_ip_banlist`;
+-- nf_ip_banlist : aucune donnée.
 DELETE FROM `nf_dispositions`;
 INSERT INTO `nf_dispositions` (`disposition_id`, `theme`, `page`, `zone`, `disposition`) VALUES
 ('82', 'nebula', '*', '0', '[]'),

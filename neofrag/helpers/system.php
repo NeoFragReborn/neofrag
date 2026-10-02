@@ -52,10 +52,12 @@ function nf_compte_masque(): int
  * et ne pouvait rien essayer — ce qui vide une démo de son intérêt. L'idée est donc de laisser
  * modifier ce que la remise à zéro horaire sait défaire, et de refuser le reste.
  *
- * Le critère n'est pas « est-ce dangereux » mais « est-ce que `install/demo.sql` le rétablit ». La
- * remise à zéro restaure le contenu, les mises en page, les menus et les membres. Elle ne restaure
- * NI les réglages, NI les addons installés, NI les rôles et permissions : ce qui est touché là
- * l'est définitivement. D'où cette liste.
+ * Le critère : « est-ce que `install/demo.sql` le rétablit, et rien d'autre ne peut-il en sortir ».
+ * La remise à zéro restaure le contenu, les mises en page, les menus, les membres et les réglages
+ * ordinaires. Elle ne restaure NI les réglages SENSIBLES (serveur d'envoi, clés, clé du cron :
+ * tools/dump-demo.php les exclut), NI les addons installés, NI les rôles et permissions : ce qui est
+ * touché là l'est définitivement. D'où cette liste. Les réglages du site y sont aussi : la démo est
+ * partagée, et un visiteur qui la mettait en maintenance la fermait à tous (2026-10-02).
  *
  * Deux entrées ne relèvent pas de la base du tout et méritent leur mot :
  *   - `addons` et `marketplace` installent des addons, donc ÉCRIVENT DES FICHIERS sur le serveur.
@@ -66,18 +68,76 @@ function nf_compte_masque(): int
 const NF_DEMO_MODULES_VERROUILLES = [
 	'access',      // rôles et permissions — non restaurés par l'instantané
 	'addons',      // installe/désinstalle : écrit des fichiers
+	'api',         // des clés d'accès au site pour des programmes extérieurs
 	'discord',     // la clé d'un bot, et des actions sur un vrai serveur Discord (mise en place, rôles)
 	'emails',      // envoi de courrier
+	'donations',   // l'adresse PayPal des campagnes : un visiteur détournait les dons des autres
 	'files',       // écrit des permissions de rôles (droits d'accès aux dossiers) — non restaurées
+	'gamification', // le barème : des réglages créés à la volée, que la remise à zéro ne retire pas
 	'marketplace', // télécharge et extrait des archives : écrit des fichiers
 	'media',       // la suppression efface aussi le FICHIER ; l'instantané ne restaure que la base
+	'moderation',  // liste noire d'IP et sanctions, non restaurées : un visiteur bloquait même la remise à zéro
 	'monitoring',  // sauvegardes, purges, mises à jour du cœur
 	'newsletter',  // envoi de courrier en masse
 	'payments',    // clés de passerelle de paiement
+	'settings',    // réglages du site : serveur d'envoi et clés (non restaurés), maintenance (pour tous)
 	'shop',        // adossé à payments
 	'tools',       // outils d'exploitation
 	'user',        // comptes et mots de passe, dont celui du compte de SECOURS, jamais restauré
 	'webhooks',    // appelle des services externes
+];
+
+/**
+ * Les requêtes qui ne font que LIRE, dans un module verrouillé, et que le filet de la démonstration
+ * laisse passer (`controleur::methode`). Le reste — tout envoi, toute action par lien porteuse d'un
+ * jeton — est refusé avant le contrôleur (cf. nf_demo_requete_refusee()).
+ */
+const NF_DEMO_LECTURES = [
+	'monitoring' => [
+		'admin_ajax::index',    // l'état du site (monitoring.json) : lecture, mise en cache du manifeste
+		'admin_ajax::fs_list',  // le gestionnaire de fichiers : une arborescence fictive en démo
+		'admin_ajax::fs_read',  // idem, un contenu fictif
+	],
+];
+
+/**
+ * Le filet de la démonstration : cette requête d'administration agit-elle sur un module verrouillé ?
+ *
+ * Une requête « agit » quand c'est un envoi (POST, AJAX compris) ou un lien porteur d'un jeton
+ * (`?_=`, la convention des suppressions, purges et bascules). Les gardes de chaque écran restent ;
+ * ce filet, posé dans Output avant le checker et le contrôleur, rattrape celles qui manqueraient :
+ * sur la démo, aucun accès ne doit passer (demandé le 2026-10-02).
+ */
+function nf_demo_requete_refusee(string $module, string $controleur, string $methode): bool
+{
+	if (!nf_demo() || nf_demo_ecriture_permise($module))
+	{
+		return FALSE;
+	}
+
+	if (in_array($controleur.'::'.$methode, NF_DEMO_LECTURES[$module] ?? [], TRUE))
+	{
+		return FALSE;
+	}
+
+	if (strtolower((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'post' || isset($_GET['_']))
+	{
+		return TRUE;
+	}
+
+	// Un lien SANS jeton n'est pas pour autant une lecture : la suppression d'un rôle, la création de
+	// la clé du bot, l'export des membres s'ouvraient par un simple lien (audit du 2026-10-02). Le nom
+	// de la méthode le dit : un de ces mots, et c'est une action.
+	return (bool) array_intersect(explode('_', strtolower(trim($methode, '_'))), NF_DEMO_MOTS_D_ACTION);
+}
+
+/** Les mots qui, dans le nom d'une méthode d'administration, désignent une action et non une page. */
+const NF_DEMO_MOTS_D_ACTION = [
+	'delete', 'remove', 'supprimer', 'purge', 'vider', 'reset', 'clear', 'export', 'download',
+	'telecharger', 'preview', 'cle', 'key', 'token', 'restore', 'restaurer', 'backup', 'sort', 'toggle',
+	'enable', 'disable', 'activer', 'desactiver', 'install', 'uninstall', 'assign', 'unassign', 'clone',
+	'revoke', 'revoquer', 'sync', 'send', 'envoyer', 'test', 'regenerer', 'diagnostic', 'adresse',
+	'webmaster', 'sudo', 'totp', 'unlink', 'appliquer', 'annuler', 'commande', 'approve', 'reject',
 ];
 
 /** Nom du module servant la requête courante, ou NULL s'il n'est pas encore résolu. */

@@ -41,6 +41,25 @@ class Admin_Ajax_Checker extends Module_Checker
 			$start = date_create_from_format('!Y-m-d', $debut) ?: date_create('-1 year midnight');
 			$end   = date_create_from_format('!Y-m-d', $fin) ?: date_create('today');
 
+			// Une plage bornée, et un nombre de points borné selon le pas : « de l'an 1 à l'an 9999,
+			// heure par heure » générait des millions de points jusqu'à épuiser la mémoire (audit du
+			// 2026-10-02 ; sur la démo, tout visiteur est administrateur). Un pas inconnu devient le mois.
+			$check['period'] = isset($periods[$check['period']]) ? $check['period'] : 'month';
+			$start = max($start, date_create('2000-01-01'));
+			$end   = min($end, date_create('+1 year midnight'));
+
+			if ($end < $start)
+			{
+				[$start, $end] = [$end, $start];
+			}
+
+			$jours_max = ['hour' => 31, 'day' => 1100, 'week' => 7300][$check['period']] ?? 18300;
+
+			if ($start->diff($end)->days > $jours_max)
+			{
+				$start = (clone $end)->modify('-'.$jours_max.' days');
+			}
+
 			$this->session	->set('statistics', 'period', $check['period'])
 							->set('statistics', 'start', $start->getTimestamp())
 							->set('statistics', 'end', $end->getTimestamp())

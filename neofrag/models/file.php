@@ -115,7 +115,17 @@ class File extends Model2
 
 	public function delete()
 	{
+		// Sur une démonstration, rien n'est supprimé, ni le fichier ni sa ligne : la remise à zéro ne
+		// restaure ni le disque ni `nf_file`, et une image supprimée par un visiteur restait cassée pour
+		// tous (galeries, icônes, logos, pièces jointes par cascade — audit du 2026-10-02). Aucun fichier
+		// n'y entre (uploaded_file() refuse) : en garder ne fait rien grossir.
+		if (nf_demo())
+		{
+			return TRUE;
+		}
+
 		@unlink($this->path);
+
 		return parent::delete();
 	}
 }

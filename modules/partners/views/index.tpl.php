@@ -3,7 +3,7 @@ $count = count($partners);
 foreach ($partners as $i => $partner): ?>
 	<div class="row">
 		<div class="col-12 col-lg-4 text-center">
-			<a href="<?php echo $partner['website'] ?>" target="_blank" class="d-block img-thumbnail" style="padding: 10px;">
+			<a href="<?php echo htmlspecialchars(nf_url_sure((string) $partner['website']) ? (string) $partner['website'] : '#') ?>" target="_blank" class="d-block img-thumbnail" style="padding: 10px;">
 				<?php if ($partner[$this->config->partners_logo_display]): ?>
 				<img src="<?php echo NeoFrag()->model2('file', $partner[$this->config->partners_logo_display])->path() ?>" class="img-fluid" alt="" />
 				<?php else: ?>
@@ -13,7 +13,7 @@ foreach ($partners as $i => $partner): ?>
 		</div>
 		<div class="col-12 col-lg-8">
 			<h4><?php echo $this->lang('À propos de %s', $partner['title']) ?></h4>
-			<p><?php echo $this->lang('Site internet') ?> : <a href="<?php echo $partner['website'] ?>" target="_blank"><?php echo preg_replace('_https?://_', '', $partner['website']) ?></a></p>
+			<p><?php echo $this->lang('Site internet') ?> : <a href="<?php echo htmlspecialchars(nf_url_sure((string) $partner['website']) ? (string) $partner['website'] : '#') ?>" target="_blank"><?php echo htmlspecialchars((string) preg_replace('_https?://_', '', (string) $partner['website'])) ?></a></p>
 			<ul class="list-inline">
 				<?php if ($partner['facebook']) echo '<li class="list-inline-item"><a href="'.$partner['facebook'].'" class="btn btn-primary" target="_blank" data-bs-toggle="tooltip" title="Facebook">'.icon('fab fa-facebook-f').'</a></li>' ?>
 				<?php if ($partner['twitter']) echo '<li class="list-inline-item"><a href="'.$partner['twitter'].'" class="btn btn-info" target="_blank" data-bs-toggle="tooltip" title="Twitter">'.icon('fab fa-twitter').'</a></li>' ?>

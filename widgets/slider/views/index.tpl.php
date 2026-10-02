@@ -37,7 +37,7 @@ $resolve_image = function($src) {
 			<div class="carousel-item<?php echo $i === 0 ? ' active' : '' ?>">
 				<?php
 					$img_src = $resolve_image($slide['image_url'] ?? '');
-					$has_link = !empty($slide['link']);
+					$has_link = !empty($slide['link']) && nf_url_sure((string) $slide['link']);
 				?>
 				<?php if ($has_link): ?><a href="<?php echo htmlspecialchars($slide['link']) ?>"><?php endif ?>
 				<?php if ($img_src): ?>

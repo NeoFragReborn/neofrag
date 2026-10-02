@@ -270,4 +270,12 @@ return [
 	'ed40c461' => 'Punkte zu prüfen',
 	'2aa571c1' => 'Alles in Ordnung',
 	'43f0122b' => 'Noch keine Sicherung: „Jetzt sichern“ erstellt die erste.',
+	'7592a511' => 'Diagnosewerkzeuge',
+	'3f8c23cc' => 'In der Demo nicht verfügbar',
+	'a2d890b9' => 'Debug-Modus, Seitenprotokoll und Übersetzungsprotokoll werden hier eingestellt, auf Ihrer eigenen Website.',
+	'62900acd' => 'Auf Ihrer Website zeigt diese Seite, was der Server aufgezeichnet hat. Da die Demo öffentlich ist, bleibt sie hier geschlossen.',
+	'9c39e0fa' => 'In der Demo nicht verfügbar.',
+	'c5bc2c51' => 'Webmaster-Passwort',
+	'e6fff20f' => 'Auf Ihrer Website schützt dieses Passwort die Dateibearbeitung und sensible Aktionen.',
+	'2fbd5770' => 'Beispieldatei: In der Demo zeigt die Dateiverwaltung keine echte Serverdatei. Auf Ihrer Website lesen und bearbeiten Sie hier Ihre Dateien, geschützt durch das Webmaster-Passwort.',
 ];

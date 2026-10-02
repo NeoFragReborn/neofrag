@@ -286,9 +286,12 @@ class Form extends Library
 
 						if (!empty($files['tmp_name'][$var]))
 						{
-							if (!($post[$var] = NeoFrag()->model2('file')->static_uploaded_file($files, isset($options['upload']) ? $options['upload'] : NULL, isset($options['value']) ? $options['value'] : NULL, $var)->id))
+							// La réception rend FALSE quand elle refuse (démonstration, extension interdite).
+							$fichier = NeoFrag()->model2('file')->static_uploaded_file($files, isset($options['upload']) ? $options['upload'] : NULL, isset($options['value']) ? $options['value'] : NULL, $var);
+
+							if (!is_object($fichier) || !($post[$var] = $fichier->id))
 							{
-								$this->_errors[$var] = NeoFrag()->lang('Erreur de transfert');
+								$this->_errors[$var] = nf_demo() ? NeoFrag()->lang('Envoi de fichiers désactivé sur le site de démonstration.') : NeoFrag()->lang('Erreur de transfert');
 								return FALSE;
 							}
 							else if (isset($options['post_upload']) && is_callable($options['post_upload']))

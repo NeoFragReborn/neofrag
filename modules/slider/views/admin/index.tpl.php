@@ -49,7 +49,7 @@
 						</td>
 						<td>
 							<?php if (!empty($slide['link'])): ?>
-								<small><a href="<?php echo htmlspecialchars($slide['link']) ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars(mb_substr($slide['link'], 0, 50)) ?></a></small>
+								<small><a href="<?php echo htmlspecialchars(nf_url_sure((string) $slide['link']) ? (string) $slide['link'] : '#') ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars(mb_substr($slide['link'], 0, 50)) ?></a></small>
 							<?php else: ?>
 								<small class="text-muted">—</small>
 							<?php endif ?>

@@ -372,6 +372,7 @@ class Admin extends Controller_Module
 			$rows = $this->db->select('a.id', 'a.user_id', 'a.action', 'a.target_type', 'a.target_id', 'a.created_at', 'u.username')
 				->from('nf_audit_log a')
 				->join('nf_user u', 'u.id = a.user_id', 'LEFT')
+				->where('(a.user_id IS NULL OR a.user_id != '.nf_compte_masque().')')   // le compte de secours d'une démonstration
 				->order_by('a.id DESC')->limit(8)->get();
 			foreach ($rows as $r)
 			{

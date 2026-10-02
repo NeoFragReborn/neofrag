@@ -315,6 +315,14 @@ class Admin_Ajax extends Controller_Module
 
 	public function phpinfo()
 	{
+		// Le phpinfo() complet — chemins, variables d'environnement, configuration — ne sort pas sur
+		// la démonstration, qui est publique et partage son serveur avec le site officiel.
+		if (nf_demo())
+		{
+			return $this->modal($this->lang('Informations détaillées'))
+						->body('<p class="text-center text-muted m-0 py-3">'.icon('fas fa-lock').' '.$this->lang('Indisponible sur la démonstration.').'</p>');
+		}
+
 		$extensions = get_loaded_extensions();
 		natcasesort($extensions);
 
@@ -786,6 +794,16 @@ class Admin_Ajax extends Controller_Module
 			return $this->json($e);
 		}
 
+		// Sur la démonstration : une arborescence d'exemple, aucun vrai fichier (la démo est publique,
+		// et partage son serveur avec le site officiel).
+		if (nf_demo())
+		{
+			return $this->json(['path' => '', 'entries' => array_merge(
+				array_map(static fn ($n) => ['name' => $n, 'path' => $n, 'type' => 'dir'], ['modules', 'themes', 'upload', 'widgets']),
+				array_map(static fn ($n) => ['name' => $n, 'path' => $n, 'type' => 'file'], ['exemple.css', 'exemple.php', 'LISEZ-MOI.txt'])
+			), 'demo' => TRUE]);
+		}
+
 		$abs = $this->_fm_path((string) post('dir') ?: '.');
 
 		if ($abs === NULL || !is_dir($abs))
@@ -834,6 +852,16 @@ class Admin_Ajax extends Controller_Module
 		if ($e = $this->_fm_deny_admin())
 		{
 			return $this->json($e);
+		}
+
+		if (nf_demo())
+		{
+			return $this->json([
+				'path'    => basename((string) post('path')),
+				'content' => (string) $this->lang('Fichier d’exemple : sur la démonstration, le gestionnaire de fichiers ne montre aucun vrai fichier du serveur. Sur votre site, vous lisez et modifiez ici vos fichiers, protégés par le mot de passe webmaster.'),
+				'mode'    => 'text',
+				'demo'    => TRUE,
+			]);
 		}
 
 		$abs = $this->_fm_path((string) post('path'));

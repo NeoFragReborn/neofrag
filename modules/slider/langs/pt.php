@@ -45,4 +45,5 @@ return [
 	'b0d653e1' => 'Inativo',
 	'eb6693d4' => 'Desativar',
 	'52c9bbab' => 'Modificar',
+	'287e1fcc' => 'A ligação deve ser um endereço web (http ou https) ou uma página do site.',
 ];

@@ -587,4 +587,5 @@ return [
 	'310f6d4a' => 'Webmaster-Passwort abgelehnt',
 	'83ebb393' => 'Webmaster-Zugang entsperrt',
 	'a93536c8' => 'Berechtigungen geändert',
+	'dc2bca2b' => 'Das Hochladen von Dateien ist auf der Demo-Website deaktiviert.',
 ];

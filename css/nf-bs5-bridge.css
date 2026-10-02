@@ -431,3 +431,9 @@ select:autofill {
 	--bs-carousel-caption-color: #fff;
 	--bs-carousel-control-icon-filter: none;
 }
+
+/* L'éditeur de texte (TinyMCE) : ses deux habillages, clair et sombre, peignent le cadre de saisie en
+   blanc. En sombre, ce blanc dépassait d'une fraction de pixel au bord droit, en liseré (2026-10-02,
+   sous les commentaires d'un billet). Transparent, le cadre laisse voir le fond de l'éditeur, de la
+   bonne couleur dans les deux modes. Deux classes : l'habillage, chargé après, a la même règle à une. */
+.tox.tox-tinymce .tox-edit-area__iframe { background-color: transparent; }

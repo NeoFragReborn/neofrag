@@ -1,5 +1,6 @@
 <?php
 // R1.4 — Liste des rôles avec actions (edit, clone, delete) et compteurs.
+$jeton = $jeton ?? '';
 ?>
 <?php if (empty($roles)): ?>
 	<div class="alert alert-info text-center">
@@ -71,7 +72,7 @@
 						<a class="btn btn-sm btn-outline-secondary" href="<?php echo url('admin/access/roles/edit/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Éditer') ?>"><i class="fas fa-pen"></i></a>
 						<a class="btn btn-sm btn-outline-secondary" href="<?php echo url('admin/access/roles/clone/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Cloner') ?>"><i class="fas fa-copy"></i></a>
 						<?php if (!$r['built_in']): ?>
-							<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/access/roles/delete/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>"
+							<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/access/roles/delete/'.(int)$r['role_id'].'/'.url_title($r['title'])).'?_='.$jeton ?>"
 								data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer le rôle "%s" ? Tous ses %d utilisateurs perdront ces permissions.', $this->lang($r['title']), (int)$r['user_count']), ENT_QUOTES) ?>"
 								data-confirm-title="<?php echo htmlspecialchars($this->lang('Supprimer le rôle'), ENT_QUOTES) ?>"
 								data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>"><i class="far fa-trash-alt"></i></a>

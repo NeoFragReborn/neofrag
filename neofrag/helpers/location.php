@@ -10,6 +10,27 @@ function url($url = ''): string
 	return NeoFrag()->url($url);
 }
 
+/**
+ * Une adresse sans danger dans un `href` : vide, relative, web (http, https), courriel (mailto),
+ * téléphone (tel) ou position (geo).
+ * Un schéma comme « javascript: » ou « data: » exécute du code au clic : saisi dans un diaporama ou
+ * l'annuaire de liens, il frappait chaque visiteur — et sur la démonstration, servie sous le même
+ * domaine que le site officiel, avec les droits de celui-ci (audit du 2026-10-02). Les blancs et
+ * caractères de contrôle qu'un navigateur ignore dans un schéma (« java\tscript: ») sont retirés
+ * avant de juger.
+ */
+function nf_url_sure(string $url): bool
+{
+	$nette = (string) preg_replace('/[\x00-\x20\x7f]+/', '', $url);
+
+	if (preg_match('#^([a-z][a-z0-9+.\-]*):#i', $nette, $schema))
+	{
+		return in_array(strtolower($schema[1]), ['http', 'https', 'mailto', 'tel', 'geo'], TRUE);
+	}
+
+	return TRUE;
+}
+
 function redirect($location = '')
 {
 	return NeoFrag()->url->redirect(url($location));

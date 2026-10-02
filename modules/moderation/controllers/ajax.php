@@ -36,6 +36,7 @@ class Ajax extends Controller_Module
 		$reason      = trim((string)($_POST['reason'] ?? 'other'));
 		$comment     = trim((string)($_POST['comment'] ?? ''));
 		$url         = trim((string)($_POST['url'] ?? ''));
+		$url         = nf_url_sure($url) ? $url : '';   // envoyée par le membre qui signale, montrée au modérateur
 
 		if ($target_type === '' || $target_id === '')
 		{
@@ -96,7 +97,9 @@ class Ajax extends Controller_Module
 	 */
 	private function _backup_attachments(string $target_type, string $target_id, int $report_id): void
 	{
-		if (empty($this->config->nf_moderation_snapshot_attachments_enabled)) return;
+		// Sur la démonstration, aucune copie : elles s'accumulaient sous backups/, que la remise à zéro
+		// ne nettoie pas, à chaque signalement d'un visiteur (audit du 2026-10-02).
+		if (nf_demo() || empty($this->config->nf_moderation_snapshot_attachments_enabled)) return;
 
 		// Map target_type → (table_attachments, message_id à utiliser)
 		$src = $this->_resolve_attachments_source($target_type, $target_id);
