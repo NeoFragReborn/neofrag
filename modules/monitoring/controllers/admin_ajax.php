@@ -310,6 +310,27 @@ class Admin_Ajax extends Controller_Module
 			$result = json_decode(file_get_contents('cache/monitoring/monitoring.json'));
 		}
 
+		// Sur la démonstration, l'onglet Fichiers montre un arbre d'exemple : l'arborescence réelle du
+		// serveur ne sort pas, même sans le contenu des fichiers (demandé le 2026-10-02).
+		if (nf_demo())
+		{
+			$fichier  = static fn (string $nom): array => ['text' => $nom, 'tags' => []];
+			$exemple  = [
+				['text' => 'modules', 'tags' => [], 'nodes' => [['text' => 'exemple', 'tags' => [], 'nodes' => [$fichier('exemple.php')]]]],
+				['text' => 'themes', 'tags' => [], 'nodes' => [['text' => 'exemple', 'tags' => [], 'nodes' => [$fichier('style.css')]]]],
+				$fichier('index.php'),
+			];
+
+			if (is_array($result))
+			{
+				$result['files'] = $exemple;
+			}
+			else if (is_object($result))
+			{
+				$result->files = $exemple;
+			}
+		}
+
 		return $this->json($result);
 	}
 

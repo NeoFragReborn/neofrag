@@ -10,6 +10,14 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.17] — 2026-10-02
+
+### Sécurité
+
+- **Sur la démonstration, l'onglet Fichiers du Monitoring** montrait encore l'arborescence réelle de
+  l'installation (des noms de dossiers et de fichiers, sans leur contenu) : il montre désormais un arbre
+  d'exemple, comme le gestionnaire de fichiers.
+
 ## [1.2.16] — 2026-10-02
 
 ### Sécurité
