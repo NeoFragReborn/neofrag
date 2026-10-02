@@ -54,7 +54,7 @@ class Events extends Core
 				}
 				catch (\Throwable $e)
 				{
-					if (NEOFRAG_DEBUG_BAR || NEOFRAG_LOGS)
+					if (nf_debogage_actif() || nf_trace_active())
 					{
 						$this->debug('EVENTS', 'Listener for "'.$event.'" threw: '.$e->getMessage());
 					}

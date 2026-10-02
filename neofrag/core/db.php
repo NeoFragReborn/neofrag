@@ -540,7 +540,7 @@ class Db extends Core
 
 								self::$_drivers[$config['type']] = $driver;
 
-								if (NEOFRAG_DEBUG_BAR || NEOFRAG_LOGS)
+								if (nf_debogage_actif() || nf_trace_active())
 								{
 									$this->debug('DB', 'Connection established '.$config['type'].' / '.$config['hostname'].' / '.$config['database'].' ('.$config['driver'].')');
 								}
@@ -551,8 +551,12 @@ class Db extends Core
 
 				if (!isset(self::$_drivers[$type]))
 				{
-					header('HTTP/1.0 503 Service Unavailable');
-					exit('Database error check config/db.php');
+					// La base injoignable : le visiteur lit une page claire, dans sa langue ; l'exploitant
+					// trouve la cause au journal. Elle répondait « Database error check config/db.php »,
+					// en anglais brut, et ne laissait aucune trace.
+					nf_journaliser_erreur('db', 'connexion impossible à la base de données « '.$type.' » — vérifier config/db.php et le serveur de base de données');
+					nf_page_erreur_autonome(503);
+					exit;
 				}
 
 				unset(self::$_config[$type]);
@@ -601,7 +605,7 @@ class Db extends Core
 
 		$this->_request = [];
 
-		if (NEOFRAG_DEBUG_BAR || NEOFRAG_LOGS)
+		if (nf_debogage_actif() || nf_trace_active())
 		{
 			self::$_requests[] = $request;
 		}

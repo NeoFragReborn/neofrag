@@ -315,4 +315,5 @@ return [
 	'7b86045c' => 'Todavía no hay cuentas vinculadas.',
 	'41dd9c72' => 'Su cuenta no tiene contraseña: inicia sesión mediante una cuenta vinculada. Defina una contraseña en su perfil para no depender de ella.',
 	'a4afc21b' => 'Vincular una cuenta',
+	'2778f267' => 'Automática: la de su navegador',
 ];

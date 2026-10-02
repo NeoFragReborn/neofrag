@@ -42,6 +42,8 @@ NF.ready(function(){
 			// Réponse streamée = suite de fragments JSON séparés par ';'. On re-parse tout le buffer à
 			// chaque chunk (idempotent grâce au garde `value < pourcent`) ; un fragment incomplet en fin
 			// de buffer échoue silencieusement et sera complété au chunk suivant.
+			var fin = null;   // [100, 'OK'] ou [99, message, référence] : comment le serveur dit avoir fini
+
 			function processBuffer(){
 				buffer.split(';').forEach(function(chunk){
 					chunk = chunk.trim();
@@ -49,6 +51,8 @@ NF.ready(function(){
 
 					var d;
 					try { d = JSON.parse(chunk); } catch (err){ return; }
+
+					if (d[0] === 100 || d[0] === 99){ fin = d; return; }
 
 					var entry    = progressBar[d[0]];
 					if (!entry){ return; }
@@ -73,11 +77,19 @@ NF.ready(function(){
 			function pump(){
 				return reader.read().then(function(result){
 					if (result.done){
-						var refresh = document.querySelector('.module-monitoring .refresh');
-						if (refresh){ refresh.click(); }
 						bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-						notify('<?php echo addslashes($this->lang('Mise à jour effectuée avec succès')) ?>');
-						setTimeout(function(){ window.location.reload(); }, 2000);
+
+						// Le succès ne s'annonce que si le serveur l'a dit. « Mise à jour effectuée avec
+						// succès » s'affichait dès que le flux s'arrêtait, échec compris (relevé le 2026-10-02).
+						if (fin && fin[0] === 100){
+							var refresh = document.querySelector('.module-monitoring .refresh');
+							if (refresh){ refresh.click(); }
+							notify('<?php echo addslashes($this->lang('Mise à jour effectuée avec succès')) ?>');
+							setTimeout(function(){ window.location.reload(); }, 2000);
+						}
+						else {
+							nfEchecDuFlux('<?php echo addslashes($this->lang('La mise à jour a échoué : %s')) ?>', fin, buffer);
+						}
 						return;
 					}
 
@@ -88,6 +100,27 @@ NF.ready(function(){
 			}
 
 			return pump();
+		}).catch(function(){
+			bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+			nfEchecDuFlux('<?php echo addslashes($this->lang('La mise à jour a échoué : %s')) ?>', null, '');
 		});
 	});
 });
+
+/**
+ * L'échec d'une opération en flux (sauvegarde, mise à jour), dit à l'administrateur : le message du
+ * serveur et la référence que porte le journal ; à défaut, le texte brut que le serveur a renvoyé ;
+ * à défaut, qu'elle s'est arrêtée sans confirmation.
+ */
+function nfEchecDuFlux(modele, fin, brut){
+	var echapper = function(t){ return String(t).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+	var texte    = fin && fin[0] === 99 ? fin[1] : String(brut || '').split(';').filter(function(c){ c = c.trim(); if (!c){ return false; } try { JSON.parse(c); return false; } catch (e){ return true; } }).join(' ').trim();
+	texte        = String(texte).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
+	var message  = modele.replace('%s', echapper(texte || '<?php echo addslashes($this->lang('elle s’est arrêtée sans confirmation du serveur.')) ?>'));
+
+	if (fin && /^[0-9A-F]{8}$/.test(fin[2] || '')){
+		message += ' <?php echo addslashes($this->lang('Référence : %s')) ?>'.replace('%s', fin[2]);
+	}
+
+	notify(message, 'danger');
+}

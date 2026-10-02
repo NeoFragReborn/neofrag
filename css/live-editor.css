@@ -169,6 +169,78 @@ body.nf-le-chrome .live-editor-navbar .dropdown-item:focus {
 	color: var(--nf-le-accent-text);
 }
 
+/* Navigation : des sous-menus repliables, rangés comme la barre latérale de l'administration */
+body.nf-le-chrome .live-editor-navbar .nf-le-nav {
+	min-width: 17rem;
+	max-height: min(70vh, 34rem);
+	overflow-y: auto;
+}
+
+body.nf-le-chrome .live-editor-navbar .nf-le-nav-filtre {
+	position: sticky;
+	top: -4px;
+	z-index: 1;
+	padding: 4px 4px 6px;
+	background: var(--nf-le-navbar-bg);
+}
+
+body.nf-le-chrome .live-editor-navbar .nf-le-nav-groupe > summary {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	border-radius: var(--nf-le-radius-xs);
+	color: var(--nf-le-navbar-text);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	cursor: pointer;
+	list-style: none;
+	opacity: .8;
+}
+
+body.nf-le-chrome .live-editor-navbar .nf-le-nav-groupe > summary::-webkit-details-marker {
+	display: none;
+}
+
+body.nf-le-chrome .live-editor-navbar .nf-le-nav-groupe > summary::after {
+	content: "";
+	margin-left: 4px;
+	width: 6px;
+	height: 6px;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(-45deg);
+	transition: transform .15s ease;
+}
+
+body.nf-le-chrome .live-editor-navbar .nf-le-nav-groupe[open] > summary::after {
+	transform: rotate(45deg);
+}
+
+body.nf-le-chrome .live-editor-navbar .nf-le-nav-groupe > summary:hover {
+	background: var(--nf-le-accent-soft);
+	opacity: 1;
+}
+
+body.nf-le-chrome .live-editor-navbar .nf-le-nav-nombre {
+	margin-left: auto;
+	font-weight: 600;
+	opacity: .7;
+}
+
+body.nf-le-chrome .live-editor-navbar .nf-le-nav-groupe > .dropdown-item {
+	padding-left: 28px;
+}
+
+body.nf-le-chrome .live-editor-navbar .nf-le-nav-vide {
+	margin: 6px 10px;
+	font-size: 13px;
+	color: var(--nf-le-navbar-text);
+	opacity: .7;
+}
+
 /* Mode toggle */
 body.nf-le-chrome .live-editor-navbar .btn-group {
 	background: var(--nf-le-accent-soft);

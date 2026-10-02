@@ -127,6 +127,14 @@ class Session extends Core
 		if ($user())
 		{
 			$user->set('last_activity_date', NeoFrag()->date())->update();
+
+			// Le fuseau horaire choisi dans son profil, pour l'affichage des dates (cf. nf_fuseau(),
+			// helpers/time.php). Ici et non dans le module user : son __init() ne s'exécute que sur
+			// ses propres pages, et le choix du membre restait sans effet partout ailleurs.
+			if (($profil = $user->profile()) && $profil() && (string) $profil->timezone !== '')
+			{
+				nf_fuseau_membre((string) $profil->timezone, TRUE);
+			}
 		}
 
 		$this	->trigger('session_init', $this)

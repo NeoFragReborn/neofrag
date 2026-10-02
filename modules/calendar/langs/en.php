@@ -56,4 +56,6 @@ return [
 	'960d0854' => 'Manage events',
 	'46b60b4f' => 'F j, Y',
 	'0c3ae1ce' => 'F j, Y, H:i',
+	'f5ae0a85' => 'Start',
+	'eae6f46e' => 'End (optional)',
 ];

@@ -25,6 +25,14 @@ class Date extends Text
 			{
 				$data[$this->_name] = $post[$this->_name];
 				call_user_func_array([$this->config->lang, $this->_datetime_type.'2sql'], [&$data[$this->_name]]);
+
+				// Une date et heure se saisit dans le fuseau de celui qui remplit le formulaire, et
+				// s'enregistre dans celui du serveur (cf. nf_heure_saisie()). Une date seule, une heure
+				// seule, ne changent pas de fuseau.
+				if ($this->_datetime_type === 'datetime')
+				{
+					$data[$this->_name] = nf_heure_saisie($data[$this->_name]);
+				}
 			}
 
 			if (!isset($data[$this->_name]) || !preg_match('/^'.$this->_datetime_regexp.'$/', $data[$this->_name]))

@@ -67,7 +67,7 @@ class Output extends Core
 						echo "\n";
 					}
 
-					if (NEOFRAG_DEBUG_BAR || NEOFRAG_LOGS)
+					if (nf_debogage_actif() || nf_trace_active())
 					{
 						$this->debug('OUTPUT', 'HTTP_HEADER', json_encode(headers_list()));
 					}
@@ -355,32 +355,43 @@ class Output extends Core
 					 * en silence : la page s'affiche, amputée, sans rien dire. Retrouver l'origine
 					 * demandait de rejouer le flux et de chercher à la main.
 					 *
-					 * On garde la première image de pile qui appartient au PRODUIT : celle de
-					 * `htmlspecialchars` elle-même n'apprend rien, c'est son appelant qui compte.
+					 * L'endroit où l'erreur est née est le bon quand il appartient au PRODUIT — pour une
+					 * fonction de PHP comme `htmlspecialchars`, c'est déjà la ligne qui l'appelle. On ne
+					 * remonte la pile que si elle est née dans une bibliothèque (`vendor/`) : remonter à
+					 * chaque fois désignait l'aiguillage du cœur (`output.php`) au lieu du module fautif
+					 * (relevé le 2026-10-02).
 					 */
 					$origine = $e->getFile().':'.$e->getLine();
 
-					foreach ($e->getTrace() as $image)
+					if (str_contains(str_replace('\\', '/', $e->getFile()), '/vendor/'))
 					{
-						if (!empty($image['file']) && !str_contains($image['file'], '/vendor/'))
+						foreach ($e->getTrace() as $image)
 						{
-							$origine = $image['file'].':'.$image['line'];
-							break;
+							if (!empty($image['file']) && !str_contains(str_replace('\\', '/', $image['file']), '/vendor/'))
+							{
+								$origine = $image['file'].':'.$image['line'];
+								break;
+							}
 						}
 					}
 
-					if (!$adresse_incomplete)
-					{
-						error_log('[output] '.$this->url->request.' : '.$e->getMessage()
-							.' — '.str_replace(NEOFRAG_CMS.'/', '', $origine));
-					}
-					if (defined('NEOFRAG_DEBUG_BAR') && NEOFRAG_DEBUG_BAR)
+					$reference = $adresse_incomplete ? '' : nf_journaliser_erreur('output', $e->getMessage(), nf_chemin_relatif($origine));
+
+					// En débogage, l'erreur remonte en brut — pour un administrateur connecté seulement.
+					if (nf_debogage_visible())
 					{
 						throw $e;
 					}
 					if (ob_get_level())
 					{
 						ob_clean(); // jette la sortie partielle du module en échec → page d'erreur propre
+					}
+
+					// Une page qui plante est une ERREUR INTERNE (500), pas une adresse introuvable : le
+					// visiteur lit la référence que porte la ligne du journal.
+					if ($reference !== '')
+					{
+						$this->error->interne($reference);
 					}
 				}
 
@@ -440,7 +451,7 @@ class Output extends Core
 						error_log('[checker] '.$diagnostic);
 					}
 
-					if (defined('NEOFRAG_DEBUG_BAR') && NEOFRAG_DEBUG_BAR && !$this->url->cli)
+					if (nf_debogage_visible() && !$this->url->cli)
 					{
 						if (ob_get_level())
 						{
@@ -929,7 +940,7 @@ class Output extends Core
 				exit($content);
 			}
 		}
-		else if (NEOFRAG_DEBUG_BAR || NEOFRAG_LOGS)
+		else if (nf_debogage_actif() || nf_trace_active())
 		{
 			$this->debug('INFO', 'ASSET', 'Not exists on disk');
 		}

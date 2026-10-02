@@ -101,4 +101,9 @@ return [
 	'5d023f8c' => 'Öffentliche Website ansehen',
 	'c57dcade' => 'Keine Ergebnisse',
 	'fb31a891' => 'Aktualisierung erfolgreich abgeschlossen',
+	'da974ab9' => 'Update verfügbar',
+	'4376b46f' => 'Update %s',
+	'0b125c77' => 'Das Update ist fehlgeschlagen: %s',
+	'24480076' => 'sie wurde ohne Bestätigung des Servers beendet.',
+	'51b5ce2f' => 'Referenz: %s',
 ];

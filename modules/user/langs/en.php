@@ -315,4 +315,5 @@ return [
 	'7b86045c' => 'No linked accounts yet.',
 	'41dd9c72' => 'Your account has no password: you sign in through a linked account. Set a password in your profile so as not to depend on it.',
 	'a4afc21b' => 'Link an account',
+	'2778f267' => 'Automatic: your browser’s',
 ];

@@ -850,7 +850,7 @@ class Admin extends Controller_Module
 			$icon = $item['dir'] ? 'far fa-folder' : 'far fa-file';
 			$title = $item['dir'] ? '<a href="'.$this->index_url($item['path']).'">'.$name.'</a>' : '<a href="'.url('files/'.$item['slug']).'" target="_blank" rel="noopener">'.$name.'</a>';
 			$size = $item['dir'] ? '-' : human_size($item['size']);
-			$date = date('d/m/Y H:i', $item['date']);
+			$date = timetostr('d/m/Y H:i', $item['date']);
 			$value = $item['type'] === 'file' ? 'file:'.$item['id'] : 'dir:'.$item['path'];
 			$access = $item['type'] === 'file' ? $this->button_access($item['id'], 'file', 'files', $this->lang('Permissions de lecture')) : $this->button_access($item['id'], 'directory', 'files', $this->lang('Permissions de lecture'));
 

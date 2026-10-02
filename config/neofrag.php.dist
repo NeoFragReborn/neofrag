@@ -8,17 +8,22 @@
  *
  *   NEOFRAG_DEBUG_BAR   la barre de débogage en bas de page. À TRUE, elle affiche les requêtes,
  *                       le temps et la mémoire — et elle RELANCE les exceptions au lieu de les
- *                       avaler, ce qui rend visibles les modules qui tombent en silence.
+ *                       avaler, ce qui rend visibles les modules qui tombent en silence. Tout cela ne
+ *                       se montre qu'à un ADMINISTRATEUR CONNECTÉ : les visiteurs voient le site
+ *                       normal, et le journal (Monitoring → Journal des erreurs) garde le reste.
+ *                       Inutile de le passer à TRUE pour un diagnostic : Monitoring → Diagnostic
+ *                       l'allume pour une heure, sans toucher à ce fichier.
  *   NEOFRAG_SAFE_MODE   démarre sans les addons, pour rattraper une installation qui ne répond plus.
  *   NEOFRAG_DEMO        mode démonstration : les modules sensibles refusent l'écriture.
- *   NEOFRAG_LOGS        journalise les requêtes servies.
- *   NEOFRAG_LOGS_DB     journalise les requêtes SQL. Volumineux.
- *   NEOFRAG_LOGS_I18N   journalise les clés de traduction introuvables. Utile en traduisant.
+ *   NEOFRAG_LOGS        trace chaque page servie, ses requêtes SQL et ses en-têtes (logs/neofrag.log).
+ *                       Volumineux. Monitoring → Diagnostic l'allume pour une heure, et la lit.
+ *   NEOFRAG_LOGS_I18N   relève les traductions manquantes, et montre aux administrateurs le drapeau
+ *                       de chaque texte traduit. Monitoring → Diagnostic l'allume pour une heure, et
+ *                       liste ce qu'il a relevé.
  */
 
 define('NEOFRAG_DEBUG_BAR', FALSE);
 define('NEOFRAG_SAFE_MODE', FALSE);
 define('NEOFRAG_DEMO',      FALSE);
 define('NEOFRAG_LOGS',      FALSE);
-define('NEOFRAG_LOGS_DB',   FALSE);
 define('NEOFRAG_LOGS_I18N', FALSE);

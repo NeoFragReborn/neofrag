@@ -3583,12 +3583,6 @@ parameters:
 			path: modules/live_editor/models/live_editor.php
 
 		-
-			message: '#^Variable \$modules might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: modules/live_editor/views/index.tpl.php
-
-		-
 			message: '#^Variable \$styles_row might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
@@ -4131,7 +4125,7 @@ parameters:
 		-
 			message: '#^Variable \$dump might not be defined\.$#'
 			identifier: variable.undefined
-			count: 3
+			count: 1
 			path: modules/monitoring/controllers/admin_ajax.php
 
 		-
@@ -7435,34 +7429,10 @@ parameters:
 			path: neofrag/core/config.php
 
 		-
-			message: '#^Constant NEOFRAG_DEBUG_BAR not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/core/config.php
-
-		-
-			message: '#^Constant NEOFRAG_LOGS not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/core/config.php
-
-		-
 			message: '#^Variable \$name might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
 			path: neofrag/core/config.php
-
-		-
-			message: '#^Constant NEOFRAG_DEBUG_BAR not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: neofrag/core/db.php
-
-		-
-			message: '#^Constant NEOFRAG_LOGS not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: neofrag/core/db.php
 
 		-
 			message: '#^Variable \$i might not be defined\.$#'
@@ -7474,18 +7444,6 @@ parameters:
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Debug\:\:session\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: neofrag/core/debug.php
-
-		-
-			message: '#^Constant NEOFRAG_DEBUG_BAR not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: neofrag/core/debug.php
-
-		-
-			message: '#^Constant NEOFRAG_LOGS not found\.$#'
-			identifier: constant.notFound
-			count: 2
 			path: neofrag/core/debug.php
 
 		-
@@ -7511,30 +7469,6 @@ parameters:
 			identifier: variable.undefined
 			count: 1
 			path: neofrag/core/debug.php
-
-		-
-			message: '#^Variable \$max might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: neofrag/core/debug.php
-
-		-
-			message: '#^Variable \$min might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: neofrag/core/debug.php
-
-		-
-			message: '#^Constant NEOFRAG_DEBUG_BAR not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/core/events.php
-
-		-
-			message: '#^Constant NEOFRAG_LOGS not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/core/events.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Groups\:\:db\(\)\.$#'
@@ -7651,18 +7585,6 @@ parameters:
 			path: neofrag/core/output.php
 
 		-
-			message: '#^Constant NEOFRAG_DEBUG_BAR not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: neofrag/core/output.php
-
-		-
-			message: '#^Constant NEOFRAG_LOGS not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: neofrag/core/output.php
-
-		-
 			message: '#^Function check_file not found\.$#'
 			identifier: function.notFound
 			count: 1
@@ -7741,18 +7663,6 @@ parameters:
 			path: neofrag/core/url.php
 
 		-
-			message: '#^Constant NEOFRAG_DEBUG_BAR not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/core/url.php
-
-		-
-			message: '#^Constant NEOFRAG_LOGS not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/core/url.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Displayables\\Zone\:\:theme\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -7785,18 +7695,6 @@ parameters:
 		-
 			message: '#^Class NF\\NeoFrag\\Driver_Query referenced with incorrect case\: NF\\NeoFrag\\driver_query\.$#'
 			identifier: class.nameCase
-			count: 1
-			path: neofrag/driver.php
-
-		-
-			message: '#^Constant NEOFRAG_DEBUG_BAR not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/driver.php
-
-		-
-			message: '#^Constant NEOFRAG_LOGS not found\.$#'
-			identifier: constant.notFound
 			count: 1
 			path: neofrag/driver.php
 
@@ -8158,12 +8056,6 @@ parameters:
 			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Lang\:\:db\(\)\.$#'
 			identifier: method.notFound
 			count: 1
-			path: neofrag/libraries/lang.php
-
-		-
-			message: '#^Constant NEOFRAG_LOGS_I18N not found\.$#'
-			identifier: constant.notFound
-			count: 2
 			path: neofrag/libraries/lang.php
 
 		-
@@ -8539,28 +8431,10 @@ parameters:
 			path: neofrag/models/i18n.php
 
 		-
-			message: '#^Constant NEOFRAG_LOGS_I18N not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/models/i18n.php
-
-		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:lang\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
 			count: 1
 			path: neofrag/models/i18n.php
-
-		-
-			message: '#^Constant NEOFRAG_DEBUG_BAR not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/neofrag.php
-
-		-
-			message: '#^Constant NEOFRAG_LOGS not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/neofrag.php
 
 		-
 			message: '#^Function class_name not found\.$#'

@@ -315,4 +315,5 @@ return [
 	'7b86045c' => 'Ancora nessun account collegato.',
 	'41dd9c72' => 'Il tuo account non ha una password: accedi tramite un account collegato. Imposta una password nel tuo profilo per non dipenderne.',
 	'a4afc21b' => 'Collega un account',
+	'2778f267' => 'Automatico: quello del tuo browser',
 ];

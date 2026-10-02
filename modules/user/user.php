@@ -75,10 +75,7 @@ class User extends Module
 		// Les notifications email pour les MP user-to-user sont maintenant gérées par
 		// modules/talks/talks.php (listener `talks.message.created` filtré sur type=direct/group).
 
-		// Fuseau horaire du membre connecté → appliqué à l'affichage des dates.
-		if ($this->user() && ($profile = $this->user->profile()) && $profile() && ($tz = (string) $profile->timezone) !== '' && in_array($tz, timezone_identifiers_list(), TRUE))
-		{
-			date_default_timezone_set($tz);
-		}
+		// Le fuseau horaire du membre s'applique à l'ouverture de la session (core/session.php), et
+		// non plus ici : ce __init() ne s'exécute que sur les pages du module user.
 	}
 }

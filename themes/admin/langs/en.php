@@ -101,4 +101,9 @@ return [
 	'5d023f8c' => 'View public site',
 	'c57dcade' => 'No results',
 	'fb31a891' => 'Update completed successfully',
+	'da974ab9' => 'Update available',
+	'4376b46f' => 'Update %s',
+	'0b125c77' => 'The update failed: %s',
+	'24480076' => 'it stopped without confirmation from the server.',
+	'51b5ce2f' => 'Reference: %s',
 ];

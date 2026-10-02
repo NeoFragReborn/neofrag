@@ -183,7 +183,16 @@ foreach ($chemins as $chemin)
         continue;
     }
 
+    $debut   = microtime(TRUE);
     $verdict = nf_sonde_verdict(nf_chrome_dom($serveur->base.$chemin, ['budget' => 8000]), 'nf-console-verdict');
+
+    // Une page lente se dit tout de suite : l'épreuve n'écrit rien d'autre avant la fin, et une page
+    // qui ne finissait pas de charger la faisait tomber sur la limite de la CI sans laisser de trace.
+    if (($duree = microtime(TRUE) - $debut) > 25)
+    {
+        printf("  … %s : %d s%s\n", $chemin, $duree, $verdict === NULL ? ', interrompue' : '');
+        flush();
+    }
 
     if ($verdict === NULL)
     {

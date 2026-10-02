@@ -25,9 +25,12 @@ class Debug extends Core
 		$this('Start');
 
 		set_error_handler(function($errno, $errstr, $errfile, $errline){
-			if (error_reporting() !== 0)
+			// `error_reporting() & $errno` et non `!== 0` : depuis PHP 8, `@` ne ramène plus le niveau à zéro.
+			// Le relevé notait donc les alertes volontairement étouffées — « propriété absente » sur les
+			// thèmes, « REDIRECT_CONTEXT » hors Apache —, des milliers de lignes que le journal PHP ignore.
+			if (error_reporting() & $errno)
 			{
-				if (NEOFRAG_DEBUG_BAR || NEOFRAG_LOGS)
+				if (nf_debogage_actif() || nf_trace_active())
 				{
 					if (in_array($errno, [E_USER_ERROR, E_RECOVERABLE_ERROR]))
 					{
@@ -70,7 +73,7 @@ class Debug extends Core
 			return FALSE;
 		});
 
-		if (NEOFRAG_LOGS)
+		if (nf_trace_active())
 		{
 			$this->on('output_rendered', function(){
 				$cols = $lines = [];
@@ -100,6 +103,10 @@ class Debug extends Core
 				if ($f = fopen('logs/neofrag.log', 'a'))
 				{
 					while (!flock($f, LOCK_EX));
+
+					// La page tracée, en tête de son bloc : la lecture du Monitoring (Trace des pages) en fait
+					// le titre de chaque page ; sans elle, rien ne disait à quelle adresse le bloc répondait.
+					fwrite($f, '» '.($_SERVER['REQUEST_METHOD'] ?? 'CLI').' '.($_SERVER['REQUEST_URI'] ?? '')."\n");
 
 					foreach ($lines as list($args, $message))
 					{
@@ -142,28 +149,14 @@ class Debug extends Core
 			$output = '<table class="table table-striped">
 						<tbody>';
 
-			usort($this->_timeline, function($a, $b){
-				return $a[1] > $b[1];
-			});
+			usort($this->_timeline, static fn ($a, $b): int => $a[1] <=> $b[1]);
 
-			foreach ($this->_timeline as $object)
-			{
-				$object = (object)$object;
-				list($time) = $object->__debug->time;
-
-				if (!isset($min, $max))
-				{
-					$min = $time[1];
-					$max = $time[2];
-				}
-				else
-				{
-					$min = min($min, $time[1]);
-					$max = max($max, $time[2]);
-				}
-			}
-
-			$total = $max - $min;
+			// Les bornes de la chronologie : le premier début et la dernière fin. Elles se lisaient sur une
+			// propriété `__debug` que ces entrées n'ont pas — la barre, rallumée le 2026-10-02, ne
+			// s'affichait plus (variables indéfinies, puis division par zéro).
+			$min   = $this->_timeline ? min(array_column($this->_timeline, 1)) : 0;
+			$max   = $this->_timeline ? max(array_column($this->_timeline, 2)) : 0;
+			$total = ($max - $min) ?: 1;
 
 			foreach ($this->_timeline as $time)
 			{
@@ -197,7 +190,7 @@ class Debug extends Core
 
 	public function bar($type = '', $data = NULL)
 	{
-		if (NEOFRAG_DEBUG_BAR)
+		if (nf_debogage_actif())
 		{
 			static $debug_bar = [];
 
@@ -205,6 +198,10 @@ class Debug extends Core
 			{
 				$debug_bar[$type] = $data;
 				return $this;
+			}
+			else if (!nf_debogage_visible())
+			{
+				return '';   // la barre ne se montre qu'à un administrateur connecté
 			}
 			else
 			{
@@ -240,7 +237,10 @@ class Debug extends Core
 					}
 					else
 					{
-						return utf8_htmlentities(str_replace(["\n", "\r"], '', $data));
+						// (string) : un nombre (temps, compteur, port du serveur) faisait tomber toute la
+						// barre en mode strict — elle ne s'affichait plus du tout, et personne ne le voyait
+						// tant qu'elle restait éteinte (relevé le 2026-10-02 par le journal des erreurs).
+						return utf8_htmlentities(str_replace(["\n", "\r"], '', (string) $data));
 					}
 				};
 

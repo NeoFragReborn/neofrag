@@ -362,6 +362,15 @@ class Mysqli extends Driver
 		$result = $params = [];
 		$md = $request->stmt->result_metadata();
 
+		// Une requête sans jeu de résultats — une écriture lue par get() ou row(), ou une requête que
+		// la base a refusée (déjà notée au journal par le pilote) : il n'y a rien à lire.
+		// `result_metadata()` rend alors FALSE, et lire ses champs faisait tomber la page sur
+		// « fetch_field() on false », sans dire quelle requête (relevé le 2026-10-02).
+		if ($md === FALSE)
+		{
+			return [];
+		}
+
 		while ($field = $md->fetch_field())
 		{
 			$params[] = &$result[$field->name];

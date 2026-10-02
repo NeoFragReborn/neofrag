@@ -7,6 +7,8 @@ declare(strict_types=1);
 
 namespace NF\NeoFrag;
 
+// `__debug` est posé sur chaque pilote par index.php quand un outil de diagnostic est allumé.
+#[\AllowDynamicProperties]
 abstract class Driver
 {
 	protected $info;
@@ -54,7 +56,7 @@ abstract class Driver
 			$this->check_foreign_keys($check_foreign_keys = FALSE);
 		}
 
-		if ($debug = NEOFRAG_DEBUG_BAR || NEOFRAG_LOGS)
+		if ($debug = nf_debogage_actif() || nf_trace_active())
 		{
 			$time = microtime(TRUE);
 		}

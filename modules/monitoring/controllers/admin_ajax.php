@@ -47,6 +47,33 @@ class Admin_Ajax extends Controller_Module
 				$this->_notify($this->lang('Il est recommandé d\'utiliser MySQLi'), 'info');
 			}
 
+			/*
+			 * Le journal des erreurs : s'écrit-il encore, et que dit-il des dernières 24 heures ? Un
+			 * dossier `logs/` non inscriptible faisait taire le site sans rien dire (PHP se rabat sur le
+			 * journal du serveur), et rien ne poussait à lire le journal — il fallait y penser, et y
+			 * aller par SSH ou FTP. Au-delà de 20 Mo, il est mis de côté (`php.log.1`) avant d'être relu.
+			 */
+			require_once NEOFRAG_CMS.'/neofrag/helpers/journal.php';
+
+			if (!is_dir('logs') || !is_writable('logs'))
+			{
+				$this->_notify($this->lang('Le dossier %s n’est pas inscriptible : les erreurs du site ne sont plus enregistrées', '<code>logs</code>'), 'danger');
+			}
+			else
+			{
+				if (is_file('logs/php.log') && filesize('logs/php.log') > 20 * 1048576)
+				{
+					@rename('logs/php.log', 'logs/php.log.1');
+				}
+
+				$recentes = count(array_filter(nf_journal_entrees(nf_journal_fin('logs/php.log')), static fn (array $e): bool => ($e['date'] ?? 0) >= time() - 86400 && in_array(nf_journal_gravite($e['texte']), ['fatale', 'erreur'], TRUE)));
+
+				if ($recentes)
+				{
+					$this->_notify($this->lang('%d erreur dans les dernières 24 heures|%d erreurs dans les dernières 24 heures', $recentes, $recentes).' — <a href="'.url('admin/monitoring/journal').'">'.$this->lang('voir le journal').'</a>', 'warning');
+				}
+			}
+
 			dir_create('cache/monitoring');
 
 			// Origine des manifestes (version.json, checksum.json). `nf_monitoring_check_url` peut la
@@ -384,8 +411,7 @@ class Admin_Ajax extends Controller_Module
 				// Rien n'a encore été écrit dans l'arborescence : il n'y a rien à annuler. La
 				// sauvegarde prise plus haut reste disponible, mais elle n'est pas nécessaire ici.
 				@unlink($file);
-				error_log('[update] '.$e->getMessage());
-				exit($this->lang('Mise à jour interrompue : %s', $e->getMessage()));
+				throw new \RuntimeException((string) $this->lang('Mise à jour interrompue : %s', $e->getMessage()), 0, $e);
 			}
 
 			$patch_name = preg_replace('/[^a-z0-9]/i', '_', $version->version);
@@ -435,8 +461,7 @@ class Admin_Ajax extends Controller_Module
 			catch (\Throwable $e)
 			{
 				@unlink($file);
-				error_log('[update] '.$e->getMessage());
-				exit($this->lang('Mise à jour interrompue : %s', $e->getMessage()).' '.$this->_retour_arriere($archive));
+				throw new \RuntimeException($this->lang('Mise à jour interrompue : %s', $e->getMessage()).' '.$this->_retour_arriere($archive), 0, $e);
 			}
 
 			unlink($file);
@@ -508,15 +533,23 @@ class Admin_Ajax extends Controller_Module
 
 		set_time_limit(0);
 
+		/*
+		 * Comment le flux FINIT, dit explicitement : `[100, "OK"]` quand tout s'est bien passé,
+		 * `[99, message, référence]` sinon. Le navigateur annonçait « Sauvegarde réalisée » ou « Mise à
+		 * jour effectuée avec succès » dès que le flux s'arrêtait, échec compris — une mise à jour
+		 * interrompue répondait même par un texte brut, que rien ne lisait (relevé le 2026-10-02).
+		 */
 		try
 		{
 			$callback();
+
+			echo PHP_EOL.';'.json_encode([100, 'OK']).PHP_EOL;
 		}
 		catch (\Throwable $e)
 		{
-			// Émet l'erreur dans le stream pour que le JS puisse la voir
-			echo PHP_EOL.';'.json_encode([99, 'ERROR: '.$e->getMessage()]).PHP_EOL;
-			error_log('[monitoring backup] '.$e->getMessage().' @ '.$e->getFile().':'.$e->getLine());
+			$reference = nf_journaliser_erreur('monitoring', $e->getMessage(), nf_chemin_relatif($e->getFile()).':'.$e->getLine());
+
+			echo PHP_EOL.';'.json_encode([99, $e->getMessage(), $reference], JSON_UNESCAPED_UNICODE).PHP_EOL;
 		}
 
 		exit;
@@ -550,7 +583,20 @@ class Admin_Ajax extends Controller_Module
 			sleep(1);
 		}
 
-		$this->mysqldump->dump(fopen($dump, 'w+b'), function($value){
+		/*
+		 * Chaque écriture est vérifiée. L'ouverture de l'archive et sa fermeture n'étaient pas
+		 * regardées : dans un dossier non inscriptible, ou sur un disque plein, la sauvegarde
+		 * « réussissait » et rendait le chemin d'une archive qui n'existait pas — et la mise à jour,
+		 * qui s'appuie dessus pour revenir en arrière, n'aurait rien eu à remettre (relevé le 2026-10-02).
+		 */
+		$echec = fn () => new \RuntimeException((string) $this->lang('La sauvegarde n’a pas pu être écrite dans le dossier %s : vérifiez ses droits d’écriture et l’espace disque.', 'backups'));
+
+		if (($flux = @fopen($dump, 'w+b')) === FALSE)
+		{
+			throw $echec();
+		}
+
+		$this->mysqldump->dump($flux, function($value){
 			$this->_flush(0, $value);
 		});
 
@@ -560,7 +606,12 @@ class Admin_Ajax extends Controller_Module
 		$archive = $file.'.zip';
 
 		$zip = new \ZipArchive;
-		$zip->open($archive, \ZipArchive::CREATE);
+
+		if ($zip->open($archive, \ZipArchive::CREATE) !== TRUE)
+		{
+			@unlink($dump);
+			throw $echec();
+		}
 
 		$zip->addFile($dump, Installer::BACKUP_SQL_ENTRY);
 
@@ -589,7 +640,12 @@ class Admin_Ajax extends Controller_Module
 			$this->_flush(1, ++$i / $total * 100);
 		}
 
-		$zip->close();
+		if (!$zip->close() || !is_file($archive) || !filesize($archive))
+		{
+			@unlink($dump);
+			@unlink($archive);
+			throw $echec();
+		}
 
 		unlink($dump);
 

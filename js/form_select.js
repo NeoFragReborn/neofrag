@@ -44,6 +44,12 @@ form.find('select.selectize', function(){
 		optgroup_header: function(data, escape){ return '<div class="optgroup-header">' + escape(data[1]) + '</div>'; }
 	};
 
+	// Le texte « aucun résultat » de tom-select est en anglais : le produit le traduit (data-no-results).
+	if (NF.data(el, 'no-results')){
+		var aucun = String(NF.data(el, 'no-results'));
+		data.render.no_results = function(data, escape){ return '<div class="no-results">' + escape(aucun) + '</div>'; };
+	}
+
 	if (NF.data(el, 'placeholder')){
 		data.placeholder = NF.data(el, 'placeholder');
 	}

@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.2.12');
+define('NEOFRAG_VERSION', '1.2.13');
 
 error_reporting(E_ALL);
 
@@ -66,7 +66,7 @@ function NeoFrag()
 			return;
 		}
 
-		if ($debug = NEOFRAG_DEBUG_BAR || NEOFRAG_LOGS)
+		if ($debug = nf_debogage_actif() || nf_trace_active())
 		{
 			$memory = memory_get_usage();
 			$time   = microtime(TRUE);
@@ -138,6 +138,7 @@ foreach ([
 			'file',
 			'geolocalisation',
 			'dir',
+			'erreurs',
 			'input',
 			'location',
 			'markdown',
@@ -156,6 +157,10 @@ foreach ([
 {
 	require_once 'neofrag/helpers/'.$helper.'.php';
 }
+
+// Plus de page blanche : une exception que rien n'a rattrapée, ou une erreur fatale, affiche une page
+// d'erreur avec sa référence, celle que porte le journal (cf. neofrag/helpers/erreurs.php).
+nf_filet_erreurs();
 
 spl_autoload_register(function($name){
 	$namespace = explode('\\', $name);

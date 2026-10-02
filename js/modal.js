@@ -107,6 +107,11 @@ var modal = new function(){
 								});
 								bootstrap.Modal.getOrCreateInstance(modalEl).hide();
 							}
+						}).catch(function(e){
+							// L'envoi a échoué : le bouton redevient cliquable, et le message part de
+							// NF (l'erreur est relancée pour lui).
+							if (submitBtn){ submitBtn.classList.remove('disabled'); }
+							throw e;
 						});
 					});
 

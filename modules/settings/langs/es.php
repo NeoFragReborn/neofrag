@@ -153,4 +153,6 @@ return [
 	'697ea2fe' => 'Elección del tema',
 	'302bd7b4' => 'Permitir que los visitantes elijan el tema del sitio, en el pie de página',
 	'0c152739' => 'La elección se guarda en el navegador del visitante, solo para este sitio. Desmarcar impone el tema predeterminado a todos.',
+	'e68f0a23' => 'Zona horaria',
+	'029c4e19' => 'Cada visitante ve las horas en la zona horaria de su navegador, y un miembro puede elegir la suya en su perfil. Esta se usa cuando no se conoce la zona horaria del visitante: primera visita, tareas automáticas.',
 ];

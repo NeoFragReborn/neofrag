@@ -104,6 +104,11 @@ NF.ready(function(){
 
 			loading = false;
 			document.querySelectorAll('.module-monitoring .refresh > i').forEach(function(i){ i.classList.remove('fa-spin'); });
+		}).catch(function(e){
+			// L'actualisation a échoué : le sablier s'arrête, on peut réessayer, et NF dit l'erreur.
+			loading = false;
+			document.querySelectorAll('.module-monitoring .refresh > i').forEach(function(i){ i.classList.remove('fa-spin'); });
+			throw e;
 		});
 	};
 
@@ -140,12 +145,16 @@ NF.ready(function(){
 				var decoder = new TextDecoder();
 				var buffer  = '';
 
+				var fin = null;   // [100, 'OK'] ou [99, message, référence] : comment le serveur dit avoir fini
+
 				function processBuffer(){
 					buffer.split(';').forEach(function(chunk){
 						chunk = chunk.trim();
 						if (!chunk){ return; }
 						var d;
 						try { d = JSON.parse(chunk); } catch (err){ return; }
+
+						if (d[0] === 100 || d[0] === 99){ fin = d; return; }
 
 						var bar = modalEl.querySelectorAll('.progress-bar')[d[0]];
 						if (!bar){ return; }
@@ -168,9 +177,16 @@ NF.ready(function(){
 				function pump(){
 					return reader.read().then(function(result){
 						if (result.done){
+							// Le succès ne s'annonce que si le serveur l'a dit ; sinon, l'erreur et sa référence.
 							setTimeout(function(){
 								bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-								notify('<?php echo addslashes($this->lang('Sauvegarde réalisée dans le dossier <b>backups</b> de votre FTP')) ?>');
+
+								if (fin && fin[0] === 100){
+									notify('<?php echo addslashes($this->lang('Sauvegarde réalisée dans le dossier <b>backups</b> de votre FTP')) ?>');
+								}
+								else {
+									nfEchecDuFlux('<?php echo addslashes($this->lang('La sauvegarde a échoué : %s')) ?>', fin, buffer);
+								}
 							}, 1000);
 							return;
 						}
@@ -181,9 +197,30 @@ NF.ready(function(){
 				}
 
 				return pump();
+			}).catch(function(){
+				bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+				nfEchecDuFlux('<?php echo addslashes($this->lang('La sauvegarde a échoué : %s')) ?>', null, '');
 			});
 		});
 	}
 
 	refresh();
 });
+
+/**
+ * L'échec d'une opération en flux (sauvegarde, mise à jour), dit à l'administrateur : le message du
+ * serveur et la référence que porte le journal ; à défaut, le texte brut que le serveur a renvoyé ;
+ * à défaut, qu'elle s'est arrêtée sans confirmation.
+ */
+function nfEchecDuFlux(modele, fin, brut){
+	var echapper = function(t){ return String(t).replace(/[&<>"']/g, function(c){ return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+	var texte    = fin && fin[0] === 99 ? fin[1] : String(brut || '').split(';').filter(function(c){ c = c.trim(); if (!c){ return false; } try { JSON.parse(c); return false; } catch (e){ return true; } }).join(' ').trim();
+	texte        = String(texte).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
+	var message  = modele.replace('%s', echapper(texte || '<?php echo addslashes($this->lang('elle s’est arrêtée sans confirmation du serveur.')) ?>'));
+
+	if (fin && /^[0-9A-F]{8}$/.test(fin[2] || '')){
+		message += ' <?php echo addslashes($this->lang('Référence : %s')) ?>'.replace('%s', fin[2]);
+	}
+
+	notify(message, 'danger');
+}

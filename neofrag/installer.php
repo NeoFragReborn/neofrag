@@ -266,7 +266,7 @@ final class Installer
 			."// Origine canonique du site, figée à l'installation. Toutes les URLs absolues\n"
 			."// (liens d'e-mails : reset de mot de passe, validation ; callbacks OAuth ; retours\n"
 			."// de paiement) sont construites dessus — jamais sur le Host de la requête, forgeable.\n"
-			."// À modifier à la main si le site change de domaine.\n"
+			."// Modifiable depuis l'administration (Monitoring → Adresse du site), ou ici à la main.\n"
 			."\$url['site'] = ".var_export($origin, TRUE).";\n";
 
 		self::write_file(rtrim($config_dir, '/\\').'/url.php', $php);
@@ -1025,6 +1025,9 @@ final class Installer
 	// un seul jeu d'hotes autorises — une seconde allow-list serait une seconde chose a garder a jour,
 	// donc une seconde occasion de laisser passer une origine que l'on ne controle pas.
 	const UPDATE_URL_DEFAULT = 'https://neofrag-reborn.xyz/update';
+
+	/** Ce qu'apporte chaque version : le journal des versions, dans le wiki du site officiel. */
+	const CHANGELOG_URL = 'https://neofrag-reborn.xyz/wiki/journal-des-versions';
 
 	/**
 	 * Nom sous lequel la copie de la base voyage DANS l'archive de sauvegarde.

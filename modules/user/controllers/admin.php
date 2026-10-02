@@ -563,7 +563,7 @@ class Admin extends Controller_Module
 					: '<i class="text-muted">-</i>';
 
 				$body .= '<tr>'
-					.'<td>'.date('Y-m-d H:i:s', $row['created_ts']).'</td>'
+					.'<td>'.timetostr('Y-m-d H:i:s', $row['created_ts']).'</td>'
 					.'<td>'.$user_disp.'</td>'
 					.'<td><code>'.htmlspecialchars((string) ($row['action'])).'</code></td>'
 					.'<td>'.$target.'</td>'

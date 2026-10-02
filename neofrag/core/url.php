@@ -78,7 +78,7 @@ class Url extends Core
 		$this->_const['domain']       = isset($config['domain']) && is_a($config['domain'], 'closure') ? call_user_func_array($config['domain'], [$this->_const]) : '';
 		$this->_const['subdomain']    = $this->domain && $this->host != $this->domain ? substr($this->host, 0, -strlen($this->domain) - 1) : '';
 		$this->_const['ajax_header']  = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
-		$this->_const['base']         = @$_SERVER['REDIRECT_CONTEXT'];
+		$this->_const['base']         = $_SERVER['REDIRECT_CONTEXT'] ?? NULL;
 		// La base du site se déduit de SCRIPT_NAME quand il se termine par `index.php` — ce que donnent
 		// Apache, nginx et Caddy, à la racine (`/index.php`) comme en sous-dossier (`/site/index.php`).
 		// Un SAPI qui y met autre chose (le serveur intégré de PHP 8.3 pose le chemin demandé pour une
@@ -213,7 +213,7 @@ class Url extends Core
 				}
 			}
 
-			if (NEOFRAG_DEBUG_BAR || NEOFRAG_LOGS)
+			if (nf_debogage_actif() || nf_trace_active())
 			{
 				$this->debug('URL', 'LOCATION', $this->location);
 				$this->debug('URL', 'SEGMENTS', implode(' / ', $this->segments));

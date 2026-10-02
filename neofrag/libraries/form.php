@@ -245,6 +245,14 @@ class Form extends Library
 				$type = 'text';
 			}
 
+			// Un champ absent de l'envoi (formulaire posté par un programme, champ retiré par le
+			// navigateur) vaut vide : le lire laissait « Undefined array key » au journal à chaque
+			// envoi incomplet. Une case à cocher décochée, un fichier non joint ont leur propre règle.
+			if (!array_key_exists($var, $post) && !in_array($type, ['checkbox', 'file'], TRUE))
+			{
+				$post[$var] = NULL;
+			}
+
 			if (($error = $this->{'_check_'.$type}($post, $var, $options)) !== TRUE)
 			{
 				$this->_errors[$var] = $error;
@@ -440,6 +448,10 @@ class Form extends Library
 	private function _check_datetime(&$post, $var, $options)
 	{
 		$this->config->lang->datetime2sql($post[$var]);
+
+		// Saisie dans le fuseau de celui qui remplit le formulaire, enregistrée dans celui du serveur.
+		$post[$var] = nf_heure_saisie($post[$var]);
+
 		return $this->_check_text($post, $var, $options);
 	}
 
@@ -524,9 +536,14 @@ class Form extends Library
 				{
 					$output .= '<div class="nf-field row'.(isset($this->_errors[$var]) ? ' nf-field-invalid' : '').'">';
 
+					// L'erreur d'un champ se lit SOUS le champ. Elle ne s'affichait qu'au survol d'une
+					// petite icône rouge, dans une bulle : qui ne la survolait pas voyait le formulaire
+					// refusé sans savoir pourquoi (relevé le 2026-10-02).
+					$erreur = !empty($this->_errors[$var]) ? '<div class="invalid-feedback d-block">'.icon('fas fa-exclamation-triangle').' '.$this->_errors[$var].'</div>' : '';
+
 					if ($this->_fast_mode)
 					{
-						$output .= '<div class="col">'.$display.'</div>';
+						$output .= '<div class="col">'.$display.$erreur.'</div>';
 					}
 					else
 					{
@@ -548,7 +565,7 @@ class Form extends Library
 							? $options['size']
 							: 'col-sm-9';
 
-						$output .= '</label><div class="'.$taille.'">'.$display.'</div>';
+						$output .= '</label><div class="'.$taille.'">'.$display.$erreur.'</div>';
 					}
 
 					$output .= '</div>';
@@ -900,7 +917,12 @@ class Form extends Library
 	{
 		if (isset($options['value']) && $options['value'] !== '')
 		{
-			$options['value'] = timetostr(NeoFrag()->lang('d/m/Y'), $options['value']);
+			// Une date seule ne change pas de fuseau : enregistrée dans une colonne date et heure
+			// (« 2026-10-05 00:00:00 »), elle serait sinon lue comme un instant, et reculerait d'un jour
+			// à l'ouest de l'heure universelle.
+			$valeur = is_string($options['value']) && preg_match('/^\d{4}-\d{2}-\d{2}/', $options['value']) ? substr($options['value'], 0, 10) : $options['value'];
+
+			$options['value'] = timetostr(NeoFrag()->lang('d/m/Y'), $valeur);
 		}
 		else
 		{
@@ -1042,9 +1064,20 @@ class Form extends Library
 		{
 			$user_value = $this->_display_value($var, $options);
 
+			$option = function($value, $label) use ($user_value){
+				return '<option value="'.self::_attr($value).'"'.($user_value == (string)$value ? ' selected="selected"' : '').'>'.$label.'</option>';
+			};
+
 			foreach ($options['values'] as $value => $label)
 			{
-				$output .= '<option value="'.self::_attr($value).'"'.($user_value == (string)$value ? ' selected="selected"' : '').'>'.$label.'</option>';
+				// Un tableau : un groupe d'options, titré par sa clé (ex. les fuseaux horaires par région).
+				if (is_array($label))
+				{
+					$output .= '<optgroup label="'.self::_attr($value).'">'.implode(array_map($option, array_keys($label), $label)).'</optgroup>';
+					continue;
+				}
+
+				$output .= $option($value, $label);
 			}
 		}
 

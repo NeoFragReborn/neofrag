@@ -56,7 +56,7 @@
 							<div class="small text-muted"><?php echo htmlspecialchars(mb_substr($c['description'], 0, 100)) ?></div>
 						<?php endif ?>
 						<div class="small text-muted">
-							<?php echo \icon('far fa-trash-alt').' '.$this->lang('Supprimée le %s', date('d/m/Y H:i', strtotime($c['deleted_at']))) ?>
+							<?php echo \icon('far fa-trash-alt').' '.$this->lang('Supprimée le %s', timetostr('d/m/Y H:i', $c['deleted_at'])) ?>
 							· <?php echo (int)$c['messages_count'].' '.$this->lang('messages') ?>
 							· <span class="text-danger"><?php echo $this->lang('Suppression définitive dans %d jour|Suppression définitive dans %d jours', $days_left, $days_left) ?></span>
 						</div>

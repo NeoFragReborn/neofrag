@@ -178,5 +178,39 @@ etape(function () {
 	});
 });
 
+// ── 10. La référence d'erreur du serveur suit l'erreur ──────────────────────
+//
+// Une erreur 500 du produit répond l'en-tête `X-NF-Reference` ; le message montré au visiteur la
+// cite, et l'administrateur la retrouve dans Monitoring → Journal des erreurs.
+etape(function () {
+	window.fetch = function (url, init) {
+		dernier = { url: url, init: init };
+		var r = reponse(500, 'boum', null);
+		r.headers = { get: function (nom) { return nom === 'X-NF-Reference' ? 'A1B2C3D4' : null; } };
+		return Promise.resolve(r);
+	};
+
+	return NF.ajax({ url: '/erreur', dataType: 'text' }).then(
+		function () { NFTest.verifie('500 + référence : rejette', 'rejet', 'résolu'); },
+		function (erreur) {
+			NFTest.verifie('500 + référence : la référence est portée par l\'erreur', 'A1B2C3D4', erreur.reference);
+			NFTest.verifie('500 + référence : marquée comme erreur de NF.ajax', true, erreur.nfAjax);
+		}
+	);
+});
+
+// ── 11. Le serveur injoignable : statut 0, pas une exception brute ──────────
+etape(function () {
+	window.fetch = function () { return Promise.reject(new TypeError('Failed to fetch')); };
+
+	return NF.ajax({ url: '/coupe', dataType: 'text' }).then(
+		function () { NFTest.verifie('réseau coupé : rejette', 'rejet', 'résolu'); },
+		function (erreur) {
+			NFTest.verifie('réseau coupé : statut 0', 0, erreur.status);
+			NFTest.verifie('réseau coupé : marquée comme erreur de NF.ajax', true, erreur.nfAjax);
+		}
+	);
+});
+
 derouler(0);
 </script>

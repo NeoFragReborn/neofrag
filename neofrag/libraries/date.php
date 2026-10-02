@@ -80,8 +80,21 @@ class Date extends Library
 	public function __toString()
 	{
 		$timestamp = $this->timestamp();
-		$diff      = $this->date(NULL, $this->_format, $this->_datetime->getTimezone())->timestamp() - $timestamp;
+		$murale    = $this->murale();
 		$output    = '';
+
+		// « Demain », « hier », « il y a 7 jours à minuit » : des bornes lues dans le fuseau de celui qui
+		// regarde (nf_fuseau()), et non dans celui du serveur — à l'heure universelle, « Aujourd'hui »
+		// basculait à 2 h du matin pour un visiteur français. Une date seule est enregistrée à minuit
+		// dans le fuseau d'enregistrement : on y reporte la même date de calendrier.
+		$fuseau = nf_fuseau();
+		$borne  = static function (string $quand) use ($fuseau, $murale): int {
+			$moment = new \DateTime($quand, $fuseau);
+
+			return $murale ? (new \DateTime($moment->format('Y-m-d H:i:s'), nf_fuseau_stockage()))->getTimestamp() : $moment->getTimestamp();
+		};
+
+		$diff = ($this->_format == 'Y-m-d' ? $borne('today') : $this->date(NULL, $this->_format, $this->_datetime->getTimezone())->timestamp()) - $timestamp;
 
 		if ($this->_format == 'Y-m-d')
 		{
@@ -89,30 +102,30 @@ class Date extends Library
 
 			if ($diff < 0)
 			{
-				if ($timestamp < strtotime('+2 days midnight'))
+				if ($timestamp < $borne('+2 days midnight'))
 				{
 					$output = NeoFrag()->lang('Demain');
 				}
-				else if ($timestamp < strtotime('+8 days midnight'))
+				else if ($timestamp < $borne('+8 days midnight'))
 				{
 					$output = NeoFrag()->lang('%s prochain', ucfirst($this->locale('l')));
 				}
-				else if ($timestamp < strtotime('+22 days midnight'))
+				else if ($timestamp < $borne('+22 days midnight'))
 				{
 					$output = NeoFrag()->lang('Dans %d jours', floor($diff / 86400 * -1));
 				}
 			}
 			else if ($diff > 0)
 			{
-				if ($timestamp >= strtotime('yesterday midnight'))
+				if ($timestamp >= $borne('yesterday midnight'))
 				{
 					$output = NeoFrag()->lang('Hier');
 				}
-				else if ($timestamp >= strtotime('7 days ago midnight'))
+				else if ($timestamp >= $borne('7 days ago midnight'))
 				{
 					$output = NeoFrag()->lang('%s dernier', ucfirst($this->locale('l')));
 				}
-				else if ($timestamp >= strtotime('20 days ago midnight'))
+				else if ($timestamp >= $borne('20 days ago midnight'))
 				{
 					$output = NeoFrag()->lang('Il y a %d jours', floor($diff / 86400));
 				}
@@ -128,19 +141,19 @@ class Date extends Library
 
 			if ($diff < 0)
 			{
-				if ($timestamp < strtotime('+1 days midnight'))
+				if ($timestamp < $borne('+1 days midnight'))
 				{
 					$output = NeoFrag()->lang('Aujourd\'hui à %s', $this->short_time());
 				}
-				else if ($timestamp < strtotime('+2 days midnight'))
+				else if ($timestamp < $borne('+2 days midnight'))
 				{
 					$output = NeoFrag()->lang('Demain à %s', $this->short_time());
 				}
-				else if ($timestamp < strtotime('+8 days midnight'))
+				else if ($timestamp < $borne('+8 days midnight'))
 				{
 					$output = NeoFrag()->lang('%s prochain à %s', ucfirst($this->locale('l')), $this->short_time());
 				}
-				else if ($timestamp < strtotime('+22 days midnight'))
+				else if ($timestamp < $borne('+22 days midnight'))
 				{
 					$output = NeoFrag()->lang('Dans %d jours à %s', floor($diff / 86400 * -1), $this->short_time());
 				}
@@ -183,11 +196,11 @@ class Date extends Library
 				{
 					$output = NeoFrag()->lang('Il y a environ une heure|Il y a %d heures', $diff = floor($diff / 3660), $diff);
 				}
-				else if ($timestamp >= strtotime('yesterday'))
+				else if ($timestamp >= $borne('yesterday'))
 				{
 					$output = NeoFrag()->lang('Hier à %s', $this->short_time());
 				}
-				else if ($timestamp >= strtotime('6 days ago midnight'))
+				else if ($timestamp >= $borne('6 days ago midnight'))
 				{
 					$output = NeoFrag()->lang('%s dernier à %s', ucfirst($this->locale('l')), $this->short_time());
 				}
@@ -305,9 +318,15 @@ class Date extends Library
 		return $this->_datetime->format($format ?: $this->_format ?: 'Y-m-d H:i:s.u P');
 	}
 
+	/** Une date seule (`Y-m-d`) ou une heure seule (`H:i…`) : pas un instant, elle ne change pas de fuseau. */
+	public function murale(): bool
+	{
+		return $this->_format == 'Y-m-d' || (is_string($this->_format) && preg_match('/^H:i/', $this->_format));
+	}
+
 	public function locale($format)
 	{
-		return timetostr($format, $this->timestamp());
+		return timetostr($format, $this);
 	}
 
 	public function short_date()

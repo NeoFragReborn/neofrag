@@ -1,6 +1,6 @@
-# NeoFrag Reborn 1.2.12
+# NeoFrag Reborn 1.2.13
 
-> **Version archivée.** Le code de la version 1.2.12, tel qu'il était, aux commentaires près :
+> **Version archivée.** Le code de la version 1.2.13, tel qu'il était, aux commentaires près :
 > ceux qui renvoyaient au travail interne du projet ont été réécrits, et quelques fichiers de travail
 > retirés. Les paquets de l'époque ne sont pas republiés.
 

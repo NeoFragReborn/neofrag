@@ -70,59 +70,20 @@ class Admin extends Theme
 
 		$this->data = $this->array;
 
-		// ============ Mapping module → section ============
-		// Chaque module administrable est rangé dans une catégorie claire ; plus de
-		// fourre-tout « Autres modules » (les non-mappés restent en 'autres', rare).
-		$module_to_section = [
-			// Contenu (publication)
-			'pages'       => 'contenu',
-			'articles'    => 'contenu',
-			'news'        => 'contenu',
-			'newsletter'  => 'contenu',
-			'feeds'        => 'contenu',
-			// Communauté & échanges
-			'forum'       => 'communaute',
-			'comments'    => 'communaute',
-			'talks'        => 'communaute',
-			'guestbook'   => 'communaute',
-			'surveys'     => 'communaute',
-			'bugtracker'  => 'communaute',
-			'contact'     => 'communaute',
-			'moderation'   => 'communaute',
-			// Base de connaissances
-			'wiki'        => 'connaissance',
-			'faq'         => 'connaissance',
-			'downloads'   => 'connaissance',
-			'links'       => 'connaissance',
-			// Médias
-			'media'       => 'medias',
-			'gallery'     => 'medias',
-			'calendar'    => 'medias',
-			// Gaming / eSport
-			'events'      => 'gaming',
-			'games'       => 'gaming',
-			'recruits'    => 'gaming',
-			'teams'       => 'gaming',
-			'partners'    => 'gaming',
-			'awards'      => 'gaming',
-			// Monétisation & engagement
-			'shop'         => 'monetisation',
-			'donations'    => 'monetisation',
-			'payments'     => 'monetisation',
-			'ads'          => 'monetisation',
-			'gamification' => 'monetisation',
-			'classifieds'  => 'monetisation',
-		];
+		// ============ Rubriques ============
+		// Une seule liste, nf_rubriques_admin() (helpers/theme.php), que suit aussi le menu « Navigation » de l'éditeur en direct. Un module
+		// qu'elle ne nomme pas — une extension de la place de marché — va dans « Autres modules ».
+		$rubriques         = nf_rubriques_admin();
+		$module_to_section = [];
+		$module_items      = array_fill_keys(array_keys($rubriques), []);
 
-		$module_items = [
-			'contenu'      => [],
-			'communaute'   => [],
-			'connaissance' => [],
-			'medias'       => [],
-			'gaming'       => [],
-			'monetisation' => [],
-			'autres'       => []
-		];
+		foreach ($rubriques as $cle => $rubrique)
+		{
+			foreach ($rubrique['modules'] as $nom)
+			{
+				$module_to_section[$nom] = $cle;
+			}
+		}
 
 		// Modules à exclure du listing (déjà rendus dans des sections spéciales : Système, Monitoring)
 		$excluded_modules = ['monitoring', 'admin', 'addons', 'settings', 'user', 'access', 'live_editor', 'statistics', 'search', 'tools', 'members', 'trash'];
@@ -172,18 +133,9 @@ class Admin extends Theme
 			]))
 		];
 
-		// Catégories de contenu (chacune masquée si vide — utile après le découplage
-		// marketplace). Ordre = ordre d'affichage dans la sidebar.
-		$labels = [
-			'contenu'      => ['title' => $this->lang('Contenu'),       'icon' => 'fas fa-bullhorn'],
-			'communaute'   => ['title' => $this->lang('Communauté'),     'icon' => 'fas fa-users'],
-			'connaissance' => ['title' => $this->lang('Connaissance'),     'icon' => 'fas fa-book'],
-			'medias'       => ['title' => $this->lang('Média'),         'icon' => 'fas fa-photo-video'],
-			'gaming'       => ['title' => $this->lang('Gaming'),        'icon' => 'fas fa-gamepad'],
-			'monetisation' => ['title' => $this->lang('Monétisation'),  'icon' => 'fas fa-coins'],
-			'autres'       => ['title' => $this->lang('Autres modules'), 'icon' => 'fas fa-ellipsis-h'],
-		];
-		foreach ($labels as $key => $meta)
+		// Les rubriques, chacune masquée si vide (une installation n'a pas tous les modules), dans
+		// l'ordre de nf_rubriques_admin().
+		foreach ($rubriques as $key => $meta)
 		{
 			if (!empty($module_items[$key]))
 			{

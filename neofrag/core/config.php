@@ -245,7 +245,7 @@ class Config extends Core
 				array_unshift($langs, $main_lang);
 				$this->_const['langs'] = array_values($langs);
 
-				if (NEOFRAG_DEBUG_BAR || NEOFRAG_LOGS)
+				if (nf_debogage_actif() || nf_trace_active())
 				{
 					$this->debug('LANGS', implode(' / ', array_map(function($a){
 						return strtoupper($a->info()->name);

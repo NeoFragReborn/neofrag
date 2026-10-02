@@ -66,4 +66,7 @@ return [
 	'9d433e55' => 'The display no longer matches what is saved: reload the page.',
 	'88a46340' => 'Visual layout editor: drag and drop widgets into the theme zones.',
 	'dd3795ad' => 'Menu',
+	'66a08d25' => 'Site pages',
+	'bc74124e' => 'Search for a page',
+	'cdf72ea5' => 'No page matches.',
 ];

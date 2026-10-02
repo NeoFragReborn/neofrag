@@ -90,7 +90,7 @@ class Index extends Controller_Module
 		{
 			$meta .= ' &middot; <i class="far fa-user"></i> '.$this->user->link($page['author_id'], $page['username']);
 		}
-		$meta .= ' &middot; <i class="far fa-clock"></i> '.date('Y-m-d H:i', $page['updated_ts']);
+		$meta .= ' &middot; <i class="far fa-clock"></i> '.timetostr('Y-m-d H:i', $page['updated_ts']);
 		$meta .= '</small><a class="btn btn-sm btn-outline-secondary" href="'.url('wiki/history/'.$page['slug']).'"><i class="fas fa-history"></i> '.$this->lang('Historique').'</a></div>';
 
 		$main = $meta.'<div class="wiki-content">'.self::ancres(render_content($page['content'])).'</div>';
@@ -128,7 +128,7 @@ class Index extends Controller_Module
 				}
 
 				$body .= '<tr>'
-					.'<td>'.date('Y-m-d H:i', $r['ts']).'</td>'
+					.'<td>'.timetostr('Y-m-d H:i', $r['ts']).'</td>'
 					.'<td>'.($r['user_id'] ? $this->user->link($r['user_id'], $r['username']) : $this->lang('Anonyme')).'</td>'
 					.'<td>'.htmlspecialchars((string) ($r['title'])).'</td>'
 					.'<td><small>'.htmlspecialchars((string) ($r['comment'] ?? '')).'</small></td>'
@@ -145,7 +145,7 @@ class Index extends Controller_Module
 	{
 		$this->title($this->lang('Révision archivée : %s', $rev['title']))->icon('fas fa-history')->breadcrumb();
 
-		$body = '<div class="alert alert-warning"><i class="fas fa-info-circle"></i> '.$this->lang('Tu visualises une <strong>ancienne version</strong> de cette page (révision du %s par %s).', date('Y-m-d H:i', $rev['ts']), $rev['user_id'] ? $this->user->link($rev['user_id'], $rev['username']) : $this->lang('Anonyme'));
+		$body = '<div class="alert alert-warning"><i class="fas fa-info-circle"></i> '.$this->lang('Tu visualises une <strong>ancienne version</strong> de cette page (révision du %s par %s).', timetostr('Y-m-d H:i', $rev['ts']), $rev['user_id'] ? $this->user->link($rev['user_id'], $rev['username']) : $this->lang('Anonyme'));
 		if (!empty($rev['comment']))
 		{
 			$body .= ' '.$this->lang('Commentaire : %s', '<em>'.htmlspecialchars((string) ($rev['comment'])).'</em>');
@@ -168,7 +168,7 @@ class Index extends Controller_Module
 
 		$label = function($rev){
 			$who  = $rev['user_id'] ? $this->user->link($rev['user_id'], $rev['username']) : $this->lang('Anonyme');
-			$when = date('Y-m-d H:i', $rev['ts']);
+			$when = timetostr('Y-m-d H:i', $rev['ts']);
 			$name = !empty($rev['current']) ? $this->lang('Version actuelle') : $this->lang('Révision');
 			return '<strong>'.$name.'</strong><br><small>'.$when.' · '.$who.'</small>';
 		};

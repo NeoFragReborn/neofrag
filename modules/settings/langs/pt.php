@@ -153,4 +153,6 @@ return [
 	'697ea2fe' => 'Escolha do tema',
 	'302bd7b4' => 'Deixar os visitantes escolherem o tema do site, no rodapé',
 	'0c152739' => 'A escolha é guardada no navegador do visitante, apenas para este site. Desmarcar impõe o tema predefinido a todos.',
+	'e68f0a23' => 'Fuso horário',
+	'029c4e19' => 'Cada visitante vê as horas no fuso horário do seu navegador, e um membro pode escolher o seu no perfil. Este é usado quando o fuso do visitante não é conhecido: primeira visita, tarefas automáticas.',
 ];

@@ -12,9 +12,10 @@ declare(strict_types=1);
  * étaient écrits là depuis des heures. Personne ne lisait ce journal, et le seul outil qui en lisait
  * un, `check-journal`, ne regardait que ce qui s'écrivait pendant qu'il servait seize pages.
  *
- * Ce fichier est l'unique endroit où l'on sait ce qu'est une ligne FAUTIVE — erreur PHP, ou ligne
- * écrite par le produit lui-même — et comment la montrer : regroupée par message, avec son nombre
- * d'occurrences et la dernière, parce que 225 Ko de lignes brutes ne se lisent pas.
+ * Ce qu'est une ligne FAUTIVE — erreur PHP, ou ligne écrite par le produit lui-même — et comment la
+ * regrouper, le produit le sait (`neofrag/helpers/journal.php`, que lit aussi la page Journal du
+ * Monitoring) ; ce fichier y ajoute ce dont les outils ont besoin : préparer un journal, le lire
+ * depuis un octet ou une date, et montrer le rapport en ligne de commande.
  *
  * Usage
  * -----
@@ -27,16 +28,9 @@ declare(strict_types=1);
 
 require_once __DIR__.'/outil.php';
 
-/** Ce qui trahit une erreur de PHP dans une ligne du journal. */
-const NF_JOURNAL_MOTIFS_PHP = ['Fatal error', 'Uncaught', 'Parse error', 'Warning:', 'Notice:', 'Deprecated:', 'Recoverable fatal'];
-
-/**
- * Une ligne écrite par le PRODUIT porte une étiquette entre crochets : `[checker]`, `[output]`,
- * `[widget]`, `[update]`… Le journal de production est le premier instrument de diagnostic : ce
- * qui n'est pas une anomalie n'a rien à y faire. La reconnaître à sa FORME plutôt que par une
- * liste évite qu'une étiquette neuve passe inaperçue.
- */
-const NF_JOURNAL_ETIQUETTE = '/^\[[a-z][a-z0-9_-]*\] /';
+// Ce qu'est une entrée, sa classe, son message et son regroupement : le produit le sait, pour la page
+// Journal du Monitoring comme pour les outils — une seule définition (cf. neofrag/helpers/journal.php).
+require_once dirname(__DIR__, 2).'/neofrag/helpers/journal.php';
 
 /**
  * Le journal d'une installation que l'outil sert LUI-MÊME, prêt à être mesuré.
@@ -110,103 +104,6 @@ function nf_journal_depuis_date(string $journal, int $depuis): ?array
     }
 
     return array_values(array_filter($entrees, fn(array $e): bool => $e['date'] !== NULL && $e['date'] >= $depuis));
-}
-
-/** @return list<array{date: ?int, texte: string}> */
-function nf_journal_entrees(string $brut): array
-{
-    $entrees = [];
-
-    foreach (explode("\n", $brut) as $ligne)
-    {
-        if (trim($ligne) === '')
-        {
-            continue;
-        }
-
-        if (preg_match('/^\[(\d{2}-[A-Za-z]{3}-\d{4} \d{2}:\d{2}:\d{2})(?: ([A-Za-z_\/+-]+))?\] (.*)$/', $ligne, $m))
-        {
-            $date      = DateTimeImmutable::createFromFormat('d-M-Y H:i:s', $m[1], new DateTimeZone($m[2] !== '' ? $m[2] : 'UTC'));
-            $entrees[] = ['date' => $date ? $date->getTimestamp() : NULL, 'texte' => $m[3]];
-        }
-        else if ($entrees)
-        {
-            $entrees[count($entrees) - 1]['texte'] .= "\n".$ligne;
-        }
-        else
-        {
-            $entrees[] = ['date' => NULL, 'texte' => $ligne];
-        }
-    }
-
-    return $entrees;
-}
-
-/**
- * Range chaque entrée : erreur de PHP, ligne du produit, ou autre chose (montrée, jamais jugée).
- *
- * @param  list<array{date: ?int, texte: string}> $entrees
- * @return array{php: list<array{date: ?int, texte: string}>, produit: list<array{date: ?int, texte: string}>, autres: list<array{date: ?int, texte: string}>}
- */
-function nf_journal_classer(array $entrees): array
-{
-    $classe = ['php' => [], 'produit' => [], 'autres' => []];
-
-    foreach ($entrees as $entree)
-    {
-        if (preg_match(NF_JOURNAL_ETIQUETTE, $entree['texte']))
-        {
-            $classe['produit'][] = $entree;
-            continue;
-        }
-
-        foreach (NF_JOURNAL_MOTIFS_PHP as $motif)
-        {
-            if (str_contains($entree['texte'], $motif))
-            {
-                $classe['php'][] = $entree;
-                continue 2;
-            }
-        }
-
-        $classe['autres'][] = $entree;
-    }
-
-    return $classe;
-}
-
-/**
- * Regroupe des entrées par MESSAGE : sans horodatage, sans le chemin de l'installation, les numéros
- * `#123` confondus — sinon chaque widget et chaque argument ferait sa propre ligne. Les plus
- * récents d'abord.
- *
- * @param  list<array{date: ?int, texte: string}> $entrees
- * @return list<array{message: string, nombre: int, dernier: ?int}>
- */
-function nf_journal_regrouper(array $entrees, string $installation = ''): array
-{
-    $groupes = [];
-
-    foreach ($entrees as $entree)
-    {
-        // La première ligne suffit à nommer le défaut ; la pile d'appels le rendrait unique.
-        $message = strtok($entree['texte'], "\n") ?: '';
-
-        if ($installation !== '')
-        {
-            $message = str_replace(rtrim($installation, '/').'/', '', $message);
-        }
-
-        $message = (string) preg_replace('/#\d+/', '#N', $message);
-
-        $groupes[$message] ??= ['message' => $message, 'nombre' => 0, 'dernier' => NULL];
-        $groupes[$message]['nombre']++;
-        $groupes[$message]['dernier'] = max($groupes[$message]['dernier'] ?? 0, $entree['date'] ?? 0) ?: NULL;
-    }
-
-    usort($groupes, fn(array $a, array $b): int => ($b['dernier'] ?? 0) <=> ($a['dernier'] ?? 0));
-
-    return $groupes;
 }
 
 /**

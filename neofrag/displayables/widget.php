@@ -83,9 +83,9 @@ class Widget extends Displayable
 		catch (\Throwable $e)
 		{
 			error_log('[widget] #'.$this->_widget.' : '.$e->getMessage());
-			if (defined('NEOFRAG_DEBUG_BAR') && NEOFRAG_DEBUG_BAR)
+			if (nf_debogage_visible())
 			{
-				throw $e; // en debug : on remonte l'erreur au lieu de la masquer
+				throw $e; // en débogage, pour un administrateur connecté : l'erreur remonte au lieu d'être masquée
 			}
 			return '';
 		}

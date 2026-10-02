@@ -65,7 +65,7 @@ class Admin extends Controller_Module
 					.'<td style="font-family:\'JetBrains Mono\',monospace;font-size:12px;color:var(--nf-text-muted);">#'.(int)$s['id'].'</td>'
 					.'<td><strong>'.htmlspecialchars((string) ($s['email'])).'</strong></td>'
 					.'<td>'.$status.'</td>'
-					.'<td style="color:var(--nf-text-muted);font-feature-settings:\'tnum\';">'.date('Y-m-d H:i', $s['ts']).'</td>'
+					.'<td style="color:var(--nf-text-muted);font-feature-settings:\'tnum\';">'.timetostr('Y-m-d H:i', $s['ts']).'</td>'
 					.'<td class="text-end"><a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/newsletter/subscribers/delete/'.$s['id']).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer cet abonné ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a></td>'
 					.'</tr>';
 			}

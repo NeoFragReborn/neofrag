@@ -1,3 +1,4 @@
+<?php $groupes = $groupes ?? [] ?>
 <form target="live-editor-iframe" action="<?php echo url() ?>" method="post">
 	<input type="hidden" name="live_editor" value="<?php echo $live_editor = $this->session('live_editor') ?: $this->output->live_editor() ^ \NF\NeoFrag\Core\Output::WIDGETS ?>" />
 	<nav class="live-editor-navbar navbar navbar-expand-lg">
@@ -8,13 +9,23 @@
 		<div class="collapse navbar-collapse" id="modules-links-collapse">
 			<ul class="navbar-nav me-auto align-items-center">
 				<li class="nav-item dropdown">
-					<a class="nav-link" href="#" id="navbarDropdownModules" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<a class="nav-link" href="#" id="navbarDropdownModules" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false">
 						<?php echo icon('fas fa-link').' '.$this->lang('Navigation').' '.icon('fas fa-angle-down') ?>
 					</a>
-					<div class="dropdown-menu" aria-labelledby="navbarDropdownModules">
-						<?php foreach ($modules as $name => $title): ?>
+					<?php /* Des sous-menus repliables, rangés comme la barre latérale de l'administration, et une recherche. */ ?>
+					<div class="dropdown-menu nf-le-nav" aria-labelledby="navbarDropdownModules">
+						<div class="nf-le-nav-filtre">
+							<input type="search" class="form-control form-control-sm" placeholder="<?php echo $this->lang('Rechercher une page') ?>" aria-label="<?php echo $this->lang('Rechercher une page') ?>" autocomplete="off">
+						</div>
+						<?php $premier = TRUE; foreach ($groupes as $groupe): ?>
+						<details class="nf-le-nav-groupe"<?php echo $premier ? ' open data-ouvert="1"' : '' ?>>
+							<summary><?php echo icon($groupe['icon']) ?><span><?php echo $groupe['title'] ?></span><span class="nf-le-nav-nombre"><?php echo count($groupe['pages']) ?></span></summary>
+							<?php foreach ($groupe['pages'] as $name => $title): ?>
 							<a class="dropdown-item" href="<?php echo url($name) ?>"><?php echo $title ?></a>
-						<?php endforeach ?>
+							<?php endforeach ?>
+						</details>
+						<?php $premier = FALSE; endforeach ?>
+						<p class="nf-le-nav-vide" hidden><?php echo $this->lang('Aucune page ne correspond.') ?></p>
 					</div>
 				</li>
 				<li class="nav-item ms-2">

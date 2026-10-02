@@ -1460,6 +1460,9 @@ function seed_activite(mysqli $db, array $users): void
 function configurer_site_demo(mysqli $db): void
 {
     $db->query("UPDATE nf_settings SET value = 'nebula' WHERE name = 'nf_default_theme'");
+    // Le fuseau du site : une démonstration française montre ses heures à l'heure de Paris, pas à
+    // l'heure universelle du serveur (le navigateur du visiteur prend le relais dès sa première page).
+    $db->query("INSERT INTO nf_settings (name, site, lang, value, type) VALUES ('nf_timezone', '', '', 'Europe/Paris', 'string') ON DUPLICATE KEY UPDATE value = VALUES(value)");
     $theme_t  = type_id($db, 'theme');
     $widget_t = type_id($db, 'widget');
     if ($theme_t) {

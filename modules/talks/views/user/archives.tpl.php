@@ -52,7 +52,7 @@
 							<div class="small text-muted"><?php echo htmlspecialchars(mb_substr($c['description'], 0, 100)) ?></div>
 						<?php endif ?>
 						<div class="small text-muted">
-							<?php echo \icon('fas fa-archive').' '.$this->lang('Archivée le %s', date('d/m/Y H:i', strtotime($c['archived_at']))) ?>
+							<?php echo \icon('fas fa-archive').' '.$this->lang('Archivée le %s', timetostr('d/m/Y H:i', $c['archived_at'])) ?>
 							· <?php echo (int)$c['messages_count'].' '.$this->lang('messages') ?>
 						</div>
 					</div>

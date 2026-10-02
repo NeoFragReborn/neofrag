@@ -151,4 +151,6 @@ return [
 	'697ea2fe' => 'Choix du thème',
 	'302bd7b4' => 'Laisser les visiteurs choisir le thème du site, dans le pied de page',
 	'0c152739' => 'Le choix est gardé dans le navigateur du visiteur, pour ce site seulement. Décocher impose le thème par défaut à tous.',
+	'e68f0a23' => 'Fuseau horaire',
+	'029c4e19' => 'Chaque visiteur voit les heures dans le fuseau de son navigateur, et un membre peut choisir le sien dans son profil. Celui-ci sert quand le fuseau du visiteur n’est pas connu : première visite, tâches automatiques.',
 ];

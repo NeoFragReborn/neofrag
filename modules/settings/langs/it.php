@@ -153,4 +153,6 @@ return [
 	'697ea2fe' => 'Scelta del tema',
 	'302bd7b4' => 'Lascia che i visitatori scelgano il tema del sito, nel piè di pagina',
 	'0c152739' => 'La scelta viene conservata nel browser del visitatore, solo per questo sito. Deselezionare impone a tutti il tema predefinito.',
+	'e68f0a23' => 'Fuso orario',
+	'029c4e19' => 'Ogni visitatore vede gli orari nel fuso orario del proprio browser, e un membro può scegliere il suo nel profilo. Questo serve quando il fuso del visitatore non è noto: prima visita, attività automatiche.',
 ];

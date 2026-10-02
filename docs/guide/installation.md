@@ -91,8 +91,11 @@ Active **HTTPS** si l'hébergeur ne l'a pas fait. Sous Caddy, le `Caddyfile` liv
   une base vierge** avant de relancer.
 - **Adresses en 404 ou AJAX cassés sous nginx ou Plesk** : le `.htaccess` n'est lu que par Apache ; voir la
   note « nginx / Plesk » du [guide de déploiement](../deploy-ftp.md).
-- **Aucun e-mail ne part** : regarde `logs/php.log` (`[email] échec envoi …`) ; l'adresse de contact
-  doit être valide et un transport doit exister (serveur SMTP configuré, ou agent de messagerie local).
+- **Aucun e-mail ne part** : regarde *Système → Monitoring → Journal des erreurs* (une ligne
+  `[email] échec envoi …`) ; l'adresse de contact doit être valide et un transport doit exister (serveur
+  SMTP configuré, ou agent de messagerie local).
+- **« Une erreur est survenue », avec une référence** : la page a planté. Le détail est dans le journal
+  des erreurs ; la référence y retrouve la bonne ligne.
 
 ## Développement
 

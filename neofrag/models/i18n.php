@@ -32,7 +32,7 @@ class I18n extends Model2
 	{
 		$prefix = '';
 
-		if (NEOFRAG_LOGS_I18N && $this->lang())
+		if (nf_traductions_visibles() && $this->lang())
 		{
 			$prefix = $this->lang->addon()->info()->icon;
 		}

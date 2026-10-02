@@ -173,7 +173,7 @@ foreach ($profils as $cle => $profil)
         "<?php\n\n"
         ."define('NEOFRAG_DEBUG_BAR', FALSE);\ndefine('NEOFRAG_SAFE_MODE', FALSE);\n"
         ."define('NEOFRAG_DEMO', FALSE);\ndefine('NEOFRAG_LOGS', FALSE);\n"
-        ."define('NEOFRAG_LOGS_DB', FALSE);\ndefine('NEOFRAG_LOGS_I18N', FALSE);\n");
+        ."define('NEOFRAG_LOGS_I18N', FALSE);\n");
 
     file_put_contents($root.'/config/url.php', "<?php\n\n\$url['site'] = 'http://127.0.0.1:{$port_h}';\n");
 

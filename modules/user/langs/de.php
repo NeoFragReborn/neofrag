@@ -315,4 +315,5 @@ return [
 	'7b86045c' => 'Noch keine verknüpften Konten.',
 	'41dd9c72' => 'Ihr Konto hat kein Passwort: Sie melden sich über ein verknüpftes Konto an. Legen Sie in Ihrem Profil ein Passwort fest, um nicht davon abhängig zu sein.',
 	'a4afc21b' => 'Ein Konto verknüpfen',
+	'2778f267' => 'Automatisch: die Ihres Browsers',
 ];

@@ -160,7 +160,6 @@ function nf_cli_main(array $argv): int
 			. "define('NEOFRAG_SAFE_MODE', FALSE);\n"
 			. "define('NEOFRAG_DEMO',      " . ($c['demo'] ? 'TRUE' : 'FALSE') . ");\n"
 			. "define('NEOFRAG_LOGS',      FALSE);\n"
-			. "define('NEOFRAG_LOGS_DB',   FALSE);\n"
 			. "define('NEOFRAG_LOGS_I18N', FALSE);\n"
 		);
 		if ($c['site_url'] !== '')

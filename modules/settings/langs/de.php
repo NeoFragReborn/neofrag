@@ -153,4 +153,6 @@ return [
 	'697ea2fe' => 'Designauswahl',
 	'302bd7b4' => 'Besucher das Design der Website in der Fußzeile wählen lassen',
 	'0c152739' => 'Die Wahl wird im Browser des Besuchers gespeichert, nur für diese Website. Deaktivieren erzwingt für alle das Standarddesign.',
+	'e68f0a23' => 'Zeitzone',
+	'029c4e19' => 'Jeder Besucher sieht die Uhrzeiten in der Zeitzone seines Browsers, und Mitglieder können ihre eigene im Profil wählen. Diese hier gilt, wenn die Zeitzone des Besuchers unbekannt ist: erster Besuch, automatische Aufgaben.',
 ];

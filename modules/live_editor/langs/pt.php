@@ -66,4 +66,7 @@ return [
 	'9d433e55' => 'O que vês já não corresponde ao que está guardado: recarrega a página.',
 	'88a46340' => 'Editor visual de esquema: arrastar e largar widgets nas zonas do tema.',
 	'dd3795ad' => 'Menu',
+	'66a08d25' => 'Páginas do site',
+	'bc74124e' => 'Procurar uma página',
+	'cdf72ea5' => 'Nenhuma página corresponde.',
 ];

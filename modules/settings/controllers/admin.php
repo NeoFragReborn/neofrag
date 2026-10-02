@@ -194,6 +194,14 @@ class Admin extends Controller_Module
 						'type'   => 'select',
 						'rules'  => 'required'
 					],
+					'timezone' => [
+						'label'       => $this->lang('Fuseau horaire'),
+						'description' => $this->lang('Chaque visiteur voit les heures dans le fuseau de son navigateur, et un membre peut choisir le sien dans son profil. Celui-ci sert quand le fuseau du visiteur n’est pas connu : première visite, tâches automatiques.'),
+						'values'      => nf_fuseaux_liste(),
+						'value'       => nf_fuseau_site()->getName(),
+						'type'        => 'select',
+						'rules'       => 'required'
+					],
 					'font' => [
 						'label'       => $this->lang('Police du site'),
 						'description' => $this->lang('Remplace la police de tous les thèmes. Les polices sont servies par Google Fonts ; « %s » ne fait appel à aucun service extérieur.', $this->lang('Police du thème')),
@@ -263,7 +271,7 @@ class Admin extends Controller_Module
 		{
 			foreach ($post as $var => $value)
 			{
-				if ($var === 'pwa' || $var === 'theme_visiteur')
+				if ($var === 'pwa' || $var === 'theme_visiteur' || ($var === 'timezone' && !nf_fuseau_ouvrir($value)))
 				{
 					continue;
 				}

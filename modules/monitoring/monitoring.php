@@ -39,6 +39,16 @@ class Monitoring extends Module
 				'admin/cron/reset'                     => '_cron_reset',
 				'admin/webmaster'                      => 'webmaster',
 				'admin/files'                          => 'files',
+				'admin/journal'                        => '_journal',
+				'admin/journal/telecharger'            => '_journal_telecharger',
+				'admin/journal/vider'                  => '_journal_vider',
+				'admin/diagnostic/(debogage|trace|traductions)/(allumer|eteindre)' => '_diagnostic',
+				'admin/trace'                          => '_trace',
+				'admin/trace/telecharger'              => '_trace_telecharger',
+				'admin/trace/vider'                    => '_trace_vider',
+				'admin/traductions'                    => '_traductions',
+				'admin/traductions/vider'              => '_traductions_vider',
+				'admin/adresse'                        => '_adresse',
 				'cron'                                 => 'cron'
 			]
 		];

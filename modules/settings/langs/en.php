@@ -153,4 +153,6 @@ return [
 	'697ea2fe' => 'Theme choice',
 	'302bd7b4' => 'Let visitors choose the site theme, in the footer',
 	'0c152739' => 'The choice is kept in the visitor\'s browser, for this site only. Unchecking imposes the default theme on everyone.',
+	'e68f0a23' => 'Time zone',
+	'029c4e19' => 'Each visitor sees times in their browser’s time zone, and members can choose their own in their profile. This one is used when the visitor’s time zone is unknown: first visit, automated tasks.',
 ];

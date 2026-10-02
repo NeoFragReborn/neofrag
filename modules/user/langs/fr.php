@@ -311,4 +311,5 @@ return [
 	'7b86045c' => 'Aucun compte lié pour le moment.',
 	'41dd9c72' => 'Votre compte n’a pas de mot de passe : vous vous connectez par un compte lié. Définissez un mot de passe dans votre profil pour ne pas en dépendre.',
 	'a4afc21b' => 'Lier un compte',
+	'2778f267' => 'Automatique : celui de votre navigateur',
 ];

@@ -38,7 +38,22 @@ $this	->rule($this->form_text('first_name')
 		)
 		->rule($this->form_select('timezone')
 					->title($this->lang('Fuseau horaire'))
-					->data(['' => $this->lang('Fuseau par défaut du site')] + array_combine(timezone_identifiers_list(), timezone_identifiers_list()))
+					// Les fuseaux groupés par région, les villes dans la langue du site (nf_fuseaux_liste()) ;
+					// la liste brute des 419 identifiants anglais était illisible. Vide : le fuseau du navigateur.
+					->data((function(){
+						$fuseaux = ['' => [$this->lang('Automatique : celui de votre navigateur')]];
+
+						foreach (array_values(nf_fuseaux_liste()) as $groupe => $liste)
+						{
+							foreach ($liste as $nom => $libelle)
+							{
+								$fuseaux[$nom] = [$libelle, $groupe];
+							}
+						}
+
+						return $fuseaux;
+					})())
+					->optgroup(1, array_keys(nf_fuseaux_liste()))
 					->size('col-12 col-sm-6')
 		)
 		->rule($this->form_text('location')

@@ -126,10 +126,12 @@ class Calendar extends Module
 		$start = strtotime($dt);
 		if ($all_day)
 		{
-			$out = timetostr($mod->lang('j F Y'), $start);
-			if ($end_dt && date('Y-m-d', strtotime($end_dt)) !== date('Y-m-d', $start))
+			// Une journée entière est une date de calendrier : passée en « Y-m-d », timetostr() ne la
+			// convertit pas de fuseau (le 5 octobre resterait sinon le 4 à l'ouest de l'heure universelle).
+			$out = timetostr($mod->lang('j F Y'), substr((string) $dt, 0, 10));
+			if ($end_dt && substr((string) $end_dt, 0, 10) !== substr((string) $dt, 0, 10))
 			{
-				$out .= ' – '.timetostr($mod->lang('j F Y'), strtotime($end_dt));
+				$out .= ' – '.timetostr($mod->lang('j F Y'), substr((string) $end_dt, 0, 10));
 			}
 			$out .= ' '.$mod->lang('(toute la journée)');
 			return $out;
@@ -139,9 +141,9 @@ class Calendar extends Module
 		if ($end_dt && strtotime($end_dt) > $start)
 		{
 			$end = strtotime($end_dt);
-			if (date('Y-m-d', $end) === date('Y-m-d', $start))
+			if (timetostr('Y-m-d', $end) === timetostr('Y-m-d', $start))
 			{
-				$out .= ' – '.date('H:i', $end);
+				$out .= ' – '.timetostr('H:i', $end);
 			}
 			else
 			{

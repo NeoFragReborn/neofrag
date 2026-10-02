@@ -637,7 +637,8 @@ NF.ready(function(){
 	var modulesLinks = document.getElementById('modules-links-collapse');
 	if (modulesLinks){
 		modulesLinks.addEventListener('click', function(e){
-			var link = e.target.closest('.dropdown-menu > a');
+			// Les pages sont rangées en sous-menus (`.nf-le-nav`) : le lien n'est plus un enfant direct du menu.
+			var link = e.target.closest('.dropdown-menu > a, .nf-le-nav a.dropdown-item');
 			if (!link){ return; }
 			e.preventDefault();
 
@@ -648,6 +649,35 @@ NF.ready(function(){
 			document.querySelectorAll('.dropdown-menu').forEach(function(m){ m.classList.remove('show'); });
 			document.querySelectorAll('.nav-item.dropdown').forEach(function(m){ m.classList.remove('show'); });
 		});
+	}
+
+	/* La recherche du menu « Navigation » : elle ouvre les sous-menus qui ont une page correspondante, et
+	   cache les autres ; vidée, chaque sous-menu retrouve son état d'origine. */
+	var navFiltre = document.querySelector('.nf-le-nav-filtre input');
+	if (navFiltre){
+		var navMenu = navFiltre.closest('.nf-le-nav');
+		navFiltre.addEventListener('input', function(){
+			var q = navFiltre.value.trim().toLowerCase();
+			var trouves = 0;
+			navMenu.querySelectorAll('.nf-le-nav-groupe').forEach(function(groupe){
+				var visibles = 0;
+				groupe.querySelectorAll('a.dropdown-item').forEach(function(lien){
+					var garde = q === '' || lien.textContent.toLowerCase().indexOf(q) !== -1;
+					lien.hidden = !garde;
+					visibles += garde ? 1 : 0;
+				});
+				groupe.hidden = visibles === 0;
+				groupe.open = q !== '' ? visibles > 0 : groupe.hasAttribute('data-ouvert');
+				trouves += visibles;
+			});
+			var vide = navMenu.querySelector('.nf-le-nav-vide');
+			if (vide){ vide.hidden = trouves > 0; }
+		});
+		// Le menu s'ouvre sur la recherche : on tape tout de suite.
+		var navToggle = document.getElementById('navbarDropdownModules');
+		if (navToggle){
+			navToggle.addEventListener('shown.bs.dropdown', function(){ navFiltre.focus(); });
+		}
 	}
 
 	/* Styles Overview */

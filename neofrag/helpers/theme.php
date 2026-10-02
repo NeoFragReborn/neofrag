@@ -139,3 +139,33 @@ function nf_selecteur_theme(): string
 		.'<div class="dropdown-menu dropdown-menu-end">'.$entrees.'</div>'
 		.'</div>';
 }
+
+/**
+ * Les rubriques de l'administration, dans leur ordre. La barre latérale du thème d'administration les
+ * affiche, et le menu « Navigation » de l'éditeur en direct en fait ses sous-menus : une seule liste.
+ *
+ * Neuf rubriques courtes, choisies par le mainteneur le 2026-10-02 : les six précédentes mêlaient le
+ * calendrier aux médias, la newsletter au contenu, le Bugtracker à la communauté, et treize modules
+ * finissaient dans « Autres modules ». Celle-ci ne reçoit plus que les modules qu'elle ne nomme pas
+ * (une extension de la place de marché). Des pages publiques sans administration (la liste des
+ * membres, la recherche…) y sont nommées pour l'éditeur en direct.
+ *
+ * @return array<string, array{title: string, icon: string, modules: list<string>}>
+ */
+function nf_rubriques_admin(): array
+{
+	$nf = NeoFrag();
+
+	return [
+		'contenu'      => ['title' => (string) $nf->lang('Contenu'),        'icon' => 'fas fa-bullhorn',     'modules' => ['pages', 'articles', 'news', 'slider', 'quotes', 'recipes', 'menu', 'marketplace', 'search']],
+		'communaute'   => ['title' => (string) $nf->lang('Communauté'),     'icon' => 'fas fa-users',        'modules' => ['forum', 'talks', 'comments', 'guestbook', 'emojis', 'members', 'user', 'notifications']],
+		'animation'    => ['title' => (string) $nf->lang('Animation'),      'icon' => 'fas fa-calendar-alt', 'modules' => ['calendar', 'surveys', 'gamification', 'classifieds']],
+		'gaming'       => ['title' => (string) $nf->lang('Gaming'),         'icon' => 'fas fa-gamepad',      'modules' => ['events', 'teams', 'games', 'recruits', 'awards', 'partners']],
+		'savoir'       => ['title' => (string) $nf->lang('Savoir'),         'icon' => 'fas fa-book',         'modules' => ['wiki', 'faq', 'glossary', 'downloads', 'links', 'places']],
+		'medias'       => ['title' => (string) $nf->lang('Médias'),         'icon' => 'fas fa-photo-video',  'modules' => ['media', 'gallery', 'files', 'webradio']],
+		'diffusion'    => ['title' => (string) $nf->lang('Diffusion'),      'icon' => 'fas fa-paper-plane',  'modules' => ['newsletter', 'emails', 'feeds', 'discord', 'webhooks', 'api']],
+		'support'      => ['title' => (string) $nf->lang('Support'),        'icon' => 'fas fa-life-ring',    'modules' => ['contact', 'bugtracker', 'moderation', 'sandbox']],
+		'monetisation' => ['title' => (string) $nf->lang('Monétisation'),   'icon' => 'fas fa-coins',        'modules' => ['shop', 'donations', 'payments', 'ads']],
+		'autres'       => ['title' => (string) $nf->lang('Autres modules'), 'icon' => 'fas fa-ellipsis-h',   'modules' => []],
+	];
+}

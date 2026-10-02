@@ -27,6 +27,7 @@ class Select extends Multiple
 			$input = parent ::html('select')
 							->attr('class', 'form-select selectize')
 							->attr('data-options', $encode($this->_data))
+							->attr('data-no-results', $this->lang('Aucun résultat'))
 							->attr_if($this->_multiple,                      'multiple')
 							->attr_if($this->_disabled || $this->_read_only, 'disabled')
 							// `attr_if` est un APPEL DE FONCTION : PHP évalue ses trois arguments avant

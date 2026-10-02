@@ -107,15 +107,27 @@ function nf_chrome_capture(string $url, string $fichier, array $options = []): b
     return is_file($fichier) && filesize($fichier) > 0;
 }
 
-/** La ligne de commande commune, sans l'action (`--dump-dom` ou `--screenshot`) ni l'adresse. */
+/**
+ * La ligne de commande commune, sans l'action (`--dump-dom` ou `--screenshot`) ni l'adresse.
+ *
+ * Chrome est borné dans le temps par `timeout` (coreutils) : le temps virtuel ne s'écoule pas tant
+ * qu'une requête reste en suspens, et une seule page qui ne finit pas de charger tenait l'épreuve
+ * entière jusqu'à la limite de la CI — 10 minutes, sans dire quelle page (2026-10-02). Interrompu,
+ * Chrome ne rend rien : la page compte comme muette, et l'appelant la nomme.
+ */
 function nf_chrome_commande(string $url, array $options): string
 {
-    $profil = nf_temp('profil-'.($options['profil'] ?? 'defaut'));
+    static $timeout = NULL;
 
-    return sprintf('%s --headless=new --disable-gpu --no-sandbox --hide-scrollbars --user-data-dir=%s'
+    $timeout ??= trim((string) @shell_exec('command -v timeout 2>/dev/null'));
+    $profil    = nf_temp('profil-'.($options['profil'] ?? 'defaut'));
+    $budget    = $options['budget'] ?? 6000;
+
+    return sprintf('%s%s --headless=new --disable-gpu --no-sandbox --hide-scrollbars --user-data-dir=%s'
         .' --window-size=%d,%d --virtual-time-budget=%d',
+        $timeout !== '' ? escapeshellarg($timeout).' -k 5 '.(intdiv($budget, 1000) + 45).' ' : '',
         escapeshellarg(nf_chrome()), escapeshellarg($profil),
-        $options['largeur'] ?? 1400, $options['hauteur'] ?? 900, $options['budget'] ?? 6000);
+        $options['largeur'] ?? 1400, $options['hauteur'] ?? 900, $budget);
 }
 
 /**

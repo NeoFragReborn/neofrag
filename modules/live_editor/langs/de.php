@@ -66,4 +66,7 @@ return [
 	'9d433e55' => 'Die Anzeige entspricht nicht mehr dem gespeicherten Stand: Laden Sie die Seite neu.',
 	'88a46340' => 'Visueller Layout-Editor: Widgets per Drag & Drop in die Bereiche des Themes ziehen.',
 	'dd3795ad' => 'Menü',
+	'66a08d25' => 'Seiten der Website',
+	'bc74124e' => 'Seite suchen',
+	'cdf72ea5' => 'Keine Seite entspricht.',
 ];

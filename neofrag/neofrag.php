@@ -95,7 +95,7 @@ class NeoFrag
 		{
 			if ($callback($path))
 			{
-				if ((NEOFRAG_DEBUG_BAR || NEOFRAG_LOGS) && isset($this->debug) && !is_a($path, 'NF\NeoFrag\Libraries\Date'))
+				if ((nf_debogage_actif() || nf_trace_active()) && isset($this->debug) && !is_a($path, 'NF\NeoFrag\Libraries\Date'))
 				{
 					$this->debug(strtoupper($type), get_class($this), is_object($path) ? get_class($path) : $path);
 				}

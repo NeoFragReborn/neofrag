@@ -53,7 +53,6 @@ file_put_contents($root.'/config/neofrag.php',
     ."define('NEOFRAG_SAFE_MODE', FALSE);\n"
     ."define('NEOFRAG_DEMO',      FALSE);\n"
     ."define('NEOFRAG_LOGS',      FALSE);\n"
-    ."define('NEOFRAG_LOGS_DB',   FALSE);\n"
     ."define('NEOFRAG_LOGS_I18N', FALSE);\n"
 );
 

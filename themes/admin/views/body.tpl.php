@@ -39,6 +39,14 @@ if (!$is_dashboard) {
 			</a>
 		</div>
 
+		<?php if ($maj = $this->__caller->update()): ?>
+		<a href="#" class="nf-sb-update" data-modal-ajax="<?php echo url('admin/monitoring/update') ?>">
+			<i class="fas fa-rocket"></i>
+			<span class="nf-sb-update-text"><strong><?php echo $this->lang('Mise à jour disponible') ?></strong><small>NeoFrag <?php echo utf8_htmlentities((string) $maj->version) ?></small></span>
+			<i class="fas fa-chevron-right"></i>
+		</a>
+		<?php endif ?>
+
 		<button type="button" class="nf-sb-search" id="nfCmdHint" title="<?php echo $this->lang('Recherche rapide (Ctrl+K)') ?>">
 			<i class="fas fa-search"></i>
 			<span><?php echo $this->lang('Rechercher…') ?></span>
@@ -162,7 +170,7 @@ if (!$is_dashboard) {
 				<?php endif ?>
 				<?php if ($update = $this->__caller->update()): ?>
 				<a href="#" class="nf-update-pill" data-modal-ajax="<?php echo url('admin/monitoring/update') ?>" title="<?php echo $this->lang('Mise à jour disponible : NeoFrag %s', $update->version) ?>">
-					<i class="far fa-bell"></i><span><?php echo $update->version ?></span>
+					<i class="far fa-bell"></i><span><?php echo $this->lang('Mise à jour %s', utf8_htmlentities((string) $update->version)) ?></span>
 				</a>
 				<?php endif ?>
 				<a href="<?php echo url() ?>" class="nf-icon-btn" title="<?php echo $this->lang('Voir le site') ?>" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i></a>

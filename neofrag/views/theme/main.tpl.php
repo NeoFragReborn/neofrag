@@ -6,6 +6,8 @@
 <meta content="IE=edge, chrome=1" http-equiv="X-UA-Compatible">
 <script>window.__nfNonce=<?php echo json_encode($GLOBALS['nf_csp_nonce'] ?? '') ?>;</script>
 <script>(function(){try{var k=<?php echo $this->url->admin ? "'nf-admin-theme'" : "'nf-dungeon-theme'" ?>;var t=localStorage.getItem(k);if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);document.documentElement.setAttribute('data-bs-theme',t==='dark'?'dark':'light');}catch(e){}})();</script>
+<?php /* Le fuseau horaire du navigateur, pour afficher les heures dans le sien (cf. nf_fuseau(), helpers/time.php). Une préférence d'affichage, rien d'autre. */ ?>
+<script>(function(){try{var z=Intl.DateTimeFormat().resolvedOptions().timeZone;if(z&&document.cookie.indexOf('nf_fuseau='+encodeURIComponent(z))<0){document.cookie='nf_fuseau='+encodeURIComponent(z)+';path=/;max-age=31536000;samesite=lax'+(location.protocol==='https:'?';secure':'');}}catch(e){}})();</script>
 <?php if ($this->config->nf_theme_color): ?>
 <meta name="theme-color" content="<?php echo $this->config->nf_theme_color ?>">
 <?php endif ?>
@@ -164,7 +166,7 @@ if (isset($this->user) && $this->user->admin && method_exists($this->access, 'ge
 					<strong><?php echo $this->lang('Mode preview actif') ?></strong> ·
 					<?php echo $this->lang('Tu vois le site comme %s : <strong>%s</strong>', $preview['type'] === 'role' ? $this->lang('rôle') : $this->lang('user'), htmlspecialchars($preview['label'])) ?>
 					<small class="ms-2 text-muted">
-						<?php echo $this->lang('(actif depuis %s, expire dans %d min)', date('H:i', $preview['started_at']), max(0, ceil((1800 - (time() - $preview['started_at'])) / 60))) ?>
+						<?php echo $this->lang('(actif depuis %s, expire dans %d min)', timetostr('H:i', $preview['started_at']), max(0, ceil((1800 - (time() - $preview['started_at'])) / 60))) ?>
 					</small>
 				</div>
 				<div class="col-auto">
@@ -237,7 +239,15 @@ window.NF = (function(){
 			init.body = sp;
 		}
 
-		return fetch(url, init).then(function(response){
+		return fetch(url, init).catch(function(e){
+			// Le serveur injoignable (réseau coupé, site arrêté) : fetch rejette sans statut. Une
+			// annulation voulue (AbortController) n'est pas une erreur à signaler.
+			if (e && e.name === 'AbortError'){ throw e; }
+			var erreur = new Error('Network — ' + url);
+			erreur.status = 0;
+			erreur.nfAjax = true;
+			throw erreur;
+		}).then(function(response){
 			// Un statut d'erreur doit REJETER. jQuery ne déclenchait pas .done() sur un 404 ; fetch,
 			// lui, ne résout pas seulement : il livre le corps de la page d'erreur. Sans ce garde, un
 			// appelant en dataType 'text' insère la page « 404 Not Found » dans le DOM comme si de
@@ -247,6 +257,10 @@ window.NF = (function(){
 			if (!response.ok){
 				var error = new Error('HTTP ' + response.status + ' — ' + url);
 				error.status = response.status;
+				// Lu prudemment : une réponse sans en-têtes (un double de test, un polyfill) ne doit pas
+				// faire perdre le statut à l'erreur.
+				error.reference = (response.headers && typeof response.headers.get === 'function' && response.headers.get('X-NF-Reference')) || '';
+				error.nfAjax = true;
 				throw error;
 			}
 			return opts.dataType === 'text' ? response.text() : response.json();
@@ -347,6 +361,33 @@ window.NF = (function(){
 		runScripts: runScripts, loadScript: loadScript
 	};
 })();
+
+/*
+ * Une action qui échoue le DIT. NF.ajax rejette sur un statut d'erreur, mais la plupart des appelants
+ * ne traitent pas l'échec : une fenêtre qui ne s'ouvrait pas, un bouton resté grisé, sans un mot
+ * (relevé le 2026-10-02). Un rejet de NF.ajax que personne n'a rattrapé devient ici un message, avec
+ * la référence de l'erreur quand le serveur en donne une — celle que porte le journal. Un appelant
+ * qui traite lui-même l'échec (`.catch`) n'est pas concerné : son rejet n'arrive jamais ici.
+ */
+window.addEventListener('unhandledrejection', function(ev){
+	var e = ev.reason;
+
+	if (!e || !e.nfAjax || typeof notify !== 'function'){ return; }
+
+	ev.preventDefault();
+
+	var message = e.status === 0
+		? <?php echo json_encode((string) $this->lang('Le site ne répond pas : vérifiez votre connexion, puis réessayez.'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?>
+		: (e.status === 403 || e.status === 401
+			? <?php echo json_encode((string) $this->lang('Action refusée : vous n’avez pas les droits nécessaires, ou votre session a expiré.'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?>
+			: <?php echo json_encode((string) $this->lang('L’action n’a pas abouti (erreur %d). Réessayez ; si cela se reproduit, prévenez l’administrateur du site.'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?>.replace('%d', e.status));
+
+	if (e.reference && /^[0-9A-F]{8}$/.test(e.reference)){
+		message += ' ' + <?php echo json_encode((string) $this->lang('Référence : %s'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?>.replace('%s', e.reference);
+	}
+
+	notify(message, 'danger');
+});
 </script>
 <?php echo $this->output->js() ?>
 <script type="text/javascript">

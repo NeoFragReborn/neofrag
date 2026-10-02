@@ -315,4 +315,5 @@ return [
 	'7b86045c' => 'Ainda não há contas associadas.',
 	'41dd9c72' => 'A sua conta não tem palavra-passe: inicia sessão através de uma conta associada. Defina uma palavra-passe no seu perfil para não depender dela.',
 	'a4afc21b' => 'Associar uma conta',
+	'2778f267' => 'Automático: o do seu navegador',
 ];

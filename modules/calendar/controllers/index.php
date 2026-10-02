@@ -40,12 +40,12 @@ class Index extends Controller_Module
 				$color = $e['color'] ? $e['color'] : '#03c1a2';
 				$body .= '<a href="'.url('calendar/'.$e['id'].'/'.$slug).'" class="list-group-item list-group-item-action" style="border-left:4px solid '.htmlspecialchars((string) ($color)).'">';
 				$body .= '<div class="d-flex justify-content-between mb-1">';
-				$body .= '<strong>'.htmlspecialchars((string) ($e['title'])).'</strong>';
+				$body .= '<strong>'.htmlspecialchars((string) ($e['title']), ENT_QUOTES, 'UTF-8', FALSE).'</strong>';
 				$body .= '<small class="text-muted">'.Calendar::format_dt($e['start_at'], (bool)$e['all_day'], $e['end_at']).'</small>';
 				$body .= '</div>';
 				if (!empty($e['location']))
 				{
-					$body .= '<small class="text-muted"><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars((string) ($e['location'])).'</small>';
+					$body .= '<small class="text-muted"><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars((string) ($e['location']), ENT_QUOTES, 'UTF-8', FALSE).'</small>';
 				}
 				$body .= '</a>';
 			}
@@ -59,11 +59,11 @@ class Index extends Controller_Module
 	{
 		$this->title($e['title'])->icon('far fa-calendar')->breadcrumb();
 
-		$body = '<div class="mb-3"><h2>'.htmlspecialchars((string) ($e['title'])).'</h2>';
+		$body = '<div class="mb-3"><h2>'.htmlspecialchars((string) ($e['title']), ENT_QUOTES, 'UTF-8', FALSE).'</h2>';
 		$body .= '<p class="text-muted"><i class="far fa-clock"></i> '.Calendar::format_dt($e['start_at'], (bool)$e['all_day'], $e['end_at']).'</p>';
 		if (!empty($e['location']))
 		{
-			$body .= '<p><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars((string) ($e['location'])).'</p>';
+			$body .= '<p><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars((string) ($e['location']), ENT_QUOTES, 'UTF-8', FALSE).'</p>';
 		}
 		if ($e['user_id'])
 		{
@@ -82,7 +82,9 @@ class Index extends Controller_Module
 
 		if (!empty($e['description']))
 		{
-			$body .= '<div class="card"><div class="card-body">'.nl2br(htmlspecialchars((string) ($e['description']))).'</div></div>';
+			// Un champ éditeur : du HTML assaini à l'enregistrement (sanitize_html, form.php), à
+			// afficher comme tel. Échappé, il montrait ses balises au visiteur.
+			$body .= '<div class="card"><div class="card-body">'.sanitize_html((string) $e['description']).'</div></div>';
 		}
 
 		$body .= '<div class="mt-3"><a class="btn btn-secondary btn-sm" href="'.url('calendar').'"><i class="fas fa-arrow-left"></i> '.$this->lang('Retour au calendrier').'</a></div>';
@@ -137,6 +139,9 @@ class Index extends Controller_Module
 
 	private function _ical_escape($str)
 	{
+		// Un agenda attend du texte brut : le site enregistre ses textes encodés (« journ&eacute;e »), et
+		// la description est du HTML.
+		$str = html_entity_decode(strip_tags((string) $str), ENT_QUOTES | ENT_HTML5, 'UTF-8');
 		$str = str_replace(["\\", "\r\n", "\n", ",", ";"], ["\\\\", "\\n", "\\n", "\\,", "\\;"], $str);
 		return $str;
 	}

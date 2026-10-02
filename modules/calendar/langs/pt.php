@@ -56,4 +56,6 @@ return [
 	'960d0854' => 'Gerir os eventos',
 	'46b60b4f' => 'j \\d\\e F \\d\\e Y',
 	'0c3ae1ce' => 'j \\d\\e F \\d\\e Y, H:i',
+	'f5ae0a85' => 'Início',
+	'eae6f46e' => 'Fim (opcional)',
 ];

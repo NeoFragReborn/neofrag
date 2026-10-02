@@ -10,6 +10,91 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.13] — 2026-10-02
+
+### Ajouté
+
+- **Le journal des erreurs, dans l'administration** (*Système → Monitoring → Journal des erreurs*). Plus
+  besoin du FTP ni d'un accès au serveur pour savoir ce qui a échoué : les erreurs du site, regroupées,
+  de la plus récente à la plus ancienne, classées par gravité, à filtrer par période ou par mot. Les
+  chemins du serveur, les mots de passe, les clés, les adresses e-mail et IP sont masqués à l'écran ; le
+  fichier se télécharge et se vide (l'ancien est gardé à côté). Le Monitoring signale les erreurs des
+  dernières 24 heures, et un dossier `logs/` où le site ne peut plus écrire.
+- **Les outils de diagnostic s'allument depuis l'administration** (*Monitoring → Diagnostic*), pour une
+  heure, sans modifier `config/neofrag.php` par FTP :
+  - **le mode débogage** — ce qu'il affiche, la barre en bas de page et le détail des erreurs, ne se
+    montre plus qu'aux administrateurs connectés ; allumé, il s'affichait à tous les visiteurs, requêtes
+    et données de la visite comprises ;
+  - **la trace des pages**, qui se lit enfin dans l'administration : les dernières pages servies, leurs
+    requêtes et leur durée, les valeurs sensibles masquées ;
+  - **le relevé des traductions**, avec la liste des textes manquants par langue et par extension ; le
+    drapeau qu'il ajoute devant les textes traduits ne se montre plus qu'aux administrateurs.
+- **L'administration rangée en neuf rubriques** : *Contenu*, *Communauté*, *Animation*, *Gaming*,
+  *Savoir*, *Médias*, *Diffusion*, *Support*, *Monétisation* (et *Système*). Les six précédentes
+  mêlaient le calendrier aux médias ou le Bugtracker à la communauté, et treize modules finissaient dans
+  « Autres modules ».
+- **Le menu « Navigation » de l'éditeur en direct** suit les mêmes rubriques, en sous-menus repliables,
+  avec une recherche ; il alignait plus de quarante pages à la suite.
+- **L'adresse du site se corrige depuis l'administration** (*Monitoring → Adresse du site*). Après un
+  changement de domaine, les liens des courriels menaient encore à l'ancien tant qu'on ne modifiait pas
+  `config/url.php` par FTP.
+- **Une référence pour chaque erreur.** Le visiteur qui tombe sur une erreur lit une référence de huit
+  caractères ; l'administrateur la cherche dans le journal et tombe sur la bonne ligne.
+- **Les heures dans le fuseau de chacun.** Un membre choisit son fuseau horaire dans son profil ; à
+  défaut, le site prend celui de son navigateur, et à défaut celui du site, nouveau réglage de
+  *Paramètres → Préférences générales*. Les heures saisies dans les formulaires se comprennent dans le
+  fuseau de celui qui les saisit. La liste des fuseaux est groupée par région, les villes nommées dans
+  la langue du site.
+
+### Corrigé
+
+- **Les heures n'ont plus deux heures de retard.** Le site les affichait à l'heure du serveur — l'heure
+  universelle — pour tout le monde. Le fuseau du profil membre, lui, ne s'appliquait que sur les pages
+  du profil, et décalait les dates que ce membre faisait enregistrer. Le calendrier, le wiki, le
+  Bugtracker, les conversations archivées et le gestionnaire de fichiers écrivaient leurs heures sans
+  conversion ; l'émission « en direct » de la webradio se lisait à l'heure du serveur.
+- **Le calendrier** : le début et la fin d'un événement se choisissent dans un sélecteur de date, et
+  non plus dans un champ texte au format « YYYY-MM-DD HH:MM:SS » ; un titre accentué ne s'affiche plus
+  « journ&amp;eacute;e » ; la description mise en forme ne montre plus ses balises ; l'export agenda
+  reçoit un texte propre.
+- **Les listes avec recherche** disent « Aucun résultat » dans la langue du site, et non « No results
+  found ».
+- **L'éditeur en direct** proposait de composer le Forum, les Galeries, les Équipes, le Contact et le
+  Palmarès : ils manquaient à son menu, faute d'une route déclarée pour leur page d'accueil.
+
+- **Une page qui plante dit « Une erreur est survenue » (500)**, avec sa référence, au lieu de « Page
+  introuvable », qui faisait croire à une mauvaise adresse.
+- **Plus de page blanche.** Une erreur fatale, ou une exception hors des pages, affiche une page d'erreur
+  dans la langue du visiteur. La base de données injoignable aussi (503), au lieu d'un message en anglais
+  brut, et la panne est enfin notée au journal.
+- **Une action qui échoue le dit** : une fenêtre qui ne s'ouvre pas, un envoi refusé, le serveur qui ne
+  répond plus affichent un message, avec la référence de l'erreur — au lieu d'un bouton resté grisé sans
+  un mot. Le Monitoring qui ne parvient pas à s'actualiser arrête son sablier.
+- **La sauvegarde et la mise à jour disent la vérité.** Elles annonçaient « Sauvegarde réalisée » ou
+  « Mise à jour effectuée avec succès » même après un échec ; elles n'annoncent plus le succès que si le
+  serveur le confirme, et disent sinon ce qui a échoué. La sauvegarde vérifie aussi qu'elle a bien écrit
+  son archive : dans un dossier non inscriptible ou sur un disque plein, elle se disait réussie — et la
+  mise à jour, qui s'appuie sur elle pour revenir en arrière, n'aurait rien eu à remettre.
+- **L'erreur d'un champ de formulaire se lit sous le champ**, et non plus seulement au survol d'une
+  petite icône.
+- Un formulaire envoyé sans un de ses champs, et une requête sans résultat lue comme une recherche, ne
+  laissent plus d'alerte au journal — la seconde faisait tomber la page.
+- **La barre de débogage s'affiche de nouveau** : un nombre la faisait tomber tout entière depuis le
+  passage du code en typage strict, et son calcul de chronologie était faux.
+
+- **L'annonce d'une mise à jour se voit de nouveau.** Elle n'était plus qu'un « 1.2.x » sans couleur
+  dans la barre du haut : un nettoyage du style de l'administration avait emporté le sien. Elle
+  retrouve un encart sous le logo — « Mise à jour disponible · NeoFrag X.Y.Z » — et une pastille
+  lisible dans la barre du haut.
+- **La fenêtre de mise à jour** montrait un bloc vide et laissait un avertissement au journal : elle dit
+  maintenant quelle version arrive, que le site est sauvegardé avant de commencer et revient à son état
+  d'avant en cas d'échec, avec un lien vers ce qu'apporte la version.
+
+### Retiré
+
+- **`NEOFRAG_LOGS_DB`**, que rien ne lisait : les installations neuves ne l'écrivent plus dans
+  `config/neofrag.php`. Une installation existante peut le garder, il reste sans effet.
+
 ## [1.2.12] — 2026-10-02
 
 Le bot Discord passe en **version 0.2.0** : remplace son dossier par celui de la nouvelle archive (en

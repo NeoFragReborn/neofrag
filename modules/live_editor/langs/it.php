@@ -66,4 +66,7 @@ return [
 	'9d433e55' => 'La visualizzazione non corrisponde più a quanto salvato: ricarica la pagina.',
 	'88a46340' => 'Editor visivo del layout: trascina e rilascia i widget nelle zone del tema.',
 	'dd3795ad' => 'Menu',
+	'66a08d25' => 'Pagine del sito',
+	'bc74124e' => 'Cerca una pagina',
+	'cdf72ea5' => 'Nessuna pagina corrisponde.',
 ];

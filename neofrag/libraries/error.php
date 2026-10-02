@@ -31,6 +31,21 @@ class Error extends Library
 		return parent::__call($name, $args);
 	}
 
+	/**
+	 * Une erreur interne (500) : la page a planté. Le visiteur lit qu'un problème est survenu, avec la
+	 * référence que porte aussi la ligne du journal — et non plus « Page introuvable », qui lui faisait
+	 * croire à une mauvaise adresse (relevé le 2026-10-02).
+	 */
+	public function interne(string $reference)
+	{
+		throw NeoFrag()->___load('', 'exception', [function() use ($reference){
+			header('HTTP/1.0 500 Internal Server Error');
+			header('X-NF-Reference: '.$reference);   // lue par NF.ajax, qui la montre dans son message
+			$this->output->data->set('module', 'title', (string) $this->lang('Une erreur est survenue'));
+			return $this->view('errors/internal', ['reference' => $reference]);
+		}]);
+	}
+
 	public function unauthorized()
 	{
 		throw NeoFrag()->___load('', 'exception', [function(){

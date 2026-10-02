@@ -66,4 +66,7 @@ return [
 	'9d433e55' => 'L\'affichage ne correspond plus à ce qui est enregistré : rechargez la page.',
 	'88a46340' => 'Éditeur visuel de mise en page : glisser-déposer des widgets dans les zones du thème.',
 	'dd3795ad' => 'Menu',
+	'66a08d25' => 'Pages du site',
+	'bc74124e' => 'Rechercher une page',
+	'cdf72ea5' => 'Aucune page ne correspond.',
 ];

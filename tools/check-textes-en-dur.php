@@ -26,7 +26,8 @@ declare(strict_types=1);
  *
  * Ce qui n'est pas un défaut
  * --------------------------
- *   - l'argument d'un appel qui TRADUIT : `lang()`, et ce que la bibliothèque traduit elle-même —
+ *   - l'argument d'un appel qui TRADUIT : `lang()` (et `$lang()`, la traduction de la page d'erreur
+ *     autonome, qui tourne sans le site), et ce que la bibliothèque traduit elle-même —
  *     `->title()`, `->heading()`, `->tooltip()`, `->label()`, `->modal()`, `->popover()`,
  *     `->placeholder()`, `->info()` (liste tenue avec `check-langs`) — pas `->no_data()`, que le tableau
  *     classique affiche tel quel : on lui passe `$this->lang('…')` ;
@@ -61,7 +62,7 @@ const APPELS_EXEMPTS = [
  * Les appels qui s'adressent au DÉVELOPPEUR : tout ce qui est écrit dedans, même à travers un
  * `sprintf()`, part aux journaux ou dans un diagnostic, jamais à l'écran d'un visiteur.
  */
-const APPELS_DEVELOPPEUR = ['trigger_error', 'error_log', 'debug', 'nf_refus'];
+const APPELS_DEVELOPPEUR = ['trigger_error', 'error_log', 'debug', 'nf_refus', 'nf_journaliser_erreur'];
 
 /**
  * Les clés dont la valeur n'est pas un texte à passer par lang() ICI : une identité (`author`…), ou
@@ -231,6 +232,13 @@ function nom_appel(array $jetons, int $i): string
             $nom = $jetons[$j][1];
 
             return strtolower(substr($nom, (int) strrpos('\\'.$nom, '\\')));
+        }
+
+        // Une fonction rangée dans une variable : `$lang('…')`, la traduction de la page d'erreur
+        // autonome, qui tourne sans le site (neofrag/helpers/erreurs.php). `check-langs` la lit déjà.
+        if (is_array($jetons[$j]) && $jetons[$j][0] === T_VARIABLE)
+        {
+            return strtolower(ltrim($jetons[$j][1], '$'));
         }
 
         return '';

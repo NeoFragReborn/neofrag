@@ -66,4 +66,7 @@ return [
 	'9d433e55' => 'Lo que ves ya no coincide con lo guardado: recarga la página.',
 	'88a46340' => 'Editor visual de diseño: arrastra y suelta widgets en las zonas del tema.',
 	'dd3795ad' => 'Menú',
+	'66a08d25' => 'Páginas del sitio',
+	'bc74124e' => 'Buscar una página',
+	'cdf72ea5' => 'Ninguna página coincide.',
 ];

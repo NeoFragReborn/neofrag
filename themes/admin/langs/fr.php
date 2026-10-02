@@ -92,4 +92,9 @@ return [
 	'5d023f8c' => 'Voir le site public',
 	'c57dcade' => 'Aucun résultat',
 	'fb31a891' => 'Mise à jour effectuée avec succès',
+	'da974ab9' => 'Mise à jour disponible',
+	'4376b46f' => 'Mise à jour %s',
+	'0b125c77' => 'La mise à jour a échoué : %s',
+	'24480076' => 'elle s’est arrêtée sans confirmation du serveur.',
+	'51b5ce2f' => 'Référence : %s',
 ];

@@ -82,7 +82,7 @@ class Lang extends Library
 			}
 			else
 			{
-				if (NEOFRAG_LOGS_I18N && $this->db()->from('nf_log_i18n')->where('language', $language)->where('key', $key)->where('file', $class = get_class($this->__caller))->empty())
+				if (nf_traductions_actives() && $this->db()->from('nf_log_i18n')->where('language', $language)->where('key', $key)->where('file', $class = get_class($this->__caller))->empty())
 				{
 					NeoFrag()->model2('log_i18n')->set('language', $language)->set('key', $key)->set('locale', $locale)->set('file', $class)->create();
 				}
@@ -152,7 +152,7 @@ class Lang extends Library
 				$locale = call_user_func_array('sprintf', $args);
 			}
 
-			if (NEOFRAG_LOGS_I18N)
+			if (nf_traductions_visibles())
 			{
 				if (!isset($lang))
 				{

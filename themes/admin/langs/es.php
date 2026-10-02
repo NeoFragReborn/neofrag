@@ -101,4 +101,9 @@ return [
 	'5d023f8c' => 'Ver el sitio público',
 	'c57dcade' => 'Sin resultados',
 	'fb31a891' => 'Actualización realizada con éxito',
+	'da974ab9' => 'Actualización disponible',
+	'4376b46f' => 'Actualización %s',
+	'0b125c77' => 'La actualización ha fallado: %s',
+	'24480076' => 'se ha detenido sin confirmación del servidor.',
+	'51b5ce2f' => 'Referencia: %s',
 ];
