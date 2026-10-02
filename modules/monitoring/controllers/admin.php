@@ -1078,9 +1078,12 @@ class Admin extends Controller_Module
 		 * laissant un avertissement au journal à chaque mise à jour (relevé le 2026-10-02). Elle dit
 		 * maintenant ce qui va se passer, et renvoie au journal des versions.
 		 */
+		// Le lien mène à la version annoncée dans le journal (ancre « 1-2-14 », cf. l'ancre du wiki), et
+		// non au haut de la page, où se lisait la version d'avant tant que la nouvelle n'y était pas.
+		$numero     = preg_match('/^\d+(?:\.\d+)+$/', (string) $version->version) ? (string) $version->version : '';
 		$nouveautes = '<p class="mb-1">'.$this->lang('NeoFrag %s est disponible.', utf8_htmlentities((string) $version->version)).'</p>'
 			.'<p class="text-muted small mb-0">'.$this->lang('Une sauvegarde complète du site est faite avant de commencer ; en cas d’échec, le site revient à son état d’avant.')
-			.' <a href="'.\NF\NeoFrag\Installer::CHANGELOG_URL.'" target="_blank" rel="noopener">'.$this->lang('Ce qu’apporte cette version').'</a></p>';
+			.' <a href="'.\NF\NeoFrag\Installer::CHANGELOG_URL.($numero !== '' ? '#'.str_replace('.', '-', $numero) : '').'" target="_blank" rel="noopener">'.$this->lang('Ce qu’apporte cette version').'</a></p>';
 
 		return $this->modal($this->lang('Mise à jour de NeoFrag'), 'fas fa-rocket')
 					->large()

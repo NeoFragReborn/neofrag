@@ -10,6 +10,28 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.15] — 2026-10-02
+
+### Modifié
+
+- **La recherche rapide de l'administration (Ctrl+K), reprise** : les rubriques en petites capitales
+  discrètes, alignées sur les icônes, au lieu de titres collés au bord ; le nom de la rubrique n'est
+  plus répété au bout de chaque ligne ; une loupe dans le champ ; la partie trouvée en surbrillance. La
+  recherche ignore les accents (« evenements » trouve « Événements gaming ») et cherche aussi dans les
+  rubriques (« gaming » liste les six modules de la rubrique).
+- **La photo du membre dans la barre latérale de l'administration**, au lieu de l'initiale de son
+  pseudo, qui reste pour un compte sans photo.
+
+### Corrigé
+
+- **Les flèches du clavier, dans la recherche rapide**, déplaçaient une sélection invisible : seule la
+  souris surlignait une ligne.
+- **« Ce qu'apporte cette version »**, dans la fenêtre de mise à jour, ouvrait le journal des versions
+  en haut de la page, sur la version précédente : il mène maintenant à la version annoncée.
+- **Le cadre des commentaires d'un billet du Blog** perdait sa marge intérieure et la ligne sous son
+  titre : « Commentaires » et le compteur touchaient le bord. Cinq thèmes appliquaient à tout cadre
+  imbriqué une règle prévue pour l'en-tête des cadres transparents.
+
 ## [1.2.14] — 2026-10-02
 
 ### Modifié

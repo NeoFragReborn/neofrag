@@ -243,9 +243,18 @@ class Index extends Controller_Module
 		return '<div class="wiki-cat-resume"><p>'.htmlspecialchars($debut).'</p><a href="'.$lien.'">'.$this->lang('Lire la page').' <i class="fas fa-chevron-right"></i></a></div>';
 	}
 
-	/** L'ancre d'un titre : son texte en minuscules, des tirets à la place du reste. */
+	/**
+	 * L'ancre d'un titre : son texte en minuscules, des tirets à la place du reste. Une version du
+	 * journal (« [1.2.14] — 2026-10-02 ») a l'ancre de son seul numéro, « 1-2-14 » : la fenêtre de mise
+	 * à jour y mène sans connaître la date de publication.
+	 */
 	private static function ancre(string $titre): string
 	{
+		if (preg_match('/^\[(\d+(?:\.\d+)+)\]/', $titre, $version))
+		{
+			return str_replace('.', '-', $version[1]);
+		}
+
 		return trim((string) preg_replace('/[^\p{L}\p{N}]+/u', '-', mb_strtolower($titre)), '-') ?: 'section';
 	}
 

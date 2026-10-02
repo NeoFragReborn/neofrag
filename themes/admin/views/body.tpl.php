@@ -90,7 +90,16 @@ if (!$is_dashboard) {
 
 		<div class="nf-sb-user">
 			<a href="<?php echo url('user') ?>" class="nf-sb-user-link" title="<?php echo htmlspecialchars($this->user->username) ?>">
-				<span class="nf-avatar"><?php echo strtoupper(substr($this->user->username, 0, 1)) ?></span>
+				<?php
+				// La photo du membre, s'il en a une ; sinon l'initiale de son pseudo, dans sa casse et
+				// lettre entière (mb_ : un pseudo peut commencer par « É »).
+				$photo = $this->user->profile()->avatar() ? $this->user->profile()->avatar->path() : '';
+				?>
+				<?php if ($photo): ?>
+				<span class="nf-avatar nf-avatar-photo"><img src="<?php echo htmlspecialchars((string) $photo) ?>" alt=""></span>
+				<?php else: ?>
+				<span class="nf-avatar"><?php echo htmlspecialchars(mb_strtoupper(mb_substr((string) $this->user->username, 0, 1))) ?></span>
+				<?php endif ?>
 				<span class="nf-sb-user-name"><?php echo htmlspecialchars($this->user->username) ?></span>
 			</a>
 			<a class="nf-icon-btn" href="<?php echo url('user/logout') ?>" title="<?php echo $this->lang('Se déconnecter') ?>" aria-label="<?php echo $this->lang('Se déconnecter') ?>">
@@ -234,7 +243,10 @@ if (!$is_dashboard) {
 <!-- Command palette -->
 <div class="nf-cmd-overlay" id="nfCmdOverlay" aria-hidden="true">
 	<div class="nf-cmd-palette" role="dialog" aria-label="<?php echo $this->lang('Recherche rapide') ?>">
-		<input type="text" class="nf-cmd-input" id="nfCmdInput" placeholder="<?php echo $this->lang('Tape une commande, un module, ou une action…') ?>" autocomplete="off">
+		<div class="nf-cmd-search">
+			<i class="fas fa-search" aria-hidden="true"></i>
+			<input type="text" class="nf-cmd-input" id="nfCmdInput" placeholder="<?php echo $this->lang('Tape une commande, un module, ou une action…') ?>" autocomplete="off">
+		</div>
 		<div class="nf-cmd-results" id="nfCmdResults"></div>
 		<div class="nf-cmd-footer">
 			<span><kbd>↑</kbd><kbd>↓</kbd> <?php echo $this->lang('Naviguer') ?></span>

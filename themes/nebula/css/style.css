@@ -405,7 +405,7 @@ i.icon:only-child { margin: 0; }
 .card .card-body { padding: 14px 16px; font-size: 13.5px; }
 .card .card-footer { background: var(--fg-surface-2); border-top: 1px solid var(--fg-border); padding: 10px 16px; font-size: 12px; color: var(--fg-muted); }
 .card.card-transparent { background: transparent; border: none; box-shadow: none; }
-.card.card-transparent .card-header { border-bottom: none; padding-left: 0; padding-right: 0; }
+.card.card-transparent > .card-header { border-bottom: none; padding-left: 0; padding-right: 0; } /* l'en-tête direct : un cadre imbriqué (les commentaires d'un billet) garde le sien */
 
 .card.panel-header > .card-header {
 	background: color-mix(in srgb, var(--fg-accent) 12%, transparent); border-bottom: 1px solid var(--fg-border);

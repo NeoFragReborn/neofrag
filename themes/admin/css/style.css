@@ -432,41 +432,51 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 	flex-direction: column;
 }
 
+.nf-cmd-search {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 0 18px;
+	border-bottom: 1px solid var(--nf-border);
+}
+.nf-cmd-search > i { color: var(--nf-muted); font-size: 14px; }
+
 .nf-cmd-input {
+	flex: 1 1 auto;
+	min-width: 0;
 	height: 52px;
 	border: 0;
-	border-bottom: 1px solid var(--nf-border);
 	background: transparent;
 	color: var(--nf-text);
 	font-family: var(--nf-font);
 	font-size: 15px;
-	padding: 0 18px;
+	padding: 0;
 	outline: none;
 }
 
 .nf-cmd-input::placeholder { color: var(--nf-muted-2); }
-.nf-cmd-results { max-height: 50vh; overflow-y: auto; padding: 6px 0; }
+.nf-cmd-results { max-height: 50vh; overflow-y: auto; padding: 4px 8px 8px; }
 
+/* Une entrée : l'icône dans sa colonne, le titre ; la sélection (clavier ou souris) en pastille. */
 .nf-cmd-result {
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	padding: 9px 18px;
+	padding: 8px 10px;
+	border-radius: 8px;
 	cursor: pointer;
-	color: var(--nf-text-soft);
-	font-size: 13.5px;
+	color: var(--nf-text);
+	font-size: 14px;
+	text-decoration: none;
 	transition: background-color 100ms ease, color 100ms ease;
 }
 
-.nf-cmd-result-icon { width: 22px; color: var(--nf-muted); font-size: 13px; display: inline-flex; justify-content: center; }
+.nf-cmd-result-icon { width: 20px; flex: 0 0 20px; color: var(--nf-muted); font-size: 14px; display: inline-flex; justify-content: center; }
 .nf-cmd-result-title { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
-.nf-cmd-result-section { font-size: 11px; color: var(--nf-muted-2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.nf-cmd-result-title mark { padding: 0; background: none; color: var(--nf-accent); font-weight: 700; }
 
-.nf-cmd-result.is-active,
-.nf-cmd-result:hover { background: var(--nf-accent-soft); color: var(--nf-accent-text); }
-
-.nf-cmd-result.is-active .nf-cmd-result-icon,
-.nf-cmd-result:hover .nf-cmd-result-icon { color: var(--nf-accent); }
+.nf-cmd-result.is-active { background: var(--nf-accent-soft); color: var(--nf-accent-text); }
+.nf-cmd-result.is-active .nf-cmd-result-icon { color: var(--nf-accent); }
 
 .nf-cmd-empty { padding: 24px; text-align: center; color: var(--nf-muted); font-size: 13px; }
 
@@ -490,9 +500,20 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 	font-family: var(--nf-font-mono);
 	margin-right: 2px;
 }
-/* Icône des en-têtes de section dans la command palette */
-.nf-cmd-section-header { display: flex; align-items: center; gap: 7px; }
-.nf-cmd-section-header i { color: var(--nf-accent); font-size: 11px; width: 13px; text-align: center; }
+/* L'en-tête d'une rubrique : en petites capitales discrètes, aligné sur la colonne des icônes. */
+.nf-cmd-section + .nf-cmd-section { margin-top: 4px; }
+.nf-cmd-section-header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 10px 4px;
+	color: var(--nf-muted);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .05em;
+	text-transform: uppercase;
+}
+.nf-cmd-section-header i { width: 20px; flex: 0 0 20px; text-align: center; font-size: 11px; color: var(--nf-muted-2); }
 
 /* =========================================================================
    Bootstrap 4 overrides
@@ -3618,6 +3639,8 @@ button.nf-local-tab {
 .nf-sb-user-link { display: flex; align-items: center; gap: 9px; flex: 1; text-decoration: none; color: var(--nf-text); min-width: 0; }
 .nf-sb-user-name { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .nf-avatar { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, #2dd4bf, #22d3ee); color: #04201d; display: grid; place-items: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+.nf-avatar-photo { background: var(--nf-surface-2); overflow: hidden; }
+.nf-avatar-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .nf-main { display: flex; flex-direction: column; min-width: 0; }
 .nf-topbar { display: flex; align-items: center; gap: 14px; height: 60px; min-height: 60px; padding: 0 24px; background: color-mix(in srgb, var(--nf-bg) 78%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--nf-border); position: sticky; top: 0; z-index: 20; }

@@ -74,11 +74,25 @@
 		return out;
 	}
 
+	// Sans accents ni majuscules : « evenements » trouve « Événements gaming ». La décomposition (NFD)
+	// puis le retrait des accents garde la longueur d'un titre composé (NFC) : les positions servent
+	// telles quelles au surlignage.
+	function normaliser(s) {
+		return String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+	}
+
+	function surligner(titre, q) {
+		var i = q ? normaliser(titre).indexOf(q) : -1;
+		if (i < 0) return escapeHtml(titre);
+		return escapeHtml(titre.slice(0, i)) + '<mark>' + escapeHtml(titre.slice(i, i + q.length)) + '</mark>' + escapeHtml(titre.slice(i + q.length));
+	}
+
 	function renderResults(query) {
 		if (!cmdResults) return;
-		var q = (query || '').toLowerCase().trim();
+		var q = normaliser(query).trim();
 		var all = getCommands();
-		var matched = all.filter(function(c) { return !q || c.title.toLowerCase().indexOf(q) !== -1; });
+		// Le titre, ou le nom de la rubrique : « gaming » liste les modules de la rubrique Gaming.
+		var matched = all.filter(function(c) { return !q || normaliser(c.title).indexOf(q) !== -1 || normaliser(c.section).indexOf(q) !== -1; });
 		if (matched.length === 0) {
 			cmdResults.innerHTML = '<div class="nf-cmd-empty"><i class="fas fa-search"></i> <?php echo addslashes($this->lang('Aucun résultat')) ?></div>';
 			return;
@@ -90,14 +104,14 @@
 		var idx = 0;
 		Object.keys(grouped).forEach(function(sec) {
 			html += '<div class="nf-cmd-section">';
-			html += '<div class="nf-cmd-section-header"><i class="' + escapeAttr(sectionIcons[sec]) + '"></i>' + escapeHtml(sec) + '</div>';
+			html += '<div class="nf-cmd-section-header"><i class="' + escapeAttr(sectionIcons[sec]) + '"></i><span>' + escapeHtml(sec) + '</span></div>';
 			grouped[sec].forEach(function(c) {
 				html += '<a class="nf-cmd-result" data-idx="' + idx + '"';
 				if (c.url) html += ' href="' + escapeAttr(c.url) + '"';
 				html += ' data-action="' + escapeAttr(c.action || '') + '">';
 				html += '<span class="nf-cmd-result-icon"><i class="' + escapeAttr(c.icon) + '"></i></span>';
-				html += '<span class="nf-cmd-result-title">' + escapeHtml(c.title) + '</span>';
-				html += '<span class="nf-cmd-result-section">' + escapeHtml(c.section) + '</span>';
+				// Le nom de la rubrique n'est plus répété à droite : l'en-tête du groupe le dit déjà.
+				html += '<span class="nf-cmd-result-title">' + surligner(c.title, q) + '</span>';
 				html += '</a>';
 				idx++;
 			});
@@ -117,7 +131,9 @@
 
 	function updateFocus() {
 		var items = cmdResults.querySelectorAll('.nf-cmd-result');
-		items.forEach(function(it, i) { it.classList.toggle('focused', i === focusedIdx); });
+		// « is-active » : la classe que la feuille dessine. L'ancienne (« focused ») n'avait aucun style,
+		// et les flèches du clavier déplaçaient une sélection invisible.
+		items.forEach(function(it, i) { it.classList.toggle('is-active', i === focusedIdx); });
 		if (items[focusedIdx]) items[focusedIdx].scrollIntoView({ block: 'nearest' });
 	}
 
@@ -156,6 +172,13 @@
 			else if (e.key === 'ArrowUp') { e.preventDefault(); if (items.length) { focusedIdx = (focusedIdx - 1 + items.length) % items.length; updateFocus(); } }
 			else if (e.key === 'Enter') { e.preventDefault(); if (items[focusedIdx]) executeResult(items[focusedIdx]); }
 			else if (e.key === 'Escape') { closePalette(); }
+		});
+		// La souris et le clavier partagent la même sélection : jamais deux lignes surlignées à la fois.
+		cmdResults.addEventListener('mousemove', function(e) {
+			var item = e.target.closest('.nf-cmd-result');
+			if (!item) return;
+			var i = parseInt(item.getAttribute('data-idx'), 10);
+			if (i !== focusedIdx) { focusedIdx = i; cmdResults.querySelectorAll('.nf-cmd-result').forEach(function(it, j) { it.classList.toggle('is-active', j === i); }); }
 		});
 		cmdResults.addEventListener('click', function(e) {
 			var item = e.target.closest('.nf-cmd-result');
