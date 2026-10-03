@@ -10,6 +10,33 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.20] — 2026-10-03
+
+### Ajouté
+
+- **Un profil d'installation « Association / club »** : actualités, forum, galeries, calendrier, dons,
+  newsletter, wiki et FAQ, sans l'attirail esport. Il s'ajoute à *Complet*, *Gaming / eSport*,
+  *Communauté* et *Cœur seul*, dans les six langues de l'assistant.
+
+### Corrigé
+
+- **L'export des membres au format JSON** (RGPD, article 15) écrit de nouveau sa mention « Export des
+  données membres » : elle sortait vide.
+- **Blog** : sur la page d'un auteur, « Voir son profil » menait à une page introuvable.
+
+### Sécurité
+
+- **L'instantané de la démonstration n'emporte plus aucun secret.** Le fichier qui remet la démo à zéro,
+  livré avec le paquet de démonstration, aurait recopié l'identifiant d'envoi des e-mails, la clé du
+  service de traduction d'origine et les clés des widgets Twitch et TeamSpeak d'un site où elles
+  auraient été saisies ; il portait encore la ligne, vide, de la clé secrète du captcha. Aucune clé
+  n'avait fui. Un contrôle vérifie désormais la liste contre le code, et le fichier livré lui-même.
+
+### Documentation
+
+- NeoFrag Reborn se présente comme **le CMS libre des communautés, du gaming aux associations** ; le
+  guide des concepts montre comment monter le site d'une association ou d'un club.
+
 ## [1.2.19] — 2026-10-02
 
 ### Ajouté

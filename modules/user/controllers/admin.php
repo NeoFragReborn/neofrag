@@ -213,7 +213,8 @@ class Admin extends Controller_Module
 					'generated_at' => date('c'),
 					'site'         => $this->config->nf_name,
 					'count'        => count($members),
-					'rgpd_notice'  => $this->lang('Export des données membres (RGPD, article 15).'),
+					// lang() rend un objet : json_encode() en écrirait `{}` au lieu du texte.
+					'rgpd_notice'  => (string) $this->lang('Export des données membres (RGPD, article 15).'),
 				],
 				'members' => $members,
 			], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

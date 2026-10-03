@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 /**
- * check-demo-lock — le verrou du site de démonstration et sa remise à zéro se répondent : rien de modifiable n'est irréversible.
+ * check-demo-lock — le verrou de la démonstration et sa remise à zéro se répondent, et l'instantané publié n'emporte aucun secret.
  *
  * Famille : statique
  *
@@ -30,7 +30,13 @@ declare(strict_types=1);
  *   2. si un module NON verrouillé écrit des réglages, alors `nf_settings` doit être restauré par
  *      l'instantané ;
  *   3. tout module verrouillé existe réellement — sinon la liste protège un fantôme et laisse
- *      croire que le sujet est traité.
+ *      croire que le sujet est traité ;
+ *   4. tout réglage que l'instantané exclut (ou déclare public) existe dans le code : la liste de
+ *      `dump-demo` citait huit noms inventés le 2026-10-02, un neuvième le 2026-10-03 ;
+ *   5. tout réglage du code dont le nom désigne un secret (NF_DEMO_MOTIF_SECRET) est exclu, ou
+ *      déclaré public avec sa raison — la liste et le motif vivent dans `tools/lib/demo.php` ;
+ *   6. `install/demo.sql`, le fichier PUBLIÉ, ne porte ni un réglage exclu ni une clé dans les
+ *      réglages d'un widget.
  *
  * Usage
  * -----
@@ -38,6 +44,9 @@ declare(strict_types=1);
  */
 
 require __DIR__.'/lib/outil.php';
+require __DIR__.'/lib/depot.php';
+require __DIR__.'/lib/sql.php';
+require __DIR__.'/lib/demo.php';
 
 nf_options([]);
 
@@ -135,6 +144,84 @@ foreach ($verrouilles as $module)
     }
 }
 
+// ── 4 à 6. Les secrets que l'instantané n'emporte pas (tools/lib/demo.php) ──
+// Les réglages que le code nomme : lus (`config->nom`) ou écrits (`config('nom'`, `_poser('nom'`).
+// Les commentaires ne comptent pas : un `@property` ne prouve pas qu'un code s'en sert.
+$noms_du_code = [];
+$sources      = nf_fichiers(['neofrag', 'modules', 'widgets', 'themes', 'addons'], ['php']) + ['index.php' => $racine.'/index.php'];
+
+foreach ($sources as $chemin)
+{
+    preg_match_all('/(?:config\(\s*|_poser\(\s*)[\'"]([a-z][a-z0-9_]+)[\'"]|config->([a-z][a-z0-9_]+)/',
+        nf_sans_commentaires((string) file_get_contents($chemin)), $m, PREG_SET_ORDER);
+
+    foreach ($m as $x)
+    {
+        $noms_du_code[$x[1] !== '' ? $x[1] : $x[2]] = TRUE;
+    }
+}
+
+// 4. Rien d'inventé : une liste qui nomme un réglage absent protège un fantôme.
+foreach (['NF_DEMO_REGLAGES_EXCLUS' => NF_DEMO_REGLAGES_EXCLUS, 'NF_DEMO_REGLAGES_PUBLICS' => NF_DEMO_REGLAGES_PUBLICS] as $liste => $noms)
+{
+    foreach (array_keys($noms) as $nom)
+    {
+        if (!isset($noms_du_code[$nom]))
+        {
+            $anomalies[] = sprintf("%s figure dans %s, mais aucun code ne le lit ni ne l'écrit — nom inventé ou périmé.", $nom, $liste);
+        }
+    }
+}
+
+// 5. Rien d'oublié : un réglage dont le nom désigne un secret est exclu, ou déclaré public.
+foreach (array_keys($noms_du_code) as $nom)
+{
+    if (preg_match(NF_DEMO_MOTIF_SECRET, $nom) && !isset(NF_DEMO_REGLAGES_EXCLUS[$nom]) && !isset(NF_DEMO_REGLAGES_PUBLICS[$nom]))
+    {
+        $anomalies[] = sprintf("%s a le nom d'un secret, et l'instantané de la démo l'emporterait.\n"
+            ."                 → l'ajouter à NF_DEMO_REGLAGES_EXCLUS, ou à NF_DEMO_REGLAGES_PUBLICS avec sa raison (tools/lib/demo.php).", $nom);
+    }
+}
+
+// 6. Le fichier produit : ce qui est publié est ce qui compte. Un instantané pris avant que la liste
+// change porte encore ce qu'elle exclut désormais — c'est ainsi que la clé secrète du captcha y était
+// restée après la correction du 2026-10-02.
+$instantane = (string) @file_get_contents($racine.'/install/demo.sql');
+
+if ($instantane === '')
+{
+    nf_refus('install/demo.sql est introuvable : le fichier produit ne peut pas être relu');
+}
+
+$reglages = nf_sql_tuples($instantane, 'nf_settings');
+$col_nom  = array_search('name', $reglages['colonnes'], TRUE);
+
+foreach ($reglages['tuples'] as $tuple)
+{
+    if ($col_nom !== FALSE && isset(NF_DEMO_REGLAGES_EXCLUS[(string) $tuple['valeurs'][$col_nom]]))
+    {
+        $anomalies[] = sprintf("install/demo.sql porte le réglage %s, que l'instantané doit exclure — le régénérer (php tools/dump-demo.php).",
+            $tuple['valeurs'][$col_nom]);
+    }
+}
+
+$widgets      = nf_sql_tuples($instantane, 'nf_widgets');
+$col_reglages = array_search('settings', $widgets['colonnes'], TRUE);
+
+foreach ($widgets['tuples'] as $tuple)
+{
+    $json = $col_reglages !== FALSE ? $tuple['valeurs'][$col_reglages] : NULL;
+
+    if ($json !== NULL && nf_demo_reglages_widget($json) !== $json)
+    {
+        $anomalies[] = sprintf("install/demo.sql porte un secret dans les réglages du widget n°%s (%s) — le régénérer (php tools/dump-demo.php).",
+            $tuple['valeurs'][0], $tuple['valeurs'][1]);
+    }
+}
+
+printf("Instantané : %d réglage(s) que le code nomme, dont %d exclu(s) et %d public(s) ; %d réglage(s) du site et %d widget(s) relus dans install/demo.sql.\n\n",
+    count($noms_du_code), count(NF_DEMO_REGLAGES_EXCLUS), count(NF_DEMO_REGLAGES_PUBLICS), count($reglages['tuples']), count($widgets['tuples']));
+
 // ── Rapport ─────────────────────────────────────────────────────────────────
 if ($anomalies)
 {
@@ -148,4 +235,4 @@ if ($anomalies)
     nf_echec(count($anomalies).' anomalie(s) entre le verrou de la démo et sa remise à zéro');
 }
 
-nf_ok(sprintf('les %d module(s) qui touchent aux addons ou aux rôles sont verrouillés, et ce que les autres écrivent est rétabli par la remise à zéro', count($verrouilles)));
+nf_ok(sprintf('les %d module(s) qui touchent aux addons ou aux rôles sont verrouillés, ce que les autres écrivent est rétabli par la remise à zéro, et install/demo.sql ne porte aucun des %d réglages exclus ni aucune clé de widget', count($verrouilles), count(NF_DEMO_REGLAGES_EXCLUS)));

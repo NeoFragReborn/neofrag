@@ -52,6 +52,15 @@ return [
 		'tag'     => 'communaute',
 	],
 
+	// Choisi par le mainteneur le 2026-10-03 (« du gaming aux associations »). Le Calendrier, et
+	// non les Événements : ceux-ci exigent les Jeux et les Équipes, à cause des matchs.
+	'association' => [
+		'title'   => lang('Association / club'),
+		'tagline' => lang('Actualités, forum, galeries, calendrier, dons, newsletter, wiki et FAQ. De quoi faire vivre une association ou un club, sans l’attirail esport.'),
+		'icon'    => '🤝',
+		'tag'     => 'association',
+	],
+
 	'core' => [
 		'title'   => lang('Cœur seul'),
 		'tagline' => lang('Rien que l’essentiel : pages, commentaires, menu, contact, membres et messagerie. Vous ajouterez le reste depuis le marketplace, quand vous en aurez besoin.'),

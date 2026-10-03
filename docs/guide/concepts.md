@@ -9,7 +9,7 @@ boutique… Chaque module apporte ses **pages publiques**, son **interface d'adm
 **données** (tables) et ses **permissions**.
 
 Le paquet livre **62 modules**, mais tu ne les installes pas tous : à l'installation, un **profil de
-site** — *Complet*, *Gaming / eSport*, *Communauté* ou *Cœur seul* — pré-coche ce qui correspond, et tu
+site** — *Complet*, *Gaming / eSport*, *Communauté*, *Association / club* ou *Cœur seul* — pré-coche ce qui correspond, et tu
 peux décocher module par module. Ce qu'un module réclame est ajouté automatiquement (le palmarès a
 besoin des équipes). Les modules du **cœur** (comptes, permissions, paramètres, pages, outils…) sont
 toujours là et ne se désinstallent pas.
@@ -34,7 +34,7 @@ pied de page, et le **mode clair ou sombre**. Il déclare des **zones**, leur do
 régions** stables (`header`, `content`, `footer`…), et pose ses **dispositions** par défaut.
 
 Le paquet livre **Nebula**, un thème communautaire généraliste (navy et turquoise, glassmorphism),
-pensé pour une équipe, une guilde ou une communauté. Quatre autres thèmes — **Granite**, **Forge**,
+pensé pour une équipe, une guilde, un club ou une association. Quatre autres thèmes — **Granite**, **Forge**,
 **Blockcraft**, **Extend** — sont dans le paquet et s'installent depuis **Administration → Thèmes &
 Addons** ; une installation qui ne les a pas les trouve dans le [marketplace](marketplace.md). Le thème actif se
 choisit dans **Administration → Thèmes & Addons** ; si plusieurs thèmes publics sont installés, les
@@ -84,6 +84,10 @@ Pour une équipe de jeu : à l'installation, choisis le profil **Gaming / eSport
 place le widget **navigation** dans la région `header` et un widget de contenu (derniers sujets,
 prochains matchs…) dans la colonne latérale de l'accueil. Tout se règle dans l'administration, **sans
 une ligne de code**.
+
+Pour une association ou un club : choisis le profil **Association / club** — actualités, forum,
+galeries, calendrier, dons, newsletter, wiki et FAQ, sans l'attirail esport. Les membres, les pages et
+le formulaire de contact sont toujours là ; les équipes, s'il en faut, s'ajoutent d'un clic.
 
 ## Surcharge sans forker
 

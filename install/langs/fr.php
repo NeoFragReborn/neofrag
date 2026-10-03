@@ -197,4 +197,6 @@ return [
 	'b02b809e' => 'Tout est en ordre. Votre hébergement remplit les conditions nécessaires.',
 	'df383219' => 'Corrigez les points en rouge — extensions PHP manquantes, ou droits d\'écriture sur le dossier <code>config/</code> — puis revérifiez.',
 	'f43a187f' => 'Revérifier',
+	'6b41f3af' => 'Association / club',
+	'efd057dc' => 'Actualités, forum, galeries, calendrier, dons, newsletter, wiki et FAQ. De quoi faire vivre une association ou un club, sans l’attirail esport.',
 ];

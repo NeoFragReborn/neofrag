@@ -31,7 +31,7 @@ d'URL).
    `config/`, `cache/`, `logs/`, `upload/`, `backups/`. (Ces dossiers sont créés au besoin ; le seul
    indispensable en écriture au départ est `config/`.)
 3. Visiter **`https://<domaine>/install/`** → l'assistant en **cinq étapes** : prérequis (valeurs constatées) →
-   **profil du site** (*Complet*, *Gaming / eSport*, *Communauté*, *Cœur seul* ; modules décochables un par un,
+   **profil du site** (*Complet*, *Gaming / eSport*, *Communauté*, *Association / club*, *Cœur seul* ; modules décochables un par un,
    dépendances ajoutées d'office) → base de données → compte administrateur → fin. Il génère `config/db.php`
    + les secrets (`crypt.php`, `password.php`) + `config/url.php` (origine canonique du site, figée pour les
    liens d'e-mail), importe le schéma + le seed, installe les addons choisis, baseline leurs migrations, pose

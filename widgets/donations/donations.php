@@ -20,7 +20,7 @@ class Donations extends Widget
 			'license'     => 'LGPLv3',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
-			'presets'     => [],
+			'presets'     => ['association'],
 			'requires'    => [],
 			'version'     => '1.0',
 			'depends'     => ['neofrag' => '0.2.0'],

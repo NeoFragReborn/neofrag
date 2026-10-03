@@ -32,8 +32,8 @@ qui sépare le projet de ses premiers utilisateurs.
 - **Installeur web en un clic** : prérequis, base de données, compte administrateur. Un installeur en
   ligne de commande existe aussi, pour les déploiements automatisés.
 - **Installation à la carte** : au moment d'installer, vous choisissez le type de site que vous
-  montez — complet, gaming et eSport, communauté, ou le cœur seul. Rien n'est figé : tout reste
-  activable ensuite.
+  montez — complet, gaming et eSport, communauté, association ou club, ou le cœur seul. Rien n'est
+  figé : tout reste activable ensuite.
 - **Mise à jour du CMS en un clic** : le paquet est vérifié par empreinte avant d'être posé, une
   sauvegarde complète — fichiers et base — est prise juste avant d'écrire, et si quelque chose échoue
   en route, le site revient seul dans son état d'avant.

@@ -1,6 +1,6 @@
 {
     "name": "neofragreborn/neofrag",
-    "description": "NeoFrag Reborn — CMS modulaire pour communautés gaming, continuité de NeoFrag (base Alpha 0.2.4)",
+    "description": "NeoFrag Reborn — le CMS libre des communautés, du gaming aux associations ; continuité de NeoFrag (base Alpha 0.2.4)",
     "type": "project",
     "license": "LGPL-3.0-or-later",
     "require": {

@@ -1,4 +1,4 @@
-# Documentation — NeoFrag Reborn 1.2.19
+# Documentation — NeoFrag Reborn 1.2.20
 
 Documentation **vérifiée contre le code réel** (62 modules · 40 widgets · 7 thèmes · 10 addons dans le dépôt).
 Ses chiffres, ses renvois et sa structure sont contrôlés en intégration continue par

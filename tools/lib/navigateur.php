@@ -98,11 +98,18 @@ function nf_chrome_dom(string $url, array $options = []): string
     return (string) shell_exec(nf_chrome_commande($url, $options).' --dump-dom '.escapeshellarg($url).' 2>/dev/null');
 }
 
-/** Capture une page en PNG ; vrai si le fichier a été écrit. */
+/**
+ * Capture une page en PNG ; vrai si le fichier a été écrit.
+ *
+ * Le navigateur annonce « moins d'animations » : une capture montre la page dans son état STABLE.
+ * Sans cela, elle montre l'instant où tombe le budget de temps virtuel — le titre défilant de la
+ * vitrine change toutes les trois secondes, et chaque capture à six secondes tombait en plein fondu,
+ * une ligne vide au milieu du titre (2026-10-03).
+ */
 function nf_chrome_capture(string $url, string $fichier, array $options = []): bool
 {
     @unlink($fichier);
-    shell_exec(nf_chrome_commande($url, $options).' --screenshot='.escapeshellarg($fichier).' '.escapeshellarg($url).' 2>/dev/null');
+    shell_exec(nf_chrome_commande($url, $options).' --force-prefers-reduced-motion --screenshot='.escapeshellarg($fichier).' '.escapeshellarg($url).' 2>/dev/null');
 
     return is_file($fichier) && filesize($fichier) > 0;
 }

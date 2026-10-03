@@ -197,4 +197,6 @@ return [
 	'b02b809e' => 'Everything is in order. Your hosting meets the requirements.',
 	'df383219' => 'Fix the items in red — missing PHP extensions, or write permissions on the <code>config/</code> folder — then check again.',
 	'f43a187f' => 'Check again',
+	'6b41f3af' => 'Nonprofit / club',
+	'efd057dc' => 'News, forum, galleries, calendar, donations, newsletter, wiki and FAQ. Everything to keep a nonprofit or a club alive, without the eSports toolkit.',
 ];

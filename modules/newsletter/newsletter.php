@@ -22,7 +22,7 @@ class Newsletter extends Module
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
-			'presets'     => [],
+			'presets'     => ['association'],
 			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',

@@ -15,7 +15,7 @@ declare(strict_types=1);
  * seule journée de production, de quoi noyer une vraie erreur. Silencieux à l'écran, bruyant dans
  * les journaux — exactement ce qu'on ne découvre qu'en allant lire les journaux.
  *
- * Trois vérifications, toutes sur `lang()` :
+ * Quatre vérifications, toutes sur `lang()` :
  *
  *   1. les CLÉS MANQUANTES d'une langue, appels `lang('…')` et libellés que la bibliothèque traduit
  *      elle-même (`->title('…')`, `->heading('…')`…) — le titre du champ de connexion n'avait de
@@ -27,6 +27,9 @@ declare(strict_types=1);
  *      reste part à `sprintf`. `lang('%d part|%d parts', $n)` ne lui laisse rien : ArgumentCountError,
  *      et une page 404 qui s'affiche PARFAITEMENT — trois pages en étaient là le 2026-09-20. La
  *      bonne écriture passe le compteur deux fois : `lang('%d part|%d parts', $n, $n)`.
+ *
+ *   4. lang() écrit dans du JSON (`json_encode`, `->json`) sans être converti en texte : il rend un
+ *      objet, que le JSON écrit `{}` — la mention RGPD de l'export des membres (2026-10-03).
  *
  * Et deux vérifications sur les TRADUCTIONS elles-mêmes : une traduction qui perd une forme du
  * pluriel, et une « traduction » restée identique au français dans un texte qui a l'air français
@@ -471,6 +474,44 @@ foreach ($domaines as $nom => $dossier)
                 && preg_match('/[éèêàçùûôœ]|(?<!\p{L})(le|la|les|des|une|pour|avec|votre|vous|aucun|aucune)(?!\p{L})/iu', $traduit))
             {
                 $erreurs[] = sprintf('traduction recopiée du français : %s/langs/%s.php, %s — « %s »', nf_relatif($dossier), $langue, $cle, mb_strimwidth($traduit, 0, 70, '…'));
+            }
+        }
+    }
+}
+
+/*
+ * ── lang() écrit dans du JSON sans être converti ────────────────────────────────
+ * lang() rend un OBJET, qui ne devient texte qu'à l'affichage. `json_encode()` n'affiche pas : il
+ * écrit `{}` — ou, débogage allumé, l'intérieur de l'objet. L'export RGPD des membres portait ainsi
+ * une mention vide, et le titre défilant de la vitrine des mesures de mémoire (2026-10-03). Le texte
+ * se convertit au passage : `(string) $this->lang(…)`. Seul l'appel DIRECT se voit ici ; un texte
+ * rangé d'abord dans une variable se convertit de même, sans contrôle pour le rappeler.
+ */
+foreach (nf_fichiers(['neofrag', 'modules', 'widgets', 'themes', 'addons'], ['php']) + ['index.php' => nf_racine().'/index.php'] as $relatif => $chemin)
+{
+    $code = nf_sans_commentaires((string) file_get_contents($chemin));
+
+    foreach (['json_encode(', '->json('] as $appel)
+    {
+        for ($debut = strpos($code, $appel); $debut !== FALSE; $debut = strpos($code, $appel, $debut + 1))
+        {
+            // L'argument, jusqu'à la parenthèse qui ferme l'appel.
+            for ($fin = $debut + strlen($appel), $profondeur = 1; $fin < strlen($code) && $profondeur > 0; $fin++)
+            {
+                $profondeur += $code[$fin] === '(' ? 1 : ($code[$fin] === ')' ? -1 : 0);
+            }
+
+            $argument = substr($code, $debut, $fin - $debut);
+
+            preg_match_all('/(?:\$this->|NeoFrag\(\)->|\$[a-z_]+->)?\blang\(/i', $argument, $appels, PREG_OFFSET_CAPTURE);
+
+            foreach ($appels[0] as [, $position])
+            {
+                if (!preg_match('/(\(string\)|strval\()\s*$/', substr($argument, 0, $position)))
+                {
+                    $erreurs[] = sprintf('lang() écrit dans du JSON sans être converti : %s:%d — `(string) $this->lang(…)`, sans quoi le JSON porte `{}`',
+                        $relatif, substr_count(substr($code, 0, $debut + $position), "\n") + 1);
+                }
             }
         }
     }

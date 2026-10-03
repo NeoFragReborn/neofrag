@@ -197,4 +197,6 @@ return [
 	'b02b809e' => 'Todo está en orden. Tu alojamiento cumple los requisitos.',
 	'df383219' => 'Corrige los puntos en rojo — extensiones PHP que faltan, o permisos de escritura en la carpeta <code>config/</code> — y vuelve a comprobar.',
 	'f43a187f' => 'Volver a comprobar',
+	'6b41f3af' => 'Asociación / club',
+	'efd057dc' => 'Noticias, foro, galerías, calendario, donaciones, boletín, wiki y FAQ. Lo necesario para dar vida a una asociación o un club, sin el equipamiento de eSports.',
 ];

@@ -66,13 +66,14 @@ class Notes extends Module
 ### Les trois déclarations de découplage
 
 Depuis le 2026-09-15, le paquet s'installe **à la carte** : l'installeur propose des profils
-(*Complet*, *Gaming / eSport*, *Communauté*, *Cœur seul*) composés **à partir de ces déclarations**.
+(*Complet*, *Gaming / eSport*, *Communauté*, *Association / club*, *Cœur seul*) composés **à partir de ces déclarations**.
 Aucune liste n'est écrite à la main ailleurs.
 
 - `core` — `TRUE` pour un module d'infrastructure ou de CMS livré toujours et non désinstallable ;
   `FALSE` pour tout ce qui est optionnel. Un module du cœur ne peut **jamais** dépendre d'un
   optionnel (règle 3 de `tools/check-addon-declarations.php`).
-- `presets` — les profils qui le pré-cochent : `'gaming'` et/ou `'communaute'`. Vide : il n'apparaît
+- `presets` — les profils qui le pré-cochent : `'gaming'`, `'communaute'`, `'association'` (les étiquettes de
+  `install/lib/presets.php`). Vide : il n'apparaît
   que dans le profil *Complet*.
 - `requires` — les addons dont il a besoin **pour ne pas casser** : une table lue, une classe nommée.
   L'installeur les ajoute d'office quand on coche ton module. Une dépendance **molle** (un service qui

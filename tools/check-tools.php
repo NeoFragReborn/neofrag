@@ -165,7 +165,7 @@ foreach ($outils as $nom => $chemin)
 }
 
 // ── Règle 8 : un contrôle statique se joue en CI ─────────────────────────────────────────────
-// La famille « statique » promet le job `lint` (tools/README.md, « Les familles »). Une exception se
+// La famille « statique » promet le job `statique` (tools/README.md, « Les familles »). Une exception se
 // nomme, avec ce qui empêche la CI de la jouer.
 const NON_JOUES_EN_CI = [
     'check-marketplace' => "les archives des addons ne sont pas versionnées : il se joue sur l'atelier, après package-addons",
@@ -178,7 +178,7 @@ foreach ($entetes as $nom => $e)
     if ($e['famille'] === 'statique' && str_starts_with($nom, 'check-') && !isset(NON_JOUES_EN_CI[$nom])
         && !str_contains($ci, 'tools/'.$nom.'.php'))
     {
-        $anomalies[] = [$nom, "contrôle statique que la CI ne joue pas : l'ajouter au job `lint` de .github/workflows/ci.yml (ou à NON_JOUES_EN_CI, avec sa raison)"];
+        $anomalies[] = [$nom, "contrôle statique que la CI ne joue pas : l'ajouter au job `statique` de .github/workflows/ci.yml (ou à NON_JOUES_EN_CI, avec sa raison)"];
     }
 }
 

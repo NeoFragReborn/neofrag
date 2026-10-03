@@ -22,7 +22,7 @@ class Forum extends Widget
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
-			'presets'     => ['communaute', 'gaming'],
+			'presets'     => ['communaute', 'association', 'gaming'],
 			'requires'    => [],
 			'version'     => '1.0',
 			'depends'     => [

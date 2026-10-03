@@ -1,8 +1,9 @@
 name: Documentation
 
-# Un envoi qui ne touche que de la documentation n'exécute pas la CI complète (21 minutes facturées,
+# Un envoi qui ne touche que de la documentation n'exécute pas la CI (environ 11 minutes facturées,
 # cf. ci.yml) : ce workflow vérifie en une minute ce que la documentation doit tenir — chiffres
-# d'inventaire, renvois, conventions des outils et catalogue de tools/README.md.
+# d'inventaire, renvois, conventions des outils et catalogue de tools/README.md. Il obéit au même
+# interrupteur que la CI : la variable de dépôt `CI_ENVOI` à `pause` le suspend (cf. ci.yml).
 on:
   push:
     branches: [main]
@@ -17,6 +18,7 @@ concurrency:
 jobs:
   docs:
     name: Documentation ↔ code
+    if: vars.CI_ENVOI != 'pause'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

@@ -7,7 +7,7 @@ declare(strict_types=1);
  *
  * Chaque addon doit déclarer dans son `__info()` :
  *   'core'     => TRUE|FALSE   livré toujours et non désinstallable, ou non
- *   'presets'  => [...]        profils d'installation qui le pré-cochent ('gaming')
+ *   'presets'  => [...]        profils d'installation qui le pré-cochent ('gaming', 'communaute', 'association')
  *   'requires' => [...]        addons dont il a BESOIN (dépendance dure : sans eux, il casse)
  *
  * POURQUOI. Avant, l'appartenance au cœur était un DÉFAUT IMPLICITE : tout ce qui n'était listé
@@ -15,6 +15,10 @@ declare(strict_types=1);
  * qu'`emojis`, `files` et `webhooks` s'y sont retrouvés sans que personne ne l'ait décidé. Ici le
  * défaut est inversé : un addon muet fait ÉCHOUER la CI. Oublier devient une erreur de build, pas
  * une livraison involontaire.
+ *
+ * La règle 8 tient les ÉTIQUETTES de profil : celles des addons et celles d'`install/lib/presets.php`
+ * se répondent. Une faute de frappe (« asociation ») ne casse rien et n'avertit personne : le profil
+ * s'affiche, vide, et l'addon n'apparaît dans aucun (2026-10-03, à l'ajout du profil Association / club).
  *
  * La règle 3 est celle dont l'absence a fait capoter le cœur lean en juin 2026 : un module du cœur
  * qui dépend d'un module optionnel rend le paquet indivisible — et produit un 500 sur une
@@ -247,6 +251,38 @@ if (is_file($fa) && preg_match_all('/\.fa-([a-z0-9-]+)(?=[{,:])/', (string) file
             $erreurs[] = "« $cle » déclare l'icône « {$a['icon']} », absente du FontAwesome embarqué "
                        . "(" . count($connues) . " noms disponibles) — elle rendrait une case vide.";
         }
+    }
+}
+
+// ── Règle 8 : les étiquettes de profil se répondent ───────────────────────────
+// Le fichier des profils appelle lang() (la langue de l'assistant) : il se lit, il ne s'exécute pas.
+preg_match_all("/'tag'\s*=>\s*'([a-z_]+)'/", (string) @file_get_contents("$racine/install/lib/presets.php"), $m);
+$etiquettes = array_fill_keys($m[1], 0);
+
+if (!$etiquettes)
+{
+    $erreurs[] = "install/lib/presets.php : aucune étiquette de profil lue — fichier absent ou forme changée.";
+}
+
+foreach ($addons as $cle => $a)
+{
+    foreach ($a['presets'] ?? [] as $etiquette)
+    {
+        if (!isset($etiquettes[$etiquette]))
+        {
+            $erreurs[] = "$cle : le profil « $etiquette » n'existe pas dans install/lib/presets.php — l'addon n'apparaîtrait dans aucun profil.";
+            continue;
+        }
+
+        $etiquettes[$etiquette]++;
+    }
+}
+
+foreach ($etiquettes as $etiquette => $nombre)
+{
+    if ($nombre === 0)
+    {
+        $erreurs[] = "install/lib/presets.php : le profil « $etiquette » ne pré-coche aucun addon — il s'afficherait vide.";
     }
 }
 

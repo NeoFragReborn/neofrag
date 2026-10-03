@@ -71,7 +71,7 @@ class News extends Module
 			'license'     => 'LGPLv3 <https://neofr.ag/license>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
-			'presets'     => ['communaute', 'gaming'],
+			'presets'     => ['communaute', 'association', 'gaming'],
 			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',

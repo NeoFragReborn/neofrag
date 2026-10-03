@@ -20,7 +20,7 @@ class Donations extends Module
 			'license'     => 'LGPLv3',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
-			'presets'     => [],
+			'presets'     => ['association'],
 			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',

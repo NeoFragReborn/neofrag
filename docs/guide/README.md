@@ -1,8 +1,8 @@
 # Documentation NeoFrag Reborn
 
-Bienvenue dans la documentation publique de **NeoFrag Reborn**, le CMS modulaire open source pour créer
-ton site eSport, gaming ou communautaire — sans écrire une ligne de code, et entièrement extensible
-quand tu en as envie.
+Bienvenue dans la documentation publique de **NeoFrag Reborn**, le CMS libre des communautés, du gaming
+aux associations : crée le site de ton équipe, de ta guilde, de ton club ou de ton association sans
+écrire une ligne de code, et étends-le quand tu en as envie.
 
 > NeoFrag Reborn est la continuité communautaire de **NeoFrag**, créé à l'origine par
 > **Michaël BILCOT** & **Jérémy VALENTIN** ([neofr.ag](https://neofr.ag)). Projet open source sous

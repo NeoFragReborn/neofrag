@@ -197,4 +197,6 @@ return [
 	'b02b809e' => 'Alles in Ordnung. Ihr Hosting erfüllt die Voraussetzungen.',
 	'df383219' => 'Beheben Sie die rot markierten Punkte — fehlende PHP-Erweiterungen oder Schreibrechte für den Ordner <code>config/</code> — und prüfen Sie dann erneut.',
 	'f43a187f' => 'Erneut prüfen',
+	'6b41f3af' => 'Verein / Club',
+	'efd057dc' => 'News, Forum, Galerien, Kalender, Spenden, Newsletter, Wiki und FAQ. Alles, um einen Verein oder Club zu beleben, ohne das E-Sport-Rüstzeug.',
 ];

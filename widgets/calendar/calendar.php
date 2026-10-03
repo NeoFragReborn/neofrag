@@ -15,7 +15,7 @@ class Calendar extends Widget
 			'license' => 'LGPLv3',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
-			'presets'     => ['gaming'],
+			'presets'     => ['association', 'gaming'],
 			'requires'    => [],
 			'version' => '1.0',
 			'depends' => ['neofrag' => '0.2.0'],

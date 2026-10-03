@@ -197,4 +197,6 @@ return [
 	'b02b809e' => 'Tutto in ordine. Il tuo hosting soddisfa i requisiti.',
 	'df383219' => 'Correggi i punti in rosso — estensioni PHP mancanti, o permessi di scrittura sulla cartella <code>config/</code> — poi verifica di nuovo.',
 	'f43a187f' => 'Verifica di nuovo',
+	'6b41f3af' => 'Associazione / club',
+	'efd057dc' => 'Notizie, forum, gallerie, calendario, donazioni, newsletter, wiki e FAQ. Quanto serve per far vivere un’associazione o un club, senza l’armamentario eSport.',
 ];

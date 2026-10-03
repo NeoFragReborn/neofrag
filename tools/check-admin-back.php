@@ -164,6 +164,18 @@ foreach ($routes as $chemin => $module)
         continue;
     }
 
+    // Un TÉLÉCHARGEMENT n'est pas une page : le journal ou la trace du Monitoring, servis en texte avec
+    // `Content-Disposition: attachment`. Le navigateur l'enregistre, l'administrateur reste sur la page
+    // d'où il l'a demandé. Sur une installation où le fichier existe, il était jugé comme une page sans
+    // retour (2026-10-03, l'atelier) ; en CI, le fichier n'existe pas, et la réponse était un 404.
+    $type = strtolower($reponse['entetes']['content-type'] ?? 'text/html');
+
+    if (!str_starts_with($type, 'text/html') || str_contains(strtolower($reponse['entetes']['content-disposition'] ?? ''), 'attachment'))
+    {
+        $muettes[] = sprintf('%s (%s) : téléchargement, pas une page%s', $chemin, strtok($type, ';'), $suffixe);
+        continue;
+    }
+
     // Trois arrivées trahissent un point d'ACTION plutôt qu'une page : l'accueil du module, celui de
     // l'administration, ou le site public (« voir le site comme ce membre » active le mode aperçu
     // puis renvoie à l'accueil). Juger la page d'arrivée serait un faux verdict.

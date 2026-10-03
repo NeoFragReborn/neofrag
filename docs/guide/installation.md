@@ -30,6 +30,7 @@ L'assistant se déroule en **cinq étapes** : *Prérequis* → *Profil du site* 
    | **Complet** | le cœur et tous les modules du paquet |
    | **Gaming / eSport** | le cœur et l'identité gaming : forum, équipes, jeux, événements, recrutement, palmarès… |
    | **Communauté** | le cœur, les actualités, le forum, la galerie |
+   | **Association / club** | le cœur, les actualités, le forum, la galerie, le calendrier, les dons, la newsletter, le wiki et la FAQ |
    | **Cœur seul** | comptes, permissions, pages, paramètres — rien de plus |
 
    Les modules restent décochables un par un ; ceux qu'un module réclame sont ajoutés automatiquement,

@@ -27,6 +27,7 @@ declare(strict_types=1);
 require __DIR__.'/lib/outil.php';
 require __DIR__.'/lib/site.php';
 require __DIR__.'/lib/sql.php';
+require __DIR__.'/lib/demo.php';
 
 [$o] = nf_options(['force' => FALSE]);
 
@@ -127,24 +128,11 @@ foreach (['forum.category_read', 'gallery.gallery_see', 'pages.access_page', 'ev
 $out .= "\n";
 
 // 1 bis. Les RÉGLAGES du site — restaurés depuis le 2026-09-16, ce qui permet de laisser ouverts
-// les écrans de configuration des modules de contenu. Deux précautions : les réglages SENSIBLES
-// sont exclus (jamais dans un fichier versionné, et les écraser couperait la démo de son cron), et
-// `ON DUPLICATE KEY UPDATE` plutôt que DELETE : un réglage apparu depuis l'instantané reste.
-$sensibles = [
-    'nf_cron_key',                 // sans elle, la remise à zéro s'auto-détruit
-    'nf_monitoring_check_url',     // origine des mises à jour du cœur
-    'nf_smtp_password', 'nf_smtp_user', 'nf_smtp_host', 'nf_email_password',
-    // Les noms RÉELS des réglages (vérifiés le 2026-10-02) : la liste citait nf_recaptcha_secret,
-    // nf_stripe_secret, nf_twitch_client_secret… qu'aucun code n'emploie, et laissait passer la vraie
-    // clé secrète du captcha. Les identifiants Twitch et YouTube vivent dans les réglages du widget
-    // (nf_widgets), pas ici.
-    'nf_captcha_private_key',
-    'pay_stripe_secret', 'pay_stripe_webhook_secret',
-    'nf_discord_token',            // la clé du bot Discord, chiffrée — mais une clé reste une clé
-    // L'état de l'installation, pas un réglage : figé dans l'instantané, chaque remise à zéro le
-    // ramènerait à la version du jour de l'instantané (relevé le 2026-10-01).
-    'nf_migrations_version',
-];
+// les écrans de configuration des modules de contenu. Deux précautions : les secrets et les réglages
+// propres à l'installation sont exclus — la liste et ses raisons vivent dans tools/lib/demo.php, que
+// check-demo-lock confronte au code —, et `ON DUPLICATE KEY UPDATE` plutôt que DELETE : un réglage
+// apparu depuis l'instantané reste.
+$sensibles = array_keys(NF_DEMO_REGLAGES_EXCLUS);
 
 $exclusion = "`name` NOT IN ('".implode("', '", array_map([$db, 'real_escape_string'], $sensibles))."')";
 
@@ -196,8 +184,19 @@ foreach (CONTENT_TABLES as $table)
         continue;
     }
 
+    // Les réglages d'un widget peuvent porter une clé (Twitch, TeamSpeak) : vidée, cf. tools/lib/demo.php.
+    // La ligne garde l'ordre de ses colonnes : les valeurs s'écrivent dans cet ordre.
+    $sans_secret = $table === 'nf_widgets'
+        ? static function (array $ligne): array
+        {
+            $ligne['settings'] = nf_demo_reglages_widget($ligne['settings']);
+
+            return $ligne;
+        }
+        : NULL;
+
     $out .= "DELETE FROM `{$table}`;\n";
-    $out .= nf_sql_inserts($db, $table);
+    $out .= nf_sql_inserts($db, $table, '', $sans_secret);
 }
 
 $out .= "\nCOMMIT;\n";

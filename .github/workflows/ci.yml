@@ -1,19 +1,22 @@
 name: CI
 
-# Le dépôt est privé : chaque exécution consomme le quota de GitHub Actions (2 000 minutes par mois,
-# environ 21 par exécution complète). Septembre 2026 l'a épuisé en 84 exécutions, et la CI s'est
-# arrêtée le 23. D'où trois règles :
+# Le dépôt est privé : chaque exécution consomme le quota de GitHub Actions — 2 000 minutes par mois,
+# et GitHub arrondit CHAQUE JOB à la minute supérieure. Septembre 2026 l'a épuisé le 23, et la CI
+# s'est arrêtée jusqu'au 30 ; octobre en avait brûlé 1 900 le 2 au soir (192 exécutions). D'où :
 #   - `push` sur main seulement : une branche de travail (Dependabot) passe par sa demande de fusion.
 #     Avant, elle déclenchait DEUX exécutions — `push` et `pull_request` ne portent pas la même
-#     référence, et la règle de concurrence ci-dessous ne les fusionnait pas, contrairement à ce
-#     que son commentaire affirmait ;
+#     référence, et la règle de concurrence ci-dessous ne les fusionnait pas ;
 #   - un envoi qui ne touche QUE de la documentation n'exécute pas ce workflow : docs.yml la vérifie
 #     en une minute ;
-#   - Dependabot regroupe ses mises à jour (.github/dependabot.yml).
-# Ça n'a pas suffi : environ 1 100 minutes les 1er et 2 octobre. Depuis le 2026-10-02, un envoi ne
-# joue plus que la batterie RAPIDE (tout sauf Interface, et PHPUnit sur les deux bornes 8.2 et 8.5).
-# La batterie ENTIÈRE se lance à la main (workflow_dispatch) avant chaque version — étape 1 de
-# docs/RELEASING.md : `gh workflow run CI`.
+#   - Dependabot regroupe ses mises à jour (.github/dependabot.yml) ;
+#   - un envoi joue la batterie RAPIDE — `statique`, PHPUnit sur PHP 8.2, `db-smoke`, `e2e-smoke`,
+#     environ 11 minutes facturées. La batterie ENTIÈRE (Interface, et PHPUnit sur 8.2 à 8.5) se
+#     lance à la main avant chaque version — étape 1 de docs/RELEASING.md : `gh workflow run CI` ;
+#   - les petits contrôles vivent dans UN job, `statique` : en jobs séparés, chacun payait sa minute
+#     arrondie et sa préparation (9,5 minutes de travail facturées 14 le 2026-10-02) ;
+#   - l'INTERRUPTEUR : la variable de dépôt `CI_ENVOI` à `pause` suspend la batterie des envois (et
+#     docs.yml) sans rien consommer ; la batterie manuelle joue toujours. Quand le quota du mois
+#     s'épuise, `php tools/un outil interne.php` le mesure et donne les deux commandes.
 on:
   push:
     branches: [main]
@@ -22,66 +25,31 @@ on:
     paths-ignore: ['docs/**', '**/*.md']
   workflow_dispatch:
 
-# Une nouvelle exécution sur la même référence annule la précédente, devenue inutile.
+# Une nouvelle exécution sur la même référence annule la précédente, devenue inutile — mais un envoi
+# n'annule jamais la batterie entière lancée à la main : d'où l'événement dans le groupe.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
 
 jobs:
-  composer-audit:
-    name: Composer audit (CVE des dépendances verrouillées)
+  statique:
+    name: Contrôles statiques (syntaxe, gardes, PHPStan, audits, épreuves JS, bot)
+    if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
-          coverage: none
-      - name: composer audit --locked
-        run: composer audit --locked --no-interaction
-
-  bot:
-    name: Bot Discord (compilation TypeScript, tests, audit npm)
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    defaults:
-      run:
-        working-directory: bot
-    steps:
-      - uses: actions/checkout@v7
-      # La version de Node la plus ancienne que le bot accepte (cf. bot/package.json, « engines ») :
-      # ce qui passe ici passe sur les machines des administrateurs.
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '22.9'
-          cache: npm
-          cache-dependency-path: bot/package-lock.json
-      - name: npm ci
-        run: npm ci --no-audit --no-fund
-      # Le test qui compare le lien d'invitation du bot à celui du module Discord lit
-      # modules/discord/discord.php : il juge ici, le dépôt entier étant présent.
-      - name: Compilation et tests
-        run: npm test
-      - name: npm audit (dépendances de production)
-        run: npm audit --omit=dev --audit-level=high
-
-  lint:
-    name: Lint PHP (php -l)
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, intl, mysqli
+          extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
       - name: php -l sur tout le code (hors vendor)
         run: |
           find . -path ./vendor -prune -o -name '*.php' -print0 \
             | xargs -0 -n1 -P4 php -l > /dev/null
       - name: Gardes anti-régression (anti-patterns connus)
+        if: ${{ !cancelled() }}
         run: |
           # notify() n'accepte que success|info|warning|danger (Bootstrap). 'error'/'warn'/'fail' → rendu VERT.
           if grep -rnE "notify\([^;]*,[[:space:]]*'(error|warn|fail|failure|ko)'\)" --include='*.php' modules/ neofrag/; then
@@ -102,14 +70,17 @@ jobs:
       # dans tools/lib/, verdicts, ports, catalogue de tools/README.md à jour). Sans ce contrôle,
       # chaque passe de rangement était à refaire à la suivante.
       - name: Garde des conventions des outils
+        if: ${{ !cancelled() }}
         run: php tools/check-tools.php
       - name: Garde strict_types (ratchet — ne doit jamais baisser)
+        if: ${{ !cancelled() }}
         run: php tools/check-strict-types.php
       # Découplage du paquet : chaque addon doit déclarer core/presets/requires, et le cœur ne doit
       # JAMAIS dépendre d'un addon optionnel. Sans ce contrôle, l'appartenance au cœur est un défaut
       # implicite — c'est ainsi qu'emojis, files et webhooks s'y sont retrouvés sans décision, et
       # c'est la même classe de défaut qui a produit le 500 de juin 2026 sur une install allégée.
       - name: Garde déclarations d'addons (cœur ↮ optionnel)
+        if: ${{ !cancelled() }}
         run: php tools/check-addon-declarations.php
       # Couplage RÉEL entre addons, lu dans le code par le tokenizer PHP : quel addon lit la table,
       # nomme la classe, demande le service ou pointe la route d'un autre. Tout couplage FATAL
@@ -117,12 +88,14 @@ jobs:
       # l'endroit où il a lieu. Sans ce contrôle, la moitié « qui dépend de qui » n'existe nulle
       # part — c'est ce trou qui a produit le 500 de juin 2026 sur une install allégée.
       - name: Garde couplage entre addons (déclaré ou annoté)
+        if: ${{ !cancelled() }}
         run: php tools/check-addon-coupling.php
       # Caractères INVISIBLES dans les sources. Une séquence backslash-b mangée par un
       # outil d'édition, devenue un vrai BACKSPACE (0x08), a rendu muette la détection des tables
       # citées en JS de check-addon-coupling.php ci-dessus : le fichier passait `php -l`, le motif ne correspondait
       # simplement jamais, et le contrôle se disait vert en étant aveugle. Rien ne le voyait.
       - name: Garde hygiène des sources (aucun caractère invisible)
+        if: ${{ !cancelled() }}
         run: php tools/check-source-hygiene.php
       # `php -l` pour le JavaScript, et le vocabulaire. Rien ne vérifiait la syntaxe des fichiers JS :
       # une parenthèse manquante ne se découvrait qu'en ouvrant la page. Une partie contient du PHP
@@ -131,13 +104,16 @@ jobs:
       # et levaient « $ is not defined » au chargement — syntaxiquement valide, donc règle de vocabulaire.
       # node est préinstallé sur les runners ubuntu-latest.
       - name: Garde sources JavaScript (syntaxe et vocabulaire sans jQuery)
+        if: ${{ !cancelled() }}
         run: php tools/check-js-sources.php
       # ESLint voit ce que les deux precedents ne voient pas : une globale creee par oubli d'un
       # `var`, un `innerHTML` nourri d'une valeur calculee, un `eval` deguise, du code apres un
       # `return`. Aucun paquet npm n'est deploye : ceci est de l'outillage, comme PHPStan.
       - name: Outillage front (ESLint)
+        if: ${{ !cancelled() }}
         run: npm ci --no-audit --no-fund
       - name: Garde ESLint (globales implicites, innerHTML calcule, eval)
+        if: ${{ !cancelled() }}
         run: php tools/check-js-lint.php
       # Deux copies IDENTIQUES d'un meme asset, l'une dans le cœur l'autre dans un addon : `path()`
       # resout selon l'APPELANT, donc deux pages servent deux fichiers differents. Tant qu'ils sont
@@ -145,35 +121,41 @@ jobs:
       # l'ancien, sans erreur ni trace. C'est ce qui a fait afficher l'assistant de widget sans
       # aucun style le 2026-09-15, alors que la feuille etait bien deployee.
       - name: Garde assets masqués (aucune copie identique)
+        if: ${{ !cancelled() }}
         run: php tools/check-assets.php
       # La documentation respecte ses règles : chiffres d'inventaire justes (« 53 modules » affiché
       # pendant des semaines pour 54 réels), renvois vivants (Markdown ne se compile pas), aucun
       # document orphelin, aucun outil nommé qui n'existe plus, aucune prose recopiée d'un document
       # à l'autre (c'est la copie qui diverge, et qui coûte une passe de rangement à chaque fois).
       - name: Garde documentation ↔ code
+        if: ${{ !cancelled() }}
         run: php tools/check-docs.php
       # Un module se branche sur un « carrefour » en posant `controllers/<carrefour>.php`, et le
       # carrefour appelle la méthode du même nom sans rien vérifier. Si elle est renommée, rendue
       # privée ou dotée d'un paramètre obligatoire de plus, l'erreur fatale n'apparaît qu'à
       # l'ouverture de la page qui agrège — en production. 39 contrats sont vérifiés ici.
       - name: Garde contrats d'addons (carrefours + régions de thème)
+        if: ${{ !cancelled() }}
         run: php tools/check-addon-contracts.php
       # Tout ce qui concerne lang() : les clés absentes des six langues (un avertissement PHP à
       # chaque rendu — 3 846 en une journée de production), les formats de date que chaque langue
       # doit déclarer, les pluriels sans assez d'arguments (une page 404 avec le bon titre), et les
       # traductions qui ont perdu la forme plurielle de leur source (« 3 topic », 47 cas).
       - name: Garde traductions (les six langues, formats de date, pluriels)
+        if: ${{ !cancelled() }}
         run: php tools/check-langs.php --toutes
       # check-langs ne voit que ce qui passe DÉJÀ par lang(). Un texte écrit en dur — `<th>Décision</th>`
       # dans une vue, `title = 'Retour en haut'` dans un script — restait en français sur un site
       # anglais : 340 relevés sur les pages rendues, 740 dans les sources, le 2026-09-23.
       - name: Garde textes en dur (tout texte d'interface passe par les traductions)
+        if: ${{ !cancelled() }}
         run: php tools/check-textes-en-dur.php
       # `var(--nf-bg-elevated, #fff)` a l'air sûr : il y a un repli. C'est le piège. La variable
       # n'était définie que dans les thèmes PUBLICS ; sous l'administration, chaque usage retombait
       # sur le repli BLANC et posait un bloc blanc au milieu d'une page sombre. Le navigateur ne
       # signale rien, la feuille est valide, et le défaut ne se voit qu'à l'œil, dans le bon thème.
       - name: Garde variables CSS (employées ↔ définies par tous les thèmes)
+        if: ${{ !cancelled() }}
         run: php tools/check-css-variables.php
       # Même famille de silence, autre cause : Bootstrap 5 a SUPPRIMÉ ou redéfini des classes de
       # Bootstrap 3 et 4. Une vue qui les emploie encore ne casse pas, elle s'affiche de travers — et
@@ -182,59 +164,123 @@ jobs:
       # données livrées, et fabriqué par concaténation ; plus la grille sur une cellule de tableau et
       # la liste déroulante en `form-control`.
       - name: Garde legs Bootstrap 3 et 4 (aucun, même redéfini)
+        if: ${{ !cancelled() }}
         run: php tools/check-classes-bs4.php
       # `->name` sur un addon CHARGE rend FALSE, sans le moindre avertissement : le nom est dans
       # info()->name. Trois endroits s'y etaient fait prendre (statistiques prefixees a vide,
       # exclusion de live_editor/pages inoperante, dependances toutes annoncees manquantes).
       - name: Garde nom d'addon (->name sur un addon chargé)
+        if: ${{ !cancelled() }}
         run: php tools/check-addon-name.php
       # Un theme declare ses zones dans __info() ; l'installation cree une disposition par zone et
       # l'editeur de mise en page les propose. Si le gabarit n'appelle jamais region() ni zone(),
       # le widget qu'on y place est bien enregistre et ne s'affiche nulle part. `nebula` et
       # `vitrine` promettaient ainsi « Header » et « Footer » sans les tenir (2026-09-20).
       - name: Garde zones de thème (déclarées ↔ rendues)
+        if: ${{ !cancelled() }}
         run: php tools/check-theme-zones.php
       # Un widget peut arriver SANS reglages : pose par l'install() d'un theme, ajoute en Live
       # Editor avant qu'on ouvre son formulaire, ou restaure depuis une disposition ancienne. Douze
       # checkers sur trente-huit lisaient leurs cles sans repli ; onze n'y perdaient qu'un
       # avertissement, le douzieme (`partners`) employait la sienne comme DIVISEUR et plantait.
       - name: Garde réglages de widget (lus ↔ avec valeur de repli)
+        if: ${{ !cancelled() }}
         run: php tools/check-widget-reglages.php
       # Db::delete() exige sa table. L'ecriture heritee `->from('t')->…->delete()` levait une
       # ArgumentCountError : la desinscription de la newsletter, la suppression de son compte et la
       # desactivation de la double authentification tombaient sans rien supprimer (2026-10-01).
       - name: Garde suppressions par le constructeur de requêtes (la table est nommée)
+        if: ${{ !cancelled() }}
         run: php tools/check-db-delete.php
       # Le site de démonstration ouvre son administration aux visiteurs. Ce qu'ils peuvent modifier
       # doit être exactement ce que la remise à zéro sait défaire — sans quoi la démo se dégrade
       # définitivement, une visite après l'autre.
       - name: Garde verrou du site de démonstration
+        if: ${{ !cancelled() }}
         run: php tools/check-demo-lock.php
       # La démonstration se remet à zéro en rejouant install/demo.sql. Une clé primaire écrite deux
       # fois fait refuser TOUT l'import : le 2026-09-22, la remise à zéro a échoué quatorze heures
       # sans que rien le dise.
       - name: Garde instantanés SQL livrés (aucune clé primaire en double, historique des migrations complet)
+        if: ${{ !cancelled() }}
         run: php tools/check-instantanes.php
       # Les `.htaccess` du paquet ne sont exercés par personne : la production tourne sous Caddy.
       # Ils avaient divergé dans le mauvais sens — `/les notes du mainteneur` servi en texte sur toute
       # installation Apache. Ce contrôle relit ce qu'Apache doit refuser, avec la raison de chaque ligne.
       - name: Garde .htaccess (Apache refuse tout ce que Caddy refuse)
+        if: ${{ !cancelled() }}
         run: php tools/check-htaccess.php
       # Cinq contrôles écrits le 2026-10-02 n'étaient joués par personne : check-tools refuse
       # désormais un contrôle statique absent de ce fichier.
       - name: Garde requêtes à une colonne (valeurs lues comme des lignes)
+        if: ${{ !cancelled() }}
         run: php tools/check-db-colonne.php
       - name: Garde compteurs (la date de modification n'avance pas)
+        if: ${{ !cancelled() }}
         run: php tools/check-db-compteurs.php
       - name: Garde heures affichées (fuseau de qui regarde, format de la langue)
+        if: ${{ !cancelled() }}
         run: php tools/check-heures.php
       - name: Garde pagination (une liste découpée affiche ses pages)
+        if: ${{ !cancelled() }}
         run: php tools/check-pagination.php
       - name: Garde charte des boutons de l'administration
+        if: ${{ !cancelled() }}
         run: php tools/check-actions-admin.php
+      - name: composer install (PHPStan et le wiki en ont besoin)
+        if: ${{ !cancelled() }}
+        run: composer install --no-interaction --no-progress
+      # Le bootstrap charge tout le code → toute classe qui fatalise au chargement (méthode abstraite
+      # non implémentée, redéclaration de fonction native…) remonte en erreur SÉVÈRE. C'est précisément
+      # ce qui a attrapé les 7 widgets cassés + array_last (conflit PHP 8.5). Le reste est gelé (baseline).
+      - name: PHPStan (analyse statique)
+        if: ${{ !cancelled() }}
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=2G
+      # Le wiki livré (install/wiki.sql) et celui de la démonstration (install/demo.sql) sont
+      # générés depuis docs/guide/ (la conversion passe par CommonMark : d'où sa place après
+      # composer install). Rien ne disait quand les régénérer : le 2026-09-23, les dix pages
+      # avaient une semaine de retard, et « Créer un widget » enseignait une classe de Bootstrap 4.
+      - name: Garde wiki livré ↔ guides
+        if: ${{ !cancelled() }}
+        run: php tools/check-wiki-docs.php
+      - name: Composer audit (CVE des dépendances verrouillées)
+        if: ${{ !cancelled() }}
+        run: composer audit --locked --no-interaction
+      # Certaines propriétés du front ne s'observent QUE dans un navigateur : ce qui s'exécute ou non,
+      # dans quel document, avec quel nonce CSP. Aucun test PHP ne les voit — et c'est précisément le
+      # trou par lequel sont passées les cinq régressions de la dé-jQuery, puis le JS inerte des widgets
+      # ajoutés en Live Editor, qui a vécu des mois sans que rien ne le signale.
+      # Chrome est préinstallé sur les runners ubuntu-latest.
+      - name: Épreuves JS de tests/Browser/ (navigateur sans interface)
+        if: ${{ !cancelled() }}
+        timeout-minutes: 5
+        run: php tools/check-js.php
+      # La version de Node la plus ancienne que le bot accepte (cf. bot/package.json, « engines ») :
+      # ce qui passe ici passe sur les machines des administrateurs.
+      - uses: actions/setup-node@v7
+        if: ${{ !cancelled() }}
+        with:
+          node-version: '22.9'
+          cache: npm
+          cache-dependency-path: bot/package-lock.json
+      - name: Bot Discord — npm ci
+        if: ${{ !cancelled() }}
+        working-directory: bot
+        run: npm ci --no-audit --no-fund
+      # Le test qui compare le lien d'invitation du bot à celui du module Discord lit
+      # modules/discord/discord.php : il juge ici, le dépôt entier étant présent.
+      - name: Bot Discord — compilation TypeScript et tests
+        if: ${{ !cancelled() }}
+        working-directory: bot
+        run: npm test
+      - name: Bot Discord — npm audit (dépendances de production)
+        if: ${{ !cancelled() }}
+        working-directory: bot
+        run: npm audit --omit=dev --audit-level=high
 
   test:
     name: PHPUnit (PHP ${{ matrix.php }})
+    if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     # Sans base de données, les 56 tests d'INTÉGRATION se sautent eux-mêmes en silence : la suite
@@ -273,8 +319,11 @@ jobs:
       matrix:
         # NeoFrag Reborn supporte toutes les versions PHP >= 8.2 (cf. composer.json). La batterie
         # entière les teste toutes (régressions propres à une version, ex. unserialize) ; un envoi
-        # ordinaire, les deux bornes seulement — le quota (cf. en-tête).
-        php: ${{ github.event_name == 'workflow_dispatch' && fromJSON('["8.2", "8.3", "8.4", "8.5"]') || fromJSON('["8.2", "8.5"]') }}
+        # ordinaire, la borne basse seulement — le quota (cf. en-tête). Aucun poste ne joue 8.2 :
+        # la CI est seule à voir une fonction de 8.3 ou plus. La borne haute, 8.5, est celle de
+        # l'atelier et de la production, où la suite passe avant chaque envoi ; `e2e-smoke` la joue
+        # aussi sous PHP 8.3 (Dockerfile).
+        php: ${{ github.event_name == 'workflow_dispatch' && fromJSON('["8.2", "8.3", "8.4", "8.5"]') || fromJSON('["8.2"]') }}
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
@@ -300,33 +349,9 @@ jobs:
       - name: phpunit
         run: phpunit --fail-on-skipped
 
-  phpstan:
-    name: PHPStan (analyse statique)
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: mbstring, intl, mysqli, gd, zip, curl
-          coverage: none
-      - name: composer install
-        run: composer install --no-interaction --no-progress
-      # Le bootstrap charge tout le code → toute classe qui fatalise au chargement (méthode abstraite
-      # non implémentée, redéclaration de fonction native…) remonte en erreur SÉVÈRE. C'est précisément
-      # ce qui a attrapé les 7 widgets cassés + array_last (conflit PHP 8.5). Le reste est gelé (baseline).
-      - name: phpstan
-        run: vendor/bin/phpstan analyse --no-progress --memory-limit=2G
-      # Le wiki livré (install/wiki.sql) et celui de la démonstration (install/demo.sql) sont
-      # générés depuis docs/guide/ (la conversion passe par CommonMark : d'où ce job, qui installe
-      # les dépendances). Rien ne disait quand les régénérer : le 2026-09-23, les dix pages
-      # avaient une semaine de retard, et « Créer un widget » enseignait une classe de Bootstrap 4.
-      - name: Garde wiki livré ↔ guides
-        run: php tools/check-wiki-docs.php
-
   db-smoke:
     name: Schema + migration runner (smoke)
+    if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -484,26 +509,9 @@ jobs:
         timeout-minutes: 10
         run: php tools/check-mise-en-page.php --largeurs=360,1440 --profils=visiteur --max=80 --parallele=2
 
-  js-browser:
-    name: Épreuves JS (navigateur sans interface)
-    runs-on: ubuntu-latest
-    # Un job qui pend est tué : celui des épreuves JS a tenu six heures les 21 et 22 septembre 2026.
-    steps:
-      - uses: actions/checkout@v7
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          coverage: none
-      # Certaines propriétés du front ne s'observent QUE dans un navigateur : ce qui s'exécute ou non,
-      # dans quel document, avec quel nonce CSP. Aucun test PHP ne les voit — et c'est précisément le
-      # trou par lequel sont passées les cinq régressions de la dé-jQuery, puis le JS inerte des widgets
-      # ajoutés en Live Editor, qui a vécu des mois sans que rien ne le signale.
-      # Chrome est préinstallé sur les runners ubuntu-latest.
-      - name: Épreuves de tests/Browser/
-        run: php tools/check-js.php
-
   e2e-smoke:
     name: Smoke E2E (install complète + flux critiques)
+    if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
