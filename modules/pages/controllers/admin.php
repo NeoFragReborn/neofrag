@@ -142,6 +142,12 @@ class Admin extends Controller_Module
 										$post['layout'],
 										$post['date'] ?? '');
 
+			// Une page renommée laisse son ancienne adresse mener à la nouvelle.
+			if ((string) $post['name'] !== (string) $name)
+			{
+				nf_redirection_ajouter((string) $name, (string) $post['name']);
+			}
+
 			notify($this->lang('Page éditée avec succès'));
 
 			redirect_back('admin/pages');
@@ -155,7 +161,7 @@ class Admin extends Controller_Module
 			'instances' => $this->model()->get_instances($page_id, FALSE)
 		]);
 
-		return $this->admin_card('fas fa-edit', $this->lang('Édition de la page').' — '.$title, $this->form()->display().$composer.$this->_blocks_help());
+		return $this->admin_card('fas fa-edit', $this->lang('Édition de la page').' — '.$title, $this->form()->display().$composer.$this->_blocks_help(), '', nf_seo_bouton('pages', (int) $page_id));
 	}
 
 	/** Note d'aide listant les blocs de module injectables via [block:clé] dans le contenu. */

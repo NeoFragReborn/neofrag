@@ -598,4 +598,5 @@ return [
 	'3cd5288d' => 'A carregar…',
 	'f2226c73' => 'Recarregar',
 	'02ad0f3e' => 'Conclua a verificação anti-robô',
+	'18ac8fe0' => 'Referenciação',
 ];

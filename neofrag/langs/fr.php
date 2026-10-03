@@ -457,4 +457,5 @@ return [
 	'3cd5288d' => 'Chargement…',
 	'f2226c73' => 'Recharger',
 	'02ad0f3e' => 'Veuillez valider la vérification anti-robot',
+	'18ac8fe0' => 'Référencement',
 ];

@@ -155,12 +155,21 @@ class Admin extends Controller_Module
 
 				$data['user_id'] = $this->user->id;
 				NeoFrag()->db->where('id', $page_id)->update('nf_wiki_pages', $data);
+
+				// Une page qui change d'adresse laisse l'ancienne mener à la nouvelle.
+				if ($slug !== $p['slug'])
+				{
+					nf_redirection_ajouter('wiki/'.$p['slug'], 'wiki/'.$slug);
+				}
 			}
 
 			notify($is_new ? $this->lang('Page créée.') : $this->lang('Page modifiée. Ancienne version archivée dans l\'historique.'));
 			redirect('admin/wiki');
 		}
 
-		return $this->row($this->col($this->panel()->heading()->body($this->form()->display()))->size('col-12'));
+		// Le titre et la description que la page donne aux moteurs, une fois la page créée.
+		$referencement = $is_new ? '' : '<div class="mb-3">'.nf_seo_bouton('wiki', (int) $p['id']).'</div>';
+
+		return $this->row($this->col($this->panel()->heading()->body($referencement.$this->form()->display()))->size('col-12'));
 	}
 }

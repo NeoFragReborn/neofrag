@@ -10,6 +10,36 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.22] — 2026-10-03
+
+### Ajouté
+
+- **Le référencement d'un contenu** : un bouton « Référencement » dans la carte d'édition d'une
+  actualité, d'un billet du Blog, d'une page ou d'une page du wiki donne, pour chaque langue, le titre et
+  la description que montrent les moteurs et les aperçus de partage. Vides, tout reste automatique.
+- **Paramètres → Référencement → Bilan** : ce que voit un moteur de recherche, mesuré sur le site — les
+  pages du plan par module, les textes de chaque langue, l'image de partage, Google et Bing, `robots.txt`,
+  la maintenance —, avec pour chaque point le lien vers ce qui le corrige.
+- **Les redirections** : une ancienne adresse mène à la nouvelle (301) au lieu de répondre « Page
+  introuvable », avec le nombre de visites qu'elle reçoit encore. Une page ou une page du wiki renommée
+  laisse la sienne d'elle-même ; on en ajoute à la main, pour l'adresse d'un ancien site par exemple.
+- **Prévenir les moteurs (IndexNow)** : allumé dans Paramètres → Référencement, le site signale dans les
+  minutes qui suivent chaque page qui paraît, change ou disparaît, à Bing, Yandex, Seznam, Naver, Yep et
+  Amazon. Google n'y participe pas : pour lui, le plan du site reste la voie. Tout module qui annonce ses
+  pages au plan du site est prévenu, sans rien de plus ; la tâche planifiée du site est nécessaire.
+
+### Corrigé
+
+- **Modération** : dans l'administration, un modérateur sans le droit « conversations privées » pouvait
+  ouvrir le signalement d'un message privé, et cet accès n'était pas inscrit au journal d'audit. Celui
+  qui signale un message privé voit de nouveau l'avertissement qui lui est destiné.
+- **Messagerie** : le message envoyé au salon du staff depuis l'administration répondait toujours
+  « Aucun salon staff configuré ».
+- Des avertissements PHP au journal quand un signalement, un message ou un membre visés ont été
+  supprimés.
+
+---
+
 ## [1.2.21] — 2026-10-03
 
 ### Ajouté

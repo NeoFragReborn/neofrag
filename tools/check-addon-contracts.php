@@ -59,9 +59,9 @@ $carrefours = [
     // Un module qui ne fournirait que search() est ignoré en silence par la recherche instantanée.
     'search'     => ['methodes' => ['search' => 0, 'suggest' => null], 'appelant' => 'modules/search/controllers/ajax.php'],
 
-    // modules/settings/controllers/ajax.php : $controleur->sitemap(), dans la langue du plan.
+    // neofrag/helpers/seo.php, nf_seo_plan() : $controleur->sitemap(), dans la langue du plan.
     // Chaque module y donne ses adresses publiques ; sans lui, il est absent du plan du site.
-    'sitemap'    => ['methodes' => ['sitemap' => 0], 'appelant' => 'modules/settings/controllers/ajax.php'],
+    'sitemap'    => ['methodes' => ['sitemap' => 0], 'appelant' => 'neofrag/helpers/seo.php'],
 
     // modules/monitoring/controllers/index.php : $controller->cron(), sur les WIDGETS.
     // Un widget qui dépend d'un service extérieur y rafraîchit son cache hors du rendu d'une page.

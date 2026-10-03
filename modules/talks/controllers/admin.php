@@ -92,9 +92,9 @@ class Admin extends Controller_Module
 								->join('nf_user u',  'u.id = m.user_id', 'LEFT')
 								->where('m.message_id', (int)$r['message_id'])
 								->row();
-				$r['message_text']    = is_array($msg) ? $msg['message']    : '';
-				$r['message_author']  = is_array($msg) ? $msg['author']     : '';
-				$r['talk_name']       = is_array($msg) ? $msg['talk_name']  : '';
+				$r['message_text']    = is_array($msg) ? (string) ($msg['message'] ?? '')   : '';
+				$r['message_author']  = is_array($msg) ? (string) ($msg['author'] ?? '')    : '';
+				$r['talk_name']       = is_array($msg) ? (string) ($msg['talk_name'] ?? '') : '';
 			}
 		}
 		unset($r);

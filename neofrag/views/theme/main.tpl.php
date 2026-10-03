@@ -81,9 +81,9 @@ $nf_accueil      = $nf_chemin === '';
  * La description : celle de la page, sinon celle du site dans la langue de la page (cf. output.php),
  * réduite à une ligne de texte de 160 caractères au plus — au-delà, les moteurs la coupent.
  *
- * L'image de partage : celle de la page (la couverture d'un billet), sinon celle du référencement
- * (1 200 × 630, faite pour les aperçus), sinon le logo, sinon le favicon. Seule une image de partage
- * mérite la grande carte (`summary_large_image`) : un logo carré y serait recadré.
+ * L'image de partage : celle de la page (la couverture d'un billet), sinon celle du site — réglages,
+ * thème, logo, favicon, cf. nf_seo_image_partage(). Seule une image de partage mérite la grande carte
+ * (`summary_large_image`) : un logo carré y serait recadré.
  */
 $nf_seo_desc  = nf_seo_description((string) ($description ?? ''));
 $nf_og_type   = (string) ($this->output->data->get('module', 'og_type') ?: 'website');
@@ -91,13 +91,9 @@ $nf_og_image  = (string) ($this->output->data->get('module', 'og_image') ?: '');
 $nf_og_grande = $nf_og_image !== '';
 $nf_fichier   = static fn ($id): string => $id ? (string) NeoFrag()->model2('file', $id)->path() : '';
 
-if ($nf_og_image === '' && ($nf_og_image = $nf_fichier(nf_seo_reglage('image'))) !== '')
+if ($nf_og_image === '')
 {
-	$nf_og_grande = TRUE;
-}
-else if ($nf_og_image === '')
-{
-	$nf_og_image = $nf_fichier($this->config->nf_logo) ?: $nf_fichier($this->config->nf_favicon);
+	['adresse' => $nf_og_image, 'grande' => $nf_og_grande] = nf_seo_image_partage();
 }
 
 if ($nf_og_image !== '' && strpos($nf_og_image, '://') === FALSE)

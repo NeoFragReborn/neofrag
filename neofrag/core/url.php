@@ -128,6 +128,12 @@ class Url extends Core
 			{
 				$this->_const['segments'] = explode('/', 'ajax/settings/sitemap');
 			}
+			else if (preg_match('/^[a-f0-9]{32}\.txt$/', $this->request))
+			{
+				// La clé IndexNow, que le moteur lit à la racine pour s'assurer qu'un envoi vient
+				// bien du site. Toute autre clé de cette forme répond 404 (Settings\Controllers\Ajax::indexnow()).
+				$this->_const['segments'] = explode('/', 'ajax/settings/indexnow');
+			}
 			else if (preg_match('/^manifest\.webmanifest$/', $this->request))
 			{
 				// Le manifeste d'application (PWA). Servi par le produit et non déposé en fichier :
@@ -230,7 +236,7 @@ class Url extends Core
 					$segments($request);
 				}
 			}
-			// Les fichiers RACINE que réclament les robots et les navigateurs — robots.txt, humans.txt,
+			// Les fichiers RACINE que réclament les robots et les navigateurs — robots.txt, humans.txt, la clé IndexNow,
 			// sitemap.xml, favicon.ico — n'ont pas de version par langue et ne doivent JAMAIS être
 			// redirigés vers un préfixe : `Url::redirect()` répond en JSON dès que l'extension est txt,
 			// xml ou json, si bien qu'un moteur de recherche demandant /sitemap.xml recevait
@@ -239,7 +245,7 @@ class Url extends Core
 			// L'API (`api/…`) non plus : un programme ne suit pas une redirection de langue,
 			// et un POST redirigé perdrait son corps. Elle répond dans la langue par défaut du site.
 			else if (!defined('NEOFRAG_INSTALL') && !$this->cli && !preg_match('_^user/auth/|^api/_', $this->request)
-			                                     && !preg_match('_^(humans|robots)\.txt$|^sitemap\.xml$|^favicon\.ico$|^manifest\.webmanifest$|^service-worker\.js$_', $this->request))
+			                                     && !preg_match('_^(humans|robots|[a-f0-9]{32})\.txt$|^sitemap\.xml$|^favicon\.ico$|^manifest\.webmanifest$|^service-worker\.js$_', $this->request))
 			{
 				$this->on('config_lang_selected', function(){
 					// Une VRAIE redirection : sans cela, `/quoi.json` rendait 200 + JSON au lieu du

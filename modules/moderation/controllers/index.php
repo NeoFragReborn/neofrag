@@ -84,7 +84,7 @@ class Index extends Controller_Module
 			                ->join('nf_talks t', 't.talk_id = m.talk_id')
 			                ->where('m.message_id', (int)$report['target_id'])
 			                ->row(FALSE);
-			$is_private = is_array($row) && in_array($row['type'], ['direct', 'group'], TRUE);
+			$is_private = is_array($row) && in_array($row['type'] ?? '', ['direct', 'group'], TRUE);
 			if ($is_private && !$this->access('moderation', 'access_private'))
 			{
 				notify($this->lang('Permission insuffisante : ce signalement concerne une conversation privée.'), 'danger');
@@ -398,7 +398,7 @@ class Index extends Controller_Module
 				->join('nf_talks t', 't.talk_id = m.talk_id')
 				->where('m.message_id', (int)$snap['target_id'])
 				->row(FALSE);
-			$is_private = is_array($row) && in_array($row['type'], ['direct', 'group'], TRUE);
+			$is_private = is_array($row) && in_array($row['type'] ?? '', ['direct', 'group'], TRUE);
 			if ($is_private && !$controller->access('moderation', 'access_private'))
 			{
 				$controller->error->unauthorized();

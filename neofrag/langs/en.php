@@ -597,4 +597,5 @@ return [
 	'3cd5288d' => 'Loading…',
 	'f2226c73' => 'Reload',
 	'02ad0f3e' => 'Please complete the anti-robot check',
+	'18ac8fe0' => 'Search engines',
 ];

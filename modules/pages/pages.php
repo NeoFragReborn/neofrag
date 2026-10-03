@@ -11,6 +11,25 @@ use NF\NeoFrag\Addons\Module;
 
 class Pages extends Module
 {
+	/**
+	 * Descripteurs de contenu — cf. Module::content_types(). Sans réaction, abonnement ni révision : la
+	 * déclaration sert au référencement de chaque page (nf_seo_meta) et à son adresse publique.
+	 */
+	public function declare_content_types()
+	{
+		return [
+			'pages' => ['table' => 'nf_pages', 'pk' => 'page_id', 'author' => NULL],
+		];
+	}
+
+	/** L'adresse publique d'une page : son nom, à la racine du site. */
+	public function content_url($type, $id)
+	{
+		$nom = $type === 'pages' ? $this->db->select('name')->from('nf_pages')->where('page_id', (int) $id)->row() : NULL;
+
+		return is_string($nom) && $nom !== '' ? url($nom) : '';
+	}
+
 	protected function __info()
 	{
 		return [

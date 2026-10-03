@@ -65,6 +65,9 @@ class Index extends Controller_Module
 
 	public function _news($news_id, $category_id, $user_id, $image_id, $date, $published, $views, $vote, $title, $introduction, $content, $tags, $category_name, $category_title, $image, $category_icon, $username, $admin, $online, $quote, $avatar, $sex)
 	{
+		// Le titre et la description que l'actualité donne aux moteurs, si elle en donne.
+		nf_seo_contenu('news', (int) $news_id);
+
 		$this	->title($title)
 				->meta_description(!empty($introduction) ? $introduction : $content)
 				->breadcrumb($title)

@@ -162,7 +162,7 @@ class Ajax extends Controller_Module
 				return ['table' => 'nf_forum_attachments', 'message_id' => (int)$target_id];
 			case 'forum_topic':
 				$row = $this->db->select('message_id')->from('nf_forum_topics')->where('topic_id', (int)$target_id)->row(FALSE);
-				return is_array($row) ? ['table' => 'nf_forum_attachments', 'message_id' => (int)$row['message_id']] : NULL;
+				return is_array($row) && $row ? ['table' => 'nf_forum_attachments', 'message_id' => (int)$row['message_id']] : NULL;
 			case 'talks_message':
 				return ['table' => 'nf_talks_attachments', 'message_id' => (int)$target_id];
 		}
@@ -175,7 +175,7 @@ class Ajax extends Controller_Module
 		{
 			case 'forum_message':
 				$row = $this->db->select('user_id')->from('nf_forum_messages')->where('message_id', (int)$target_id)->row(FALSE);
-				return is_array($row) ? (int)$row['user_id'] : NULL;
+				return is_array($row) && $row ? (int)$row['user_id'] : NULL;
 			case 'forum_topic':
 				// nf_forum_topics n'a pas de user_id : l'auteur est sur le message_id starter
 				$row = $this->db->select('m.user_id')
@@ -183,19 +183,19 @@ class Ajax extends Controller_Module
 					->join('nf_forum_messages m', 'm.message_id = t.message_id')
 					->where('t.topic_id', (int)$target_id)
 					->row(FALSE);
-				return is_array($row) ? (int)$row['user_id'] : NULL;
+				return is_array($row) && $row ? (int)$row['user_id'] : NULL;
 			case 'talks_message':
 				$row = $this->db->select('user_id')->from('nf_talks_messages')->where('message_id', (int)$target_id)->row(FALSE);
-				return is_array($row) ? (int)$row['user_id'] : NULL;
+				return is_array($row) && $row ? (int)$row['user_id'] : NULL;
 			case 'comment':
 				$row = $this->db->select('user_id')->from('nf_comment')->where('id', (int)$target_id)->row(FALSE);
-				return is_array($row) ? (int)$row['user_id'] : NULL;
+				return is_array($row) && $row ? (int)$row['user_id'] : NULL;
 			case 'profile':
 			case 'user':
 				return (int)$target_id;
 			case 'guestbook':
 				$row = $this->db->select('user_id')->from('nf_guestbook')->where('guestbook_id', (int)$target_id)->row(FALSE);
-				return is_array($row) ? (int)$row['user_id'] : NULL;
+				return is_array($row) && $row ? (int)$row['user_id'] : NULL;
 		}
 		return NULL;
 	}
@@ -210,7 +210,7 @@ class Ajax extends Controller_Module
 		{
 			case 'forum_message':
 				$row = $this->db->select('message')->from('nf_forum_messages')->where('message_id', (int)$target_id)->row(FALSE);
-				if (!is_array($row)) return NULL;
+				if (!is_array($row) || !$row) return NULL;
 				return mb_substr((string)$row['message'].$this->_attachments_snapshot('forum', (int)$target_id), 0, 5000);
 			case 'forum_topic':
 				$row = $this->db->select('t.title', 'm.message', 'm.message_id')
@@ -218,16 +218,16 @@ class Ajax extends Controller_Module
 					->join('nf_forum_messages m', 'm.message_id = t.message_id')
 					->where('t.topic_id', (int)$target_id)
 					->row(FALSE);
-				if (!is_array($row)) return NULL;
+				if (!is_array($row) || !$row) return NULL;
 				$body = '['.((string)$row['title']).'] '.((string)$row['message']);
 				return mb_substr($body.$this->_attachments_snapshot('forum', (int)$row['message_id']), 0, 5000);
 			case 'talks_message':
 				$row = $this->db->select('message')->from('nf_talks_messages')->where('message_id', (int)$target_id)->row(FALSE);
-				if (!is_array($row)) return NULL;
+				if (!is_array($row) || !$row) return NULL;
 				return mb_substr((string)$row['message'].$this->_attachments_snapshot('talks', (int)$target_id), 0, 5000);
 			case 'comment':
 				$row = $this->db->select('content')->from('nf_comment')->where('id', (int)$target_id)->row(FALSE);
-				return is_array($row) ? mb_substr((string)$row['content'], 0, 5000) : NULL;
+				return is_array($row) && $row ? mb_substr((string)$row['content'], 0, 5000) : NULL;
 			case 'guestbook':
 				$row = $this->db->select('message')->from('nf_guestbook')->where('guestbook_id', (int)$target_id)->row(FALSE);
 				return is_array($row) && !empty($row['message']) ? mb_substr((string)$row['message'], 0, 5000) : NULL;
@@ -240,7 +240,7 @@ class Ajax extends Controller_Module
 					->join('nf_user_profile p', 'p.id = u.id', 'LEFT')
 					->where('u.id', (int)$target_id)
 					->row(FALSE);
-				if (!is_array($row)) return NULL;
+				if (!is_array($row) || !$row) return NULL;
 				$parts = ['@'.($row['username'] ?? '?')];
 				if (!empty($row['first_name']) || !empty($row['last_name'])) $parts[] = trim(($row['first_name'] ?? '').' '.($row['last_name'] ?? ''));
 				// Les intitulés sont figés dans le snapshot, dans la langue du site au moment du signalement.

@@ -548,6 +548,11 @@ jobs:
           docker compose exec -T
           -e NF_DB_HOST=db -e NF_DB_USER=neofrag -e NF_DB_PASS=neofragpass -e NF_DB_NAME=neofrag
           web php tools/ci-install.php
+      # Le contrôle que `build-release` joue avant de fabriquer les paquets : chaque table de la base
+      # installée appartient à un module ou au cœur. Il n'était joué qu'au workflow de release, et trois
+      # tables de la 1.2.22 l'y ont fait tomber après une CI verte (2026-10-03).
+      - name: Carte des tables (chaque table installée a son propriétaire)
+        run: docker compose exec -T web php tools/extract-module-sql.php --check
       - name: Recharger le web (prise en compte de la config fraîche)
         run: docker compose restart web
       - name: Attendre que le web réponde

@@ -497,7 +497,9 @@ class Index extends Controller_Module
 								->where('audience', 'staff')
 								->where('deleted_at', NULL)
 								->order_by('talk_id')
-								->row();
+								->row(FALSE);
+		// row(FALSE) : une colonne seule rendait sa valeur, `is_array()` répondait non, et le message
+		// partait toujours sur « Aucun salon staff configuré » (relevé le 2026-10-03).
 		if (!is_array($staff_talk) || empty($staff_talk['talk_id']))
 		{
 			notify($this->lang('Aucun salon staff configuré.'), 'danger');

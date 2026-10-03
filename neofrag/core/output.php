@@ -35,7 +35,8 @@ class Output extends Core
 		{
 			// Le titre ne répète jamais le nom du site : cf. nf_seo_titre(), helpers/seo.php.
 			$this->_title = function(){
-				if (($this->url->segments[0] != 'index' || $this->url->subdomain) && $this->module() && ($title = $this->data->get('module', 'title')))
+				// Le « titre pour Google » d'un contenu (nf_seo_contenu()) passe avant le sien.
+				if (($this->url->segments[0] != 'index' || $this->url->subdomain) && $this->module() && ($title = $this->data->get('module', 'seo_titre') ?: $this->data->get('module', 'title')))
 				{
 					return nf_seo_titre((string) $title, (string) $this->config->nf_name);
 				}
@@ -670,9 +671,9 @@ class Output extends Core
 
 			$output = $this->_theme->view('theme/main', [
 				'title'       => call_user_func($this->_title),
-				// La page, sinon la description du site dans la langue de la page (Paramètres → Référencement),
-				// sinon celle des Préférences générales, commune à toutes les langues.
-				'description' => trim((string)($this->data->get('module', 'description') ?: nf_seo_reglage('description') ?: $this->config->nf_description)),
+				// Celle que le contenu donne aux moteurs, sinon celle de la page, sinon celle du site
+				// dans la langue de la page (Paramètres → Référencement), sinon celle des Préférences générales.
+				'description' => trim((string)($this->data->get('module', 'seo_description') ?: $this->data->get('module', 'description') ?: nf_seo_reglage('description') ?: $this->config->nf_description)),
 				'body'        => $body,
 				'debug_bar'   => $this->debug->bar()
 			]);

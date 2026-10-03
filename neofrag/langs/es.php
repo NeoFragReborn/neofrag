@@ -598,4 +598,5 @@ return [
 	'3cd5288d' => 'Cargando…',
 	'f2226c73' => 'Recargar',
 	'02ad0f3e' => 'Complete la verificación antirrobots',
+	'18ac8fe0' => 'Posicionamiento',
 ];

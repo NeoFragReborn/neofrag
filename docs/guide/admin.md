@@ -143,7 +143,26 @@ Ce que tu remplis, dans **Paramètres → Référencement** :
   ou Facebook — à défaut, le logo ;
 - le code de vérification de **Google Search Console** et de **Bing Webmaster Tools** : crée la
   propriété du site dans l'outil, choisis la vérification par **balise HTML**, colle la balise (ou le
-  code seul), puis soumets-y le plan du site, `https://ton-site/sitemap.xml`.
+  code seul), puis soumets-y le plan du site, `https://ton-site/sitemap.xml` ;
+- **Prévenir les moteurs (IndexNow)** : coché, le site signale chaque page qui paraît, change ou
+  disparaît à Bing, Yandex, Seznam, Naver, Yep et Amazon, dans les minutes qui suivent, au lieu
+  d'attendre leur prochain passage. Google n'y participe pas : pour lui, c'est le plan du site. Il faut
+  que la **tâche planifiée** du site tourne (*Monitoring*, qui donne la ligne à installer). Le premier
+  passage ne fait que relever les pages existantes ; ensuite, seuls les changements partent.
+
+Trois écrans de plus, depuis la même rubrique :
+
+- **Bilan du référencement** — ce que voit un moteur, mesuré sur le site : le nombre de pages du plan et
+  leur module, les textes de l'accueil dans chaque langue, l'image de partage, Google et Bing, IndexNow,
+  `robots.txt`, la maintenance. Chaque point a le lien vers ce qui le corrige.
+- **Redirections** — une ancienne adresse qui mène à la nouvelle, au lieu de « Page introuvable » : un
+  classement acquis ne se perd pas. Une page ou une page du wiki **renommée** laisse la sienne toute
+  seule ; ajoute à la main celles d'un ancien site (`page.php`, `/fr/ancienne-page`…). La colonne
+  *Visites* dit si l'ancienne adresse sert encore.
+- **Le référencement d'un contenu** — dans la carte d'édition d'une actualité, d'un billet du Blog, d'une
+  page ou d'une page du wiki, le bouton **Référencement** : un titre pour les moteurs (60 caractères au
+  plus, le nom du site suit) et une description (160 au plus), dans chaque langue. Vides, ce sont le
+  titre et le début du texte.
 
 ### Le captcha
 

@@ -598,4 +598,5 @@ return [
 	'3cd5288d' => 'Caricamento…',
 	'f2226c73' => 'Ricarica',
 	'02ad0f3e' => 'Completa la verifica anti-robot',
+	'18ac8fe0' => 'Indicizzazione',
 ];

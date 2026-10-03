@@ -84,8 +84,11 @@ class Admin extends Controller_Module
 			$row = $this->db->select('t.type')->from('nf_talks_messages m')
 			                ->join('nf_talks t', 't.talk_id = m.talk_id')
 			                ->where('m.message_id', (int)$report['target_id'])
-			                ->row();
-			$is_private = is_array($row) && in_array($row['type'], ['direct', 'group'], TRUE);
+			                ->row(FALSE);
+			// row(FALSE) : sans lui, une colonne seule rend sa VALEUR, `is_array()` répondait toujours non, et un
+			// modérateur sans le droit access_private ouvrait le signalement d'un message privé, sans trace au
+			// journal d'audit (relevé le 2026-10-03).
+			$is_private = is_array($row) && in_array($row['type'] ?? '', ['direct', 'group'], TRUE);
 			if ($is_private && !$this->access('moderation', 'access_private'))
 			{
 				notify($this->lang('Permission insuffisante : ce signalement concerne une conversation privée. Contacte un admin senior.'), 'danger');

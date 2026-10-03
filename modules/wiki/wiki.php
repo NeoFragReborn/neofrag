@@ -11,6 +11,26 @@ use NF\NeoFrag\Addons\Module;
 
 class Wiki extends Module
 {
+	/**
+	 * Descripteurs de contenu — cf. Module::content_types(). Sans réaction, abonnement ni révision (le
+	 * wiki tient son propre historique) : la déclaration sert au référencement de chaque page (un chantier interne,
+	 * nf_seo_meta) et à son adresse publique.
+	 */
+	public function declare_content_types()
+	{
+		return [
+			'wiki' => ['table' => 'nf_wiki_pages', 'pk' => 'id'],
+		];
+	}
+
+	/** L'adresse publique d'une page du wiki. */
+	public function content_url($type, $id)
+	{
+		$slug = $type === 'wiki' ? $this->db->select('slug')->from('nf_wiki_pages')->where('id', (int) $id)->row() : NULL;
+
+		return is_string($slug) && $slug !== '' ? url('wiki/'.$slug) : '';
+	}
+
 	protected function __info()
 	{
 		return [

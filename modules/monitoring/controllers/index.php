@@ -97,6 +97,19 @@ class Index extends Controller_Module
 			$report[] = 'calendar: '.$cmodel->send_due_reminders().' reminded';
 		}
 
+		// IndexNow : les pages parues, changées ou disparues depuis le passage précédent sont
+		// signalées aux moteurs. Après les parutions programmées ci-dessus, pour qu'elles partent tout de suite.
+		// Une erreur ici ne prive pas les widgets de leur passage.
+		try
+		{
+			$report[] = nf_indexnow();
+		}
+		catch (\Throwable $erreur)
+		{
+			error_log('[indexnow] '.$erreur->getMessage());
+			$report[] = 'indexnow: error, '.$erreur->getMessage();
+		}
+
 		// Carrefour « cron » des WIDGETS. Un widget qui dépend d'un service extérieur — le lecteur de
 		// flux, par exemple — y rafraîchit son cache HORS du rendu d'une page. C'est ce qui garantit
 		// qu'un site tiers lent ne fasse jamais attendre un visiteur : la page lit un cache, elle

@@ -17,8 +17,9 @@
 		$row = $this->db->select('t.type')->from('nf_talks_messages m')
 		                ->join('nf_talks t', 't.talk_id = m.talk_id')
 		                ->where('m.message_id', (int)$target_id)
-		                ->row();
-		$talk_type = is_array($row) ? $row['type'] : '';
+		                ->row(FALSE);
+		// row(FALSE) : une colonne seule rendait sa valeur, et l'avertissement ne s'affichait jamais.
+		$talk_type = is_array($row) ? (string) ($row['type'] ?? '') : '';
 		$is_private_talk = in_array($talk_type, ['direct', 'group'], TRUE);
 	}
 	if ($is_private_talk):

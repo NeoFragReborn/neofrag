@@ -13,6 +13,14 @@ class Error extends Library
 {
 	public function __invoke()
 	{
+		// Une ancienne adresse : avant de répondre 404, le site cherche une redirection —
+		// une page renommée, l'adresse d'un ancien site. Une page qui existe n'arrive jamais ici.
+		if (($cible = nf_redirection()) !== NULL)
+		{
+			NeoFrag()->url->redirect_http($cible, 301);
+			exit;
+		}
+
 		throw NeoFrag()->___load('', 'exception', [function(){
 			header('HTTP/1.0 404 Not Found');
 			// Le titre de l'onglet le dit aussi, plutôt que le nom du module qui n'a rien trouvé.

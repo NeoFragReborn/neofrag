@@ -294,11 +294,10 @@ JS;
 	 *
 	 * Chaque module donne désormais ses adresses lui-même : c'est le carrefour `sitemap`
 	 * (`modules/<module>/controllers/sitemap.php`, méthode `sitemap()`, contrat tenu par
-	 * `check-addon-contracts`). Il rend des chemins comme ceux que prend `url()` — `articles/12/titre`
-	 * devient `/fr/blog/12/titre` —, ne garde que ce qu'un VISITEUR peut lire, et seulement ce qui existe
-	 * dans la langue du plan : un contenu servi dans une autre langue se déclare canonique ailleurs.
-	 * Un module désactivé ne contribue pas : ses pages répondent 404. Un module qui échoue n'emporte pas
-	 * le plan : son erreur part au journal, les autres sont servis.
+	 * `check-addon-contracts`), que réunit nf_seo_plan() (helpers/seo.php). Il rend des chemins comme ceux
+	 * que prend `url()` — `articles/12/titre` devient `/fr/blog/12/titre` —, ne garde que ce qu'un VISITEUR
+	 * peut lire, et seulement ce qui existe dans la langue du plan : un contenu servi dans une autre langue
+	 * se déclare canonique ailleurs.
 	 */
 	public function sitemap()
 	{
@@ -310,41 +309,17 @@ JS;
 			return nf_seo_index_xml(array_map(fn ($langue): string => nf_seo_adresse($origine, $this->url->base, $langue->info()->name, 'sitemap.xml'), $this->config->langs));
 		}
 
-		$entrees = [['adresse' => '']];
+		return nf_seo_plan_xml(nf_seo_plan()['adresses']);
+	}
 
-		foreach (NeoFrag()->model2('addon')->get('module') as $module)
-		{
-			if (!$module->is_enabled() || !($controleur = @$module->controller('sitemap')) || !method_exists($controleur, 'sitemap'))
-			{
-				continue;
-			}
-
-			try
-			{
-				foreach ((array) $controleur->sitemap() as $entree)
-				{
-					$entrees[] = $entree;
-				}
-			}
-			catch (\Throwable $erreur)
-			{
-				trigger_error('Plan du site : le module « '.$module->info()->name.' » a échoué — '.$erreur->getMessage(), E_USER_WARNING);
-			}
-		}
-
-		$adresses = [];
-
-		foreach ($entrees as $entree)
-		{
-			$loc = $origine.url((string) ($entree['adresse'] ?? ''));
-
-			if (!isset($adresses[$loc]))
-			{
-				$adresses[$loc] = ['loc' => $loc, 'lastmod' => nf_seo_date($entree['date'] ?? NULL)];
-			}
-		}
-
-		return nf_seo_plan_xml(array_values($adresses));
+	/**
+	 * La clé IndexNow, à la racine : `/<clé>.txt` ne contient qu'elle. Le moteur la lit pour
+	 * s'assurer qu'un envoi vient bien du site (nf_indexnow()). Toute autre adresse de cette forme, et la
+	 * clé elle-même quand IndexNow est éteint, répondent 404 (Ajax_Checker::indexnow()).
+	 */
+	public function indexnow()
+	{
+		return nf_indexnow_cle();
 	}
 
 	public function debug_bar()

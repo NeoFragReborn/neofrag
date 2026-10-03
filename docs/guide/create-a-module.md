@@ -277,6 +277,25 @@ public function declare_content_types()
 
 Exemple réel : `modules/news/news.php`.
 
+### Le référencement d'un contenu
+
+Un type de contenu déclaré ci-dessus (avec sa `table` et sa `pk`) peut recevoir, comme les actualités ou
+le wiki, un titre et une description pour les moteurs — la page commune est celle de la rubrique
+Référencement, rien n'est à écrire de ce côté. Trois appels :
+
+```php
+// La carte d'édition de l'administration : le bouton qui mène à la page commune.
+return $this->admin_card('fas fa-edit', $titre, $formulaire, '', nf_seo_bouton('note', (int) $id));
+
+// L'action de la page publique, avant de rendre la vue : applique le titre et la description saisis.
+nf_seo_contenu('note', (int) $id);
+
+// Quand l'adresse d'un contenu change (un nom, un slug), l'ancienne mène à la nouvelle (301).
+nf_redirection_ajouter('notes/'.$ancien_slug, 'notes/'.$nouveau_slug);
+```
+
+Exemples réels : `modules/wiki/controllers/admin.php` et `modules/wiki/controllers/index.php`.
+
 ### Les carrefours : statistiques, activité, tableau de bord, recherche, plan du site
 
 Un module se branche sur une page qui **agrège** en posant un contrôleur du nom du carrefour. Le
@@ -291,7 +310,7 @@ paramètre obligatoire de plus, l'erreur n'apparaît qu'à l'ouverture de la pag
 | `controllers/dashboard.php` | `dashboard()` | le tableau de bord de l'administration |
 | `controllers/block.php` | `block()` | les blocs `[block:…]` des pages |
 | `controllers/search.php` | `search()` **et** `suggest()` | la recherche globale et la suggestion instantanée — un module qui n'a que `search()` est **ignoré en silence** |
-| `controllers/sitemap.php` | `sitemap()` | le plan du site (`/sitemap.xml`, un par langue) : rend `[['adresse' => 'monmodule/12/titre', 'date' => …], …]`, des chemins comme ceux que prend `url()`, seulement ce qu'un **visiteur** peut lire (`$this->access('monmodule', 'lire', $id, 'visitors')`) et ce qui existe **dans la langue du plan** — sans lui, le module est absent des moteurs |
+| `controllers/sitemap.php` | `sitemap()` | le plan du site (`/sitemap.xml`, un par langue) : rend `[['adresse' => 'monmodule/12/titre', 'date' => …], …]`, des chemins comme ceux que prend `url()`, seulement ce qu'un **visiteur** peut lire (`$this->access('monmodule', 'lire', $id, 'visitors')`) et ce qui existe **dans la langue du plan** — sans lui, le module est absent des moteurs, et IndexNow ne signale pas ses pages : la tâche planifiée compare ce même plan d'un passage à l'autre |
 
 ## 6. Les permissions (optionnel)
 

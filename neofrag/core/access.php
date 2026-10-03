@@ -622,7 +622,7 @@ class Access extends Core
 		if (!array_key_exists($user_id, $cache))
 		{
 			$row = $this->db()->select('admin')->from('nf_user')->where('id', $user_id)->row(FALSE);
-			$cache[$user_id] = is_array($row) ? ($row['admin'] === '1' || $row['admin'] === 1) : FALSE;
+			$cache[$user_id] = is_array($row) && isset($row['admin']) ? ($row['admin'] === '1' || $row['admin'] === 1) : FALSE;
 		}
 
 		return $cache[$user_id];

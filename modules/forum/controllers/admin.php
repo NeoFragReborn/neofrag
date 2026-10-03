@@ -362,7 +362,7 @@ class Admin extends Controller_Module
 			if ($this->model()->merge_topics($topic_id, $target_id))
 			{
 				$target = $this->db->select('title')->from('nf_forum_topics')->where('topic_id', $target_id)->row();
-				$target_title = is_array($target) ? $target['title'] : $target;
+				$target_title = is_array($target) ? (string) ($target['title'] ?? '') : (string) $target;
 				notify($this->lang('Sujet fusionné avec succès'));
 				redirect('forum/topic/'.$target_id.'/'.url_title($target_title));
 			}

@@ -58,6 +58,9 @@ class Index extends Controller_Module
 
 	public function _page($page)
 	{
+		// Le titre et la description que la page donne aux moteurs, si elle en donne.
+		nf_seo_contenu('wiki', (int) $page['id']);
+
 		$this->title($page['title'])->icon('fas fa-book')->breadcrumb();
 
 		// Navigation latérale : arbre des pages (page active surlignée).

@@ -120,6 +120,9 @@ class Config extends Core
 {
 	protected $_const = [];
 
+	/** Les réglages lus en base, par site puis par langue : dans_la_langue() y reprend ceux d'une langue. */
+	protected $_reglages = [];
+
 	public function __construct()
 	{
 		$settings = [];
@@ -149,6 +152,8 @@ class Config extends Core
 
 			$settings[$setting['site']][$setting['lang']][$setting['name']] = $value;
 		}
+
+		$this->_reglages = $settings;
 
 		$load = function($site = '', $lang = '') use (&$settings){
 			$this->_const['lang'] = $lang;
@@ -297,6 +302,61 @@ class Config extends Core
 	public function __isset($name)
 	{
 		return array_key_exists($name, $this->_const);
+	}
+
+	/**
+	 * Fait `$faire` comme si la page était servie dans la langue `$nom`, puis rend la sienne.
+	 *
+	 * Pour une tâche qui parcourt les langues du site hors d'une page de chacune : le cron qui compare le
+	 * plan du site de toutes les langues pour prévenir les moteurs (nf_indexnow()). La langue
+	 * courante, ses réglages propres, les adresses que rend `url()` et la locale suivent. Une langue que le
+	 * site ne sert pas ne fait rien : `$faire` n'est pas appelé, et NULL est rendu.
+	 *
+	 * Tout revient comme avant ensuite — y compris un réglage écrit pendant `$faire`, qui ne vaut donc, en
+	 * mémoire, qu'à la requête suivante : on n'écrit pas de réglage dans une autre langue.
+	 */
+	public function dans_la_langue(string $nom, callable $faire): mixed
+	{
+		$langue = NULL;
+
+		foreach ($this->_const['langs'] ?: [$this->_const['lang']] as $candidate)
+		{
+			if ($candidate && $candidate->info()->name === $nom)
+			{
+				$langue = $candidate;
+			}
+		}
+
+		if (!$langue)
+		{
+			return NULL;
+		}
+
+		$avant  = $this->_const;
+		$locale = setlocale(LC_ALL, '0');
+
+		$this->_const['lang'] = $langue;
+
+		foreach ($this->_reglages[''][$nom] ?? [] as $reglage => $valeur)
+		{
+			$this->_const[$reglage] = $valeur;
+		}
+
+		setlocale(LC_ALL, $langue->locale());
+
+		try
+		{
+			return $faire();
+		}
+		finally
+		{
+			$this->_const = $avant;
+
+			if ($locale !== FALSE)
+			{
+				setlocale(LC_ALL, $locale);
+			}
+		}
 	}
 
 	public function __invoke($name, $value, $type = NULL)

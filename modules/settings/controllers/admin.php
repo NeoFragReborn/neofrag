@@ -447,6 +447,15 @@ class Admin extends Controller_Module
 			];
 		}
 
+		// IndexNow : le site signale lui-même ses pages aux moteurs qui participent.
+		$regles['indexnow'] = [
+			'label'       => $this->lang('Prévenir les moteurs'),
+			'type'        => 'checkbox',
+			'values'      => ['on' => $this->lang('Signaler chaque page qui paraît, change ou disparaît (IndexNow)')],
+			'checked'     => ['on' => !empty($this->config->nf_seo_indexnow)],
+			'description' => $this->lang('Bing, Yandex, Seznam, Naver, Yep et Amazon sont prévenus dans les minutes qui suivent, au lieu de l’apprendre à leur prochain passage. Google n’y participe pas : pour lui, le plan du site reste la voie. Demande la tâche planifiée du site (Surveillance).')
+		];
+
 		$this	->form()
 				->add_rules($regles)
 				->add_submit($this->lang('Valider'))
@@ -456,9 +465,35 @@ class Admin extends Controller_Module
 		{
 			foreach ($post as $var => $value)
 			{
+				if ($var === 'indexnow')
+				{
+					continue;
+				}
+
 				$valeur = in_array($var, ['google', 'bing'], TRUE) ? nf_seo_code_verification((string) $value) : trim((string) $value);
 				$this->config('nf_seo_'.$var, $valeur);
 			}
+
+			// Hors de la boucle : une case décochée n'arrive pas dans le POST. Allumer crée la clé si besoin
+			// et repart d'un relevé neuf — ce qui a changé pendant l'extinction, le plan du site le dit.
+			$indexnow = !empty($post['indexnow']);
+
+			if ($indexnow && empty($this->config->nf_seo_indexnow))
+			{
+				if (!nf_indexnow_cle_valide(nf_indexnow_cle()))
+				{
+					$this->config('nf_seo_indexnow_cle', bin2hex(random_bytes(16)));
+				}
+
+				if ($this->db->table_exists('nf_indexnow'))
+				{
+					$this->db->execute('TRUNCATE TABLE `nf_indexnow`');
+				}
+
+				$this->config('nf_seo_indexnow_etat', (string) json_encode(['allume' => date('Y-m-d H:i:s')]));
+			}
+
+			$this->config('nf_seo_indexnow', $indexnow ? '1' : '0', 'bool');
 
 			$this->_audit('seo');
 			notify($this->lang('Référencement sauvegardé avec succès'));
@@ -466,12 +501,375 @@ class Admin extends Controller_Module
 			refresh();
 		}
 
-		return '<div class="settings-section-back"><a href="'.url('admin/settings').'" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> '.$this->lang('Tous les paramètres').'</a></div>'
+		return '<div class="settings-section-back"><a href="'.url('admin/settings').'" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> '.$this->lang('Tous les paramètres').'</a>'
+			.' <a href="'.url('admin/settings/seo-bilan').'" class="btn btn-light btn-sm"><i class="fas fa-clipboard-check"></i> '.$this->lang('Bilan du référencement').'</a>'
+			.' <a href="'.url('admin/settings/seo-redirections').'" class="btn btn-light btn-sm"><i class="fas fa-route"></i> '.$this->lang('Redirections').'</a></div>'
 			.'<div class="settings-section-card">'
 			.'<div class="settings-section-header">'
 			.'<div class="settings-section-icon"><i class="fas fa-magnifying-glass-chart"></i></div>'
 			.'<div class="settings-section-meta"><div class="settings-section-title">'.$this->lang('Référencement').'</div>'
 			.'<div class="settings-section-subtitle">'.$this->lang('Le plan du site, les liens entre langues et les données structurées se font tout seuls ; ici, ce que le site dit de lui-même.').'</div></div>'
+			.'</div>'
+			.'<div class="settings-section-body">'.$this->form()->display().'</div>'
+			.'</div>';
+	}
+
+	/**
+	 * Les redirections : une ancienne adresse mène à la nouvelle (301), au lieu de répondre 404.
+	 * Le site les cherche juste avant de répondre « Page introuvable » (Libraries\Error) : une page qui
+	 * existe n'est jamais détournée. Une page renommée laisse la sienne d'elle-même.
+	 */
+	public function seo_redirections()
+	{
+		$this	->subtitle($this->lang('Redirections'))
+				->icon('fas fa-route');
+
+		if (!$this->db->table_exists('nf_redirects'))
+		{
+			$this->error(404);
+			return '';
+		}
+
+		$langues = nf_langues_du_site();
+
+		$this	->form()
+				->add_rules([
+					'source' => [
+						'label'       => $this->lang('Ancienne adresse'),
+						'description' => $this->lang('Le chemin qui ne répond plus : « ancienne-page », « /fr/ancienne-page », ou l’adresse d’un ancien site (« page.php »). La langue et les paramètres sont ignorés.'),
+						'rules'       => 'required',
+						'check'       => function($saisie) use ($langues){
+							if (nf_redirection_source((string) $saisie, $langues) === '')
+							{
+								return $this->lang('Indiquez un chemin, pas seulement la racine du site.');
+							}
+						}
+					],
+					'cible' => [
+						'label'       => $this->lang('Nouvelle adresse'),
+						'description' => $this->lang('Un chemin du site (« nouvelle-page ») ou une adresse complète en https://.'),
+						'rules'       => 'required',
+						'check'       => function($saisie) use ($langues){
+							if (nf_redirection_cible((string) $saisie, $langues) === '')
+							{
+								return $this->lang('Une adresse du site ou en https:// seulement.');
+							}
+						}
+					],
+				])
+				->add_submit($this->lang('Ajouter'))
+				->display_required(FALSE);
+
+		if ($this->form()->is_valid($post))
+		{
+			nf_redirection_ajouter(html_entity_decode((string) $post['source'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), html_entity_decode((string) $post['cible'], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+			$this->_audit('seo-redirections');
+			notify($this->lang('Redirection ajoutée'));
+			refresh();
+		}
+
+		$lignes = $this->db->select('id', 'source', 'target', 'hits', 'last_hit_at')->from('nf_redirects')->order_by('id DESC')->get();
+		$liste  = '';
+
+		foreach ($lignes as $ligne)
+		{
+			$liste .= '<tr>'
+				.'<td><code>/'.htmlspecialchars((string) $ligne['source'], ENT_QUOTES).'</code></td>'
+				.'<td><code>'.htmlspecialchars(preg_match('#^https?://#', (string) $ligne['target']) ? (string) $ligne['target'] : '/'.$ligne['target'], ENT_QUOTES).'</code></td>'
+				.'<td class="text-end">'.(int) $ligne['hits'].'</td>'
+				.'<td>'.($ligne['last_hit_at'] ? timetostr($this->lang('d/m/Y'), (string) $ligne['last_hit_at']) : '—').'</td>'
+				.'<td class="text-end"><a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/settings/seo-redirections-supprimer/'.(int) $ligne['id']).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a></td>'
+				.'</tr>';
+		}
+
+		$tableau = $liste !== ''
+			? '<div class="table-responsive"><table class="table table-sm align-middle mb-0"><thead><tr><th>'.$this->lang('Ancienne adresse').'</th><th>'.$this->lang('Nouvelle adresse').'</th><th class="text-end">'.$this->lang('Visites').'</th><th>'.$this->lang('Dernière').'</th><th></th></tr></thead><tbody>'.$liste.'</tbody></table></div>'
+			: '<p class="text-muted mb-0">'.$this->lang('Aucune redirection : une adresse inconnue répond « Page introuvable ».').'</p>';
+
+		return '<div class="settings-section-back"><a href="'.url('admin/settings/seo').'" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> '.$this->lang('Référencement').'</a></div>'
+			.$this->admin_card('fas fa-route', $this->lang('Redirections'), $tableau, $this->lang('Une ancienne adresse mène à la nouvelle : le classement acquis ne se perd pas.'))
+			.$this->admin_card('fas fa-plus', $this->lang('Ajouter une redirection'), $this->form()->display());
+	}
+
+	public function seo_redirections_supprimer($id = 0)
+	{
+		$this->check_csrf('admin/settings/seo-redirections');
+
+		if ($this->db->table_exists('nf_redirects'))
+		{
+			$this->db->where('id', (int) $id)->delete('nf_redirects');
+			$this->_audit('seo-redirections');
+			notify($this->lang('Redirection supprimée'));
+		}
+
+		redirect('admin/settings/seo-redirections');
+	}
+
+	/**
+	 * Le bilan du référencement : ce que voit un moteur de recherche, mesuré sur le site, et
+	 * pour chaque point ce qui le corrige. L'équivalent, lisible par un administrateur, de `check-seo`.
+	 */
+	public function seo_bilan()
+	{
+		$this	->subtitle($this->lang('Bilan du référencement'))
+				->icon('fas fa-clipboard-check');
+
+		$points = [];
+		// Les textes arrivent de lang(), qui rend un objet : convertis ici, une fois.
+		$point  = function(string $etat, $titre, $detail, string $lien = '', $action = '') use (&$points){
+			$points[] = [$etat, (string) $titre, (string) $detail, $lien, (string) $action];
+		};
+
+		// 1. Le plan du site, dans la langue affichée — le même calcul que /sitemap.xml.
+		$plan    = nf_seo_plan();
+		$nombre  = count($plan['adresses']);
+		$modules = $plan['modules'];
+		arsort($modules);
+		$detail  = implode(', ', array_map(fn ($m, $n) => ($this->module($m) ? $this->module($m)->info()->title : $m).' '.$n, array_keys($modules), $modules));
+
+		$point($nombre > 1 ? 'ok' : 'alerte',
+			$this->lang('Plan du site : %d page(s) annoncée(s) en %s', $nombre, $this->config->lang->info()->title),
+			$nombre > 1 ? $detail : $this->lang('Seul l\'accueil est annoncé : aucun module ne montre de page aux visiteurs. Vérifiez leurs droits dans la matrice des permissions.'),
+			url('sitemap.xml'), $this->lang('Voir le plan'));
+
+		// 2. Les textes, langue par langue.
+		foreach ($this->config->langs ?: [$this->config->lang] as $langue)
+		{
+			$code        = $langue->info()->name;
+			$accroche    = nf_seo_reglage('accroche', $code);
+			$description = nf_seo_description(nf_seo_reglage('description', $code) ?: (string) $this->config->nf_description);
+			$manques     = [];
+
+			if ($accroche === '')
+			{
+				$manques[] = $this->lang('pas d\'accroche : le titre de l\'accueil n\'est que le nom du site');
+			}
+
+			if (mb_strlen($description) < 50 || nf_seo_meme_texte($description, (string) $this->config->nf_name))
+			{
+				$manques[] = $this->lang('une description trop courte, ou qui répète le nom du site');
+			}
+
+			$point($manques ? 'conseil' : 'ok',
+				$this->lang('Textes de l\'accueil — %s', $langue->info()->title),
+				$manques ? implode(' ; ', $manques) : '« '.nf_seo_titre('', (string) $this->config->nf_name, $accroche).' » — '.$description,
+				url('admin/settings/seo'), $this->lang('Compléter'));
+		}
+
+		// 3. L'image de partage, par la même règle que l'en-tête des pages.
+		$partage = nf_seo_image_partage();
+		$sources = [
+			'reglage' => $this->lang('Celle des réglages, montrée en grand dans les aperçus de Discord, X, Facebook et LinkedIn.'),
+			'theme'   => $this->lang('Celle que fournit le thème, montrée en grand dans les aperçus de partage.'),
+			'logo'    => $this->lang('Le logo sert à défaut : une image de 1 200 × 630 pixels donnerait un aperçu en grand.'),
+			'favicon' => $this->lang('Le favicon sert à défaut : une image de 1 200 × 630 pixels donnerait un aperçu en grand.'),
+			''        => $this->lang('Aucune : un lien du site partagé n\'aura pas d\'image.'),
+		];
+		$point($partage['grande'] ? 'ok' : ($partage['source'] !== '' ? 'conseil' : 'alerte'), $this->lang('Image de partage'), $sources[$partage['source']], url('admin/settings/seo'), $this->lang('Choisir'));
+
+		// 4. Les outils des moteurs.
+		foreach (['google' => ['Google Search Console', 'https://search.google.com/search-console'], 'bing' => ['Bing Webmaster Tools', 'https://www.bing.com/webmasters']] as $outil => [$nom, $adresse])
+		{
+			$present = nf_seo_reglage($outil) !== '';
+			$point($present ? 'ok' : 'conseil', $nom,
+				$present ? $this->lang('Code de vérification posé. Soumettez-y le plan du site : %s', site_origin().url('sitemap.xml'))
+					: $this->lang('Non déclaré : l\'outil montre comment le moteur voit le site, et à quelle vitesse il le relit. Une vérification par DNS chez l\'hébergeur du domaine convient aussi.'),
+				$adresse, $this->lang('Ouvrir'));
+		}
+
+		// 5. IndexNow : le site prévient-il les moteurs, et son dernier envoi est-il passé ?
+		$etat = nf_indexnow_etat();
+
+		if (nf_demo())
+		{
+			$point('info', 'IndexNow', $this->lang('Une démonstration ne prévient jamais les moteurs.'));
+		}
+		else if (!nf_indexnow_actif())
+		{
+			$point('conseil', 'IndexNow', $this->lang('Éteint : Bing, Yandex et les autres moteurs participants découvrent une page à leur prochain passage, pas à sa publication.'), url('admin/settings/seo'), $this->lang('Allumer'));
+		}
+		else if (empty($etat['passage']) && strtotime((string) ($etat['allume'] ?? '')) > time() - 3600)
+		{
+			$point('info', 'IndexNow', $this->lang('Allumé : le premier passage de la tâche planifiée relèvera les pages du site, sans rien envoyer ; les changements partiront ensuite.'));
+		}
+		else if (empty($etat['passage']) || strtotime((string) $etat['passage']) < time() - 3600)
+		{
+			$point('alerte', 'IndexNow', $this->lang('La tâche planifiée du site ne passe pas : rien n’est envoyé. La Surveillance donne la ligne à installer.'), url('admin/monitoring'), $this->lang('Ouvrir'));
+		}
+		else
+		{
+			$attente = (int) $this->db->select('COUNT(*)')->from('nf_indexnow')->where('pending', 1)->row();
+			$cle     = nf_indexnow_corps(site_origin(), (string) $this->url->base, nf_indexnow_cle(), [])['keyLocation'];
+
+			if (($etat['issue'] ?? '') === 'refusee')
+			{
+				$point('alerte', 'IndexNow', $this->lang('Le dernier envoi a été refusé (réponse %d) : le plus souvent, le moteur n’a pas pu lire la clé du site à son adresse, %s. %d adresse(s) en attente.', (int) $etat['statut'], $cle, $attente), $cle, $this->lang('Ouvrir'));
+			}
+			else if (($etat['issue'] ?? '') === 'plus_tard')
+			{
+				$point('conseil', 'IndexNow', $this->lang('Le dernier envoi n’a pas abouti (réponse %d) ; nouvel essai dans l’heure. %d adresse(s) en attente.', (int) $etat['statut'], $attente));
+			}
+			else
+			{
+				$point('ok', 'IndexNow', !empty($etat['recue'])
+					? $this->lang('En service : %d adresses suivies. Dernier envoi le %s : %d adresse(s), reçues.', (int) $etat['suivies'], timetostr($this->lang('d/m/Y H:i'), (string) $etat['recue']), (int) $etat['recues'])
+					: $this->lang('En service : %d adresses suivies. Rien n’a changé depuis la mise en service.', (int) $etat['suivies']));
+			}
+		}
+
+		// 6. Ce qui cache le site tout entier.
+		$ferme = nf_seo_robots_ferme((string) $this->config->nf_robots_txt);
+		$point($ferme ? 'alerte' : 'ok', 'robots.txt',
+			$ferme ? $this->lang('« Disallow: / » interdit aux moteurs de lire le site entier.') : $this->lang('Les moteurs peuvent lire le site, et le fichier leur annonce le plan.'),
+			url('admin/settings/general'), $this->lang('Modifier'));
+
+		if ($this->config->nf_maintenance)
+		{
+			$point('alerte', $this->lang('Mode maintenance'), $this->lang('Le site est fermé : les moteurs ne voient que la page de maintenance.'), url('admin/settings/maintenance'), $this->lang('Modifier'));
+		}
+
+		// 7. Les contenus qui ont leur propre titre ou description.
+		if ($this->db->table_exists('nf_seo_meta'))
+		{
+			$propres = [];
+
+			foreach ($this->db->select('content_type', 'COUNT(DISTINCT content_id) AS nb')->from('nf_seo_meta')->group_by('content_type')->get() as $ligne)
+			{
+				$propres[] = $ligne['content_type'].' '.$ligne['nb'];
+			}
+
+			$point('info', $this->lang('Contenus au référencement personnalisé'),
+				$propres ? implode(', ', $propres) : $this->lang('Aucun : titres et descriptions sont automatiques. Le bouton « Référencement » de la carte d\'édition d\'une actualité, d\'un billet, d\'une page ou d\'une page du wiki les règle.'));
+		}
+
+		$icones = ['ok' => 'fas fa-check-circle text-success', 'conseil' => 'fas fa-lightbulb text-warning', 'alerte' => 'fas fa-exclamation-triangle text-danger', 'info' => 'fas fa-info-circle text-info'];
+		$liste  = '<ul class="list-group list-group-flush">';
+
+		foreach ($points as [$etat, $titre, $detail, $lien, $action])
+		{
+			$liste .= '<li class="list-group-item d-flex align-items-start gap-3">'
+				.'<i class="'.$icones[$etat].' mt-1"></i>'
+				.'<div class="flex-grow-1"><div class="fw-semibold">'.htmlspecialchars($titre, ENT_QUOTES).'</div>'
+				.'<div class="text-muted small">'.htmlspecialchars($detail, ENT_QUOTES).'</div></div>'
+				.($lien !== '' ? '<a class="btn btn-sm btn-light text-nowrap" href="'.htmlspecialchars($lien, ENT_QUOTES).'"'.(str_starts_with($lien, 'http') ? ' target="_blank" rel="noopener"' : '').'>'.htmlspecialchars($action, ENT_QUOTES).'</a>' : '')
+				.'</li>';
+		}
+
+		$liste .= '</ul>';
+
+		return '<div class="settings-section-back"><a href="'.url('admin/settings/seo').'" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> '.$this->lang('Référencement').'</a></div>'
+			.$this->admin_card('fas fa-clipboard-check', $this->lang('Bilan du référencement'), $liste, $this->lang('Ce que voit un moteur de recherche, mesuré sur le site.'), '', TRUE);
+	}
+
+	/**
+	 * Le titre et la description qu'UN contenu donne aux moteurs, dans chaque langue du site.
+	 * Une seule page pour tous les modules : le bouton « Référencement » de leur carte d'édition
+	 * (nf_seo_bouton()) y mène, leur page publique les applique (nf_seo_contenu()). Le type est l'un de
+	 * ceux que les modules déclarent (`declare_content_types()`), et le contenu doit exister.
+	 */
+	public function seo_contenu($type = '', $id = 0)
+	{
+		$types = \NF\NeoFrag\Addons\Module::content_types();
+		$id    = (int) $id;
+		$desc  = $types[$type] ?? NULL;
+
+		if (!$desc || $id <= 0 || empty($desc['table']) || !$this->db->table_exists($desc['table']) || !$this->db->table_exists('nf_seo_meta')
+			|| !$this->db->select($desc['pk'], $desc['pk'].' AS existe')->from($desc['table'])->where($desc['pk'], $id)->row())
+		{
+			$this->error(404);
+			return '';
+		}
+
+		$this	->subtitle($this->lang('Référencement'))
+				->icon('fas fa-magnifying-glass-chart');
+
+		$langues = $this->config->langs ?: [$this->config->lang];
+		$saisies = [];
+
+		foreach ($this->db->select('lang', 'title', 'description')->from('nf_seo_meta')->where('content_type', $type)->where('content_id', $id)->get() as $ligne)
+		{
+			$saisies[$ligne['lang']] = $ligne;
+		}
+
+		$regles = [];
+
+		foreach ($langues as $langue)
+		{
+			$code  = $langue->info()->name;
+			$titre = $langue->info()->title;
+
+			$regles['titre_'.$code] = [
+				'label'       => $this->lang('Titre pour les moteurs — %s', $titre),
+				'value'       => $saisies[$code]['title'] ?? '',
+				'description' => $this->lang('Remplace le titre de la page dans les résultats et les aperçus de partage ; le nom du site suit. Vide, le titre de la page sert. 60 caractères au plus.'),
+				'check'       => function($texte){
+					if (mb_strlen(trim((string) $texte)) > 60)
+					{
+						return $this->lang('60 caractères au plus : au-delà, les moteurs coupent le titre.');
+					}
+				}
+			];
+
+			$regles['description_'.$code] = [
+				'label'       => $this->lang('Description — %s', $titre),
+				'type'        => 'textarea',
+				'rows'        => 3,
+				'value'       => $saisies[$code]['description'] ?? '',
+				'description' => $this->lang('Ce que les moteurs affichent sous le titre. Vide, la description automatique de la page sert. 160 caractères au plus.'),
+				'check'       => function($texte){
+					if (mb_strlen(trim((string) $texte)) > 160)
+					{
+						return $this->lang('160 caractères au plus : au-delà, les moteurs coupent la description.');
+					}
+				}
+			];
+		}
+
+		$this	->form()
+				->add_rules($regles)
+				->add_submit($this->lang('Valider'))
+				->display_required(FALSE);
+
+		if ($this->form()->is_valid($post))
+		{
+			foreach ($langues as $langue)
+			{
+				$code        = $langue->info()->name;
+				$titre       = trim((string) ($post['titre_'.$code] ?? ''));
+				$description = trim((string) ($post['description_'.$code] ?? ''));
+
+				$this->db	->where('content_type', $type)
+							->where('content_id', $id)
+							->where('lang', $code)
+							->delete('nf_seo_meta');
+
+				if ($titre !== '' || $description !== '')
+				{
+					$this->db->insert('nf_seo_meta', [
+						'content_type' => $type,
+						'content_id'   => $id,
+						'lang'         => $code,
+						'title'        => $titre,
+						'description'  => $description,
+					]);
+				}
+			}
+
+			$this->_audit('seo-contenu');
+			notify($this->lang('Référencement sauvegardé avec succès'));
+
+			redirect_back();
+		}
+
+		$adresse = \NF\NeoFrag\Addons\Module::content_url_of($type, $id);
+		$voir    = $adresse !== '' ? ' <a class="btn btn-secondary btn-sm" href="'.htmlspecialchars($adresse, ENT_QUOTES).'" target="_blank" rel="noopener">'.icon('fas fa-external-link-alt').' '.$this->lang('Voir la page').'</a>' : '';
+
+		return '<div class="settings-section-back"><a href="'.url('admin/settings/seo').'" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> '.$this->lang('Référencement').'</a>'.$voir.'</div>'
+			.'<div class="settings-section-card">'
+			.'<div class="settings-section-header">'
+			.'<div class="settings-section-icon"><i class="fas fa-magnifying-glass-chart"></i></div>'
+			.'<div class="settings-section-meta"><div class="settings-section-title">'.$this->lang('Référencement de ce contenu').'</div>'
+			.'<div class="settings-section-subtitle">'.$this->lang('Ce que ce contenu montre aux moteurs de recherche et dans les aperçus de partage, langue par langue. Tout ce qui reste vide est automatique.').'</div></div>'
 			.'</div>'
 			.'<div class="settings-section-body">'.$this->form()->display().'</div>'
 			.'</div>';

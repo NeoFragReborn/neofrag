@@ -734,7 +734,7 @@ class Forum extends Model
 			{
 				$parent = $by_id[$pid];
 				$parent_user = $this->db->select('username')->from('nf_user')->where('id', (int)$parent['user_id'])->row();
-				$m['parent_username'] = !empty($parent['identite']) ? $parent['identite']['nom'] : (is_array($parent_user) ? $parent_user['username'] : (string)$parent_user);
+				$m['parent_username'] = !empty($parent['identite']) ? $parent['identite']['nom'] : (is_array($parent_user) ? (string) ($parent_user['username'] ?? '') : (string)$parent_user);
 				$m['parent_excerpt']  = trim(strip_tags(str_replace(['<br>', '<br/>', '<br />'], ' ', (string)$parent['message'])));
 			}
 		}

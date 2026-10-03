@@ -139,4 +139,88 @@ final class HelpersSeoTest extends TestCase
         $this->assertSame('sitemapindex', $index->getName());
         $this->assertCount(2, $index->sitemap);
     }
+
+    public function test_la_source_d_une_redirection_se_lit_comme_la_requete(): void
+    {
+        $langues = ['fr', 'en'];
+
+        $this->assertSame('ancienne-page', nf_redirection_source('/fr/ancienne-page', $langues));
+        $this->assertSame('ancienne-page', nf_redirection_source('https://exemple.org/en/ancienne-page/?x=1#y', $langues));
+        $this->assertSame('ancienne-page', nf_redirection_source('ancienne-page', $langues));
+        $this->assertSame('index.php', nf_redirection_source('/index.php?page=3', $langues), "l'adresse d'un ancien site, extension comprise");
+        $this->assertSame('frites/maison', nf_redirection_source('/frites/maison', $langues), "seul un code de langue entier se retire");
+        $this->assertSame('', nf_redirection_source('/fr/', $langues));
+        $this->assertSame('café', nf_redirection_source('/caf%C3%A9', $langues));
+    }
+
+    public function test_la_cible_d_une_redirection_est_sure(): void
+    {
+        $langues = ['fr'];
+
+        $this->assertSame('nouvelle-page', nf_redirection_cible('/fr/nouvelle-page', $langues));
+        $this->assertSame('https://ailleurs.org/x', nf_redirection_cible('https://ailleurs.org/x', $langues));
+        $this->assertSame('', nf_redirection_cible('javascript:alert(1)', $langues));
+        $this->assertSame('', nf_redirection_cible('data:text/html,x', $langues));
+        $this->assertSame('', nf_redirection_cible('//ailleurs.org/x', $langues), "une adresse sans schéma mène hors du site");
+        $this->assertSame('', nf_redirection_cible('https://', $langues));
+    }
+
+    public function test_seul_un_disallow_pour_tous_ferme_le_site(): void
+    {
+        $this->assertTrue(nf_seo_robots_ferme("User-agent: *\nDisallow: /"));
+        $this->assertTrue(nf_seo_robots_ferme("user-agent : *   # tous\r\ndisallow : /  \n"));
+        $this->assertTrue(nf_seo_robots_ferme("User-agent: Googlebot\nUser-agent: *\nDisallow: /"), 'un groupe de plusieurs agents');
+        $this->assertFalse(nf_seo_robots_ferme("User-agent: GPTBot\nDisallow: /\n\nUser-agent: *\nDisallow: /admin"), 'un robot nommé seulement');
+        $this->assertFalse(nf_seo_robots_ferme("User-agent: *\nDisallow: /\nAllow: /blog"), 'rouvert en partie');
+        $this->assertFalse(nf_seo_robots_ferme("User-agent: *\nDisallow:"), 'un Disallow vide autorise tout');
+        $this->assertFalse(nf_seo_robots_ferme("User-agent: *\nDisallow: /admin/"));
+        $this->assertFalse(nf_seo_robots_ferme(''));
+    }
+
+    public function test_indexnow_ne_signale_que_ce_qui_a_change(): void
+    {
+        $avant = ['https://e.org/fr' => '2026-10-01', 'https://e.org/fr/news' => '2026-10-01', 'https://e.org/fr/faq' => NULL, 'https://e.org/fr/vieille' => NULL];
+        $plan  = ['https://e.org/fr' => '2026-10-01', 'https://e.org/fr/news' => '2026-10-03', 'https://e.org/fr/faq' => NULL, 'https://e.org/fr/news/9/neuve' => '2026-10-03'];
+
+        $this->assertSame([
+            'nouvelles' => ['https://e.org/fr/news/9/neuve'],
+            'changees'  => ['https://e.org/fr/news'],
+            'disparues' => ['https://e.org/fr/vieille'],
+        ], nf_indexnow_ecarts($avant, $plan));
+
+        $this->assertSame(['nouvelles' => [], 'changees' => [], 'disparues' => []], nf_indexnow_ecarts($plan, $plan), 'rien ne change, rien ne part');
+        $this->assertSame(['https://e.org/fr/faq'], nf_indexnow_ecarts(['https://e.org/fr/faq' => NULL], ['https://e.org/fr/faq' => '2026-10-03'])['changees'], 'une date qui apparaît');
+    }
+
+    public function test_indexnow_n_envoie_que_les_adresses_du_site(): void
+    {
+        $cle   = str_repeat('ab12', 8);
+        $corps = nf_indexnow_corps('https://exemple.org/', '/', $cle, ['https://exemple.org/fr/a', 'https://ailleurs.org/fr/b', 'https://exemple.org/fr/a', 'http://exemple.org/fr/c']);
+
+        $this->assertSame('exemple.org', $corps['host']);
+        $this->assertSame('https://exemple.org/'.$cle.'.txt', $corps['keyLocation'], 'la clé à la racine');
+        $this->assertSame(['https://exemple.org/fr/a'], $corps['urlList'], 'ni étrangère, ni en double, ni d\'un autre schéma');
+
+        $sous = nf_indexnow_corps('https://exemple.org', '/site/', $cle, ['https://exemple.org/site/fr/a', 'https://exemple.org/autre']);
+        $this->assertSame('https://exemple.org/site/'.$cle.'.txt', $sous['keyLocation'], 'installé dans un sous-dossier');
+        $this->assertSame(['https://exemple.org/site/fr/a'], $sous['urlList'], 'la clé ne vaut que pour son dossier');
+
+        $this->assertCount(10000, nf_indexnow_corps('https://e.org', '/', $cle, array_map(fn (int $n): string => 'https://e.org/p'.$n, range(1, 10050)))['urlList']);
+    }
+
+    public function test_indexnow_la_cle_et_les_reponses(): void
+    {
+        $this->assertTrue(nf_indexnow_cle_valide(bin2hex(random_bytes(16))));
+        $this->assertFalse(nf_indexnow_cle_valide('ABCDEF0123456789ABCDEF0123456789'), 'le site les crée en minuscules');
+        $this->assertFalse(nf_indexnow_cle_valide('robots'));
+        $this->assertFalse(nf_indexnow_cle_valide(''));
+
+        $this->assertSame('recue', nf_indexnow_issue(200));
+        $this->assertSame('recue', nf_indexnow_issue(202), 'la clé reste à vérifier');
+        $this->assertSame('refusee', nf_indexnow_issue(403));
+        $this->assertSame('refusee', nf_indexnow_issue(422));
+        $this->assertSame('plus_tard', nf_indexnow_issue(429));
+        $this->assertSame('plus_tard', nf_indexnow_issue(503));
+        $this->assertSame('plus_tard', nf_indexnow_issue(0), 'pas de réponse');
+    }
 }

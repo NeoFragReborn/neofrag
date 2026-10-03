@@ -34,6 +34,8 @@ const NF_DEMO_REGLAGES_EXCLUS = [
     'pay_stripe_webhook_secret' => 'le secret des notifications de Stripe',
     'nf_discord_token'          => 'la clé du bot Discord, chiffrée — une clé reste une clé',
     'nf_translate_api'          => "la clé du service de traduction de NeoFrag d'origine",
+    'nf_seo_indexnow_cle'       => "la clé IndexNow, propre à chaque site : un moteur la lit à la racine de celui qui envoie",
+    'nf_seo_indexnow_api'       => "le service IndexNow remplacé pour une épreuve : jamais d'un site à l'autre",
 ];
 
 /**

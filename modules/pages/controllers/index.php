@@ -57,6 +57,9 @@ class Index extends Controller_Module
 
 	public function _index($page_id, $title, $subtitle, $content, $layout = 'default')
 	{
+		// Le titre et la description que la page donne aux moteurs, si elle en donne.
+		nf_seo_contenu('pages', (int) $page_id);
+
 		$this	->title($title)
 				->meta_description(!empty($subtitle) ? $subtitle : preg_replace('/\[block:[a-z0-9._-]+[^\]]*\]/i', '', $content))
 				->breadcrumb($this->lang('Pages'), 'pages')

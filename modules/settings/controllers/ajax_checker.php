@@ -67,4 +67,14 @@ class Ajax_Checker extends Module_Checker
 			return [];
 		}
 	}
+
+	public function indexnow()
+	{
+		// La clé IndexNow : celle du site seulement, à la racine, et quand IndexNow est allumé.
+		if (nf_indexnow_actif() && $this->url->request == nf_indexnow_cle().'.txt')
+		{
+			$this->extension('txt');
+			return [];
+		}
+	}
 }

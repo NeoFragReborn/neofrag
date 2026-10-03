@@ -598,4 +598,5 @@ return [
 	'3cd5288d' => 'Wird geladen…',
 	'f2226c73' => 'Neu laden',
 	'02ad0f3e' => 'Bitte die Anti-Roboter-Prüfung abschließen',
+	'18ac8fe0' => 'Suchmaschinen',
 ];

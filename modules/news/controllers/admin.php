@@ -271,7 +271,7 @@ class Admin extends Controller_Module
 
 		$history_btn = '<a class="btn btn-sm btn-light" href="'.url('admin/news/history/'.(int)$news_id.'/'.url_title($title)).'">'.icon('fas fa-history').' '.$this->lang('Historique').'</a>';
 
-		return $this->admin_card('fas fa-edit', $this->lang('Éditer l\'actualité').' — '.$title, $this->form()->display(), '', $history_btn);
+		return $this->admin_card('fas fa-edit', $this->lang('Éditer l\'actualité').' — '.$title, $this->form()->display(), '', $history_btn.' '.nf_seo_bouton('news', (int) $news_id));
 	}
 
 	public function _delete($news_id, $title)
