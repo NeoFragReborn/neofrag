@@ -13,6 +13,10 @@ class Index extends Controller_Module
 {
 	public function index($module_name = '', $page = '')
 	{
+		// Une page de résultats n'a rien à faire dans un moteur : elle n'est qu'un reflet des autres,
+		// et chaque recherche en fabriquerait une de plus. Ses liens, eux, se suivent.
+		$this->output->data->set('module', 'robots', 'noindex, follow');
+
 		$count  = 0;
 		$row    = $this->array;
 		$search = '';

@@ -963,6 +963,10 @@ class Index extends Controller_Module
 
 	public function _member($user)
 	{
+		// Le profil d'un membre ne s'indexe pas : peu de texte, et un membre n'a pas à se retrouver dans
+		// un moteur de recherche sans l'avoir choisi. Ses liens, eux, se suivent.
+		$this->output->data->set('module', 'robots', 'noindex, follow');
+
 		return $this->title($user->username)
 					->breadcrumb($this->lang('Profil'))
 					->breadcrumb($user->username)

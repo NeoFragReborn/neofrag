@@ -4,12 +4,9 @@ declare(strict_types=1);
  * https://neofr.ag
  * @author: Michaël BILCOT <michael.bilcot@neofr.ag>
  *
- * couplage(articles): le generateur de sitemap agrege le contenu publie des modules presents.
- * Chaque bloc est garde par un `table_exists()` en amont — /sitemap.xml est une URL publique
- * visitee par les moteurs, elle ne doit jamais fataliser sur un module absent (corrige le
- * 2026-09-15 : elle n'avait aucune garde).
- * couplage(news): idem, meme sitemap, meme garde.
- * couplage(faq): idem.
+ * Le plan du site ne lit plus les tables des autres modules : chacun donne ses adresses par le
+ * carrefour `sitemap` (2026-10-03). Un module absent ne contribue pas, et ne peut donc
+ * plus faire tomber /sitemap.xml.
  */
 
 namespace NF\Modules\Settings\Controllers;
@@ -36,17 +33,24 @@ class Ajax extends Controller_Module
 		exit;
 	}
 
+	/**
+	 * `robots.txt` : le texte des Préférences générales, et l'adresse COMPLÈTE du plan du site — la norme
+	 * l'exige, et `Sitemap: /fr/sitemap.xml` n'était pas lu (2026-10-03). Le plan annoncé est
+	 * l'index des langues, à la racine. Une ligne `Sitemap:` relative saisie à la main est complétée.
+	 */
 	public function robots()
 	{
-		$content = $this->config->nf_robots_txt;
-		$sitemap_line = "\nSitemap: ".url('sitemap.xml');
+		$content = rtrim((string) $this->config->nf_robots_txt);
+		$origine = site_origin();
+
+		$content = (string) preg_replace_callback('/^(\s*sitemap\s*:\s*)(\/\S*)\s*$/mi', static fn (array $m): string => $m[1].$origine.$m[2], $content);
 
 		if (stripos($content, 'sitemap:') === FALSE)
 		{
-			$content .= $sitemap_line;
+			$content .= "\n\nSitemap: ".nf_seo_adresse($origine, $this->url->base, '', 'sitemap.xml');
 		}
 
-		return $content;
+		return $content."\n";
 	}
 
 	/**
@@ -280,108 +284,67 @@ JS;
 		]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 	}
 
+	/**
+	 * Le plan du site (2026-10-03).
+	 *
+	 * À la racine (`/sitemap.xml`, l'adresse qu'annonce `robots.txt`), un site en plusieurs langues sert
+	 * l'INDEX de ses plans, un par langue ; `/fr/sitemap.xml` est le plan du français. Jusque-là, la racine
+	 * servait le plan d'une seule langue — celle que préférait le navigateur —, aux adresses relatives,
+	 * que Google ignore, et d'une liste de modules écrite ici en dur : ni le wiki, ni les sujets du forum.
+	 *
+	 * Chaque module donne désormais ses adresses lui-même : c'est le carrefour `sitemap`
+	 * (`modules/<module>/controllers/sitemap.php`, méthode `sitemap()`, contrat tenu par
+	 * `check-addon-contracts`). Il rend des chemins comme ceux que prend `url()` — `articles/12/titre`
+	 * devient `/fr/blog/12/titre` —, ne garde que ce qu'un VISITEUR peut lire, et seulement ce qui existe
+	 * dans la langue du plan : un contenu servi dans une autre langue se déclare canonique ailleurs.
+	 * Un module désactivé ne contribue pas : ses pages répondent 404. Un module qui échoue n'emporte pas
+	 * le plan : son erreur part au journal, les autres sont servis.
+	 */
 	public function sitemap()
 	{
-		$urls = [];
+		$origine = site_origin();
+		$demande = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
 
-		// Home
-		$urls[] = ['loc' => url('//'), 'changefreq' => 'daily', 'priority' => '1.0'];
-
-		// Pages CMS publiées
-		$pages = $this->db	->select('page_id', 'name')
-							->from('nf_pages')
-							->where('published', '1')
-							->get();
-		foreach ($pages as $p)
+		if (count($this->config->langs) > 1 && $demande === rtrim($this->url->base, '/').'/sitemap.xml')
 		{
-			$urls[] = ['loc' => url($p['name']), 'changefreq' => 'monthly', 'priority' => '0.5'];
+			return nf_seo_index_xml(array_map(fn ($langue): string => nf_seo_adresse($origine, $this->url->base, $langue->info()->name, 'sitemap.xml'), $this->config->langs));
 		}
 
-		// Articles publiés
-		// Module optionnel : absent d'une installation allegee, ses tables n'existent pas et la
-		// requete fataliserait — sur /sitemap.xml, donc une URL publique visitee par les moteurs.
-		$articles = !$this->db->table_exists('nf_articles') ? [] : $this->db	->select('a.article_id', 'al.title', 'UNIX_TIMESTAMP(a.date) AS ts')
-								->from('nf_articles a')
-								->join('nf_articles_lang al', 'a.article_id = al.article_id')
-								->where('a.published', '1')
-								->where('a.deleted_at', NULL)
-								->where('a.date <=', date('Y-m-d H:i:s'))
-								->where('al.lang', $this->config->lang->info()->name)
-								->order_by('a.date DESC')
-								->get();
-		foreach ($articles as $a)
-		{
-			$urls[] = [
-				'loc'        => url('articles/'.$a['article_id'].'/'.url_title($a['title'])),
-				'lastmod'    => date('Y-m-d', $a['ts']),
-				'changefreq' => 'weekly',
-				'priority'   => '0.8'
-			];
-		}
+		$entrees = [['adresse' => '']];
 
-		// News publiées
-		// Module optionnel : absent d'une installation allegee, ses tables n'existent pas et la
-		// requete fataliserait — sur /sitemap.xml, donc une URL publique visitee par les moteurs.
-		$news = !$this->db->table_exists('nf_news') ? [] : $this->db	->select('n.news_id', 'nl.title', 'UNIX_TIMESTAMP(n.date) AS ts')
-							->from('nf_news n')
-							->join('nf_news_lang nl', 'n.news_id = nl.news_id')
-							->where('n.published', '1')
-							->where('n.deleted_at', NULL)
-							->where('n.date <=', date('Y-m-d H:i:s'))
-							->where('nl.lang', $this->config->lang->info()->name)
-							->order_by('n.date DESC')
-							->get();
-		foreach ($news as $n)
+		foreach (NeoFrag()->model2('addon')->get('module') as $module)
 		{
-			$urls[] = [
-				'loc'        => url('news/'.$n['news_id'].'/'.url_title($n['title'])),
-				'lastmod'    => date('Y-m-d', $n['ts']),
-				'changefreq' => 'weekly',
-				'priority'   => '0.7'
-			];
-		}
-
-		// FAQ questions
-		// Module optionnel : absent d'une installation allegee, ses tables n'existent pas et la
-		// requete fataliserait — sur /sitemap.xml, donc une URL publique visitee par les moteurs.
-		$faq = !$this->db->table_exists('nf_faq_questions') ? [] : $this->db	->select('q.id', 'q.question', 'UNIX_TIMESTAMP(q.updated_at) AS ts')
-							->from('nf_faq_questions q')
-							->where('q.published', '1')
-							->get();
-		foreach ($faq as $q)
-		{
-			$urls[] = [
-				'loc'        => url('faq#faq-q-'.$q['id']),
-				'lastmod'    => date('Y-m-d', $q['ts']),
-				'changefreq' => 'monthly',
-				'priority'   => '0.4'
-			];
-		}
-
-		// Top-level routes des modules core (généralistes)
-		foreach (['articles', 'news', 'forum', 'gallery', 'contact', 'members', 'search', 'faq', 'links', 'downloads', 'guestbook', 'newsletter'] as $route)
-		{
-			$urls[] = ['loc' => url($route), 'changefreq' => 'weekly', 'priority' => '0.6'];
-		}
-
-		$xml  = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
-
-		foreach ($urls as $u)
-		{
-			$xml .= "\t<url>\n";
-			$xml .= "\t\t<loc>".htmlspecialchars((string) ($u['loc']), ENT_XML1)."</loc>\n";
-			if (isset($u['lastmod']))
+			if (!$module->is_enabled() || !($controleur = @$module->controller('sitemap')) || !method_exists($controleur, 'sitemap'))
 			{
-				$xml .= "\t\t<lastmod>".$u['lastmod']."</lastmod>\n";
+				continue;
 			}
-			$xml .= "\t\t<changefreq>".$u['changefreq']."</changefreq>\n";
-			$xml .= "\t\t<priority>".$u['priority']."</priority>\n";
-			$xml .= "\t</url>\n";
+
+			try
+			{
+				foreach ((array) $controleur->sitemap() as $entree)
+				{
+					$entrees[] = $entree;
+				}
+			}
+			catch (\Throwable $erreur)
+			{
+				trigger_error('Plan du site : le module « '.$module->info()->name.' » a échoué — '.$erreur->getMessage(), E_USER_WARNING);
+			}
 		}
 
-		$xml .= '</urlset>'."\n";
+		$adresses = [];
 
-		return $xml;
+		foreach ($entrees as $entree)
+		{
+			$loc = $origine.url((string) ($entree['adresse'] ?? ''));
+
+			if (!isset($adresses[$loc]))
+			{
+				$adresses[$loc] = ['loc' => $loc, 'lastmod' => nf_seo_date($entree['date'] ?? NULL)];
+			}
+		}
+
+		return nf_seo_plan_xml(array_values($adresses));
 	}
 
 	public function debug_bar()

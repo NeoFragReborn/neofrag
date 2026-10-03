@@ -10,6 +10,43 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.21] — 2026-10-03
+
+### Ajouté
+
+- **Paramètres → Référencement** : pour chaque langue, l'accroche du titre de l'accueil et la
+  description que montrent les moteurs ; une image de partage (1 200 × 630) pour les aperçus de Discord,
+  X ou Facebook ; les codes de vérification de Google Search Console et de Bing Webmaster Tools.
+- **Un plan du site par langue**, réuni à la racine (`/sitemap.xml`) : chaque module y annonce lui-même
+  ses pages publiques — le blog, le forum et ses sujets, le wiki, la galerie, le calendrier, les
+  événements… —, seulement celles qu'un visiteur peut lire et qui existent dans la langue du plan.
+- Sur l'accueil, des **données structurées** qui décrivent le site, son logo et ses réseaux sociaux.
+
+### Modifié
+
+- **Les profils et l'annuaire des membres** ne sont plus proposés aux moteurs de recherche, ni les
+  résultats d'une recherche : peu de contenu, et un membre n'a pas à se retrouver dans Google sans
+  l'avoir choisi.
+
+### Corrigé
+
+- **Le plan du site** ne portait que des adresses relatives — ignorées des moteurs —, dans une seule
+  langue, sans le wiki ni le forum ; `robots.txt` l'annonçait par une adresse relative.
+- **Chaque page du Blog** se déclarait comme adresse de référence `/articles/…`, une redirection ;
+  l'accueil, `/index`. Les liens entre langues sont complets, avec la version par défaut (`x-default`).
+- **Le titre de l'accueil** ne répète plus le nom du site (« NeoFrag Reborn | NeoFrag Reborn »).
+- **Google Analytics** : le réglage n'acceptait que l'ancien format `UA-…`, que Google a arrêté en
+  2023 ; il accepte les identifiants actuels, `G-…`.
+- **La langue du navigateur** : un visiteur dont le navigateur n'annonce que `de-DE` arrive en allemand,
+  et non dans la langue par défaut du site.
+- **Le sélecteur de langue** et le bandeau « ce contenu n'existe pas dans votre langue », depuis le
+  Blog, menaient à son ancienne adresse.
+
+### Sécurité
+
+- **Les adresses complètes** de l'en-tête des pages (canonique, langues, partage) sont construites sur
+  l'adresse du site, et non plus sur l'en-tête `Host` de la requête, que n'importe qui peut forger.
+
 ## [1.2.20] — 2026-10-03
 
 ### Ajouté

@@ -277,7 +277,7 @@ public function declare_content_types()
 
 Exemple réel : `modules/news/news.php`.
 
-### Les carrefours : statistiques, activité, tableau de bord, recherche
+### Les carrefours : statistiques, activité, tableau de bord, recherche, plan du site
 
 Un module se branche sur une page qui **agrège** en posant un contrôleur du nom du carrefour. Le
 carrefour appelle la méthode du même nom **sans rien vérifier** : renommée, rendue privée ou dotée d'un
@@ -291,6 +291,7 @@ paramètre obligatoire de plus, l'erreur n'apparaît qu'à l'ouverture de la pag
 | `controllers/dashboard.php` | `dashboard()` | le tableau de bord de l'administration |
 | `controllers/block.php` | `block()` | les blocs `[block:…]` des pages |
 | `controllers/search.php` | `search()` **et** `suggest()` | la recherche globale et la suggestion instantanée — un module qui n'a que `search()` est **ignoré en silence** |
+| `controllers/sitemap.php` | `sitemap()` | le plan du site (`/sitemap.xml`, un par langue) : rend `[['adresse' => 'monmodule/12/titre', 'date' => …], …]`, des chemins comme ceux que prend `url()`, seulement ce qu'un **visiteur** peut lire (`$this->access('monmodule', 'lire', $id, 'visitors')`) et ce qui existe **dans la langue du plan** — sans lui, le module est absent des moteurs |
 
 ## 6. Les permissions (optionnel)
 

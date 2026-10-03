@@ -13,6 +13,9 @@ class Index extends Controller_Module
 {
 	public function index($members)
 	{
+		// L'annuaire ne s'indexe pas, comme les profils : une liste de noms, et un membre n'a pas à se
+		// retrouver dans un moteur de recherche sans l'avoir choisi. Ses liens se suivent.
+		$this->output->data->set('module', 'robots', 'noindex, follow');
 		$this->css('members');
 
 		return $this->array()

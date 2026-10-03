@@ -13,7 +13,7 @@ Un module = un dossier `modules/{x}/` avec un manifeste `{x}.php` (`namespace NF
   **`routes`** (URL → méthode), `'admin' => TRUE` s'il a une administration ; parfois `settings` ;
 - **`declare_content_types()`** (modules de contenu) : les tables que réactions, abonnements, révisions,
   corbeille et gamification collectent ;
-- **`controllers/statistics|activity|dashboard|block|search.php`** (optionnels) : les **carrefours**, dont
+- **`controllers/statistics|activity|dashboard|block|search|sitemap.php`** (optionnels) : les **carrefours**, dont
   les méthodes sont figées par `tools/check-addon-contracts.php` ;
 - **`permissions()`** (optionnel) : arbre de permissions RBAC ;
 - **`__init()`** (optionnel) : listeners sur l'event bus v0.4.

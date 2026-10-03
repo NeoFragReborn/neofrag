@@ -33,13 +33,14 @@ class Output extends Core
 		}
 		else
 		{
+			// Le titre ne répète jamais le nom du site : cf. nf_seo_titre(), helpers/seo.php.
 			$this->_title = function(){
 				if (($this->url->segments[0] != 'index' || $this->url->subdomain) && $this->module() && ($title = $this->data->get('module', 'title')))
 				{
-					return $title.' | '.$this->config->nf_name;
+					return nf_seo_titre((string) $title, (string) $this->config->nf_name);
 				}
 
-				return $this->config->nf_description.' | '.$this->config->nf_name;
+				return nf_seo_titre('', (string) $this->config->nf_name, nf_seo_accroche());
 			};
 		}
 
@@ -669,7 +670,9 @@ class Output extends Core
 
 			$output = $this->_theme->view('theme/main', [
 				'title'       => call_user_func($this->_title),
-				'description' => trim((string)($this->data->get('module', 'description') ?: $this->config->nf_description)),
+				// La page, sinon la description du site dans la langue de la page (Paramètres → Référencement),
+				// sinon celle des Préférences générales, commune à toutes les langues.
+				'description' => trim((string)($this->data->get('module', 'description') ?: nf_seo_reglage('description') ?: $this->config->nf_description)),
 				'body'        => $body,
 				'debug_bar'   => $this->debug->bar()
 			]);
@@ -1026,7 +1029,8 @@ class Output extends Core
 			return !empty($langs[$code]) ? (string)$langs[$code]->info()->title : (string)$code;
 		};
 
-		$lien = $this->url->base.implode('/', array_merge([$servie], $this->url->segments)).$this->url->query;
+		// Le chemin PUBLIC (`blog`, pas `articles`) : cf. nf_chemin_public(), helpers/seo.php.
+		$lien = $this->url->base.trim($servie.'/'.nf_chemin_public(), '/').$this->url->query;
 
 		return '<div class="alert alert-info d-flex align-items-center gap-2" role="alert">'
 			.'<i class="fas fa-language" aria-hidden="true"></i>'

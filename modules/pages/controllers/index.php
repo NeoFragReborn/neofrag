@@ -15,7 +15,7 @@ class Index extends Controller_Module
 	{
 		$this->title($this->lang('Pages'));
 
-		$pages = $this->db	->select('p.page_id', 'pl.title', 'pl.subtitle')
+		$pages = $this->db	->select('p.page_id', 'p.name', 'pl.title', 'pl.subtitle')
 							->from('nf_pages p')
 							->join('nf_pages_lang pl', 'p.page_id = pl.page_id')
 							->where('pl.lang', $this->config->lang->info()->name)
@@ -43,7 +43,9 @@ class Index extends Controller_Module
 		$html = '<ul class="list-group list-group-flush">';
 		foreach ($pages as $p)
 		{
-			$url = url('pages/'.url_title($p['title']));
+			// L'adresse d'une page est son NOM, à la racine du site (`/fr/a-propos`) : le contrôleur refuse
+			// `pages/…`, et le titre n'est pas le nom. Chaque lien de cette liste rendait 404 (2026-10-03).
+			$url = url($p['name']);
 			$html .= '<li class="list-group-item">'
 				   . '<a href="'.$url.'">'.icon('far fa-file-alt').' '.htmlspecialchars((string) ($p['title'])).'</a>'
 				   . (!empty($p['subtitle']) ? ' <small class="text-muted">— '.htmlspecialchars((string) ($p['subtitle'])).'</small>' : '')

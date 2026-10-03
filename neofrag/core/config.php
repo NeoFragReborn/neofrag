@@ -208,18 +208,12 @@ class Config extends Core
 					{
 						$main_lang = $langs[$name];
 					}
-					else if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && preg_match_all('/([a-zA-Z-]+)(?:;q=([0-9.]+))?,?/', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $matches, PREG_SET_ORDER))
+					else if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 					{
-						$accepted = [];
-
-						foreach ($matches as $match)
-						{
-							$accepted[$match[1]] = isset($match[2]) ? (float)$match[2] : 1;
-						}
-
-						arsort($accepted);
-
-						foreach ($accepted as $name => $q)
+						// Une variante régionale vaut aussi pour sa langue : un navigateur qui n'annonce que
+						// `de-DE` tombait sur la langue par défaut du site (2026-10-03). Les moteurs
+						// suivent cette même redirection pour l'adresse `x-default`. Cf. helpers/seo.php.
+						foreach (nf_langues_acceptees((string) $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $name)
 						{
 							if (isset($langs[$name]))
 							{

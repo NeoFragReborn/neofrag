@@ -25,6 +25,13 @@ class Admin extends Controller_Module
 				'color' => 'accent'
 			],
 			[
+				'title' => $this->lang('Référencement'),
+				'desc'  => $this->lang('Titre et description par langue, image de partage, Google et Bing'),
+				'icon'  => 'fas fa-magnifying-glass-chart',
+				'url'   => 'admin/settings/seo',
+				'color' => 'success'
+			],
+			[
 				'title' => $this->lang('Thèmes & addons'),
 				'desc'  => $this->lang('Activer/désactiver les thèmes, modules, widgets'),
 				'icon'  => 'fas fa-puzzle-piece',
@@ -232,10 +239,12 @@ class Admin extends Controller_Module
 					],
 					'analytics' => [
 						'label'       => '<a href="https://analytics.google.com" target="_blank">'.$this->lang('Code Google Analytics').'</a>',
-						'description' => $this->lang('Format UA-XXXXXXXXX-Y'),
+						// Google Analytics 4 (`G-…`) : Universal Analytics (`UA-…`) a cessé de compter en juillet
+						// 2023, et ce champ refusait encore tout autre format (relevé le 2026-10-03).
+						'description' => $this->lang('Format G-XXXXXXXXXX (Google Analytics 4)'),
 						'value'       => $this->config->nf_analytics,
 						'check'       => function($code){
-							if (!is_empty($code) && !preg_match('/^UA-\d+-\d+$/', $code))
+							if (!is_empty($code) && !preg_match('/^(G-[A-Z0-9]{4,20}|UA-\d+-\d+)$/', $code))
 							{
 								return $this->lang('Ce code est invalide');
 							}
@@ -353,6 +362,118 @@ class Admin extends Controller_Module
 			.'<div class="row">'
 			.'<div class="col-12 col-lg-7">'.$form_card.'</div>'
 			.'<div class="col-12 col-lg-5">'.$preview_card.'</div>'
+			.'</div>';
+	}
+
+	/**
+	 * Le référencement (2026-10-03) : ce que les moteurs et les aperçus de partage montrent du
+	 * site. Les textes existent PAR LANGUE — la description des Préférences générales, commune à toutes,
+	 * reste le repli. Chaque texte a son propre réglage (`nf_seo_description_en`…) : un même nom pour six
+	 * langues serait écrasé à chaque enregistrement, Config::__invoke() met à jour toutes ses lignes.
+	 */
+	public function seo()
+	{
+		$this	->subtitle($this->lang('Référencement'))
+				->icon('fas fa-magnifying-glass-chart');
+
+		$langues = $this->config->langs ?: [$this->config->lang];
+		$regles  = [];
+
+		foreach ($langues as $langue)
+		{
+			$code  = $langue->info()->name;
+			$titre = $langue->info()->title;
+
+			$regles['accroche_'.$code] = [
+				'label'       => $this->lang('Accroche de l’accueil — %s', $titre),
+				'value'       => nf_seo_reglage('accroche', $code),
+				'description' => $this->lang('Suit le nom du site dans le titre de l’accueil : « %s — votre accroche ». 60 caractères au plus.', (string) $this->config->nf_name),
+				'check'       => function($texte){
+					if (mb_strlen(trim((string) $texte)) > 60)
+					{
+						return $this->lang('60 caractères au plus : au-delà, les moteurs coupent le titre.');
+					}
+				}
+			];
+
+			$regles['description_'.$code] = [
+				'label'       => $this->lang('Description — %s', $titre),
+				'type'        => 'textarea',
+				'rows'        => 3,
+				'value'       => nf_seo_reglage('description', $code),
+				'description' => $this->lang('Ce que les moteurs affichent sous le titre, et les aperçus de partage. Entre 70 et 160 caractères ; vide, la description des Préférences générales sert.'),
+				'check'       => function($texte){
+					if (mb_strlen(trim((string) $texte)) > 160)
+					{
+						return $this->lang('160 caractères au plus : au-delà, les moteurs coupent la description.');
+					}
+				}
+			];
+		}
+
+		$regles['image'] = [
+			'label'  => $this->lang('Image de partage'),
+			'value'  => nf_seo_reglage('image'),
+			'type'   => 'file',
+			'upload' => 'seo',
+			'info'   => $this->lang(' d\'image (1 200 × 630 px conseillés, 600 px de large au moins, %d Mo au plus)', file_upload_max_size() / 1024 / 1024),
+			'check'  => function($filename, $ext){
+				if (!in_array($ext, ['jpeg', 'jpg', 'png', 'webp']))
+				{
+					return $this->lang('Une image JPEG, PNG ou WebP');
+				}
+
+				[$largeur] = getimagesize($filename) ?: [0];
+
+				if ($largeur < 600)
+				{
+					return $this->lang('L\'image doit faire au moins %dpx de large', 600);
+				}
+			}
+		];
+
+		foreach (['google' => ['Google Search Console', 'https://search.google.com/search-console'], 'bing' => ['Bing Webmaster Tools', 'https://www.bing.com/webmasters']] as $outil => [$nom, $adresse])
+		{
+			$regles[$outil] = [
+				'label'       => '<a href="'.$adresse.'" target="_blank" rel="noopener">'.$nom.'</a>',
+				'value'       => nf_seo_reglage($outil),
+				'description' => $this->lang('Le code de vérification par balise HTML : le code seul, ou la balise entière que l’outil fait copier.'),
+				'check'       => function($code){
+					if (trim((string) $code) !== '' && nf_seo_code_verification((string) $code) === '')
+					{
+						return $this->lang('Ce code est invalide');
+					}
+				}
+			];
+		}
+
+		$this	->form()
+				->add_rules($regles)
+				->add_submit($this->lang('Valider'))
+				->display_required(FALSE);
+
+		if ($this->form()->is_valid($post))
+		{
+			foreach ($post as $var => $value)
+			{
+				$valeur = in_array($var, ['google', 'bing'], TRUE) ? nf_seo_code_verification((string) $value) : trim((string) $value);
+				$this->config('nf_seo_'.$var, $valeur);
+			}
+
+			$this->_audit('seo');
+			notify($this->lang('Référencement sauvegardé avec succès'));
+
+			refresh();
+		}
+
+		return '<div class="settings-section-back"><a href="'.url('admin/settings').'" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> '.$this->lang('Tous les paramètres').'</a></div>'
+			.'<div class="settings-section-card">'
+			.'<div class="settings-section-header">'
+			.'<div class="settings-section-icon"><i class="fas fa-magnifying-glass-chart"></i></div>'
+			.'<div class="settings-section-meta"><div class="settings-section-title">'.$this->lang('Référencement').'</div>'
+			.'<div class="settings-section-subtitle">'.$this->lang('Le plan du site, les liens entre langues et les données structurées se font tout seuls ; ici, ce que le site dit de lui-même.').'</div></div>'
+			.'</div>'
+			.'<div class="settings-section-body">'.$this->form()->display().'</div>'
 			.'</div>';
 	}
 

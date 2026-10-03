@@ -1089,7 +1089,10 @@ class Form extends Library
 
 	private function _display_textarea($var, $options, $post, $editor = FALSE)
 	{
-		return '<textarea id="form_'.$this->token().'_'.$var.'" class="form-control'.($editor ? ' editor' : '').'" rows="10" name="'.$this->token().'['.$var.']">'.self::_attr($this->_display_value($var, $options)).'</textarea>';
+		// `rows` : la hauteur, dix lignes par défaut. Une description de 160 caractères en demande trois.
+		$lignes = max(2, (int) ($options['rows'] ?? 10));
+
+		return '<textarea id="form_'.$this->token().'_'.$var.'" class="form-control'.($editor ? ' editor' : '').'" rows="'.$lignes.'" name="'.$this->token().'['.$var.']">'.self::_attr($this->_display_value($var, $options)).'</textarea>';
 	}
 
 	private function _display_editor($var, $options, $post)

@@ -32,6 +32,7 @@ require_once __DIR__ . '/../neofrag/helpers/file.php';
 require_once __DIR__ . '/../neofrag/helpers/assets.php';
 require_once __DIR__ . '/../neofrag/helpers/color.php';
 require_once __DIR__ . '/../neofrag/helpers/sanitize.php';
+require_once __DIR__ . '/../neofrag/helpers/seo.php';
 
 // Socle des tests d'intégration (DB). Chargé ici car PHPUnit n'auto-include que
 // les fichiers *Test.php ; la classe de base ne l'est pas. Inoffensif pour la suite unit.

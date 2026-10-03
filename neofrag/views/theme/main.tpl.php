@@ -47,76 +47,145 @@ if ($nf_police = police_du_site()):
 <?php endif ?>
 <?php
 /*
- * `hreflang` : n'annoncer que des adresses qui répondent.
+ * Le référencement (2026-10-03) : ce que les moteurs lisent ici, ils le croient. Les calculs
+ * vivent dans helpers/seo.php ; `tools/check-seo.php` relit le résultat sur les pages servies.
  *
- * Cette boucle émettait une déclaration par langue ACTIVE du site, en échangeant le seul préfixe. Sur
- * un contenu rédigé dans une seule langue, cinq d'entre elles menaient à un 404 — et ce sont les
- * moteurs de recherche qui les suivent. Quand le module a dit dans quelles langues son contenu
- * existe (cf. `Model::langue_du_contenu()`), on s'y tient. Les pages qui ne déclarent rien — accueil,
- * forum, espace membre — sont réellement disponibles partout : elles gardent le comportement d'avant.
+ *   - toutes les adresses sont COMPLÈTES, et construites sur l'origine du site (config/url.php) —
+ *     jamais sur l'en-tête `Host` de la requête, que n'importe qui peut forger ;
+ *   - l'accueil est la racine de sa langue (`/fr`), jamais `/fr/index` : les deux répondent ;
+ *   - `canonical` désigne la langue réellement SERVIE : un contenu rédigé dans une seule langue, servi
+ *     dans les cinq autres avec un bandeau, rendrait sinon six pages identiques ;
+ *   - `hreflang` n'annonce que des adresses qui répondent : quand le module a dit dans quelles langues
+ *     son contenu existe (`Model::langue_du_contenu()`), on s'y tient. `x-default` — l'adresse sans
+ *     langue, que le site redirige vers celle du visiteur — n'accompagne que les pages présentes partout.
  */
+$nf_origin       = site_origin();
+$nf_chemin       = nf_chemin_public();
 $nf_langues_page = (array) ($this->output->data->get('module', 'langues_du_contenu') ?: []);
+$nf_langue_page  = (string) ($this->output->data->get('module', 'langue_servie') ?: $this->config->lang->info()->name);
+$nf_canonical    = nf_seo_adresse($nf_origin, $this->url->base, $nf_langue_page, $nf_chemin);
+$nf_accueil      = $nf_chemin === '';
 ?>
+<?php if (count($this->config->langs) > 1): ?>
 <?php foreach ($this->config->langs as $lang): ?>
 <?php if (!$nf_langues_page || in_array($lang->info()->name, $nf_langues_page, TRUE)): ?>
-<link rel="alternate" href="<?php echo $this->url->base.implode('/', array_merge([$lang->info()->name], $this->url->segments)).$this->url->query ?>" hreflang="<?php echo $lang->info()->name ?>">
+<link rel="alternate" hreflang="<?php echo $lang->info()->name ?>" href="<?php echo htmlspecialchars(nf_seo_adresse($nf_origin, $this->url->base, $lang->info()->name, $nf_chemin), ENT_QUOTES) ?>">
 <?php endif ?>
 <?php endforeach ?>
+<?php if (!$nf_langues_page): ?>
+<link rel="alternate" hreflang="x-default" href="<?php echo htmlspecialchars(nf_seo_adresse($nf_origin, $this->url->base, '', $nf_chemin), ENT_QUOTES) ?>">
+<?php endif ?>
+<?php endif ?>
 <?php
-// SEO : description, canonical, Open Graph et Twitter Card. URLs absolues (les crawlers les exigent).
-$nf_origin    = ($this->url->https ? 'https' : 'http').'://'.$_SERVER['HTTP_HOST'];
 /*
- * `canonical` : l'adresse de RÉFÉRENCE, qui n'est pas toujours celle qu'on sert.
+ * La description : celle de la page, sinon celle du site dans la langue de la page (cf. output.php),
+ * réduite à une ligne de texte de 160 caractères au plus — au-delà, les moteurs la coupent.
  *
- * Quand la langue demandée n'a pas de version et qu'on sert l'original à la place, les six adresses
- * rendent le même texte. Sans ce renvoi, un moteur les indexe toutes et les traite comme du contenu
- * dupliqué, ce qui dessert la vraie page. Le canonical désigne donc la langue réellement servie.
+ * L'image de partage : celle de la page (la couverture d'un billet), sinon celle du référencement
+ * (1 200 × 630, faite pour les aperçus), sinon le logo, sinon le favicon. Seule une image de partage
+ * mérite la grande carte (`summary_large_image`) : un logo carré y serait recadré.
  */
-$nf_langue_page = (string) ($this->output->data->get('module', 'langue_servie') ?: $this->config->lang->info()->name);
-$nf_canonical = $nf_origin.$this->url->base.implode('/', array_merge([$nf_langue_page], $this->url->segments));
-$nf_seo_desc  = trim((string)($description ?? $this->config->nf_description));
-/*
- * Une page de contenu peut fournir son image de partage, son type et ses données structurées
- * (`module.og_image`, `module.og_type`, `module.jsonld`) : un billet du Blog partagé montre sa
- * couverture, et non le logo du site (2026-10-01). À défaut, le logo puis le favicon.
- */
+$nf_seo_desc  = nf_seo_description((string) ($description ?? ''));
 $nf_og_type   = (string) ($this->output->data->get('module', 'og_type') ?: 'website');
-$nf_jsonld    = $this->output->data->get('module', 'jsonld');
 $nf_og_image  = (string) ($this->output->data->get('module', 'og_image') ?: '');
-if ($nf_og_image) {
-	// Fournie par la page.
-} else if ($this->config->nf_logo && ($nf_img = NeoFrag()->model2('file', $this->config->nf_logo)->path())) {
-	$nf_og_image = $nf_img;
-} else if ($this->config->nf_favicon && ($nf_fav = NeoFrag()->model2('file', $this->config->nf_favicon)->path())) {
-	$nf_og_image = $nf_fav;
+$nf_og_grande = $nf_og_image !== '';
+$nf_fichier   = static fn ($id): string => $id ? (string) NeoFrag()->model2('file', $id)->path() : '';
+
+if ($nf_og_image === '' && ($nf_og_image = $nf_fichier(nf_seo_reglage('image'))) !== '')
+{
+	$nf_og_grande = TRUE;
 }
-if ($nf_og_image && strpos($nf_og_image, '://') === FALSE) {
-	$nf_og_image = $nf_origin.'/'.ltrim($nf_og_image, '/');
+else if ($nf_og_image === '')
+{
+	$nf_og_image = $nf_fichier($this->config->nf_logo) ?: $nf_fichier($this->config->nf_favicon);
 }
+
+if ($nf_og_image !== '' && strpos($nf_og_image, '://') === FALSE)
+{
+	$nf_og_image = rtrim($nf_origin, '/').'/'.ltrim($nf_og_image, '/');
+}
+
+/*
+ * Les données structurées. Celles de la page (un billet, une fiche de logiciel), et sur l'accueil celles
+ * du site : `WebSite`, avec sa recherche si le module est installé, et `Organization`, son logo et ses
+ * réseaux (Paramètres → Réseaux sociaux) — ce qui relie le site à ses comptes chez les moteurs.
+ */
+$nf_jsonld = $this->output->data->get('module', 'jsonld');
+$nf_jsonld = is_array($nf_jsonld) ? $nf_jsonld : NULL;
+
+if ($nf_accueil)
+{
+	$nf_reseaux = [];
+
+	foreach (['facebook', 'twitter', 'instagram', 'threads', 'bluesky', 'mastodon', 'tiktok', 'youtube', 'twitch', 'discord', 'github', 'steam', 'linkedin'] as $nf_reseau)
+	{
+		if (isset($this->config->{'nf_social_'.$nf_reseau}) && ($nf_adresse = trim(utf8_html_entity_decode((string) $this->config->{'nf_social_'.$nf_reseau}))) !== '')
+		{
+			$nf_reseaux[] = $nf_adresse;
+		}
+	}
+
+	$nf_logo   = $nf_fichier($this->config->nf_logo);
+	$nf_jsonld = nf_seo_jsonld_fusion(
+		nf_seo_jsonld_site(
+			$nf_origin,
+			(string) $this->config->nf_name,
+			$nf_canonical,
+			$nf_langue_page,
+			$nf_logo !== '' ? rtrim($nf_origin, '/').'/'.ltrim($nf_logo, '/') : '',
+			$nf_reseaux,
+			$this->module('search') ? nf_seo_adresse($nf_origin, $this->url->base, $nf_langue_page, 'search').'?q={search_term_string}' : ''
+		),
+		$nf_jsonld
+	);
+}
+
+/*
+ * `noindex` : une page qui n'a rien à faire dans un moteur — les résultats d'une recherche, la connexion,
+ * l'inscription — le déclare (`module.robots`). Elle reste suivie : ses liens mènent à du vrai contenu.
+ * L'administration ne s'indexe jamais, et ne se suit pas.
+ */
+$nf_robots = $this->url->admin ? 'noindex, nofollow' : (string) ($this->output->data->get('module', 'robots') ?: '');
 ?>
-<?php if ($nf_seo_desc): ?>
+<?php if ($nf_seo_desc !== ''): ?>
 <meta name="description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES) ?>">
 <?php endif ?>
+<?php if ($nf_robots !== ''): ?>
+<meta name="robots" content="<?php echo htmlspecialchars($nf_robots, ENT_QUOTES) ?>">
+<?php endif ?>
 <link rel="canonical" href="<?php echo htmlspecialchars($nf_canonical, ENT_QUOTES) ?>">
-<meta property="og:type" content="<?php echo htmlspecialchars($nf_og_type, ENT_QUOTES) ?>">
-<?php if (is_array($nf_jsonld) && $nf_jsonld): ?>
+<?php if (($nf_code = nf_seo_code_verification(nf_seo_reglage('google'))) !== ''): ?>
+<meta name="google-site-verification" content="<?php echo $nf_code ?>">
+<?php endif ?>
+<?php if (($nf_code = nf_seo_code_verification(nf_seo_reglage('bing'))) !== ''): ?>
+<meta name="msvalidate.01" content="<?php echo $nf_code ?>">
+<?php endif ?>
+<?php if ($nf_jsonld): ?>
 <script type="application/ld+json"><?php echo json_encode($nf_jsonld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
 <?php endif ?>
-<meta property="og:site_name" content="<?php echo htmlspecialchars((string)$this->config->nf_name, ENT_QUOTES) ?>">
+<meta property="og:type" content="<?php echo htmlspecialchars($nf_og_type, ENT_QUOTES) ?>">
+<meta property="og:site_name" content="<?php echo htmlspecialchars((string)$this->config->nf_name, ENT_QUOTES, 'UTF-8', FALSE) ?>">
 <meta property="og:title" content="<?php echo htmlspecialchars((string)$title, ENT_QUOTES, 'UTF-8', FALSE) ?>">
-<?php if ($nf_seo_desc): ?>
-<meta property="og:description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES, 'UTF-8', FALSE) ?>">
+<?php if ($nf_seo_desc !== ''): ?>
+<meta property="og:description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES) ?>">
 <?php endif ?>
 <meta property="og:url" content="<?php echo htmlspecialchars($nf_canonical, ENT_QUOTES) ?>">
-<?php if ($nf_og_image): ?>
+<meta property="og:locale" content="<?php echo htmlspecialchars(nf_seo_locale($this->config->lang->locale()), ENT_QUOTES) ?>">
+<?php foreach ($this->config->langs as $lang): ?>
+<?php if ($lang->info()->name !== $this->config->lang->info()->name && (!$nf_langues_page || in_array($lang->info()->name, $nf_langues_page, TRUE))): ?>
+<meta property="og:locale:alternate" content="<?php echo htmlspecialchars(nf_seo_locale($lang->locale()), ENT_QUOTES) ?>">
+<?php endif ?>
+<?php endforeach ?>
+<?php if ($nf_og_image !== ''): ?>
 <meta property="og:image" content="<?php echo htmlspecialchars($nf_og_image, ENT_QUOTES) ?>">
+<meta property="og:image:alt" content="<?php echo htmlspecialchars((string)$this->config->nf_name, ENT_QUOTES, 'UTF-8', FALSE) ?>">
 <?php endif ?>
-<meta name="twitter:card" content="<?php echo $nf_og_image ? 'summary_large_image' : 'summary' ?>">
+<meta name="twitter:card" content="<?php echo $nf_og_grande ? 'summary_large_image' : 'summary' ?>">
 <meta name="twitter:title" content="<?php echo htmlspecialchars((string)$title, ENT_QUOTES, 'UTF-8', FALSE) ?>">
-<?php if ($nf_seo_desc): ?>
-<meta name="twitter:description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES, 'UTF-8', FALSE) ?>">
+<?php if ($nf_seo_desc !== ''): ?>
+<meta name="twitter:description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES) ?>">
 <?php endif ?>
-<?php if ($nf_og_image): ?>
+<?php if ($nf_og_image !== ''): ?>
 <meta name="twitter:image" content="<?php echo htmlspecialchars($nf_og_image, ENT_QUOTES) ?>">
 <?php endif ?>
 <?php

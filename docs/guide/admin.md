@@ -118,8 +118,32 @@ aux groupes depuis *Système*.
 ## Réglages essentiels
 
 Dans **Paramètres** : titre et description du site, favicon, email de contact, page
-d'accueil, fuseau horaire, gestion des inscriptions, sécurité anti-bots (captcha), maintenance,
-copyright, réseaux sociaux. Ces réglages alimentent les thèmes et les widgets.
+d'accueil, fuseau horaire, référencement, gestion des inscriptions, sécurité anti-bots (captcha),
+maintenance, copyright, réseaux sociaux. Ces réglages alimentent les thèmes et les widgets.
+
+### Le référencement
+
+Ce que lisent les moteurs de recherche se fait **tout seul** :
+
+- un **plan du site** par langue, réuni à la racine (`/sitemap.xml`) et annoncé par `robots.txt` —
+  chaque module y donne ses pages publiques (le blog, le forum et ses sujets, le wiki, la galerie…),
+  seulement celles qu'un visiteur peut lire ;
+- dans chaque page, son **adresse de référence** (canonique), les **liens vers ses autres langues**, et
+  ce que montrent les aperçus de partage (titre, description, image) ;
+- sur l'accueil, des **données structurées** qui décrivent le site, son logo et ses réseaux sociaux
+  (*Paramètres → Réseaux sociaux*) ;
+- la recherche, les profils et l'annuaire des membres ne sont **pas** indexés.
+
+Ce que tu remplis, dans **Paramètres → Référencement** :
+
+- pour chaque langue, une **accroche** (le titre de l'accueil devient « Nom du site — accroche », 60
+  caractères au plus) et une **description** (ce que les moteurs affichent sous le titre, 160 caractères
+  au plus ; vide, celle des Préférences générales sert) ;
+- une **image de partage** de 1 200 × 630 pixels, montrée quand on colle un lien du site sur Discord, X
+  ou Facebook — à défaut, le logo ;
+- le code de vérification de **Google Search Console** et de **Bing Webmaster Tools** : crée la
+  propriété du site dans l'outil, choisis la vérification par **balise HTML**, colle la balise (ou le
+  code seul), puis soumets-y le plan du site, `https://ton-site/sitemap.xml`.
 
 ### Le captcha
 

@@ -95,7 +95,7 @@ $is_admin = $logged && $this->access->effective_admin();
 				<?php echo nf_selecteur_theme() ?>
 				<?php if (count($this->config->langs) > 1): $cur = $this->config->lang->info(); ?>
 				<form method="post" action="<?php echo url('ajax/settings/languages') ?>" class="fg-lang dropup">
-					<input type="hidden" name="url" value="<?php echo htmlspecialchars($this->url->base.implode('/', array_merge([$cur->name], $this->url->segments)).$this->url->query) ?>" />
+					<input type="hidden" name="url" value="<?php echo htmlspecialchars($this->url->base.trim($cur->name.'/'.nf_chemin_public(), '/').$this->url->query) ?>" />
 					<button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $cur->icon ?> <?php echo strtoupper($cur->name) ?></button>
 					<div class="dropdown-menu dropdown-menu-end">
 						<?php foreach ($this->config->langs as $l): $i = $l->info(); ?>

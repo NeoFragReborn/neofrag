@@ -77,6 +77,7 @@ const NF_PORTS = [
     'check-mise-en-page'    => 8110,
     'check-mise-en-page-vierge' => 8111,
     'check-mise-a-jour'     => 8112,
+    'check-seo'             => 8113,
 ];
 
 /** Le nom de l'outil qui s'exécute, tel qu'il apparaît dans ses verdicts : `check-liens`. */
