@@ -13,6 +13,9 @@ abstract class Module_Checker extends Module
 {
 	private $_extension_allowed;
 
+	/** Le checker a-t-il déclaré l'extension qu'il sert (`extension('xml')`…) ? */
+	private bool $_extension_declaree = FALSE;
+
 	public function __construct($caller)
 	{
 		parent::__construct($caller);
@@ -22,6 +25,8 @@ abstract class Module_Checker extends Module
 
 	public function extension($extension)
 	{
+		$this->_extension_declaree = TRUE;
+
 		if ($this->url->extension != $extension)
 		{
 			$this->error();
@@ -55,6 +60,18 @@ abstract class Module_Checker extends Module
 	public function refus_ordinaire(): bool
 	{
 		return FALSE;
+	}
+
+	/**
+	 * L'adresse porte une extension alors que cette page n'en sert AUCUNE : c'est une adresse qui
+	 * n'existe pas, un 404 ordinaire. Ce sont les robots qui sondent (`newsletter/.env`), ou qui tapent
+	 * `/index.php` : le journal du site officiel en portait une ligne d'anomalie à chaque passage
+	 * (relevé le 2026-10-04). Une page qui sert une extension (`sitemap.xml`) et en reçoit une autre
+	 * reste, elle, une anomalie journalisée : c'est peut-être un lien faux du produit.
+	 */
+	public function extension_jamais_servie(): bool
+	{
+		return !$this->_extension_declaree && (bool) $this->url->extension;
 	}
 
 	/**

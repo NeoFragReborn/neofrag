@@ -73,8 +73,9 @@ Discord interdit à un bot de donner un rôle placé plus haut que le sien.
 
 ## 3. Installer le bot sur sa machine
 
-Le bot se télécharge en archive déjà compilée, `neofrag-reborn-bot-X.Y.Z.tar.gz`. Il a ses propres
-numéros de version, indépendants de ceux du site.
+Le bot se télécharge en archive déjà compilée, `neofrag-reborn-bot-X.Y.Z.tar.gz`, sur la
+[page des versions](https://github.com/NeoFragReborn/bot-discord/releases/latest) de son dépôt. Il a ses propres numéros de version,
+indépendants de ceux du site.
 
 ```bash
 tar xzf neofrag-reborn-bot-X.Y.Z.tar.gz && cd bot
@@ -254,4 +255,5 @@ réglage *Durée maximale* (90 jours par défaut, un an au plus).
 
 Le bot s'étend par **fonctionnalités**, chacune dans un dossier, en TypeScript. La marche à suivre — le
 contrat d'une fonctionnalité, ses réglages, ses commandes, ses textes traduits, ses tests — est dans le
-guide du contributeur du bot, `CONTRIBUTING.md`, à la racine de son code.
+guide du contributeur du bot, `CONTRIBUTING.md`, à la racine de son code :
+[NeoFragReborn/bot-discord](https://github.com/NeoFragReborn/bot-discord).

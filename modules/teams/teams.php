@@ -49,7 +49,10 @@ class Teams extends Module
 										->value([$this->config->teams_display_matches ? 'on' : NULL])
 							)
 							->success(function($data){
-								$this->config('teams_display_matches', $data['teams_display_matches']);
+								// Une case à cocher rend un TABLEAU (les valeurs cochées) : enregistré tel quel, il
+								// devenait le texte « Array », toujours vrai — l'option ne se décochait plus
+								// (trouvé par check-reglages, 2026-10-04).
+								$this->config('teams_display_matches', in_array('on', (array) $data['teams_display_matches'], TRUE));
 								notify($this->lang('Configuration modifiée'));
 								refresh();
 							});

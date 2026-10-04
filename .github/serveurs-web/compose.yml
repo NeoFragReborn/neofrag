@@ -1,0 +1,68 @@
+# Les épreuves des serveurs web (`installation.yml`, job « serveur-web ») : le site du dépôt servi par
+# Apache, nginx ou Caddy — un profil chacun —, avec les configurations LIVRÉES (`.htaccess`,
+# `nginx.conf`, `Caddyfile`), adaptées seulement là où elles disent « à adapter » (`adapter.sh`).
+#
+#   RACINE=$PWD CONF=/tmp/conf PHP=8.5 docker compose -f .github/serveurs-web/compose.yml --profile nginx up -d --wait
+#
+# Le site est monté à /var/www/neofrag, le chemin des exemples livrés.
+services:
+  db:
+    image: mariadb:11.8
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: neofrag
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  # PHP-FPM, derrière nginx ou Caddy.
+  php:
+    profiles: [nginx, caddy]
+    build:
+      context: .
+      args:
+        PHP: ${PHP:-8.5}
+        VARIANTE: fpm
+    # Les outils s'y lancent (docker compose exec) : depuis la racine du site.
+    working_dir: /var/www/neofrag
+    volumes:
+      - ${RACINE}:/var/www/neofrag
+    depends_on:
+      db:
+        condition: service_healthy
+
+  apache:
+    profiles: [apache]
+    build:
+      context: .
+      args:
+        PHP: ${PHP:-8.5}
+        VARIANTE: apache
+    # Les outils s'y lancent (docker compose exec) : depuis la racine du site.
+    working_dir: /var/www/neofrag
+    volumes:
+      - ${RACINE}:/var/www/neofrag
+    depends_on:
+      db:
+        condition: service_healthy
+
+  nginx:
+    profiles: [nginx]
+    image: nginx:stable
+    volumes:
+      - ${RACINE}:/var/www/neofrag:ro
+      - ${CONF}/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ${CONF}/neofrag-fastcgi.conf:/etc/nginx/snippets/neofrag-fastcgi.conf:ro
+    depends_on:
+      - php
+
+  caddy:
+    profiles: [caddy]
+    image: caddy:2
+    volumes:
+      - ${RACINE}:/var/www/neofrag:ro
+      - ${CONF}/Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - php

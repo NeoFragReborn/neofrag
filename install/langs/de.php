@@ -206,4 +206,5 @@ return [
 	'c54fdfde' => 'Passwort-Hashing (%s)',
 	'23bcdfc3' => 'verfügbar',
 	'c2f31600' => 'fehlt in diesem PHP',
+	'3e30f3e2' => 'Diese Website hat bereits einen Administrator: Die Installation ist abgeschlossen.',
 ];

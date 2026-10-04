@@ -145,5 +145,28 @@ final class InstallerTest extends TestCase
 	public function testIsAlreadyInstalledFalseWithoutConfig(): void
 	{
 		$this->assertFalse(Installer::is_already_installed($this->tmp), 'Pas de config/db.php → non installé');
+		$this->assertSame('vierge', Installer::etat_installation($this->tmp));
+	}
+
+	/**
+	 * Une configuration dont la base ne répond pas n'est PAS une installation à reprendre : l'assistant,
+	 * qui sait réécrire config/db.php, ne doit pas s'ouvrir (Installer::etat_installation()).
+	 */
+	public function testConfigWithUnreachableDatabaseIsNotResumable(): void
+	{
+		Installer::write_config($this->tmp, ['hostname' => '127.0.0.1', 'username' => 'x', 'password' => 'y', 'database' => 'nf', 'port' => 1]);
+
+		$journal = ini_set('error_log', $this->tmp.'/php.log');
+
+		try
+		{
+			$this->assertSame('injoignable', Installer::etat_installation($this->tmp));
+			$this->assertFalse(Installer::is_already_installed($this->tmp));
+			$this->assertStringContainsString('[install] config/db.php présent, mais la base ne répond pas', (string) @file_get_contents($this->tmp.'/php.log'));
+		}
+		finally
+		{
+			ini_set('error_log', (string) $journal);
+		}
 	}
 }

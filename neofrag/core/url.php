@@ -102,6 +102,15 @@ class Url extends Core
 			exit;
 		}
 
+		// `/index.php` est l'accueil sous un autre nom : on y renvoie, une fois pour toutes. Il partait
+		// au module de la page d'accueil comme une adresse à extension, répondait 404 et écrivait une
+		// ligne d'anomalie au journal à chaque robot qui le tape (relevé le 2026-10-04).
+		if ($request === 'index.php' && PHP_SAPI !== 'cli')
+		{
+			header('Location: '.$this->base.(isset($url['query']) ? '?'.$url['query'] : ''), TRUE, 301);
+			exit;
+		}
+
 		$segments = function($request) use ($config){
 			$this->_const['request']   = $request;
 			$this->_const['extension'] = extension($this->request);

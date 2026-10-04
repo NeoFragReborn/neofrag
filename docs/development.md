@@ -11,7 +11,7 @@ Toute machine avec **PHP 8.2 à 8.5** (les extensions sont listées dans le
 
 ```bash
 composer install
-php install/cli.php --db-name=neofrag --db-user=… --db-pass=… --admin-user=admin \
+php install/cli.php --db-name=neofrag --create-db --db-user=… --db-pass=… --admin-user=admin \
     --admin-email=admin@exemple.test --admin-pass-env=NF_ADMIN_PASS --site-url=http://127.0.0.1:8080 --yes
 php -S 127.0.0.1:8080 tools/router-builtin.php      # serveur PHP intégré, routeur fourni
 ```
@@ -104,6 +104,10 @@ bibliothèque commune des outils sont dans [tools/README.md](../tools/README.md)
 | Une requête qui échoue à l'exécution, une date rejetée par MariaDB en mode strict | PHPUnit **contre une base** — le job `e2e-smoke`, après `ci-install` |
 | Un 500 sur un POST, un fatal de rendu, un 503 de maintenance | `check-smoke`, contre un site qui tourne |
 | Un profil d'installation qui ne démarre pas sans tel module | `check-install-profiles`, qui installe pour de vrai |
+| Un écran de l'assistant d'installation qui casse, un refus qui ne refuse pas, un compte créé qui ne se connecte pas | `check-assistant`, qui joue l'assistant comme un visiteur, profil par profil |
+| Un écran de réglages d'addon qui plante à l'ouverture ou une fois enregistré | `check-reglages --enregistrer`, qui ouvre, enregistre tel quel et rouvre chacun |
+| Une configuration de serveur livrée qui laisse passer un fichier sensible, exécute un script interne ou ne démarre pas | `check-serveur-web`, sur un vrai Apache, nginx ou Caddy (`installation.yml`) |
+| Une commande du README ou du guide du contributeur qui échoue chez un nouveau venu | `check-nouveau-venu`, qui les joue telles quelles sur une machine vierge (`nouveau-venu.yml`) |
 | Une erreur survenue APRÈS l'envoi des en-têtes | `check-journal`, le seul qui lise le journal PHP |
 | Un script qui plante au chargement, une violation CSP | `check-js-console`, dans un vrai navigateur |
 | Un lien mort, un débordement, un contraste insuffisant, un retour absent | `check-liens`, `check-responsive`, `check-contraste`, `check-admin-back` |
@@ -160,19 +164,26 @@ portent la même clé), puis depuis le dictionnaire, dont il refuse toute traduc
 
 `.github/workflows/ci.yml`, à chaque push sur `main` et à chaque PR — sauf quand l'envoi ne touche que
 la documentation, que `docs.yml` vérifie en une minute —, cinq jobs : **statique** (`php -l`, les
-gardes légères et tous les contrôles statiques — `check-tools` le vérifie —, sauf `check-marketplace`,
-dont les archives ne sont pas versionnées ; puis PHPStan, `check-wiki-docs`, `composer audit`, les
+gardes légères et tous les contrôles statiques — `check-tools` le vérifie — ; puis PHPStan, `check-wiki-docs`, `composer audit`, les
 épreuves de `tests/Browser/` et le bot Discord : compilation TypeScript, tests, `npm audit`),
 **test** (PHPUnit sur PHP 8.2, 8.3, 8.4, 8.5), **db-smoke** (schéma, migrations,
 `check-install-profiles`), **interface** (`check-admin-back`, `check-js-console`, `check-liens`,
 `check-journal`, puis un échantillon de `check-mise-en-page` sur une installation montée par
 `ci-install`) et **e2e-smoke** (installation complète sous Apache, `check-smoke`,
-`check-widget-contract`, puis **PHPUnit complet contre la base installée**, sans aucun test sauté).
+`check-widget-contract`, `check-reglages`, puis **PHPUnit complet contre la base installée**, sans
+aucun test sauté).
 Dans **statique**, chaque contrôle joue même si un précédent a échoué : un seul passage donne tous
 les verdicts.
 
 Un envoi joue la batterie **rapide** : tout sauf **interface**, et **test** sur PHP 8.2 seulement.
 La batterie **entière** — **interface** et les quatre PHP — joue avant chaque version.
+
+Deux workflows jouent chaque semaine sur un dépôt public, et à la main ailleurs : `compatibilite.yml`
+(PHP 8.2 et 8.5 face à chaque version de MariaDB et de MySQL annoncée), `installation.yml` (l'assistant
+d'installation joué de bout en bout par `check-assistant`, sous PHP 8.2 et 8.5, paquet public et paquet de
+démonstration ; les réglages de chaque addon par `check-reglages` ; et Apache, nginx et Caddy, avec les
+configurations livrées, par `check-assistant`, `check-serveur-web` et `check-smoke`) et `nouveau-venu.yml`
+(le README et le guide du contributeur joués à la lettre par `check-nouveau-venu`).
 
 `composer.json` fixe la **plateforme** à PHP 8.2.0 : le verrou reste installable sur toute version que
 le produit supporte, quelle que soit celle du poste qui l'a produit. Sans cela, un `composer update`

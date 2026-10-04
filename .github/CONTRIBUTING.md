@@ -6,15 +6,20 @@ Merci de ton intérêt ! NeoFrag Reborn est la continuité communautaire de [Neo
 ## Démarrer
 
 Il faut PHP 8.2 à 8.5, avec les extensions que liste le [guide d'installation](../docs/guide/installation.md#prérequis),
-et MySQL ou MariaDB.
+Composer, Node.js 22 ou plus (pour ESLint), et MySQL ou MariaDB avec un compte qui peut créer des bases
+(celle du site, puis celle des tests). Le mot de passe de l'administrateur du site se lit dans une
+variable d'environnement, pour ne pas rester dans l'historique du terminal : `export NF_ADMIN_PASS=…`
+d'abord.
 
+<!-- nouveau-venu : ces deux blocs sont joués tels quels, sur une machine vierge, par tools/check-nouveau-venu.php -->
 ```bash
 git clone https://github.com/NeoFragReborn/neofrag.git
 git clone https://github.com/NeoFragReborn/extensions.git
 cd neofrag
 composer install
+npm ci                                             # ESLint, pour le contrôle du JavaScript
 php tools/assembler.php --extensions=../extensions   # les addons à la carte : le produit entier
-php install/cli.php --db-name=neofrag --db-user=… --db-pass=… --admin-user=admin \
+php install/cli.php --db-name=neofrag --create-db --db-user=… --db-pass=… --admin-user=admin \
     --admin-email=admin@exemple.test --admin-pass-env=NF_ADMIN_PASS --site-url=http://localhost:8080 --yes
 php -S 127.0.0.1:8080 tools/router-builtin.php     # ou Apache / nginx / Caddy
 ```
@@ -27,12 +32,15 @@ qui peut l'employer ; `php tools/ci-install.php` fait une installation complète
 
 Fais tourner ce que la CI rejouera (huit jobs, PHP 8.2 à 8.5) :
 
+<!-- nouveau-venu -->
 ```bash
+php tools/prepare-test-db.php           # une fois : la base des tests (neofrag_test) et config/db-test.php
 vendor/bin/phpunit --fail-on-skipped    # SANS base de test, les suites integration et headless se
                                         # sautent : --fail-on-skipped transforme ce silence en échec.
 composer stan                           # PHPStan — attrape les fatales au chargement ; baseline dans phpstan-baseline.neon
 composer stan:baseline                  # régénère la baseline (jamais à la main), puis on la compare à l'ancienne
 php tools/check-all.php                 # composer audit + tous les contrôles statiques
+php tools/seed-demo.php --sans-config-demo   # une fois : du contenu, que les épreuves en navigateur mesurent
 php tools/check-all.php --navigateur    # + ceux qui servent le site dans un vrai navigateur (Chromium requis)
 ```
 

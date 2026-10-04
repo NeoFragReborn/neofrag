@@ -20,7 +20,7 @@ declare(strict_types=1);
  * `install/`, `tools/`, `tests/` et `docs/` joignables), et le `Caddyfile` une ancienne copie de notre
  * configuration de production.
  *
- * Ce contrôle tient LA liste, ci-dessous, et vérifie que les trois configurations la refusent toute :
+ * Ce contrôle lit LA liste (`tools/lib/interdits.php`) et vérifie que les trois configurations la refusent toute :
  * les gardes des dossiers et le `.htaccess` racine pour Apache, la ligne `@interdit` du `Caddyfile`,
  * les blocs `deny all` de `nginx.conf` — et leur copie dans le guide de déploiement (`deploy-ftp.md`,
  * pour nginx sur Plesk), qui ne refusait que trois dossiers sur huit.
@@ -28,8 +28,8 @@ declare(strict_types=1);
  * Ce qu'il ne fait pas
  * --------------------
  * Il ne lance ni Apache, ni nginx, ni Caddy : il vérifie que les RÈGLES sont écrites, pas qu'un serveur
- * réel les applique. C'est une limite, et elle est réelle : un `AllowOverride None` chez un hébergeur
- * rend les `.htaccess` inopérants, quoi qu'ils contiennent.
+ * réel les applique — un `AllowOverride None` chez un hébergeur rend les `.htaccess` inopérants, quoi
+ * qu'ils contiennent. C'est `check-serveur-web` qui les éprouve, sur un vrai serveur.
  *
  * Usage
  * -----
@@ -38,39 +38,11 @@ declare(strict_types=1);
  */
 
 require __DIR__.'/lib/outil.php';
+require __DIR__.'/lib/interdits.php';
 
 [$o]     = nf_options(['verbeux' => FALSE]);
 $racine  = nf_racine();
 $verbeux = $o['verbeux'];
-
-/*
- * Les dossiers qui ne doivent JAMAIS être joignables en HTTP, et pourquoi.
- *
- * La raison compte autant que la règle : c'est elle qui permet de trancher, le jour où l'on se
- * demande si une garde peut sauter.
- */
-const DOSSIERS_INTERDITS = [
-    'config'  => 'identifiants de base, clé de chiffrement, sel des mots de passe, SMTP',
-    'backups' => 'archives complètes du site, base comprise',
-    'logs'    => 'journaux applicatifs : adresses, erreurs, parfois des données de membres',
-    'cache'   => 'dérivés internes, parfois issus de contenu réservé',
-    'install' => "l'installateur et ses schémas SQL (l'assistant s'affiche à la racine du site)",
-    'tools'   => 'migrations, sauvegardes, extraction de schéma — exécutables',
-    'tests'   => 'la suite de tests : décrit le fonctionnement interne',
-    'docs'    => 'la documentation de travail',
-    'upload'  => 'fichiers déposés par les membres : à servir, mais jamais à exécuter',
-];
-
-/** Les extensions refusées, quelle que soit leur place dans l'arborescence. */
-const EXTENSIONS_INTERDITES = ['sql', 'lock', 'scssc', 'map', 'dist', 'ini', 'sh', 'neon', 'md'];
-
-/*
- * Les fichiers refusés par leur NOM, faute de pouvoir l'être par leur extension : `.json` et `.js`
- * se servent légitimement partout ailleurs, et les exemples de configuration n'en ont pas. Aucun ne
- * porte de secret ; la raison est la même que pour `tools/` et `tests/` : rien de ce qui sert à
- * développer ou à configurer un serveur n'a de raison d'être servi.
- */
-const FICHIERS_INTERDITS = ['package.json', 'package-lock.json', 'eslint.config.js', 'playwright.config.js', 'Caddyfile', 'nginx.conf'];
 
 /** Un fichier `.htaccess` refuse-t-il tout accès ? */
 function refuse_tout(string $chemin): bool
@@ -98,7 +70,7 @@ $vu = static function (string $fichier, string $quoi) use ($verbeux): void {
 };
 
 // ── Apache : les gardes des dossiers ──────────────────────────────────────────
-foreach (DOSSIERS_INTERDITS as $dossier => $pourquoi)
+foreach (NF_DOSSIERS_INTERDITS as $dossier => $pourquoi)
 {
     $chemin = $racine.'/'.$dossier;
 
@@ -144,7 +116,7 @@ if ($contenu === '')
 }
 else
 {
-    foreach (EXTENSIONS_INTERDITES as $extension)
+    foreach (NF_EXTENSIONS_INTERDITES as $extension)
     {
         // On cherche l'extension dans un `<FilesMatch>` qui refuse. Le motif reste large : il
         // s'agit de repérer un OUBLI, pas de valider une expression régulière d'Apache.
@@ -158,7 +130,7 @@ else
         }
     }
 
-    foreach (FICHIERS_INTERDITS as $fichier)
+    foreach (NF_FICHIERS_INTERDITS as $fichier)
     {
         // Un `<Files>` ou un `<FilesMatch>` qui nomme le fichier : là encore, on repère un OUBLI.
         if (!preg_match('/<Files(?:Match)?[^>]*'.preg_quote(str_replace('.', '\\.', $fichier), '/').'/i', $contenu))
@@ -183,9 +155,9 @@ if (!$interdit)
 else
 {
     $attendus = array_merge(
-        array_map(static fn (string $d): string => '/'.$d.'/*', array_keys(array_diff_key(DOSSIERS_INTERDITS, ['upload' => TRUE]))),
-        array_map(static fn (string $e): string => '*.'.$e, EXTENSIONS_INTERDITES),
-        array_map(static fn (string $f): string => '/'.$f, FICHIERS_INTERDITS)
+        array_map(static fn (string $d): string => '/'.$d.'/*', array_keys(array_diff_key(NF_DOSSIERS_INTERDITS, ['upload' => TRUE]))),
+        array_map(static fn (string $e): string => '*.'.$e, NF_EXTENSIONS_INTERDITES),
+        array_map(static fn (string $f): string => '/'.$f, NF_FICHIERS_INTERDITS)
     );
 
     foreach ($attendus as $motif)
@@ -236,17 +208,17 @@ foreach (['nginx.conf', 'docs/deploy-ftp.md'] as $fichier)
     $extensions = nginx_refuse($contenu, '/location\s+~\*\s+\\\\\.\(([^)]+)\)\$\s*\{\s*deny\s+all;/');
     $fichiers   = nginx_refuse($contenu, '/location\s+~\s+\^\/\(([^)]+)\)\$\s*\{\s*deny\s+all;/');
 
-    foreach (array_keys(array_diff_key(DOSSIERS_INTERDITS, ['upload' => TRUE])) as $dossier)
+    foreach (array_keys(array_diff_key(NF_DOSSIERS_INTERDITS, ['upload' => TRUE])) as $dossier)
     {
-        in_array($dossier, $dossiers, TRUE) ? $vu($fichier, $dossier.'/ refusé') : $manques[] = [$fichier, "ne refuse pas `/{$dossier}/`", DOSSIERS_INTERDITS[$dossier]];
+        in_array($dossier, $dossiers, TRUE) ? $vu($fichier, $dossier.'/ refusé') : $manques[] = [$fichier, "ne refuse pas `/{$dossier}/`", NF_DOSSIERS_INTERDITS[$dossier]];
     }
 
-    foreach (EXTENSIONS_INTERDITES as $extension)
+    foreach (NF_EXTENSIONS_INTERDITES as $extension)
     {
         in_array($extension, $extensions, TRUE) ? $vu($fichier, '.'.$extension.' refusé') : $manques[] = [$fichier, "ne refuse pas les fichiers `.{$extension}`", 'refusé par les autres configurations'];
     }
 
-    foreach (FICHIERS_INTERDITS as $interdit)
+    foreach (NF_FICHIERS_INTERDITS as $interdit)
     {
         in_array($interdit, $fichiers, TRUE) ? $vu($fichier, $interdit.' refusé') : $manques[] = [$fichier, "ne refuse pas `{$interdit}`", 'refusé par les autres configurations'];
     }
@@ -254,7 +226,7 @@ foreach (['nginx.conf', 'docs/deploy-ftp.md'] as $fichier)
 
 // ── Le verdict ──────────────────────────────────────────────────────────────
 printf("%d dossier(s), %d extension(s) et %d fichier(s) surveillés, dans 3 configurations et le guide de déploiement.\n\n",
-    count(DOSSIERS_INTERDITS), count(EXTENSIONS_INTERDITES), count(FICHIERS_INTERDITS));
+    count(NF_DOSSIERS_INTERDITS), count(NF_EXTENSIONS_INTERDITES), count(NF_FICHIERS_INTERDITS));
 
 if (!$manques)
 {

@@ -156,14 +156,7 @@ function nf_cli_main(array $argv): int
 			'hostname' => $c['db_host'], 'username' => $c['db_user'],
 			'password' => $c['db_pass'], 'database' => $c['db_name'], 'port' => $c['db_port'],
 		]);
-		file_put_contents($config_dir . '/neofrag.php',
-			"<?php\n\n"
-			. "define('NEOFRAG_DEBUG_BAR', FALSE);\n"
-			. "define('NEOFRAG_SAFE_MODE', FALSE);\n"
-			. "define('NEOFRAG_DEMO',      " . ($c['demo'] ? 'TRUE' : 'FALSE') . ");\n"
-			. "define('NEOFRAG_LOGS',      FALSE);\n"
-			. "define('NEOFRAG_LOGS_I18N', FALSE);\n"
-		);
+		file_put_contents($config_dir . '/neofrag.php', Installer::config_neofrag((bool) $c['demo']));
 		if ($c['site_url'] !== '')
 		{
 			Installer::write_site_url($config_dir, rtrim($c['site_url'], '/'));

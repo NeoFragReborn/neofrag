@@ -154,7 +154,7 @@ foreach ($fichiers as $relatif => $chemin)
 // La famille « statique » promet le job `statique` (tools/README.md, « Les familles »). Une exception se
 // nomme, avec ce qui empêche la CI de la jouer.
 const NON_JOUES_EN_CI = [
-    'check-marketplace' => "les archives des addons ne sont pas versionnées : il se joue sur une installation, après package-addons",
+    // Vide depuis que check-marketplace, qui juge des archives fabriquées, est de la famille « cible ».
 ];
 
 $ci = (string) @file_get_contents(nf_racine().'/.github/workflows/ci.yml');

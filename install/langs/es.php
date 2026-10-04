@@ -206,4 +206,5 @@ return [
 	'c54fdfde' => 'Cifrado de contraseñas (%s)',
 	'23bcdfc3' => 'disponible',
 	'c2f31600' => 'ausente en este PHP',
+	'3e30f3e2' => 'Este sitio ya tiene un administrador: la instalación ha finalizado.',
 ];

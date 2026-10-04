@@ -6,13 +6,10 @@
     Require all denied
 </FilesMatch>
 
-# Coupe le moteur PHP ici si mod_php est chargé (ignoré sous php-fpm).
-<IfModule mod_php.c>
-    php_admin_flag engine off
-</IfModule>
-<IfModule mod_php7.c>
-    php_admin_flag engine off
-</IfModule>
+# Pas de `php_admin_flag engine off` ici : Apache interdit les directives `php_admin_*` dans un
+# .htaccess, et quand PHP tourne en module, CHAQUE fichier de ce dossier répondait 500 — avatars,
+# galerie, médias (trouvé par check-serveur-web sur un vrai Apache, 2026-10-04). Le refus ci-dessus
+# suffit : aucun script n'est servi, donc aucun n'est exécuté.
 
 # Pas de sniffing de type : un upload n'est jamais réinterprété.
 <IfModule mod_headers.c>

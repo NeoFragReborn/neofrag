@@ -206,4 +206,5 @@ return [
 	'c54fdfde' => 'Hash das palavras-passe (%s)',
 	'23bcdfc3' => 'disponível',
 	'c2f31600' => 'ausente neste PHP',
+	'3e30f3e2' => 'Este site já tem um administrador: a instalação está concluída.',
 ];

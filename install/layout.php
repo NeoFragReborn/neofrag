@@ -244,7 +244,7 @@ code{background:var(--surface2);padding:2px 6px;border-radius:var(--radius-xs);f
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
-<body>
+<body data-nf-assistant>
 <div class="app">
 
 	<aside class="side">

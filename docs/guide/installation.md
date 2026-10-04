@@ -9,7 +9,9 @@ Composer, ni accès shell ne sont nécessaires — le paquet embarque ses dépen
   `fileinfo` et `iconv`, et un PHP qui sait hacher les mots de passe en **Argon2** (c'est le cas de la
   plupart). Elles s'activent dans le panneau de l'hébergeur, souvent sous « Version de PHP » ou
   « Extensions ». L'assistant les vérifie toutes, et refuse de continuer s'il en manque une.
-- **MySQL 5.7+** ou **MariaDB 10.5+**, moteur **InnoDB**, jeu de caractères **utf8mb4**.
+- **MySQL 5.7, 8.0 ou 8.4**, ou **MariaDB 10.5, 10.6, 10.11, 11.4 ou 11.8**, moteur **InnoDB**, jeu de
+  caractères **utf8mb4**. Ce sont les versions que chaque version du CMS éprouve avant de partir, avec PHP
+  8.2 et 8.5 : installation complète, suite de tests entière, et chacun des profils d'installation.
 - **Apache** avec `mod_rewrite` (un `.htaccess` est livré) ; ou **nginx** (`nginx.conf`) ; ou **Caddy**
   (`Caddyfile`).
 - Une base de données **vide** et ses identifiants.
@@ -23,7 +25,8 @@ L'assistant se déroule en **cinq étapes** : *Prérequis* → *Profil du site* 
 *Administrateur* → *Terminé*.
 
 1. **Téléverse** les fichiers de NeoFrag Reborn à la racine web : le contenu du dossier `neofrag-reborn/`
-   du paquet `neofrag-reborn-public-<version>.zip` (par FTP, ou en le décompressant sur le serveur).
+   du paquet `neofrag-reborn-public-<version>.zip` (par FTP, ou en le décompressant sur le serveur). Le
+   paquet se télécharge sur la [page des versions](https://github.com/NeoFragReborn/neofrag/releases/latest) du projet.
 2. Ouvre ton domaine : l'assistant se lance et affiche les **prérequis** avec la valeur constatée
    (version de PHP, extensions présentes).
 3. Choisis le **profil du site** :
@@ -107,6 +110,8 @@ le `.htaccess` sous Apache.
 
 ## Développement
 
-Pour développer ou tester, toute machine avec PHP 8.2+ et MariaDB convient ; une pile Docker
+Le code est sur GitHub : le CMS dans [NeoFragReborn/neofrag](https://github.com/NeoFragReborn/neofrag), les addons à la carte dans
+[NeoFragReborn/extensions](https://github.com/NeoFragReborn/extensions) — `tools/assembler.php` les pose dans l'arbre du CMS. Pour
+développer ou tester, toute machine avec PHP 8.2+ et MariaDB ou MySQL convient ; une pile Docker
 (`docker-compose.yml`) est fournie. Détails (base, migrations, tests, contrôles, déploiement) :
 [`docs/development.md`](../development.md).

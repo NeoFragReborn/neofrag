@@ -28,11 +28,22 @@ if (!defined('NEOFRAG_VERSION')) {
 }
 
 // --- Garde « déjà installé » ------------------------------------------------
-if (Installer::is_already_installed($NF_CONFIG)) {
+$nf_etat = Installer::etat_installation($NF_CONFIG);
+
+if ($nf_etat === 'installe') {
 	if (!is_file($NF_LOCK)) {
 		@file_put_contents($NF_LOCK, gmdate('c') . "\n");
 	}
 	return; // rend la main à index.php racine → boot normal du CMS
+}
+
+// Une configuration dont la base ne répond pas n'est pas une installation à reprendre : l'assistant,
+// qui sait réécrire config/db.php, ne s'ouvre pas. Le visiteur lit la page « base injoignable » du
+// cœur, traduite et autonome (cf. Installer::etat_installation()).
+if ($nf_etat === 'injoignable') {
+	require_once dirname(__DIR__) . '/neofrag/helpers/erreurs.php';
+	nf_page_erreur_autonome(503);
+	exit;
 }
 
 // --- Petit framework de wizard ----------------------------------------------
@@ -272,6 +283,19 @@ function nf_handle_admin(string $config_dir, string $lock): array
 
 	try {
 		$db = Installer::connect($cfg);
+
+		// Jamais un second administrateur par l'assistant. Il ne s'affiche sur un site installé que si
+		// le verrou et la détection ont tous deux manqué (verrou perdu, base momentanément muette) ;
+		// sans cette garde, quiconque passait alors par ici se créait un compte d'administrateur dans
+		// la base en service (relevé le 2026-10-04, par check-serveur-web). Le verrou est reposé.
+		if (Installer::table_has_rows($db, 'nf_user'))
+		{
+			$db->close();
+			@file_put_contents($lock, gmdate('c') . "\n");
+
+			return [lang('Ce site a déjà un administrateur : l\'installation est terminée.')];
+		}
+
 		Installer::create_admin($db, ['username' => $username, 'email' => $email, 'password' => $pass]);
 		Installer::set_setting($db, 'nf_name', $site);
 

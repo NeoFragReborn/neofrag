@@ -10,6 +10,80 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.24] — 2026-10-04
+
+**NeoFrag Reborn s'ouvre sur GitHub.** Le code du CMS ([NeoFragReborn/neofrag](https://github.com/NeoFragReborn/neofrag)), les addons
+à la carte ([NeoFragReborn/extensions](https://github.com/NeoFragReborn/extensions)) et le bot Discord
+([NeoFragReborn/bot-discord](https://github.com/NeoFragReborn/bot-discord)) y sont publiés, chacun avec l'historique de ses versions
+depuis la 1.0.0 — le code de chaque version, ses notes, et les paquets à partir de la 1.2.23.
+
+### Modifié
+
+- **Les bases de données annoncées sont celles qui sont éprouvées** : chaque version s'installe et passe
+  toute sa suite de tests, avec PHP 8.2 et 8.5, sur MySQL 5.7, 8.0 et 8.4 et sur MariaDB 10.5, 10.6,
+  10.11, 11.4 et 11.8 — le guide d'installation annonce ces versions-là, et non plus « 5.7+ » et « 10.5+ ».
+- **Les guides disent où trouver le projet** : le paquet d'installation et l'archive du bot sur leur page
+  des versions, les addons à la carte et leur catalogue sur celle d'`extensions`, le code pour qui veut
+  contribuer. Dans le wiki, les renvois vers un document du dépôt (déploiement, architecture, outils)
+  mènent à ce document sur GitHub, au lieu de n'en garder que le titre.
+
+### Corrigé
+
+- **Les réglages des modules s'ouvrent de nouveau** : la fenêtre « Configuration » du Forum, du
+  Recrutement, des Actualités, de la Galerie, des Événements, du Calendrier et des Articles répondait
+  « erreur 500 » à chaque ouverture, sur tous les sites, depuis la 1.2.0 : le champ « nombre » refusait un
+  nombre entier (son pas, et la valeur relue de la base) depuis le passage du code au typage strict.
+- **Équipes : l'option « Afficher les matchs réalisés » se décoche de nouveau.** L'enregistrement des
+  réglages stockait le mot « Array » au lieu d'un oui ou d'un non, toujours lu comme « oui ».
+- **Les réglages d'un authentificateur jamais configuré** (Google, Discord, GitHub) s'ouvrent sans écrire
+  huit alertes au journal.
+- **Le tableau de bord et les statistiques d'un site sans Articles, Bugtracker ou Forum** n'écrivent plus
+  d'alertes au journal à chaque ouverture : les cartes de ces modules n'apparaissent que s'ils sont
+  installés, et aucune table absente n'est plus interrogée.
+- **L'assistant d'installation relit la configuration qu'il vient d'écrire** : sur un hébergement dont le
+  cache de PHP ne revérifie pas les fichiers, une deuxième tentative à l'étape « Base de données » lisait
+  encore l'ancienne `config/db.php`.
+- **Un site déployé depuis git et installé par l'assistant web fonctionne** : l'assistant n'écrivait pas
+  `config/neofrag.php` (le paquet le porte, un clone n'en a que le modèle), et chaque page répondait
+  « erreur 500 » sans une ligne au journal.
+- **L'exemple `nginx.conf` démarre** : la règle de TinyMCE, sans guillemets, faisait refuser toute la
+  configuration à nginx (« missing closing parenthesis »). Ses redirections ne portent plus le paramètre
+  interne `request_url`.
+- **Les fichiers envoyés se servent sous Apache avec PHP en module** : la garde de `upload/` employait une
+  directive interdite dans un `.htaccess`, et tout ce dossier — avatars, galerie, médiathèque — répondait
+  « erreur 500 ».
+- **Sous Caddy, les fichiers envoyés qui ne sont pas des images** (un PDF de la médiathèque) se servent :
+  l'exemple ne servait que les images.
+- **`/index.php` mène à l'accueil** (redirection permanente) au lieu d'une page introuvable ; et une
+  adresse à extension qu'aucune page ne sert (`/newsletter/.env`, que tentent les robots) répond 404 sans
+  écrire d'anomalie au journal.
+- **`tools/check-all.php` sous PHP 8.2** : chaque contrôle y comptait pour un échec, même réussi — le code
+  de sortie était relu une fois de trop, ce que PHP ne permet qu'à partir de la 8.3. Pour qui contribue
+  sous PHP 8.2.
+
+### Sécurité
+
+- **L'assistant d'installation ne se rouvre plus sur un site installé dont la base ne répond pas.** Si le
+  verrou `install/db.txt` avait disparu, une panne passagère de la base rouvrait l'assistant, dont l'étape
+  « Base de données » réécrit `config/db.php` : un visiteur pouvait alors rediriger le site vers sa propre
+  base. Le site affiche désormais « momentanément indisponible ». Et l'étape « Administrateur » refuse de
+  créer un compte dès que le site en a un.
+- **Apache n'exécute plus que l'`index.php` de la racine** : la règle de réécriture laissait s'exécuter
+  directement tout fichier `index.php` d'un sous-dossier (plus de quatre-vingts contrôleurs internes).
+
+### Ajouté
+
+- **Quatre contrôles de plus** : `check-assistant` joue l'assistant d'installation de bout en bout, comme
+  un visiteur, pour chaque profil (écrans, refus, compte créé, connexion avec le mot de passe saisi,
+  journal muet) ; `check-reglages` ouvre l'écran de réglages de chaque addon, l'enregistre tel quel et le
+  rouvre ; `check-serveur-web` éprouve Apache, nginx et Caddy, avec les configurations livrées, en posant
+  des sondes (dossiers et fichiers interdits, scripts qui ne doivent pas s'exécuter, réécriture, en-têtes
+  de sécurité) ; `check-nouveau-venu` joue tels quels le README et le guide du contributeur sur une
+  machine vierge. Les workflows `installation.yml` et `nouveau-venu.yml` les rejouent chaque semaine.
+- **Le README dit ce qu'il permet** : son bloc « Développer » s'arrêtait sur une suite de tests qui
+  échouait faute de base de test ; il renvoie maintenant au guide du contributeur, qui crée cette base
+  (`php tools/prepare-test-db.php`).
+
 ## [1.2.23] — 2026-10-04
 
 Le bot Discord passe en **version 0.2.1** : rien ne change dans son fonctionnement — il devient un projet

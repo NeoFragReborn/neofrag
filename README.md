@@ -35,14 +35,18 @@ le téléverser, ouvrir le domaine, suivre l'assistant. Prérequis exacts et pas
 
 ## Développer
 
+<!-- nouveau-venu : ce bloc est joué tel quel, sur une machine vierge, par tools/check-nouveau-venu.php -->
 ```bash
 git clone https://github.com/NeoFragReborn/neofrag.git
 git clone https://github.com/NeoFragReborn/extensions.git
 cd neofrag && composer install
+npm ci                                 # ESLint, pour le contrôle du JavaScript (Node.js 22 ou plus)
 php tools/assembler.php --extensions=../extensions   # les addons à la carte : le produit entier
 php tools/check-all.php                # composer audit + les contrôles statiques
-vendor/bin/phpunit --fail-on-skipped   # la suite de tests (base de test : docs/development.md)
 ```
+
+Un site qui tourne sur ta machine, la base des tests et la suite entière : le chemin pas à pas est dans
+[.github/CONTRIBUTING.md](.github/CONTRIBUTING.md#démarrer).
 
 Chaque contrôle est décrit dans [tools/README.md](tools/README.md) ; l'environnement, la batterie et la
 CI dans [docs/development.md](docs/development.md) ; les règles et le chemin d'une contribution dans

@@ -1,0 +1,67 @@
+name: Nouveau venu
+
+# Celui qui découvre le projet copie les commandes du README, puis celles du guide du contributeur.
+# Ce workflow les joue TELLES QUELLES (`tools/check-nouveau-venu.php`), sur une machine qui n'a que ce
+# que le guide demande : PHP et ses extensions, Composer, MySQL. Aucun `actions/checkout` du projet
+# dans le dossier joué : le code vient du `git clone` écrit dans le README.
+#
+# Sur un dépôt public, chaque semaine ; ailleurs, à la main. Un dépôt encore privé se clone avec le
+# jeton de l'application de l'organisation, posé dans la configuration de git : les commandes jouées,
+# elles, ne changent pas.
+on:
+  schedule:
+    - cron: '53 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  nouveau-venu:
+    name: Le README et le guide du contributeur, à la lettre
+    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      NF_NV_DB_USER: nouveau
+      NF_NV_DB_PASS: nouveau-venu-2026
+      NF_ADMIN_PASS: Nouveau-Venu-2026!
+    steps:
+      # L'outil seul, à part : le dossier joué reste vierge.
+      - uses: actions/checkout@v7
+        with:
+          path: outil
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, intl, mysqli, gd, zip, curl
+          tools: composer
+          coverage: none
+      # Le MySQL de la machine (arrêté d'office sur les machines de GitHub), et le compte du nouveau
+      # venu : il crée la base du site, puis celle des tests.
+      - name: MySQL, et le compte du nouveau venu
+        run: |
+          sudo systemctl start mysql.service
+          mysql -uroot -proot -e "CREATE USER '$NF_NV_DB_USER'@'localhost' IDENTIFIED BY '$NF_NV_DB_PASS';
+            GRANT ALL PRIVILEGES ON *.* TO '$NF_NV_DB_USER'@'localhost' WITH GRANT OPTION;"
+      - name: Jeton de l'application (dépôts encore privés)
+        if: github.event.repository.private
+        id: app
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          private-key: ${{ secrets.NF_APP_CLE }}
+          owner: ${{ github.repository_owner }}
+      - name: Accès en lecture aux dépôts de l'organisation
+        if: github.event.repository.private
+        run: git config --global url."https://x-access-token:${{ steps.app.outputs.token }}@github.com/".insteadOf "https://github.com/"
+      # Hors du dépôt neofrag — dans un dépôt où l'on éprouve une version candidate —, le README clone la
+      # candidate : ses branches `neofrag` et `extensions`, poussées à côté du produit assemblé.
+      - name: Le parcours, joué à la lettre
+        run: >-
+          php outil/tools/check-nouveau-venu.php --dossier="$RUNNER_TEMP/nouveau-venu"
+          ${{ github.repository != 'NeoFragReborn/neofrag' && format('--depot-neofrag=https://github.com/{0}.git#neofrag --depot-extensions=https://github.com/{0}.git#extensions', github.repository) || '' }}

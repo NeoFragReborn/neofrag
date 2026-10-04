@@ -4,9 +4,10 @@ declare(strict_types=1);
  * https://neofr.ag
  * Modern statistics admin v0.4 — stat cards with trends + filter bar + chart card.
  *
- * couplage(forum): les compteurs passent tous par _safe_count(), qui enveloppe la requete dans
- * un try/catch et rend 0 si la table n'existe pas. Sans le module forum, la statistique vaut
- * zero au lieu de casser la page.
+ * couplage(forum): la carte « Messages forum » n'existe que si le module est installé
+ * (`$this->module('forum')`), et _safe_count() ne lit jamais une table absente : la couche base de
+ * données écrit son alerte au journal AVANT de lever l'erreur, qu'un try/catch ne rattrape
+ * qu'après coup (même défaut que le tableau de bord, 2026-10-04).
  */
 
 namespace NF\Modules\Statistics\Controllers;
@@ -101,6 +102,11 @@ JS;
 
 	private function _safe_count($table, array $where = [])
 	{
+		if (!$this->db->table_exists($table))
+		{
+			return 0;
+		}
+
 		try {
 			$q = $this->db->from($table);
 			foreach ($where as $w) {
@@ -150,22 +156,25 @@ JS;
 			'trend_icon'  => $reg_diff['icon']
 		];
 
-		$forum_30 = $this->_safe_count('nf_forum_messages', [
-			['date > DATE_SUB(NOW(), INTERVAL 30 DAY)']
-		]);
-		$forum_60 = $this->_safe_count('nf_forum_messages', [
-			['date > DATE_SUB(NOW(), INTERVAL 60 DAY)'],
-			['date <= DATE_SUB(NOW(), INTERVAL 30 DAY)']
-		]);
-		$forum_diff = $this->_pct_diff($forum_30, $forum_60);
-		$out[] = [
-			'label' => $this->lang('Messages forum (30j)'),
-			'icon'  => 'fas fa-comments',
-			'value' => number_format($forum_30, 0, ',', ' '),
-			'trend' => $forum_diff['text'],
-			'trend_class' => $forum_diff['class'],
-			'trend_icon'  => $forum_diff['icon']
-		];
+		if ($this->module('forum'))
+		{
+			$forum_30 = $this->_safe_count('nf_forum_messages', [
+				['date > DATE_SUB(NOW(), INTERVAL 30 DAY)']
+			]);
+			$forum_60 = $this->_safe_count('nf_forum_messages', [
+				['date > DATE_SUB(NOW(), INTERVAL 60 DAY)'],
+				['date <= DATE_SUB(NOW(), INTERVAL 30 DAY)']
+			]);
+			$forum_diff = $this->_pct_diff($forum_30, $forum_60);
+			$out[] = [
+				'label' => $this->lang('Messages forum (30j)'),
+				'icon'  => 'fas fa-comments',
+				'value' => number_format($forum_30, 0, ',', ' '),
+				'trend' => $forum_diff['text'],
+				'trend_class' => $forum_diff['class'],
+				'trend_icon'  => $forum_diff['icon']
+			];
+		}
 
 		$com_30 = $this->_safe_count('nf_comment', [['date > DATE_SUB(NOW(), INTERVAL 30 DAY)']]);
 		$com_60 = $this->_safe_count('nf_comment', [

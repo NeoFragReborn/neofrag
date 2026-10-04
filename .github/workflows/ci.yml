@@ -610,6 +610,14 @@ jobs:
         run: >-
           docker compose exec -T web
           php tools/check-widget-contract.php
+      # L'écran de réglages de chaque addon, ouvert, enregistré tel quel puis rouvert : un réglage
+      # numérique se relit en entier, et le champ « nombre » le refusait depuis la vague strict_types —
+      # 500 sur les réglages du Forum et du Recrutement du site officiel (2026-10-04). Aucun contrôle
+      # n'ouvrait ces écrans.
+      - name: Réglages des addons (ouverts, enregistrés tels quels, rouverts)
+        run: >-
+          docker compose exec -T web
+          php tools/check-reglages.php --enregistrer
       # Jusqu'au 2026-10-01, ce pas sautait 67 tests en restant vert : il n'y avait pas de
       # `config/db-test.php` dans le conteneur, et les suites d'intégration se sautent elles-mêmes
       # sans base. Le pas précédent la prépare dans le service `db` de la pile, comme le job `test`

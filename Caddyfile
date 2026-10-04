@@ -30,6 +30,17 @@ example.org {
 		@editeurs path /js/tinymce/* /js/codemirror/*
 		file_server @editeurs
 
+		# Les fichiers envoyés se servent tels quels — un PDF ou une archive de la médiathèque comme une
+		# image —, jamais un script, qui continue vers le site et n'y est pas exécuté. Seules les images
+		# étaient servies jusqu'au 2026-10-04 : le lien d'un PDF de la médiathèque partait vers le site au
+		# lieu du fichier (trouvé par check-serveur-web). Même liste que upload/.htaccess.
+		@envois {
+			file
+			path /upload/*
+			not path_regexp (?i)\.(php[0-9]?|phtml|phps|phar|pl|py|cgi|asp|aspx|jsp|sh|exe|com|htaccess)$
+		}
+		file_server @envois
+
 		@medias {
 			file
 			path *.png *.jpg *.jpeg *.gif *.svg *.ico *.webp *.eot *.ttf *.woff *.woff2 *.mp4

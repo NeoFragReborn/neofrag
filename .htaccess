@@ -40,7 +40,11 @@ DirectorySlash Off
 RewriteEngine On
 RewriteBase "/"
 
-RewriteRule index\.php - [L]
+# Le seul script qu'Apache exécute est l'index.php de la racine du site. La règle n'était pas ancrée
+# jusqu'au 2026-10-04 : tout chemin CONTENANT « index.php » passait tel quel, et
+# /modules/news/controllers/index.php — comme plus de quatre-vingts autres — s'exécutait directement
+# (nginx et Caddy le refusaient déjà). Trouvé par check-serveur-web.
+RewriteRule ^index\.php$ - [L]
 
 # Bibliothèques tierces vendorisées (TinyMCE, CodeMirror) : servies en statique par Apache, en
 # contournant le routeur d'assets PHP — qui interpréterait les « <?php »/« <?= » présents dans

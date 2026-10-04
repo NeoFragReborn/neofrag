@@ -50,7 +50,6 @@ Joués par défaut par `check-all`. Ils lisent les sources, sans base ni serveur
 | [`check-js-lint`](check-js-lint.php) | passe ESLint sur nos sources JavaScript, PHP interpolé neutralisé. | `php tools/check-js-lint.php` |
 | [`check-js-sources`](check-js-sources.php) | les sources JavaScript : syntaxe (`node --check`) et vocabulaire (aucun jQuery). | `php tools/check-js-sources.php` |
 | [`check-langs`](check-langs.php) | tout ce qui concerne lang() : clés manquantes, formats de date, arguments du pluriel. | `php tools/check-langs.php` |
-| [`check-marketplace`](check-marketplace.php) | le catalogue publié dit-il la vérité sur les archives qu'il propose ? | `php tools/check-marketplace.php` |
 | [`check-notice`](check-notice.php) | la NOTICE dit qui a écrit chaque addon, sous quelle licence, et ce que le produit embarque d'autrui. | `php tools/check-notice.php` |
 | [`check-pagination`](check-pagination.php) | une liste que le checker découpe en pages affiche les liens de ses pages. | `php tools/check-pagination.php` |
 | [`check-prerequis`](check-prerequis.php) | les prérequis annoncés sont ceux que l'installation exige, écrits à un seul endroit. | `php tools/check-prerequis.php` |
@@ -88,12 +87,17 @@ Jamais lancés d'office : chacun exige un argument, une base jetable, ou abîme 
 | Outil | Ce qu'il fait | Usage |
 |---|---|---|
 | [`capturer-apercus`](capturer-apercus.php) | produit la VIGNETTE de chaque addon, par capture d'écran réelle. | `php tools/capturer-apercus.php` |
+| [`check-assistant`](check-assistant.php) | l'assistant d'installation web, joué de bout en bout comme un visiteur, profil par profil. | `php tools/check-assistant.php` |
 | [`check-important`](check-important.php) | mesure quels `!important` d'une feuille servent réellement à quelque chose. | `php tools/check-important.php --feuille=themes/admin/css/style.css` |
 | [`check-install-profiles`](check-install-profiles.php) | chaque profil d'installation doit démarrer et répondre, installé pour de vrai. | `php tools/check-install-profiles.php --profil=core` |
+| [`check-marketplace`](check-marketplace.php) | le catalogue publié dit-il la vérité sur les archives qu'il propose ? | `php tools/check-marketplace.php` |
 | [`check-mise-a-jour`](check-mise-a-jour.php) | un site neuf, à la version précédente, se met à jour par le vrai bouton depuis l'origine publiée, et arrive à la version annoncée. | `php tools/check-mise-a-jour.php` |
 | [`check-mise-en-page`](check-mise-en-page.php) | chaque page publique et d'administration, dans chaque thème, chaque mode et à chaque largeur : aucun défaut visuel que le navigateur sait constater. | `php tools/check-mise-en-page.php` |
+| [`check-nouveau-venu`](check-nouveau-venu.php) | le README et le guide du contributeur, suivis à la lettre sur une machine vierge, mènent à un site qui tourne et à une batterie verte. | `php tools/check-nouveau-venu.php --dossier=… --depot-neofrag=https://github.com/<org>/<candidate>.git` |
 | [`check-parcours`](check-parcours.php) | suit un visiteur d'un écran au suivant, dans un vrai navigateur. | `php tools/check-parcours.php` |
+| [`check-reglages`](check-reglages.php) | l'écran de réglages de chaque addon installé s'ouvre, s'enregistre et se rouvre, sans rien écrire au journal. | `php tools/check-reglages.php` |
 | [`check-restauration`](check-restauration.php) | éprouve, pour de vrai, le cycle sauvegarde → casse → restauration. | `php tools/check-restauration.php --compte=admin --motdepasse=… --site-jetable` |
+| [`check-serveur-web`](check-serveur-web.php) | un vrai serveur web (Apache, nginx, Caddy) refuse ce qu'il doit refuser, et sert le site comme il faut. | `php tools/check-serveur-web.php --url=http://localhost:8080` |
 | [`check-smoke`](check-smoke.php) | frappe les flux critiques d'un site qui tourne, et échoue au moindre 5xx. | `php tools/check-smoke.php http://localhost:8080 --email=<membre existant>` |
 
 ### Les autres outils
@@ -192,12 +196,14 @@ Engendrée elle aussi par `check-tools`, depuis la première ligne de chaque fic
 | [`demo.php`](lib/demo.php) | ce que l'instantané de la démonstration ne porte jamais. | `NF_DEMO_REGLAGES_EXCLUS`, `NF_DEMO_MOTIF_SECRET`, `NF_DEMO_REGLAGES_PUBLICS`, `nf_demo_reglages_widget()` |
 | [`depot.php`](lib/depot.php) | parcourir les fichiers du dépôt, toujours avec les mêmes exclusions. | `NF_EXCLUS`, `NF_DOSSIERS_PRODUIT`, `NF_DOSSIERS_JS`, `nf_fichiers()`, `nf_parcourir()`, `nf_supprimer()`, `nf_relatif()`, `nf_addons()`, `nf_themes_publics()`, `nf_extensions_absentes()`, `nf_exiger_assemblage()` |
 | [`entetes.php`](lib/entetes.php) | ce que l'en-tête d'un outil déclare : sa famille, son usage, sa batterie, sa diffusion. | `NF_FAMILLES`, `NF_DIFFUSIONS`, `nf_diffusion()`, `nf_resume()`, `nf_entete_outil()` |
+| [`interdits.php`](lib/interdits.php) | ce qu'un serveur web ne doit jamais servir : les dossiers, les extensions, les fichiers. | `NF_DOSSIERS_INTERDITS`, `NF_EXTENSIONS_INTERDITES`, `NF_FICHIERS_INTERDITS` |
 | [`journal.php`](lib/journal.php) | lire le journal PHP d'une installation, classer ses lignes, et les montrer regroupées. | `nf_journal_preparer()`, `nf_journal_taille()`, `nf_journal_depuis_octet()`, `nf_journal_depuis_date()`, `nf_journal_montrer()` |
 | [`langues.php`](lib/langues.php) | lire et écrire les fichiers de langue (`langs/<code>.php`) sans les exécuter. | `NF_LANGUES`, `nf_langue_cle()`, `nf_langue_valeurs()`, `nf_langue_cles()`, `nf_langue_echapper()`, `nf_langue_ajouter()`, `nf_langue_jokers()` |
 | [`navigateur.php`](lib/navigateur.php) | ouvrir une page dans un Chrome sans interface, et relire ce qu'une sonde y a écrit. | `nf_chrome()`, `nf_chrome_utilisable()`, `nf_chrome_dom()`, `nf_chrome_capture()`, `nf_chrome_commande()`, `nf_sonde_verdict()`, `nf_chrome_menage()` |
 | [`outil.php`](lib/outil.php) | le socle que chaque outil de `tools/` charge en première ligne. | `NF_RACINE`, `NF_OK`, `NF_ECHEC`, `NF_REFUS`, `NF_PORTS`, `nf_outil()`, `nf_racine()`, `nf_options()`, `nf_port()`, `nf_temp()`, `nf_avertir()`, `nf_ok()`, `nf_echec()`, `nf_refus()`, `nf_sans_commentaires()` |
 | [`paquet.php`](lib/paquet.php) | ce qui a le droit d'entrer dans un paquet d'installation ou de mise à jour. | `NF_PAQUET_RACINE`, `NF_PAQUET_ENGENDRES`, `nf_paquet_exclu()` |
 | [`parcours.php`](lib/parcours.php) | suivre les liens internes d'un site servi, sans jamais ouvrir une adresse qui agit. | `NF_ADRESSES_QUI_AGISSENT`, `nf_parcourir_site()` |
+| [`profils.php`](lib/profils.php) | ce qu'un site installé selon un profil doit servir, et le vérifier en le frappant. | `NF_ROUTES_COEUR`, `NF_ROUTES_MODULES`, `nf_frapper_profil()`, `nf_tables_hors_profil()` |
 | [`routeur-outil.php`](lib/routeur-outil.php) | le routeur du serveur intégré quand c'est un OUTIL qui sert le site. | — |
 | [`serveur.php`](lib/serveur.php) | servir le site avec le serveur intégré de PHP, et lui parler en HTTP. | `NF_AGENT`, `nf_serveur()`, `nf_encoder_adresse()`, `nf_http()`, `nf_statut()`, `nf_formulaire()`, `nf_balisage()` |
 | [`site.php`](lib/site.php) | l'installation sur laquelle l'outil travaille : sa base, ses réglages, un administrateur. | `nf_config_db()`, `nf_connexion()`, `nf_connexion_admin()`, `nf_scalar()`, `nf_colonne()`, `nf_table_existe()`, `nf_type_id()`, `nf_reglage()`, `nf_reglage_poser()`, `nf_themes_installes()`, `nf_premier_admin()`, `nf_session_admin()`, `nf_session_fermer()`, `nf_mode_demo()`, `nf_theme_temporaire()` |

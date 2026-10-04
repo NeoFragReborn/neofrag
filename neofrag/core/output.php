@@ -460,8 +460,12 @@ class Output extends Core
 					 *     démonstration en portait 104 lignes d'« erreur », écrites par des outils qui sondent ;
 					 *   - l'adresse INCOMPLÈTE, à laquelle il manque un segment.
 					 * Un checker qui veut qu'un refus se lise au journal le dit avec `nf_refus('…')`.
+					 *
+					 * Et depuis le 2026-10-04, l'extension qu'une page ne sert JAMAIS (`newsletter/.env`) :
+					 * cf. Module_Checker::extension_jamais_servie().
 					 */
 					$ordinaire = (method_exists($checker, 'refus_ordinaire') && $checker->refus_ordinaire())
+						|| (!$deposes && method_exists($checker, 'extension_jamais_servie') && $checker->extension_jamais_servie())
 						|| $adresse_incomplete
 						|| (!$deposes && $checker->valid() && ($segments === NULL || $segments === FALSE));
 

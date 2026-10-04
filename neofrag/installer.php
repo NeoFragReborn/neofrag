@@ -124,15 +124,32 @@ final class Installer
 	/**
 	 * Sonde DB : une install fonctionnelle est présente si config/db.php existe,
 	 * que la connexion passe, que la table nf_user existe et contient ≥ 1 membre.
-	 * Une config présente mais base vide/injoignable → FALSE (install incomplète,
-	 * l'installeur doit pouvoir reprendre).
 	 */
 	public static function is_already_installed(string $config_dir): bool
+	{
+		return self::etat_installation($config_dir) === 'installe';
+	}
+
+	/**
+	 * Où en est l'installation, d'après la configuration et la base :
+	 *   - `vierge`      : aucune `config/db.php` — l'assistant commence ;
+	 *   - `en_cours`    : la configuration est écrite, la base répond, mais aucun compte n'existe encore
+	 *                     (l'étape « administrateur » reste à faire) — l'assistant reprend ;
+	 *   - `installe`    : la base répond et porte au moins un compte ;
+	 *   - `injoignable` : la configuration existe, mais la base ne répond pas.
+	 *
+	 * Le dernier état n'est PAS une installation à reprendre. Jusqu'au 2026-10-04, une base muette
+	 * rouvrait l'assistant ; et son étape « base de données » réécrit `config/db.php` : sur un site dont
+	 * le verrou avait disparu, une panne de la base laissait n'importe quel visiteur rediriger le site
+	 * vers sa propre base. Trouvé par check-serveur-web, où un PHP gardait en cache une configuration
+	 * périmée. Le motif part au journal.
+	 */
+	public static function etat_installation(string $config_dir): string
 	{
 		$cfg = self::read_db_config($config_dir);
 		if ($cfg === null)
 		{
-			return FALSE;
+			return 'vierge';
 		}
 
 		try
@@ -141,19 +158,17 @@ final class Installer
 		}
 		catch (RuntimeException $e)
 		{
-			return FALSE;
+			error_log('[install] config/db.php présent, mais la base ne répond pas : '.$e->getMessage());
+
+			return 'injoignable';
 		}
 
-		$res       = @$db->query('SELECT COUNT(*) FROM nf_user');
-		$installed = FALSE;
-		if ($res)
-		{
-			$row       = $res->fetch_row();
-			$installed = $row && (int) $row[0] >= 1;
-		}
+		// Une table absente est une installation qui s'est arrêtée avant le schéma : elle reprend.
+		$res  = @$db->query('SELECT COUNT(*) FROM nf_user');
+		$etat = $res && ($row = $res->fetch_row()) && (int) $row[0] >= 1 ? 'installe' : 'en_cours';
 		$db->close();
 
-		return $installed;
+		return $etat;
 	}
 
 	/** Lit config/db.php et retourne $db[0] (ou NULL si absent/invalide). */
@@ -287,6 +302,30 @@ final class Installer
 		{
 			self::write_file($dir.'/email.php', self::email_config_template());
 		}
+
+		// config/neofrag.php, que index.php exige : le paquet le porte, un dépôt cloné n'en a que le
+		// gabarit. Sans lui, un site déployé depuis git et installé par l'assistant web répondait 500
+		// sur chaque page, sans une ligne au journal (trouvé par check-assistant sur Apache, nginx et
+		// Caddy, 2026-10-04). Celui d'un paquet — le mode démonstration, par exemple — est gardé.
+		if (!is_file($dir.'/neofrag.php'))
+		{
+			self::write_file($dir.'/neofrag.php', self::config_neofrag());
+		}
+	}
+
+	/**
+	 * Le `config/neofrag.php` d'un site : ses interrupteurs, tous éteints (`config/neofrag.php.dist`
+	 * dit ce que fait chacun), le mode démonstration en option. Une seule source : le paquet
+	 * (`build-release`), l'installeur en ligne de commande et l'assistant web l'écrivent ainsi.
+	 */
+	public static function config_neofrag(bool $demo = FALSE): string
+	{
+		return "<?php\n\n"
+			."define('NEOFRAG_DEBUG_BAR', FALSE);\n"
+			."define('NEOFRAG_SAFE_MODE', FALSE);\n"
+			."define('NEOFRAG_DEMO',      ".($demo ? 'TRUE' : 'FALSE').");\n"
+			."define('NEOFRAG_LOGS',      FALSE);\n"
+			."define('NEOFRAG_LOGS_I18N', FALSE);\n";
 	}
 
 	/**
@@ -2047,6 +2086,19 @@ final class Installer
 		if (@file_put_contents($path, $contents) === FALSE)
 		{
 			throw new RuntimeException(self::lang('Écriture impossible : %s', $path));
+		}
+
+		/*
+		 * Un fichier PHP réécrit doit être relu tel quel à la requête suivante. Le cache d'opcodes de PHP
+		 * garde l'ancienne version tant qu'il ne revérifie pas le fichier — quelques secondes, ou jusqu'au
+		 * redémarrage quand l'hébergeur a coupé la vérification (`opcache.validate_timestamps=0`). Une
+		 * deuxième tentative à l'étape « base de données » faisait alors lire l'ancienne `config/db.php`.
+		 * Trouvé par check-assistant, qui réinstalle cinq fois de suite (2026-10-04) ; Monitoring faisait
+		 * déjà de même pour `config/url.php`.
+		 */
+		if (str_ends_with($path, '.php') && function_exists('opcache_invalidate'))
+		{
+			@opcache_invalidate($path, TRUE);
 		}
 	}
 

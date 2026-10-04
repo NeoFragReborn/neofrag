@@ -41,6 +41,7 @@ declare(strict_types=1);
 require __DIR__.'/lib/outil.php';
 require __DIR__.'/lib/depot.php';
 require __DIR__.'/lib/paquet.php';
+require_once dirname(__DIR__).'/neofrag/installer.php';
 
 [$o] = nf_options(['racine-autorisee' => FALSE]);
 
@@ -169,7 +170,7 @@ function build(string $root, string $dist, string $version, string $variant): ar
     }
 
     // config/neofrag.php généré (non versionné). Démo : NEOFRAG_DEMO=TRUE.
-    $zip->addFromString($prefix.'config/neofrag.php', neofrag_config($demo));
+    $zip->addFromString($prefix.'config/neofrag.php', \NF\NeoFrag\Installer::config_neofrag($demo));
     // NB : config/email.php n'est PAS embarqué — l'installeur le génère (host vide => mail()). Ainsi
     // un redéploiement ne réécrase pas un SMTP configuré. La config dev (mailpit) reste exclue.
     $count++;
@@ -288,24 +289,6 @@ function manifests(string $dist, string $version, array $entries): void
 function excluded(string $rel, string $variant): bool
 {
     return nf_paquet_exclu($rel, $variant);
-}
-
-function neofrag_config(bool $demo): string
-{
-    $lines = [
-        "<?php",
-        "",
-        "define('NEOFRAG_DEBUG_BAR',  FALSE);",
-        "define('NEOFRAG_SAFE_MODE',  FALSE);",
-        "define('NEOFRAG_LOGS',       FALSE);",
-        "define('NEOFRAG_LOGS_I18N',  FALSE);",
-    ];
-    if ($demo) {
-        $lines[] = "";
-        $lines[] = "// Site de démonstration : actions sensibles verrouillées, remis à zéro par le cron.";
-        $lines[] = "define('NEOFRAG_DEMO',       TRUE);";
-    }
-    return implode("\n", $lines) . "\n";
 }
 
 function nf_version(string $root): string

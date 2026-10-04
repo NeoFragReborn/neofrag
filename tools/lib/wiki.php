@@ -64,9 +64,14 @@ function nf_wiki_convertir(string $md): string
     // liens internes vers un autre guide : strip .md → lien relatif (résolu sous /wiki/)
     $md = (string) preg_replace('/\]\(\.?\/?([a-z0-9-]+)\.md(#[^)]*)?\)/i', ']($1$2)', $md);
     // liens qui sortent des guides (../architecture.md, ../deploy-ftp.md#ancre, ../../tools/README.md) :
-    // le wiki n'a pas ces documents, on garde le texte. Jusqu'au 2026-10-04, seuls les liens SANS ancre
-    // et d'un seul niveau étaient traités : trois liens morts partaient dans le wiki de chaque site.
-    $md = (string) preg_replace('/\[([^\]]+)\]\(\.\.\/[^)\s]*\)/', '$1', $md);
+    // le wiki n'a pas ces documents ; ils mènent au dépôt public, où ils vivent (depuis l'ouverture des
+    // dépôts, 1.2.24). Avant, le wiki n'en gardait que le texte.
+    $md = (string) preg_replace_callback('/\[([^\]]+)\]\(((?:\.\.\/)+)([^)\s#]*)(#[^)\s]*)?\)/', static function (array $m): string
+    {
+        $dossiers = array_slice(['docs', 'guide'], 0, max(0, 2 - substr_count($m[2], '../')));
+
+        return '['.$m[1].'](https://github.com/NeoFragReborn/neofrag/blob/main/'.implode('/', array_merge($dossiers, [$m[3]])).($m[4] ?? '').')';
+    }, $md);
     // lien d'index
     $md = str_replace('](README.md)', '](.)', $md);
 

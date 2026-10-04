@@ -206,4 +206,5 @@ return [
 	'c54fdfde' => 'Hachage des mots de passe (%s)',
 	'23bcdfc3' => 'disponible',
 	'c2f31600' => 'absent de ce PHP',
+	'3e30f3e2' => 'Ce site a déjà un administrateur : l\'installation est terminée.',
 ];

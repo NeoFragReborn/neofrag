@@ -6,7 +6,8 @@ déjà tous : il sert donc surtout aux mises à jour, et à reprendre un addon q
 intervient *après* l'installation, depuis l'administration.
 
 Le catalogue et les archives sont servis depuis **neofrag-reborn.xyz**, en HTTPS ; chaque archive est
-vérifiée par **empreinte SHA-256** au téléchargement.
+vérifiée par **empreinte SHA-256** au téléchargement. Chaque version les publie aussi, avec le catalogue,
+sur la [page des versions](https://github.com/NeoFragReborn/extensions/releases) du dépôt des addons à la carte.
 
 ## Installer un addon
 
@@ -52,7 +53,9 @@ l'ajout/mise à jour d'un addon (extraction + `install.sql`/migrations SQL idemp
 
 ## Pour les auteurs d'addons
 
-Le catalogue est généré par `tools/package-addons.php`, qui zippe chaque addon (dossier `<name>/` à la
+Le code des addons à la carte vit dans [NeoFragReborn/extensions](https://github.com/NeoFragReborn/extensions) : y proposer un addon
+ou une correction, c'est y ouvrir une demande de fusion. Le catalogue est généré par
+`tools/package-addons.php`, qui zippe chaque addon (dossier `<name>/` à la
 racine de l'archive) et produit `marketplace/catalog.json`. Une entrée réelle, abrégée :
 
 ```json
@@ -103,7 +106,8 @@ les versions.
 
 ### À la main
 
-Télécharge `neofrag-reborn-public-<version>.zip` et remplace les fichiers (hors `config/`, `upload/`,
+Télécharge `neofrag-reborn-public-<version>.zip` sur la [page des versions](https://github.com/NeoFragReborn/neofrag/releases)
+et remplace les fichiers (hors `config/`, `upload/`,
 `backups/`), puis visite le site — les migrations s'appliquent ([guide de déploiement](../deploy-ftp.md#mettre-à-jour-un-site-déjà-en-ligne)).
 
 ### Ce que publie chaque version

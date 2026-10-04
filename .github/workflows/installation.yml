@@ -1,0 +1,195 @@
+name: Installation
+
+# Ce que vit celui qui installe NeoFrag Reborn : il dépose le paquet, ouvre son site, et suit
+# l'assistant. Ce workflow joue ce chemin-là, comme un visiteur, pour chacun des profils
+# d'installation (`check-assistant`) : les écrans, la session, les refus, le compte créé, la connexion
+# avec le mot de passe saisi, le journal PHP muet — sous la plus ancienne et la plus récente version
+# de PHP prise en charge.
+#
+# Sur un dépôt public, les minutes sont gratuites : il joue chaque semaine. Sur un dépôt privé, à la
+# main seulement.
+on:
+  schedule:
+    - cron: '41 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  assistant:
+    name: Assistant · PHP ${{ matrix.php }} · paquet ${{ matrix.variante }}
+    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.5']
+        variante: ['public']
+        include:
+          # Le paquet de démonstration importe son contenu à la création du compte : un profil suffit.
+          - { php: '8.5', variante: 'demo', profil: 'complete' }
+    services:
+      db:
+        image: mariadb:11.8
+        env:
+          MARIADB_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=30
+    env:
+      NF_DB_HOST: 127.0.0.1
+      NF_DB_PORT: '3306'
+      NF_DB_USER: root
+      NF_DB_PASS: root
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, mysqli, gd, zip, curl
+          coverage: none
+      # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
+      # Le vendor d'un paquet : sans les dépendances de développement.
+      - name: composer install (production)
+        run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+      - name: L'assistant, joué de bout en bout
+        run: php tools/check-assistant.php --variante=${{ matrix.variante }} ${{ matrix.profil && format('--profil={0}', matrix.profil) || '' }}
+
+  # Les trois serveurs web que le produit documente, chacun avec la configuration qu'il LIVRE
+  # (`.htaccess`, `nginx.conf`, `Caddyfile`), sous la plus ancienne et la plus récente version de PHP :
+  # l'assistant joué sur le vrai serveur, puis un site installé dont on éprouve les refus, la
+  # réécriture et les en-têtes (`check-serveur-web`) et les flux critiques (`check-smoke`).
+  serveur-web:
+    name: ${{ matrix.serveur }} · PHP ${{ matrix.php }}
+    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        serveur: ['apache', 'nginx', 'caddy']
+        php: ['8.2', '8.5']
+    env:
+      COMPOSE_FILE: .github/serveurs-web/compose.yml
+      COMPOSE_PROFILES: ${{ matrix.serveur }}
+      RACINE: ${{ github.workspace }}
+      PHP: ${{ matrix.php }}
+      # Où s'exécutent les outils (là où est PHP), et l'adresse du site vue de là.
+      SVC: ${{ matrix.serveur == 'apache' && 'apache' || 'php' }}
+      URL: ${{ matrix.serveur == 'apache' && 'http://localhost' || format('http://{0}', matrix.serveur) }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, mysqli, gd, zip, curl
+          coverage: none
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
+      - name: composer install (production)
+        run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+      # Le serveur (www-data) écrit dans l'arbre : cache, journaux, configuration, envois.
+      - name: L'arbre, inscriptible par le serveur
+        run: chmod -R a+rwX .
+      # Hors de l'arbre servi : les configurations adaptées ne doivent pas être servies elles-mêmes.
+      - name: Les configurations livrées, adaptées là où elles le disent
+        run: |
+          echo "CONF=$RUNNER_TEMP/conf" >> "$GITHUB_ENV"
+          sh .github/serveurs-web/adapter.sh "$RACINE" "$RUNNER_TEMP/conf"
+      - name: Démarrer ${{ matrix.serveur }}, PHP ${{ matrix.php }} et MariaDB
+        uses: ./.github/actions/compose-up
+        with:
+          args: -d --build --wait
+      - name: L'assistant, joué sur ce serveur (profil complet)
+        run: >-
+          docker compose exec -T -e NF_DB_HOST=db -e NF_DB_USER=root -e NF_DB_PASS=root "$SVC"
+          php tools/check-assistant.php --url="$URL" --racine=/var/www/neofrag --profil=complete
+      - name: Installation complète (tous les addons, un administrateur)
+        run: >-
+          docker compose exec -T -e NF_DB_HOST=db -e NF_DB_USER=root -e NF_DB_PASS=root -e NF_DB_NAME=neofrag "$SVC"
+          php tools/ci-install.php
+      # Le PHP qui sert le site garde en cache d'opcodes la configuration du site que l'assistant vient
+      # d'installer puis d'effacer : ci-install, en ligne de commande, ne peut pas vider ce cache-là, et
+      # le site lisait une config/db.php périmée (vu sous PHP-FPM). On recharge PHP, comme on le fait sur
+      # un serveur après avoir remplacé une configuration à la main.
+      - name: Recharger PHP (sa mémoire d'avant l'installation)
+        run: |
+          if [ "$SVC" = apache ]; then docker compose restart apache; else docker compose kill -s USR2 php; fi
+          docker compose exec -T "$SVC" php -r 'for ($i = 0; $i < 30; $i++) { if (@file_get_contents($argv[1]) !== FALSE) exit(0); sleep(1); } exit(1);' "$URL"
+      - name: Ce que le serveur refuse, ce qu'il sert, ses en-têtes
+        run: docker compose exec -T "$SVC" php tools/check-serveur-web.php --url="$URL" --racine=/var/www/neofrag
+      - name: Les flux critiques (échec au moindre 5xx)
+        run: docker compose exec -T "$SVC" php tools/check-smoke.php "$URL" --email=ci-admin@example.test
+      - name: Journaux des services (si échec)
+        if: failure()
+        run: docker compose logs --tail 80
+      # Ce que voit le site : sa configuration, son verrou, la fin de son journal, et s'il se croit installé.
+      - name: État du site (si échec)
+        if: failure()
+        run: >-
+          docker compose exec -T "$SVC" sh -c 'ls -la config install;
+          tail -n 30 logs/php.log 2>/dev/null;
+          php -r "require \"neofrag/installer.php\"; var_dump(NF\\NeoFrag\\Installer::is_already_installed(\"config\"));"'
+
+  reglages:
+    name: Réglages des addons · PHP ${{ matrix.php }}
+    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.5']
+    services:
+      db:
+        image: mariadb:11.8
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: neofrag
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=30
+    env:
+      NF_DB_HOST: 127.0.0.1
+      NF_DB_PORT: '3306'
+      NF_DB_USER: root
+      NF_DB_PASS: root
+      NF_DB_NAME: neofrag
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, mysqli, gd, zip, curl
+          coverage: none
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
+      - name: composer install (production)
+        run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+      - name: Installation complète (tous les addons, un administrateur)
+        run: php tools/ci-install.php
+      # Un réglage numérique se relit en entier une fois enregistré : c'est la réouverture qui le juge.
+      - name: Chaque écran de réglages s'ouvre, s'enregistre tel quel et se rouvre
+        run: php tools/check-reglages.php --enregistrer

@@ -232,12 +232,11 @@ function lancer(string $commande, int $secondes_max): array
     fclose($tubes[1]);
     fclose($tubes[2]);
 
-    $code = $expire ? 124 : (proc_get_status($proc)['exitcode'] ?? proc_close($proc));
-
-    if ($expire)
-    {
-        proc_close($proc);
-    }
+    // Le code de sortie se prend dans l'état qui a VU la fin : avant PHP 8.3, proc_get_status() ne le rend
+    // qu'une fois, puis -1. Relu ici, il faisait de chaque contrôle un échec sous PHP 8.2 (CI d'extensions,
+    // 2026-10-04) — la CI du dépôt de développement joue ses contrôles sous 8.3 et ne pouvait pas le voir.
+    $code = $expire ? 124 : (int) ($etat['exitcode'] ?? -1);
+    proc_close($proc);
 
     return [$code, $sortie, microtime(TRUE) - $debut];
 }

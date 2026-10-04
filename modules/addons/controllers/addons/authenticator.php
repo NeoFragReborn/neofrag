@@ -119,9 +119,12 @@ class Authenticator extends Controller
 									->exec(function($form) use ($type, $auth){
 										foreach ($auth->_keys as $name)
 										{
+											// Un authentificateur jamais configuré n'a ni clés de développement ni
+											// de production : l'écran les lisait sur un objet vide (huit alertes au
+											// journal par ouverture — trouvé par check-reglages, 2026-10-04).
 											$form->rule($this	->form_text($type.'_'.$name)
 																->title($name)
-																->value($auth->settings()->$type->$name));
+																->value($auth->settings()->$type->$name ?? ''));
 										}
 									});
 						}

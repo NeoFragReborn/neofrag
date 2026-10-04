@@ -4,10 +4,14 @@ declare(strict_types=1);
  * https://neofr.ag
  * Modern dashboard v0.4 — sober stat-cards + activity + system state.
  *
- * couplage(articles): le flux d'activite du tableau de bord agrege le contenu recent de TOUS les
- * modules presents. Chaque requete est dans son propre try/catch : un module absent fait
- * simplement disparaitre sa ligne du flux, il n'interrompt pas le tableau de bord.
- * couplage(bugtracker): idem — meme flux, meme try/catch.
+ * couplage(articles): la carte « Articles publiés » et le flux d'activité ne lisent les articles
+ * que si le module est installé (`$this->module('articles')`) ; sans lui, la carte disparaît.
+ * couplage(bugtracker): la carte « Bugs ouverts », de même (`$this->module('bugtracker')`).
+ *
+ * Jusqu'au 2026-10-04, chaque requête était seulement entourée d'un try/catch : la page tenait,
+ * mais la couche base de données écrit son alerte AVANT de lever l'erreur, et chaque ouverture
+ * du tableau de bord d'un site sans articles ni bugtracker laissait cinq alertes au journal.
+ * Trouvé par check-assistant, qui se connecte au site de chaque profil d'installation.
  */
 
 namespace NF\Modules\Admin\Controllers;
@@ -255,6 +259,12 @@ class Admin extends Controller_Module
 
 	private function _safe_count($table, array $where = [])
 	{
+		// Une table absente compte zéro SANS être interrogée : cf. l'en-tête.
+		if (!$this->db->table_exists($table))
+		{
+			return 0;
+		}
+
 		try {
 			$q = $this->db->from($table);
 			foreach ($where as $w) {
@@ -282,17 +292,20 @@ class Admin extends Controller_Module
 			'trend_icon'  => ''
 		];
 
-		// Articles publiés + brouillons
-		$articles = $this->_safe_count('nf_articles', [['published', TRUE]]);
-		$drafts   = $this->_safe_count('nf_articles', [['published', FALSE]]);
-		$out[] = [
-			'label' => $this->lang('Articles publiés'),
-			'icon'  => 'far fa-newspaper',
-			'value' => number_format($articles, 0, ',', ' '),
-			'trend' => $drafts > 0 ? $drafts.' '.$this->lang('brouillon|brouillons', $drafts) : $this->lang('Aucun brouillon'),
-			'trend_class' => $drafts > 0 ? 'warn' : '',
-			'trend_icon'  => $drafts > 0 ? 'fas fa-pencil-alt' : ''
-		];
+		// Articles publiés + brouillons — si le module est installé
+		if ($this->module('articles'))
+		{
+			$articles = $this->_safe_count('nf_articles', [['published', TRUE]]);
+			$drafts   = $this->_safe_count('nf_articles', [['published', FALSE]]);
+			$out[] = [
+				'label' => $this->lang('Articles publiés'),
+				'icon'  => 'far fa-newspaper',
+				'value' => number_format($articles, 0, ',', ' '),
+				'trend' => $drafts > 0 ? $drafts.' '.$this->lang('brouillon|brouillons', $drafts) : $this->lang('Aucun brouillon'),
+				'trend_class' => $drafts > 0 ? 'warn' : '',
+				'trend_icon'  => $drafts > 0 ? 'fas fa-pencil-alt' : ''
+			];
+		}
 
 		// Commentaires
 		$comments = $this->_safe_count('nf_comment');
@@ -305,19 +318,22 @@ class Admin extends Controller_Module
 			'trend_icon'  => ''
 		];
 
-		// Bugs ouverts (open + in_progress)
-		$bugs_open    = $this->_safe_count('nf_bug_tickets', [['status', 'open']]);
-		$bugs_progress = $this->_safe_count('nf_bug_tickets', [['status', 'in_progress']]);
-		$bugs = $bugs_open + $bugs_progress;
-		$critical = $this->_safe_count('nf_bug_tickets', [['status', 'open'], ['priority', 'critical']]);
-		$out[] = [
-			'label' => $this->lang('Bugs ouverts'),
-			'icon'  => 'fas fa-bug',
-			'value' => number_format($bugs, 0, ',', ' '),
-			'trend' => $critical > 0 ? $this->lang('%d critique|%d critiques', $critical, $critical) : ($bugs === 0 ? $this->lang('Aucun bug en cours') : $this->lang('Aucun critique')),
-			'trend_class' => $critical > 0 ? 'down' : ($bugs === 0 ? 'up' : ''),
-			'trend_icon'  => $critical > 0 ? 'fas fa-exclamation-triangle' : ($bugs === 0 ? 'fas fa-check' : 'fas fa-clipboard-check')
-		];
+		// Bugs ouverts (open + in_progress) — si le module est installé
+		if ($this->module('bugtracker'))
+		{
+			$bugs_open    = $this->_safe_count('nf_bug_tickets', [['status', 'open']]);
+			$bugs_progress = $this->_safe_count('nf_bug_tickets', [['status', 'in_progress']]);
+			$bugs = $bugs_open + $bugs_progress;
+			$critical = $this->_safe_count('nf_bug_tickets', [['status', 'open'], ['priority', 'critical']]);
+			$out[] = [
+				'label' => $this->lang('Bugs ouverts'),
+				'icon'  => 'fas fa-bug',
+				'value' => number_format($bugs, 0, ',', ' '),
+				'trend' => $critical > 0 ? $this->lang('%d critique|%d critiques', $critical, $critical) : ($bugs === 0 ? $this->lang('Aucun bug en cours') : $this->lang('Aucun critique')),
+				'trend_class' => $critical > 0 ? 'down' : ($bugs === 0 ? 'up' : ''),
+				'trend_icon'  => $critical > 0 ? 'fas fa-exclamation-triangle' : ($bugs === 0 ? 'fas fa-check' : 'fas fa-clipboard-check')
+			];
+		}
 
 		return $out;
 	}
@@ -420,7 +436,7 @@ class Admin extends Controller_Module
 			}
 		} catch (\Throwable $e) {}
 
-		try {
+		if ($this->module('articles')) try {
 			$rows = $this->db->select('a.article_id', 'al.title', 'a.date', 'u.username')
 				->from('nf_articles a')
 				->join_lang('nf_articles_lang al', 'article_id', 'a.article_id', NULL, 'LEFT')

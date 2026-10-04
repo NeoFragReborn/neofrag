@@ -21,6 +21,9 @@ declare(strict_types=1);
  *   $reponse = nf_http($serveur->base.'/fr/admin');           // ['code' => 200, 'corps' => …, …]
  *   … le serveur s'arrête tout seul à la fin de l'outil.
  *
+ *   $bocal = new NfBocal();                                   // les cookies, d'une requête à l'autre
+ *   nf_http($serveur->base.'/', ['bocal' => $bocal]);
+ *
  * Variables lues par le routeur (toutes facultatives) :
  *   NF_OUTIL_SESSION   identifiant de session à poser en cookie (session ET session_https)
  *   NF_OUTIL_CONSENT   valeur du cookie `nf_consent` (`essentials` écarte le bandeau cookies)
@@ -83,6 +86,66 @@ final class NfServeur
 
             fclose($x);
             usleep(100000);
+        }
+    }
+}
+
+/**
+ * Un bocal à cookies : ce qu'un navigateur garde d'une réponse à l'autre.
+ *
+ * Sans lui, chaque requête de `nf_http()` arrive sans session : l'assistant d'installation, qui range
+ * en session son jeton anti-falsification et le profil choisi, recommencerait à chaque page, et une
+ * connexion par le vrai formulaire serait oubliée à la requête suivante. Un seul site par bocal : le
+ * domaine et le chemin des cookies ne sont pas lus.
+ */
+final class NfBocal
+{
+    /** @var array<string, string> */
+    public array $cookies = [];
+
+    /** L'en-tête `Cookie:` à envoyer, ou NULL si le bocal est vide. */
+    public function entete(): ?string
+    {
+        if (!$this->cookies)
+        {
+            return NULL;
+        }
+
+        $paires = [];
+
+        foreach ($this->cookies as $nom => $valeur)
+        {
+            $paires[] = $nom.'='.$valeur;
+        }
+
+        return 'Cookie: '.implode('; ', $paires);
+    }
+
+    /**
+     * Range les `Set-Cookie` d'une réponse ; un cookie effacé (valeur vide, `deleted`, expiré) sort.
+     *
+     * @param list<string> $entetes  les lignes brutes de la réponse
+     */
+    public function lire(array $entetes): void
+    {
+        foreach ($entetes as $ligne)
+        {
+            if (!preg_match('/^Set-Cookie:\s*([^=;\s]+)=([^;]*)/i', $ligne, $c))
+            {
+                continue;
+            }
+
+            $efface = $c[2] === '' || $c[2] === 'deleted' || preg_match('/;\s*max-age=0(?![0-9])/i', $ligne)
+                || (preg_match('/;\s*expires=([^;]+)/i', $ligne, $e) && ($t = strtotime($e[1])) !== FALSE && $t < time());
+
+            if ($efface)
+            {
+                unset($this->cookies[$c[1]]);
+            }
+            else
+            {
+                $this->cookies[$c[1]] = $c[2];
+            }
         }
     }
 }
@@ -204,7 +267,10 @@ function nf_encoder_adresse(string $url): string
  * ne laisse pas voir l'adresse d'arrivée de façon fiable, et un contrôle a suivi les liens d'une
  * page ÉTRANGÈRE en croyant être resté sur le site. `suivre => 0` rend la réponse brute.
  *
- * @param array{post?: array<string, string>|null, ajax?: bool, suivre?: int, timeout?: int, agent?: string, entetes?: list<string>} $options
+ * Avec un `bocal`, les cookies reçus sont gardés et renvoyés, à chaque saut de redirection aussi —
+ * c'est ainsi qu'un navigateur suit une connexion.
+ *
+ * @param array{post?: array<string, string|list<string>>|null, ajax?: bool, suivre?: int, timeout?: int, agent?: string, entetes?: list<string>, bocal?: NfBocal|null} $options
  * @return array{code: int, corps: string, arrivee: string, raison: string, entetes: array<string, string>}
  *         `code` vaut 0 quand la requête n'a pas abouti, et `raison` dit alors pourquoi.
  */
@@ -212,6 +278,7 @@ function nf_http(string $url, array $options = []): array
 {
     $post    = $options['post'] ?? NULL;
     $suivre  = $options['suivre'] ?? 5;
+    $bocal   = $options['bocal'] ?? NULL;
     $arrivee = $url;
 
     for ($saut = 0; $saut <= $suivre; $saut++)
@@ -231,6 +298,11 @@ function nf_http(string $url, array $options = []): array
         foreach ($options['entetes'] ?? [] as $entete)
         {
             $entetes[] = $entete;
+        }
+
+        if ($bocal !== NULL && ($cookies = $bocal->entete()) !== NULL)
+        {
+            $entetes[] = $cookies;
         }
 
         $contexte = stream_context_create(['http' => [
@@ -259,6 +331,8 @@ function nf_http(string $url, array $options = []): array
                 $recus[strtolower($t[1])] = trim($t[2]);
             }
         }
+
+        $bocal?->lire($http_response_header ?? []);
 
         $vers = $recus['location'] ?? '';
 

@@ -854,12 +854,8 @@ class Admin extends Controller_Module
 
 		try
 		{
+			// Le cache d'opcodes est prévenu par l'écriture elle-même (Installer::write_file()).
 			\NF\NeoFrag\Installer::write_site_url(NEOFRAG_CMS.'/config', $actuelle);
-
-			if (function_exists('opcache_invalidate'))
-			{
-				@opcache_invalidate(NEOFRAG_CMS.'/config/url.php', TRUE);
-			}
 
 			(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('monitoring.adresse', ['details' => ($enregistree !== '' ? $enregistree : '—').' → '.$actuelle]);
 			notify($this->lang('Adresse du site enregistrée : %s.', $actuelle));

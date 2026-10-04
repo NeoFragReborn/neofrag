@@ -4,8 +4,13 @@ declare(strict_types=1);
 /**
  * check-marketplace — le catalogue publié dit-il la vérité sur les archives qu'il propose ?
  *
- * Famille : statique
+ * Famille : cible
  * Diffusion : publique
+ *
+ * Il juge des archives FABRIQUÉES : un clone du dépôt n'en a pas (elles ne sont pas versionnées), et
+ * il se joue après `php tools/package-addons.php`, ou contre une installation qui les sert. Classé
+ * « statique » jusqu'au 2026-10-04, il rendait `check-all` rouge sur tout clone neuf — 63 « écarts »
+ * qui n'étaient que l'absence des archives (trouvé par check-nouveau-venu).
  *
  * Pourquoi
  * --------
