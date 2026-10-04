@@ -41,8 +41,10 @@ faire tourner ; le site, lui, n'en a pas besoin et reste où il est.
 
 ## 2. Régler le module Discord
 
-Le bot demande deux modules optionnels du site, **API** et **Discord** (*Système → Thèmes & Addons*
-pour les installer).
+Le bot s'appuie sur deux modules du site, **API** et **Discord**. Le profil d'installation *Complet*
+installe les deux ; sinon, *Système → Thèmes & Addons* les ajoute (Discord, un addon à la carte, vient du
+marketplace s'il n'est pas sur le serveur). La synchronisation du forum demande aussi le module
+**Forum**, celle des tickets le module **Bugtracker**.
 
 *Administration → Discord → Connexion* :
 
@@ -71,8 +73,8 @@ Discord interdit à un bot de donner un rôle placé plus haut que le sien.
 
 ## 3. Installer le bot sur sa machine
 
-Chaque version de NeoFrag Reborn a son archive du bot, à côté de celle du site
-(`neofrag-reborn-bot-X.Y.Z.tar.gz`) ; le code est aussi dans le dossier `bot/` du dépôt.
+Le bot se télécharge en archive déjà compilée, `neofrag-reborn-bot-X.Y.Z.tar.gz`. Il a ses propres
+numéros de version, indépendants de ceux du site.
 
 ```bash
 tar xzf neofrag-reborn-bot-X.Y.Z.tar.gz && cd bot
@@ -94,8 +96,9 @@ Pour qu'il tourne en service, démarre avec la machine et redémarre s'il tombe 
 
 Sur la machine, il ne reste que ces deux lignes. Tout le reste arrive par le site.
 
-**Mettre à jour le bot** : remplace le dossier par celui de la nouvelle archive en gardant `.env`,
-puis `npm ci --omit=dev` et redémarre le service. Une nouvelle version du bot qui a besoin de droits
+**Mettre à jour le bot** : remplace le dossier par celui de la nouvelle archive en gardant ta
+configuration (`.env`, ou `/etc/neofrag-bot/bot.env` sous systemd), puis `npm ci --omit=dev` et
+redémarre le service. Une nouvelle version du bot qui a besoin de droits
 de plus sur le site le dit dans l'administration : crée alors une nouvelle clé d'accès.
 
 ## 4. Le piloter depuis l'administration
@@ -249,56 +252,6 @@ réglage *Durée maximale* (90 jours par défaut, un an au plus).
 
 ## Écrire une fonctionnalité
 
-Le bot est écrit en **TypeScript** avec [discord.js](https://discord.js.org/). Une fonctionnalité est
-un dossier de `bot/src/fonctionnalites/`, inscrit dans `bot/src/fonctionnalites/index.ts`, qui
-respecte le contrat de `bot/src/fonctionnalites/types.ts` :
-
-```ts
-import { GatewayIntentBits } from 'discord.js';
-import type { Evenement } from '../../site.js';
-import { TEXTES } from '../../textes.js';
-import type { Contexte, Fonctionnalite, Reglage } from '../types.js';
-
-export class Bienvenue implements Fonctionnalite {
-    readonly nom = 'bienvenue';
-    readonly titre = 'Bienvenue';                                   // dans l'administration
-    readonly description = 'Accueille chaque nouveau membre.';
-    readonly defaut = false;                                        // éteinte au départ
-    readonly reglages = [
-        { cle: 'salon', type: 'salon', defaut: '', salons: [0], libelle: 'Salon de bienvenue' },  // 0 : un salon texte
-    ] as const satisfies readonly Reglage[];
-    readonly intents = [GatewayIntentBits.GuildMembers] as const;  // en plus de ceux de base
-    readonly evenements = ['forum.topic.created'] as const;         // le fil d'événements du site
-
-    demarrer(ctx: Contexte): void {
-        // ctx.client, ctx.guilde, ctx.site (l'API), ctx.config, ctx.reglages, ctx.textes, ctx.journal
-        ctx.journal.info('Bienvenue : prête sur « %s ».', ctx.guilde.name);
-    }
-
-    reconfigurer(ctx: Contexte): void { /* l'administration a changé un réglage */ }
-    tour(ctx: Contexte): void { /* toutes les 30 secondes environ */ }
-    surEvenement(ctx: Contexte, evenement: Evenement): void { /* un événement suivi */ }
-    resynchroniser(ctx: Contexte): void { /* « Resynchroniser » dans l'administration : rattraper ce qui manque */ }
-    arreter(): void { /* retirer ses minuteries et ses écouteurs */ }
-}
-```
-
-- Les **réglages** déclarés (`bool`, `int`, `choix`, `salon`, `role`, `texte`) font d'eux-mêmes leur
-  formulaire dans l'administration, bornes vérifiées ; `ctx.reglages` donne la valeur choisie. Un
-  réglage `salon` dit quels types de salons Discord il accepte (`salons` : `0` texte, `15` Forum…).
-- Seul `demarrer()` est obligatoire ; les autres points d'entrée sont facultatifs.
-- Une fonctionnalité qui a des **commandes** les déclare dans `commandes(textes)` et y répond dans
-  `surCommande()` ; boutons et fenêtres arrivent dans `surInteraction()`, si leur `customId` commence
-  par son nom (`bienvenue:…`).
-- Une fonctionnalité qui lève une erreur l'écrit au journal sans emporter le bot ni les autres.
-- **Tout ce qui s'affiche sur Discord** — messages, réponses, descriptions des commandes — vit dans
-  `bot/src/textes.ts` (`TEXTES`), en modèles français ; `ctx.textes.dans(locale, TEXTES.…, …)` le rend
-  dans la langue de chacun, `textes.localisations()` pour les descriptions des commandes.
-- **Le journal est traduit par le site** : écris un *modèle* et ses valeurs
-  (`ctx.journal.warn('Le rôle « %s » est mal placé.', role.name)`), jamais une phrase assemblée.
-- Chaque modèle — du journal comme de `TEXTES` — s'ajoute à `Discord::textes_du_bot()`
-  (`modules/discord/discord.php`), puis `php tools/check-langs.php --fix` et
-  `php tools/fill-langs.php` le traduisent : un test du bot échoue si un modèle manque.
-- `npm test` compile et lance les tests (`*.test.ts`, lanceur intégré de Node) ; la CI les joue à
-  chaque envoi. Une règle qui ne dépend pas de Discord gagne à vivre dans son propre fichier, testé
-  (`roles-temporaires/regles.ts`, `bugtracker/etiquettes.ts`).
+Le bot s'étend par **fonctionnalités**, chacune dans un dossier, en TypeScript. La marche à suivre — le
+contrat d'une fonctionnalité, ses réglages, ses commandes, ses textes traduits, ses tests — est dans le
+guide du contributeur du bot, `CONTRIBUTING.md`, à la racine de son code.

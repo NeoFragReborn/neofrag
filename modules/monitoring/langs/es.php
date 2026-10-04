@@ -278,4 +278,6 @@ return [
 	'c5bc2c51' => 'Contraseña de webmaster',
 	'e6fff20f' => 'En su sitio, esta contraseña protege la edición de archivos y las acciones sensibles.',
 	'2fbd5770' => 'Archivo de ejemplo: en la demostración, el gestor de archivos no muestra ningún archivo real del servidor. En su sitio, aquí lee y modifica sus archivos, protegidos por la contraseña de webmaster.',
+	'fe7b1e4c' => 'La extensión %s debe estar activada',
+	'aa514b0e' => 'Este PHP debe poder cifrar las contraseñas con %s',
 ];

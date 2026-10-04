@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-classes-bs4 — aucun legs de Bootstrap 3 ou 4 : classes disparues, attributs `data-*` sans `bs`, classes fabriquées par concaténation.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi cet outil existe
  * -------------------------
@@ -49,7 +50,7 @@ declare(strict_types=1);
  *   - `Button::modal()`          — chaque bouton qui ouvre une modale déclarative ;
  *   - `Buttons\\Dropdown`        — chaque bouton qui déroule un menu.
  *
- * Le premier a été signalé à l'œil par le mainteneur le 2026-09-22 : la croix de l'en-tête fermait la
+ * Le premier a été signalé à l'œil le 2026-09-22 : la croix de l'en-tête fermait la
  * modale, le bouton « Fermer » juste en dessous ne faisait rien.
  *
  * Et une troisième écriture, trouvée dans le journal de la démonstration
@@ -68,7 +69,7 @@ declare(strict_types=1);
  * ---------------------------------------
  * Le contrôle acceptait jusque-là une classe héritée dès qu'une feuille lui redonnait un style : le
  * « pont » (`css/nf-bs5-bridge.css`) rétablissait `.form-group`, `.media`, `.close`, `.btn-block`,
- * `.card-columns`… et le verdict était vert. le mainteneur a demandé que tout soit « bien migré et/ou
+ * `.card-columns`… et le verdict était vert. Il a été demandé que tout soit « bien migré et/ou
  * adapté pour BS5 » : un nom de Bootstrap 3 ou 4 dans le balisage est désormais refusé, qu'il soit
  * redéfini ou non. Une classe qui sert de crochet au produit se RENOMME (préfixe `nf-`) et se style
  * sous son propre nom — elle ne prétend plus venir de Bootstrap.
@@ -85,7 +86,7 @@ declare(strict_types=1);
  *
  * Et le BALISAGE, qu'aucun nom ne trahit (2026-09-23, le soir)
  * -----------------------------------------------------------
- * le mainteneur a vu sur son téléphone les indicateurs du carrousel afficher « 1. 2. 3. » : le carrousel
+ * Un téléphone a montré les indicateurs du carrousel sous la forme « 1. 2. 3. » : le carrousel
  * était écrit `<ol><li>` comme en Bootstrap 4, avec des noms de classes parfaitement valides. Le
  * contrôle lit désormais les STRUCTURES (`STRUCTURES`) : carrousel en liste ou en liens, bouton de
  * fermeture qui garde son « × », accordéon « carte + bouton-lien », `data-bs-parent` posé sur le
@@ -366,8 +367,8 @@ function classes_grille_bs3(): array
 /*
  * Les STRUCTURES de composants que Bootstrap 5 a changées — le nom des classes n'y suffit pas.
  *
- * Ce contrôle ne cherchait que des noms de classes et d'attributs. Le 2026-09-23, le mainteneur a vu sur
- * son téléphone les indicateurs du carrousel afficher « 1. 2. 3. » à côté de leurs traits : le
+ * Ce contrôle ne cherchait que des noms de classes et d'attributs. Le 2026-09-23, un téléphone a
+ * montré les indicateurs du carrousel afficher « 1. 2. 3. » à côté de leurs traits : le
  * carrousel était écrit `<ol class="carousel-indicators"><li …>`, le balisage de Bootstrap 4, que
  * Bootstrap 5 remplace par des `<button>`. Aucune classe morte : les noms sont les mêmes, c'est la
  * STRUCTURE qui a changé. La même passe a trouvé huit boutons de fermeture qui gardaient leur « × »

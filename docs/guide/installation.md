@@ -5,8 +5,11 @@ Composer, ni accès shell ne sont nécessaires — le paquet embarque ses dépen
 
 ## Prérequis
 
-- **PHP 8.2+** avec les extensions `mysqli`, `gd`, `intl`, `mbstring`, `zip`, `curl`.
-- **MySQL 5.7+** ou **MariaDB 10.5+**.
+- **PHP 8.2 à 8.5** avec les extensions `mysqli`, `mbstring`, `openssl`, `curl`, `gd`, `zip`, `intl`,
+  `fileinfo` et `iconv`, et un PHP qui sait hacher les mots de passe en **Argon2** (c'est le cas de la
+  plupart). Elles s'activent dans le panneau de l'hébergeur, souvent sous « Version de PHP » ou
+  « Extensions ». L'assistant les vérifie toutes, et refuse de continuer s'il en manque une.
+- **MySQL 5.7+** ou **MariaDB 10.5+**, moteur **InnoDB**, jeu de caractères **utf8mb4**.
 - **Apache** avec `mod_rewrite` (un `.htaccess` est livré) ; ou **nginx** (`nginx.conf`) ; ou **Caddy**
   (`Caddyfile`).
 - Une base de données **vide** et ses identifiants.
@@ -29,7 +32,7 @@ L'assistant se déroule en **cinq étapes** : *Prérequis* → *Profil du site* 
    |---|---|
    | **Complet** | le cœur et tous les modules du paquet |
    | **Gaming / eSport** | le cœur et l'identité gaming : forum, équipes, jeux, événements, recrutement, palmarès… |
-   | **Communauté** | le cœur, les actualités, le forum, la galerie |
+   | **Communauté** | le cœur, les actualités, le forum, la galerie et l'API (pour le bot Discord et les intégrations) |
    | **Association / club** | le cœur, les actualités, le forum, la galerie, le calendrier, les dons, la newsletter, le wiki et la FAQ |
    | **Cœur seul** | comptes, permissions, pages, paramètres — rien de plus |
 
@@ -45,7 +48,8 @@ qui ne sont pas dans le paquet depuis le [marketplace](marketplace.md).
 ## Installation en ligne de commande
 
 Pour un déploiement **scriptable** (serveur, provisioning), `install/cli.php` fait la même chose que
-l'assistant, sans navigateur. Il installe le profil **Complet**.
+l'assistant, sans navigateur — prérequis compris : il refuse de continuer s'il en manque un. Il installe
+le profil **Complet**.
 
 ```bash
 # Mot de passe administrateur via variable d'environnement (invisible dans la liste des processus) :
@@ -58,14 +62,16 @@ php install/cli.php \
 
 Sans arguments, il passe en **mode interactif** (mot de passe masqué). Options : `--db-port`,
 `--create-db` (crée la base), `--dry-run` (valide la configuration et teste la connexion sans rien
-écrire), `--force` (réinstalle), `--no-lock` (ne pose pas le verrou), `--help`.
+écrire), `--force` (réinstalle), `--no-lock` (ne pose pas le verrou), `--lang=fr|en|de|es|it|pt` (la
+langue des messages), `--help`.
 
 ## Sécuriser l'accès après l'installation
 
 À la fin, l'assistant pose un **verrou** (`install/db.txt`) : revisiter `/install/` n'affiche plus rien
 d'exploitable. Par précaution, **supprime ou renomme le dossier `install/`** — il n'est plus nécessaire.
-Active **HTTPS** si l'hébergeur ne l'a pas fait. Sous Caddy, le `Caddyfile` livré refuse déjà l'accès à
-`config/`, `logs/`, `install/`, `tools/`, `tests/`, `docs/` et aux fichiers sensibles.
+Active **HTTPS** si l'hébergeur ne l'a pas fait. Sous nginx ou Caddy, pars des exemples livrés à la
+racine (`nginx.conf`, `Caddyfile`) : ils refusent déjà l'accès aux dossiers et fichiers sensibles, comme
+le `.htaccess` sous Apache.
 
 ## Premiers réglages
 

@@ -10,7 +10,7 @@
  * La palette est declaree sur `.mkt` ET sur `.mkt-modal` : la fenetre de detail est ecrite EN DEHORS
  * du bloc `.mkt`, en fin de page, et n'heritait donc d'aucune de ces couleurs. `var(--mkt-solide)`
  * ne valait rien, la declaration entiere etait invalide, et le fond restait transparent — on lisait
- * le texte de la fiche par-dessus les cartes. Corrige apres trois signalements de le mainteneur, le
+ * le texte de la fiche par-dessus les cartes. Corrige apres trois signalements, le
  * 2026-09-22 : les deux premieres fois j'avais corrige la COULEUR, jamais sa portee.
  */
 .mkt,

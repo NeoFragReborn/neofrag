@@ -3,7 +3,9 @@ declare(strict_types=1);
 require_once __DIR__.'/outil.php';
 
 /**
- * NeoFrag Reborn — manifeste de découplage / packaging (3 tiers).
+ * addons-manifest — les trois tiers d'addons (cœur, identité, à la carte), dérivés des déclarations.
+ *
+ * Diffusion : publique
  *
  * Ce fichier était, jusqu'au 2026-09-15, une **table écrite à la main** figée le 2026-06-06. C'était
  * la seconde source de vérité sur les tiers, à côté des déclarations des addons eux-mêmes — et les
@@ -22,8 +24,8 @@ require_once __DIR__.'/outil.php';
  * AUCUNE des deux listes : il ne doit être ni packagé ni publié au catalogue.
  *
  * La forme de retour est inchangée — `['identity' => ['module' => [...], 'widget' => [...], 'theme' =>
- * [...]], 'optional' => [...]]` — pour les trois consommateurs : tools/package-addons.php,
- * tools/un outil interne.php et tools/dump-schema.php.
+ * [...]], 'optional' => [...]]` — pour ses consommateurs : tools/package-addons.php, tools/dump-schema.php
+ * et la fabrique des dépôts publics.
  *
  * ⚠ Ce qui reste vrai et n'est PAS déductible d'ici : les thèmes granite/blockcraft/forge référencent
  * les widgets `talks` et `slider` dans leurs dispositions. Ces deux widgets doivent donc rester au

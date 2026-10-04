@@ -5,6 +5,7 @@ declare(strict_types=1);
  * ci-install — installation non interactive, pour la CI ou un montage local rapide.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Ce qu'il fait
  * -------------

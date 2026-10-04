@@ -11,7 +11,7 @@
 -- Le pas suivant n'a jamais ete fait. Resultat, sur toute installation existante : la mention
 -- « Propulse par NeoFrag » ne flotte pas a droite du pied de page, elle tombe a la ligne, a gauche.
 --
--- Verifie le 2026-09-20 : les trois installations du VPS — production, demonstration et atelier —
+-- Verifie le 2026-09-20 : les trois installations du projet — production, demonstration et essai —
 -- portaient la valeur fautive.
 --
 -- On ne touche qu'aux REGLAGES, jamais au contenu redige par les membres : une actualite ou un

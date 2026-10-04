@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-widget-reglages — aucun checker de widget ne lit un réglage sans valeur de repli.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi ce contrôle existe
  * ---------------------------

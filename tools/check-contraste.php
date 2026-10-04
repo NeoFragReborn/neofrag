@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-contraste — le contraste WCAG du texte, thème par thème et mode par mode, mesuré dans un navigateur.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

@@ -2,7 +2,9 @@
 declare(strict_types=1);
 /**
  * https://translate.neofr.ag
- * @author: NeoFrag — i18n sync 2026-05-03
+ * @author: FoxLey
+ * @author: eResnova
+ * Complété par NeoFrag Reborn (traductions synchronisées le 2026-05-03).
  */
 
 return [
@@ -83,4 +85,7 @@ return [
 	'bc645dc3' => 'Absent',
 	'caf517ea' => 'Dashboard and central administration panel.',
 	'c0833bb9' => '%d critical|%d critical',
+	'1ffdbac4' => 'Required PHP extensions',
+	'11bbb161' => 'Missing: %s',
+	'cc32ed89' => 'All present',
 ];

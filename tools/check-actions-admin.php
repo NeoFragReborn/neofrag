@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-actions-admin — dans l'administration, un bouton « modifier » est neutre, un bouton « supprimer » est un contour rouge avec une corbeille.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi ce contrôle existe
  * ---------------------------

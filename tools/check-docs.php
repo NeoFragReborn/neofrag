@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-docs — la documentation respecte ses règles : chiffres justes, renvois vivants, rien d'orphelin ni de recopié.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
@@ -27,8 +28,14 @@ declare(strict_types=1);
  *      CHANGELOG racontent le passé, ils en sont dispensés) ;
  *   5. aucune PROSE RECOPIÉE : une même phrase de plus de 80 caractères dans deux documents
  *      vivants est une copie, qui divergera — on renvoie, on ne recopie pas ;
- *   6. les documents vivants restent LISIBLES : `les notes du mainteneur` tourne vers l'archive
- *      au-delà de 400 lignes, et aucun document vivant ne dépasse 900 lignes.
+ *   6. les documents vivants restent LISIBLES : `docs/internal/journal.md` tourne vers l'archive
+ *      au-delà de 400 lignes, et aucun document vivant ne dépasse 900 lignes ;
+ *   7. la CLOISON : un document public — tout ce qui n'est pas sous `docs/internal/`, CHANGELOG
+ *      compris — ne renvoie jamais aux documents de travail, ne cite ni fiche ni `TODO.md`, et ne
+ *      nomme pas le mainteneur par son pseudo, hors de son crédit (« maintenue par … ») : la copie
+ *      publique ne les porte pas, le renvoi y serait mort. Le 2026-10-04, la politique de sécurité
+ *      publique renvoyait encore à un audit et à une fiche internes, et annonçait comme limite une
+ *      purge faite depuis un mois.
  *
  * Usage
  * -----
@@ -40,6 +47,9 @@ require __DIR__.'/lib/outil.php';
 require __DIR__.'/lib/depot.php';
 
 [$o] = nf_options(['verbeux' => FALSE]);
+
+// Les chiffres d'inventaire décrivent le produit entier : sans les addons à la carte, rien à juger.
+nf_exiger_assemblage('la documentation');
 
 $root    = nf_racine();
 $erreurs = [];
@@ -226,7 +236,7 @@ foreach ($vivants as $doc)
 
         // « NeoFrag Reborn X.Y.Z » dans un document qui décrit le présent : la version du code. Six
         // documents se disaient « vérifiés contre la 1.1.0 » à la 1.2.17 (2026-10-02). Les documents
-        // de travail (`les notes du mainteneur`) racontent les versions passées et en sont dispensés.
+        // de travail (`docs/internal/`) racontent les versions passées et en sont dispensés.
         if (!str_contains($doc, '/docs/internal/') && $version !== ''
             && preg_match_all('/NeoFrag Reborn (\d+\.\d+\.\d+)/u', $affirme, $m))
         {
@@ -376,7 +386,9 @@ foreach ($documents as $fichier)
 // ══ 3. Aucun document orphelin sous docs/ ═══════════════════════════════════════════════════════
 foreach ($documents as $fichier)
 {
-    if (!str_contains($fichier, '/docs/') || str_ends_with($fichier, '/docs/README.md'))
+    // Les deux index sont des points d'entrée : le public (`docs/README.md`) et celui des documents de
+    // travail (`docs/internal/README.md`), qu'aucun document public n'a le droit de citer (règle 7).
+    if (!str_contains($fichier, '/docs/') || str_ends_with($fichier, '/docs/README.md') || str_ends_with($fichier, '/docs/internal/README.md'))
     {
         continue;
     }
@@ -455,6 +467,42 @@ foreach ($vivants as $fichier)
     if ($lignes > $limite)
     {
         $erreurs[] = sprintf('%s — %d lignes, plus de %d : le raccourcir, ou faire tourner ses entrées anciennes vers docs/internal/archive/', $rel($fichier), $lignes, $limite);
+    }
+}
+
+// ══ 7. La cloison : un document public ne renvoie jamais au travail interne ════════════════════════
+const CLOISON = [
+    '#(?<![\w-])(?:\.\./)*(?:docs/)?internal/#'                                   => 'renvoie aux documents de travail (`docs/internal/`)',
+    '/\bTODO\.md\b/'                                                               => 'renvoie à l\'ancien tableau des chantiers (`TODO.md`)',
+    '/\b[Ff]iches? [ABC]\d{1,2}\b|\((?:[ABC]\d{1,2})(?:, ?[ABC]\d{1,2})*\)/'      => 'cite une fiche de travail',
+    '/\bLuandre\b/'                                                                => 'nomme le mainteneur par son pseudo',
+];
+
+/**
+ * La seule place du pseudo dans un document public : le crédit, sous cette forme. Le mainteneur a
+ * choisi (2026-10-04) d'être neutre partout — « le mainteneur » — et crédité une fois, dans le README
+ * public et le profil de l'organisation.
+ */
+const CREDIT = '/\b[Mm]aintenue? par \*{0,2}Luandre\*{0,2}/';
+
+foreach ($documents as $fichier)
+{
+    if (str_contains($fichier, '/docs/internal/'))
+    {
+        continue;
+    }
+
+    foreach (file($fichier, FILE_IGNORE_NEW_LINES) ?: [] as $i => $ligne)
+    {
+        foreach (CLOISON as $motif => $quoi)
+        {
+            $verifie++;
+
+            if (preg_match($motif, $ligne) && !($quoi === CLOISON['/\bLuandre\b/'] && preg_match(CREDIT, $ligne)))
+            {
+                $erreurs[] = sprintf("%s:%d — %s : la copie publique ne l'a pas", $rel($fichier), $i + 1, $quoi);
+            }
+        }
     }
 }
 

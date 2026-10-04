@@ -86,4 +86,31 @@ final class HelpersFileTest extends TestCase
         $this->assertSame('500.00 B', human_size(500));
         $this->assertSame('1.00 MB', human_size(1048576));
     }
+
+    public function test_les_sauvegardes_anciennes_se_retirent_jamais_les_cinq_dernieres(): void
+    {
+        $maintenant = strtotime('2026-11-01 12:00:00');
+        $jour       = 86400;
+        $sauvegardes = [];
+
+        // Huit sauvegardes : une par semaine, la plus récente hier.
+        for ($i = 0; $i < 8; $i++)
+        {
+            $date = $maintenant - $jour - $i * 7 * $jour;
+            $sauvegardes[date('YmdHis', $date).'-'.str_repeat(dechex($i), 16).'.zip'] = $date;
+        }
+
+        $sauvegardes['.htaccess']     = $maintenant - 400 * $jour;
+        $sauvegardes['mon-export.zip'] = $maintenant - 400 * $jour;
+
+        $retirer = nf_sauvegardes_a_retirer($sauvegardes, $maintenant);
+
+        $this->assertCount(3, $retirer, 'les cinq plus récentes restent, les trois autres ont plus de trente jours');
+        $this->assertNotContains('mon-export.zip', $retirer, 'un fichier que la sauvegarde n\'a pas fait n\'est jamais retiré');
+        $this->assertNotContains('.htaccess', $retirer);
+
+        $recentes = array_slice($sauvegardes, 0, 3, TRUE);
+        $this->assertSame([], nf_sauvegardes_a_retirer($recentes, $maintenant), 'moins de cinq : rien ne part');
+        $this->assertSame([], nf_sauvegardes_a_retirer(array_map(static fn () => $maintenant - $jour, $sauvegardes), $maintenant), 'toutes récentes : rien ne part');
+    }
 }

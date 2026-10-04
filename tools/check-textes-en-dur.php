@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-textes-en-dur — aucun texte d'interface écrit en dur en français : tout passe par les traductions.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
@@ -14,7 +15,7 @@ declare(strict_types=1);
  *
  * Le 2026-09-23, le parcours du site en anglais (`check-mise-en-page --langue=en`) en a relevé 340
  * sur les pages qu'il visite. Mais il ne voit que les pages qu'il visite : ni les fenêtres qu'on
- * ouvre, ni les messages d'une action, ni les e-mails. le mainteneur, le même jour : « tout le site vitrine
+ * ouvre, ni les messages d'une action, ni les e-mails. La règle, posée le même jour : « tout le site
  * et tout le CMS (modules, widgets, thèmes, réglages, boutons…) doit être multilingue ». Ce contrôle
  * lit donc les SOURCES : chaque chaîne, chaque texte de gabarit, chaque chaîne de script.
  *

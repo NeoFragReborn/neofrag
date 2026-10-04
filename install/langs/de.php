@@ -199,4 +199,11 @@ return [
 	'f43a187f' => 'Erneut prüfen',
 	'6b41f3af' => 'Verein / Club',
 	'efd057dc' => 'News, Forum, Galerien, Kalender, Spenden, Newsletter, Wiki und FAQ. Alles, um einen Verein oder Club zu beleben, ohne das E-Sport-Rüstzeug.',
+	'0cfd79fc' => 'Inhalte (Wiki-Dokumentation und Demo)…',
+	'07d371b4' => 'Inhalte (Wiki-Dokumentation)…',
+	'0a0551e7' => 'PHP %s oder neuer ist erforderlich (dieses PHP: %s).',
+	'7338e32d' => 'Dieses PHP kann Passwörter nicht mit %s hashen: Es wird ein mit Argon2 kompiliertes PHP benötigt.',
+	'c54fdfde' => 'Passwort-Hashing (%s)',
+	'23bcdfc3' => 'verfügbar',
+	'c2f31600' => 'fehlt in diesem PHP',
 ];

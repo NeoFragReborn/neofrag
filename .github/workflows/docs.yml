@@ -19,7 +19,7 @@ jobs:
   docs:
     name: Documentation ↔ code
     if: vars.CI_ENVOI != 'pause'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
@@ -27,6 +27,11 @@ jobs:
         with:
           php-version: '8.3'
           coverage: none
+      # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: Garde documentation ↔ code
         run: php tools/check-docs.php
       - name: Garde des conventions des outils (catalogue de tools/README.md)

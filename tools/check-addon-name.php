@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-addon-name — aucune lecture `->name` sur un addon chargé : elle rend FALSE en silence, le nom est dans `info()->name`.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi ce contrôle existe
  * ---------------------------

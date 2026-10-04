@@ -1,4 +1,4 @@
--- rappels du calendrier.
+-- Rappels du calendrier.
 --
 -- Le module `events` sait rappeler ses evenements a leurs PARTICIPANTS depuis longtemps. Le
 -- calendrier generique n'a pas de participants : il lui fallait d'abord un moyen de suivre un

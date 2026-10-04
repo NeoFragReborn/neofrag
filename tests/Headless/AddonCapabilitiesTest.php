@@ -30,9 +30,16 @@ final class AddonCapabilitiesTest extends HeadlessTestCase
 	/** Le défaut qui a motivé ce chantier : nebula était supprimable. */
 	public function test_les_themes_non_choisis_ne_sont_pas_supprimables(): void
 	{
-		foreach (['admin'   => 'le back-office',
-		          'nebula'  => 'le seul thème public livré',
-		          'vitrine' => 'notre propre site, non distribué'] as $nom => $pourquoi)
+		$themes = ['admin' => 'le back-office', 'nebula' => 'le seul thème public livré'];
+
+		// La vitrine n'existe que dans le dépôt de développement : le produit publié ne la porte jamais,
+		// et ce test y échouait (« Addon theme:vitrine introuvable », banc d'essai du 2026-10-04).
+		if (is_dir(dirname(__DIR__, 2).'/themes/vitrine'))
+		{
+			$themes['vitrine'] = 'notre propre site, non distribué';
+		}
+
+		foreach ($themes as $nom => $pourquoi)
 		{
 			$this->assertFalse($this->addon('theme', $nom)->is_removable(),
 				"Le thème « $nom » ($pourquoi) ne doit pas être supprimable.");

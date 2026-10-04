@@ -1,13 +1,14 @@
 # Le marketplace
 
-Le **marketplace** sert à **mettre à jour** tes addons et à **ajouter des addons tiers** non livrés
-dans le paquet. NeoFrag Reborn s'installe déjà **complet** (tous les modules/widgets/thèmes du paquet,
-modèle « tout bundlé ») ; le marketplace intervient *après* l'installation, depuis l'administration.
+Le **marketplace** sert à **mettre à jour** tes addons et à **installer ceux qui ne sont pas sur ton
+serveur**. Il ne propose que les addons officiels de NeoFrag Reborn, que le paquet d'installation contient
+déjà tous : il sert donc surtout aux mises à jour, et à reprendre un addon que tu avais supprimé. Il
+intervient *après* l'installation, depuis l'administration.
 
-Le catalogue et les archives sont servis depuis **neofrag-reborn.xyz**. Chaque archive est vérifiée
-par **empreinte SHA-256** au téléchargement (intégrité), via HTTPS.
+Le catalogue et les archives sont servis depuis **neofrag-reborn.xyz**, en HTTPS ; chaque archive est
+vérifiée par **empreinte SHA-256** au téléchargement.
 
-## Installer un addon tiers
+## Installer un addon
 
 Deux chemins :
 
@@ -21,7 +22,8 @@ enregistre l'addon (ainsi que son widget apparié, le cas échéant).
 
 La page **Marketplace** (front) présente chaque addon en fiche avec un bouton **Télécharger**. Tu peux
 aussi : télécharger le `.zip`, puis **Admin → Thèmes & Addons → Ajouter** et envoyer l'archive (l'upload
-est validé : les archives au contenu non sûr sont refusées).
+est validé : les archives au contenu non sûr sont refusées). C'est aussi le chemin d'un addon que tu as
+écrit toi-même : zippe son dossier et envoie-le.
 
 ## Mettre à jour ou retirer
 
@@ -36,8 +38,10 @@ est validé : les archives au contenu non sûr sont refusées).
 > déjà présents, à configurer dans les réglages — ils ne passent pas par le marketplace.
 
 > **Marketplace injoignable ?** Si l'écran « Mises à jour » affiche « Marketplace injoignable », vérifie
-> que ton serveur peut sortir en **HTTPS** vers `neofrag-reborn.xyz`. Le catalogue est fixé à cette origine ;
-> un administrateur peut la surcharger (vers un hôte autorisé, en HTTPS) via le réglage `nf_marketplace_url`.
+> que ton serveur peut sortir en **HTTPS** vers `neofrag-reborn.xyz`. Le catalogue est fixé à cette
+> origine : la liste des hôtes autorisés est écrite dans le code (`MARKETPLACE_HOSTS`,
+> `neofrag/installer.php`), et le réglage `nf_marketplace_url`, sans écran d'administration, ne peut
+> désigner qu'une adresse HTTPS sur ces hôtes.
 
 ## Sécurité
 
@@ -48,38 +52,28 @@ l'ajout/mise à jour d'un addon (extraction + `install.sql`/migrations SQL idemp
 
 ## Pour les auteurs d'addons
 
-Le catalogue est généré depuis le dépôt par `tools/package-addons.php`, qui zippe chaque addon
-(dossier `<name>/` à la racine de l'archive) et produit `marketplace/catalog.json` :
+Le catalogue est généré par `tools/package-addons.php`, qui zippe chaque addon (dossier `<name>/` à la
+racine de l'archive) et produit `marketplace/catalog.json`. Une entrée réelle, abrégée :
 
 ```json
 {
-  "schema": 1, "base_version": "1.0.0",
+  "schema": 1, "base_version": "1.2.22",
   "addons": [{
-    "type": "module", "name": "wiki", "tier": 2, "category": "contenu",
-    "title": "Wiki", "version": "1.0", "file": "modules/wiki.zip",
-    "size": 15114, "sha256": "…", "provides_widgets": []
+    "type": "module", "name": "quotes", "tier": 2, "category": "contenu",
+    "title": "Citations", "description": "Recueil de citations classées, avec leur auteur et leur source.",
+    "i18n": { "en": { "title": "Quotes", "description": "…" } },
+    "version": "1.0", "author": "NeoFrag Reborn", "license": "LGPLv3 <https://neofr.ag/license>",
+    "file": "modules/quotes.zip", "preview": "modules/quotes.jpg", "size": 60556, "sha256": "…",
+    "requires": { "base": ">=1.2.22", "addons": [] }, "provides_widgets": [], "install": "zip"
   }]
 }
 ```
 
-`catalog.json` et les `.zip` doivent être publiés **ensemble** (jeu cohérent du même run : les empreintes
-SHA-256 dépendent du run). Pour proposer ton addon, suis les guides
-[créer un module](create-a-module.md), [un widget](create-a-widget.md) ou
-[un thème](create-a-theme.md), puis zippe son dossier.
-
-## Héberger le catalogue (opérateur)
-
-Le marketplace est un **jeu de fichiers statiques** servi sur le domaine de la marketplace : `catalog.json`
-+ les `.zip` (rangés sous `modules/`, `widgets/`, `themes/`).
-
-1. `php tools/package-addons.php` → (re)génère `marketplace/catalog.json` + les zips à jour.
-2. Uploade le contenu de `marketplace/` à la racine du site → `https://<host>/marketplace/catalog.json`.
-3. Le CMS pointe vers ce catalogue via **`nf_marketplace_url`** (défaut : `https://neofrag-reborn.xyz/marketplace`,
-   **sans `www`**). Origines autorisées (anti-SSRF, HTTPS:443) : `neofrag-reborn.xyz` et `www.neofrag-reborn.xyz` ;
-   pour un autre domaine, adapte `nf_marketplace_url` **et** `MARKETPLACE_HOSTS` dans `neofrag/installer.php`.
-
-À refaire **à chaque changement d'addon** (version ou fichiers) : les SHA-256 du catalogue doivent
-correspondre aux zips publiés (même run).
+`catalog.json` et les `.zip` se publient **ensemble** : les empreintes SHA-256 ne valent que pour les
+archives du même passage. Le catalogue officiel est publié à chaque version, et un site ne peut pas en
+suivre un autre sans modifier `MARKETPLACE_HOSTS`. Un addon que tu écris — guides :
+[créer un module](create-a-module.md), [un widget](create-a-widget.md), [un thème](create-a-theme.md) —
+s'installe sur n'importe quel site par *Thèmes & Addons → Ajouter*.
 
 ## Mise à jour du cœur (NeoFrag lui-même)
 
@@ -94,13 +88,10 @@ Deux chemins pour l'appliquer.
 de mise à jour, vérifie son empreinte, superpose les fichiers, applique les migrations en attente et
 recompile les feuilles de style.
 
-Ce bouton était désactivé sur ce fork (`NEOFRAG_ALLOW_AUTOUPDATE`) parce que l'ancien mécanisme téléchargeait
-la release **upstream** (`neofrag.download`) et l'étalait par-dessus, ce qui aurait écrasé le code Reborn
-divergé. Un interrupteur global empêchait toutefois aussi les mises à jour légitimes. Il est remplacé par
-quatre garanties de nature :
+Le bouton n'accepte que la bonne mise à jour, par quatre garanties :
 
-1. l'**origine** vient de la même allow-list que le marketplace — `neofrag.download` n'y est pas, et une
-   valeur injectée en base ne peut pas l'y faire entrer ;
+1. l'**origine** vient de la même liste blanche que le marketplace, et une valeur injectée en base ne
+   peut pas en sortir ;
 2. `version.json` ne fournit qu'un **nom de fichier**, jamais une URL : ni hôte, ni chemin, donc ni
    redirection ni remontée de répertoire ;
 3. l'empreinte **SHA-256** est vérifiée **avant** qu'un seul fichier du site ne soit touché ;
@@ -115,23 +106,10 @@ les versions.
 Télécharge `neofrag-reborn-public-<version>.zip` et remplace les fichiers (hors `config/`, `upload/`,
 `backups/`), puis visite le site — les migrations s'appliquent ([guide de déploiement](../deploy-ftp.md#mettre-à-jour-un-site-déjà-en-ligne)).
 
-### Publier une mise à jour (opérateur)
+### Ce que publie chaque version
 
-`php tools/build-release.php` produit, en plus des paquets d'installation, **trois fichiers à publier
-ensemble** sur l'origine de mise à jour (`https://neofrag-reborn.xyz/update/` par défaut, surchargeable
-via `nf_monitoring_check_url` vers un hôte autorisé) :
-
-| Fichier | Rôle |
-|---|---|
-| `neofrag-reborn-update-<v>.zip` | le paquet, **à plat** (aucun dossier racine) |
-| `version.json` | version publiée, nom du zip, son SHA-256, sa taille |
-| `checksum.json` | une empreinte MD5 par fichier livré, pour le contrôle d'intégrité du Monitoring |
-
-> Le paquet de mise à jour est **plat**, contrairement aux paquets d'installation qui rangent tout sous
-> `neofrag-reborn/`. C'est essentiel : l'updater écrit chaque entrée à son propre chemin, donc un paquet
-> à dossier racine créerait un sous-dossier `neofrag-reborn/` au lieu de remplacer quoi que ce soit — la
-> mise à jour « réussirait » sans rien mettre à jour.
-
-> Les trois fichiers forment un **jeu cohérent d'un même run** : le SHA-256 de `version.json` et les
-> empreintes de `checksum.json` ne valent que pour ce zip précis. Publier l'un sans les autres fait
-> échouer la vérification côté site.
+Chaque version publie sur l'origine de mise à jour (`https://neofrag-reborn.xyz/update/`) trois fichiers
+qui forment un jeu cohérent : le paquet de mise à jour, `version.json` (la version, le nom du paquet, son
+SHA-256 et sa taille) et `checksum.json` (une empreinte par fichier livré, pour le contrôle d'intégrité du
+Monitoring). Le bouton vérifie chacun par les autres : publier l'un sans les autres fait échouer la mise à
+jour, sans rien toucher au site.

@@ -4,6 +4,8 @@ declare(strict_types=1);
 /**
  * serveur — servir le site avec le serveur intégré de PHP, et lui parler en HTTP.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * Quatorze outils lançaient leur `php -S`, chacun avec ses trente lignes : refuser un port occupé

@@ -21,9 +21,9 @@ class Moderation extends Module
 			'title'       => $this->lang('Modération'),
 			'description' => $this->lang('Système de modération étendu : signalements, sanctions (avertissement, mute, ban, restrictions), historique et traçabilité.'),
 			'icon'        => 'fas fa-shield-alt',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'NeoFrag Reborn',
-			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],

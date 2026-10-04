@@ -40,6 +40,64 @@ final class Installer
 	const MIGRATIONS_TABLE = 'nf_migrations';
 
 	/**
+	 * Ce qu'il faut à NeoFrag Reborn pour tourner : UNE liste, lue par l'assistant web
+	 * (`install/steps/requirements.php`), l'installation en ligne de commande (`install/cli.php`), le
+	 * Monitoring et le tableau de bord de l'administration ; `check-prerequis` la confronte à
+	 * `composer.json` et au guide d'installation.
+	 *
+	 * Chaque exigence dit ce qui casse sans elle. Le 2026-10-04, cinq listes vivaient chacune à sa
+	 * manière : l'assistant n'exigeait ni `openssl`, ni `fileinfo`, ni `iconv`, ni Argon2 ; la ligne de
+	 * commande n'exigeait que deux extensions et ne regardait pas la version de PHP ; le Monitoring
+	 * vérifiait `json`, qui ne peut plus manquer depuis PHP 8.0.
+	 */
+	const PREREQUIS = [
+		'php'         => '8.2.0',
+		// La plus récente version de PHP éprouvée (la CI joue 8.2 à 8.5) ; les dépendances livrées
+		// (`nette/utils`) s'arrêtent aussi à 8.5. Les documents annoncent « PHP 8.2 à 8.5 ».
+		'php_eprouve' => '8.5',
+		// Chacune, avec ce qui casse sans elle.
+		'extensions'  => [
+			'mysqli',   // la base de données
+			'mbstring', // les textes en UTF-8, partout
+			'openssl',  // le chiffrement des secrets enregistrés et des jetons (crypt.php) : erreur fatale sans lui
+			'curl',     // les appels sortants : mises à jour, marketplace, connexions OAuth, IndexNow, webhooks
+			'gd',       // les images envoyées, ré-encodées (métadonnées et code caché retirés) et redimensionnées
+			'zip',      // les sauvegardes, la mise à jour du cœur et le marketplace
+			'intl',     // les noms de jours et de mois dans la langue du visiteur
+			'fileinfo', // le type réel des fichiers envoyés : sans lui, tout envoi de fichier est refusé
+			'iconv',    // le QR code de la double authentification (bibliothèque bacon/bacon-qr-code)
+		],
+	];
+
+	/**
+	 * Les prérequis, mesurés sur le PHP qui tourne : la version, chaque extension, Argon2.
+	 *
+	 * @return list<array{type: 'php'|'extension'|'argon2', nom: string, ok: bool}>
+	 */
+	public static function prerequis(): array
+	{
+		$mesures = [['type' => 'php', 'nom' => PHP_VERSION, 'ok' => version_compare(PHP_VERSION, self::PREREQUIS['php'], '>=')]];
+
+		foreach (self::PREREQUIS['extensions'] as $extension)
+		{
+			$mesures[] = ['type' => 'extension', 'nom' => $extension, 'ok' => extension_loaded($extension)];
+		}
+
+		// Le hachage des mots de passe : `password_hash(…, PASSWORD_ARGON2ID)`. Un PHP compilé sans Argon2
+		// ne connaît pas la constante, et l'installation tombait en erreur fatale à la création du compte
+		// administrateur.
+		$mesures[] = ['type' => 'argon2', 'nom' => 'Argon2id', 'ok' => \defined('PASSWORD_ARGON2ID')];
+
+		return $mesures;
+	}
+
+	/** La version minimale de PHP, telle qu'on l'écrit : « 8.2 ». */
+	public static function php_minimum(): string
+	{
+		return implode('.', array_slice(explode('.', self::PREREQUIS['php']), 0, 2));
+	}
+
+	/**
 	 * Le texte dans la langue de l'assistant ou du site (`install/lib/langue.php`), et le texte
 	 * français tel quel si le site a supprimé son dossier `install/` — même pluriel `a|b`, même
 	 * `sprintf`, pour que le message reste juste.
@@ -327,7 +385,7 @@ final class Installer
 	/**
 	 * Les erreurs MySQL qui disent « c'est déjà fait » : table, colonne, index ou clé déjà présents,
 	 * élément déjà supprimé. Une migration appliquée à la main sans être enregistrée — ou une base
-	 * restaurée en partie — n'est pas une panne : relevé le 2026-10-01 sur l'atelier, où le rappel du
+	 * restaurée en partie — n'est pas une panne : relevé le 2026-10-01 sur un site d'essai, où le rappel du
 	 * calendrier était dans le schéma sans être marqué, et sa migration rejouée échouait. Sur un site,
 	 * cela aurait annulé la mise à jour entière.
 	 */

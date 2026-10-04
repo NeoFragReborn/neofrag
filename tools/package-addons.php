@@ -5,6 +5,7 @@ declare(strict_types=1);
  * package-addons — zippe chaque addon distribuable et génère le catalogue du marketplace.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Ce qu'il fait
  * -------------

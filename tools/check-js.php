@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-js — exécute les épreuves JS de tests/Browser/ dans un vrai navigateur.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

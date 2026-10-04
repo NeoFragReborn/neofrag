@@ -20,6 +20,9 @@ class Authenticator_Github extends Authenticator
 			'color'       => '#24292e',
 			'help'        => 'https://github.com/settings/applications/new',
 			'version'     => '1.0',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
+			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
+			'link'        => 'https://neofr.ag',
 			'depends'     => [
 				'addon/authenticator' => '1.0'
 			]

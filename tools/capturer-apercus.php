@@ -5,6 +5,7 @@ declare(strict_types=1);
  * capturer-apercus — produit la VIGNETTE de chaque addon, par capture d'écran réelle.
  *
  * Famille : cible
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

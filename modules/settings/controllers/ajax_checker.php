@@ -11,20 +11,28 @@ use NF\NeoFrag\Loadables\Controllers\Module_Checker;
 
 class Ajax_Checker extends Module_Checker
 {
+	/*
+	 * Les fichiers texte de la racine déclarent leur extension AVANT de décider : un fichier absent est
+	 * alors un 404 ordinaire. Déclarée seulement quand le fichier existait, l'extension faisait du refus
+	 * une « extension d'URL refusée », écrite au journal de production à chaque robot qui sonde un
+	 * humans.txt vide ou une clé IndexNow inconnue (relevé à la 1.2.22, 2026-10-03).
+	 */
 	public function humans()
 	{
+		$this->extension('txt');
+
 		if ($this->url->request == 'humans.txt' && $this->config->nf_humans_txt)
 		{
-			$this->extension('txt');
 			return [];
 		}
 	}
 
 	public function robots()
 	{
+		$this->extension('txt');
+
 		if ($this->url->request == 'robots.txt' && $this->config->nf_robots_txt)
 		{
-			$this->extension('txt');
 			return [];
 		}
 	}
@@ -71,9 +79,10 @@ class Ajax_Checker extends Module_Checker
 	public function indexnow()
 	{
 		// La clé IndexNow : celle du site seulement, à la racine, et quand IndexNow est allumé.
+		$this->extension('txt');
+
 		if (nf_indexnow_actif() && $this->url->request == nf_indexnow_cle().'.txt')
 		{
-			$this->extension('txt');
 			return [];
 		}
 	}

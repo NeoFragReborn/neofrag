@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-theme-zones — toute zone qu'un thème déclare est rendue par ses gabarits.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi ce contrôle existe
  * ---------------------------

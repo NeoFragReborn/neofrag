@@ -5,6 +5,7 @@ declare(strict_types=1);
  * extract-module-sql — génère le SQL d'install/désinstall embarqué de chaque module.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Ce qu'il produit
  * ----------------
@@ -17,6 +18,9 @@ declare(strict_types=1);
  * Garde-fou : la partition modules ∪ core de table-map.php doit recouvrir EXACTEMENT les tables
  * vives — toute table non classée fait échouer le script (anti-oubli). `build-release` le joue en
  * mode `--check` avant de packager.
+ *
+ * Les commentaires écrits au-dessus d'une colonne dans un install.sql (pourquoi `datetime` et non
+ * `timestamp`, par exemple) sont reportés à la régénération (nf_sql_commentaires_de_colonnes()).
  *
  * Usage
  * -----
@@ -110,13 +114,16 @@ foreach ($map['modules'] as $module => $tables)
     }
 
     // install.sql : CREATE TABLE IF NOT EXISTS (idempotent, rejoué à chaque reset/scan sans
-    // détruire les données), FK désactivées le temps du batch.
+    // détruire les données), FK désactivées le temps du batch. Les commentaires écrits au-dessus d'une
+    // colonne dans le fichier déjà livré sont reportés : SHOW CREATE TABLE ne les connaît pas.
+    $commentaires = is_file("{$dir}/install.sql") ? nf_sql_commentaires_de_colonnes((string) file_get_contents("{$dir}/install.sql")) : [];
+
     $install  = nf_sql_entete('extract-module-sql', "install du module « {$module} » — tables propres au module");
     $install .= "SET FOREIGN_KEY_CHECKS = 0;\nSET NAMES utf8mb4;\n\n";
 
     foreach ($tables as $table)
     {
-        $install .= nf_sql_show_create($db, $table, TRUE).";\n\n";
+        $install .= nf_sql_reposer_commentaires(nf_sql_show_create($db, $table, TRUE), $table, $commentaires).";\n\n";
     }
 
     $install .= "SET FOREIGN_KEY_CHECKS = 1;\n";

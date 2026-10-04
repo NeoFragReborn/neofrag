@@ -188,7 +188,6 @@ return [
 	'2c84b316' => 'Ciò che questo contenuto mostra ai motori di ricerca e nelle anteprime di condivisione, lingua per lingua. Ciò che resta vuoto è automatico.',
 	'a7879650' => 'Resoconto SEO',
 	'90ca5d10' => 'Mappa del sito: %d pagina/e annunciata/e in %s',
-	'e8db9599' => 'Viene annunciata solo la home: nessun modulo mostra pagine ai visitatori. Controlla i loro diritti nella matrice dei permessi.',
 	'489eeedf' => 'Vedi la mappa',
 	'48e5150b' => 'nessuno slogan: il titolo della home è solo il nome del sito',
 	'5de6f257' => 'una descrizione troppo corta, o che ripete il nome del sito',
@@ -237,4 +236,7 @@ return [
 	'47b6a471' => 'In servizio: %d indirizzi seguiti. Ultimo invio il %s: %d indirizzo/i, ricevuti.',
 	'3a0f34b9' => 'In servizio: %d indirizzi seguiti. Nulla è cambiato dall\'attivazione.',
 	'c3bc28a3' => 'Attivato: il primo passaggio dell\'attività pianificata registrerà le pagine del sito senza inviare nulla; le modifiche partiranno dopo.',
+	'93f5c577' => 'Viene annunciata solo la home: nessun modulo ha ancora contenuti leggibili dai visitatori. Una sezione vuota non viene annunciata; se i contenuti esistono, controlla i diritti nella matrice dei permessi.',
+	'e44f4288' => 'Verificato tramite il DNS del dominio. Invia lì la mappa del sito: %s',
+	'cda95d5f' => 'Importato da Google Search Console? Allora non c\'è altro da fare: l\'importazione non lascia tracce leggibili dal sito. Altrimenti, incolla qui il suo codice di verifica.',
 ];

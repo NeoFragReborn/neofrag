@@ -160,72 +160,41 @@ class Monitoring extends Model
 	{
 		$server = $this->get_info();
 
+		// Ce que le produit exige de PHP, lu dans la même liste que l'installeur (Installer::PREREQUIS) :
+		// le Monitoring en vérifiait cinq à sa manière, dont `json`, qui ne peut plus manquer depuis
+		// PHP 8.0, et ignorait `openssl`, `fileinfo`, `iconv` et Argon2.
+		require_once NEOFRAG_CMS.'/neofrag/installer.php';
+
+		$php = [];
+
+		foreach (Installer::prerequis() as $mesure)
+		{
+			if ($mesure['type'] === 'php')
+			{
+				continue;
+			}
+
+			$php['php_'.strtolower($mesure['nom'])] = [
+				'title' => $mesure['nom'],
+				'check' => function(&$errors) use ($mesure){
+					if (!$mesure['ok'])
+					{
+						$errors[] = [$mesure['type'] === 'extension'
+							? $this->lang('L\'extension %s doit être activée', $mesure['nom'])
+							: $this->lang('Ce PHP doit savoir hacher les mots de passe en %s', $mesure['nom']), 'danger'];
+						return FALSE;
+					}
+
+					return TRUE;
+				}
+			];
+		}
+
 		return [
 			[
 				'title' => $server['php_server'],
 				'icon'  => 'fas fa-server',
-				'check' => [
-					'php_curl' => [
-						'title' => 'cURL',
-						'check' => function(&$errors){
-							if (!extension_loaded('curl'))
-							{
-								$errors[] = [$this->lang('L\'extension cURL doit être activée'), 'danger'];
-								return FALSE;
-							}
-
-							return TRUE;
-						}
-					],
-					'php_gd' => [
-						'title' => 'GD',
-						'check' => function(&$errors){
-							if (!extension_loaded('gd'))
-							{
-								$errors[] = [$this->lang('L\'extension GD doit être activée'), 'danger'];
-								return FALSE;
-							}
-
-							return TRUE;
-						}
-					],
-					'php_json' => [
-						'title' => 'JSON',
-						'check' => function(&$errors){
-							if (!extension_loaded('json'))
-							{
-								$errors[] = [$this->lang('L\'extension JSON doit être activée'), 'danger'];
-								return FALSE;
-							}
-
-							return TRUE;
-						}
-					],
-					'php_mbstring' => [
-						'title' => 'mbstring',
-						'check' => function(&$errors){
-							if (!extension_loaded('mbstring'))
-							{
-								$errors[] = [$this->lang('L\'extension mbstring doit être activée'), 'danger'];
-								return FALSE;
-							}
-
-							return TRUE;
-						}
-					],
-					'php_zip' => [
-						'title' => 'Zip',
-						'check' => function(&$errors){
-							if (!extension_loaded('zip'))
-							{
-								$errors[] = [$this->lang('L\'extension Zip doit être activée'), 'danger'];
-								return FALSE;
-							}
-
-							return TRUE;
-						}
-					]
-				]
+				'check' => $php
 			],
 			[
 				'title' => $server['web_server'],

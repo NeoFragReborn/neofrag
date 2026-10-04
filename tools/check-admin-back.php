@@ -5,10 +5,11 @@ declare(strict_types=1);
  * check-admin-back — chaque sous-page d'administration offre un retour au module, fil d'Ariane ou bouton, dans le HTML servi.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
- * le mainteneur l'a signalé sur la newsletter : « bouton retour manquant sur les onglets ». Le comptage
+ * Le défaut a été signalé sur la newsletter : « bouton retour manquant sur les onglets ». Le comptage
  * fait à la main à ce moment-là — par `grep` des méthodes rendant du HTML sans `admin_back` —
  * annonçait 36 sous-pages sur 97. Ce comptage ne pouvait pas être juste : il ne voyait que l'un
  * des deux chemins de retour. Le fil d'Ariane en offre un second, et il a justement été corrigé
@@ -167,7 +168,7 @@ foreach ($routes as $chemin => $module)
     // Un TÉLÉCHARGEMENT n'est pas une page : le journal ou la trace du Monitoring, servis en texte avec
     // `Content-Disposition: attachment`. Le navigateur l'enregistre, l'administrateur reste sur la page
     // d'où il l'a demandé. Sur une installation où le fichier existe, il était jugé comme une page sans
-    // retour (2026-10-03, l'atelier) ; en CI, le fichier n'existe pas, et la réponse était un 404.
+    // retour (2026-10-03, sur un site d'essai) ; en CI, le fichier n'existe pas, et la réponse était un 404.
     $type = strtolower($reponse['entetes']['content-type'] ?? 'text/html');
 
     if (!str_starts_with($type, 'text/html') || str_contains(strtolower($reponse['entetes']['content-disposition'] ?? ''), 'attachment'))

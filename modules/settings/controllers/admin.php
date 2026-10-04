@@ -389,7 +389,7 @@ class Admin extends Controller_Module
 				'value'       => nf_seo_reglage('accroche', $code),
 				'description' => $this->lang('Suit le nom du site dans le titre de l’accueil : « %s — votre accroche ». 60 caractères au plus.', (string) $this->config->nf_name),
 				'check'       => function($texte){
-					if (mb_strlen(trim((string) $texte)) > 60)
+					if (mb_strlen(nf_seo_saisie($texte)) > 60)
 					{
 						return $this->lang('60 caractères au plus : au-delà, les moteurs coupent le titre.');
 					}
@@ -403,7 +403,7 @@ class Admin extends Controller_Module
 				'value'       => nf_seo_reglage('description', $code),
 				'description' => $this->lang('Ce que les moteurs affichent sous le titre, et les aperçus de partage. Entre 70 et 160 caractères ; vide, la description des Préférences générales sert.'),
 				'check'       => function($texte){
-					if (mb_strlen(trim((string) $texte)) > 160)
+					if (mb_strlen(nf_seo_saisie($texte)) > 160)
 					{
 						return $this->lang('160 caractères au plus : au-delà, les moteurs coupent la description.');
 					}
@@ -439,7 +439,7 @@ class Admin extends Controller_Module
 				'value'       => nf_seo_reglage($outil),
 				'description' => $this->lang('Le code de vérification par balise HTML : le code seul, ou la balise entière que l’outil fait copier.'),
 				'check'       => function($code){
-					if (trim((string) $code) !== '' && nf_seo_code_verification((string) $code) === '')
+					if (nf_seo_saisie($code) !== '' && nf_seo_code_verification(nf_seo_saisie($code)) === '')
 					{
 						return $this->lang('Ce code est invalide');
 					}
@@ -470,7 +470,7 @@ class Admin extends Controller_Module
 					continue;
 				}
 
-				$valeur = in_array($var, ['google', 'bing'], TRUE) ? nf_seo_code_verification((string) $value) : trim((string) $value);
+				$valeur = in_array($var, ['google', 'bing'], TRUE) ? nf_seo_code_verification(nf_seo_saisie($value)) : nf_seo_saisie($value);
 				$this->config('nf_seo_'.$var, $valeur);
 			}
 
@@ -539,7 +539,7 @@ class Admin extends Controller_Module
 						'description' => $this->lang('Le chemin qui ne répond plus : « ancienne-page », « /fr/ancienne-page », ou l’adresse d’un ancien site (« page.php »). La langue et les paramètres sont ignorés.'),
 						'rules'       => 'required',
 						'check'       => function($saisie) use ($langues){
-							if (nf_redirection_source((string) $saisie, $langues) === '')
+							if (nf_redirection_source(nf_seo_saisie($saisie), $langues) === '')
 							{
 								return $this->lang('Indiquez un chemin, pas seulement la racine du site.');
 							}
@@ -550,7 +550,7 @@ class Admin extends Controller_Module
 						'description' => $this->lang('Un chemin du site (« nouvelle-page ») ou une adresse complète en https://.'),
 						'rules'       => 'required',
 						'check'       => function($saisie) use ($langues){
-							if (nf_redirection_cible((string) $saisie, $langues) === '')
+							if (nf_redirection_cible(nf_seo_saisie($saisie), $langues) === '')
 							{
 								return $this->lang('Une adresse du site ou en https:// seulement.');
 							}
@@ -562,7 +562,7 @@ class Admin extends Controller_Module
 
 		if ($this->form()->is_valid($post))
 		{
-			nf_redirection_ajouter(html_entity_decode((string) $post['source'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), html_entity_decode((string) $post['cible'], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+			nf_redirection_ajouter(nf_seo_saisie($post['source']), nf_seo_saisie($post['cible']));
 			$this->_audit('seo-redirections');
 			notify($this->lang('Redirection ajoutée'));
 			refresh();
@@ -629,7 +629,7 @@ class Admin extends Controller_Module
 
 		$point($nombre > 1 ? 'ok' : 'alerte',
 			$this->lang('Plan du site : %d page(s) annoncée(s) en %s', $nombre, $this->config->lang->info()->title),
-			$nombre > 1 ? $detail : $this->lang('Seul l\'accueil est annoncé : aucun module ne montre de page aux visiteurs. Vérifiez leurs droits dans la matrice des permissions.'),
+			$nombre > 1 ? $detail : $this->lang('Seul l\'accueil est annoncé : aucun module n\'a encore de contenu que les visiteurs peuvent lire. Une rubrique vide n\'est pas annoncée ; si du contenu existe, vérifiez les droits dans la matrice des permissions.'),
 			url('sitemap.xml'), $this->lang('Voir le plan'));
 
 		// 2. Les textes, langue par langue.
@@ -667,13 +667,32 @@ class Admin extends Controller_Module
 		];
 		$point($partage['grande'] ? 'ok' : ($partage['source'] !== '' ? 'conseil' : 'alerte'), $this->lang('Image de partage'), $sources[$partage['source']], url('admin/settings/seo'), $this->lang('Choisir'));
 
-		// 4. Les outils des moteurs.
+		// 4. Les outils des moteurs. Le plan à leur soumettre est l'index des langues, à la racine — celui
+		// qu'annonce robots.txt —, et non celui de la langue affichée (`/fr/sitemap.xml`, conseillé à tort
+		// jusqu'au 2026-10-03). Google se vérifie aussi par le DNS du domaine, sans réglage dans le site.
+		$plan_index = nf_seo_adresse(site_origin(), (string) $this->url->base, '', 'sitemap.xml');
+		$txt        = nf_seo_txt_du_domaine();
+
+		// Bing importe aussi un site depuis Google Search Console, sans rien poser sur le site : quand Google
+		// est vérifié, son point le dit plutôt que d'annoncer « non déclaré » un site peut-être importé.
+		$google_verifie = FALSE;
+
 		foreach (['google' => ['Google Search Console', 'https://search.google.com/search-console'], 'bing' => ['Bing Webmaster Tools', 'https://www.bing.com/webmasters']] as $outil => [$nom, $adresse])
 		{
-			$present = nf_seo_reglage($outil) !== '';
-			$point($present ? 'ok' : 'conseil', $nom,
-				$present ? $this->lang('Code de vérification posé. Soumettez-y le plan du site : %s', site_origin().url('sitemap.xml'))
-					: $this->lang('Non déclaré : l\'outil montre comment le moteur voit le site, et à quelle vitesse il le relit. Une vérification par DNS chez l\'hébergeur du domaine convient aussi.'),
+			$reglage = nf_seo_reglage($outil) !== '';
+			$par_dns = !$reglage && $outil === 'google' && nf_seo_txt_annonce($txt, 'google-site-verification=');
+			$importe = !$reglage && $outil === 'bing' && $google_verifie;
+
+			if ($outil === 'google')
+			{
+				$google_verifie = $reglage || $par_dns;
+			}
+
+			$point($reglage || $par_dns ? 'ok' : ($importe ? 'info' : 'conseil'), $nom,
+				$par_dns ? $this->lang('Vérifié par le DNS du domaine. Soumettez-y le plan du site : %s', $plan_index)
+					: ($reglage ? $this->lang('Code de vérification posé. Soumettez-y le plan du site : %s', $plan_index)
+					: ($importe ? $this->lang('Importé depuis Google Search Console ? Alors rien d\'autre à faire : l\'import ne laisse aucune trace que le site puisse lire. Sinon, collez ici son code de vérification.')
+					: $this->lang('Non déclaré : l\'outil montre comment le moteur voit le site, et à quelle vitesse il le relit. Une vérification par DNS chez l\'hébergeur du domaine convient aussi.'))),
 				$adresse, $this->lang('Ouvrir'));
 		}
 
@@ -803,7 +822,7 @@ class Admin extends Controller_Module
 				'value'       => $saisies[$code]['title'] ?? '',
 				'description' => $this->lang('Remplace le titre de la page dans les résultats et les aperçus de partage ; le nom du site suit. Vide, le titre de la page sert. 60 caractères au plus.'),
 				'check'       => function($texte){
-					if (mb_strlen(trim((string) $texte)) > 60)
+					if (mb_strlen(nf_seo_saisie($texte)) > 60)
 					{
 						return $this->lang('60 caractères au plus : au-delà, les moteurs coupent le titre.');
 					}
@@ -817,7 +836,7 @@ class Admin extends Controller_Module
 				'value'       => $saisies[$code]['description'] ?? '',
 				'description' => $this->lang('Ce que les moteurs affichent sous le titre. Vide, la description automatique de la page sert. 160 caractères au plus.'),
 				'check'       => function($texte){
-					if (mb_strlen(trim((string) $texte)) > 160)
+					if (mb_strlen(nf_seo_saisie($texte)) > 160)
 					{
 						return $this->lang('160 caractères au plus : au-delà, les moteurs coupent la description.');
 					}
@@ -835,8 +854,8 @@ class Admin extends Controller_Module
 			foreach ($langues as $langue)
 			{
 				$code        = $langue->info()->name;
-				$titre       = trim((string) ($post['titre_'.$code] ?? ''));
-				$description = trim((string) ($post['description_'.$code] ?? ''));
+				$titre       = nf_seo_saisie($post['titre_'.$code] ?? '');
+				$description = nf_seo_saisie($post['description_'.$code] ?? '');
 
 				$this->db	->where('content_type', $type)
 							->where('content_id', $id)

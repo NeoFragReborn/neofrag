@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-addon-contracts — les contrats des carrefours : la méthode qu'un carrefour appelle existe, publique, avec la bonne signature.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi cet outil existe
  * -------------------------

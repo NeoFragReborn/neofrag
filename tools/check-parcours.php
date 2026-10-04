@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-parcours — suit un visiteur d'un écran au suivant, dans un vrai navigateur.
  *
  * Famille : cible
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
@@ -87,7 +88,7 @@ else
      * On sert CETTE installation. On peut donc vérifier, avant de partir, que le compte demandé
      * existe — et refuser proprement s'il n'existe pas.
      *
-     * La distinction compte : sans elle, parcourir l'atelier avec le compte de la démonstration
+     * La distinction compte : sans elle, parcourir un site d'essai avec le compte de la démonstration
      * rendait « 2 parcours échoués », ce qui se lit comme une connexion cassée alors que le compte
      * n'était simplement pas là. Un contrôle qui accuse le produit d'un défaut de son terrain est
      * pire qu'un contrôle absent.

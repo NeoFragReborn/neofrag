@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-db-compteurs — un compteur (vues, clics) ne fait pas avancer la date de modification de sa ligne.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi ce contrôle existe
  * ---------------------------

@@ -4,6 +4,8 @@ declare(strict_types=1);
 /**
  * navigateur — ouvrir une page dans un Chrome sans interface, et relire ce qu'une sonde y a écrit.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * Six outils lançaient Chrome avec la même ligne de commande recopiée, et chacun avait ses propres

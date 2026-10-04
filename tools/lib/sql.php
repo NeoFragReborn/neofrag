@@ -4,6 +4,8 @@ declare(strict_types=1);
 /**
  * sql — produire et jouer du SQL depuis la base vive.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * Cinq outils régénèrent des fichiers SQL livrés (`install/schema.sql`, `seed.sql`, `demo.sql`,
@@ -63,6 +65,62 @@ function nf_sql_show_create(mysqli $db, string $table, bool $si_absente = FALSE)
     }
 
     return $create;
+}
+
+/**
+ * Les commentaires écrits à la main au-dessus d'une colonne, dans un `install.sql` déjà livré. Ils
+ * disent POURQUOI une colonne est ainsi — `datetime` et non `timestamp`, à cause du 19/01/2038 — et
+ * `SHOW CREATE TABLE` ne les connaît pas : relancer `extract-module-sql` les effaçait dans quatre
+ * modules (relevé le 2026-10-01). Lus avant la régénération, ils sont reposés par
+ * nf_sql_reposer_commentaires().
+ *
+ * @return array<string, array<string, string>> table => colonne => lignes de commentaire
+ */
+function nf_sql_commentaires_de_colonnes(string $sql): array
+{
+    $commentaires = [];
+    $table        = '';
+    $bloc         = '';
+
+    foreach (preg_split('/\R/', $sql) ?: [] as $ligne)
+    {
+        if (preg_match('/^CREATE TABLE (?:IF NOT EXISTS )?`([^`]+)`/', $ligne, $m))
+        {
+            $table = $m[1];
+            $bloc  = '';
+        }
+        else if (preg_match('/^[ \t]+--/', $ligne))
+        {
+            $bloc .= $ligne."\n";
+        }
+        else
+        {
+            if ($bloc !== '' && $table !== '' && preg_match('/^[ \t]+`([^`]+)`/', $ligne, $m))
+            {
+                $commentaires[$table][$m[1]] = $bloc;
+            }
+
+            $bloc = '';
+        }
+    }
+
+    return $commentaires;
+}
+
+/**
+ * Repose, au-dessus de leur colonne, les commentaires que nf_sql_commentaires_de_colonnes() a lus.
+ * Une colonne disparue emporte le sien.
+ *
+ * @param array<string, array<string, string>> $commentaires
+ */
+function nf_sql_reposer_commentaires(string $create, string $table, array $commentaires): string
+{
+    if (empty($commentaires[$table]))
+    {
+        return $create;
+    }
+
+    return (string) preg_replace_callback('/^[ \t]+`([^`]+)`/m', static fn (array $m): string => ($commentaires[$table][$m[1]] ?? '').$m[0], $create);
 }
 
 /**

@@ -184,4 +184,10 @@ if (!defined('NEOFRAG_HEADLESS'))
 	{
 		NeoFrag()->{'core_'.$core};
 	}
+
+	// Le visiteur. Sur le site, la session pose toujours `NeoFrag()->user` — anonyme, s'il n'est pas
+	// connecté (Core\Session) ; ici, sans session, il manquait, et un modèle qui demande « qui
+	// regarde ? » (`$this->user()`, le forum en tête) écrivait un avertissement à chaque test, tout en
+	// passant (2026-10-03). Un utilisateur sans identifiant est un visiteur : `user()` rend NULL.
+	NeoFrag()->user = NeoFrag()->module('user')->model2('user');
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-restauration — éprouve, pour de vrai, le cycle sauvegarde → casse → restauration.
  *
  * Famille : cible
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

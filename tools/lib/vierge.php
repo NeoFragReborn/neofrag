@@ -4,12 +4,14 @@ declare(strict_types=1);
 /**
  * vierge — une installation NEUVE, sans contenu, montée le temps d'un outil, puis détruite.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * Un site vide ne se comporte pas comme un site peuplé : une liste sans élément, une galerie sans
- * image, un widget sans données prennent des chemins que l'atelier n'emprunte jamais. Le 2026-09-22,
+ * image, un widget sans données prennent des chemins qu'un site d'essai peuplé n'emprunte jamais. Le 2026-09-22,
  * c'est la CI — qui installe un site neuf — qui a vu le widget « image aléatoire » planter sur une
- * galerie vide. le mainteneur a demandé que les vérifications portent sur le site « avec et sans
+ * galerie vide. Les vérifications doivent porter sur le site « avec et sans
  * contenu » : ce fichier fabrique le second, à la demande, sur la machine elle-même.
  *
  * Le code du dépôt est recopié HORS de lui (sur le disque, pas dans `/tmp`, une mémoire vive de 2 Go

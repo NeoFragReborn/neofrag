@@ -62,7 +62,7 @@ class Debug extends Core
 			 *
 			 * La version précédente la gardait pour la barre de débogage et `logs/neofrag.log` dès que
 			 * NEOFRAG_LOGS ou NEOFRAG_DEBUG_BAR étaient actifs : `logs/php.log` ne recevait alors plus
-			 * AUCUNE alerte PHP. C'est la configuration de l'atelier — si bien que `check-journal` et
+			 * AUCUNE alerte PHP. C'est la configuration d'un site d'essai — si bien que `check-journal` et
 			 * `check-liens`, qui lisent `php.log`, n'y voyaient rien, pendant que la production (réglages
 			 * éteints) les écrivait. Le 2026-09-22, le widget du forum y a perdu des mois.
 			 *

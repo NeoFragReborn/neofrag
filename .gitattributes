@@ -54,7 +54,7 @@ docs/**            linguist-documentation
 # chaque release GitHub. On en retire ce qui ne sert qu'au développement, pour que quelqu'un qui
 # télécharge la source n'hérite pas de l'outillage de CI.
 # Attention : cela n'affecte QUE les archives. Ces fichiers restent visibles dans le dépôt.
-# Les vrais paquets d'installation sont produits par tools/build-release.php (cf. docs/RELEASING.md).
+# Les vrais paquets d'installation sont produits par tools/build-release.php.
 /.github               export-ignore
 /tests                 export-ignore
 /docs/internal         export-ignore

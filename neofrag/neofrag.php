@@ -9,7 +9,7 @@ namespace NF\NeoFrag;
 
 /**
  * Cœur + service-locator. Les services sont résolus dynamiquement via __get() ; ces annotations les
- * rendent visibles de l'IDE et de PHPStan sans changer le runtime (cf. les notes du mainteneur, chunk 1).
+ * rendent visibles de l'IDE et de PHPStan sans changer le runtime.
  *
  * On ne type ici QUE les services dont la classe expose une vraie API déclarée. Volontairement
  * absents : $user (\NF\NeoFrag\Models\User, Model2) et $lang (\NF\NeoFrag\Libraries\Lang), qui

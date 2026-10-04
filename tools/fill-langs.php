@@ -5,6 +5,7 @@ declare(strict_types=1);
  * fill-langs — écrit les traductions qui manquent : celles que le produit possède déjà, puis celles d'un dictionnaire.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

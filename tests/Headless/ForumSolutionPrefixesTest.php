@@ -11,7 +11,7 @@ namespace NF\Tests\Headless;
  * et restaurée elle le redevient ; un préfixe inconnu vaut « aucun » ; supprimer un préfixe en
  * détache les sujets sans les supprimer ; le filtre par préfixe ne rend que les sujets qui le portent.
  *
- * Le lien protégé, l'encart, la marque et le filtre à l'écran ont été mesurés sur l'atelier.
+ * Le lien protégé, l'encart, la marque et le filtre à l'écran ont été mesurés sur un site d'essai.
  */
 final class ForumSolutionPrefixesTest extends HeadlessTestCase
 {

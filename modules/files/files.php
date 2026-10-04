@@ -17,9 +17,9 @@ class Files extends Module
 			'title'       => $this->lang('Fichiers'),
 			'description' => $this->lang('Gestionnaire de fichiers : arborescence, upload, dossiers et permissions de lecture par fichier/dossier.'),
 			'icon'        => 'far fa-folder-open',
-			'link'        => 'https://neofr.ag',
-			'author'      => 'HiddenCMS',
-			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'link'        => 'https://neofrag-reborn.xyz',
+			'author'      => 'HiddenBlob (HiddenCMS) — portage NeoFrag Reborn',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],

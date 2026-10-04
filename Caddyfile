@@ -1,0 +1,43 @@
+# NeoFrag Reborn — exemple de configuration Caddy (HTTPS automatique, certificat Let's Encrypt).
+#
+# À adapter : le domaine, le dossier du site et la socket de PHP-FPM. Il fait sous Caddy ce que font
+# les `.htaccess` du paquet sous Apache : les dossiers et fichiers sensibles refusés, les fichiers
+# statiques servis tels quels, tout le reste confié à index.php — l'assistant d'installation compris,
+# qui s'affiche à la racine du site. `check-htaccess` vérifie que les trois configurations livrées
+# (`.htaccess`, `nginx.conf`, ce fichier) refusent la même liste.
+
+example.org {
+	root * /var/www/neofrag
+	encode zstd gzip
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+	route {
+		@interdit path /backups/* /cache/* /config/* /logs/* /install/* /tools/* /tests/* /docs/* *.sql *.lock *.scssc *.map *.dist *.ini *.sh *.neon *.md /package.json /package-lock.json /eslint.config.js /playwright.config.js /Caddyfile /nginx.conf
+		respond @interdit 403
+
+		rewrite /humans.txt /ajax/settings/humans.txt
+		rewrite /robots.txt /ajax/settings/robots.txt
+		rewrite /noscript.html /ajax/settings/noscript.html
+
+		# Les éditeurs embarqués (TinyMCE, CodeMirror) se servent tels quels : certains de leurs fichiers
+		# contiennent « <?php », que le routeur des feuilles et scripts du site exécuterait.
+		@editeurs path /js/tinymce/* /js/codemirror/*
+		file_server @editeurs
+
+		@medias {
+			file
+			path *.png *.jpg *.jpeg *.gif *.svg *.ico *.webp *.eot *.ttf *.woff *.woff2 *.mp4
+		}
+		file_server @medias
+
+		# Tout le reste passe par le site : aucun autre script PHP n'est exécuté directement.
+		rewrite * /index.php
+		php_fastcgi unix//run/php/php-fpm.sock
+	}
+}

@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-instantanes — les SQL livrés s'importent (aucune clé en double) ; l'historique des migrations est complet.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi cet outil existe
  * -------------------------

@@ -35,8 +35,8 @@ class Admin extends Controller_Module
 		/*
 		 * Le menu « Navigation », en sous-menus : les pages du site d'abord, puis les modules rangés
 		 * dans les rubriques de la barre latérale de l'administration (nf_rubriques_admin(), une seule
-		 * liste pour les deux). Il alignait jusqu'ici plus de quarante entrées à la suite (relevé par
-		 * le mainteneur, 2026-10-02).
+		 * liste pour les deux). Il alignait jusqu'ici plus de quarante entrées à la suite (relevé le
+		 * 2026-10-02).
 		 */
 		$rubriques = nf_rubriques_admin();
 		$rangement = [];

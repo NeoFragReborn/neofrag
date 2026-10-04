@@ -1,22 +1,28 @@
 name: CI
 
-# Le dépôt est privé : chaque exécution consomme le quota de GitHub Actions — 2 000 minutes par mois,
-# et GitHub arrondit CHAQUE JOB à la minute supérieure. Septembre 2026 l'a épuisé le 23, et la CI
-# s'est arrêtée jusqu'au 30 ; octobre en avait brûlé 1 900 le 2 au soir (192 exécutions). D'où :
+# Un seul fichier pour deux mondes. Sur un dépôt PUBLIC, les minutes de GitHub Actions sont gratuites :
+# la batterie ENTIÈRE joue à chaque envoi. Sur un dépôt PRIVÉ, chaque exécution consomme un quota —
+# 2 000 minutes par mois, et GitHub arrondit CHAQUE JOB à la minute supérieure ; septembre 2026 l'a
+# épuisé le 23, octobre en avait brûlé 1 900 le 2 au soir (192 exécutions). D'où, sur un dépôt privé :
 #   - `push` sur main seulement : une branche de travail (Dependabot) passe par sa demande de fusion.
 #     Avant, elle déclenchait DEUX exécutions — `push` et `pull_request` ne portent pas la même
 #     référence, et la règle de concurrence ci-dessous ne les fusionnait pas ;
 #   - un envoi qui ne touche QUE de la documentation n'exécute pas ce workflow : docs.yml la vérifie
 #     en une minute ;
-#   - Dependabot regroupe ses mises à jour (.github/dependabot.yml) ;
+#   - Dependabot regroupe ses mises à jour ;
 #   - un envoi joue la batterie RAPIDE — `statique`, PHPUnit sur PHP 8.2, `db-smoke`, `e2e-smoke`,
 #     environ 11 minutes facturées. La batterie ENTIÈRE (Interface, et PHPUnit sur 8.2 à 8.5) se
-#     lance à la main avant chaque version — étape 1 de docs/RELEASING.md : `gh workflow run CI` ;
+#     lance à la main avant chaque version : `gh workflow run CI` (`github.event.repository.private`
+#     départage les deux mondes) ;
 #   - les petits contrôles vivent dans UN job, `statique` : en jobs séparés, chacun payait sa minute
 #     arrondie et sa préparation (9,5 minutes de travail facturées 14 le 2026-10-02) ;
 #   - l'INTERRUPTEUR : la variable de dépôt `CI_ENVOI` à `pause` suspend la batterie des envois (et
-#     docs.yml) sans rien consommer ; la batterie manuelle joue toujours. Quand le quota du mois
-#     s'épuise, `php tools/un outil interne.php` le mesure et donne les deux commandes.
+#     docs.yml) sans rien consommer ; la batterie manuelle joue toujours.
+# Les étapes du bot Discord ne jouent que là où il est (`bot/package.json`). Une étape marquée
+# « # interne » appartient au seul dépôt de développement : la copie publique ne la porte pas.
+#   - le système est FIXÉ (`ubuntu-24.04`, et non `ubuntu-latest`) : GitHub passe `ubuntu-latest` à
+#     Ubuntu 26.04 le 19 octobre 2026, au milieu d'un mois sans minutes pour l'éprouver. La bascule se
+#     fera à la main, la batterie entière jouée d'abord sur `ubuntu-26.04` (MariaDB, Chrome, PHP).
 on:
   push:
     branches: [main]
@@ -35,7 +41,7 @@ jobs:
   statique:
     name: Contrôles statiques (syntaxe, gardes, PHPStan, audits, épreuves JS, bot)
     if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
@@ -44,6 +50,11 @@ jobs:
           php-version: '8.3'
           extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
+      # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: php -l sur tout le code (hors vendor)
         run: |
           find . -path ./vendor -prune -o -name '*.php' -print0 \
@@ -102,7 +113,7 @@ jobs:
       # interpolé, que `node --check` refuse : l'outil le neutralise avant de vérifier la structure.
       # Et jQuery n'est plus chargé depuis juin 2026 ; trois fichiers l'appelaient encore le 2026-09-17
       # et levaient « $ is not defined » au chargement — syntaxiquement valide, donc règle de vocabulaire.
-      # node est préinstallé sur les runners ubuntu-latest.
+      # node est préinstallé sur les runners Ubuntu de GitHub.
       - name: Garde sources JavaScript (syntaxe et vocabulaire sans jQuery)
         if: ${{ !cancelled() }}
         run: php tools/check-js-sources.php
@@ -130,6 +141,12 @@ jobs:
       - name: Garde documentation ↔ code
         if: ${{ !cancelled() }}
         run: php tools/check-docs.php
+      - name: Garde des prérequis (une seule liste, du code aux documents)
+        if: ${{ !cancelled() }}
+        run: php tools/check-prerequis.php
+      - name: Garde de la NOTICE (auteurs des addons, licences d'autrui)
+        if: ${{ !cancelled() }}
+        run: php tools/check-notice.php
       # Un module se branche sur un « carrefour » en posant `controllers/<carrefour>.php`, et le
       # carrefour appelle la méthode du même nom sans rien vérifier. Si elle est renommée, rendue
       # privée ou dotée d'un paramètre obligatoire de plus, l'erreur fatale n'apparaît qu'à
@@ -204,9 +221,9 @@ jobs:
       - name: Garde instantanés SQL livrés (aucune clé primaire en double, historique des migrations complet)
         if: ${{ !cancelled() }}
         run: php tools/check-instantanes.php
-      # Les `.htaccess` du paquet ne sont exercés par personne : la production tourne sous Caddy.
-      # Ils avaient divergé dans le mauvais sens — `/les notes du mainteneur` servi en texte sur toute
-      # installation Apache. Ce contrôle relit ce qu'Apache doit refuser, avec la raison de chaque ligne.
+      # Les `.htaccess` du paquet, comme les exemples nginx et Caddy, ne sont exercés par personne au
+      # quotidien. Ils avaient divergé dans le mauvais sens — la documentation de travail servie en texte
+      # sur toute installation Apache. Ce contrôle relit ce qu'Apache doit refuser, avec la raison de chaque ligne.
       - name: Garde .htaccess (Apache refuse tout ce que Caddy refuse)
         if: ${{ !cancelled() }}
         run: php tools/check-htaccess.php
@@ -250,7 +267,7 @@ jobs:
       # dans quel document, avec quel nonce CSP. Aucun test PHP ne les voit — et c'est précisément le
       # trou par lequel sont passées les cinq régressions de la dé-jQuery, puis le JS inerte des widgets
       # ajoutés en Live Editor, qui a vécu des mois sans que rien ne le signale.
-      # Chrome est préinstallé sur les runners ubuntu-latest.
+      # Chrome est préinstallé sur les runners Ubuntu de GitHub.
       - name: Épreuves JS de tests/Browser/ (navigateur sans interface)
         if: ${{ !cancelled() }}
         timeout-minutes: 5
@@ -258,30 +275,29 @@ jobs:
       # La version de Node la plus ancienne que le bot accepte (cf. bot/package.json, « engines ») :
       # ce qui passe ici passe sur les machines des administrateurs.
       - uses: actions/setup-node@v7
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && hashFiles('bot/package.json') != '' }}
         with:
           node-version: '22.9'
           cache: npm
           cache-dependency-path: bot/package-lock.json
       - name: Bot Discord — npm ci
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && hashFiles('bot/package.json') != '' }}
         working-directory: bot
         run: npm ci --no-audit --no-fund
-      # Le test qui compare le lien d'invitation du bot à celui du module Discord lit
-      # modules/discord/discord.php : il juge ici, le dépôt entier étant présent.
+      # Les tests du bot lisent son contrat avec le site (bot/contrat-du-site.json) : ils jugent partout.
       - name: Bot Discord — compilation TypeScript et tests
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && hashFiles('bot/package.json') != '' }}
         working-directory: bot
         run: npm test
       - name: Bot Discord — npm audit (dépendances de production)
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && hashFiles('bot/package.json') != '' }}
         working-directory: bot
         run: npm audit --omit=dev --audit-level=high
 
   test:
     name: PHPUnit (PHP ${{ matrix.php }})
     if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     # Sans base de données, les 56 tests d'INTÉGRATION se sautent eux-mêmes en silence : la suite
     # s'affiche verte alors qu'un cinquième des tests n'a rien vérifié. Le service ci-dessous leur
@@ -320,10 +336,10 @@ jobs:
         # NeoFrag Reborn supporte toutes les versions PHP >= 8.2 (cf. composer.json). La batterie
         # entière les teste toutes (régressions propres à une version, ex. unserialize) ; un envoi
         # ordinaire, la borne basse seulement — le quota (cf. en-tête). Aucun poste ne joue 8.2 :
-        # la CI est seule à voir une fonction de 8.3 ou plus. La borne haute, 8.5, est celle de
-        # l'atelier et de la production, où la suite passe avant chaque envoi ; `e2e-smoke` la joue
+        # la CI est seule à voir une fonction de 8.3 ou plus. La borne haute, 8.5, est celle des
+        # installations d'essai et de production, où la suite passe avant chaque envoi ; `e2e-smoke` la joue
         # aussi sous PHP 8.3 (Dockerfile).
-        php: ${{ github.event_name == 'workflow_dispatch' && fromJSON('["8.2", "8.3", "8.4", "8.5"]') || fromJSON('["8.2"]') }}
+        php: ${{ (github.event_name == 'workflow_dispatch' || !github.event.repository.private) && fromJSON('["8.2", "8.3", "8.4", "8.5"]') || fromJSON('["8.2"]') }}
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
@@ -333,6 +349,11 @@ jobs:
           extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
           tools: phpunit:11
+      # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
       # Les tests touchent du code qui dépend du vendor (sanitize_html → HTMLPurifier, etc.). Sans
       # composer install, phpunit fatalise sur « Class HTMLPurifier_Config not found ». Le verrou
       # s'installe sur les quatre versions sans option : composer.json fixe la plateforme à PHP 8.2.0.
@@ -352,7 +373,7 @@ jobs:
   db-smoke:
     name: Schema + migration runner (smoke)
     if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     services:
       db:
@@ -380,6 +401,11 @@ jobs:
           php-version: '8.3'
           extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
+      # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: Import schema.sql cœur lean (valide le DDL + collations)
         run: mysql -h127.0.0.1 -P3306 -uroot -proot neofrag < install/schema.sql
       - name: Baseline des migrations déjà présentes dans le schéma (05-04)
@@ -403,8 +429,8 @@ jobs:
   interface:
     name: Interface (responsive mesuré + navigation admin)
     # Le job le plus long (7 à 8 minutes) : batterie entière seulement (cf. en-tête).
-    if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     # Le responsive ne reposait que sur des captures regardées à la main. Une entrée du suivi
     # affirmait « 0 débordement de 390 px à 2560 px » — c'était faux : 309 colonnes s'appliquaient
@@ -437,6 +463,11 @@ jobs:
           php-version: '8.3'
           extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
+      # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: composer install
         run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
       # Une vraie installation : sans dispositions ni contenu, les pages rendraient du vide et la
@@ -446,7 +477,7 @@ jobs:
       # Chaque étape navigateur a SON délai : le 2026-09-23, Chrome s'est figé pendant la mesure du
       # débordement, et le job a attendu ses trente minutes avant d'échouer sans dire où. Un délai
       # par étape fait échouer vite, sous le nom de l'étape qui bloque.
-      # Chrome est préinstallé sur les runners ubuntu-latest. L'outil démarre son propre serveur,
+      # Chrome est préinstallé sur les runners Ubuntu de GitHub. L'outil démarre son propre serveur,
       # ouvre une session d'administrateur temporaire et fait le ménage derrière lui.
       # Sur une sous-page d'administration, il faut pouvoir remonter au module — par le fil d'Ariane
       # ou par un bouton « Retour ». Le comptage fait à la main annonçait 36 pages fautives sur 97 :
@@ -518,7 +549,7 @@ jobs:
   e2e-smoke:
     name: Smoke E2E (install complète + flux critiques)
     if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
@@ -527,6 +558,11 @@ jobs:
           php-version: '8.3'
           extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
+      # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
       # vendor/ est gitignored ET monté dans le conteneur web (docker-compose: ./:/var/www/html), et le
       # Dockerfile ne fait PAS composer install. Sans cette étape, le conteneur n'a aucun vendor/ → fatal
       # runtime dès qu'une classe vendored est instanciée (ex. PHPMailer pour l'email de lost-password → 500).

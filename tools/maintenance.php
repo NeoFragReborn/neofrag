@@ -5,6 +5,7 @@ declare(strict_types=1);
  * maintenance — tâches de maintenance périodiques, à lancer par un cron externe.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Ce qu'il fait
  * -------------

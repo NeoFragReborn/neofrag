@@ -19,8 +19,8 @@
  * variantes perdent la leur. Le produit en emploie 90 : `btn-outline-danger` 51 fois,
  * `btn-outline-secondary` 17, `warning` 10, `info` 7, `success` 4, `light` 1.
  *
- * Rien ne cassait : le texte gardait sa couleur, et le bouton ressemblait a un simple lien. le mainteneur
- * l'a signale le 2026-09-22 sur le bandeau de maintenance, ou « Ouvrir le site » n'avait de cadre
+ * Rien ne cassait : le texte gardait sa couleur, et le bouton ressemblait a un simple lien. Signale
+ * le 2026-09-22 sur le bandeau de maintenance, ou « Ouvrir le site » n'avait de cadre
  * qu'au survol.
  *
  * POURQUOI ICI ET PAS DANS LE PONT. `css/nf-bs5-bridge.css` est charge AVANT la feuille du theme :

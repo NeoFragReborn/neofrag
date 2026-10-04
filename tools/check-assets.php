@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-assets — deux fichiers d'asset homonymes dont l'un masque l'autre, et les cartes de source absentes.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

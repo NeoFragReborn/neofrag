@@ -2,7 +2,9 @@
 declare(strict_types=1);
 /**
  * https://translate.neofr.ag
- * @author: NeoFrag — i18n sync 2026-05-03
+ * @author: FoxLey
+ * @author: eResnova
+ * Complété par NeoFrag Reborn (traductions synchronisées le 2026-05-03).
  */
 
 return [
@@ -93,4 +95,5 @@ return [
 	'3d3305f0' => 'List',
 	'd3fe1369' => 'Schedule',
 	'45002a02' => 'No extension matches.',
+	'79e64a05' => '<b>NeoFrag %s</b> is available (you are using %s): <a href="%s">Monitoring</a> updates it in one click, taking a backup before writing anything.',
 ];

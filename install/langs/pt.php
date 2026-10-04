@@ -199,4 +199,11 @@ return [
 	'f43a187f' => 'Verificar de novo',
 	'6b41f3af' => 'Associação / clube',
 	'efd057dc' => 'Notícias, fórum, galerias, calendário, donativos, newsletter, wiki e FAQ. O necessário para dar vida a uma associação ou a um clube, sem o equipamento de eSports.',
+	'0cfd79fc' => 'Conteúdo (documentação do wiki e demonstração)…',
+	'07d371b4' => 'Conteúdo (documentação do wiki)…',
+	'0a0551e7' => 'É necessário PHP %s ou mais recente (este PHP: %s).',
+	'7338e32d' => 'Este PHP não consegue gerar o hash das palavras-passe com %s: é necessário um PHP compilado com Argon2.',
+	'c54fdfde' => 'Hash das palavras-passe (%s)',
+	'23bcdfc3' => 'disponível',
+	'c2f31600' => 'ausente neste PHP',
 ];

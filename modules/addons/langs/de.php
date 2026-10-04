@@ -93,4 +93,5 @@ return [
 	'3d3305f0' => 'Liste',
 	'd3fe1369' => 'Programm',
 	'45002a02' => 'Keine Erweiterung entspricht.',
+	'79e64a05' => '<b>NeoFrag %s</b> ist verfügbar (du verwendest %s): <a href="%s">Monitoring</a> aktualisiert es mit einem Klick und legt vorher eine Sicherung an.',
 ];

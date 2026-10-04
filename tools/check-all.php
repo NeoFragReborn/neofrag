@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-all — lance toute la batterie de contrôles d'un coup, et dit ce qu'elle n'a pas joué.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
@@ -40,6 +41,7 @@ declare(strict_types=1);
 
 require __DIR__.'/lib/outil.php';
 require __DIR__.'/lib/navigateur.php';
+require __DIR__.'/lib/entetes.php';
 
 [$o] = nf_options(['navigateur' => FALSE, 'tout' => FALSE, 'liste' => FALSE, 'seul' => '', 'sauf' => '', 'minutes' => 10]);
 
@@ -80,10 +82,11 @@ foreach (glob(nf_racine().'/tools/check-*.php') ?: [] as $fichier)
         continue;
     }
 
-    $entete   = (string) file_get_contents($fichier, FALSE, NULL, 0, 6000);
-    $famille  = preg_match('/^ \* Famille : (statique|navigateur|cible)\s*$/m', $entete, $m) ? $m[1] : 'statique';
-    $batterie = preg_match('/^ \* Batterie : (.+?)\s*$/m', $entete, $m) ? trim($m[1]) : '';
-    $usage    = preg_match('/^ \*\s{2,}(php tools\/check-'.preg_quote($nom, '/').'\.php.*?)(?:\s{2,}.*)?$/m', $entete, $m) ? trim($m[1]) : '';
+    // L'en-tête se lit à un seul endroit (tools/lib/entetes.php), comme pour check-tools.
+    $entete   = nf_entete_outil('check-'.$nom, $fichier);
+    $famille  = in_array($entete['famille'], ['statique', 'navigateur', 'cible'], TRUE) ? $entete['famille'] : 'statique';
+    $batterie = $entete['batterie'];
+    $usage    = current(array_filter($entete['usage'], static fn (string $u): bool => str_starts_with($u, 'php tools/check-'.$nom.'.php'))) ?: '';
 
     $controles[$nom] = ['fichier' => $fichier, 'famille' => $famille, 'batterie' => $batterie, 'usage' => $usage];
 }

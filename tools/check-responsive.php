@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-responsive — mesure le débordement horizontal des pages, à plusieurs largeurs.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

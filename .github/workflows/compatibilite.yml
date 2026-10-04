@@ -1,0 +1,94 @@
+name: Compatibilité
+
+# Ce que le guide d'installation annonce — les versions de PHP, de MariaDB et de MySQL — n'y entre que
+# si cette matrice le prouve : chaque version de PHP prise en charge (la plus ancienne et la plus
+# récente), face à chaque base que l'on envisage d'annoncer. Chaque case installe le produit entier
+# pour de vrai (`ci-install`), joue toute la suite de tests (intégration et amorçage du framework
+# compris) et installe chacun des cinq profils d'installation (`check-install-profiles`).
+#
+# Sur un dépôt public, les minutes sont gratuites : la matrice joue chaque semaine. Sur un dépôt privé,
+# elle coûte une heure et demie de minutes : à la main seulement.
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  case:
+    name: PHP ${{ matrix.php }} · ${{ matrix.base.nom }}
+    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.5']
+        base:
+          - { nom: 'MariaDB 10.5',  image: 'mariadb:10.5',  sante: 'healthcheck.sh --connect --innodb_initialized' }
+          - { nom: 'MariaDB 10.6',  image: 'mariadb:10.6',  sante: 'healthcheck.sh --connect --innodb_initialized' }
+          - { nom: 'MariaDB 10.11', image: 'mariadb:10.11', sante: 'healthcheck.sh --connect --innodb_initialized' }
+          - { nom: 'MariaDB 11.4',  image: 'mariadb:11.4',  sante: 'healthcheck.sh --connect --innodb_initialized' }
+          - { nom: 'MariaDB 11.8',  image: 'mariadb:11.8',  sante: 'healthcheck.sh --connect --innodb_initialized' }
+          - { nom: 'MySQL 5.7',     image: 'mysql:5.7',     sante: 'mysqladmin ping -h 127.0.0.1 -uroot -proot' }
+          - { nom: 'MySQL 8.0',     image: 'mysql:8.0',     sante: 'mysqladmin ping -h 127.0.0.1 -uroot -proot' }
+          - { nom: 'MySQL 8.4',     image: 'mysql:8.4',     sante: 'mysqladmin ping -h 127.0.0.1 -uroot -proot' }
+    # Les images MariaDB acceptent les variables MYSQL_* : une seule déclaration pour les deux familles.
+    services:
+      db:
+        image: ${{ matrix.base.image }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: neofrag
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="${{ matrix.base.sante }}"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=30
+    env:
+      NF_DB_HOST: 127.0.0.1
+      NF_DB_PORT: '3306'
+      NF_DB_USER: root
+      NF_DB_PASS: root
+      NF_DB_NAME: neofrag
+      NF_TEST_DB_HOST: 127.0.0.1
+      NF_TEST_DB_PORT: '3306'
+      NF_TEST_DB_NAME: neofrag_test
+      NF_TEST_DB_USER: neofrag_test
+      NF_TEST_DB_PASS: neofrag_test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, mysqli, gd, zip, curl
+          coverage: none
+      # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
+      - name: La version de la base
+        run: mysql -h127.0.0.1 -P3306 -uroot -proot -e 'SELECT VERSION()'
+      - name: composer install
+        run: composer install --no-interaction --no-progress
+      - name: Installation complète (tous les addons, un administrateur)
+        run: php tools/ci-install.php
+      - name: Prépare la base des tests d'intégration
+        run: php tools/prepare-test-db.php --root-user=root --root-pass=root
+      - name: La suite de tests entière (rien ne se saute)
+        run: vendor/bin/phpunit --fail-on-skipped
+      - name: Vendor de production
+        run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+      - name: Les cinq profils d'installation démarrent et répondent
+        env:
+          NF_DB_NAME_PREFIX: nfprofil
+        run: php tools/check-install-profiles.php

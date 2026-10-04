@@ -16,9 +16,9 @@ class Latest_Comments extends Widget
 			'title'       => $this->lang('Derniers commentaires'),
 			'description' => $this->lang('Affiche les commentaires les plus récents postés sur le site (toutes sections confondues).'),
 			'icon'        => 'far fa-comments',
-			'link'        => 'https://neofr.ag',
-			'author'      => 'NeoFrag Fork',
-			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'link'        => 'https://neofrag-reborn.xyz',
+			'author'      => 'NeoFrag Reborn',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],

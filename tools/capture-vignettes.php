@@ -5,6 +5,7 @@ declare(strict_types=1);
  * capture-vignettes — refabrique les vignettes d'aperçu des thèmes publics.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

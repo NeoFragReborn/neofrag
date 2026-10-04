@@ -1,0 +1,53 @@
+name: Poser les extensions
+description: >-
+  Le dépôt neofrag ne porte que le cœur et les addons d'identité ; la documentation, la NOTICE et la
+  suite de tests décrivent le produit entier. Là où les addons à la carte manquent, cette action clone
+  NeoFragReborn/extensions et les pose dans l'arbre (tools/assembler.php). Là où ils sont déjà — le
+  dépôt de développement —, elle ne fait rien.
+
+inputs:
+  app-id:
+    description: "L'application de l'organisation, tant qu'extensions est privé (vide une fois public)."
+    required: false
+    default: ''
+  app-cle:
+    description: "Sa clé privée."
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Les addons à la carte manquent-ils ?
+      id: besoin
+      shell: bash
+      run: |
+        if php -r 'require "tools/lib/outil.php"; require "tools/lib/depot.php"; exit(nf_extensions_absentes() ? 0 : 1);'; then
+          echo "poser=oui" >> "$GITHUB_OUTPUT"
+        else
+          echo "poser=non" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Jeton de lecture d'extensions (dépôt encore privé)
+      id: jeton
+      if: ${{ steps.besoin.outputs.poser == 'oui' && inputs.app-id != '' }}
+      uses: actions/create-github-app-token@v2
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.app-cle }}
+        owner: NeoFragReborn
+        repositories: extensions
+
+    - name: Cloner extensions
+      if: ${{ steps.besoin.outputs.poser == 'oui' }}
+      uses: actions/checkout@v7
+      with:
+        repository: NeoFragReborn/extensions
+        path: _extensions
+        token: ${{ steps.jeton.outputs.token || github.token }}
+
+    # Les addons posés sont inscrits dans .git/info/exclude ; le clone, lui, n'a plus rien à faire là.
+    - name: Assembler
+      if: ${{ steps.besoin.outputs.poser == 'oui' }}
+      shell: bash
+      run: php tools/assembler.php --extensions=_extensions && rm -rf _extensions

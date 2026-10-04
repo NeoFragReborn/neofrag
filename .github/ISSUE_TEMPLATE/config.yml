@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 Faille de sécurité
+    url: https://github.com/NeoFragReborn/neofrag/security/advisories/new
+    about: Signale-la en privé (ne crée pas d'issue publique). Voir la politique de sécurité de l'organisation.
+  - name: 💬 Question / aide
+    url: https://github.com/NeoFragReborn/neofrag/discussions
+    about: Pour les questions d'usage, ouvre une discussion.

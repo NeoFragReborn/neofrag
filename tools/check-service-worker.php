@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-service-worker — le worker se retire quand on l'éteint, et ne met jamais le HTML en cache.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

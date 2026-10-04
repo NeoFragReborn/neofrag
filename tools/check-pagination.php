@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-pagination — une liste que le checker découpe en pages affiche les liens de ses pages.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi ce contrôle existe
  * ---------------------------

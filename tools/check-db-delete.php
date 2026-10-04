@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-db-delete — une suppression par le constructeur de requêtes nomme sa table : `->delete('nf_…')`, jamais `->delete()`.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi ce contrôle existe
  * ---------------------------

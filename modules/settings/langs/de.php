@@ -188,7 +188,6 @@ return [
 	'2c84b316' => 'Was dieser Inhalt Suchmaschinen und Vorschauen beim Teilen zeigt, Sprache für Sprache. Was leer bleibt, ist automatisch.',
 	'a7879650' => 'SEO-Bericht',
 	'90ca5d10' => 'Sitemap: %d Seite(n) auf %s gemeldet',
-	'e8db9599' => 'Nur die Startseite wird gemeldet: Kein Modul zeigt Besuchern eine Seite. Prüfen Sie deren Rechte in der Berechtigungsmatrix.',
 	'489eeedf' => 'Sitemap ansehen',
 	'48e5150b' => 'kein Slogan: Der Titel der Startseite ist nur der Name der Website',
 	'5de6f257' => 'eine zu kurze Beschreibung oder eine, die den Namen der Website wiederholt',
@@ -237,4 +236,7 @@ return [
 	'47b6a471' => 'Aktiv: %d Adressen verfolgt. Letzte Übermittlung am %s: %d Adresse(n), empfangen.',
 	'3a0f34b9' => 'Aktiv: %d Adressen verfolgt. Seit dem Einschalten hat sich nichts geändert.',
 	'c3bc28a3' => 'Eingeschaltet: Der erste Lauf der geplanten Aufgabe erfasst die Seiten der Website, ohne etwas zu senden; Änderungen werden danach gesendet.',
+	'93f5c577' => 'Nur die Startseite wird gemeldet: Kein Modul hat bisher Inhalte, die Besucher lesen können. Ein leerer Bereich wird nicht gemeldet; falls Inhalte vorhanden sind, prüfen Sie die Rechte in der Berechtigungsmatrix.',
+	'e44f4288' => 'Über das DNS der Domain bestätigt. Reichen Sie dort die Sitemap ein: %s',
+	'cda95d5f' => 'Aus der Google Search Console importiert? Dann ist nichts weiter zu tun: Der Import hinterlässt keine Spur, die die Website lesen kann. Andernfalls fügen Sie hier den Bestätigungscode ein.',
 ];

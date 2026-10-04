@@ -199,4 +199,11 @@ return [
 	'f43a187f' => 'Volver a comprobar',
 	'6b41f3af' => 'Asociación / club',
 	'efd057dc' => 'Noticias, foro, galerías, calendario, donaciones, boletín, wiki y FAQ. Lo necesario para dar vida a una asociación o un club, sin el equipamiento de eSports.',
+	'0cfd79fc' => 'Contenido (documentación del wiki y demostración)…',
+	'07d371b4' => 'Contenido (documentación del wiki)…',
+	'0a0551e7' => 'Se requiere PHP %s o posterior (este PHP: %s).',
+	'7338e32d' => 'Este PHP no puede cifrar las contraseñas con %s: se necesita un PHP compilado con Argon2.',
+	'c54fdfde' => 'Cifrado de contraseñas (%s)',
+	'23bcdfc3' => 'disponible',
+	'c2f31600' => 'ausente en este PHP',
 ];

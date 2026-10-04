@@ -694,6 +694,20 @@ class Admin_Ajax extends Controller_Module
 
 		unlink($dump);
 
+		// La nouvelle archive écrite, les anciennes se retirent : les cinq plus récentes restent
+		// toujours, les autres partent passé trente jours (nf_sauvegardes_a_retirer()).
+		$dates = [];
+
+		foreach (glob('backups/*.zip') ?: [] as $chemin)
+		{
+			$dates[basename($chemin)] = (int) filemtime($chemin);
+		}
+
+		foreach (nf_sauvegardes_a_retirer($dates, time()) as $ancienne)
+		{
+			@unlink('backups/'.$ancienne);
+		}
+
 		// Chemin absolu : l'archive a été écrite relativement au répertoire courant, mais le retour
 		// arrière peut survenir alors qu'on ne l'a plus.
 		return rtrim(NEOFRAG_CMS, '/').'/'.$archive;

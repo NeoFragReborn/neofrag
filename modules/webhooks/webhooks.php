@@ -31,9 +31,9 @@ class Webhooks extends Module
 			'title'       => $this->lang('Webhooks'),
 			'description' => $this->lang('Notifie des services externes (Discord, Zapier…) par webhook signé à chaque événement.'),
 			'icon'        => 'fas fa-bolt',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'NeoFrag Reborn',
-			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			// install/seed.sql l'enregistre dans le coeur : la declaration doit dire ce qui est
 			// REELLEMENT installe. Ses appelants le traitent pourtant deja comme optionnel

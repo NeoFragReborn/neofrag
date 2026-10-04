@@ -5,16 +5,27 @@
  * Chaque contrôle annonce sa VALEUR constatée, pas seulement un ✓ : quand quelque chose manque,
  * savoir quelle version de PHP tourne réellement évite un aller-retour avec l'hébergeur. Le titre
  * de l'étape est porté par le bandeau du gabarit (install/layout.php) — pas de <h2> ici.
+ *
+ * La liste vient de `Installer::PREREQUIS`, la même que celle de l'installation en ligne de
+ * commande : jusqu'au 2026-10-04, chacune avait la sienne, et aucune ne disait tout.
  */
+use NF\NeoFrag\Installer;
+
 $dossier_config = is_dir($NF_CONFIG) ? $NF_CONFIG : $NF_ROOT;
 
 /** libellé => [réussi ?, valeur constatée] */
-$checks = [
-	'PHP ≥ 8.2' => [version_compare(PHP_VERSION, '8.2.0', '>='), PHP_VERSION],
-];
+$checks = [];
 
-foreach (['mysqli', 'mbstring', 'gd', 'zip', 'curl', 'intl'] as $extension) {
-	$checks[lang('Extension %s', $extension)] = [extension_loaded($extension), extension_loaded($extension) ? lang('présente') : lang('absente')];
+foreach (Installer::prerequis() as $mesure) {
+	if ($mesure['type'] === 'php') {
+		$checks['PHP ≥ '.Installer::php_minimum()] = [$mesure['ok'], $mesure['nom']];
+	}
+	else if ($mesure['type'] === 'extension') {
+		$checks[lang('Extension %s', $mesure['nom'])] = [$mesure['ok'], $mesure['ok'] ? lang('présente') : lang('absente')];
+	}
+	else {
+		$checks[lang('Hachage des mots de passe (%s)', $mesure['nom'])] = [$mesure['ok'], $mesure['ok'] ? lang('disponible') : lang('absent de ce PHP')];
+	}
 }
 
 $checks[lang('Dossier config/')] = [is_writable($dossier_config), is_writable($dossier_config) ? lang('inscriptible') : lang('non inscriptible')];

@@ -12,7 +12,7 @@ namespace NF\Tests\Headless;
  * chaque traduction — un lien partagé en français ne casse pas en anglais. La suppression d'un forum
  * emporte ses traductions (clé étrangère en cascade).
  *
- * L'affichage dans la langue du visiteur demande une page servie : il a été mesuré sur l'atelier
+ * L'affichage dans la langue du visiteur demande une page servie : il a été mesuré sur un site d'essai
  * (français et allemand sur le titre par défaut, anglais sur sa traduction).
  */
 final class ForumTitresTraduitsTest extends HeadlessTestCase

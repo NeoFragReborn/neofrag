@@ -32,6 +32,47 @@ final class InstallerTest extends TestCase
 		@rmdir($this->tmp);
 	}
 
+	/**
+	 * Une seule liste des prérequis (2026-10-04) : la mesure suit la liste, dans l'ordre — la version
+	 * de PHP d'abord, chaque extension, Argon2 en dernier — et dit vrai sur ce PHP.
+	 */
+	public function testPrerequisMesureChaqueExigenceDeLaListe(): void
+	{
+		$mesures = Installer::prerequis();
+
+		$this->assertSame('php', $mesures[0]['type']);
+		$this->assertSame(PHP_VERSION, $mesures[0]['nom']);
+		$this->assertTrue($mesures[0]['ok'], 'la suite tourne sur un PHP pris en charge');
+
+		$extensions = array_column(array_filter($mesures, static fn (array $m): bool => $m['type'] === 'extension'), 'ok', 'nom');
+		$this->assertSame(Installer::PREREQUIS['extensions'], array_keys($extensions));
+
+		foreach ($extensions as $nom => $ok)
+		{
+			$this->assertSame(extension_loaded($nom), $ok, $nom);
+		}
+
+		$argon2 = end($mesures);
+		$this->assertSame('argon2', $argon2['type']);
+		$this->assertSame(defined('PASSWORD_ARGON2ID'), $argon2['ok']);
+	}
+
+	/**
+	 * Les trois extensions que l'assistant oubliait — dont l'absence casse le site sans prévenir —
+	 * restent dans la liste, et la plage de PHP se lit.
+	 */
+	public function testPrerequisGardentCeQuiCasseSansPrevenir(): void
+	{
+		foreach (['openssl', 'fileinfo', 'iconv'] as $nom)
+		{
+			$this->assertContains($nom, Installer::PREREQUIS['extensions']);
+		}
+
+		$this->assertSame('8.2', Installer::php_minimum());
+		$this->assertMatchesRegularExpression('/^\d+\.\d+$/', Installer::PREREQUIS['php_eprouve']);
+		$this->assertTrue(version_compare(Installer::PREREQUIS['php_eprouve'], Installer::php_minimum(), '>='));
+	}
+
 	public function testRandomSecretLengthCharsetAndUniqueness(): void
 	{
 		$a = Installer::random_secret(99);

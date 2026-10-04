@@ -120,6 +120,34 @@ function file_upload_max_size()
 	return $max_size;
 }
 
+/**
+ * Les sauvegardes à retirer de `backups/` après en avoir pris une nouvelle : jamais l'une des `$garder`
+ * plus récentes, et parmi les autres, celles qui ont plus de `$jours` jours — la règle du bouton « Purger »
+ * du Monitoring, appliquée d'elle-même. Chaque mise à jour par le bouton prend une sauvegarde complète
+ * (16 Mo pour un site neuf) et rien ne les retirait : la vitrine en portait 23, 358 Mo (2026-10-03).
+ * Seuls les noms que fabrique la sauvegarde sont considérés.
+ *
+ * @param array<string, int> $sauvegardes nom du fichier => date de modification
+ * @return list<string>
+ */
+function nf_sauvegardes_a_retirer(array $sauvegardes, int $maintenant, int $garder = 5, int $jours = 30): array
+{
+	$sauvegardes = array_filter($sauvegardes, static fn ($date, $nom): bool => (bool) preg_match('/^\d{14}(-[a-f0-9]{16})?\.zip$/', (string) $nom), ARRAY_FILTER_USE_BOTH);
+	arsort($sauvegardes);
+
+	$retirer = [];
+
+	foreach (array_slice($sauvegardes, max(0, $garder), NULL, TRUE) as $nom => $date)
+	{
+		if ($date < $maintenant - $jours * 86400)
+		{
+			$retirer[] = (string) $nom;
+		}
+	}
+
+	return $retirer;
+}
+
 function human_size($bytes, $decimals = 2): string
 {
 	// (string) obligatoire : le fichier est en strict_types, strlen(int|float) lèverait une TypeError
@@ -340,12 +368,12 @@ function image_normalize($filename, $max_width, $max_height = NULL): bool
  * Pourquoi cette fonction existe
  * ------------------------------
  * `NEOFRAG_LOGS` consigne, pour CHAQUE page servie, toutes ses requêtes SQL et ses en-têtes. Rien
- * ne bornait le fichier : sur l'atelier — le seul des trois sites où le réglage est actif —
+ * ne bornait le fichier : sur notre site d'essai — le seul des trois où le réglage était actif —
  * `logs/neofrag.log` avait atteint **1,7 Go** le 2026-09-20, chaque passage de la batterie en
  * ajoutant une centaine de mégaoctets.
  *
- * Le danger n'est pas le fichier, c'est le disque : les trois installations le partagent, et un
- * atelier qui le remplit arrête aussi la production. Le correctif appartient au produit et non au
+ * Le danger n'est pas le fichier, c'est le disque : les installations d'un même serveur le
+ * partagent, et un site d'essai qui le remplit arrête aussi la production. Le correctif appartient au produit et non au
  * serveur — n'importe qui activant `NEOFRAG_LOGS` sur son hébergement aura le même problème, et
  * n'a pas forcément `logrotate`.
  *

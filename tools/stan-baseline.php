@@ -5,6 +5,7 @@ declare(strict_types=1);
  * stan-baseline — régénère la liste d'exceptions de PHPStan, et refuse d'y geler une erreur neuve.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

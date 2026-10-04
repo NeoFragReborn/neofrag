@@ -7,9 +7,17 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.2.22');
+define('NEOFRAG_VERSION', '1.2.23');
 
 error_reporting(E_ALL);
+
+// Le journal des erreurs s'écrit dans logs/php.log. Les paquets d'installation ne portaient pas ce
+// dossier jusqu'à la 1.2.22, et rien ne le créait : PHP se rabattait sur le journal du serveur, et
+// Monitoring → Journal des erreurs restait vide. Un site qui ne l'a pas le recrée, avec sa garde.
+if (!is_dir(NEOFRAG_CMS.'/logs') && @mkdir(NEOFRAG_CMS.'/logs', 0775, TRUE))
+{
+	@file_put_contents(NEOFRAG_CMS.'/logs/.htaccess', "Require all denied\n");
+}
 
 ini_set('error_log',       'logs/php.log');
 // display_errors OFF par défaut au bootstrap (avant le chargement de config/neofrag.php) : évite de
@@ -77,7 +85,7 @@ function NeoFrag()
 		// `__debug` est une propriété DYNAMIQUE, posée sur chaque objet en mode débogage seulement.
 		// Toute classe instanciée ici doit donc porter #[\AllowDynamicProperties] : PHP 8.2 déprécie
 		// le reste, et les champs de `neofrag/fields/` écrivaient ainsi plus de deux mille lignes au
-		// journal de l'atelier pour trois cents pages (2026-09-22).
+		// journal d'un site d'essai pour trois cents pages (2026-09-22).
 		if ($debug)
 		{
 			$object->__debug = (object)[

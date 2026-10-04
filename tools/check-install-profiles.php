@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-install-profiles — chaque profil d'installation doit démarrer et répondre, installé pour de vrai.
  *
  * Famille : cible
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

@@ -15,7 +15,7 @@ d'URL).
 
 ## Prérequis hébergement
 
-- PHP **≥ 8.2** avec extensions : `mysqli`, `mbstring`, `gd`, `zip`, `curl`, `intl`.
+- PHP **8.2 à 8.5**, avec les extensions que liste le [guide d'installation](guide/installation.md#prérequis).
 - Une base **MySQL/MariaDB** (créée depuis le panel, ou créée par l'installeur si les droits le permettent).
 - Apache avec **`mod_rewrite`** et `AllowOverride All` (le `.htaccess` route vers `index.php`). Sur la
   plupart des mutualisés c'est actif par défaut ; sinon demander au support.
@@ -149,13 +149,16 @@ Deux corrections (au choix) :
 
 ### Dossiers sensibles sous nginx (⚠ sécurité)
 
-Le `.htaccess` interdit aussi l'accès direct à `backups/`, `logs/` et `config/` (les archives de
-sauvegarde contiennent le **dump SQL + les secrets de `config/`**). Sous **nginx sans `.htaccess`**, ces
-dossiers seraient servis en statique → **fuite de secrets**. Si tu n'as pas décoché le smart static
-(option 1), ajoute dans les *Directives nginx supplémentaires* :
+Le `.htaccess` interdit aussi l'accès direct aux dossiers et fichiers sensibles (les archives de
+sauvegarde contiennent le **dump SQL + les secrets de `config/`**). Sous **nginx sans `.htaccess`**, ils
+seraient servis en statique → **fuite de secrets**. Si tu n'as pas décoché le smart static (option 1),
+ajoute dans les *Directives nginx supplémentaires* :
 
 ```nginx
-location ~ ^/(backups|logs|config)/ { deny all; }
+location ~ ^/(backups|cache|config|logs|install|tools|tests|docs)/ { deny all; }
+location ~* \.(sql|lock|scssc|map|dist|ini|sh|neon|md)$ { deny all; }
+location ~ ^/(package\.json|package-lock\.json|eslint\.config\.js|playwright\.config\.js|Caddyfile|nginx\.conf)$ { deny all; }
 ```
 
-Le repo fournit un `nginx.conf` de référence (racine) avec ces règles, à adapter avant tout usage réel.
+Ce sont les règles de l'exemple complet que livre le paquet, `nginx.conf` (à la racine), à adapter :
+domaine, dossier du site, PHP-FPM. `check-htaccess` vérifie que ces lignes refusent la même liste.

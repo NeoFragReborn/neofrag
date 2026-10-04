@@ -5,6 +5,7 @@ declare(strict_types=1);
  * dump-schema — régénère le schéma de référence et le seed d'installation depuis la base vive, en cœur lean.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Ce qu'il produit
  * ----------------

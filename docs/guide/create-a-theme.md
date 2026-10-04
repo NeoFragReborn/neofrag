@@ -42,7 +42,7 @@ class Aurora extends Theme
             'title'       => 'Aurora',
             'description' => $this->lang('Thème communautaire sombre et néon.'),
             'author'      => 'Ton Nom',
-            'license'     => 'Creative Commons CC BY-NC-SA 4.0',
+            'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
             'version'     => '1.0.0',
 
             // Déclarations de découplage — OBLIGATOIRES.

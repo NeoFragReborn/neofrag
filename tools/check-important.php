@@ -5,10 +5,11 @@ declare(strict_types=1);
  * check-important — mesure quels `!important` d'une feuille servent réellement à quelque chose.
  *
  * Famille : cible
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
- * Le produit en compte près de trois cents, répartis sur 31 feuilles. un chantier interne proposait de les
+ * Le produit en compte près de trois cents, répartis sur 31 feuilles. Le premier plan proposait de les
  * retirer « un par un, avec capture avant/après » : le chantier n'avançait pas, parce que juger un
  * seul cas demandait de regarder sept thèmes à deux modes sur une dizaine de pages.
  *

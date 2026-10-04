@@ -389,7 +389,7 @@ class Url extends Core
 	 * qui attendent un fichier ou un 404, pas un JSON de redirection.
 	 *
 	 * Les deux correctifs précédents avaient traité les symptômes — les quatre fichiers racine,
-	 * puis la redirection de langue. Celui-ci traite la cause. un chantier interne.
+	 * puis la redirection de langue. Celui-ci traite la cause.
 	 *
 	 * CE QU'ON N'A PAS FAIT, ET POURQUOI. `ajax_header` — l'en-tête `X-Requested-With` — est
 	 * calculé juste à côté (ligne 71) et n'est lu nulle part. Le brancher ici semblait naturel ;

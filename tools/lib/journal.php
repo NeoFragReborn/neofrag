@@ -4,6 +4,8 @@ declare(strict_types=1);
 /**
  * journal — lire le journal PHP d'une installation, classer ses lignes, et les montrer regroupées.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * Le 2026-09-22 au soir, la lecture du journal de la DÉMONSTRATION a trouvé en dix minutes six

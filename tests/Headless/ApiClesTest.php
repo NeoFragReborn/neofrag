@@ -9,7 +9,7 @@ namespace NF\Tests\Headless;
  * Ce test épingle les promesses de sécurité qu'aucun écran ne montre : seule l'empreinte d'une clé
  * est gardée ; une clé se vérifie par sa valeur exacte, et plus du tout une fois révoquée ; une
  * valeur mal formée est refusée sans requête. Les réponses HTTP de l'API (401, 403, 405, 429…) ont
- * été mesurées sur l'atelier par de vraies requêtes.
+ * été mesurées sur un site d'essai par de vraies requêtes.
  */
 final class ApiClesTest extends HeadlessTestCase
 {

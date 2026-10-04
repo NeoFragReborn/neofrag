@@ -4,6 +4,8 @@ declare(strict_types=1);
 /**
  * langues — lire et écrire les fichiers de langue (`langs/<code>.php`) sans les exécuter.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * Deux outils écrivent dans ces fichiers : `check-langs --fix` y ajoute les clés françaises,

@@ -89,6 +89,12 @@ class Sitemap extends Controller_Module
 			}
 		}
 
+		// Une rubrique vide n'est pas annoncée aux moteurs : sa page ne dirait que « rien pour l'instant ».
+		if (!$visibles)
+		{
+			return [];
+		}
+
 		$adresses[0]['date'] = max(array_map(static fn (array $a): string => (string) ($a['date'] ?? ''), $adresses));
 
 		return $adresses;

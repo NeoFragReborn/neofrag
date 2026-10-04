@@ -1,8 +1,8 @@
 {
     "schema": 1,
     "project": "NeoFrag Reborn",
-    "base_version": "1.2.17",
-    "generated_at": "2026-10-02T16:51:52+00:00",
+    "base_version": "1.2.22",
+    "generated_at": "2026-10-04T00:45:49+00:00",
     "count": 63,
     "addons": [
         {
@@ -36,13 +36,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/ads.zip",
             "preview": "modules/ads.jpg",
-            "size": 31174,
-            "sha256": "20af397a4b1e3862bfb4e172d3d5a232cfdf3567064e967a2b58e459ccf95d2b",
+            "size": 31179,
+            "sha256": "5b2f5f06924af056e4ea4b2cb9d56476db12f39cc058e935dc996a522c10f31b",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -81,13 +81,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/api.zip",
             "preview": "",
-            "size": 37333,
-            "sha256": "7897e17ec056d72cfcd0914156a9d9b90a90ee7ee53305a25cf811dd8148f7b4",
+            "size": 37312,
+            "sha256": "4e178878d56a1f1d4066f7993787184d35b64f56bfe2a7f94c626389830acd7d",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -123,14 +123,14 @@
                 }
             },
             "version": "1.0",
-            "author": "user_id",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/articles.zip",
             "preview": "modules/articles.jpg",
-            "size": 86082,
-            "sha256": "0146d3e47795fee9cc6ab1e80b8ec1931afabfc6f17c512718e1c03acd342a77",
+            "size": 87342,
+            "sha256": "13b2d0c04b615d87f133b11694898dcf442c1fecc4d9b527f980bfaf93a8e0e1",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -169,13 +169,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/awards.zip",
             "preview": "modules/awards.jpg",
-            "size": 46770,
-            "sha256": "0e93a8ac63cf5b1aef3ffc0e4413fab37922f1f328dbf21412ba5d5c3dd00f07",
+            "size": 47456,
+            "sha256": "5deaecb5a48e41e1787a3ca2ba59330f89e45ff390577862c1b3a78ca95422a3",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": [
                     "teams",
                     "games"
@@ -217,13 +217,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/bugtracker.zip",
             "preview": "modules/bugtracker.jpg",
-            "size": 58289,
-            "sha256": "ac7976411c1eaf53663ab244e0cb5d075b414a6e217637f2c1ee8efdd9c18979",
+            "size": 59084,
+            "sha256": "ff5593f799dbffe5b2fc484b0dced1690cb3123ed0541d9004bce39a6df08285",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -260,13 +260,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/calendar.zip",
             "preview": "modules/calendar.jpg",
-            "size": 36648,
-            "sha256": "b4b3bb64e70a6588a905289d9c192b04de95fa821d4b183f80663187360a601f",
+            "size": 37402,
+            "sha256": "105fa34c873d3b882f6477d8e7f8994db7a2a7b2a446342e03f690dd7d175457",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -305,13 +305,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/classifieds.zip",
             "preview": "modules/classifieds.jpg",
-            "size": 45731,
-            "sha256": "2494645e778780e81b27b46c71b528e779a21167e3ff5c94acbb7e9f99ee7b83",
+            "size": 46668,
+            "sha256": "85c01984d58decc507a423ee597d796ce785e47cc083cffd1460a53286bd4a84",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -348,13 +348,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/discord.zip",
             "preview": "",
-            "size": 92919,
-            "sha256": "c3a05b776c90dc9ce5ca7765a4bdd046de470d6a78d5bdaf75def05fbf5ee824",
+            "size": 92879,
+            "sha256": "fa0131f8c924c9216c0a74b74c3224ea42c33be9236923cfa1d45dfb4a8e4017",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": [
                     "api"
                 ]
@@ -365,7 +365,7 @@
         {
             "type": "module",
             "name": "donations",
-            "tier": 2,
+            "tier": 1,
             "category": "monetisation",
             "title": "Dons",
             "description": "Système de campagnes de dons avec objectif, barre de progression, liste de donateurs et bouton PayPal.",
@@ -392,14 +392,14 @@
                 }
             },
             "version": "1.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "HiddenBlob (Donation v3), d’après majiid — portage NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/donations.zip",
             "preview": "modules/donations.jpg",
-            "size": 60452,
-            "sha256": "4bef54ba4f5a3027c6b3408cb30079eb7ff7a8c508e6aa4b909e989292cb915a",
+            "size": 61249,
+            "sha256": "2ad82a1ef12570089c94471f69c8b0b6f707f635714f27946612897a044bed9d",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -438,13 +438,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/downloads.zip",
             "preview": "modules/downloads.jpg",
-            "size": 48847,
-            "sha256": "e38d7ec7418aa04da7006abf114d8f6f4808246dca8b461aa247f3c2156df7ae",
+            "size": 49562,
+            "sha256": "6d37159d6c3b84e09f76e878a32de1bd5bac64815269a482d9a626fdfb0410a6",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -483,13 +483,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/emojis.zip",
             "preview": "modules/emojis.jpg",
-            "size": 30528,
-            "sha256": "d7d83846946de9a79b8e3af830813b83dd2db7c980b7853a059122d637a3ef4c",
+            "size": 30534,
+            "sha256": "7ddb229dce565147f05d571a9842fb6f8c6c876f4187efdff5a6862d63cd6e33",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -526,13 +526,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/events.zip",
             "preview": "modules/events.jpg",
-            "size": 192192,
-            "sha256": "cbb82005cc935b2edb3858b99b7a3a75427cb78c8e812b905178fa5c40cd415e",
+            "size": 193143,
+            "sha256": "3ccbaa96df88c82012a8ffdd0bc99cc56123aa242f0102eac4a003f078c0ce20",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": [
                     "games",
                     "teams"
@@ -546,8 +546,8 @@
         {
             "type": "module",
             "name": "faq",
-            "tier": 2,
-            "category": "contenu",
+            "tier": 1,
+            "category": "identite",
             "title": "FAQ",
             "description": "Foire aux questions catégorisée affichée en accordéon Bootstrap.",
             "i18n": {
@@ -574,13 +574,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/faq.zip",
             "preview": "modules/faq.jpg",
-            "size": 32384,
-            "sha256": "0a04e719483fcce0decd91976a4815550353ede6085216e013c37c987330a027",
+            "size": 33134,
+            "sha256": "a50d5a96dac178706c8a9d0f97b7cc40b18a9c6d4854f3a5d90f21103ad3247b",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -617,13 +617,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/feeds.zip",
             "preview": "modules/feeds.jpg",
-            "size": 28398,
-            "sha256": "aee30de5bafee66526b43bbe64d9cdb8ec75e2389fa8619d4e2d356bf73f5d30",
+            "size": 28401,
+            "sha256": "3deb2236b6cb7a8650cb88e9c14ebf4e014a442406375c529629a10a2fb70164",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": [
                     "news",
                     "articles"
@@ -663,13 +663,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/forum.zip",
             "preview": "modules/forum.jpg",
-            "size": 149614,
-            "sha256": "5e4ce5edd04ee13c37523b639e37f6da17d479bea3805395f3db27b4d472cb73",
+            "size": 151157,
+            "sha256": "05a1d374c33568231d471aef27fc79e91a2f327db31405c36379805b39f8b258",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -708,13 +708,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/gallery.zip",
             "preview": "modules/gallery.jpg",
-            "size": 92444,
-            "sha256": "2acace5f9e575898c84830925ad8ac7126577c1797b3c29cd4f29dbeca3e1da1",
+            "size": 93641,
+            "sha256": "1321d41932425a79c03dbc38d4f1750779a9923e03d77ff31556b4af350b92f5",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -753,13 +753,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/games.zip",
             "preview": "modules/games.jpg",
-            "size": 62531,
-            "sha256": "38f556a6b1c2ee4c2ec0c6a8c0c00b5ffcdeffa846b2feee56d04daee07fd30e",
+            "size": 62576,
+            "sha256": "f46871e2973541daabc112a62af4aaf3bafdce4e54ce82e6ec23fb5d210ec604",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -796,13 +796,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/gamification.zip",
             "preview": "modules/gamification.jpg",
-            "size": 40732,
-            "sha256": "548eb683b384e5834c6e0cee33f38e4a56da6496f6d777a303f553592d5aab72",
+            "size": 40738,
+            "sha256": "4541411d6b9f4d8b318f16c470ba33d6678a93f6a6e9dc85a942c02435090600",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -839,13 +839,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/glossary.zip",
             "preview": "modules/glossary.jpg",
-            "size": 55506,
-            "sha256": "7c1be25682a5c6035e3d371ddf028ee446bb348cadd9db0b77982283bbd1aec1",
+            "size": 56194,
+            "sha256": "2f3ff140285f97b7b432d829948e0c08bfd795e2eb127f93035d00197449f9b3",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -882,13 +882,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/guestbook.zip",
             "preview": "modules/guestbook.jpg",
-            "size": 26510,
-            "sha256": "ab3cc8900b8f05b866ea4d25861a81acdbac20361fb0fa38a4a19a64ab5b0267",
+            "size": 26968,
+            "sha256": "d7ea052513d8e534f4e12d3bc868a96272f379d02d4227519cdbce855c812e65",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -927,13 +927,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/links.zip",
             "preview": "modules/links.jpg",
-            "size": 37401,
-            "sha256": "69cc67c2027630505d49100211047a9d13932a9749c985dfe593960db9f1113a",
+            "size": 38091,
+            "sha256": "5f7721403e79d3d52343b7f257da72d5613b62a6089ff233a10f4b3b68c24fe0",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -972,13 +972,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/news.zip",
             "preview": "modules/news.jpg",
-            "size": 74961,
-            "sha256": "766f69d84c8897c5c9e4f4a1c21578d6fd821977b751aedd4a9b4299bded77df",
+            "size": 76091,
+            "sha256": "dd9ed1b66c4ba312604a6c0577af6280ecb5e37909015179ab53be58b3819813",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -989,7 +989,7 @@
         {
             "type": "module",
             "name": "newsletter",
-            "tier": 2,
+            "tier": 1,
             "category": "monetisation",
             "title": "Newsletter",
             "description": "Inscription à la newsletter (double opt-in) et envoi de campagnes.",
@@ -1017,13 +1017,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/newsletter.zip",
             "preview": "modules/newsletter.jpg",
-            "size": 58117,
-            "sha256": "dcc95034c5a312631217f0dfd9d8346d88e230638f9e845784d782ae5f668551",
+            "size": 58595,
+            "sha256": "27fcc00bfc23e2b80802aa153cb94d70fb6b548e0e43f5ec0e03161ee1c6317d",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -1062,13 +1062,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/partners.zip",
             "preview": "modules/partners.jpg",
-            "size": 44998,
-            "sha256": "6136639fa469c6b6ee9034a8fa45fbcfde1e3f4ace9f680eb1b5bbdc3e8a467f",
+            "size": 45675,
+            "sha256": "9036abe9fd1283626a2fe97592fc1cf8d89d02db486fc2c9e26bb1f0861cd7af",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -1107,13 +1107,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/payments.zip",
             "preview": "modules/payments.jpg",
-            "size": 45725,
-            "sha256": "b6434bf85f3719ce573e8ada54f388c1639350871cb7f116540bd937b14561b0",
+            "size": 45729,
+            "sha256": "13215bdb7547679707cbf4cda942dc5ec327e9faa035237fa763b77d16c0ddaf",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1150,13 +1150,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/places.zip",
             "preview": "modules/places.jpg",
-            "size": 178082,
-            "sha256": "d71eca3541f4fe8dc6184fca1e774b6be371223520ea02b10063dbd991b0e875",
+            "size": 178709,
+            "sha256": "68fb99b0fc6b432ede1e31176fb0117cf0b7d7e0e32fcdfd216a147ecd51750d",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1193,13 +1193,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/quotes.zip",
             "preview": "modules/quotes.jpg",
-            "size": 60015,
-            "sha256": "63e452264b0009d4a79b0bd3fbfc039f108f7719d1569b7ba5a97b94a01222c5",
+            "size": 60667,
+            "sha256": "5e6fe45ec361e6bb5f2c256a045bec24e3efd6d3f358ade4b853e399a1ebc694",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1236,13 +1236,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/recipes.zip",
             "preview": "modules/recipes.jpg",
-            "size": 53024,
-            "sha256": "14998e0171edf92511ce827f09a70442fec70dee4649891b2bbd17ccab981aed",
+            "size": 53803,
+            "sha256": "9d1dee72b990905012f2db9b44ca9ad6479778f0ee611e587ba19c8a4c6d88b2",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1279,13 +1279,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/recruits.zip",
             "preview": "modules/recruits.jpg",
-            "size": 74083,
-            "sha256": "c81ceeb5cbf6e4041c93b43737f3cc0dc464e7f1eacfc1ae2420bcebacb95602",
+            "size": 74839,
+            "sha256": "1344351891bb4a9da9b6f240e6e31f47071f2ab36df07eb64296b0d90bfc488d",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": [
                     "teams",
                     "games"
@@ -1327,13 +1327,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/sandbox.zip",
             "preview": "modules/sandbox.jpg",
-            "size": 50350,
-            "sha256": "ae101f4d825ea0b3276391ad1ed5aae677ebaa489e10733ef5b834e8fef551e2",
+            "size": 50355,
+            "sha256": "24aa05b39429998c1b9e11bed7f942afe635278553d86012d24b9aa61e11d5e7",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1370,13 +1370,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/shop.zip",
             "preview": "modules/shop.jpg",
-            "size": 44764,
-            "sha256": "1791df23921a14c1c14e1bf4005b9241d37fa3e3567dad8a689b280cbfc161b4",
+            "size": 45389,
+            "sha256": "312c10ec67cb545cbeed934aff06f710910d3baeb7f0e5fdae28ef576bfee837",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1413,13 +1413,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/surveys.zip",
             "preview": "modules/surveys.jpg",
-            "size": 46723,
-            "sha256": "c56dab0fa74bc597151448443b2fd66dea0143d7205f6f92194da3138ac7c337",
+            "size": 47475,
+            "sha256": "7bd2566ddf875ddcc0914cf0e674d5c5d2ef28da8fb6da2bfae295b6f0ed91b5",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [
@@ -1458,13 +1458,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/teams.zip",
             "preview": "modules/teams.jpg",
-            "size": 54790,
-            "sha256": "494e589a4344ecadef1793c154a9b046100a84844c218a9333ba277c3651cc2f",
+            "size": 55691,
+            "sha256": "f64c01bdd3a606f2f9d295b221bae82d8476cb2bcf6af104404fb195e8333c19",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": [
                     "games"
                 ]
@@ -1505,13 +1505,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/webradio.zip",
             "preview": "modules/webradio.jpg",
-            "size": 62351,
-            "sha256": "5b6d7f442595c168c003ca0dae10f52655d1d65326396fa1d489feca85ad2326",
+            "size": 62906,
+            "sha256": "ef74a3a6aef3274e2d756e409516f84cd33e3fa512d14e3dd420c94e497e4175",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1520,8 +1520,8 @@
         {
             "type": "module",
             "name": "wiki",
-            "tier": 2,
-            "category": "contenu",
+            "tier": 1,
+            "category": "identite",
             "title": "Wiki",
             "description": "Pages collaboratives avec historique de révisions automatique.",
             "i18n": {
@@ -1548,13 +1548,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/wiki.zip",
             "preview": "modules/wiki.jpg",
-            "size": 37857,
-            "sha256": "3081477008e7f359482a8c8b37d61c76086fcf54f25b5c45948ce8729421d263",
+            "size": 39261,
+            "sha256": "2a7d953f05b02233683afbaee35755dba03bf284bae27c397389d864eb7f3997",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1585,14 +1585,14 @@
                 }
             },
             "version": "1.0.0",
-            "author": "NeoFrag fork",
-            "license": "Creative Commons CC BY-NC-SA 4.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/blockcraft.zip",
             "preview": "themes/blockcraft.jpg",
-            "size": 45073,
-            "sha256": "94ae0aa4b5111e37981f1a4c53038262a97f928c8e0d27f7001d99c47b3e2746",
+            "size": 45039,
+            "sha256": "7bf3d63e877abdf82c61e02bf0c5fbf6d660b83d89c1985c75c5770caa5d2847",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1623,14 +1623,14 @@
                 }
             },
             "version": "1.0.0",
-            "author": "Chewbaka — port NeoFrag Reborn",
-            "license": "Creative Commons CC BY-NC-SA 4.0",
+            "author": "Chewbaka — portage NeoFrag Reborn",
+            "license": "Creative Commons CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>",
             "file": "themes/extend.zip",
             "preview": "themes/extend.jpg",
-            "size": 42902,
-            "sha256": "50d32189f06635733484e51e99d4f5bcd9a58fb91cf109e76899fae530424d2b",
+            "size": 42899,
+            "sha256": "d168f00b12f3eee189819bd89b090e1570e4a4252d899903cb400419fa7219f5",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1661,14 +1661,14 @@
                 }
             },
             "version": "1.0.0",
-            "author": "NeoFrag fork",
-            "license": "Creative Commons CC BY-NC-SA 4.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/forge.zip",
             "preview": "themes/forge.jpg",
-            "size": 41965,
-            "sha256": "f573fbf9bf2f55842548850660402386563414aeb3157c1ab91d93b2b827d903",
+            "size": 41932,
+            "sha256": "cf2d3c105939000bf54eb9147184f29dc8a62d0f765966d347f1d2cf81e9cf3c",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1699,14 +1699,14 @@
                 }
             },
             "version": "1.0.0",
-            "author": "NeoFrag fork",
-            "license": "Creative Commons CC BY-NC-SA 4.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/granite.zip",
             "preview": "themes/granite.jpg",
-            "size": 43634,
-            "sha256": "54c1a83fbe02c703cd1a9414e262d08ac19f0730e2c1ab731543dbbc3b0240d6",
+            "size": 43599,
+            "sha256": "0ee2ca7cb40cf5e68c7496763a95477f9ac8d041be2ed768e078c022f2b68603",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1743,13 +1743,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/about.zip",
             "preview": "widgets/about.jpg",
-            "size": 32297,
-            "sha256": "35625caa4fa9613e125fa23f573340b342be52dd27feee58eef35ccfc201edef",
+            "size": 32294,
+            "sha256": "5a9cef22ec93488473b88ced25762fc395e445d933f687ade3152351d9bb6b91",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1786,13 +1786,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/ads.zip",
             "preview": "widgets/ads.jpg",
-            "size": 22269,
-            "sha256": "58188cc7b32871ed44120c3e730d018f138232bd663105793621657c4c41fa41",
+            "size": 22274,
+            "sha256": "5ef39b09a00a58744011b453503ea86a642b838f56c1c7cba96ef1b2a033d964",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1828,14 +1828,14 @@
                 }
             },
             "version": "1.1",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/articles.zip",
             "preview": "widgets/articles.jpg",
-            "size": 37472,
-            "sha256": "a8a29ae7a00fd9e0e745807f575c3d794d42dd4144bfe450a8f39bfeb1c64c61",
+            "size": 37423,
+            "sha256": "073f3da6943e22e4b94160083347913ec22b60742ce26a1d24b6663b98f71400",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1872,13 +1872,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/awards.zip",
             "preview": "widgets/awards.jpg",
-            "size": 19477,
-            "sha256": "493dc2c5d38e87167393715412d5cb542f9fd5a191318045c03e1b5320d4c99d",
+            "size": 19474,
+            "sha256": "68355bb5def4aa8b09dde511da60b13060d91c7ef3069b6f40f15fdeadd946f7",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1914,14 +1914,14 @@
                 }
             },
             "version": "1.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/calendar.zip",
             "preview": "widgets/calendar.jpg",
-            "size": 28005,
-            "sha256": "4cd65447630096b7edf8fa3cf3ddc50786ed4b98db28c9d0ec26531d73cc9ee8",
+            "size": 28046,
+            "sha256": "b124e3fce1f93da9b2d58d1b1deb775548e3a9a5a0f3a3464134a25531f0e4aa",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1930,7 +1930,7 @@
         {
             "type": "widget",
             "name": "donations",
-            "tier": 2,
+            "tier": 1,
             "category": "monetisation",
             "title": "Campagne de dons",
             "description": "Affiche la progression d'une campagne de dons : barre de progression, montant collecté, top donateurs et bouton \"Faire un don\".",
@@ -1957,14 +1957,14 @@
                 }
             },
             "version": "1.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "HiddenBlob (Donation v3), d’après majiid — portage NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/donations.zip",
             "preview": "widgets/donations.jpg",
-            "size": 29694,
-            "sha256": "4aac8f6f8d64e9d418602672193f729c9711c1a4b349fd83a8ee335f46c8b733",
+            "size": 29777,
+            "sha256": "d19c309d3cdd9af76f857c5ae9bae13ee99fdbc1b4b2fceadaba0ea67d094cc7",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2000,14 +2000,14 @@
                 }
             },
             "version": "1.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/downloads.zip",
             "preview": "widgets/downloads.jpg",
-            "size": 33049,
-            "sha256": "10ca43f54c5d37dee98791717f8f3017737e6f7365609db8a35028b5ec88b6b0",
+            "size": 33076,
+            "sha256": "699fbf862cd2b2b856b3a1582d94c25bdd97dab825aaff85c39b67de277e8fc0",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2044,13 +2044,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/events.zip",
             "preview": "widgets/events.jpg",
-            "size": 34553,
-            "sha256": "33c57497f874189e900b216fd0ee473e55998c7b7de2de60636c1f12ea51209f",
+            "size": 34550,
+            "sha256": "a9b77217820e424b7fc50dd7db03ff4c4229c8f9bf7cac931cfe0b02e6a345a6",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2087,13 +2087,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/forum.zip",
             "preview": "widgets/forum.jpg",
-            "size": 32898,
-            "sha256": "5ccec112bd6f63f2e768278702c7d47247b421740fd58892708e076d325f9bda",
+            "size": 32884,
+            "sha256": "1b431fc554a64945a6fa6c60bbd6a72b9ac7556980cc087af7d4acb4b2572ca3",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2130,13 +2130,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/gallery.zip",
             "preview": "widgets/gallery.jpg",
-            "size": 28881,
-            "sha256": "bccedaa22c7778c50b68375c8ad45eac8127d827369018e83c93ae8d4d72171a",
+            "size": 28887,
+            "sha256": "6ee160d75471d1d59b78c9d211afaa98e6a3b4b29f9965adf768d7164d74964a",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2172,14 +2172,14 @@
                 }
             },
             "version": "1.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/gameserver.zip",
             "preview": "widgets/gameserver.jpg",
-            "size": 44601,
-            "sha256": "a247346df59c0e37badc7093e7d366775c3f966291f044eddc78e64cddffc8f0",
+            "size": 44623,
+            "sha256": "9a33e7630f5c5af731f5c700da4dc8f59c11f905d3e40eeaabead4ac35db7437",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2215,14 +2215,14 @@
                 }
             },
             "version": "1.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/guestbook.zip",
             "preview": "widgets/guestbook.jpg",
-            "size": 28585,
-            "sha256": "f1de54a9408dd7ca5314d23c3cd4ee24e9bf02526d270eef49581848daf648a2",
+            "size": 28613,
+            "sha256": "56d46663f90543bef11b91569119dda6ae39ce5f085cd06eef067fab14af1f14",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2258,14 +2258,14 @@
                 }
             },
             "version": "1.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/links.zip",
             "preview": "widgets/links.jpg",
-            "size": 23304,
-            "sha256": "2c30c467447421a6f6b9d9ebefaf821b18c3a1cd2e374d738b5bc5d044af8694",
+            "size": 23328,
+            "sha256": "1fc96c49f2d0702ff11098d5f2f2ffa5ed79c1d143f1625fd5fc794574707eef",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2302,13 +2302,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/news.zip",
             "preview": "widgets/news.jpg",
-            "size": 26286,
-            "sha256": "7399176c43b0c85d0364ef36b659a64a7e12d43766299d283a34c8c9881173ce",
+            "size": 26290,
+            "sha256": "78064d46668ca32ab3f22995c41ca5e955eb214cc165f68af0b28029a1c1e8a7",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2317,7 +2317,7 @@
         {
             "type": "widget",
             "name": "newsletter",
-            "tier": 2,
+            "tier": 1,
             "category": "monetisation",
             "title": "Newsletter",
             "description": "Formulaire d'inscription à la newsletter.",
@@ -2344,14 +2344,14 @@
                 }
             },
             "version": "1.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/newsletter.zip",
             "preview": "widgets/newsletter.jpg",
-            "size": 27501,
-            "sha256": "82b55b9c7d6d9b8685f683fcb5f468c411977bced3a06cf1f809b1eb6102fc59",
+            "size": 27536,
+            "sha256": "b8889329c45555eace458491218a3ae21f958a672e1163278b7f9e7ebb537eeb",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2388,13 +2388,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/partners.zip",
             "preview": "widgets/partners.jpg",
-            "size": 23822,
-            "sha256": "7175d0046e5a1f29aaf6d68f03d7bc10fc0709ec51a7c31620351f6bb34c43d5",
+            "size": 23819,
+            "sha256": "2603d86998a8c43ec5b666c92016722a99f84995f73ddc254843761435fe7136",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2431,13 +2431,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/recruits.zip",
             "preview": "widgets/recruits.jpg",
-            "size": 35402,
-            "sha256": "a1902e0cbf2cce117fcc44011a261d37b4bea5c67195c4be3dbfc26d2f3b7eec",
+            "size": 35399,
+            "sha256": "ed4951600c5bd984d23d40b298e437490b4bcc059e4d42e461a19b8902130dd7",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": [
                     "teams"
                 ]
@@ -2476,13 +2476,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/rss.zip",
             "preview": "widgets/rss.jpg",
-            "size": 56574,
-            "sha256": "d0d3b9cefa874295379c58c5a4f64c863000a751ddfc26017b565a6c5f1ada86",
+            "size": 56577,
+            "sha256": "787ec3ab709c1658d1f3d794d06e20ebfada1f6b8b324a2c20997f3cf52800a4",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2519,13 +2519,13 @@
             },
             "version": "1.0",
             "author": "NeoFrag Reborn",
-            "license": "LGPLv3",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/seasonal.zip",
             "preview": "widgets/seasonal.jpg",
-            "size": 46435,
-            "sha256": "b2a9051d3c236521c8f20acbd9d8a4e7b0f6351f8ae5b6acd60741b614965462",
+            "size": 46424,
+            "sha256": "22817854653532e2a0d288efe1dd509aea7b9930606e6ea64f148cb9ae86549e",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2561,14 +2561,14 @@
                 }
             },
             "version": "2.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/steam.zip",
             "preview": "widgets/steam.jpg",
-            "size": 39718,
-            "sha256": "1fc0e4d285cc75b77fb3ed2ada2547a4f7570aba1a9b01745caecd6b19ddbd13",
+            "size": 39777,
+            "sha256": "ff4b5342e12cfb3ecedc4e31582d64e8f9ae4df8c4f2de077f837303ae522f9c",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2604,14 +2604,14 @@
                 }
             },
             "version": "1.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/surveys.zip",
             "preview": "widgets/surveys.jpg",
-            "size": 26474,
-            "sha256": "8ba889170cbe6adb834d6c54cb595a7c4c93ccb3c626696062c151f61610d8cf",
+            "size": 26504,
+            "sha256": "947a7ed5eb0093942620e4334b640547c0e810ec1f64ff6cbfc350a79daf8375",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2648,13 +2648,13 @@
             },
             "version": "1.0",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
-            "license": "LGPLv3 <https://neofr.ag/license>",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/teams.zip",
             "preview": "widgets/teams.jpg",
-            "size": 26163,
-            "sha256": "1eb6c0944c2e636cbd15c3ed315e923e8ed18edbde2fc27420664716eb8dd051",
+            "size": 26159,
+            "sha256": "aeea18ecc2447b3e4b61c1bc18c39b9b989b237084f84f3ae3e9765114cdecdc",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2690,14 +2690,14 @@
                 }
             },
             "version": "3.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/teamspeak.zip",
             "preview": "widgets/teamspeak.jpg",
-            "size": 44440,
-            "sha256": "e849ebee49016dd150d68c62907c12f79a05a0476d56c13aed0a53dfb7e4f3d2",
+            "size": 44467,
+            "sha256": "08ad0e1d49f27519b11ddf1dfa0a2d0c77829332ecd7ecd73ac7c93172910e30",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2733,14 +2733,14 @@
                 }
             },
             "version": "3.0",
-            "author": "NeoFrag",
-            "license": "LGPLv3",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/twitch.zip",
             "preview": "widgets/twitch.jpg",
-            "size": 52650,
-            "sha256": "2db24f002e97edadcff665bbf1ef79f3f753464503535e9ca19f92ab39d46f77",
+            "size": 52668,
+            "sha256": "2e48bd69164200b488fc28a7d0ce8baf19d96b607aebf01a1d634adddca035b0",
             "requires": {
-                "base": ">=1.2.17",
+                "base": ">=1.2.22",
                 "addons": []
             },
             "provides_widgets": [],

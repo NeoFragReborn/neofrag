@@ -5,12 +5,13 @@ declare(strict_types=1);
  * installer-addon — installe un addon déjà présent sur le disque, comme le fait l'installeur du site.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
  * Un addon livré par la mise à jour du cœur arrive sur le disque, mais n'est pas installé : il
  * attend qu'un administrateur passe par « Thèmes & Addons → Scanner le disque ». Sur nos propres
- * installations (production, démonstration, atelier), ce geste se faisait à la main dans un
+ * installations (production, démonstration, essai), ce geste se faisait à la main dans un
  * navigateur — et un geste à la main s'oublie, ou se fait sur deux sites sur trois. Le module `api`
  * (2026-10-01) en a donné l'occasion.
  *

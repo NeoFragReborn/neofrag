@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-seo — ce que lit un moteur de recherche : robots.txt, plans du site, et l'en-tête des pages qu'ils annoncent.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
@@ -29,7 +30,7 @@ declare(strict_types=1);
  *      données structurées `WebSite` et `Organization` ;
  *   5. la page de recherche est en `noindex`.
  *
- * L'origine attendue est celle de `config/url.php` — l'atelier se présente avec celle de la production :
+ * L'origine attendue est celle de `config/url.php` — un site d'essai se présente souvent avec celle de la production :
  * ses adresses complètes commencent par `https://neofrag-reborn.xyz` alors qu'il est servi en local. Le
  * contrôle les ramène sur le serveur qu'il interroge pour les ouvrir.
  *

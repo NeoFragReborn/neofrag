@@ -186,7 +186,6 @@ return [
 	'2c84b316' => 'Ce que ce contenu montre aux moteurs de recherche et dans les aperçus de partage, langue par langue. Tout ce qui reste vide est automatique.',
 	'a7879650' => 'Bilan du référencement',
 	'90ca5d10' => 'Plan du site : %d page(s) annoncée(s) en %s',
-	'e8db9599' => 'Seul l\'accueil est annoncé : aucun module ne montre de page aux visiteurs. Vérifiez leurs droits dans la matrice des permissions.',
 	'489eeedf' => 'Voir le plan',
 	'48e5150b' => 'pas d\'accroche : le titre de l\'accueil n\'est que le nom du site',
 	'5de6f257' => 'une description trop courte, ou qui répète le nom du site',
@@ -235,4 +234,7 @@ return [
 	'47b6a471' => 'En service : %d adresses suivies. Dernier envoi le %s : %d adresse(s), reçues.',
 	'3a0f34b9' => 'En service : %d adresses suivies. Rien n’a changé depuis la mise en service.',
 	'c3bc28a3' => 'Allumé : le premier passage de la tâche planifiée relèvera les pages du site, sans rien envoyer ; les changements partiront ensuite.',
+	'93f5c577' => 'Seul l\'accueil est annoncé : aucun module n\'a encore de contenu que les visiteurs peuvent lire. Une rubrique vide n\'est pas annoncée ; si du contenu existe, vérifiez les droits dans la matrice des permissions.',
+	'e44f4288' => 'Vérifié par le DNS du domaine. Soumettez-y le plan du site : %s',
+	'cda95d5f' => 'Importé depuis Google Search Console ? Alors rien d\'autre à faire : l\'import ne laisse aucune trace que le site puisse lire. Sinon, collez ici son code de vérification.',
 ];

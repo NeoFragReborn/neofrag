@@ -83,4 +83,7 @@ return [
 	'bc645dc3' => 'Assente',
 	'caf517ea' => 'Dashboard e pannello di amministrazione centrale.',
 	'c0833bb9' => '%d critica|%d critiche',
+	'1ffdbac4' => 'Estensioni PHP richieste',
+	'11bbb161' => 'Assente: %s',
+	'cc32ed89' => 'Tutte presenti',
 ];

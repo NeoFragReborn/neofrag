@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-css-variables — toute variable CSS qu'un module ou un widget emploie est définie par tous les thèmes.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi cet outil existe
  * -------------------------
@@ -11,7 +12,7 @@ declare(strict_types=1);
  * variable n'était définie que dans les six thèmes PUBLICS ; sous l'administration, chaque usage
  * retombait donc sur le repli — BLANC — et posait un bloc blanc au milieu d'une page sombre. Le
  * navigateur ne signale rien, la feuille est valide, et le défaut ne se voit qu'à l'œil, dans le
- * bon thème, sur la bonne page. le mainteneur l'a trouvé avant nous.
+ * bon thème, sur la bonne page. Il a été trouvé à l'œil, avant tout contrôle.
  *
  * Une variable sans définition n'est pas toujours une erreur — une feuille de module peut
  * légitimement s'appuyer sur un jeton que chaque thème lui fournit. L'outil regarde donc si CHAQUE

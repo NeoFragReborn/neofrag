@@ -60,8 +60,10 @@ function nf_cli_main(array $argv): int
 		return 0;
 	}
 
-	nf_cli_require_extensions(['mysqli', 'mbstring']);
-	nf_cli_warn_extensions(['curl', 'gd', 'intl', 'zip', 'openssl', 'fileinfo']);
+	// Les mêmes prérequis que l'assistant web (Installer::PREREQUIS) : jusqu'au 2026-10-04, la ligne de
+	// commande n'exigeait que deux extensions, ne regardait pas la version de PHP, et un PHP sans Argon2
+	// tombait en erreur fatale à la création du compte administrateur.
+	nf_cli_require_prerequis();
 
 	$c = [
 		'db_host'     => (string) nf_cli_val($opt, 'db-host', 'localhost'),
@@ -188,8 +190,9 @@ function nf_cli_main(array $argv): int
 			return nf_cli_fail(lang('Erreurs pendant l\'installation : %s', implode(' | ', $summary['errors'])));
 		}
 
-		// 3b. Contenu du paquet principal (wiki + mise en page vitrine) + démo si demandé.
-		nf_cli_line('· ' . ($c['demo'] ? lang('Contenu (documentation wiki, mise en page vitrine et démonstration)…') : lang('Contenu (documentation wiki et mise en page vitrine)…')));
+		// 3b. Le contenu livré : la documentation du wiki, une mise en page propre au site s'il en porte une
+		// (`install/vitrine.sql`, absent des paquets), et la démonstration si elle est demandée.
+		nf_cli_line('· ' . ($c['demo'] ? lang('Contenu (documentation du wiki et démonstration)…') : lang('Contenu (documentation du wiki)…')));
 		if (is_file($wiki = NF_CLI_ROOT . '/install/wiki.sql') && Installer::table_exists($db, 'nf_wiki_pages'))
 		{
 			Installer::import_sql_file($db, $wiki);
@@ -355,26 +358,29 @@ function nf_cli_validate(array $c): string
 	return '';
 }
 
-function nf_cli_require_extensions(array $exts): void
+function nf_cli_require_prerequis(): void
 {
-	foreach ($exts as $ext)
+	foreach (Installer::prerequis() as $mesure)
 	{
-		if (!extension_loaded($ext))
+		if ($mesure['ok'])
 		{
-			nf_cli_fail(lang('Extension PHP requise manquante : %s', $ext));
-			exit(1);
+			continue;
 		}
-	}
-}
 
-function nf_cli_warn_extensions(array $exts): void
-{
-	foreach ($exts as $ext)
-	{
-		if (!extension_loaded($ext))
+		if ($mesure['type'] === 'php')
 		{
-			nf_cli_line('  ⚠ ' . lang('Extension PHP recommandée absente (fonctionnalités limitées) : %s', $ext));
+			nf_cli_fail(lang('PHP %s ou plus récent est requis (ce PHP : %s).', Installer::php_minimum(), $mesure['nom']));
 		}
+		else if ($mesure['type'] === 'extension')
+		{
+			nf_cli_fail(lang('Extension PHP requise manquante : %s', $mesure['nom']));
+		}
+		else
+		{
+			nf_cli_fail(lang('Ce PHP ne sait pas hacher les mots de passe en %s : il faut un PHP compilé avec Argon2.', $mesure['nom']));
+		}
+
+		exit(1);
 	}
 }
 

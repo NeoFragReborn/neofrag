@@ -10,6 +10,71 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.23] — 2026-10-04
+
+Le bot Discord passe en **version 0.2.1** : rien ne change dans son fonctionnement — il devient un projet
+à part entière, avec sa licence, sa NOTICE et son propre journal des versions. L'installer n'est utile
+qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
+
+### Modifié
+
+- **Le plan du site n'annonce plus une rubrique vide** : des actualités, un recrutement, une FAQ, des
+  équipes… sans rien à montrer ne sont plus proposés aux moteurs de recherche, qui n'y trouveraient
+  qu'une page « rien pour l'instant ». La rubrique y revient d'elle-même avec son premier contenu. Le
+  contact, le livre d'or, la newsletter, la webradio et les dons restent annoncés : ils ont toujours
+  quelque chose à offrir.
+- **Les sauvegardes ne s'accumulent plus** : chaque mise à jour en prend une complète (16 Mo et plus),
+  et rien ne les retirait. Le site garde toujours les cinq plus récentes, et retire les autres passé
+  trente jours ; un fichier déposé à la main dans `backups/` n'est jamais touché.
+- **L'installation vérifie tout ce dont le CMS a besoin.** L'assistant ne contrôlait ni `openssl` (sans
+  lui, enregistrer un secret — serveur d'e-mail, captcha, double authentification — tombe en erreur), ni
+  `fileinfo` (sans lui, tout envoi de fichier est refusé), ni `iconv` (le QR code de la double
+  authentification), ni le hachage des mots de passe en Argon2, faute duquel la création du compte
+  administrateur échouait. Il les vérifie désormais et refuse de continuer s'il en manque un ;
+  `install/cli.php` exige exactement la même liste, version de PHP comprise, au lieu de deux extensions.
+  *Monitoring* et le tableau de bord de l'administration montrent la même liste. PHP 8.2 à 8.5.
+- **nginx et Caddy** : le paquet livre enfin les exemples de configuration que les guides promettaient
+  (`nginx.conf`, `Caddyfile`), génériques, et qui refusent les mêmes dossiers et fichiers sensibles que
+  le `.htaccess` d'Apache — l'ancien exemple nginx laissait `install/`, `tools/`, `tests/` et `docs/`
+  joignables, et l'extrait du guide de déploiement ne protégeait que trois dossiers sur huit.
+- **Chaque addon dit qui l'a écrit.** Les addons du NeoFrag d'origine gardent leurs auteurs, Michaël
+  BILCOT et Jérémy VALENTIN — les connecteurs de connexion et les langues, qui ne signaient rien, les
+  nomment désormais, et les traductions anglaises d'origine ont retrouvé leurs pseudos, FoxLey et eResnova.
+  Les portages créditent leur auteur : l'Horloge (ArkaNiX), le thème Extend (Chewbaka), le gestionnaire
+  de fichiers (HiddenBlob, HiddenCMS) et les Dons (HiddenBlob, d'après majiid). Le reste est signé
+  « NeoFrag Reborn ». Les thèmes Nebula, Blockcraft, Forge et Granite passent sous LGPL, comme le
+  produit ; Extend garde la licence de son auteur (CC BY-NC-SA). La licence de chaque addon renvoie au
+  texte officiel de la LGPL.
+- **HSTS** : l'en-tête que pose le `.htaccess` ne s'étend plus aux sous-domaines et n'inscrit plus le
+  site à la liste de préchargement des navigateurs (`includeSubDomains` et `preload` retirés) : posés
+  d'office, ils engageaient pour un an tous les sous-domaines de qui installait le CMS.
+
+### Corrigé
+
+- **Un site installé depuis le paquet n'enregistrait aucune erreur.** Le paquet ne contenait pas le
+  dossier `logs/`, et rien ne le créait : PHP écrivait ses erreurs dans le journal du serveur, *Monitoring
+  → Journal des erreurs* restait vide et disait le dossier « non inscriptible ». Le paquet livre désormais
+  `logs/`, `cache/` et `backups/` avec leur protection, et un site qui n'a pas `logs/` le recrée de
+  lui-même : la mise à jour suffit à réparer un site déjà installé.
+- **La documentation du wiki n'a plus de liens morts.** Trois renvois de ses pages vers des documents
+  que le site n'a pas (la notice des outils, une partie du guide de déploiement) menaient à une page
+  d'erreur ; ils ne gardent plus que leur texte. Le guide du marketplace ne parle plus d'addons « tiers »
+  qui n'existent pas, ni de procédures réservées au serveur du projet.
+- **Paramètres → Référencement** refusait l'enregistrement dès qu'une description, une accroche ou un
+  titre pour les moteurs contenait des lettres accentuées en nombre : chacune comptait pour plusieurs
+  caractères, et une description portugaise de 139 caractères dépassait la limite de 160. Le code de
+  vérification de Google ou de Bing collé en balise entière était refusé de même. Les redirections
+  et le référencement d'un contenu suivent la même règle.
+- **Le bilan du référencement** reconnaît une Google Search Console vérifiée par le DNS du domaine (au
+  lieu de la dire « non déclarée »), et conseille d'y soumettre le plan qui réunit toutes les langues,
+  `/sitemap.xml`, et non celui de la seule langue affichée. Quand Google est vérifié, il ne dit plus Bing
+  « non déclaré » : un site importé depuis Google Search Console n'y laisse aucune trace lisible.
+- **`humans.txt`, `robots.txt` et la clé IndexNow** : une adresse absente — un `humans.txt` vide, une
+  clé inconnue — répond un simple « introuvable », sans écrire une erreur au journal du site à chaque
+  robot qui la demande.
+
+---
+
 ## [1.2.22] — 2026-10-03
 
 ### Ajouté

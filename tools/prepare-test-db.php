@@ -5,6 +5,7 @@ declare(strict_types=1);
  * prepare-test-db — prépare la base de données des tests d'intégration.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
@@ -86,7 +87,7 @@ $hotes       = array_unique(array_filter(['localhost', '127.0.0.1', $hote_client
 
 /*
  * Une étape d'ADMINISTRATION a le droit d'échouer faute de privilèges : sur un hébergement
- * mutualisé — et sur l'atelier — le compte a les droits sur SA base et rien d'autre. Ce n'est pas
+ * mutualisé — et sur un site d'essai — le compte a les droits sur SA base et rien d'autre. Ce n'est pas
  * un blanc-seing : la vérification finale reste la connexion des TESTS.
  */
 $sautees = [];

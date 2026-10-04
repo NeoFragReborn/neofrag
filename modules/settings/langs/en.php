@@ -2,7 +2,9 @@
 declare(strict_types=1);
 /**
  * https://translate.neofr.ag
- * @author: NeoFrag — i18n sync 2026-05-03
+ * @author: FoxLey
+ * @author: eResnova
+ * Complété par NeoFrag Reborn (traductions synchronisées le 2026-05-03).
  */
 
 return [
@@ -188,7 +190,6 @@ return [
 	'2c84b316' => 'What this content shows search engines and share previews, language by language. Anything left empty is automatic.',
 	'a7879650' => 'SEO report',
 	'90ca5d10' => 'Sitemap: %d page(s) listed in %s',
-	'e8db9599' => 'Only the home page is listed: no module shows any page to visitors. Check their rights in the permissions matrix.',
 	'489eeedf' => 'View the sitemap',
 	'48e5150b' => 'no tagline: the home page title is just the site name',
 	'5de6f257' => 'a description that is too short, or that repeats the site name',
@@ -237,4 +238,7 @@ return [
 	'47b6a471' => 'Active: %d addresses tracked. Last submission on %s: %d address(es), received.',
 	'3a0f34b9' => 'Active: %d addresses tracked. Nothing has changed since it was turned on.',
 	'c3bc28a3' => 'On: the first run of the scheduled task will record the site\'s pages without sending anything; changes will be sent after that.',
+	'93f5c577' => 'Only the home page is listed: no module has any content visitors can read yet. An empty section is not listed; if content exists, check the rights in the permissions matrix.',
+	'e44f4288' => 'Verified through the domain\'s DNS. Submit the sitemap there: %s',
+	'cda95d5f' => 'Imported from Google Search Console? Then there is nothing else to do: the import leaves no trace the site can read. Otherwise, paste its verification code here.',
 ];

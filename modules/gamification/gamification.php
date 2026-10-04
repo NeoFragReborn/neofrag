@@ -63,9 +63,9 @@ class Gamification extends Module
 			'title'       => $this->lang('Gamification'),
 			'description' => $this->lang('Karma, points et VIP. Réputation et monnaie virtuelle dérivées de l\'activité (barème réglable).'),
 			'icon'        => 'fas fa-star',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'NeoFrag Reborn',
-			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
 			'presets'     => ['gaming'],

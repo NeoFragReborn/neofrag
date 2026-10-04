@@ -4,6 +4,8 @@ declare(strict_types=1);
 /**
  * banc — poser un widget sur une page le temps d'une mesure, puis tout remettre.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * Trente-six des quarante widgets ne sont posés sur AUCUNE page : pour les voir rendus, il faut les

@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-marketplace — le catalogue publié dit-il la vérité sur les archives qu'il propose ?
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
@@ -47,7 +48,7 @@ declare(strict_types=1);
  * Usage
  * -----
  *   php tools/check-marketplace.php                      le catalogue du dépôt
- *   php tools/check-marketplace.php le dossier du site         celui d'une installation servie
+ *   php tools/check-marketplace.php /var/www/neofrag     celui d'une installation servie
  */
 
 require __DIR__.'/lib/outil.php';

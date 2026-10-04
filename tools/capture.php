@@ -5,6 +5,7 @@ declare(strict_types=1);
  * capture — capture d'écran des pages du site, y compris celles qui exigent une session d'administrateur.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

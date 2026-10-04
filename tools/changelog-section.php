@@ -4,13 +4,14 @@ declare(strict_types=1);
  * changelog-section — extrait une section de CHANGELOG.md, la source unique des notes de version.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
- * Donner une SOURCE DE VÉRITÉ UNIQUE aux notes de version. La release GitHub (workflow release.yml)
- * et la publication sur le site (tools/un outil interne.php) passent toutes deux par ce fichier,
- * donc leur texte ne peut pas diverger de CHANGELOG.md. Inclus sans être le script d'entrée
- * (require), il se contente de DÉFINIR ses fonctions, sans auto-exécution.
+ * Donner une SOURCE DE VÉRITÉ UNIQUE aux notes de version. Les notes de la release GitHub et celles
+ * publiées sur le site officiel passent toutes par ce fichier, donc leur texte ne peut pas diverger
+ * de CHANGELOG.md. Inclus sans être le script d'entrée (require), il se contente de DÉFINIR ses
+ * fonctions, sans auto-exécution.
  *
  * Usage
  * -----

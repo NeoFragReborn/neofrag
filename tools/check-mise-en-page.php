@@ -5,15 +5,16 @@ declare(strict_types=1);
  * check-mise-en-page — chaque page publique et d'administration, dans chaque thème, chaque mode et à chaque largeur : aucun défaut visuel que le navigateur sait constater.
  *
  * Famille : cible
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
- * Le 2026-09-22, le mainteneur a relevé à l'œil, sur deux captures, des boutons « Modifier / Supprimer »
+ * Le 2026-09-22, deux captures d'écran montraient des boutons « Modifier / Supprimer »
  * en escalier et la valeur de la jauge « Stockage » posée sur son arc ; la capture suivante montrait
  * « Informations serveu », tronqué net. Aucun contrôle ne pouvait les voir : `check-responsive` ne
  * rendait que onze pages, dans le thème par défaut, à trois largeurs, et ne mesurait que le
- * débordement horizontal ; `check-contraste` quatre pages à une seule largeur. le mainteneur a demandé la
- * suite : « toutes les pages publiques ou admin, avec et sans contenu, sur tous les thèmes et sur
+ * débordement horizontal ; `check-contraste` quatre pages à une seule largeur. La demande
+ * suivante : « toutes les pages publiques ou admin, avec et sans contenu, sur tous les thèmes et sur
  * toutes les dimensions d'écran ».
  *
  * Ce que l'outil fait
@@ -25,7 +26,7 @@ declare(strict_types=1);
  *      dans CHAQUE thème public installé, à chaque largeur — 360 px (petit téléphone) à 2 560 px ;
  *   3. dans chaque rendu, `tests/MiseEnPage/sonde.js` mesure le débordement horizontal, les boutons
  *      en escalier, le texte tronqué net, le texte posé sur un trait SVG ou sur un autre texte — puis,
- *      à la demande de le mainteneur (« pas uniquement ces éléments-ci mais tout problème visuel, ou
+ *      sur demande (« pas uniquement ces éléments-ci mais tout problème visuel, ou
  *      autre ») : les images cassées ou déformées, les icônes inconnues, le texte technique affiché
  *      par erreur, le contraste WCAG AA, le texte coupé par le bord gauche, les cibles trop petites
  *      pour un doigt ; et le pilote relève les erreurs JavaScript, les erreurs de la console et les
@@ -52,8 +53,8 @@ declare(strict_types=1);
  *   php tools/check-mise-en-page.php --langue=en --largeurs=1440 --modes=clair      le site en anglais
  *
  * `--langue=en` parcourt le site dans cette langue, et la sonde y relève en plus tout texte resté en
- * FRANÇAIS — écrit en dur, hors des traductions. « Tout le CMS doit être multilingue » (le mainteneur,
- * 2026-09-23) ; `check-langs` ne voit que ce qui passe par `lang()`.
+ * FRANÇAIS — écrit en dur, hors des traductions. « Tout le CMS doit être multilingue »
+ * (2026-09-23) ; `check-langs` ne voit que ce qui passe par `lang()`.
  *   php tools/check-mise-en-page.php --par-modele=2 --max=1000 --parallele=3 --detail
  */
 
@@ -82,7 +83,7 @@ require __DIR__.'/lib/vierge.php';
 
 /*
  * Interrompu (Ctrl-C, `kill`), l'outil doit quand même tout remettre : la première version, arrêtée
- * par un signal, a laissé le thème de l'atelier sur « blockcraft », un serveur fantôme sur son port,
+ * par un signal, a laissé le thème du site d'essai sur « blockcraft », un serveur fantôme sur son port,
  * la base et la copie vierges. `exit()` déclenche les fonctions d'arrêt ; un signal non intercepté,
  * non. (`nf_theme_temporaire()` pose ensuite son propre gestionnaire, qui restaure puis sort.)
  */
@@ -97,7 +98,7 @@ if (function_exists('pcntl_async_signals'))
 }
 
 /*
- * Priorité basse, pour lui et tout ce qu'il lance (serveurs, navigateur) : l'atelier partage sa
+ * Priorité basse, pour lui et tout ce qu'il lance (serveurs, navigateur) : le site d'essai partage sa
  * machine avec la production, et ce contrôle occupe les quatre processeurs pendant une demi-heure.
  * Mesuré pendant le premier passage complet : la production répondait toujours en 0,1 s.
  */
@@ -485,7 +486,7 @@ foreach ($sites as [$nom, $site, $db, $port])
 /**
  * D'où vient un texte resté en français ? La réponse fait le tri entre un défaut et du contenu.
  *
- * Sur l'atelier, beaucoup de textes français sont du CONTENU de démonstration — la catégorie de forum
+ * Sur un site d'essai peuplé, beaucoup de textes français sont du CONTENU de démonstration — la catégorie de forum
  * « Présentations », écrite par un membre, n'a pas à être traduite par le produit. Un texte présent
  * dans le CODE, en revanche, est écrit en dur : c'est le défaut, et l'outil dit où. Présent dans les
  * données livrées (`install/*.sql`), il arrive à chaque installation. Présent seulement comme valeur

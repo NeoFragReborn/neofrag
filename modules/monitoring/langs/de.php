@@ -278,4 +278,6 @@ return [
 	'c5bc2c51' => 'Webmaster-Passwort',
 	'e6fff20f' => 'Auf Ihrer Website schützt dieses Passwort die Dateibearbeitung und sensible Aktionen.',
 	'2fbd5770' => 'Beispieldatei: In der Demo zeigt die Dateiverwaltung keine echte Serverdatei. Auf Ihrer Website lesen und bearbeiten Sie hier Ihre Dateien, geschützt durch das Webmaster-Passwort.',
+	'fe7b1e4c' => 'Die Erweiterung %s muss aktiviert sein',
+	'aa514b0e' => 'Dieses PHP muss Passwörter mit %s hashen können',
 ];

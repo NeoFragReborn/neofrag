@@ -94,8 +94,8 @@ function analyser_user_agent(string $agent): array
  *   - les agents utilisateurs des membres du site, administrateurs compris, partaient chez un tiers
  *     à chaque consultation de l'historique. Personne ne l'avait demandé, et rien ne le disait ;
  *   - le rendu dépendait d'un service extérieur : s'il ne répond pas, la page reste sur des images
- *     de chargement. Les icônes servies étaient d'ailleurs de vieux logos en PNG, ce que le mainteneur a
- *     signalé.
+ *     de chargement. Les icônes servies étaient d'ailleurs de vieux logos en PNG, ce qui a
+ *     été signalé.
  *
  * L'analyse se fait donc ici, hors ligne, et les icônes viennent de la police déjà embarquée.
  */

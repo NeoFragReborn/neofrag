@@ -4,6 +4,8 @@ declare(strict_types=1);
 /**
  * site — l'installation sur laquelle l'outil travaille : sa base, ses réglages, un administrateur.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * Vingt-cinq outils lisaient `config/db.php` chacun à leur façon — deux variantes de `connect()`

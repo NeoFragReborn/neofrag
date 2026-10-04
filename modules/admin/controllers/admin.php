@@ -470,22 +470,17 @@ class Admin extends Controller_Module
 		]);
 		$rows[] = ['label' => $this->lang('Connectés (5 min)'), 'value' => (string)$online];
 
-		// Extensions PHP critiques : GD (redimensionnement/ré-encodage des images uploadées), Zip
-		// (marketplace), Fileinfo (détection MIME magic-bytes à l'upload), cURL (appels réseau).
-		foreach ([
-			'gd'       => $this->lang('GD (images)'),
-			'zip'      => $this->lang('Zip (marketplace)'),
-			'fileinfo' => $this->lang('Fileinfo (upload)'),
-			'curl'     => $this->lang('cURL (réseau)')
-		] as $ext => $label)
-		{
-			$loaded = extension_loaded($ext);
-			$rows[] = [
-				'label'       => $label,
-				'badge'       => $loaded ? $this->lang('Présente') : $this->lang('Absente'),
-				'badge_class' => $loaded ? 'text-bg-success' : 'text-bg-danger'
-			];
-		}
+		// Ce que le produit exige de PHP, lu dans la liste de l'installeur (Installer::PREREQUIS) : le
+		// tableau de bord en montrait quatre, choisies à la main, et taisait `openssl`, `iconv` et Argon2.
+		require_once NEOFRAG_CMS.'/neofrag/installer.php';
+
+		$manquants = array_column(array_filter(\NF\NeoFrag\Installer::prerequis(), static fn (array $mesure): bool => $mesure['type'] !== 'php' && !$mesure['ok']), 'nom');
+
+		$rows[] = [
+			'label'       => $this->lang('Extensions PHP requises'),
+			'badge'       => $manquants ? $this->lang('Absente : %s', implode(', ', $manquants)) : $this->lang('Toutes présentes'),
+			'badge_class' => $manquants ? 'text-bg-danger' : 'text-bg-success'
+		];
 
 		return $rows;
 	}

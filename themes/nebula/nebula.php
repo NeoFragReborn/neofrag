@@ -3,7 +3,7 @@
  * https://neofr.ag
  * Nebula — thème communautaire « NeoFrag Reborn ». DA dark navy + teal,
  * glassmorphism. Généraliste : navbar + home à widgets + sidebar, pour les sites
- * communautaires (équipes, guildes, eSport). CC BY-NC-SA 4.0.
+ * communautaires (équipes, guildes, eSport). LGPLv3.
  */
 
 namespace NF\Themes\Nebula;
@@ -17,9 +17,9 @@ class Nebula extends Theme
 		return [
 			'title'       => 'Nebula',
 			'description' => $this->lang('Thème communautaire NeoFrag Reborn : dark navy + teal, glassmorphism. Home à widgets, navbar + colonne latérale — pour ta team, ta guilde ou ta communauté.'),
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'NeoFrag Reborn',
-			'license'     => 'Creative Commons CC BY-NC-SA 4.0',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],

@@ -4,13 +4,14 @@ declare(strict_types=1);
 /**
  * check-mise-a-jour — un site neuf, à la version précédente, se met à jour par le vrai bouton depuis l'origine publiée, et arrive à la version annoncée.
  * Famille : cible
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
  * La chaîne de mise à jour du cœur existait de bout en bout — `build-release` fabrique le paquet et
  * ses deux manifestes, le bouton « Mettre à jour » du Monitoring sauvegarde, vérifie l'empreinte,
  * applique et migre — mais rien ne l'avait jamais fait tourner EN ENTIER : le dossier `/update/` de
- * l'origine n'existait pas. Seuls le site vitrine, la démonstration et l'atelier emploient NeoFrag
+ * l'origine n'existait pas. Seuls le site officiel, la démonstration et le site d'essai employaient NeoFrag
  * Reborn ; c'est donc sur un site jetable qu'on découvre les défauts de la chaîne, pas sur celui des
  * premiers utilisateurs (2026-09-23).
  *

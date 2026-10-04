@@ -3,7 +3,9 @@ declare(strict_types=1);
 require_once __DIR__.'/outil.php';
 
 /**
- * NeoFrag Reborn — mapping table → module (ownership) pour le SQL-par-module.
+ * table-map — quelle table appartient à quel module, pour le SQL embarqué de chaque module.
+ *
+ * Diffusion : publique
  *
  * « Possède » = la table est EXCLUSIVE au module (lui seul la crée/manipule). Une table
  * lue par plusieurs modules mais conceptuellement partagée (nf_user, nf_file, nf_comment,

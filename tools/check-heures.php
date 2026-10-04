@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-heures — une heure montrée à quelqu'un passe par timetostr(), qui la met dans SON fuseau horaire.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi ce contrôle existe
  * ---------------------------

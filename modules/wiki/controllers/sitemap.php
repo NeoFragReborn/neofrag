@@ -27,6 +27,12 @@ class Sitemap extends Controller_Module
 			$derniere   = max($derniere, (string) $page['updated_at']);
 		}
 
+		// Une rubrique vide n'est pas annoncée aux moteurs : sa page ne dirait que « rien pour l'instant ».
+		if (!$adresses)
+		{
+			return [];
+		}
+
 		array_unshift($adresses, ['adresse' => 'wiki', 'date' => $derniere]);
 
 		return $adresses;

@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-journal — sert des pages puis lit le journal PHP, ou relit une fenêtre de temps : rien ne doit s'y être écrit.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
@@ -30,7 +31,7 @@ declare(strict_types=1);
  * Le 2026-09-22 au soir, le journal de la DÉMONSTRATION portait depuis des heures six défauts que
  * rien n'avait vus — la page des événements en 404, les votes des sondages perdus, le widget du
  * forum toujours vide. Aucun outil ne le lisait : celui-ci ne regardait que ce qui s'écrivait
- * pendant qu'il servait ses seize pages, et la démonstration a bien plus de contenu que l'atelier.
+ * pendant qu'il servait ses seize pages, et la démonstration a bien plus de contenu qu'un site d'essai.
  *
  * `--depuis=24h` ne sert rien : il relit ce que l'installation a écrit dans la fenêtre donnée,
  * regroupé par message, et juge. C'est la lecture de reprise et d'après déploiement, pour la
@@ -39,8 +40,8 @@ declare(strict_types=1);
  * Usage
  * -----
  *   php tools/check-journal.php                    sert seize pages sur cette installation, puis lit
- *   php tools/check-journal.php --journal=le dossier du site --base=https://neofrag-reborn.xyz
- *   php tools/check-journal.php --journal=le dossier du site --depuis=24h
+ *   php tools/check-journal.php --journal=/var/www/neofrag/logs/php.log --base=https://example.org
+ *   php tools/check-journal.php --journal=/var/www/demo/logs/php.log --depuis=24h
  *   php tools/check-journal.php --depuis="2026-09-22 18:00"    une date, à l'heure du serveur
  *   php tools/check-journal.php --verbeux
  */

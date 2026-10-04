@@ -4,6 +4,8 @@ declare(strict_types=1);
 /**
  * parcours — suivre les liens internes d'un site servi, sans jamais ouvrir une adresse qui agit.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * `check-liens` parcourait le site pour y trouver les liens morts. Le 2026-09-22, `check-mise-en-page`

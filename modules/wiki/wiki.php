@@ -13,8 +13,8 @@ class Wiki extends Module
 {
 	/**
 	 * Descripteurs de contenu — cf. Module::content_types(). Sans réaction, abonnement ni révision (le
-	 * wiki tient son propre historique) : la déclaration sert au référencement de chaque page (un chantier interne,
-	 * nf_seo_meta) et à son adresse publique.
+	 * wiki tient son propre historique) : la déclaration sert au référencement de chaque page
+	 * (nf_seo_meta) et à son adresse publique.
 	 */
 	public function declare_content_types()
 	{
@@ -37,9 +37,9 @@ class Wiki extends Module
 			'title'       => $this->lang('Wiki'),
 			'description' => $this->lang('Pages collaboratives avec historique de révisions automatique.'),
 			'icon'        => 'fas fa-book',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'NeoFrag Reborn',
-			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
 			'presets'     => ['association'],

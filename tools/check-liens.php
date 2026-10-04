@@ -5,10 +5,11 @@ declare(strict_types=1);
  * check-liens — parcourt le site et refuse tout lien interne qui ne mène nulle part.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
- * le mainteneur l'a signalé ainsi : « des pages vides un peu partout ». Le premier exemple —
+ * Le défaut a été signalé ainsi : « des pages vides un peu partout ». Le premier exemple —
  * `/gallery/1/Événements` — venait d'un lien construit avec le TITRE au lieu du permalien : la page
  * existe à `/gallery/1/evenements`, mais rien ne pointe dessus. Aucun test ne voyait ce défaut,
  * parce qu'il ne casse ni le code ni la page cible : il casse le CHEMIN entre les deux.
@@ -25,7 +26,7 @@ declare(strict_types=1);
  *   php tools/check-liens.php                     site public + administration, 1000 pages max
  *   php tools/check-liens.php --max=2000
  *
- * Mille pages par défaut, et non plus trois cents : l'atelier compte quelque 740 adresses, et le
+ * Mille pages par défaut, et non plus trois cents : un site d'essai bien rempli compte quelque 740 adresses, et le
  * 2026-09-22 la moitié jamais atteinte portait une candidature en erreur 500, l'édition d'un champ
  * de profil qui plantait, et trois familles de liens morts. Un parcours qui s'arrête à mi-chemin
  * rend un verdict sur la moitié du site.

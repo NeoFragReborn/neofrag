@@ -52,7 +52,7 @@ return [
 		'tag'     => 'communaute',
 	],
 
-	// Choisi par le mainteneur le 2026-10-03 (« du gaming aux associations »). Le Calendrier, et
+	// Choisi le 2026-10-03 (« du gaming aux associations »). Le Calendrier, et
 	// non les Événements : ceux-ci exigent les Jeux et les Équipes, à cause des matchs.
 	'association' => [
 		'title'   => lang('Association / club'),

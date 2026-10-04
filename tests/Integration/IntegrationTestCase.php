@@ -51,9 +51,9 @@ abstract class IntegrationTestCase extends TestCase
 		 * `tools/prepare-test-db.php`, puis les valeurs par défaut.
 		 *
 		 * Le fichier existe parce que les variables d'environnement ne survivent pas d'une séance
-		 * à l'autre : le 2026-09-20, 18 suites se sautaient sur l'atelier — près de 200 assertions
+		 * à l'autre : le 2026-09-20, 18 suites se sautaient sur le site d'essai — près de 200 assertions
 		 * qui ne vérifiaient plus rien — parce que personne ne les avait reposées. Et le nom par
-		 * défaut, `neofrag_test`, est justement celui de la base du SITE sur cet atelier : aucun
+		 * défaut, `neofrag_test`, est justement celui de la base du SITE sur ce site d'essai : aucun
 		 * réglage par défaut ne pouvait marcher. `config/` n'est pas versionné.
 		 */
 		$local = [];

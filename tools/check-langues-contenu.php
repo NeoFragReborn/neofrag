@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-langues-contenu — un contenu rédigé dans une seule langue doit rester consultable dans les autres.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

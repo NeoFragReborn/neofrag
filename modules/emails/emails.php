@@ -22,9 +22,9 @@ class Emails extends Module
 			'title'       => $this->lang('Templates emails'),
 			'description' => $this->lang('Gestion centralisée des templates d\'emails du site (validation compte, mentions, notifications, etc.).'),
 			'icon'        => 'fas fa-envelope-open-text',
-			'link'        => 'https://neofr.ag',
-			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
-			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'link'        => 'https://neofrag-reborn.xyz',
+			'author'      => 'NeoFrag Reborn',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],

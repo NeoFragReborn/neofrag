@@ -165,6 +165,28 @@ final class HelpersSeoTest extends TestCase
         $this->assertSame('', nf_redirection_cible('https://', $langues));
     }
 
+    public function test_une_saisie_se_mesure_en_clair(): void
+    {
+        // Ce que rend le formulaire du produit pour la description portugaise de la vitrine : 139 caractères.
+        $saisie = utf8_htmlentities(' Cria o site da tua guilda, do teu clube ou da tua associação sem uma linha de código: fórum, eventos, membros, donativos. Livre e gratuito. ');
+
+        $this->assertGreaterThan(160, mb_strlen($saisie), 'mesurée encodée, elle dépassait la limite');
+        $this->assertSame(139, mb_strlen(nf_seo_saisie($saisie)));
+        $this->assertSame('Q7w-8kL0', nf_seo_code_verification(nf_seo_saisie(utf8_htmlentities('<meta name="google-site-verification" content="Q7w-8kL0" />'))), 'la balise entière, collée dans le formulaire');
+        $this->assertSame("l'ancienne-page", nf_seo_saisie('l&#039;ancienne-page'));
+        $this->assertSame('', nf_seo_saisie(['un', 'tableau']));
+    }
+
+    public function test_la_verification_google_par_le_dns(): void
+    {
+        $txt = ['v=spf1 ip4:203.0.113.10 ~all', '"google-site-verification=exemple-de-code-0000"'];
+
+        $this->assertTrue(nf_seo_txt_annonce($txt, 'google-site-verification='), 'guillemets compris, tels que certains résolveurs les rendent');
+        $this->assertFalse(nf_seo_txt_annonce(['v=spf1 ~all'], 'google-site-verification='));
+        $this->assertFalse(nf_seo_txt_annonce(['x google-site-verification=abc'], 'google-site-verification='), 'au début de l\'enregistrement seulement');
+        $this->assertFalse(nf_seo_txt_annonce([], 'google-site-verification='));
+    }
+
     public function test_seul_un_disallow_pour_tous_ferme_le_site(): void
     {
         $this->assertTrue(nf_seo_robots_ferme("User-agent: *\nDisallow: /"));

@@ -20,14 +20,15 @@ class Slider extends Module
 			'title'       => $this->lang('Slider'),
 			'description' => $this->lang('Gestion des slides du widget slider en page d\'accueil. Ajoute/modifie images, titres, sous-titres, liens et ordre.'),
 			'icon'        => 'fas fa-images',
-			'author'      => 'NeoFrag',
-			'license'     => 'LGPLv3',
+			'author'      => 'NeoFrag Reborn',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],
 			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'depends'     => ['neofrag' => '0.2.0'],
 			'routes'      => [
 				'admin'              => 'index',

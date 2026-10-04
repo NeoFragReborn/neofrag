@@ -4,6 +4,8 @@ declare(strict_types=1);
 /**
  * wiki — la documentation publique : des guides Markdown (`docs/guide/`) aux pages du module wiki.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * Le même texte vit à trois endroits : le guide, qu'on écrit ; `install/wiki.sql`, que l'installateur
@@ -61,8 +63,10 @@ function nf_wiki_convertir(string $md): string
 
     // liens internes vers un autre guide : strip .md → lien relatif (résolu sous /wiki/)
     $md = (string) preg_replace('/\]\(\.?\/?([a-z0-9-]+)\.md(#[^)]*)?\)/i', ']($1$2)', $md);
-    // liens vers les docs internes (../architecture.md…) : garde juste le texte
-    $md = (string) preg_replace('/\[([^\]]+)\]\(\.\.\/[a-z0-9-]+\.md\)/i', '$1', $md);
+    // liens qui sortent des guides (../architecture.md, ../deploy-ftp.md#ancre, ../../tools/README.md) :
+    // le wiki n'a pas ces documents, on garde le texte. Jusqu'au 2026-10-04, seuls les liens SANS ancre
+    // et d'un seul niveau étaient traités : trois liens morts partaient dans le wiki de chaque site.
+    $md = (string) preg_replace('/\[([^\]]+)\]\(\.\.\/[^)\s]*\)/', '$1', $md);
     // lien d'index
     $md = str_replace('](README.md)', '](.)', $md);
 

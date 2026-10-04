@@ -5,6 +5,7 @@ declare(strict_types=1);
  * dump-demo — fige l'état de la démo (après tools/seed-demo.php) en install/demo.sql.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Ce qu'il produit
  * ----------------

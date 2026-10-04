@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-js-sources — les sources JavaScript : syntaxe (`node --check`) et vocabulaire (aucun jQuery).
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

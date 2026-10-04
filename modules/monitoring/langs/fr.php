@@ -276,4 +276,6 @@ return [
 	'c5bc2c51' => 'Mot de passe webmaster',
 	'e6fff20f' => 'Sur votre site, ce mot de passe garde l’édition des fichiers et les actions sensibles.',
 	'2fbd5770' => 'Fichier d’exemple : sur la démonstration, le gestionnaire de fichiers ne montre aucun vrai fichier du serveur. Sur votre site, vous lisez et modifiez ici vos fichiers, protégés par le mot de passe webmaster.',
+	'fe7b1e4c' => 'L\'extension %s doit être activée',
+	'aa514b0e' => 'Ce PHP doit savoir hacher les mots de passe en %s',
 ];

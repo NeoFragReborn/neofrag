@@ -3,11 +3,18 @@
     "description": "NeoFrag Reborn — le CMS libre des communautés, du gaming aux associations ; continuité de NeoFrag (base Alpha 0.2.4)",
     "type": "project",
     "license": "LGPL-3.0-or-later",
+    "homepage": "https://neofrag-reborn.xyz",
+    "authors": [
+        { "name": "Michaël BILCOT", "role": "auteur du NeoFrag d’origine" },
+        { "name": "Jérémy VALENTIN", "role": "auteur du NeoFrag d’origine" },
+        { "name": "NeoFrag Reborn", "homepage": "https://neofrag-reborn.xyz", "role": "continuité" }
+    ],
     "require": {
         "php": ">=8.2",
         "ext-curl": "*",
         "ext-fileinfo": "*",
         "ext-gd": "*",
+        "ext-iconv": "*",
         "ext-intl": "*",
         "ext-mbstring": "*",
         "ext-mysqli": "*",

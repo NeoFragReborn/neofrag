@@ -199,4 +199,11 @@ return [
 	'f43a187f' => 'Revérifier',
 	'6b41f3af' => 'Association / club',
 	'efd057dc' => 'Actualités, forum, galeries, calendrier, dons, newsletter, wiki et FAQ. De quoi faire vivre une association ou un club, sans l’attirail esport.',
+	'0cfd79fc' => 'Contenu (documentation du wiki et démonstration)…',
+	'07d371b4' => 'Contenu (documentation du wiki)…',
+	'0a0551e7' => 'PHP %s ou plus récent est requis (ce PHP : %s).',
+	'7338e32d' => 'Ce PHP ne sait pas hacher les mots de passe en %s : il faut un PHP compilé avec Argon2.',
+	'c54fdfde' => 'Hachage des mots de passe (%s)',
+	'23bcdfc3' => 'disponible',
+	'c2f31600' => 'absent de ce PHP',
 ];

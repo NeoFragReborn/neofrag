@@ -310,7 +310,7 @@ paramètre obligatoire de plus, l'erreur n'apparaît qu'à l'ouverture de la pag
 | `controllers/dashboard.php` | `dashboard()` | le tableau de bord de l'administration |
 | `controllers/block.php` | `block()` | les blocs `[block:…]` des pages |
 | `controllers/search.php` | `search()` **et** `suggest()` | la recherche globale et la suggestion instantanée — un module qui n'a que `search()` est **ignoré en silence** |
-| `controllers/sitemap.php` | `sitemap()` | le plan du site (`/sitemap.xml`, un par langue) : rend `[['adresse' => 'monmodule/12/titre', 'date' => …], …]`, des chemins comme ceux que prend `url()`, seulement ce qu'un **visiteur** peut lire (`$this->access('monmodule', 'lire', $id, 'visitors')`) et ce qui existe **dans la langue du plan** — sans lui, le module est absent des moteurs, et IndexNow ne signale pas ses pages : la tâche planifiée compare ce même plan d'un passage à l'autre |
+| `controllers/sitemap.php` | `sitemap()` | le plan du site (`/sitemap.xml`, un par langue) : rend `[['adresse' => 'monmodule/12/titre', 'date' => …], …]`, des chemins comme ceux que prend `url()`, seulement ce qu'un **visiteur** peut lire (`$this->access('monmodule', 'lire', $id, 'visitors')`) et ce qui existe **dans la langue du plan** — **une rubrique vide rend `[]`** : sa page n'aurait que « rien pour l'instant » à montrer ; sans le carrefour, le module est absent des moteurs, et IndexNow ne signale pas ses pages : la tâche planifiée compare ce même plan d'un passage à l'autre |
 
 ## 6. Les permissions (optionnel)
 

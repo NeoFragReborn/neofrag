@@ -35,7 +35,7 @@ final class FileJailTest extends TestCase
 		 * descend que d'un niveau et ne rend aucun DOSSIER. Les trois arborescences creees par
 		 * `setUp()` et la racine elle-meme survivaient donc a chaque test.
 		 *
-		 * Le 2026-09-21, l'atelier portait 1 043 dossiers `nf_jail_*` abandonnes dans /tmp. Ils
+		 * Le 2026-09-21, notre site d'essai portait 1 043 dossiers `nf_jail_*` abandonnes dans /tmp. Ils
 		 * ne pesaient pas grand-chose, mais ils ont contribue a remplir un tmpfs de 2 Go — et un
 		 * /tmp plein fait echouer PHPStan sans un mot : il rend zero ligne, ce qui se lit comme
 		 * un verdict vert.

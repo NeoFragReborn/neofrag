@@ -5,6 +5,7 @@ declare(strict_types=1);
  * wiki-docs — transfère docs/guide/*.md dans le module wiki, puis fige le wiki en install/wiki.sql.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
@@ -24,12 +25,18 @@ declare(strict_types=1);
  * troisième geste manquait, et la démo avait une semaine de retard ; `check-wiki-docs` le voit
  * désormais.
  *
+ * `--sur-place` fait de même pour `install/wiki.sql` : quand un guide change sans qu'une page
+ * s'ajoute ni se renomme — le cas courant —, il n'y a pas besoin d'une base, et la correction se fait
+ * sur n'importe quel poste (2026-10-04, les prérequis du guide d'installation). Une page neuve ou
+ * renommée exige toujours le transfert par la base : l'outil le dit et refuse.
+ *
  * Usage
  * -----
  *   php tools/wiki-docs.php              les trois gestes : base, install/wiki.sql, install/demo.sql
  *   php tools/wiki-docs.php --peupler    seulement le transfert dans la base
  *   php tools/wiki-docs.php --figer      seulement install/wiki.sql depuis la base
  *   php tools/wiki-docs.php --demo       seulement les pages de documentation de install/demo.sql
+ *   php tools/wiki-docs.php --sur-place  install/wiki.sql et install/demo.sql réécrits sans base
  */
 
 require __DIR__.'/lib/outil.php';
@@ -37,11 +44,68 @@ require __DIR__.'/lib/site.php';
 require __DIR__.'/lib/sql.php';
 require __DIR__.'/lib/wiki.php';
 
-[$o] = nf_options(['peupler' => FALSE, 'figer' => FALSE, 'demo' => FALSE]);
+[$o] = nf_options(['peupler' => FALSE, 'figer' => FALSE, 'demo' => FALSE, 'sur-place' => FALSE]);
 
-if (!$o['peupler'] && !$o['figer'] && !$o['demo'])
+if ($o['sur-place'])
+{
+    $o['demo'] = TRUE;
+}
+else if (!$o['peupler'] && !$o['figer'] && !$o['demo'])
 {
     $o['peupler'] = $o['figer'] = $o['demo'] = TRUE;
+}
+
+/**
+ * Réécrit, dans un fichier SQL qui porte des lignes de `nf_wiki_pages`, le titre et le contenu des
+ * pages de documentation, sans rien toucher d'autre. Rend le nombre de lignes réécrites et les pages
+ * attendues que le fichier n'a pas.
+ *
+ * @return array{reecrites: int, absentes: list<string>}
+ */
+function reecrire_pages(string $chemin): array
+{
+    $sql = (string) file_get_contents($chemin);
+
+    ['colonnes' => $colonnes, 'tuples' => $tuples] = nf_sql_tuples($sql, 'nf_wiki_pages');
+    ['pages' => $attendu] = nf_wiki_attendu();
+
+    $i_slug    = array_search('slug', $colonnes, TRUE);
+    $i_titre   = array_search('title', $colonnes, TRUE);
+    $i_contenu = array_search('content', $colonnes, TRUE);
+
+    if ($i_slug === FALSE || $i_titre === FALSE || $i_contenu === FALSE)
+    {
+        nf_refus(nf_relatif($chemin).' : aucune ligne de nf_wiki_pages lisible');
+    }
+
+    $reecrites = 0;
+    $vues      = [];
+
+    // De la fin vers le début : chaque remplacement laisse intactes les positions qui le précèdent.
+    foreach (array_reverse($tuples) as $tuple)
+    {
+        $valeurs = $tuple['valeurs'];
+        $slug    = (string) $valeurs[$i_slug];
+
+        if (!isset($attendu[$slug]))
+        {
+            continue;
+        }
+
+        $vues[$slug]         = TRUE;
+        $valeurs[$i_titre]   = $attendu[$slug]['title'];
+        $valeurs[$i_contenu] = $attendu[$slug]['content'];
+
+        if ($valeurs !== $tuple['valeurs'])
+        {
+            $sql = substr_replace($sql, '('.implode(', ', array_map('nf_sql_valeur', $valeurs)).')', $tuple['debut'], $tuple['fin'] - $tuple['debut']);
+            $reecrites++;
+        }
+    }
+
+    file_put_contents($chemin, $sql);
+
+    return ['reecrites' => $reecrites, 'absentes' => array_keys(array_diff_key($attendu, $vues))];
 }
 
 $db = ($o['peupler'] || $o['figer']) ? nf_connexion() : NULL;
@@ -131,56 +195,33 @@ if ($o['figer'])
     echo "install/wiki.sql écrit ({$pages} pages).\n";
 }
 
+// ── Sur place : les pages de documentation de install/wiki.sql, sans base ───
+if ($o['sur-place'])
+{
+    $avant = (string) file_get_contents(nf_racine().'/install/wiki.sql');
+    $wiki  = reecrire_pages(nf_racine().'/install/wiki.sql');
+
+    if ($wiki['absentes'])
+    {
+        // Une page neuve n'a ni identifiant ni parent dans le fichier : il faut la base.
+        file_put_contents(nf_racine().'/install/wiki.sql', $avant);
+        nf_refus('install/wiki.sql n\'a pas de page « '.implode(' », « ', $wiki['absentes']).' » : une page neuve ou renommée passe par la base (php tools/wiki-docs.php)');
+    }
+
+    echo "install/wiki.sql : {$wiki['reecrites']} page(s) de documentation réécrite(s).\n";
+}
+
 // ── Démo : les pages de documentation de install/demo.sql ───────────────────
 if ($o['demo'])
 {
-    $chemin = nf_racine().'/install/demo.sql';
-    $sql    = (string) file_get_contents($chemin);
+    $demo = reecrire_pages(nf_racine().'/install/demo.sql');
 
-    ['colonnes' => $colonnes, 'tuples' => $tuples] = nf_sql_tuples($sql, 'nf_wiki_pages');
-    ['pages' => $attendu] = nf_wiki_attendu();
-
-    $i_slug    = array_search('slug', $colonnes, TRUE);
-    $i_titre   = array_search('title', $colonnes, TRUE);
-    $i_contenu = array_search('content', $colonnes, TRUE);
-
-    if ($i_slug === FALSE || $i_titre === FALSE || $i_contenu === FALSE)
-    {
-        nf_refus('install/demo.sql : aucune ligne de nf_wiki_pages lisible');
-    }
-
-    $reecrites = 0;
-    $vues      = [];
-
-    // De la fin vers le début : chaque remplacement laisse intactes les positions qui le précèdent.
-    foreach (array_reverse($tuples) as $tuple)
-    {
-        $valeurs = $tuple['valeurs'];
-        $slug    = (string) $valeurs[$i_slug];
-
-        if (!isset($attendu[$slug]))
-        {
-            continue;
-        }
-
-        $vues[$slug]         = TRUE;
-        $valeurs[$i_titre]   = $attendu[$slug]['title'];
-        $valeurs[$i_contenu] = $attendu[$slug]['content'];
-
-        if ($valeurs !== $tuple['valeurs'])
-        {
-            $sql = substr_replace($sql, '('.implode(', ', array_map('nf_sql_valeur', $valeurs)).')', $tuple['debut'], $tuple['fin'] - $tuple['debut']);
-            $reecrites++;
-        }
-    }
-
-    foreach (array_diff_key($attendu, $vues) as $slug => $_)
+    foreach ($demo['absentes'] as $slug)
     {
         nf_avertir("  ⚠ install/demo.sql n'a pas de page « {$slug} » : la régénérer par dump-demo après l'avoir créée");
     }
 
-    file_put_contents($chemin, $sql);
-    echo "install/demo.sql : {$reecrites} page(s) de documentation réécrite(s).\n";
+    echo "install/demo.sql : {$demo['reecrites']} page(s) de documentation réécrite(s).\n";
 }
 
-nf_ok('wiki'.($o['peupler'] ? ' peuplé' : '').($o['figer'] ? ', figé dans install/wiki.sql' : '').($o['demo'] ? ', démo à jour' : ''));
+nf_ok('wiki'.($o['peupler'] ? ' peuplé' : '').($o['figer'] ? ', figé dans install/wiki.sql' : '').($o['sur-place'] ? ', install/wiki.sql réécrit sur place' : '').($o['demo'] ? ', démo à jour' : ''));

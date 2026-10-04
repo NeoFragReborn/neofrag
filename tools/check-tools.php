@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-tools — les outils de `tools/` respectent leurs propres conventions.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
@@ -19,34 +20,43 @@ declare(strict_types=1);
  *   1. l'EN-TÊTE : `declare(strict_types=1)`, un bloc de documentation qui commence par
  *      `<nom> — …`, porte `Usage` et `Famille : statique|navigateur|cible|outil`, puis
  *      `require __DIR__.'/lib/outil.php'` comme première instruction — c'est elle qui garde ;
+ *      un fichier de la bibliothèque se présente aussi par `<nom> — …` ;
  *   2. l'INDENTATION : quatre espaces, jamais de tabulation en tête de ligne (cf. `.editorconfig`) ;
  *   3. la PLOMBERIE : aucun outil n'ouvre lui-même une base, un serveur, un navigateur ni une
  *      session — cela vit dans `tools/lib/`, une fois ;
  *   4. le VERDICT : un contrôle `check-*` conclut par `nf_ok()`, et refuse par `nf_echec()` ou
  *      `nf_refus()` ;
  *   5. les PORTS : tout outil qui sert le site a son port réservé dans `NF_PORTS` ;
- *   6. le CATALOGUE : `tools/README.md` liste chaque outil, et rien d'autre — la table est
- *      produite depuis les en-têtes (`--catalogue`), et doit être à jour (`--ecrire` la met à jour) ;
+ *   6. le CATALOGUE et la BIBLIOTHÈQUE : `tools/README.md` liste chaque outil et chaque fichier de
+ *      `tools/lib/`, et rien d'autre — ses deux tables sont produites depuis les en-têtes
+ *      (`--catalogue`), et doivent être à jour (`--ecrire` les met à jour). La table de la
+ *      bibliothèque était écrite à la main : le 2026-10-04, trois fichiers sur dix-huit y manquaient ;
  *   7. la SORTIE : jamais d'`exit("message")` ni de `die("message")` — une chaîne passée à `exit`
  *      s'affiche et rend le code ZÉRO ; la CI a enchaîné sur un refus ainsi masqué. On refuse par
  *      `nf_refus()` ou `nf_echec()` ;
  *   8. la CI : tout contrôle de la famille `statique` est joué par `.github/workflows/ci.yml`, sauf
  *      exception nommée avec sa raison (`NON_JOUES_EN_CI`). Cinq contrôles créés le 2026-10-02
- *      n'étaient joués par personne : la CI restait verte sans les avoir lus.
+ *      n'étaient joués par personne : la CI restait verte sans les avoir lus ;
+ *   9. la DIFFUSION : tout fichier de `tools/` déclare s'il part dans le dépôt public —
+ *      `Diffusion : publique` — ou s'il reste chez nous — `Diffusion : interne — <raison>` ;
+ *  10. la CLOISON : un fichier public ne cite jamais un fichier interne, ni dans son code ni dans
+ *      ses commentaires, et la prose de `tools/README.md` non plus : la copie publique n'aura pas
+ *      ce fichier, le renvoi y serait mort. On nomme le besoin, pas l'outil ;
+ *  11. le catalogue range les fichiers INTERNES à part, avec leur raison : la copie publique le
+ *      réécrit sans eux.
  *
  * Usage
  * -----
  *   php tools/check-tools.php                toutes les règles, code 1 s'il y a un écart
- *   php tools/check-tools.php --catalogue    imprime le catalogue tel qu'il doit figurer dans le README
- *   php tools/check-tools.php --ecrire       réécrit le catalogue dans tools/README.md
+ *   php tools/check-tools.php --catalogue    imprime les tables engendrées du README (catalogue, bibliothèque)
+ *   php tools/check-tools.php --ecrire       réécrit ces tables dans tools/README.md
  */
 
 require __DIR__.'/lib/outil.php';
 require __DIR__.'/lib/depot.php';
+require __DIR__.'/lib/entetes.php';
 
 [$o] = nf_options(['catalogue' => FALSE, 'ecrire' => FALSE]);
-
-const FAMILLES = ['statique', 'navigateur', 'cible', 'outil'];
 
 /** Ce qui n'a pas à exister hors de `tools/lib/` (motifs), et le nom de ce qui le remplace. */
 const PLOMBERIE = [
@@ -73,90 +83,25 @@ foreach (glob(nf_racine().'/tools/*.php') ?: [] as $chemin)
 
 ksort($outils);
 
-/**
- * L'en-tête d'un outil, lu dans son bloc de documentation.
- *
- * @return array{nom: string, resume: string, famille: string, usage: list<string>, batterie: string, erreurs: list<string>}
- */
-function entete(string $nom, string $chemin): array
+/** Tout fichier de `tools/` et de `tools/lib/`, ce README excepté : chacun déclare sa diffusion. */
+$fichiers = [];
+
+foreach (array_merge(glob(nf_racine().'/tools/*') ?: [], glob(nf_racine().'/tools/lib/*') ?: []) as $chemin)
 {
-    $source  = (string) file_get_contents($chemin);
-    $lignes  = explode("\n", $source);
-    $erreurs = [];
-    $entete  = ['nom' => $nom, 'resume' => '', 'famille' => '', 'usage' => [], 'batterie' => '', 'erreurs' => []];
-
-    if (($lignes[0] ?? '') !== '<?php' || ($lignes[1] ?? '') !== 'declare(strict_types=1);')
+    if (is_file($chemin) && basename($chemin) !== 'README.md')
     {
-        $erreurs[] = 'les deux premières lignes doivent être `<?php` puis `declare(strict_types=1);`';
+        $fichiers[nf_relatif($chemin)] = $chemin;
     }
-
-    if (!preg_match('#/\*\*\n \* ([a-z0-9-]+) — (.+?)\n(.*?)\*/#s', $source, $doc))
-    {
-        $erreurs[] = 'aucun bloc de documentation `/** * <nom> — <résumé> … */` en tête';
-        $entete['erreurs'] = $erreurs;
-
-        return $entete;
-    }
-
-    if ($doc[1] !== $nom)
-    {
-        $erreurs[] = sprintf('le bloc de documentation nomme « %s », le fichier s\'appelle « %s »', $doc[1], $nom);
-    }
-
-    $entete['resume'] = trim($doc[2]);
-    $corps            = $doc[3];
-
-    if (preg_match('/^ \* Famille : ([a-z]+)\s*$/m', $corps, $f) && in_array($f[1], FAMILLES, TRUE))
-    {
-        $entete['famille'] = $f[1];
-    }
-    else
-    {
-        $erreurs[] = 'aucune ligne ` * Famille : statique|navigateur|cible|outil` dans le bloc';
-    }
-
-    if (preg_match('/^ \* Batterie : (.+?)\s*$/m', $corps, $b))
-    {
-        $entete['batterie'] = trim($b[1]);
-    }
-
-    if (preg_match('/^ \* Usage\n \* -----\n((?: \*.*\n)+)/m', $corps, $u))
-    {
-        foreach (explode("\n", $u[1]) as $ligne)
-        {
-            if (preg_match('/^ \*\s{2,}(php tools\/\S+.*?)(?:\s{2,}.*)?$/', $ligne, $c))
-            {
-                $entete['usage'][] = trim($c[1]);
-            }
-        }
-    }
-
-    if (!$entete['usage'])
-    {
-        $erreurs[] = 'aucune section `Usage` avec au moins une ligne `php tools/…`';
-    }
-
-    // La première INSTRUCTION doit charger le socle : c'est lui qui porte la garde HTTP. Un fichier
-    // à espaces de noms (un outil interne) l'écrit dans son premier bloc `namespace { … }`.
-    $code = nf_sans_commentaires($source);
-    $code = (string) preg_replace('/^<\?php\s+declare\(strict_types=1\);/', '', $code);
-
-    if (!preg_match("/^\s*(?:namespace\s*\{\s*)?require(?:_once)? __DIR__\.'\/lib\/outil\.php';/", $code))
-    {
-        $erreurs[] = "la première instruction doit être `require __DIR__.'/lib/outil.php';`";
-    }
-
-    $entete['erreurs'] = $erreurs;
-
-    return $entete;
 }
 
-$entetes  = [];
+ksort($fichiers);
+
+$entetes   = [];
 $anomalies = [];
 
 foreach ($outils as $nom => $chemin)
 {
-    $entetes[$nom] = $e = entete($nom, $chemin);
+    $entetes[$nom] = $e = nf_entete_outil($nom, $chemin);
 
     foreach ($e['erreurs'] as $erreur)
     {
@@ -164,11 +109,52 @@ foreach ($outils as $nom => $chemin)
     }
 }
 
+// ── Règle 9 : chaque fichier dit s'il part dans le dépôt public ──────────────────────────────
+$diffusions = [];
+
+foreach ($fichiers as $relatif => $chemin)
+{
+    $diffusions[$relatif] = $d = nf_diffusion($chemin);
+
+    if ($d['valeur'] === NULL)
+    {
+        $anomalies[] = [$relatif, 'aucune ligne `Diffusion : publique` ou `Diffusion : interne — <raison>` dans ses premières lignes'];
+    }
+    elseif ($d['valeur'] === 'interne' && $d['raison'] === '')
+    {
+        $anomalies[] = [$relatif, 'diffusion interne sans sa raison : `Diffusion : interne — <ce qui le retient chez nous>`'];
+    }
+}
+
+$internes = array_filter($diffusions, static fn (array $d): bool => $d['valeur'] === 'interne');
+
+// ── Règle 1, pour la bibliothèque : chaque fichier se présente par `<nom> — <résumé>` ──────────
+$bibliotheque = [];
+
+foreach ($fichiers as $relatif => $chemin)
+{
+    if (!str_starts_with($relatif, 'tools/lib/'))
+    {
+        continue;
+    }
+
+    $resume = nf_resume($chemin);
+
+    if ($resume === NULL || $resume['nom'] !== basename($relatif, '.php'))
+    {
+        $anomalies[] = [$relatif, sprintf('sa documentation doit commencer par `%s — <ce qu\'il donne>`', basename($relatif, '.php'))];
+    }
+    elseif (!isset($internes[$relatif]))
+    {
+        $bibliotheque[$relatif] = $resume['resume'];
+    }
+}
+
 // ── Règle 8 : un contrôle statique se joue en CI ─────────────────────────────────────────────
 // La famille « statique » promet le job `statique` (tools/README.md, « Les familles »). Une exception se
 // nomme, avec ce qui empêche la CI de la jouer.
 const NON_JOUES_EN_CI = [
-    'check-marketplace' => "les archives des addons ne sont pas versionnées : il se joue sur l'atelier, après package-addons",
+    'check-marketplace' => "les archives des addons ne sont pas versionnées : il se joue sur une installation, après package-addons",
 ];
 
 $ci = (string) @file_get_contents(nf_racine().'/.github/workflows/ci.yml');
@@ -238,8 +224,8 @@ foreach (nf_fichiers(['tools'], ['php']) as $relatif => $chemin)
     }
 }
 
-// ── Règle 6 : le catalogue du README ──────────────────────────────────────────────────────────
-function catalogue(array $entetes): string
+// ── Règles 6 et 11 : les tables engendrées du README ─────────────────────────────────────────
+function catalogue(array $entetes, array $internes): string
 {
     $titres = [
         'statique'   => ['Contrôles statiques', 'Joués par défaut par `check-all`. Ils lisent les sources, sans base ni serveur.'],
@@ -252,7 +238,7 @@ function catalogue(array $entetes): string
 
     foreach ($titres as $famille => [$titre, $sous_titre])
     {
-        $lignes = array_filter($entetes, static fn (array $e): bool => $e['famille'] === $famille);
+        $lignes = array_filter($entetes, static fn (array $e): bool => $e['famille'] === $famille && !isset($internes['tools/'.$e['nom'].'.php']));
 
         if (!$lignes)
         {
@@ -270,47 +256,138 @@ function catalogue(array $entetes): string
         $sortie .= "\n";
     }
 
+    // Règle 11 : les internes à part. La copie publique n'en a aucun, cette section y disparaît.
+    if ($internes)
+    {
+        $sortie .= "### Les fichiers internes\n\n"
+            ."Ils ne partent jamais dans le dépôt public : ils servent notre serveur, notre publication ou notre\n"
+            ."site officiel. La copie publique ne les porte pas, et son catalogue s'écrit sans eux.\n\n"
+            ."| Fichier | Ce qu'il fait | Pourquoi il reste chez nous |\n|---|---|---|\n";
+
+        foreach ($internes as $relatif => $d)
+        {
+            $lien   = substr($relatif, strlen('tools/'));
+            $resume = nf_resume(nf_racine().'/'.$relatif)['resume'] ?? '';
+            $sortie .= sprintf("| [`%s`](%s) | %s | %s |\n", $lien, $lien, $resume, $d['raison']);
+        }
+    }
+
     return rtrim($sortie)."\n";
 }
 
-$catalogue = catalogue($entetes);
+/** Les fonctions et constantes qu'un fichier de la bibliothèque définit, dans l'ordre du fichier. */
+function definitions(string $chemin): string
+{
+    preg_match_all('/^(?:function (\w+)\(|const (\w+)\b)/m', (string) file_get_contents($chemin), $m, PREG_SET_ORDER);
+
+    $noms = array_map(static fn (array $d): string => ($d[2] ?? '') !== '' ? '`'.$d[2].'`' : '`'.$d[1].'()`', $m);
+
+    return $noms ? implode(', ', $noms) : '—';
+}
+
+function bibliotheque(array $bibliotheque): string
+{
+    $sortie = "| Fichier | Ce qu'il donne | Ce qu'il définit |\n|---|---|---|\n";
+
+    foreach ($bibliotheque as $relatif => $resume)
+    {
+        $nom     = basename($relatif);
+        $sortie .= sprintf("| [`%s`](lib/%s) | %s | %s |\n", $nom, $nom, $resume, definitions(nf_racine().'/'.$relatif));
+    }
+
+    return $sortie;
+}
+
+$sections = ['catalogue' => catalogue($entetes, $internes), 'bibliotheque' => bibliotheque($bibliotheque)];
 
 if ($o['catalogue'])
 {
-    echo $catalogue;
+    echo implode("\n", $sections);
     exit(NF_OK);
 }
 
 $readme  = nf_racine().'/tools/README.md';
 $texte   = (string) @file_get_contents($readme);
-$debut   = '<!-- catalogue:début -->';
-$fin     = '<!-- catalogue:fin -->';
-$a       = strpos($texte, $debut);
-$b       = strpos($texte, $fin);
+$nouveau = $texte;
 
-if ($a === FALSE || $b === FALSE || $b < $a)
+foreach ($sections as $cle => $attendu)
 {
-    $anomalies[] = ['tools/README.md', "les marqueurs `{$debut}` et `{$fin}` manquent"];
-}
-else
-{
-    $actuel = trim(substr($texte, $a + strlen($debut), $b - $a - strlen($debut)));
+    $debut = "<!-- {$cle}:début -->";
+    $fin   = "<!-- {$cle}:fin -->";
+    $a     = strpos($nouveau, $debut);
+    $b     = strpos($nouveau, $fin);
 
-    if ($actuel !== trim($catalogue))
+    if ($a === FALSE || $b === FALSE || $b < $a)
     {
-        if ($o['ecrire'])
+        $anomalies[] = ['tools/README.md', "les marqueurs `{$debut}` et `{$fin}` manquent"];
+        continue;
+    }
+
+    if (trim(substr($nouveau, $a + strlen($debut), $b - $a - strlen($debut))) === trim($attendu))
+    {
+        continue;
+    }
+
+    if ($o['ecrire'])
+    {
+        $nouveau = substr($nouveau, 0, $a + strlen($debut))."\n".$attendu.substr($nouveau, $b);
+    }
+    else
+    {
+        $anomalies[] = ['tools/README.md', "la table « {$cle} » ne correspond plus aux en-têtes — php tools/check-tools.php --ecrire"];
+    }
+}
+
+if ($nouveau !== $texte)
+{
+    file_put_contents($readme, $nouveau);
+    echo "tools/README.md : tables engendrées réécrites.\n";
+}
+
+// ── Règle 10 : un fichier public ne cite jamais un fichier interne ───────────────────────────
+// Un nom à trait d'union est assez singulier pour être cherché nu ; un nom commun ne se cherche
+// qu'avec son extension. La prose du README compte, ses tables engendrées non : la copie publique
+// les réécrit.
+$motifs = [];
+
+foreach (array_keys($internes) as $relatif)
+{
+    $tige    = pathinfo($relatif, PATHINFO_FILENAME);
+    $cherche = str_contains($tige, '-') ? $tige : basename($relatif);
+
+    $motifs['/(?<![\w-])'.preg_quote($cherche, '/').'(?![\w-])/u'] = $relatif;
+}
+
+$textes = ['tools/README.md' => (string) preg_replace_callback(
+    '/<!-- ([a-z]+):début -->.*?<!-- \1:fin -->/su',
+    static fn (array $m): string => str_repeat("\n", substr_count($m[0], "\n")),
+    $texte
+)];
+
+foreach ($diffusions as $relatif => $d)
+{
+    if ($d['valeur'] === 'publique')
+    {
+        $textes[$relatif] = (string) file_get_contents($fichiers[$relatif]);
+    }
+}
+
+foreach ($textes as $relatif => $source)
+{
+    foreach ($motifs as $motif => $interne)
+    {
+        preg_match_all($motif, $source, $trouves, PREG_OFFSET_CAPTURE);
+
+        foreach ($trouves[0] as [$trouve, $position])
         {
-            file_put_contents($readme, substr($texte, 0, $a + strlen($debut))."\n".$catalogue.substr($texte, $b));
-            echo "tools/README.md : catalogue réécrit.\n";
-        }
-        else
-        {
-            $anomalies[] = ['tools/README.md', 'le catalogue ne correspond plus aux en-têtes — php tools/check-tools.php --ecrire'];
+            $anomalies[] = [$relatif.':'.(substr_count($source, "\n", 0, $position) + 1),
+                sprintf('cite `%s`, qui reste chez nous (%s) : la copie publique ne l\'aura pas — nommer le besoin, pas l\'outil', $trouve, $interne)];
         }
     }
 }
 
-printf("%d outil(s), %d dans la bibliothèque.\n", count($outils), count(glob(nf_racine().'/tools/lib/*.php') ?: []));
+printf("%d outil(s), %d fichier(s) dans la bibliothèque, %d fichier(s) interne(s).\n",
+    count($outils), count(glob(nf_racine().'/tools/lib/*.php') ?: []), count($internes));
 
 if (!$anomalies)
 {

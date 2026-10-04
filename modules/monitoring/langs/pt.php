@@ -278,4 +278,6 @@ return [
 	'c5bc2c51' => 'Palavra-passe de webmaster',
 	'e6fff20f' => 'No seu site, esta palavra-passe protege a edição de ficheiros e as ações sensíveis.',
 	'2fbd5770' => 'Ficheiro de exemplo: na demonstração, o gestor de ficheiros não mostra nenhum ficheiro real do servidor. No seu site, aqui lê e modifica os seus ficheiros, protegidos pela palavra-passe de webmaster.',
+	'fe7b1e4c' => 'A extensão %s tem de estar ativada',
+	'aa514b0e' => 'Este PHP tem de conseguir gerar o hash das palavras-passe com %s',
 ];

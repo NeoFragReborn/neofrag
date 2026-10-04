@@ -20,6 +20,9 @@ class Authenticator_Discord extends Authenticator
 			'color'       => '#5865F2',
 			'help'        => 'https://discordapp.com/developers/applications/me#top',
 			'version'     => '1.0',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
+			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
+			'link'        => 'https://neofr.ag',
 			'depends'     => [
 				'addon/authenticator' => '1.0'
 			]

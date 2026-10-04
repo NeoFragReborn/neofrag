@@ -93,4 +93,5 @@ return [
 	'3d3305f0' => 'Lista',
 	'd3fe1369' => 'Grelha',
 	'45002a02' => 'Nenhuma extensão corresponde.',
+	'79e64a05' => '<b>NeoFrag %s</b> está disponível (estás a usar %s): <a href="%s">Monitoring</a> atualiza-o com um clique, com uma cópia de segurança antes de escrever.',
 ];

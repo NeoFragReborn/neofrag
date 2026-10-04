@@ -82,4 +82,7 @@ return [
 	'bc645dc3' => 'Absente',
 	'caf517ea' => 'Tableau de bord et panneau d\'administration central.',
 	'c0833bb9' => '%d critique|%d critiques',
+	'1ffdbac4' => 'Extensions PHP requises',
+	'11bbb161' => 'Absente : %s',
+	'cc32ed89' => 'Toutes présentes',
 ];

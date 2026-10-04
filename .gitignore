@@ -47,8 +47,9 @@ install/db.txt
 /.vscode
 /.playwright-mcp
 
-# === Marketplace : .zip régénérés via tools/package-addons.php (pas de bloat binaire) ===
+# === Marketplace : .zip et vignettes régénérés via tools/package-addons.php (pas de bloat binaire) ===
 /marketplace/**/*.zip
+/marketplace/**/*.jpg
 
 # === Paquets de release (régénérés via tools/build-release.php) ===
 /dist

@@ -5,6 +5,7 @@ declare(strict_types=1);
  * seed-demo — peuple un site de données de DÉMO réalistes (gaming/communauté).
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Ce qu'il fait
  * -------------
@@ -18,7 +19,7 @@ declare(strict_types=1);
  *   php tools/seed-demo.php
  *   php tools/seed-demo.php --sans-config-demo   garnir SANS la configuration du site public de
  *                                                démonstration (thème nebula imposé, vitrine retirée) :
- *                                                pour l'atelier, qui doit garder tous ses thèmes
+ *                                                pour un site d'essai, qui doit garder tous ses thèmes
  *   php tools/seed-demo.php --anglais            poser SEULEMENT la version anglaise du contenu
  *                                                existant (actualités, articles, pages, catégories,
  *                                                galeries), sans rien purger ni régénérer
@@ -1452,7 +1453,7 @@ function seed_activite(mysqli $db, array $users): void
  * aussi à garnir l'ATELIER, où retirer la vitrine casse les contrôles qui la mesurent —
  * `check-contraste` s'est arrêté sur « Thème(s) non installé(s) : vitrine » après un simple
  * repeuplement. Les droits de lecture des visiteurs, eux, ne sont pas optionnels : sans eux le
- * contenu inséré en SQL reste invisible, sur la démo comme à l'atelier.
+ * contenu inséré en SQL reste invisible, sur la démo comme sur un site d'essai.
  *
  * Remettre la vitrine après coup demande deux gestes : réinscrire l'addon dans `nf_addon`, puis
  * `php tools/init-dispositions.php` — un thème sans disposition affiche un site vide.

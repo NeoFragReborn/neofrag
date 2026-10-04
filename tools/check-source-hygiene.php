@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-source-hygiene — aucun caractère invisible dans les sources : contrôle, BOM, espace insécable, `?>` dans un commentaire.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-js-lint — passe ESLint sur nos sources JavaScript, PHP interpolé neutralisé.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

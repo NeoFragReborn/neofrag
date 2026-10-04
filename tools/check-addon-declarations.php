@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-addon-declarations — chaque addon déclare `core`, `presets` et `requires`, et le cœur ne dépend jamais d'un optionnel.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Chaque addon doit déclarer dans son `__info()` :
  *   'core'     => TRUE|FALSE   livré toujours et non désinstallable, ou non

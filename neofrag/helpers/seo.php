@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * Le référencement : ce que les moteurs lisent dans l'en-tête d'une page.
  *
- * un chantier interne, 2026-10-03. Mesuré en production le jour même : un titre « NeoFrag Reborn | NeoFrag
+ * Mesuré en production le 2026-10-03 : un titre « NeoFrag Reborn | NeoFrag
  * Reborn », une description « NeoFrag Reborn », des liens entre langues relatifs et sans `x-default`,
  * l'accueil canonique sur `/fr/index`, des adresses construites sur l'en-tête `Host` de la requête — que
  * n'importe qui peut forger —, et un plan du site aux adresses relatives, que Google ignore. Le gabarit
@@ -55,6 +55,66 @@ function nf_seo_adresse(string $origine, string $base, string $langue, string $c
 	$parties = array_filter([trim($base, '/'), $langue, trim($chemin, '/')], static fn (string $p): bool => $p !== '');
 
 	return rtrim($origine, '/').'/'.implode('/', $parties);
+}
+
+/**
+ * Une saisie de formulaire telle que la personne l'a tapée. Le formulaire du produit rend chaque valeur en
+ * entités HTML (`ç` devient `&ccedil;`, un guillemet `&quot;`) : mesurée telle quelle, une description
+ * portugaise de 139 caractères en comptait 167 et le formulaire Référencement refusait TOUT l'envoi —
+ * la case IndexNow de la vitrine comprise (2026-10-03). Les textes du référencement se vérifient et
+ * s'enregistrent donc en clair ; chaque sortie les échappe (en-tête des pages, bilan, formulaires).
+ */
+function nf_seo_saisie(mixed $valeur): string
+{
+	return trim(html_entity_decode(is_scalar($valeur) ? (string) $valeur : '', ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+}
+
+/**
+ * Un enregistrement TXT commence-t-il par `$prefixe` ? Une propriété « Domaine » de Google Search Console
+ * se vérifie par un TXT `google-site-verification=…` posé chez l'hébergeur du domaine, sans rien dans le
+ * site : le bilan ne regardait que le réglage, et annonçait « non déclaré » une console vérifiée (2026-10-03).
+ *
+ * @param list<string> $textes
+ */
+function nf_seo_txt_annonce(array $textes, string $prefixe): bool
+{
+	foreach ($textes as $texte)
+	{
+		if (str_starts_with(trim((string) $texte, " \t\""), $prefixe))
+		{
+			return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+/** Les TXT du domaine du site et, pour un sous-domaine (`www.…`), de son domaine parent. @return list<string> */
+function nf_seo_txt_du_domaine(): array
+{
+	$hote = (string) parse_url(site_origin(), PHP_URL_HOST);
+
+	if ($hote === '' || filter_var($hote, FILTER_VALIDATE_IP) || !function_exists('dns_get_record'))
+	{
+		return [];
+	}
+
+	$parties  = explode('.', $hote);
+	$domaines = count($parties) > 2 ? [$hote, implode('.', array_slice($parties, 1))] : [$hote];
+	$textes   = [];
+
+	foreach ($domaines as $domaine)
+	{
+		foreach ((array) @dns_get_record($domaine, DNS_TXT) as $enregistrement)
+		{
+			if (!empty($enregistrement['txt']))
+			{
+				$textes[] = (string) $enregistrement['txt'];
+			}
+		}
+	}
+
+	return $textes;
 }
 
 /** Deux textes disent-ils la même chose, entités, casse et espaces mis à part ? */

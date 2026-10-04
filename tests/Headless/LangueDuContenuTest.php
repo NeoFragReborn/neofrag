@@ -28,7 +28,7 @@ final class LangueDuContenuTest extends HeadlessTestCase
 	 * Pourquoi ne pas s'en remettre à la transaction de `HeadlessTestCase`. Elle suffit tant que
 	 * `tearDown()` s'exécute — et une version intermédiaire de ce fichier levait une erreur avant
 	 * d'appeler celui du parent, si bien que l'annulation n'avait jamais lieu. Six actualités de
-	 * test sont alors restées dans la base du site de l'atelier, et c'est `check-liens` qui les a
+	 * test sont alors restées dans la base du site d'essai, et c'est `check-liens` qui les a
 	 * signalées, en suivant leurs liens depuis l'administration. Un test qui écrit retire ce qu'il
 	 * a déposé, de lui-même.
 	 */
@@ -79,7 +79,7 @@ final class LangueDuContenuTest extends HeadlessTestCase
 	 *
 	 * Elle fabrique sa propre catégorie et son propre auteur : `nf_news` porte une clé étrangère vers
 	 * chacun, et une installation NEUVE — celle que monte la CI — n'a ni catégorie ni contenu. Un test
-	 * qui s'appuie sur les données d'un atelier passe chez soi et échoue partout ailleurs.
+	 * qui s'appuie sur les données d'un site d'essai passe chez soi et échoue partout ailleurs.
 	 */
 	private function semer(array $langues): int
 	{

@@ -1,33 +1,35 @@
 <?php
 declare(strict_types=1);
+
 /**
- * check-htaccess — les `.htaccess` du paquet refusent tout ce que le Caddy de production refuse.
+ * check-htaccess — les trois configurations livrées (Apache, nginx, Caddy) refusent les mêmes dossiers et fichiers sensibles.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
- * La production tourne sous **Caddy**, et sa configuration est tenue à jour parce qu'on l'exerce
- * tous les jours. Le produit, lui, vise les hébergements **mutualisés**, qui tournent sous Apache
- * et n'ont que les `.htaccess` du paquet. Personne n'exerce ceux-là : ils ne sont vérifiés par
- * aucune requête, sur aucune machine.
+ * Le produit vise d'abord les hébergements **mutualisés**, qui tournent sous Apache et n'ont que les
+ * `.htaccess` du paquet ; il livre aussi un exemple pour **nginx** et un pour **Caddy**. Personne
+ * n'exerce ces fichiers au quotidien : ils ne sont vérifiés par aucune requête, sur aucune machine.
  *
- * Les deux ont donc divergé, et dans le mauvais sens. Mesuré le 2026-09-21 : le `.htaccess` racine
- * ne refusait ni `.neon` ni `.md`, et quatre dossiers n'avaient aucune garde — `cache`, `install`,
- * `tools`, `tests`, `docs`. Conséquence la plus concrète : sur **toute installation Apache**,
- * `/les notes du mainteneur` était servi en texte, avec les fiches de travail, les notes
- * d'exploitation et les chemins du serveur.
+ * Ils ont donc divergé, et dans le mauvais sens. Mesuré le 2026-09-21 : le `.htaccess` racine ne
+ * refusait ni `.neon` ni `.md`, et cinq dossiers n'avaient aucune garde — `cache`, `install`, `tools`,
+ * `tests`, `docs`. Conséquence la plus concrète : sur toute installation Apache, la documentation de
+ * travail se lisait en texte. Le 2026-10-04, l'exemple nginx était encore celui d'origine (il laissait
+ * `install/`, `tools/`, `tests/` et `docs/` joignables), et le `Caddyfile` une ancienne copie de notre
+ * configuration de production.
  *
- * Ce contrôle relit la liste ci-dessous à chaque passage. Elle est la même que celle de la
- * configuration Caddy de production ; quand l'une bouge, l'autre doit suivre, et c'est ici qu'on
- * s'en aperçoit.
+ * Ce contrôle tient LA liste, ci-dessous, et vérifie que les trois configurations la refusent toute :
+ * les gardes des dossiers et le `.htaccess` racine pour Apache, la ligne `@interdit` du `Caddyfile`,
+ * les blocs `deny all` de `nginx.conf` — et leur copie dans le guide de déploiement (`deploy-ftp.md`,
+ * pour nginx sur Plesk), qui ne refusait que trois dossiers sur huit.
  *
  * Ce qu'il ne fait pas
  * --------------------
- * Il ne lance pas Apache. Il n'y en a pas sur le serveur — l'installer à côté de Caddy pour un
- * contrôle lui disputerait le port 80. Il vérifie donc que les RÈGLES sont écrites, pas qu'un
- * Apache réel les applique. C'est une limite, et elle est réelle : un `AllowOverride None` chez un
- * hébergeur rend ces fichiers inopérants, quoi qu'ils contiennent.
+ * Il ne lance ni Apache, ni nginx, ni Caddy : il vérifie que les RÈGLES sont écrites, pas qu'un serveur
+ * réel les applique. C'est une limite, et elle est réelle : un `AllowOverride None` chez un hébergeur
+ * rend les `.htaccess` inopérants, quoi qu'ils contiennent.
  *
  * Usage
  * -----
@@ -52,27 +54,23 @@ const DOSSIERS_INTERDITS = [
     'backups' => 'archives complètes du site, base comprise',
     'logs'    => 'journaux applicatifs : adresses, erreurs, parfois des données de membres',
     'cache'   => 'dérivés internes, parfois issus de contenu réservé',
-    'install' => "l'installateur et ses schémas SQL",
+    'install' => "l'installateur et ses schémas SQL (l'assistant s'affiche à la racine du site)",
     'tools'   => 'migrations, sauvegardes, extraction de schéma — exécutables',
     'tests'   => 'la suite de tests : décrit le fonctionnement interne',
-    'docs'    => "fiches de travail, notes d'exploitation, chemins du serveur",
+    'docs'    => 'la documentation de travail',
     'upload'  => 'fichiers déposés par les membres : à servir, mais jamais à exécuter',
 ];
 
-/*
- * Les extensions refusées à la racine, quelle que soit leur place dans l'arborescence.
- *
- * Même liste que la directive `@interdit` du Caddyfile de production.
- */
+/** Les extensions refusées, quelle que soit leur place dans l'arborescence. */
 const EXTENSIONS_INTERDITES = ['sql', 'lock', 'scssc', 'map', 'dist', 'ini', 'sh', 'neon', 'md'];
 
 /*
- * Les fichiers refusés par leur NOM, faute de pouvoir l'être par leur extension : `.json` et
- * `.js` se servent légitimement partout ailleurs. Ce sont les trois fichiers de l'outillage
- * front, ajoutés le 2026-09-22 avec ESLint. Aucun ne porte de secret ; la raison est la même que
- * pour `tools/` et `tests/` : rien de ce qui sert à DÉVELOPPER n'a de raison d'être servi.
+ * Les fichiers refusés par leur NOM, faute de pouvoir l'être par leur extension : `.json` et `.js`
+ * se servent légitimement partout ailleurs, et les exemples de configuration n'en ont pas. Aucun ne
+ * porte de secret ; la raison est la même que pour `tools/` et `tests/` : rien de ce qui sert à
+ * développer ou à configurer un serveur n'a de raison d'être servi.
  */
-const FICHIERS_INTERDITS = ['package.json', 'package-lock.json', 'eslint.config.js', 'playwright.config.js'];
+const FICHIERS_INTERDITS = ['package.json', 'package-lock.json', 'eslint.config.js', 'playwright.config.js', 'Caddyfile', 'nginx.conf'];
 
 /** Un fichier `.htaccess` refuse-t-il tout accès ? */
 function refuse_tout(string $chemin): bool
@@ -92,14 +90,21 @@ function refuse_tout(string $chemin): bool
 
 $manques = [];
 
-// ── Les dossiers ────────────────────────────────────────────────────────────
+$vu = static function (string $fichier, string $quoi) use ($verbeux): void {
+    if ($verbeux)
+    {
+        printf("  ok    %-22s %s\n", $fichier, $quoi);
+    }
+};
+
+// ── Apache : les gardes des dossiers ──────────────────────────────────────────
 foreach (DOSSIERS_INTERDITS as $dossier => $pourquoi)
 {
     $chemin = $racine.'/'.$dossier;
 
     if (!is_dir($chemin))
     {
-        // Un dossier absent du dépôt n'est pas un manque : `cache` et `logs` naissent à l'usage.
+        // Un dossier absent du dépôt n'est pas un manque : il naît à l'usage.
         continue;
     }
 
@@ -112,9 +117,9 @@ foreach (DOSSIERS_INTERDITS as $dossier => $pourquoi)
         {
             $manques[] = ['upload/.htaccess', "n'empêche pas l'exécution de ce qui y est déposé", $pourquoi];
         }
-        else if ($verbeux)
+        else
         {
-            printf("  ok    %-22s exécution neutralisée\n", 'upload/.htaccess');
+            $vu('upload/.htaccess', 'exécution neutralisée');
         }
 
         continue;
@@ -124,34 +129,32 @@ foreach (DOSSIERS_INTERDITS as $dossier => $pourquoi)
     {
         $manques[] = [$dossier.'/.htaccess', is_file($chemin.'/.htaccess') ? 'ne refuse pas tout accès' : 'absent', $pourquoi];
     }
-    else if ($verbeux)
+    else
     {
-        printf("  ok    %-22s refuse tout accès\n", $dossier.'/.htaccess');
+        $vu($dossier.'/.htaccess', 'refuse tout accès');
     }
 }
 
-// ── Les extensions ──────────────────────────────────────────────────────────
-$racine_htaccess = $racine.'/.htaccess';
+// ── Apache : le .htaccess racine ──────────────────────────────────────────────
+$contenu = (string) @file_get_contents($racine.'/.htaccess');
 
-if (!is_file($racine_htaccess))
+if ($contenu === '')
 {
     $manques[] = ['.htaccess', 'absent à la racine', 'aucune extension sensible refusée'];
 }
 else
 {
-    $contenu = (string) file_get_contents($racine_htaccess);
-
     foreach (EXTENSIONS_INTERDITES as $extension)
     {
         // On cherche l'extension dans un `<FilesMatch>` qui refuse. Le motif reste large : il
         // s'agit de repérer un OUBLI, pas de valider une expression régulière d'Apache.
         if (!preg_match('/<FilesMatch[^>]*\b'.preg_quote($extension, '/').'\b/i', $contenu))
         {
-            $manques[] = ['.htaccess', 'ne refuse pas les fichiers `.'.$extension.'`', 'refusé par Caddy en production'];
+            $manques[] = ['.htaccess', 'ne refuse pas les fichiers `.'.$extension.'`', 'refusé par les autres configurations'];
         }
-        else if ($verbeux)
+        else
         {
-            printf("  ok    %-22s .%s refusé\n", '.htaccess', $extension);
+            $vu('.htaccess', '.'.$extension.' refusé');
         }
     }
 
@@ -160,33 +163,112 @@ else
         // Un `<Files>` ou un `<FilesMatch>` qui nomme le fichier : là encore, on repère un OUBLI.
         if (!preg_match('/<Files(?:Match)?[^>]*'.preg_quote(str_replace('.', '\\.', $fichier), '/').'/i', $contenu))
         {
-            $manques[] = ['.htaccess', 'ne refuse pas `'.$fichier.'`', 'refusé par Caddy en production'];
+            $manques[] = ['.htaccess', 'ne refuse pas `'.$fichier.'`', 'refusé par les autres configurations'];
         }
-        else if ($verbeux)
+        else
         {
-            printf("  ok    %-22s %s refusé\n", '.htaccess', $fichier);
+            $vu('.htaccess', $fichier.' refusé');
         }
     }
 }
 
+// ── Caddy : la ligne @interdit ────────────────────────────────────────────────
+$caddy    = (string) @file_get_contents($racine.'/Caddyfile');
+$interdit = preg_match('/^\s*@interdit\s+path\s+(.+)$/m', $caddy, $m) ? preg_split('/\s+/', trim($m[1])) ?: [] : [];
+
+if (!$interdit)
+{
+    $manques[] = ['Caddyfile', 'aucune ligne « @interdit path … »', 'rien de sensible refusé sous Caddy'];
+}
+else
+{
+    $attendus = array_merge(
+        array_map(static fn (string $d): string => '/'.$d.'/*', array_keys(array_diff_key(DOSSIERS_INTERDITS, ['upload' => TRUE]))),
+        array_map(static fn (string $e): string => '*.'.$e, EXTENSIONS_INTERDITES),
+        array_map(static fn (string $f): string => '/'.$f, FICHIERS_INTERDITS)
+    );
+
+    foreach ($attendus as $motif)
+    {
+        if (!in_array($motif, $interdit, TRUE))
+        {
+            $manques[] = ['Caddyfile', "@interdit ne refuse pas `{$motif}`", 'refusé par les autres configurations'];
+        }
+        else
+        {
+            $vu('Caddyfile', $motif.' refusé');
+        }
+    }
+}
+
+// ── nginx : les blocs deny all, dans l'exemple et dans sa copie du guide de déploiement ──────
+/** Les noms qu'un `location ~ ^/(a|b)…` ou `location ~* \.(a|b)$` refuse par `deny all`. */
+function nginx_refuse(string $contenu, string $motif): array
+{
+    preg_match_all($motif, $contenu, $blocs);
+
+    $noms = [];
+
+    foreach ($blocs[1] as $alternatives)
+    {
+        foreach (explode('|', $alternatives) as $nom)
+        {
+            $noms[] = str_replace('\\.', '.', $nom);
+        }
+    }
+
+    return $noms;
+}
+
+// Le guide de déploiement recopie ces règles pour les hébergements nginx (Plesk) : jusqu'au
+// 2026-10-04, sa copie ne refusait que trois dossiers sur huit.
+foreach (['nginx.conf', 'docs/deploy-ftp.md'] as $fichier)
+{
+    $contenu = (string) @file_get_contents($racine.'/'.$fichier);
+
+    if ($contenu === '')
+    {
+        $manques[] = [$fichier, 'absent', 'rien de sensible refusé sous nginx'];
+        continue;
+    }
+
+    $dossiers   = nginx_refuse($contenu, '/location\s+~\s+\^\/\(([^)]+)\)\/\s*\{\s*deny\s+all;/');
+    $extensions = nginx_refuse($contenu, '/location\s+~\*\s+\\\\\.\(([^)]+)\)\$\s*\{\s*deny\s+all;/');
+    $fichiers   = nginx_refuse($contenu, '/location\s+~\s+\^\/\(([^)]+)\)\$\s*\{\s*deny\s+all;/');
+
+    foreach (array_keys(array_diff_key(DOSSIERS_INTERDITS, ['upload' => TRUE])) as $dossier)
+    {
+        in_array($dossier, $dossiers, TRUE) ? $vu($fichier, $dossier.'/ refusé') : $manques[] = [$fichier, "ne refuse pas `/{$dossier}/`", DOSSIERS_INTERDITS[$dossier]];
+    }
+
+    foreach (EXTENSIONS_INTERDITES as $extension)
+    {
+        in_array($extension, $extensions, TRUE) ? $vu($fichier, '.'.$extension.' refusé') : $manques[] = [$fichier, "ne refuse pas les fichiers `.{$extension}`", 'refusé par les autres configurations'];
+    }
+
+    foreach (FICHIERS_INTERDITS as $interdit)
+    {
+        in_array($interdit, $fichiers, TRUE) ? $vu($fichier, $interdit.' refusé') : $manques[] = [$fichier, "ne refuse pas `{$interdit}`", 'refusé par les autres configurations'];
+    }
+}
+
 // ── Le verdict ──────────────────────────────────────────────────────────────
-printf("%d dossier(s), %d extension(s) et %d fichier(s) surveillés.\n\n",
+printf("%d dossier(s), %d extension(s) et %d fichier(s) surveillés, dans 3 configurations et le guide de déploiement.\n\n",
     count(DOSSIERS_INTERDITS), count(EXTENSIONS_INTERDITES), count(FICHIERS_INTERDITS));
 
 if (!$manques)
 {
-    nf_ok('Apache refuse tout ce que Caddy refuse');
+    nf_ok('Apache, nginx et Caddy refusent la même liste');
 }
 
-echo "CE QUE CADDY REFUSE ET QU'APACHE LAISSE PASSER :\n\n";
+echo "CE QU'UNE CONFIGURATION LAISSE PASSER ET QUE LES AUTRES REFUSENT :\n\n";
 
 foreach ($manques as [$fichier, $quoi, $pourquoi])
 {
     printf("  %-22s %s\n      → %s\n", $fichier, $quoi, $pourquoi);
 }
 
-echo "\nLa production tourne sous Caddy, dont la configuration est exercée tous les jours. Ces\n";
-echo "fichiers-ci ne le sont par personne : ils ne valent que pour les hébergements mutualisés,\n";
-echo "que ce produit vise, et c'est précisément là que l'écart ne se voit pas.\n";
+echo "\nCes fichiers ne sont exercés par personne au quotidien : ils valent pour les hébergements où le\n";
+echo "produit s'installe, et c'est précisément là que l'écart ne se voit pas.\n";
 
-nf_echec(count($manques).' garde(s) Apache manquante(s) ou incomplète(s)');
+nf_echec(count($manques).' règle(s) manquante(s) ou incomplète(s)');

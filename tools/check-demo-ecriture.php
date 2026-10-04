@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-demo-ecriture — éprouve, pour de vrai, ce qu'un visiteur peut et ne peut pas écrire en démo.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

@@ -384,13 +384,14 @@ class Admin_Ajax extends Controller_Module
 		}
 
 		// Version du CŒUR : le catalogue porte la version du CMS pour laquelle il a été bâti. Si elle est
-		// plus récente que l'installée, on le SIGNALE (mise à jour MANUELLE — l'auto-update par overlay
-		// reste désactivé sur ce fork, cf. monitoring). Aucun téléchargement/écrasement automatique ici.
+		// plus récente que l'installée, on le SIGNALE, et on renvoie au Monitoring, qui fait la mise à jour
+		// en un clic (sauvegarde avant d'écrire, retour arrière si une étape échoue). Rien ne s'écrit ici.
+		// Jusqu'au 2026-10-04, ce message demandait de remplacer les fichiers à la main.
 		$core_notice = '';
 		if (is_string($base = $catalog['base_version'] ?? '') && $base !== '' && version_compare(version_format($base), version_format(NEOFRAG_VERSION), '>'))
 		{
 			$core_notice = '<div class="alert alert-info" style="margin:0 0 1rem">'.icon('fas fa-cube fa-fw').' '
-				.$this->lang('<b>NeoFrag %s</b> est disponible (tu utilises %s). Télécharge la release et remplace les fichiers — hors <code>config/</code>, <code>upload/</code>, <code>backups/</code> — puis visite le site (les migrations s\'appliquent).', $base, NEOFRAG_VERSION)
+				.$this->lang('<b>NeoFrag %s</b> est disponible (tu utilises %s) : <a href="%s">Monitoring</a> le met à jour en un clic, avec une sauvegarde avant d\'écrire.', $base, NEOFRAG_VERSION, url('admin/monitoring'))
 				.'</div>';
 		}
 

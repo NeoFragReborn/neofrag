@@ -4,6 +4,8 @@ declare(strict_types=1);
 /**
  * outil — le socle que chaque outil de `tools/` charge en première ligne.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * Soixante outils portaient chacun leur garde HTTP, leur lecture de `$argv`, leur façon d'écrire

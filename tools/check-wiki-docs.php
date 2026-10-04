@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-wiki-docs — le wiki livré et celui de la démonstration disent ce que disent les guides.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi ce contrôle existe
  * ---------------------------
@@ -30,10 +31,12 @@ declare(strict_types=1);
  * Usage
  * -----
  *   php tools/check-wiki-docs.php                              code 1 si une page est en retard
- *   php tools/check-wiki-docs.php --site=le dossier du site          et le wiki de la vitrine, dans sa base
+ *   php tools/check-wiki-docs.php --site=/var/www/neofrag      et le wiki d'un site installé, dans sa base
  *
- * Réparer : `php tools/wiki-docs.php` (base de l'atelier, puis install/wiki.sql) et
- * `php tools/wiki-docs.php --demo` (install/demo.sql) ; pour un site, la recopie de docs/RELEASING.md.
+ * Réparer : `php tools/wiki-docs.php --sur-place` quand une page a seulement changé (install/wiki.sql et
+ * install/demo.sql réécrits sans base) ; `php tools/wiki-docs.php` sur une base quand une page s'ajoute
+ * ou se renomme ; pour un site en service, recopier ses pages de documentation depuis une base où
+ * `wiki-docs` les a écrites.
  */
 
 require __DIR__.'/lib/outil.php';
@@ -85,6 +88,16 @@ foreach ((array) $o['site'] as $dossier)
 
 $ecarts = 0;
 
+// Une page du wiki ne renvoie jamais hors du wiki par un chemin relatif : le site n'a pas `docs/`.
+foreach ($attendu as $slug => $page)
+{
+    if (preg_match_all('/href="(\.\.\/[^"]*)"/', $page['content'], $morts))
+    {
+        printf("  ✗ %-18s %-18s lien mort vers %s — la conversion (tools/lib/wiki.php) doit garder le texte\n", 'docs/guide', $slug, implode(', ', $morts[1]));
+        $ecarts++;
+    }
+}
+
 foreach ($sources as $source => $pages)
 {
     foreach ($attendu as $slug => $page)
@@ -118,8 +131,9 @@ foreach ($sources as $source => $pages)
 
 if ($ecarts)
 {
-    echo "\nRéparer : php tools/wiki-docs.php (puis rapatrier install/wiki.sql) et php tools/wiki-docs.php --demo ;\n"
-        ."pour un site en service, la recopie des pages (docs/RELEASING.md, étape 4 bis-4) — les pages neuves comprises.\n";
+    echo "\nRéparer : php tools/wiki-docs.php --sur-place (une page seulement modifiée), ou php tools/wiki-docs.php\n"
+        ."sur une base (une page ajoutée ou renommée) ; pour un site en service, la recopie de ses pages de\n"
+        ."documentation — les pages neuves comprises.\n";
     nf_echec("{$ecarts} page(s) de documentation en retard sur docs/guide/");
 }
 

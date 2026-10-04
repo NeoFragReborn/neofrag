@@ -5,6 +5,7 @@ declare(strict_types=1);
  * migrate — le runner des migrations SQL du cœur.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Ce qu'il fait
  * -------------

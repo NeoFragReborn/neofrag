@@ -30,9 +30,9 @@ class Media extends Module
 			'title'       => $this->lang('Médias'),
 			'description' => $this->lang('Bibliothèque média : upload d\'images, vidéos, PDF, audio avec validation MIME.'),
 			'icon'        => 'fas fa-photo-video',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'NeoFrag Reborn',
-			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],

@@ -188,7 +188,6 @@ return [
 	'2c84b316' => 'O que este conteúdo mostra aos motores de busca e nas pré-visualizações de partilha, língua a língua. O que fica vazio é automático.',
 	'a7879650' => 'Relatório de SEO',
 	'90ca5d10' => 'Mapa do site: %d página(s) anunciada(s) em %s',
-	'e8db9599' => 'Só a página inicial é anunciada: nenhum módulo mostra páginas aos visitantes. Verifique os direitos deles na matriz de permissões.',
 	'489eeedf' => 'Ver o mapa',
 	'48e5150b' => 'sem slogan: o título da página inicial é apenas o nome do site',
 	'5de6f257' => 'uma descrição curta demais, ou que repete o nome do site',
@@ -237,4 +236,7 @@ return [
 	'47b6a471' => 'Em serviço: %d endereços acompanhados. Último envio em %s: %d endereço(s), recebidos.',
 	'3a0f34b9' => 'Em serviço: %d endereços acompanhados. Nada mudou desde que foi ligado.',
 	'c3bc28a3' => 'Ligado: a primeira execução da tarefa agendada vai registar as páginas do site sem enviar nada; as alterações serão enviadas depois.',
+	'93f5c577' => 'Só a página inicial é anunciada: nenhum módulo tem ainda conteúdo que os visitantes possam ler. Uma secção vazia não é anunciada; se existir conteúdo, verifique os direitos na matriz de permissões.',
+	'e44f4288' => 'Verificado pelo DNS do domínio. Submeta lá o mapa do site: %s',
+	'cda95d5f' => 'Importado do Google Search Console? Então não há mais nada a fazer: a importação não deixa nenhum rasto que o site possa ler. Caso contrário, cole aqui o código de verificação.',
 ];

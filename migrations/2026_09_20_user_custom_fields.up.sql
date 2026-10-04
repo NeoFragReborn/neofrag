@@ -1,4 +1,4 @@
--- champs de profil definis par l'administrateur.
+-- Champs de profil definis par l'administrateur.
 --
 -- Le profil etait FIXE : seize colonnes dans nf_user_profile (prenom, nom, avatar, banniere,
 -- signature, naissance, sexe, pays, fuseau, lieu, citation, site, LinkedIn, GitHub, Instagram,

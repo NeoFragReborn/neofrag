@@ -5,6 +5,7 @@ declare(strict_types=1);
  * find-csp-hash — retrouve le script inline qui correspond à une empreinte CSP.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

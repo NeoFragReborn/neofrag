@@ -6,7 +6,7 @@
  * `data-dismiss` — la forme de Bootstrap 4. Un attribut inconnu n'est pas une erreur pour un
  * navigateur : il est ignoré EN SILENCE. Le bouton « Fermer » s'affichait donc normalement, au bon
  * endroit, avec le bon libellé, et ne faisait rien ; la croix de l'en-tête, écrite en dur et
- * correctement, fermait bien. Signalé à l'œil par le mainteneur le 2026-09-22.
+ * correctement, fermait bien. Signalé à l'œil le 2026-09-22.
  *
  * Rien d'autre ne pouvait le voir : la page est valide, aucun script ne plante, aucune adresse ne
  * répond mal. `check-classes-bs4` refuse désormais l'attribut à la lecture du code ; ce parcours

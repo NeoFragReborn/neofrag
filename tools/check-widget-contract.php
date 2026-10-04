@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-widget-contract — chaque couple widget/type répond à l'éditeur en direct, et se rend SANS réglages sans rien écrire au journal.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

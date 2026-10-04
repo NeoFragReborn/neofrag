@@ -199,4 +199,11 @@ return [
 	'f43a187f' => 'Check again',
 	'6b41f3af' => 'Nonprofit / club',
 	'efd057dc' => 'News, forum, galleries, calendar, donations, newsletter, wiki and FAQ. Everything to keep a nonprofit or a club alive, without the eSports toolkit.',
+	'0cfd79fc' => 'Content (wiki documentation and demo)…',
+	'07d371b4' => 'Content (wiki documentation)…',
+	'0a0551e7' => 'PHP %s or newer is required (this PHP: %s).',
+	'7338e32d' => 'This PHP cannot hash passwords with %s: a PHP built with Argon2 is required.',
+	'c54fdfde' => 'Password hashing (%s)',
+	'23bcdfc3' => 'available',
+	'c2f31600' => 'missing from this PHP',
 ];

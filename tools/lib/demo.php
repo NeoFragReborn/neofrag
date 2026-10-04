@@ -5,6 +5,8 @@ require_once __DIR__.'/outil.php';
 /**
  * demo — ce que l'instantané de la démonstration ne porte jamais.
  *
+ * Diffusion : publique
+ *
  * `install/demo.sql` est versionné, part dans le dépôt public et dans le paquet de la démo, et se
  * rejoue sur la démonstration tous les quarts d'heure : un secret qui y entre est PUBLIÉ. `dump-demo`
  * le produit en appliquant ce fichier ; `check-demo-lock` confronte ce fichier au code ET au fichier

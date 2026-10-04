@@ -18,6 +18,9 @@ class Language_Pt extends Language
 			'description' => $this->lang('Langue portugaise : locales, formats de date et d’heure, et lecture des dates saisies.'),
 			'icon'        => '🇵🇹',
 			'version'     => '1.0',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
+			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
+			'link'        => 'https://neofr.ag',
 			'depends'     => [
 				'neofrag' => '0.2.0'
 			]

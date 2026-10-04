@@ -60,6 +60,10 @@ stockage, adresse du site), *Sauvegardes*, *Diagnostic*, *Serveur et sécurité*
 passe webmaster, tâche planifiée) et *Fichiers* (l'installation comparée à la version publiée). La page
 revient sur l'onglet où l'on était ; une adresse comme `admin/monitoring#diagnostic` ouvre le bon.
 
+Chaque mise à jour par le bouton prend d'abord une **sauvegarde** complète du site, base comprise. Le
+site garde toujours les **cinq plus récentes** ; les autres se retirent d'elles-mêmes passé **trente
+jours**. Téléchargez celle que vous voulez conserver plus longtemps.
+
 ### Le journal des erreurs
 
 *Monitoring → Journal des erreurs* montre ce qui a échoué sur le site, sans passer par le FTP : les

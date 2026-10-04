@@ -34,9 +34,9 @@ class Reactions extends Module
 			'title'       => $this->lang('Réactions'),
 			'description' => $this->lang('Système de « j\'aime » réutilisable (commentaires, forum, articles…).'),
 			'icon'        => 'far fa-heart',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'NeoFrag Reborn',
-			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],

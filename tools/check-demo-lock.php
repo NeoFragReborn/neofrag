@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-demo-lock — le verrou de la démonstration et sa remise à zéro se répondent, et l'instantané publié n'emporte aucun secret.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi cet outil existe
  * -------------------------

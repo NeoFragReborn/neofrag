@@ -16,14 +16,15 @@ class Donations extends Module
 			'title'       => $this->lang('Dons'),
 			'description' => $this->lang('Système de campagnes de dons avec objectif, barre de progression, liste de donateurs et bouton PayPal.'),
 			'icon'        => 'fas fa-hand-holding-heart',
-			'author'      => 'NeoFrag',
-			'license'     => 'LGPLv3',
+			'author'      => 'HiddenBlob (Donation v3), d’après majiid — portage NeoFrag Reborn',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
 			'presets'     => ['association'],
 			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'depends'     => ['neofrag' => '0.2.0'],
 			'routes'      => [
 				''                              => 'index',

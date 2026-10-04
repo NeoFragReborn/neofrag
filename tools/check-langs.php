@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-langs — tout ce qui concerne lang() : clés manquantes, formats de date, arguments du pluriel.
  *
  * Famille : statique
+ * Diffusion : publique
  * Batterie : --toutes
  *
  * Pourquoi

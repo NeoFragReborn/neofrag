@@ -1,7 +1,7 @@
 /*
  * LA SONDE DE MISE EN PAGE — évaluée dans chaque page, à chaque largeur, par `pilote.js`.
  *
- * Elle ne modifie rien et rend un verdict : ce que l'œil de le mainteneur a relevé le 2026-09-22 sur des
+ * Elle ne modifie rien et rend un verdict : ce qu'un œil a relevé le 2026-09-22 sur des
  * captures, et que rien ne mesurait.
  *
  *   deborde         la page est plus large que la fenêtre (le débordement horizontal) ;
@@ -11,7 +11,7 @@
  *   chevauchements  un texte posé SUR le trait d'un dessin SVG (« 10.15Go » sur l'arc de la
  *                   jauge), ou deux textes l'un sur l'autre ;
  *
- * et, à la demande de le mainteneur — « pas uniquement ces éléments-ci mais tout problème visuel, ou
+ * et, sur demande — « pas uniquement ces éléments-ci mais tout problème visuel, ou
  * autre » — tout ce qu'une page rendue peut montrer de travers et qu'une machine sait constater :
  *
  *   images          une image cassée (rien de chargé), ou déformée (proportions écrasées) ;

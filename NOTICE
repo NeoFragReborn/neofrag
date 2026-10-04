@@ -1,0 +1,111 @@
+NeoFrag Reborn — qui a écrit quoi, et sous quelle licence
+=========================================================
+
+NeoFrag Reborn est la continuité communautaire de NeoFrag, créé par Michaël BILCOT (FoxLey) et
+Jérémy VALENTIN (eResnova). Il est distribué sous la GNU Lesser General Public License, version 3
+ou ultérieure (COPYING, COPYING.LESSER), sauf les éléments que ce fichier signale.
+
+Ce fichier est engendré par tools/check-notice.php depuis les déclarations des addons, composer.lock
+et la liste de ce que le produit embarque d'autrui : ne pas l'éditer à la main.
+
+Addons du NeoFrag d'origine — Michaël BILCOT & Jérémy VALENTIN (LGPL-3.0)
+--------------------------------------------------------------------------
+  module access, module addons, module admin, module awards, module comments, module contact, module
+  events, module forum, module gallery, module games, module live_editor, module members, module
+  monitoring, module news, module pages, module partners, module recruits, module search, module
+  settings, module statistics, module talks, module teams, module tools, module user, widget about,
+  widget awards, widget breadcrumb, widget copyright, widget events, widget forum, widget gallery,
+  widget header, widget html, widget members, widget module, widget navigation, widget news, widget
+  partners, widget recruits, widget search, widget slider, widget socials, widget steam, widget
+  talks, widget teams, widget user, theme admin, addon authenticator, addon authenticator_discord,
+  addon authenticator_github, addon authenticator_google, addon language_de, addon language_en,
+  addon language_es, addon language_fr, addon language_it, addon language_pt
+
+Portages d'addons de la communauté NeoFrag
+------------------------------------------
+  module donations — HiddenBlob (Donation v3), d’après majiid — portage NeoFrag Reborn — LGPLv3
+  module files — HiddenBlob (HiddenCMS) — portage NeoFrag Reborn — LGPLv3
+  widget clock — ArkaNiX — portage NeoFrag Reborn — LGPLv3
+  widget donations — HiddenBlob (Donation v3), d’après majiid — portage NeoFrag Reborn — LGPLv3
+  theme extend — Chewbaka — portage NeoFrag Reborn — CC BY-NC-SA 4.0 (LICENSES/CC-BY-NC-SA-4.0.txt)
+
+Addons écrits par NeoFrag Reborn (LGPL-3.0)
+-------------------------------------------
+  module ads, module api, module articles, module bugtracker, module calendar, module classifieds,
+  module discord, module downloads, module emails, module emojis, module faq, module feeds, module
+  gamification, module glossary, module guestbook, module links, module marketplace, module media,
+  module menu, module moderation, module newsletter, module notifications, module payments, module
+  places, module quotes, module reactions, module recipes, module revisions, module sandbox, module
+  shop, module slider, module surveys, module trash, module webhooks, module webradio, module wiki,
+  widget ads, widget articles, widget calendar, widget discord, widget downloads, widget gameserver,
+  widget guestbook, widget latest_comments, widget links, widget newsletter, widget rss, widget
+  seasonal, widget surveys, widget teamspeak, widget twitch, widget video, theme blockcraft, theme
+  forge, theme granite, theme nebula
+
+Remerciements — idées reprises, sans leur code
+----------------------------------------------
+  - le widget Twitch, réécrit pour l’API actuelle de Twitch, reprend l’idée du lecteur en
+    fenêtre du « Twitch Mini » de Zaekof, Blober et Chewbaka
+  - le module Menu et l’installation en ligne de commande reprennent des idées de HiddenCMS, de
+    HiddenBlob
+  - les thèmes Granite et Blockcraft s’inspirent des thèmes « yosemite » et « LD_minecraft »
+    de Nuked-Klan, sans en reprendre ni code ni image
+
+Ce que le produit embarque d'autrui
+-----------------------------------
+  Bootstrap 5.3.8 — The Bootstrap Authors — MIT — js/bootstrap.bundle.min.js
+  Chart.js 4.4.7 — Chart.js Contributors — MIT — js/chart.umd.min.js
+  CodeMirror 5.65.16 — Marijn Haverbeke et contributeurs — MIT — js/codemirror
+  flatpickr 4.6.13 — Gregory Petrosyan et contributeurs — MIT — js/flatpickr.min.js, js/flatpickr
+  SortableJS 1.15.7 — les contributeurs de SortableJS — MIT — js/sortable.lib.min.js
+  Tom Select 2.6.1 — les contributeurs de Tom Select — Apache-2.0 — js/tom-select.complete.min.js
+  ALTCHA — Daniel Regeci, BAU Software s.r.o. — MIT — js/altcha
+  TinyMCE 7.6.1 — Ephox Corporation DBA Tiny Technologies, Inc. — GPL-2.0-or-later — js/tinymce
+  Font Awesome Free 6.7.2 — Fonticons, Inc. — polices sous OFL-1.1, icônes sous CC-BY-4.0, code sous MIT — fonts/fontawesome, css/icons/fontawesome.min.css
+  Open Sans — Steve Matteson — OFL-1.1 — fonts/open-sans
+  Titillium Web — Accademia di Belle Arti di Urbino — OFL-1.1 — fonts/titillium-web
+  Pe-icon-7-stroke — Pixeden — licence de son auteur, pixeden.com ; héritée du NeoFrag d’origine — fonts/Pe-icon-7-stroke, css/icons/Pe-icon-7-stroke.css
+  famfamfam flag icons — Mark James — libres de tout usage, sans condition ; hérités du NeoFrag d’origine — images/flags
+
+Bibliothèques PHP livrées dans vendor/ (composer.lock) — chacune y garde son texte de licence
+---------------------------------------------------------------------------------------------
+  altcha-org/altcha 2.2.0 — MIT
+  bacon/bacon-qr-code 3.1.1 — BSD-2-Clause
+  dasprid/enum 1.0.7 — BSD-2-Clause
+  dflydev/dot-access-data 3.0.3 — MIT
+  ezyang/htmlpurifier 4.19.1 — LGPL-2.1-or-later
+  jdorn/sql-formatter 1.2.17 — MIT
+  league/commonmark 2.10.3 — BSD-3-Clause
+  league/config 1.2.0 — BSD-3-Clause
+  league/uri 7.8.1 — MIT
+  league/uri-interfaces 7.8.1 — MIT
+  nette/schema 1.3.5 — BSD-3-Clause ou GPL-2.0-only ou GPL-3.0-only
+  nette/utils 4.1.3 — BSD-3-Clause ou GPL-2.0-only ou GPL-3.0-only
+  paragonie/constant_time_encoding 3.1.3 — MIT
+  paragonie/random_compat 9.99.100 — MIT
+  phpmailer/phpmailer 7.1.1 — LGPL-2.1-only
+  phpseclib/phpseclib 3.0.57 — MIT
+  planetteamspeak/ts3-php-framework 1.3.0 — GPL-3.0
+  pragmarx/google2fa 9.1.0 — MIT
+  psr/event-dispatcher 1.0.0 — MIT
+  psr/http-client 1.0.3 — MIT
+  psr/http-factory 1.1.0 — MIT
+  psr/http-message 2.0 — MIT
+  psr/simple-cache 3.0.0 — MIT
+  scssphp/scssphp 2.1.0 — MIT
+  scssphp/source-span 1.1.0 — MIT
+  socialconnect/auth 3.6.2 — MIT
+  socialconnect/jwx 1.4.0 — MIT
+  symfony/deprecation-contracts 3.7.1 — MIT
+  symfony/filesystem 7.4.18 — MIT
+  symfony/polyfill-ctype 1.37.0 — MIT
+  symfony/polyfill-mbstring 1.38.2 — MIT
+  symfony/polyfill-php80 1.37.0 — MIT
+  xpaw/php-source-query-class 6.0.0 — LGPL-2.1
+
+Remarques
+---------
+  - le widget TeamSpeak s’appuie sur planetteamspeak/ts3-php-framework, sous GPL-3.0 : employé
+    avec cette bibliothèque, il relève aussi de ses conditions
+
+Les textes des licences citées sont dans COPYING.LESSER (LGPL-3.0) et dans LICENSES/.

@@ -144,7 +144,7 @@ function nf_selecteur_theme(): string
  * Les rubriques de l'administration, dans leur ordre. La barre latérale du thème d'administration les
  * affiche, et le menu « Navigation » de l'éditeur en direct en fait ses sous-menus : une seule liste.
  *
- * Neuf rubriques courtes, choisies par le mainteneur le 2026-10-02 : les six précédentes mêlaient le
+ * Neuf rubriques courtes, choisies le 2026-10-02 : les six précédentes mêlaient le
  * calendrier aux médias, la newsletter au contenu, le Bugtracker à la communauté, et treize modules
  * finissaient dans « Autres modules ». Celle-ci ne reçoit plus que les modules qu'elle ne nomme pas
  * (une extension de la place de marché). Des pages publiques sans administration (la liste des

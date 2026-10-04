@@ -1,4 +1,4 @@
--- duree de conservation de l'historique des connexions.
+-- Duree de conservation de l'historique des connexions.
 --
 -- `nf_session_history` gardait IP, nom d'hote, referent, agent et mode d'authentification depuis
 -- toujours, sans qu'aucun code ne l'efface. Ce reglage donne une duree de vie a ces lignes ; la

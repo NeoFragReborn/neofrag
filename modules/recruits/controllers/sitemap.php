@@ -23,6 +23,7 @@ class Sitemap extends Controller_Module
 			$adresses[] = ['adresse' => 'recruits/'.$offre['recruit_id'].'/'.url_title($offre['title']), 'date' => $offre['date']];
 		}
 
-		return $adresses;
+		// Une rubrique vide n'est pas annoncée aux moteurs : sa page ne dirait que « rien pour l'instant ».
+		return count($adresses) > 1 ? $adresses : [];
 	}
 }

@@ -199,4 +199,11 @@ return [
 	'f43a187f' => 'Verifica di nuovo',
 	'6b41f3af' => 'Associazione / club',
 	'efd057dc' => 'Notizie, forum, gallerie, calendario, donazioni, newsletter, wiki e FAQ. Quanto serve per far vivere un’associazione o un club, senza l’armamentario eSport.',
+	'0cfd79fc' => 'Contenuti (documentazione del wiki e demo)…',
+	'07d371b4' => 'Contenuti (documentazione del wiki)…',
+	'0a0551e7' => 'È richiesto PHP %s o successivo (questo PHP: %s).',
+	'7338e32d' => 'Questo PHP non sa calcolare l\'hash delle password con %s: serve un PHP compilato con Argon2.',
+	'c54fdfde' => 'Hash delle password (%s)',
+	'23bcdfc3' => 'disponibile',
+	'c2f31600' => 'assente in questo PHP',
 ];

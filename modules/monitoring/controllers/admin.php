@@ -12,7 +12,7 @@ use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 class Admin extends Controller_Module
 {
 	/**
-	 * La page Monitoring, en onglets (choisi par le mainteneur le 2026-10-02) : un résumé toujours visible, puis
+	 * La page Monitoring, en onglets (choisi le 2026-10-02) : un résumé toujours visible, puis
 	 * une chose à la fois — l'essentiel, les sauvegardes, le diagnostic, le serveur, les fichiers. Elle
 	 * empilait jusque-là une dizaine de cartes dans une colonne étroite, sur près de 2 700 pixels, l'arbre
 	 * de tous les fichiers au milieu. Les éléments que remplit l'actualisation (monitoring.js) gardent

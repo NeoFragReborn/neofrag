@@ -5,6 +5,7 @@ declare(strict_types=1);
  * build-release — produit les paquets prêts à uploader par FTP (hébergement mutualisé).
  *
  * Famille : outil
+ * Diffusion : publique
  *
  *   - dist/neofrag-reborn-demo-<v>.zip   : site DÉMO. + install/demo.sql + NEOFRAG_DEMO=TRUE.
  *   - dist/neofrag-reborn-public-<v>.zip : DISTRIBUTION générique FTP-ready (sans la vitrine).
@@ -12,7 +13,7 @@ declare(strict_types=1);
  *   - dist/version.json, dist/checksum.json : manifestes servis avec le paquet de mise à jour.
  *
  * Aucun paquet ne porte la VITRINE (son thème, son widget d'accueil, sa mise en page) : elle n'existe
- * que sur le site officiel, qui la reçoit par copie depuis le dépôt (docs/RELEASING.md, étape 3).
+ * que sur le site officiel, qui la reçoit par copie depuis le dépôt de développement.
  * Un paquet « principal » qui la contenait a été fabriqué jusqu'au 2026-10-02 ; il ne servait à rien
  * et partait dans les artefacts de la CI — « le thème vitrine ne doit jamais être diffusé ».
  *
@@ -28,15 +29,26 @@ declare(strict_types=1);
  * Le user upload le contenu du zip, visite /install/ (DB + admin), met les dossiers writable,
  * et (démo) ajoute le cron de reset. Cf. docs/deploy-ftp.md.
  *
+ * Ce qui entre dans un paquet est une LISTE BLANCHE de la racine, tenue par `tools/lib/paquet.php` :
+ * un fichier posé à la racine du dépôt ne part plus dans les paquets sans qu'on l'y ait admis.
+ *
  * Usage
  * -----
  *   php tools/build-release.php
+ *   php tools/build-release.php --racine-autorisee   la liste blanche, une entrée par ligne (inventaire de release.yml)
  */
 
 require __DIR__.'/lib/outil.php';
 require __DIR__.'/lib/depot.php';
+require __DIR__.'/lib/paquet.php';
 
-nf_options([]);
+[$o] = nf_options(['racine-autorisee' => FALSE]);
+
+if ($o['racine-autorisee'])
+{
+    echo implode("\n", array_merge(NF_PAQUET_RACINE, NF_PAQUET_ENGENDRES)), "\n";
+    exit(NF_OK);
+}
 
 $root    = nf_racine();
 $version = nf_version($root);
@@ -272,69 +284,10 @@ function manifests(string $dist, string $version, array $entries): void
     printf("  %-32s sha256 %s\n",      'version.json',  substr($manifest['neofrag']['sha256'], 0, 16).'…');
 }
 
-/** Exclusions communes + spécifiques au paquet (variant : demo | public | update). */
+/** Ce fichier du dépôt reste-t-il hors du paquet ? La règle vit dans tools/lib/paquet.php. */
 function excluded(string $rel, string $variant): bool
 {
-    // Le contenu démo n'est que dans le paquet démo.
-    if ($rel === 'install/demo.sql') {
-        return $variant !== 'demo';
-    }
-
-    // La vitrine (thème « vitrine », widget « landing », sa mise en page) est le site de l'auteur :
-    // aucun paquet ne la porte (cf. en-tête).
-    if ($rel === 'install/vitrine.sql') {
-        return true;
-    }
-    foreach (['themes/vitrine/', 'widgets/landing/'] as $d) {
-        if (str_starts_with($rel . '/', $d)) {
-            return true;
-        }
-    }
-
-    // Modèle « tout bundlé » (option C) : TOUS les modules/widgets/thèmes (Tier 0/1/2) sont dans le paquet,
-    // avec leur install.sql → installables HORS-LIGNE, sans marketplace. Le marketplace ne sert plus qu'aux
-    // mises à jour et aux addons tiers. (Seule variante overlay : démo + demo.sql.)
-
-    // NB : le vendor/ doit être un vendor de PROD cohérent (composer install --no-dev) — on ne
-    // supprime PAS de dossiers dev ici (l'autoloader « files » require certains en dur au boot).
-
-    // Dossiers exclus du paquet FTP : dev/repo (pas de runtime). docs/ et tools/ ne servent pas
-    // au site déployé (tools/maintenance.php = cron optionnel, à ajouter à la main si besoin).
-    // bot/ : le bot Discord tourne ailleurs que le site — il a son archive à lui (cf. release.yml).
-    static $dirs = ['.git/', '.github/', '.wf-out/', '.playwright-mcp/', '.claude/', '.idea/', '.vscode/',
-        '.tmpshots/', 'node_modules/', 'tests/', 'backups/', 'cache/', 'logs/', 'dist/', 'docs/', 'tools/',
-        '.phpunit.cache/', 'bot/'];
-    foreach ($dirs as $d) {
-        if (str_starts_with($rel . '/', $d) || str_starts_with($rel, $d)) {
-            return true;
-        }
-    }
-
-    // upload/ : garder seulement le .htaccess de sécurité.
-    if (str_starts_with($rel, 'upload/') && $rel !== 'upload/.htaccess') {
-        return true;
-    }
-
-    static $files = ['config/db.php', 'config/crypt.php', 'config/password.php', 'config/neofrag.php', 'config/email.php',
-        'install/db.txt', '_landing-preview.html', '.gitignore', '.gitattributes', '.dockerignore',
-        '.env', 'phpunit.xml', '.phpunit.result.cache', 'settings.md', 'scan-modal.md',
-        // Fichiers repo/dev inutiles sur l'hébergement FTP :
-        'README.md', 'CHANGELOG.md', 'docker-compose.yml', 'compose.yml', 'Dockerfile', 'nginx.conf', 'Caddyfile',
-        'composer.json', 'composer.lock',
-        // Outillage d'analyse statique (dev/CI uniquement, pas de runtime) :
-        'phpstan.neon', 'phpstan-base.neon', 'phpstan-baseline.neon', 'phpstan-bootstrap.php',
-        // Outillage front : le site servi ne depend d'aucun paquet npm.
-        'package.json', 'package-lock.json', 'eslint.config.js', 'playwright.config.js'];
-    if (in_array($rel, $files, true)) {
-        return true;
-    }
-
-    $ext = strtolower(pathinfo($rel, PATHINFO_EXTENSION));
-    if (in_array($ext, ['log', 'map', 'scssc'], true)) {
-        return true;
-    }
-
-    return false;
+    return nf_paquet_exclu($rel, $variant);
 }
 
 function neofrag_config(bool $demo): string

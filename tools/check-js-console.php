@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-js-console — balaye les pages dans un vrai navigateur et refuse toute erreur JavaScript, violation CSP ou script introuvable.
  *
  * Famille : navigateur
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

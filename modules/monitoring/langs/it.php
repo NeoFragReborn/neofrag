@@ -278,4 +278,6 @@ return [
 	'c5bc2c51' => 'Password del webmaster',
 	'e6fff20f' => 'Sul tuo sito, questa password protegge la modifica dei file e le azioni sensibili.',
 	'2fbd5770' => 'File di esempio: nella demo, il gestore file non mostra alcun file reale del server. Sul tuo sito, qui leggi e modifichi i tuoi file, protetti dalla password del webmaster.',
+	'fe7b1e4c' => 'L\'estensione %s deve essere attivata',
+	'aa514b0e' => 'Questo PHP deve saper calcolare l\'hash delle password con %s',
 ];

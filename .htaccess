@@ -7,8 +7,11 @@ DirectorySlash Off
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
-    # HSTS : envoyé uniquement sur HTTPS (env=HTTPS) — sans effet en dev HTTP.
-    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+    # HSTS : envoyé uniquement sur HTTPS (env=HTTPS) — sans effet en dev HTTP. Ni `includeSubDomains`
+    # ni `preload` (retirés le 2026-10-04) : posés d'office par un paquet, ils engageaient TOUS les
+    # sous-domaines de l'utilisateur pendant un an, et l'inscrivaient à la liste de préchargement des
+    # navigateurs sans qu'il l'ait choisi. Qui les veut les ajoute en connaissance de cause.
+    Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
     # Content-Security-Policy : servie dynamiquement en PHP (index.php) avec un nonce par requête —
     # nécessaire pour retirer 'unsafe-inline' du script-src. Plus de CSP ici (Apache `always set`
     # écraserait l'en-tête PHP). Les réponses non-HTML (statiques/erreurs) n'exécutent pas de script.
@@ -18,18 +21,19 @@ DirectorySlash Off
 # sources compilées, configuration d'outillage, documentation). Lus uniquement côté serveur
 # (installeur, app) — jamais en HTTP.
 #
-# La liste suit celle de la configuration Caddy de production. Elle en était plus courte
-# jusqu'au 2026-09-21 : `neon` et `md` manquaient, si bien que sur un hébergement Apache —
-# c'est-à-dire la cible de ce produit — toute la documentation interne était lisible, chemins
-# de serveur et notes d'exploitation compris. `tools/check-htaccess.php` garde les deux en phase.
+# La liste est celle des exemples nginx et Caddy livrés à côté. Elle était plus courte jusqu'au
+# 2026-09-21 : `neon` et `md` manquaient, si bien que sur un hébergement Apache — c'est-à-dire la
+# cible de ce produit — toute la documentation de travail était lisible. `tools/check-htaccess.php`
+# garde les trois configurations en phase.
 <FilesMatch "\.(sql|lock|scssc|map|dist|ini|sh|neon|md)$">
     Require all denied
 </FilesMatch>
 
-# Outillage front. Ces trois-là portent des extensions qu'on sert légitimement par ailleurs
-# (`.json`, `.js`) : la garde est donc par NOM. Ils ne contiennent aucun secret, mais rien de ce
-# qui sert à DÉVELOPPER n'a de raison d'être servi — même règle que `tools/`, `tests/` et `docs/`.
-<Files ~ "^(package\.json|package-lock\.json|eslint\.config\.js|playwright\.config\.js)$">
+# Outillage front, et les exemples de configuration des autres serveurs web. Ils portent des
+# extensions qu'on sert légitimement par ailleurs (`.json`, `.js`), ou aucune : la garde est donc par
+# NOM. Aucun ne contient de secret, mais rien de ce qui sert à développer ou à configurer un serveur
+# n'a de raison d'être servi — même règle que `tools/`, `tests/` et `docs/`.
+<Files ~ "^(package\.json|package-lock\.json|eslint\.config\.js|playwright\.config\.js|Caddyfile|nginx\.conf)$">
     Require all denied
 </Files>
 

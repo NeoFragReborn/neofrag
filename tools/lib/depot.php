@@ -4,6 +4,8 @@ declare(strict_types=1);
 /**
  * depot — parcourir les fichiers du dépôt, toujours avec les mêmes exclusions.
  *
+ * Diffusion : publique
+ *
  * Pourquoi
  * --------
  * Vingt-et-un outils instanciaient leur propre `RecursiveDirectoryIterator`, avec chacun sa liste
@@ -77,7 +79,7 @@ function nf_fichiers(array $dossiers, array $extensions, array $exclus = NF_EXCL
             }
 
             // Séparateur `/` partout, même sous Windows : les contrôles comparent des chemins
-            // (`/les notes du mainteneur`) et PHP ouvre indifféremment l'une ou l'autre forme.
+            // (`/docs/guide/`) et PHP ouvre indifféremment l'une ou l'autre forme.
             $trouves[$relatif] = str_replace('\\', '/', $fichier->getPathname());
         }
     }
@@ -113,6 +115,51 @@ function nf_parcourir(string $base, array $dossiers_ignores = []): Generator
         {
             yield substr(str_replace('\\', '/', $fichier->getPathname()), strlen($base) + 1) => $fichier;
         }
+    }
+}
+
+/**
+ * Supprime un dossier et tout ce qu'il contient — sans suivre un lien symbolique, et en levant la
+ * lecture seule que git pose sur ses objets (sous Windows, `unlink()` les refuse sinon). Écrite une fois :
+ * cinq outils en tenaient chacun leur copie le 2026-10-04.
+ */
+function nf_supprimer(string $dossier): void
+{
+    if (!is_dir($dossier) || is_link($dossier))
+    {
+        return;
+    }
+
+    // Sous Windows, un fichier qu'on vient d'écrire peut être tenu un instant (l'antivirus le relit) :
+    // le dossier se vide alors en plusieurs passes, et l'on réessaie avant de renoncer.
+    for ($essai = 1; ; $essai++)
+    {
+        foreach (array_diff(scandir($dossier) ?: [], ['.', '..']) as $entree)
+        {
+            $chemin = $dossier.'/'.$entree;
+
+            if (is_dir($chemin) && !is_link($chemin))
+            {
+                nf_supprimer($chemin);
+            }
+            else
+            {
+                @chmod($chemin, 0666);
+                @unlink($chemin);
+            }
+        }
+
+        if (@rmdir($dossier) || !is_dir($dossier))
+        {
+            return;
+        }
+
+        if ($essai >= 10)
+        {
+            nf_refus("impossible de supprimer {$dossier} : un fichier y reste tenu");
+        }
+
+        usleep(300000);
     }
 }
 
@@ -159,4 +206,43 @@ function nf_themes_publics(): array
     $themes = array_keys(nf_addons('theme'));
 
     return array_values(array_diff($themes, ['admin']));
+}
+
+/**
+ * Les addons à la carte que le catalogue livré annonce et que l'arbre n'a pas : `module ads`, …
+ *
+ * Le dépôt `neofrag` ne porte que le cœur et les addons d'identité ; les addons à la carte vivent dans
+ * le dépôt `extensions`, et `tools/assembler.php` les pose dans l'arbre. Les documents, eux, décrivent
+ * le produit entier — le paquet d'installation réunit les deux —, si bien qu'un contrôle qui compte les
+ * addons du disque ne peut juger que l'arbre assemblé. Vide dans un arbre complet.
+ *
+ * @return list<string>
+ */
+function nf_extensions_absentes(): array
+{
+    $catalogue = json_decode((string) @file_get_contents(nf_racine().'/marketplace/catalog.json'), TRUE);
+    $absentes  = [];
+
+    foreach (is_array($catalogue) ? ($catalogue['addons'] ?? []) : [] as $addon)
+    {
+        $dossier = ['module' => 'modules', 'widget' => 'widgets', 'theme' => 'themes'][$addon['type'] ?? ''] ?? NULL;
+
+        if ($dossier !== NULL && ($addon['tier'] ?? 0) === 2 && !is_file(nf_racine()."/{$dossier}/{$addon['name']}/{$addon['name']}.php"))
+        {
+            $absentes[] = $addon['type'].' '.$addon['name'];
+        }
+    }
+
+    return $absentes;
+}
+
+/** Le refus d'un contrôle qui ne peut juger que l'arbre assemblé, si les addons à la carte manquent. */
+function nf_exiger_assemblage(string $ce_qui_se_juge): void
+{
+    if ($absentes = nf_extensions_absentes())
+    {
+        nf_refus(sprintf("%d addon(s) à la carte absent(s) de l'arbre (%s…) : %s se juge sur le produit entier.\n"
+            ."  Poser d'abord le dépôt extensions : php tools/assembler.php --extensions=../extensions",
+            count($absentes), implode(', ', array_slice($absentes, 0, 3)), $ce_qui_se_juge));
+    }
 }

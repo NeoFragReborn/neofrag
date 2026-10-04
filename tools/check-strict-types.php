@@ -5,6 +5,7 @@ declare(strict_types=1);
  * check-strict-types — le nombre de fichiers en `declare(strict_types=1)` ne baisse jamais (cliquet).
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi
  * --------

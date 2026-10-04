@@ -1,7 +1,7 @@
 # Composants — NeoFrag Reborn
 
-Inventaire des **62 modules · 40 widgets · 7 thèmes**. L'état/bugs de chaque composant
-est dans [historique.md](internal/archive/historique.md) ; l'architecture du framework dans [architecture.md](architecture.md).
+Inventaire des **62 modules · 40 widgets · 6 thèmes distribués**. L'architecture du framework est dans
+[architecture.md](architecture.md).
 La pile gamification/boutique/monétisation a sa doc dédiée : [gamification.md](gamification.md).
 
 ## Anatomie d'un module
@@ -48,7 +48,7 @@ fichier/dossier, téléchargement public par slug) · `emails` (templates email)
 générique, news/articles) · `trash` (corbeille soft-delete cross-module : news/articles/galerie/commentaires/forum) ·
 `menu` (constructeur de menus nommés réutilisables, items hiérarchiques, rendu via widget `navigation`) ·
 `webhooks` (webhooks sortants signés HMAC déclenchés par les événements) · `api` (l'API REST `/api/v1` : clés d'accès hachées et révocables, droits par clé, débit limité ; pour le bot Discord et les intégrations — optionnel) · `discord` (le bot Discord du site, réglé depuis l'administration : sa clé gardée chiffrée, marche/pause, redémarrage, état, journal, correspondances salons ↔ forums et groupes ↔ rôles — optionnel, demande `api`) · `marketplace` (catalogue public
-d'addons + téléchargement, miroir de la vitrine).
+d'addons et téléchargement).
 
 **Contenu (15)** — `news` · `articles` (blog) · `wiki` (+ révisions) · `faq` · `downloads` · `links` ·
 `gallery` · `media` (bibliothèque d'uploads) · `slider` · `guestbook` · `calendar` (+ export iCal) ·
@@ -82,9 +82,6 @@ webhook signé). Détail : [gamification.md](gamification.md).
 
 ## 40 widgets
 
-> L'accueil du thème **vitrine** (hero, features, roadmap) n'est plus un widget : il est **ancré dans
-> le thème** (`themes/vitrine/views/landing.tpl.php`, rendu par `body.tpl.php` sur la home).
-
 - **Contenu** : `news`, `articles`, `awards`, `calendar`, `donations`, `downloads`, `events`, `forum`,
   `gallery`, `guestbook`, `links`, `members`, `newsletter`, `partners`, `recruits`, `slider`,
   `surveys`, `talks`, `teams`, `user`, `video` (player HTML5 + playlist depuis la médiathèque),
@@ -106,10 +103,9 @@ webhook signé). Détail : [gamification.md](gamification.md).
 - **Langues (6)** : `language_en`, `language_fr`, `language_de`, `language_es`, `language_it`,
   `language_pt`.
 
-## 7 thèmes
+## 6 thèmes distribués
 
 - **admin** — back-office (dark mode complet, command palette).
-- **vitrine** — thème vitrine « NeoFrag Reborn » (navbar glass full-dark, landing, cloche + compte dans la nav). Core.
 - **nebula** — thème communautaire en DA Reborn (chrome propre, clair/sombre). Core.
 - **blockcraft** — public, identité « blocs » (vert herbe, coins carrés, ombres-blocs), jour/nuit.
 - **granite** — public, « pierre taillée » (teal/ardoise, titres Oswald, plat hairline), jour/nuit.

@@ -83,4 +83,7 @@ return [
 	'bc645dc3' => 'Fehlt',
 	'caf517ea' => 'Dashboard und zentrales Verwaltungspanel.',
 	'c0833bb9' => '%d kritisch|%d kritisch',
+	'1ffdbac4' => 'Erforderliche PHP-Erweiterungen',
+	'11bbb161' => 'Fehlt: %s',
+	'cc32ed89' => 'Alle vorhanden',
 ];

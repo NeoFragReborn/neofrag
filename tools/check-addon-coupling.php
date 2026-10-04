@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-addon-coupling — le couplage réel entre addons, lu au tokeniseur : tout couplage fatal est déclaré ou annoté.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * POURQUOI CET OUTIL EXISTE
  *

@@ -2,7 +2,9 @@
 declare(strict_types=1);
 /**
  * https://translate.neofr.ag
- * @author: NeoFrag — i18n sync 2026-05-03
+ * @author: FoxLey
+ * @author: eResnova
+ * Complété par NeoFrag Reborn (traductions synchronisées le 2026-05-03).
  */
 
 return [
@@ -278,4 +280,6 @@ return [
 	'c5bc2c51' => 'Webmaster password',
 	'e6fff20f' => 'On your site, this password guards file editing and sensitive actions.',
 	'2fbd5770' => 'Example file: on the demo, the file manager shows no real server file. On your site, you read and edit your files here, protected by the webmaster password.',
+	'fe7b1e4c' => 'The %s extension must be enabled',
+	'aa514b0e' => 'This PHP must be able to hash passwords with %s',
 ];

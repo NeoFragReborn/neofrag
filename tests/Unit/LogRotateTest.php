@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
  * La bascule du journal de débogage.
  *
  * `NEOFRAG_LOGS` écrit toutes les requêtes SQL de chaque page servie, et rien ne bornait le fichier :
- * il avait atteint 1,7 Go sur l'atelier, sur un disque partagé avec la production. Ce qui mérite une
+ * il avait atteint 1,7 Go sur notre site d'essai, sur un disque partagé avec la production. Ce qui mérite une
  * épreuve n'est pas l'écriture — elle marchait — mais la borne : qu'elle ne bascule PAS trop tôt,
  * qu'elle bascule au bon moment, et qu'elle n'empile pas les générations.
  */

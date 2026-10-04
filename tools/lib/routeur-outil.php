@@ -2,6 +2,8 @@
 /*
  * routeur-outil — le routeur du serveur intégré quand c'est un OUTIL qui sert le site.
  *
+ * Diffusion : publique
+ *
  * Il tourne en SAPI `cli-server` (c'est `php -S` qui l'exécute), jamais servi par un vrai serveur
  * web : on refuse tout autre SAPI, comme `tools/router-builtin.php`.
  *

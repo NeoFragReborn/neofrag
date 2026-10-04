@@ -46,6 +46,12 @@ class Sitemap extends Controller_Module
 			}
 		}
 
+		// Une rubrique vide n'est pas annoncée aux moteurs : sa page ne dirait que « rien pour l'instant ».
+		if (!$adresses)
+		{
+			return [];
+		}
+
 		array_unshift($adresses, ['adresse' => 'news', 'date' => $adresses[0]['date'] ?? NULL]);
 
 		return $adresses;

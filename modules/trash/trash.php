@@ -61,9 +61,9 @@ class Trash extends Module
 			'title'       => $this->lang('Corbeille'),
 			'description' => $this->lang('Restaurer ou purger définitivement le contenu supprimé.'),
 			'icon'        => 'fas fa-trash-restore',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'NeoFrag Reborn',
-			'license'     => 'LGPLv3 <https://neofr.ag/license>',
+			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],

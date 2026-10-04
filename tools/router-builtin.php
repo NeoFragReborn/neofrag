@@ -10,16 +10,18 @@ if (PHP_SAPI !== 'cli-server' && PHP_SAPI !== 'cli')
 }
 
 /**
+ * Diffusion : publique
+ *
  * Routeur pour le serveur intégré de PHP (php -S), utilisé par tools/check-install-profiles.php.
  * Sert les fichiers existants tels quels, et envoie tout le reste à index.php — comme le font
- * .htaccess et la configuration Caddy de production.
+ * le `.htaccess` et les exemples nginx et Caddy livrés.
  */
 /*
  * La racine servie est celle que `php -S -t <dossier>` a reçue (DOCUMENT_ROOT), pas le dépôt où vit
  * ce fichier. Les outils servent parfois une AUTRE copie du site — un site neuf et jetable
  * (`tools/lib/vierge.php`) — avec ce même routeur : il incluait alors `index.php` à côté de lui, et
- * le site jetable exécutait le code de l'atelier. Trouvé le 2026-09-23 par check-mise-a-jour : la
- * copie déclarée en 1.1.0 répondait avec le 1.2.0 de l'atelier, et se croyait déjà à jour.
+ * le site jetable exécutait le code du site d'essai. Trouvé le 2026-09-23 par check-mise-a-jour : la
+ * copie déclarée en 1.1.0 répondait avec le 1.2.0 du site d'essai, et se croyait déjà à jour.
  */
 $racine  = is_file(($_SERVER['DOCUMENT_ROOT'] ?? '') . '/index.php') ? rtrim((string) $_SERVER['DOCUMENT_ROOT'], '/') : dirname(__DIR__);
 $chemin  = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';

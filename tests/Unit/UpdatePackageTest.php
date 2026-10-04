@@ -302,7 +302,7 @@ final class UpdatePackageTest extends TestCase
 	}
 
 	/**
-	 * Le point de la une liste DECLAREE remplace le balayage deduit.
+	 * Le point clé : une liste DECLAREE remplace le balayage deduit.
 	 *
 	 * Sans manifeste, `obsolete.php` disparaitrait parce que le paquet ne le livre pas. Avec, il
 	 * reste : le paquet n'a pas dit de le retirer, et c'est lui qui fait foi.

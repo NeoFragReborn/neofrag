@@ -4,6 +4,7 @@ declare(strict_types=1);
  * check-db-colonne — une requête à UNE colonne rend des valeurs, pas des lignes : aucune n'est lue comme un tableau.
  *
  * Famille : statique
+ * Diffusion : publique
  *
  * Pourquoi ce contrôle existe
  * ---------------------------

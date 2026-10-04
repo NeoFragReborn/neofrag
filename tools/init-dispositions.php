@@ -5,6 +5,7 @@ declare(strict_types=1);
  * init-dispositions — donne sa mise en page par défaut à chaque thème installé qui n'en a pas.
  *
  * Famille : outil
+ * Diffusion : publique
  *
  * Pourquoi
  * --------
