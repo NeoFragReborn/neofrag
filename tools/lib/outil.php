@@ -82,6 +82,8 @@ const NF_PORTS = [
     'check-seo'             => 8113,
     'check-assistant'       => 8114,
     'check-reglages'        => 8115,
+    'check-extensions'      => 8116,
+    'check-prerequis-absents' => 8117,
 ];
 
 /** Le nom de l'outil qui s'exécute, tel qu'il apparaît dans ses verdicts : `check-liens`. */

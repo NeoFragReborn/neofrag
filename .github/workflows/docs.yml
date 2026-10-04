@@ -15,6 +15,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Le jeton de la CI ne fait que LIRE le dépôt : aucun job n'écrit (CodeQL l'a demandé à l'ouverture,
+# 2026-10-04 ; les autres workflows le disaient déjà).
+permissions:
+  contents: read
+
 jobs:
   docs:
     name: Documentation ↔ code

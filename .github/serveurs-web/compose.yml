@@ -48,6 +48,24 @@ services:
       db:
         condition: service_healthy
 
+  # Le PAQUET publié, déposé comme par FTP, sous un Apache bridé comme un hébergement mutualisé
+  # (mutualise.conf). Les outils viennent du dépôt, monté à part : le paquet n'en porte pas.
+  mutualise:
+    profiles: [mutualise]
+    build:
+      context: .
+      args:
+        PHP: ${PHP:-8.5}
+        VARIANTE: apache
+    working_dir: /opt/outils
+    volumes:
+      - ${RACINE}:/var/www/neofrag
+      - ${OUTILS:-.}:/opt/outils:ro
+      - ./mutualise.conf:/etc/apache2/conf-enabled/mutualise.conf:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
   nginx:
     profiles: [nginx]
     image: nginx:stable

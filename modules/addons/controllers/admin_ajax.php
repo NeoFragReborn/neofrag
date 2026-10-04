@@ -238,8 +238,22 @@ class Admin_Ajax extends Controller_Module
 						->close();
 		}
 
-		// Installables = modules/thèmes du catalogue NON déjà installés. + map des widgets (zips séparés).
-		$available = $widget_metas = [];
+		// Installables = modules, thèmes, et widgets AUTONOMES du catalogue, non déjà installés. Un widget
+		// qu'un module emmène (`provides_widgets`) vient avec lui ; ceux qu'aucun module n'emmène — À propos,
+		// Steam, Twitch… — n'étaient proposés nulle part ici : on ne pouvait les avoir que par « Ajouter »
+		// (trouvé par check-extensions, 2026-10-04).
+		$available = $widget_metas = $emmenes = [];
+		foreach ($catalog['addons'] as $a)
+		{
+			if (($a['type'] ?? '') === 'module')
+			{
+				foreach ((array) ($a['provides_widgets'] ?? []) as $w)
+				{
+					$emmenes[(string) $w] = TRUE;
+				}
+			}
+		}
+
 		foreach ($catalog['addons'] as $a)
 		{
 			$type = $a['type'] ?? '';
@@ -249,7 +263,7 @@ class Admin_Ajax extends Controller_Module
 			{
 				$widget_metas[$name] = $a;
 			}
-			if (!in_array($type, ['module', 'theme'], TRUE) || $name === '')
+			if (!in_array($type, ['module', 'theme', 'widget'], TRUE) || $name === '' || ($type === 'widget' && isset($emmenes[$name])))
 			{
 				continue;
 			}
@@ -273,7 +287,7 @@ class Admin_Ajax extends Controller_Module
 
 		$options = [];
 		// Le type, traduit : `lang(ucfirst($type))` demandait « Theme », qui n'est pas un texte français.
-		$types_catalogue = ['module' => $this->lang('Module'), 'theme' => $this->lang('Thème')];
+		$types_catalogue = ['module' => $this->lang('Module'), 'theme' => $this->lang('Thème'), 'widget' => $this->lang('Widget')];
 		foreach ($available as $key => $a)
 		{
 			$options[$key] = (\NF\NeoFrag\Installer::texte_catalogue($a, 'title') ?: $a['name']).' — '.($types_catalogue[$a['type']] ?? $a['type']).' · '.$this->lang('%d Ko', (int) round(($a['size'] ?? 0) / 1024));

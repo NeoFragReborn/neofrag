@@ -37,6 +37,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
 
+# Le jeton de la CI ne fait que LIRE le dépôt : aucun job n'écrit (CodeQL l'a demandé à l'ouverture,
+# 2026-10-04 ; les autres workflows le disaient déjà).
+permissions:
+  contents: read
+
 jobs:
   statique:
     name: Contrôles statiques (syntaxe, gardes, PHPStan, audits, épreuves JS, bot)

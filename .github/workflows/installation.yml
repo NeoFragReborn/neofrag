@@ -193,3 +193,141 @@ jobs:
       # Un réglage numérique se relit en entier une fois enregistré : c'est la réouverture qui le juge.
       - name: Chaque écran de réglages s'ouvre, s'enregistre tel quel et se rouvre
         run: php tools/check-reglages.php --enregistrer
+
+  # Les addons du marketplace PUBLIÉ, installés sur un site qui n'a que le cœur : par la fenêtre du
+  # marketplace, puis par « Ajouter » pour ce qu'elle ne propose pas.
+  extensions:
+    name: Les addons du marketplace sur un site « Cœur seul »
+    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    services:
+      db:
+        image: mariadb:11.8
+        env:
+          MARIADB_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=30
+    env:
+      NF_DB_HOST: 127.0.0.1
+      NF_DB_PORT: '3306'
+      NF_DB_USER: root
+      NF_DB_PASS: root
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, intl, mysqli, gd, zip, curl
+          coverage: none
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
+      - name: composer install (production)
+        run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+      - name: Chaque addon du catalogue s'installe
+        run: php tools/check-extensions.php
+
+  # À un PHP auquel manque une extension exigée, l'assistant et l'installeur disent laquelle.
+  prerequis:
+    name: Prérequis à l'envers · PHP ${{ matrix.php }}
+    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.5']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, mysqli, gd, zip, curl
+          coverage: none
+      - uses: ./.github/actions/extensions
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          app-cle: ${{ secrets.NF_APP_CLE }}
+      - name: composer install (production)
+        run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
+      - name: Chaque extension exigée, retirée tour à tour
+        run: php tools/check-prerequis-absents.php
+
+  # Le PAQUET publié, déposé comme par FTP chez un hébergeur mutualisé : Apache, PHP en module, aucune
+  # fonction qui lance un programme, open_basedir, 128 Mo. L'assistant y est joué de bout en bout.
+  mutualise:
+    name: Hébergement mutualisé simulé (le paquet publié)
+    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      COMPOSE_FILE: .github/serveurs-web/compose.yml
+      COMPOSE_PROFILES: mutualise
+      PHP: '8.2'
+      OUTILS: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Jeton de l'application (dépôts encore privés)
+        if: github.event.repository.private
+        id: app
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          private-key: ${{ secrets.NF_APP_CLE }}
+          owner: ${{ github.repository_owner }}
+      # Le paquet que téléchargent les gens : la dernière version publiée du dépôt neofrag.
+      - name: Le paquet publié, déposé comme par FTP
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token || github.token }}
+        run: |
+          gh release download --repo "${{ github.repository_owner }}/neofrag" --pattern 'neofrag-reborn-public-*.zip' --dir "$RUNNER_TEMP"
+          unzip -q "$RUNNER_TEMP"/neofrag-reborn-public-*.zip -d "$RUNNER_TEMP/site"
+          echo "RACINE=$RUNNER_TEMP/site/neofrag-reborn" >> "$GITHUB_ENV"
+          chmod -R a+rwX "$RUNNER_TEMP/site"
+          ls "$RUNNER_TEMP"/neofrag-reborn-public-*.zip
+      - name: Démarrer l'hébergement et MariaDB
+        uses: ./.github/actions/compose-up
+        with:
+          args: -d --build --wait
+      - name: L'assistant, joué sur le paquet (profil complet, puis cœur seul)
+        run: |
+          for profil in complete core; do
+            docker compose exec -T -e NF_DB_HOST=db -e NF_DB_USER=root -e NF_DB_PASS=root mutualise \
+              php tools/check-assistant.php --url=http://localhost --racine=/var/www/neofrag --profil=$profil
+          done
+      - name: Journaux des services (si échec)
+        if: failure()
+        run: docker compose logs --tail 80
+
+  # Les liens de tous les documents, ceux qui sortent du dépôt compris.
+  liens:
+    name: Les liens des documents
+    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - name: Jeton de l'application (dépôts encore privés)
+        if: github.event.repository.private
+        id: app
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.NF_APP_ID }}
+          private-key: ${{ secrets.NF_APP_CLE }}
+          owner: ${{ github.repository_owner }}
+      - uses: lycheeverse/lychee-action@v2
+        with:
+          token: ${{ steps.app.outputs.token || github.token }}
+          fail: true
+          args: >-
+            --no-progress --max-retries 3 --timeout 30
+            --exclude '^https?://(localhost|127\.0\.0\.1|example\.(org|com|test))'
+            --exclude 'neofrag-reborn\.xyz/.+/admin'
+            './**/*.md'

@@ -88,6 +88,7 @@ Jamais lancés d'office : chacun exige un argument, une base jetable, ou abîme 
 |---|---|---|
 | [`capturer-apercus`](capturer-apercus.php) | produit la VIGNETTE de chaque addon, par capture d'écran réelle. | `php tools/capturer-apercus.php` |
 | [`check-assistant`](check-assistant.php) | l'assistant d'installation web, joué de bout en bout comme un visiteur, profil par profil. | `php tools/check-assistant.php` |
+| [`check-extensions`](check-extensions.php) | chaque addon du marketplace s'installe sur un site qui n'a que le cœur, par le marketplace ou par son archive. | `php tools/check-extensions.php --port=8116` |
 | [`check-important`](check-important.php) | mesure quels `!important` d'une feuille servent réellement à quelque chose. | `php tools/check-important.php --feuille=themes/admin/css/style.css` |
 | [`check-install-profiles`](check-install-profiles.php) | chaque profil d'installation doit démarrer et répondre, installé pour de vrai. | `php tools/check-install-profiles.php --profil=core` |
 | [`check-marketplace`](check-marketplace.php) | le catalogue publié dit-il la vérité sur les archives qu'il propose ? | `php tools/check-marketplace.php` |
@@ -95,6 +96,7 @@ Jamais lancés d'office : chacun exige un argument, une base jetable, ou abîme 
 | [`check-mise-en-page`](check-mise-en-page.php) | chaque page publique et d'administration, dans chaque thème, chaque mode et à chaque largeur : aucun défaut visuel que le navigateur sait constater. | `php tools/check-mise-en-page.php` |
 | [`check-nouveau-venu`](check-nouveau-venu.php) | le README et le guide du contributeur, suivis à la lettre sur une machine vierge, mènent à un site qui tourne et à une batterie verte. | `php tools/check-nouveau-venu.php --dossier=… --depot-neofrag=https://github.com/<org>/<candidate>.git` |
 | [`check-parcours`](check-parcours.php) | suit un visiteur d'un écran au suivant, dans un vrai navigateur. | `php tools/check-parcours.php` |
+| [`check-prerequis-absents`](check-prerequis-absents.php) | à un PHP auquel manque une extension exigée, l'assistant web et l'installeur en ligne de commande disent laquelle, et s'arrêtent. | `php tools/check-prerequis-absents.php` |
 | [`check-reglages`](check-reglages.php) | l'écran de réglages de chaque addon installé s'ouvre, s'enregistre et se rouvre, sans rien écrire au journal. | `php tools/check-reglages.php` |
 | [`check-restauration`](check-restauration.php) | éprouve, pour de vrai, le cycle sauvegarde → casse → restauration. | `php tools/check-restauration.php --compte=admin --motdepasse=… --site-jetable` |
 | [`check-serveur-web`](check-serveur-web.php) | un vrai serveur web (Apache, nginx, Caddy) refuse ce qu'il doit refuser, et sert le site comme il faut. | `php tools/check-serveur-web.php --url=http://localhost:8080` |

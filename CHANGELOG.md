@@ -10,6 +10,39 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.25] — 2026-10-04
+
+Le bot Discord passe en **version 0.2.2** : les messages du forum qu'il relaie perdent toutes leurs balises
+HTML, même imbriquées (voir son propre journal des versions). La 0.2.1 continue de fonctionner.
+
+### Corrigé
+
+- **La fenêtre du marketplace propose aussi les widgets qu'aucun module n'apporte** (À propos, Serveur de jeu, Lecteur
+  de flux, Effet saisonnier, Groupe Steam, Serveur TeamSpeak 3, Statut live) : elle ne montrait que les
+  modules et les thèmes, et ces sept widgets ne s'installaient que par « Ajouter », archive en main. Un
+  widget déjà apporté par un module (celui du Forum, par exemple) n'y figure pas en double.
+- Le guide d'administration nomme le bouton qui enregistre une nouvelle adresse du site par son libellé,
+  *Utiliser*, suivi de l'adresse — et non plus par une fausse adresse `https://…` qu'un lecteur prenait
+  pour un lien.
+
+### Sécurité
+
+- **Les workflows de vérification du dépôt ne reçoivent qu'un jeton en lecture** (`permissions: contents:
+  read`) : ils n'ont rien à écrire, un pas compromis n'aurait rien pu modifier. Relevé par l'analyse de
+  code de GitHub à l'ouverture des dépôts.
+- **Le widget Vidéo n'accepte, pour un élément de sa liste de lecture, qu'une adresse `http(s)` ou un
+  chemin du site** : une adresse `javascript:` ou `data:` est ignorée au clic. Le lecteur n'exécutait
+  rien, mais une telle adresse n'avait rien à y faire. Relevé par la même analyse.
+
+### Ajouté
+
+- **Trois épreuves de plus dans le workflow `installation.yml`** : `check-extensions` installe chacun des
+  addons du marketplace publié sur un site qui n'a que le cœur, par la fenêtre du marketplace puis par
+  « Ajouter » ; `check-prerequis-absents` retire tour à tour chaque extension PHP exigée, et vérifie que
+  l'assistant et l'installeur en ligne de commande disent laquelle manque ; le paquet publié est installé
+  par l'assistant chez un hébergeur mutualisé simulé (Apache sans fonctions qui lancent un programme,
+  `open_basedir`, 128 Mo). Et les liens de tous les documents sont vérifiés (lychee).
+
 ## [1.2.24] — 2026-10-04
 
 **NeoFrag Reborn s'ouvre sur GitHub.** Le code du CMS ([NeoFragReborn/neofrag](https://github.com/NeoFragReborn/neofrag)), les addons

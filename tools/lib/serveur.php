@@ -156,10 +156,17 @@ final class NfBocal
  * Refuse de juger si le port est déjà occupé, attend que le serveur réponde, et l'arrête à la fin
  * de l'outil quoi qu'il arrive. `$racine` permet de servir un autre dossier (les épreuves JS).
  *
+ * `$php` passe des options à PHP lui-même, avant `-S` : `['-n', '-d', 'extension=…']` lance un PHP
+ * sans php.ini, avec les seules extensions données — c'est ainsi qu'on éprouve un hébergement auquel il
+ * en manque une (`check-prerequis-absents`).
+ *
  * @param array<string, string> $env  variables passées au routeur (voir l'en-tête)
+ * @param list<string>          $php  options de PHP
  */
-function nf_serveur(int $port, array $env = [], ?string $racine = NULL, ?string $routeur = NULL): NfServeur
+function nf_serveur(int $port, array $env = [], ?string $racine = NULL, ?string $routeur = NULL, array $php = []): NfServeur
 {
+    $options_php = implode('', array_map(static fn (string $a): string => ' '.escapeshellarg($a), $php));
+
     $racine  ??= nf_racine();
     $routeur ??= __DIR__.'/routeur-outil.php';
 
@@ -188,8 +195,8 @@ function nf_serveur(int $port, array $env = [], ?string $racine = NULL, ?string 
         $variables .= $nom.'='.escapeshellarg((string) $valeur).' ';
     }
 
-    $commande = sprintf('%s%s%s -S 127.0.0.1:%d -t %s%s',
-        $prefixe, $variables === '' ? '' : 'env '.$variables, escapeshellarg(PHP_BINARY),
+    $commande = sprintf('%s%s%s%s -S 127.0.0.1:%d -t %s%s',
+        $prefixe, $variables === '' ? '' : 'env '.$variables, escapeshellarg(PHP_BINARY), $options_php,
         $port, escapeshellarg($racine), $routeur);
 
     // Sous Windows, `env` n'existe pas : les variables passent par putenv() avant proc_open.
@@ -200,7 +207,7 @@ function nf_serveur(int $port, array $env = [], ?string $racine = NULL, ?string 
             putenv($nom.'='.$valeur);
         }
 
-        $commande = sprintf('%s -S 127.0.0.1:%d -t %s%s', escapeshellarg(PHP_BINARY), $port,
+        $commande = sprintf('%s%s -S 127.0.0.1:%d -t %s%s', escapeshellarg(PHP_BINARY), $options_php, $port,
             escapeshellarg($racine), $routeur);
     }
 
@@ -270,7 +277,10 @@ function nf_encoder_adresse(string $url): string
  * Avec un `bocal`, les cookies reçus sont gardés et renvoyés, à chaque saut de redirection aussi —
  * c'est ainsi qu'un navigateur suit une connexion.
  *
- * @param array{post?: array<string, string|list<string>>|null, ajax?: bool, suivre?: int, timeout?: int, agent?: string, entetes?: list<string>, bocal?: NfBocal|null} $options
+ * Avec des `fichiers` (`['champ' => '/chemin/archive.zip']`), le POST part en `multipart/form-data`,
+ * comme un formulaire d'envoi : c'est ainsi qu'on éprouve « Ajouter » un addon par son archive.
+ *
+ * @param array{post?: array<string, string|list<string>>|null, fichiers?: array<string, string>, ajax?: bool, suivre?: int, timeout?: int, agent?: string, entetes?: list<string>, bocal?: NfBocal|null} $options
  * @return array{code: int, corps: string, arrivee: string, raison: string, entetes: array<string, string>}
  *         `code` vaut 0 quand la requête n'a pas abouti, et `raison` dit alors pourquoi.
  */
@@ -280,6 +290,36 @@ function nf_http(string $url, array $options = []): array
     $suivre  = $options['suivre'] ?? 5;
     $bocal   = $options['bocal'] ?? NULL;
     $arrivee = $url;
+    $corps_post = $post !== NULL ? http_build_query($post) : '';
+    $type_post  = 'application/x-www-form-urlencoded';
+
+    if (!empty($options['fichiers']))
+    {
+        // Chaque champ du formulaire (tableaux compris, `a[b][]`), puis chaque fichier, en parties séparées.
+        $limite = '----nf'.bin2hex(random_bytes(12));
+        $parties = '';
+
+        foreach (explode('&', $corps_post) as $paire)
+        {
+            if ($paire === '')
+            {
+                continue;
+            }
+
+            [$nom, $valeur] = array_map('urldecode', array_pad(explode('=', $paire, 2), 2, ''));
+            $parties .= "--{$limite}\r\nContent-Disposition: form-data; name=\"{$nom}\"\r\n\r\n{$valeur}\r\n";
+        }
+
+        foreach ($options['fichiers'] as $champ => $chemin)
+        {
+            $parties .= "--{$limite}\r\nContent-Disposition: form-data; name=\"{$champ}\"; filename=\"".basename($chemin)."\"\r\n"
+                ."Content-Type: application/zip\r\n\r\n".file_get_contents($chemin)."\r\n";
+        }
+
+        $corps_post = $parties."--{$limite}--\r\n";
+        $type_post  = 'multipart/form-data; boundary='.$limite;
+        $post     ??= [];
+    }
 
     for ($saut = 0; $saut <= $suivre; $saut++)
     {
@@ -292,7 +332,7 @@ function nf_http(string $url, array $options = []): array
 
         if ($post !== NULL)
         {
-            $entetes[] = 'Content-Type: application/x-www-form-urlencoded';
+            $entetes[] = 'Content-Type: '.$type_post;
         }
 
         foreach ($options['entetes'] ?? [] as $entete)
@@ -307,7 +347,7 @@ function nf_http(string $url, array $options = []): array
 
         $contexte = stream_context_create(['http' => [
             'method'          => $post !== NULL ? 'POST' : 'GET',
-            'content'         => $post !== NULL ? http_build_query($post) : '',
+            'content'         => $post !== NULL ? $corps_post : '',
             'timeout'         => $options['timeout'] ?? 30,
             'ignore_errors'   => TRUE,
             'follow_location' => 0,

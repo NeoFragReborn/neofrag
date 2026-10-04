@@ -108,6 +108,9 @@ bibliothèque commune des outils sont dans [tools/README.md](../tools/README.md)
 | Un écran de réglages d'addon qui plante à l'ouverture ou une fois enregistré | `check-reglages --enregistrer`, qui ouvre, enregistre tel quel et rouvre chacun |
 | Une configuration de serveur livrée qui laisse passer un fichier sensible, exécute un script interne ou ne démarre pas | `check-serveur-web`, sur un vrai Apache, nginx ou Caddy (`installation.yml`) |
 | Une commande du README ou du guide du contributeur qui échoue chez un nouveau venu | `check-nouveau-venu`, qui les joue telles quelles sur une machine vierge (`nouveau-venu.yml`) |
+| Un addon du marketplace qui ne s'installe pas sur un site qui n'a que le cœur | `check-extensions`, par la fenêtre du marketplace puis par « Ajouter » |
+| Un hébergement auquel manque une extension PHP, qui ne saurait pas laquelle | `check-prerequis-absents`, qui la retire tour à tour |
+| Le paquet qui ne s'installerait pas chez un hébergeur mutualisé (pas de shell, `open_basedir`, 128 Mo) | `check-assistant` sur le paquet publié, sous un Apache bridé (`installation.yml`) |
 | Une erreur survenue APRÈS l'envoi des en-têtes | `check-journal`, le seul qui lise le journal PHP |
 | Un script qui plante au chargement, une violation CSP | `check-js-console`, dans un vrai navigateur |
 | Un lien mort, un débordement, un contraste insuffisant, un retour absent | `check-liens`, `check-responsive`, `check-contraste`, `check-admin-back` |
@@ -182,7 +185,9 @@ Deux workflows jouent chaque semaine sur un dépôt public, et à la main ailleu
 (PHP 8.2 et 8.5 face à chaque version de MariaDB et de MySQL annoncée), `installation.yml` (l'assistant
 d'installation joué de bout en bout par `check-assistant`, sous PHP 8.2 et 8.5, paquet public et paquet de
 démonstration ; les réglages de chaque addon par `check-reglages` ; et Apache, nginx et Caddy, avec les
-configurations livrées, par `check-assistant`, `check-serveur-web` et `check-smoke`) et `nouveau-venu.yml`
+configurations livrées, par `check-assistant`, `check-serveur-web` et `check-smoke` ; le paquet publié chez un
+hébergeur mutualisé simulé ; les addons du marketplace par `check-extensions` ; les prérequis absents par
+`check-prerequis-absents` ; les liens de tous les documents par lychee) et `nouveau-venu.yml`
 (le README et le guide du contributeur joués à la lettre par `check-nouveau-venu`).
 
 `composer.json` fixe la **plateforme** à PHP 8.2.0 : le verrou reste installable sur toute version que

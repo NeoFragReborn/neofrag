@@ -11,7 +11,13 @@
 
 			w.querySelectorAll('[data-video-src]').forEach(function(item) {
 				item.addEventListener('click', function() {
-					player.src = item.getAttribute('data-video-src');
+					// Une adresse http(s) ou relative seulement : le lecteur n'exécute rien, mais une
+					// adresse en `javascript:` ou `data:` n'a rien à faire là (relevé par CodeQL, 2026-10-04).
+					var src = item.getAttribute('data-video-src') || '';
+					if (!/^(https?:\/\/|\/(?!\/))/i.test(src)) {
+						return;
+					}
+					player.src = src;
 					player.play();
 					w.querySelectorAll('[data-video-src]').forEach(function(i) { i.classList.remove('active'); });
 					item.classList.add('active');

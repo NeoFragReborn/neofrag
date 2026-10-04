@@ -103,8 +103,8 @@ Un outil allumé dans `config/neofrag.php` ne s'éteint que là ; la carte le si
 Les liens des courriels (mot de passe oublié, validation d'inscription), les retours des connexions
 externes et les partages se construisent sur l'adresse enregistrée à l'installation. Après un
 changement de domaine, la carte *Adresse du site* (Monitoring, onglet *Vue d'ensemble*) le signale : ouvrez l'administration par
-la nouvelle adresse, puis *Utiliser https://…* l'enregistre (mot de passe webmaster demandé s'il est
-défini).
+la nouvelle adresse, puis le bouton *Utiliser*, suivi de cette adresse, l'enregistre (mot de passe
+webmaster demandé s'il est défini).
 
 ## Permissions
 
