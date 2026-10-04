@@ -30,7 +30,7 @@ return [
 	'dbcb5bb0' => 'Palmares modificato con successo',
 	'e4701b5e' => 'I trofei delle nostre squadre',
 	'f342c1c7' => 'Elenco palmares',
-	'ec91a486' => 'Premi (palmares) assegnabili a membri o squadre — modulo gaming.',
+	'766f341e' => 'Il palmares delle squadre: posizione ottenuta, numero di squadre, data, luogo, gioco e piattaforma di ogni competizione, con i podi contati per squadra e per gioco.',
 	'52c9bbab' => 'Modifica',
 	'8d9ef7a4' => 'Elimina',
 	// i18n 2026-06-11 (code strings)

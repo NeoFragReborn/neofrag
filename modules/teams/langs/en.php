@@ -72,6 +72,6 @@ return [
 	'3c19f7aa' => 'Opponent',
 	'a415f66e' => 'Event',
 	'f3581855' => 'Score',
-	'f4cbbafe' => 'Teams and clans — gaming module.',
+	'21ba1da3' => 'One page per team: game, description, players and roles, results and recruitment depending on the modules installed. For a guild or an esports team.',
 	'8fd9c7ef' => 'Save',
 ];

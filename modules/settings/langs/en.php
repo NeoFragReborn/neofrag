@@ -241,4 +241,8 @@ return [
 	'93f5c577' => 'Only the home page is listed: no module has any content visitors can read yet. An empty section is not listed; if content exists, check the rights in the permissions matrix.',
 	'e44f4288' => 'Verified through the domain\'s DNS. Submit the sitemap there: %s',
 	'cda95d5f' => 'Imported from Google Search Console? Then there is nothing else to do: the import leaves no trace the site can read. Otherwise, paste its verification code here.',
+	'841f610f' => 'Text specific to this language.',
+	'f4792dbe' => 'This language does not have its own yet: the shared text is shown. Save it here to translate it.',
+	'7be2269f' => 'It arrives as text in the messaging: headings, lists and links are kept, the formatting is not.',
+	'c7ad5eb2' => 'The rules, the title and the welcome message are translated language by language. A language without its own text shows the shared text.',
 ];

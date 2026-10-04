@@ -10,5 +10,5 @@ return [
 	'be90eefa' => 'Squadre',
 	'c77259fe' => 'Visualizza tutte le nostre squadre',
 	'ea2b7448' => 'Le nostre squadre',
-	'd59108aa' => 'Squadre del clan con i loro membri — widget gaming.',
+	'd2655a75' => 'Le squadre del sito come banner cliccabili, ognuno porta alla sua pagina: gioco, presentazione, giocatori. Compaiono solo le squadre che hanno un banner.',
 ];

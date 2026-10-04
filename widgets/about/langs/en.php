@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 return [
 	'6f28f1e0' => 'About',
-	'4d01d503' => 'Free-form presentation block, editable in HTML.',
+	'9d7cca2b' => 'Presents the organization entered in "Our structure": name, type, founding date, logo and biography, each shown or hidden, aligned and colored as you choose.',
 	'8088964a' => 'Display',
 	'f27c976e' => 'Style',
 	'7e924eb0' => 'Team name',

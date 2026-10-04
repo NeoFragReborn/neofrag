@@ -7,7 +7,7 @@ declare(strict_types=1);
 return [
 	'073102ce' => 'Most awarded team',
 	'2939c77c' => 'Awards',
-	'2c3a6d4a' => 'Displays the latest awards earned — gaming module.',
+	'23a963cf' => 'Awards at a glance, as you choose: the teams\' latest results, the most awarded team or the most awarded game.',
 	'3a847859' => 'Latest awards',
 	'801296f0' => 'Most awarded game',
 	'89c8752d' => '%dth / %d teams',

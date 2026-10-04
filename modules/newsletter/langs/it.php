@@ -107,4 +107,7 @@ return [
 	'03158917' => 'Gruppo',
 	'79987719' => 'iscrizione newsletter in attesa|iscrizioni newsletter in attesa',
 	'080b55ee' => 'Gestire la newsletter',
+	'a06e1419' => 'Questo indirizzo email non è valido.',
+	'edc6b420' => 'Non è stato possibile inviare l\'email di conferma. Riprova un po\' più tardi.',
+	'ce6fdf8a' => 'Troppe richieste di iscrizione recenti. Riprova tra %d minuto/i.',
 ];

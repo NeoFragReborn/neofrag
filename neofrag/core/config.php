@@ -109,6 +109,7 @@ use NF\NeoFrag\Core;
  * @property mixed $articles_per_page
  * @property mixed $articles_liste
  * @property mixed $articles_fiche
+ * @property mixed $recruits_hide_unavailable  le module Recrutements, que son widget suit aussi
  *
  * Deux valeurs que Config pose lui-même (voir `_const`), pas des réglages : la langue courante
  * et la liste des langues installées. `mixed` et non `Language` : cet addon résout `date()`,
@@ -357,6 +358,26 @@ class Config extends Core
 				setlocale(LC_ALL, $locale);
 			}
 		}
+	}
+
+	/**
+	 * Un réglage de texte traduisible : sa valeur dans la langue (`<nom>_<code>`, ex.
+	 * `nf_registration_charte_en`), sinon sa valeur commune (`<nom>`, la seule jusqu'à la 1.2.26). Le
+	 * règlement et le message de bienvenue n'avaient qu'une langue : un visiteur anglais lisait le règlement
+	 * en français (2026-10-04). La langue par défaut est celle de la page.
+	 */
+	public function traduit(string $nom, ?string $langue = NULL): string
+	{
+		$courante = $this->_const['lang'] ?? NULL;
+		$langue ??= is_object($courante) ? (string) $courante->info()->name : '';
+		$propre   = $nom.'_'.$langue;
+
+		if ($langue !== '' && trim(strip_tags((string) ($this->_const[$propre] ?? ''))) !== '')
+		{
+			return (string) $this->_const[$propre];
+		}
+
+		return (string) ($this->_const[$nom] ?? '');
 	}
 
 	public function __invoke($name, $value, $type = NULL)

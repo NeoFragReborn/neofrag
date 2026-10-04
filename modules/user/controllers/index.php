@@ -829,6 +829,12 @@ class Index extends Controller_Module
 
 		$this->session->login($user);
 
+		// Le message de bienvenue, comme pour une inscription par le formulaire : il ne partait pas (2026-10-04).
+		if (($module_user = $this->module('user')) instanceof \NF\Modules\User\User)
+		{
+			$module_user->bienvenue((int) $user->id, $nom);
+		}
+
 		notify($this->lang('Votre compte a été créé avec %s, bienvenue ! Ajoutez une adresse e-mail et un mot de passe dans votre profil pour pouvoir aussi vous connecter sans lui.', $authenticator->info()->title));
 	}
 

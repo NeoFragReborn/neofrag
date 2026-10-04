@@ -15,7 +15,7 @@ class Gallery extends Widget
 	{
 		return [
 			'title'       => $this->lang('Galeries'),
-			'description' => $this->lang('Aperçu de la galerie photos avec dernières images.'),
+			'description' => $this->lang('Quatre affichages de la galerie au choix : ses catégories, les albums d\'une catégorie, une image tirée au hasard ou le diaporama d\'un album.'),
 			'icon'        => 'far fa-image',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

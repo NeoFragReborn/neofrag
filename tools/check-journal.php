@@ -54,13 +54,20 @@ require __DIR__.'/lib/journal.php';
 
 // En lecture d'une installation servie par d'autres (`--depuis`), un journal absent est AMBIGU — rien
 // d'écrit, ou journal mal configuré : refus. Quand l'outil sert lui-même le site, il le crée d'avance.
-if ($o['depuis'] !== '' ? !is_file($o['journal']) : !nf_journal_preparer($o['journal']))
+// Sauf à côté de son `.1` : le bouton « Vider » du Monitoring RENOMME le journal (il garde l'ancien),
+// et rien n'a été écrit depuis. Un vidage dans la fenêtre en a emporté le début dans `.1` : on lit les
+// deux. Vu le 2026-10-04 : la vitrine, vidée par le mainteneur après une mise à jour, n'avait plus une
+// erreur — et l'outil refusait de le dire.
+$ancien = $o['journal'].'.1';
+$vide   = $o['depuis'] !== '' && !is_file($o['journal']) && is_file($ancien);
+
+if ($o['depuis'] !== '' ? !is_file($o['journal']) && !$vide : !nf_journal_preparer($o['journal']))
 {
     nf_refus("journal introuvable ou non inscriptible : {$o['journal']} — vérifier NEOFRAG_LOGS dans config/neofrag.php, ou passer --journal=<chemin>");
 }
 
 // Le dossier de l'installation, pour ôter son chemin des messages : `logs/php.log` en est à deux niveaux.
-$installation = dirname((string) realpath($o['journal']), 2);
+$installation = dirname((string) realpath($vide ? $ancien : $o['journal']), 2);
 
 // ── Le mode lecture : une fenêtre de temps, rien de servi ─────────────────────────
 if ($o['depuis'] !== '')
@@ -74,14 +81,35 @@ if ($o['depuis'] !== '')
         nf_refus("--depuis={$o['depuis']} : ni une durée (30m, 24h, 7j), ni une date lisible");
     }
 
-    $entrees = nf_journal_depuis_date($o['journal'], $depuis);
+    // L'ancien d'abord : ses entrées précèdent celles du journal. Écrit pour la dernière fois avant la
+    // fenêtre, il n'a rien à dire.
+    $entrees = [];
+    $lus     = [];
 
-    if ($entrees === NULL)
+    foreach ([$ancien, $o['journal']] as $fichier)
     {
-        nf_refus("aucune ligne horodatée dans {$o['journal']} : format inconnu, rien ne peut être daté — refus de conclure");
+        if (!is_file($fichier) || ($fichier === $ancien && (int) filemtime($fichier) < $depuis))
+        {
+            continue;
+        }
+
+        $lu = nf_journal_depuis_date($fichier, $depuis);
+
+        if ($lu === NULL)
+        {
+            nf_refus("aucune ligne horodatée dans {$fichier} : format inconnu, rien ne peut être daté — refus de conclure");
+        }
+
+        $entrees = array_merge($entrees, $lu);
+        $lus[]   = basename($fichier);
     }
 
-    printf("Journal : %s (%d octets)\nFenêtre : depuis le %s UTC — %d entrée(s)\n", $o['journal'], nf_journal_taille($o['journal']), gmdate('d/m/Y H:i', $depuis), count($entrees));
+    printf("Journal : %s (%s)\nFenêtre : depuis le %s UTC — %d entrée(s)%s\n",
+        $o['journal'],
+        $vide ? 'absent, son .1 à côté : vidé depuis le Monitoring, rien d\'écrit depuis' : nf_journal_taille($o['journal']).' octets',
+        gmdate('d/m/Y H:i', $depuis),
+        count($entrees),
+        $lus ? ', lues dans '.implode(' et ', $lus) : '');
 
     $classe  = nf_journal_classer($entrees);
     $fautifs = nf_journal_montrer($classe, $installation);

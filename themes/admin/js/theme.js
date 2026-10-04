@@ -74,7 +74,7 @@
 		return out;
 	}
 
-	// Sans accents ni majuscules : « evenements » trouve « Événements gaming ». La décomposition (NFD)
+	// Sans accents ni majuscules : « evenements » trouve « Événements ». La décomposition (NFD)
 	// puis le retrait des accents garde la longueur d'un titre composé (NFC) : les positions servent
 	// telles quelles au surlignage.
 	function normaliser(s) {

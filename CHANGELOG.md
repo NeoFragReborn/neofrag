@@ -10,6 +10,94 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.26] — 2026-10-04
+
+Le bot Discord passe en **version 0.2.3** : il n'écrit plus d'avertissement de discord.js à chaque réponse
+privée (voir son propre journal des versions). La 0.2.2 continue de fonctionner.
+
+### Ajouté
+
+- **Le règlement et le message de bienvenue se traduisent langue par langue** : *Paramètres → Inscription*
+  a un onglet par langue du site, et chaque visiteur lit le règlement — et reçoit le message — dans la
+  langue de la page. Une langue qui n'a pas encore son texte montre le texte commun : un site qui n'en
+  avait qu'un le garde pour toutes ses langues, rien ne change tant qu'on ne traduit pas.
+- **Le journal des versions existe en anglais** (`CHANGELOG.en.md`, le français reste la référence).
+- **Chaque addon du marketplace a une vraie vignette**, au même format (960 × 600) : les modules API et
+  Discord n'en avaient pas, les quatre thèmes du catalogue gardaient une ancienne image plus petite, et
+  plusieurs widgets du cœur n'en avaient aucune dans *Thèmes & addons*. Un nouvel addon ne peut plus être
+  publié sans la sienne.
+
+### Modifié
+
+- **Les descriptions du catalogue disent ce que fait chaque addon** : trente d'entre elles tenaient en
+  quelques mots ou disaient seulement « module gaming ». Elles décrivent maintenant ce que l'addon fait
+  vraiment, et à qui il sert, dans les six langues ; cinq disaient même une chose fausse (le widget
+  Équipes n'affiche pas les membres, le widget Téléchargements montre les plus téléchargés…).
+- **Le module Événements s'appelle « Événements »**, et non plus « Événements gaming » : il sert aussi bien
+  à un club ou à une association.
+- **Le module Paiements demande le module Gamification**, qui crédite les points et les jours VIP achetés :
+  sans lui, un paiement était encaissé sans rien créditer. L'installer l'ajoute ; s'il manque ou se
+  désactive ensuite, la vente se ferme, l'administration le signale, et un paiement reçu n'est plus marqué
+  traité (Stripe le représentera).
+
+### Corrigé
+
+- **Une image collée (Ctrl+V) ou glissée dans l'éditeur de texte est enregistrée** — réponse du forum,
+  commentaire, page de l'administration, messagerie : elle s'affichait cassée, puis disparaissait quand on
+  publiait. Elle est maintenant envoyée au site et reste dans le message. C'est réservé aux membres
+  connectés : une image JPEG, PNG, GIF ou WebP de 5 Mo au plus. Le site l'enregistre à neuf, ce qui retire
+  les informations cachées d'une photo (le lieu où elle a été prise, par exemple) ; une très grande image
+  est réduite, et un GIF animé devient une image fixe. Sur le site de démonstration, l'envoi d'images reste
+  fermé.
+- **Le message de bienvenue s'affiche proprement** : écrit dans l'éditeur riche, il arrivait dans la
+  messagerie avec ses balises visibles (`<h3>`, `<p>`…). Il y est mis en texte — titres, listes à puces ou
+  numérotées, adresses devenues des liens —, et son titre ne montre plus `&eacute;` à la place d'un accent.
+- **Le message de bienvenue part aussi quand on s'inscrit avec Discord, GitHub ou Google** : seule
+  l'inscription par le formulaire l'envoyait.
+- **Le QR code de la double authentification s'affiche** : l'écran d'activation (*Sécurité du compte →
+  Activer le 2FA*) montrait le code de l'image dans une case de saisie au lieu de l'image à scanner — les
+  formulaires ne connaissaient pas ce genre de champ et le prenaient pour un texte.
+- **Les logos du widget Partenaires mènent au site du partenaire** et comptent la visite : ils menaient à
+  une page introuvable depuis la 1.1.0, et le compteur « Visites » ne bougeait plus. La page Partenaires
+  passe aussi par la visite comptée.
+- **Les boutons « Payer » (Paiements) et « Acheter » (Boutique) fonctionnent** : ils appelaient une adresse
+  introuvable.
+- **S'inscrire à la newsletter depuis le widget fonctionne** : l'adresse tapée était perdue en route. Le lien
+  de confirmation de l'e-mail était relatif — inutilisable dans un logiciel de messagerie —, comme le lien de
+  désinscription des campagnes : tous deux sont des adresses complètes. Et si l'e-mail ne part pas,
+  l'inscription est annulée et le visiteur est prévenu, au lieu de lire « envoyé ».
+- **Les liens des e-mails du forum et de la messagerie** (mention, abonnement, discussion) sont des adresses
+  complètes : relatifs, ils ne menaient nulle part.
+- **Les sondages respectent le réglage « Afficher les résultats »** (après le vote, à la clôture, jamais) —
+  sur leur page comme dans leur widget, qui les montrait toujours. Les gestionnaires les voient toujours,
+  avec une mention.
+- **Les widgets suivent les règles de leur module** : le widget Galerie ne montre plus les albums brouillons,
+  programmés, à la corbeille ou réservés à un groupe ; le widget Forum, plus l'extrait des catégories
+  réservées ni de lignes vides pour les messages supprimés ; le widget et le calendrier des Événements,
+  plus un événement programmé avant son heure ; le widget Recrutement suit « Masquer les offres
+  indisponibles ».
+- **Un lien vers une page du site inséré dans l'éditeur garde son adresse complète** : l'éditeur la
+  réécrivait en chemin relatif (`../../…`) à la page d'édition, qui ne menait plus nulle part ailleurs.
+- La feuille de route (`ROADMAP.md`) dit que le code est publié, depuis le 4 octobre 2026.
+
+### Sécurité
+
+- **Deux anciennes adresses de la messagerie affichaient les messages sans les échapper** (la liste des
+  messages d'une conversation demandée en `ajax/talks`). Plus rien ne les appelait, et elles exigeaient un
+  accès à la conversation ; elles passent désormais par le même rendu sûr que la conversation.
+- **La page Partenaires ne suit plus un lien `javascript:`** saisi comme site ou réseau social d'un partenaire :
+  ces adresses sont filtrées et échappées.
+- **Un achat dans la Boutique, comme un paiement, exige le jeton de la session** : une page piégée ne peut
+  plus faire acheter un objet à un membre connecté sans qu'il le sache.
+- **Un achat ne peut plus être compté deux fois** : le débit des points, le stock et la possession se
+  vérifient et s'écrivent dans une seule transaction — deux achats simultanés ne vendent plus deux fois le
+  dernier objet, ni ne débitent deux fois un solde. Les gains de points et les jours VIP s'ajoutent eux aussi
+  d'un seul coup : deux gains au même instant ne s'écrasent plus. Un objet à 0 point s'obtient désormais
+  sans débit (il était refusé, « points insuffisants »).
+- **L'inscription à la newsletter est freinée** (par adresse IP et par adresse e-mail) : on ne peut plus
+  faire envoyer des e-mails de confirmation en masse à des adresses choisies.
+- **Un sondage dont les résultats sont cachés ne montre plus son total de votes** dans la liste.
+
 ## [1.2.25] — 2026-10-04
 
 Le bot Discord passe en **version 0.2.2** : les messages du forum qu'il relaie perdent toutes leurs balises

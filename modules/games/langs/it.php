@@ -34,7 +34,7 @@ return [
 	'f8f21a53' => 'Sei sicuro di voler eliminare la mappa <b>%s</b>?',
 	'b83726b5' => 'Nessuna mappa',
 	'58a98c98' => 'Aggiungi una mappa',
-	'cd59c74e' => 'Catalogo dei giochi praticati — modulo gaming.',
+	'895213c5' => 'L\'elenco dei giochi praticati, con banner, icona, mappe e modalità di gioco; fa da base a squadre, partite, palmares e reclutamento.',
 	'97671a33' => 'Giochi',
 	'8d9ef7a4' => 'Elimina',
 	'df149063' => 'Mappe',

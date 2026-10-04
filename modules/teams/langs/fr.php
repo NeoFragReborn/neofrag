@@ -68,6 +68,6 @@ return [
 	'3c19f7aa' => 'Adversaire',
 	'a415f66e' => 'Événement',
 	'f3581855' => 'Score',
-	'f4cbbafe' => 'Équipes et clans — module gaming.',
+	'21ba1da3' => 'Une page par équipe : jeu, présentation, joueurs et rôles, résultats et recrutement selon les modules installés. Pour une guilde ou une équipe eSport.',
 	'8fd9c7ef' => 'Enregistrer',
 ];

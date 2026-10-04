@@ -8,12 +8,112 @@ declare(strict_types=1);
 namespace NF\Modules\User\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
+use NF\NeoFrag\Libraries\Editeur_Images;
+use NF\NeoFrag\Libraries\Rate_Limit;
 
 class Ajax extends Controller_Module
 {
 	public function _member($user)
 	{
 		return $user->view('profile');
+	}
+
+	/**
+	 * `ajax/user/editeur-image` — une image collée ou glissée dans l'éditeur riche, envoyée par
+	 * js/editeur-images.js. Rend `{"location": "/upload/editeur/AAAA/MM/<nom>.<ext>"}`, ou `{"error": "…"}`
+	 * avec le statut du refus. Les règles — qui, quoi, combien, comment c'est écrit — sont dans
+	 * Editeur_Images ; ici, seulement leur ordre et les effets (débit, disque, registre des fichiers).
+	 *
+	 * Ici et non dans un module de contenu : l'éditeur sert partout (forum, commentaires, administration,
+	 * messagerie), et le module user est toujours présent.
+	 */
+	public function editeur_image()
+	{
+		if (strtolower((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) !== 'post')
+		{
+			header('Allow: POST');
+			$this->_editeur_reponse(405, ['error' => Editeur_Images::message('absent')]);
+		}
+
+		$jeton = $_POST['_'] ?? NULL;
+
+		// L'ordre compte : un visiteur n'apprend rien du jeton, et l'on ne crée pas de jeton pour lui.
+		$refus = Editeur_Images::refus_requete((bool) $this->user(), nf_demo(), $this->user() && is_string($jeton) && hash_equals(nf_jeton_csrf(), $jeton));
+
+		if ($refus !== NULL)
+		{
+			$this->_editeur_reponse(Editeur_Images::statut($refus), ['error' => Editeur_Images::message($refus)]);
+		}
+
+		// Le débit, par membre : chaque tentative compte, réussie ou non.
+		$limiteur = new Rate_Limit($this);
+		$cles     = [];
+
+		foreach (Editeur_Images::DEBITS as $nom => [$nombre, $fenetre])
+		{
+			$cle      = 'editeur_image:'.$nom.':'.(int) $this->user->id;
+			$controle = $limiteur->check($cle);
+
+			if (!$controle['allowed'])
+			{
+				header('Retry-After: '.max(1, (int) $controle['retry_after']));
+				$this->_editeur_reponse(429, ['error' => Editeur_Images::message('debit')]);
+			}
+
+			$cles[$cle] = [$nombre, $fenetre];
+		}
+
+		foreach ($cles as $cle => [$nombre, $fenetre])
+		{
+			$limiteur->hit($cle, $nombre, $fenetre, $fenetre);
+		}
+
+		$fichier = $_FILES['file'] ?? NULL;
+
+		if (!is_array($fichier) || !is_string($fichier['tmp_name'] ?? NULL) || !is_int($fichier['error'] ?? NULL))
+		{
+			$this->_editeur_reponse(400, ['error' => Editeur_Images::message('absent')]);
+		}
+
+		// Un chemin temporaire qui ne vient pas d'un envoi HTTP n'est jamais lu.
+		$temporaire = $fichier['error'] === UPLOAD_ERR_OK && is_uploaded_file($fichier['tmp_name']) ? $fichier['tmp_name'] : '';
+		$controle   = Editeur_Images::controler($temporaire, $fichier['error']);
+
+		if (is_string($controle))
+		{
+			$this->_editeur_reponse(Editeur_Images::statut($controle), ['error' => Editeur_Images::message($controle)]);
+		}
+
+		$relatif = Editeur_Images::chemin($controle['type'], time());
+		$absolu  = NEOFRAG_CMS.'/'.$relatif;
+
+		dir_create(dirname($absolu));
+
+		if (!is_dir(dirname($absolu)) || !is_writable(dirname($absolu)))
+		{
+			nf_journaliser_erreur('editeur', 'dossier des images de l\'éditeur non inscriptible : '.dirname($relatif), nf_chemin_relatif(__FILE__).':'.__LINE__);
+			$this->_editeur_reponse(500, ['error' => Editeur_Images::message('ecriture')]);
+		}
+
+		if (!Editeur_Images::reencoder($temporaire, $controle['type'], $absolu))
+		{
+			// Rien n'est écrit quand le ré-encodage échoue : une image que GD ne sait pas relire n'est pas gardée.
+			$this->_editeur_reponse(422, ['error' => Editeur_Images::message('illisible')]);
+		}
+
+		// Le registre des fichiers : qui a envoyé quoi, et quand (nf_file : membre, nom d'origine, chemin, date).
+		\NF\NeoFrag\Models\File::add($relatif, Editeur_Images::nom((string) ($fichier['name'] ?? ''), $controle['type']));
+
+		$this->_editeur_reponse(200, ['location' => $this->url->base.$relatif]);
+	}
+
+	/** La réponse JSON de l'envoi d'image, puis la fin de la requête. */
+	private function _editeur_reponse(int $statut, array $corps): never
+	{
+		http_response_code($statut);
+		header('Content-Type: application/json; charset=utf-8');
+
+		exit((string) json_encode($corps, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 	}
 
 	public function auth()
@@ -81,7 +181,7 @@ class Ajax extends Controller_Module
 
 	public function register()
 	{
-		return $this->form2(!empty($this->config->nf_registration_charte) ? 'username password_required email charte' : 'username password_required email', $this->model2('user'))
+		return $this->form2(trim(strip_tags($this->config->traduit('nf_registration_charte'))) !== '' ? 'username password_required email charte' : 'username password_required email', $this->model2('user'))
 					->compact()
 					->captcha()
 					->success(function($user, $form){
@@ -132,31 +232,10 @@ class Ajax extends Controller_Module
 							]);
 						}
 
-						// Welcome message via talks (post-migration MP → Talks unifié).
-						// Crée une conversation direct entre nf_welcome_user_id et le nouvel user.
-						if ($this->config->nf_welcome && $this->config->nf_welcome_user_id && !empty($this->config->nf_welcome_title) && !empty($this->config->nf_welcome_content))
+						// Le message de bienvenue, par la messagerie (le même pour l'inscription par un compte externe).
+						if (($module_user = $this->module('user')) instanceof \NF\Modules\User\User)
 						{
-							$welcome_uid = (int)$this->config->nf_welcome_user_id;
-							$content     = str_replace('[pseudo]', '@'.$user->username, $this->config->nf_welcome_content);
-
-							try
-							{
-								$talk_id = $this->module('talks')->model()->create_conversation(
-									$welcome_uid,
-									'direct',
-									(string)$this->config->nf_welcome_title,
-									'',
-									[(int)$user->id]
-								);
-								if ($talk_id)
-								{
-									$this->module('talks')->model()->send_message($talk_id, $welcome_uid, $content);
-								}
-							}
-							catch (\Throwable $e)
-							{
-								// Welcome silencieux : ne pas bloquer l'inscription si le talks crash
-							}
+							$module_user->bienvenue((int) $user->id, (string) $user->username);
 						}
 
 						notify($this->lang('Votre compte à bien été créé, bienvenue !'));

@@ -21,6 +21,9 @@ class Forum extends Model
 						->join('nf_user u',          'u.id       = m.user_id AND u.deleted = "0"')
 						->join('nf_user_profile up', 'up.id      = m.user_id')
 						->where('t.forum_id', $forums)
+						// Un message supprimé par la modération n'a plus de texte : il s'affichait en
+						// ligne vide, menant vers un message disparu.
+						->where('m.deleted_at', NULL)
 						->order_by('m.date DESC')
 						->limit(3)
 						->get());
@@ -104,9 +107,15 @@ class Forum extends Model
 		// Une requête à UNE colonne rend des scalaires, pas des lignes (`Db::get()`). La version
 		// précédente lisait `$category['category_id']` sur un entier : aucune catégorie n'était
 		// retenue, et le widget n'affichait jamais aucun sujet.
+		// La règle VIP du module : une catégorie réservée au VIP ne montre rien à qui ne l'est pas. Le
+		// widget ne lisait que le droit de lecture, et affichait l'extrait de ses messages à tous.
+		$forum  = \NeoFrag()->module('forum');
+		$modele = $forum ? $forum->model('forum') : NULL;
+
 		foreach ($this->db->select('category_id')->from('nf_forum_categories')->get() as $category_id)
 		{
-			if ($this->access('forum', 'category_read', $category_id))
+			if ($this->access('forum', 'category_read', $category_id)
+				&& !($modele instanceof \NF\Modules\Forum\Models\Forum && $modele->reservee_vip((int) $category_id)))
 			{
 				$categories[] = $category_id;
 			}

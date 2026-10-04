@@ -40,7 +40,7 @@ return [
 	'fecceb4d' => 'Créer une offre',
 	'ffa47b9d' => 'Candidatures déposées',
 	'67715710' => 'Recrutements',
-	'd81ea07e' => 'Recrutement de joueurs avec candidatures et système de votes — module gaming.',
+	'29a3450c' => 'Offres de recrutement par équipe et par poste, avec leurs propres questions ; les recruteurs donnent leur avis, puis acceptent ou refusent la candidature.',
 	'03a10bac' => 'En savoir plus',
 	'77b3c4db' => 'Postuler',
 	'1176b162' => 'J\'ai postulé !',

@@ -9,7 +9,7 @@ $this	->rule($this->form_checkbox('charte')
 					->data([
 						'on' => $this->lang('En vous inscrivant, vous acceptez notre <a %s>charte d\'inscription</a>', 'href="#collapseCharte" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseCharte"').'
 								<div class="collapse" id="collapseCharte">
-									<div class="card card-body mt-2">'.bbcode($this->config->nf_registration_charte).'</div>
+									<div class="card card-body mt-2">'.bbcode($this->config->traduit('nf_registration_charte')).'</div>
 								</div>'
 					])
 					->required()

@@ -11,7 +11,7 @@ return [
 	'7353c4ec' => 'See all listings',
 	'3771c1f7' => 'No offers at the moment',
 	'82f5d5c2' => 'View the offer',
-	'b38e1812' => 'Positions currently open for recruitment — gaming widget.',
+	'213019c2' => 'The latest recruitment offers, with their team and the positions still open, or one offer in detail: proposed role, places left, deadline.',
 	'cf25bc6e' => 'Latest listings',
 	'7712acba' => 'A single listing in detail',
 	'1f88c31b' => 'Options',

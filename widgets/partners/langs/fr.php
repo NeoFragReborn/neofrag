@@ -9,7 +9,7 @@ return [
 	'1d53170c' => 'Style du logo',
 	'a8e9757a' => 'Logo clair',
 	'7237648c' => 'Logo foncé',
-	'2b9c33c7' => 'Partenaires et sponsors avec logos — widget gaming.',
+	'4099befe' => 'Les logos des partenaires et sponsors, en bandeau défilant ou en colonne, version claire ou foncée selon le fond. Pour un club, une association ou une équipe.',
 	'54ac9ff9' => 'Partenaires',
 	'1f88c31b' => 'Options',
 	'dfcd9918' => 'Style des logos',

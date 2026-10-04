@@ -15,7 +15,7 @@ class Recruits extends Module
 	{
 		return [
 			'title'       => $this->lang('Recrutements'),
-			'description' => $this->lang('Recrutement de joueurs avec candidatures et système de votes — module gaming.'),
+			'description' => $this->lang('Offres de recrutement par équipe et par poste, avec leurs propres questions ; les recruteurs donnent leur avis, puis acceptent ou refusent la candidature.'),
 			'icon'        => 'fas fa-bullhorn',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

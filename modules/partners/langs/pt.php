@@ -29,7 +29,7 @@ return [
 	'b662eb26' => 'Editar parceiro',
 	'8caa3140' => 'Nossos parceiros',
 	'54ac9ff9' => 'Parceiros',
-	'5b5532c3' => 'Parceiros e patrocinadores — módulo de gaming.',
+	'daedcc3c' => 'Página dos parceiros e patrocinadores: logótipo claro ou escuro, site, redes sociais, código promocional e apresentação. Para um clube, uma associação ou uma equipa.',
 	'52c9bbab' => 'Modificar',
 	'8d9ef7a4' => 'Excluir',
 	'a8e9757a' => 'Logo claro',

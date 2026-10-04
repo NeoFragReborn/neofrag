@@ -9,7 +9,7 @@ class Calendar extends Widget
 	{
 		return [
 			'title'   => $this->lang('Calendrier'),
-			'description' => $this->lang('Prochains événements du calendrier.'),
+			'description' => $this->lang('Les prochains événements du calendrier, avec leur date et leur couleur, et un lien vers le calendrier complet ; le nombre d\'événements affichés se règle.'),
 			'icon'        => 'far fa-calendar',
 			'author'  => 'NeoFrag Reborn',
 			'license' => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',

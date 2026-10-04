@@ -21,7 +21,7 @@ themes/aurora/
 │   ├── theme.js              # mode clair/sombre du thème
 │   └── aurora.js             # interactions du thème
 ├── images/
-│   └── thumbnail.jpg         # vignette 480 × 270 pour la carte d'addon
+│   └── thumbnail.jpg         # vignette 960 × 600 : carte d'addon et place de marché
 └── install/
     └── migrations/           # évolutions des dispositions livrées (optionnel)
 ```
@@ -232,9 +232,20 @@ Administration → Outils.
 
 ## 5. La vignette — `images/thumbnail.jpg`
 
-La carte du thème dans l'administration et le catalogue attend `images/thumbnail.jpg` en **480 × 270**.
-Fais-en une **vraie capture** de l'accueil, pas une maquette : `tools/capture-vignettes.php` le fait pour
-tous les thèmes installés et refuse deux vignettes identiques.
+La carte du thème dans **Thèmes & Addons** et sa fiche dans la place de marché affichent
+`images/thumbnail.jpg` : un **JPEG de 960 × 600** (16/10), de 200 Ko au plus. C'est une **photo de
+l'accueil vu par un visiteur**, jamais une maquette. `tools/capturer-apercus.php` la prend sur un site où
+le thème est installé ; avec `--basculer-theme`, il en fait le thème par défaut le temps de la photo, puis
+rétablit l'ancien. Fais-le sur un site d'essai peuplé du contenu de démonstration
+(`install/cli.php --demo`), jamais sur un site en service :
+
+```bash
+php tools/capturer-apercus.php --type=theme --nom=aurora --basculer-theme
+```
+
+`check-vignettes` refuse ensuite un addon sans vignette, une vignette hors format et deux vignettes
+identiques ; `check-marketplace` refuse une entrée du catalogue sans aperçu. Le format et les quelques
+exemptions motivées vivent dans `tools/lib/vignettes.php`. Modules et widgets suivent la même règle.
 
 ## 6. Installer, activer, éprouver
 

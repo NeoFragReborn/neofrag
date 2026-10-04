@@ -304,6 +304,95 @@ class Security
 	}
 
 	/**
+	 * Un texte de l'éditeur riche (HTML) mis en texte de messagerie : un message de la messagerie est du
+	 * texte, que render_message() échappe, relie et met à la ligne. Le message de bienvenue, écrit dans
+	 * l'éditeur de *Paramètres → Inscription*, y arrivait en HTML : ses balises s'affichaient telles
+	 * quelles (2026-10-04). Les titres et paragraphes deviennent des blocs séparés d'une ligne vide, les
+	 * listes des puces « • » ou des numéros, un lien son texte suivi de son adresse ; les entités sont
+	 * décodées. Rien d'autre ne passe : le résultat est du texte, render_message() l'échappera.
+	 */
+	public static function texte_depuis_html(string $html): string
+	{
+		if (trim($html) === '')
+		{
+			return '';
+		}
+
+		$document = new \DOMDocument();
+		$ancien   = libxml_use_internal_errors(TRUE);
+		$document->loadHTML('<?xml encoding="utf-8"?><div>'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+		libxml_clear_errors();
+		libxml_use_internal_errors($ancien);
+
+		$blocs = ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'blockquote', 'pre', 'table', 'tr', 'hr'];
+
+		$parcourir = function (\DOMNode $noeud) use (&$parcourir, $blocs): string {
+			$texte = '';
+
+			foreach ($noeud->childNodes as $enfant)
+			{
+				if ($enfant instanceof \DOMText)
+				{
+					$texte .= preg_replace('/\s+/u', ' ', $enfant->nodeValue ?? '');
+					continue;
+				}
+
+				if (!$enfant instanceof \DOMElement)
+				{
+					continue;
+				}
+
+				$balise = strtolower($enfant->tagName);
+
+				if (in_array($balise, ['script', 'style'], TRUE))
+				{
+					continue;
+				}
+
+				if ($balise === 'br')
+				{
+					$texte .= "\n";
+				}
+				else if ($balise === 'li')
+				{
+					$liste  = $enfant->parentNode instanceof \DOMElement ? strtolower($enfant->parentNode->tagName) : 'ul';
+					$rang   = 1;
+
+					for ($frere = $enfant->previousSibling; $frere; $frere = $frere->previousSibling)
+					{
+						$rang += $frere instanceof \DOMElement && strtolower($frere->tagName) === 'li' ? 1 : 0;
+					}
+
+					$texte .= "\n".($liste === 'ol' ? $rang.'. ' : '• ').trim($parcourir($enfant));
+				}
+				else if ($balise === 'a')
+				{
+					$libelle = trim($parcourir($enfant));
+					$adresse = trim($enfant->getAttribute('href'));
+					$texte  .= $adresse !== '' && $adresse !== $libelle && preg_match('#^(https?://|mailto:)#i', $adresse) ? ($libelle !== '' ? $libelle.' ('.$adresse.')' : $adresse) : $libelle;
+				}
+				else if (in_array($balise, $blocs, TRUE))
+				{
+					$texte .= "\n\n".trim($parcourir($enfant))."\n\n";
+				}
+				else
+				{
+					$texte .= $parcourir($enfant);
+				}
+			}
+
+			return $texte;
+		};
+
+		$texte = html_entity_decode($parcourir($document->documentElement ?? $document), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+		$texte = preg_replace('/[ \t]+\n/u', "\n", $texte);
+		$texte = preg_replace('/\n[ \t]+/u', "\n", $texte);
+		$texte = preg_replace('/\n{3,}/u', "\n\n", $texte);
+
+		return trim((string) $texte);
+	}
+
+	/**
 	 * Rendu sécurisé d'un message : échappe HTML, auto-link URLs sûres,
 	 * GIFs whitelistés rendus en <img>, alerte sur shorteners.
 	 */

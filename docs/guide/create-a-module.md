@@ -23,6 +23,8 @@ modules/notes/
 ├── views/
 │   └── index.tpl.php
 ├── css/                      # optionnel
+├── images/
+│   └── thumbnail.jpg         # sa vignette, 960 × 600 — une capture de sa page
 ├── js/                       # optionnel — vanilla, jamais jQuery
 └── langs/
     └── fr.php                # traductions (optionnel)
@@ -455,7 +457,8 @@ Le projet a un filet, et un module neuf doit y entrer :
   `check-addon-contracts`, `check-js-sources`, `check-langs --toutes`, `check-textes-en-dur` (aucun
   texte visible hors de `lang()`), `check-actions-admin` (la charte des boutons), `check-pagination`,
   `check-heures` (aucune date affichée sans fuseau), `check-db-compteurs`, `check-demo-lock` (un module
-  qui touche à la configuration est verrouillé en démonstration),
+  qui touche à la configuration est verrouillé en démonstration), `check-vignettes` (sa vignette existe,
+  au format),
   `check-strict-types` (le compteur ne doit jamais baisser — déclare `declare(strict_types=1)` dans tes
   fichiers neufs), puis `check-install-profiles` (installe chaque profil pour de vrai et frappe les
   routes des modules absents, qui doivent rendre un **404 propre**, jamais un 500) et
@@ -474,3 +477,7 @@ les joue tous.
    **Ajouter (ZIP)**. Pour le publier au catalogue du marketplace du projet, il doit avoir
    `'core' => FALSE` et pas de `'distributed' => FALSE` ; `tools/package-addons.php` zippe et
    inscrit tous les addons optionnels dans `marketplace/catalog.json` avec leur empreinte SHA-256.
+4. Sa vignette, avant le packaging : `php tools/capturer-apercus.php --type=module --nom=notes` photographie
+   sa page publique, découpée sur le contenu du module, ou à défaut sa page d'administration. Si la page
+   montre des clés, des identifiants ou des comptes, fais la photo sur un site d'essai garni de données
+   d'exemple. Format et contrôles : [Créer un thème, § 5](create-a-theme.md).

@@ -93,7 +93,7 @@ return [
 	'fe353392' => 'Categoria editada com sucesso',
 	'0e81c33b' => 'Todos os álbuns',
 	'2f4815d7' => 'Integração <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Código para incorporar e exibir esta galeria em conteúdo HTML/BBCode livre"></i>',
-	'ff1f8094' => 'Galeria de fotos com álbuns, miniaturas e descrições.',
+	'7995ad67' => 'Galeria de fotos em categorias e álbuns; cada álbum tem as suas próprias permissões de consulta e de publicação. Imagens com título, descrição e comentários.',
 	'52c9bbab' => 'Modificar',
 	'8d9ef7a4' => 'Excluir',
 	'ca4ae516' => 'Modificar uma categoria',

@@ -15,7 +15,7 @@ class Awards extends Widget
 	{
 		return [
 			'title'       => $this->lang('Palmarès'),
-			'description' => $this->lang('Affiche les dernières récompenses attribuées — module gaming.'),
+			'description' => $this->lang('Le palmarès en bref, au choix : les derniers résultats des équipes, l\'équipe la plus récompensée ou le jeu le plus récompensé.'),
 			'icon'        => 'fas fa-trophy',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

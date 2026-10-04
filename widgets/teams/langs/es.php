@@ -10,5 +10,5 @@ return [
 	'be90eefa' => 'Equipos',
 	'c77259fe' => 'Ver todos nuestros equipos',
 	'ea2b7448' => 'Nuestros equipos',
-	'd59108aa' => 'Equipos del clan con sus miembros — widget gaming.',
+	'd2655a75' => 'Los equipos del sitio en banners clicables, cada uno lleva a su página: juego, presentación, jugadores. Solo aparecen los equipos que tienen un banner.',
 ];

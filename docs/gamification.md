@@ -42,6 +42,9 @@ droits) ; les points sont une **monnaie** gagnée puis dépensée. Les deux dér
 - Tables `nf_user_points` (solde `total`/`earned`/`spent`) + `nf_points_log` (transactions, audit + plafonds).
 - API : `get_points($uid)`, `add_points($uid,$amount,$type,$reason)`, `earn($uid,$action)` (plafonné/jour),
   `spend_points($uid,$amount,$reason)` (refus si solde insuffisant), `daily_presence()`.
+- Écritures **atomiques** : `spend_points` vérifie et débite le solde par la même requête
+  (`… WHERE total >= montant`), `add_points` et `grant_vip` écrivent par un `INSERT … ON DUPLICATE KEY
+  UPDATE` — lus puis réécrits, deux échanges simultanés n’en gardaient qu’un (2026-10-04).
 - **Anti-farm** : plafond quotidien par action (somme des gains positifs du jour).
 - **Hooks de gain** (pattern « appel direct » car les listeners cross-module sont lazy) :
   - commentaire posté → `modules/comments/comments.php`
@@ -77,7 +80,9 @@ défaut (`cfg()`). Clés : `gam_karma_{reaction,content,seniority}`, `gam_pt_{ac
 - Tables `nf_shop_items` (catalogue : titre, **prix en points**, `type`, `payload`, stock, `unique_per_user`,
   actif, position) + `nf_shop_purchases` (inventaire).
 - Page publique `/shop` (grille thémée, états possédé / points insuffisants / connexion). Achat AJAX
-  `/shop/ajax/buy/{id}` : valide → débite via `gamification->spend_points` → enregistre → applique l'effet.
+  `/ajax/shop/buy/{id}?_=<jeton>` : jeton de session des actions (`csrf_token()`) exigé, puis UNE transaction —
+  débit atomique (`spend_points`, qui verrouille la ligne du membre), possession relue après, stock
+  décrémenté par la base (`stock = stock - 1 … WHERE stock > 0`), enregistrement, effet.
 - **Types d'items** : `group` (grade → assigne `nf_users_groups`, badge profil) · `vip` (→ `grant_vip`) ·
   `cosmetic` / `perk` / `merch` (possession enregistrée, consommée ailleurs : régie pub, profil, fulfilment).
 - API : `items()`, `item($id)`, `owns($uid,$id)`, `owned_ids($uid)`, `has_perk($uid,$key)` (ex. `no_ads`).
@@ -111,6 +116,12 @@ listings (`get_categories`/`get_forums_tree` → masquée). Les **administrateur
   via `gamification->add_points` / `grant_vip`.
 - **Inerte sans clés** : `is_configured()` (⚠ ne PAS nommer `is_enabled()` — réservé au routage des addons,
   cf. `output.php`). Boutons « Indisponible », webhook → 400.
+- **Inerte sans Gamification** : le module la déclare dans `requires` (installée avec lui), et
+  `vente_possible()` ferme la vente si elle manque ou est désactivée. Un paiement reçu dans ce cas n'est
+  pas marqué traité : le webhook répond 503 et Stripe le représente plus tard (avant, il était
+  enregistré « traité » sans rien créditer).
+- Le bouton « Payer » appelle `/ajax/payments/checkout/{id}` : une adresse qui commence par `ajax/`,
+  sans quoi c'est le contrôleur public qui répond — sans `_checkout`, donc 404.
 - Admin : réglages Stripe (clés publique/secrète, secret de signature webhook) + CRUD packs.
 
 ### Activer Stripe (à faire, hors code)

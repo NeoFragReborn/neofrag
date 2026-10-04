@@ -23,7 +23,7 @@ return [
 	'e27e3273' => 'No category at the moment',
 	'e3202498' => 'All',
 	'ebcb0841' => 'Next',
-	'f21e5d9a' => 'Overview of the photo gallery with the latest images.',
+	'f36a1e9e' => 'Four views of the gallery to choose from: its categories, the albums of a category, a random image or the slideshow of an album.',
 	'51c02c0c' => 'Gallery',
 	'f8594147' => 'Album',
 ];

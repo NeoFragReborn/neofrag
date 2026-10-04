@@ -93,7 +93,7 @@ return [
 	'fe353392' => 'Kategorie erfolgreich bearbeitet',
 	'0e81c33b' => 'Alle Alben',
 	'2f4815d7' => 'Integration <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Code zur Einbettung dieser Galerie in freie HTML/BBCode-Inhalte"></i>',
-	'ff1f8094' => 'Fotogalerie mit Alben, Vorschaubildern und Beschreibungen.',
+	'7995ad67' => 'Fotogalerie in Kategorien und Alben; jedes Album hat eigene Rechte zum Ansehen und Hochladen. Bilder mit Titel, Beschreibung und Kommentaren.',
 	'52c9bbab' => 'Bearbeiten',
 	'8d9ef7a4' => 'Löschen',
 	'ca4ae516' => 'Kategorie bearbeiten',

@@ -23,6 +23,7 @@ declare(strict_types=1);
  * -----
  *   $retirer = nf_banc_widget($db, 'nebula', 'about', 'index', NULL);   // posé SANS réglages
  *   $retirer = nf_banc_widget($db, 'nebula', 'rss', 'index', '{"url":"…"}');
+ *   $retirer = nf_banc_widget($db, 'nebula', 'socials', 'index', NULL, taille: 'col-4');   // largeur d'une colonne
  *   … servir /fr/contact …
  *   $retirer();
  */
@@ -30,10 +31,14 @@ declare(strict_types=1);
 require_once __DIR__.'/outil.php';
 
 /**
- * @param  ?string $json les réglages tels qu'ils seront STOCKÉS (JSON), ou NULL pour aucun
+ * Un widget fait pour une colonne étroite — une barre latérale — se pose avec `$taille` (`col-4`) :
+ * seul sur toute la largeur de la page, il s'étirait en un bandeau qui ne lui ressemble pas.
+ *
+ * @param  ?string $json   les réglages tels qu'ils seront STOCKÉS (JSON), ou NULL pour aucun
+ * @param  ?string $taille la largeur de sa colonne, classe de grille (`col-4`), ou NULL pour toute la zone
  * @return callable(): void  retire le widget et sa disposition — sans effet la seconde fois
  */
-function nf_banc_widget(mysqli $db, string $theme, string $widget, string $type, ?string $json, string $page = 'contact/*', string $zone = '1'): callable
+function nf_banc_widget(mysqli $db, string $theme, string $widget, string $type, ?string $json, string $page = 'contact/*', string $zone = '1', ?string $taille = NULL): callable
 {
     $reglages = $json === NULL ? 'NULL' : "'".$db->real_escape_string($json)."'";
 
@@ -41,7 +46,7 @@ function nf_banc_widget(mysqli $db, string $theme, string $widget, string $type,
         .$db->real_escape_string($widget)."', '".$db->real_escape_string($type)."', NULL, ".$reglages.")");
     $id = (int) $db->insert_id;
 
-    $disposition = '[{"style":"row-default","cols":[{"size":null,"widgets":[{"id":'.$id.',"style":null,"size":null}]}]}]';
+    $disposition = '[{"style":"row-default","cols":[{"size":'.($taille === NULL ? 'null' : (string) json_encode($taille)).',"widgets":[{"id":'.$id.',"style":null,"size":null}]}]}]';
 
     $db->query("INSERT INTO `nf_dispositions` (`theme`, `page`, `zone`, `disposition`) VALUES ('"
         .$db->real_escape_string($theme)."', '".$db->real_escape_string($page)."', '".$db->real_escape_string($zone)."', '"

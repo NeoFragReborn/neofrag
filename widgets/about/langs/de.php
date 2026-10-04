@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 return [
 	'6f28f1e0' => 'Über',
-	'4d01d503' => 'Frei gestaltbarer Vorstellungsblock, in HTML bearbeitbar.',
+	'9d7cca2b' => 'Stellt die unter „Unsere Struktur“ erfasste Organisation vor: Name, Art, Gründungsdatum, Logo und Biografie, jeweils ein- oder ausblendbar, ausrichtbar und einfärbbar.',
 	'8088964a' => 'Anzeige',
 	'f27c976e' => 'Stil',
 	'7e924eb0' => 'Teamname',

@@ -6,7 +6,7 @@
 				<h4 class="modal-title" id="modalCharteLabel"><?php echo $this->lang('Règlement') ?></h4>
 			</div>
 			<div class="modal-body">
-				<?php echo bbcode($this->config->nf_registration_charte) ?>
+				<?php echo bbcode($this->config->traduit('nf_registration_charte')) ?>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo $this->lang('Fermer') ?></button>

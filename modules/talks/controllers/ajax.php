@@ -9,6 +9,9 @@ namespace NF\Modules\Talks\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 
+// La vue `index` rend les messages par Security::render_message(), comme la conversation.
+require_once __DIR__ . '/../security.php';
+
 class Ajax extends Controller_Module
 {
 	public function index($talk_id, $message_id)

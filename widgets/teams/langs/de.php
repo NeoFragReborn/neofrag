@@ -10,5 +10,5 @@ return [
 	'be90eefa' => 'Teams',
 	'c77259fe' => 'Alle unsere Teams ansehen',
 	'ea2b7448' => 'Unsere Teams',
-	'd59108aa' => 'Clan-Teams mit ihren Mitgliedern — Gaming-Widget.',
+	'd2655a75' => 'Die Teams der Website als anklickbare Banner, jedes führt zu seiner Seite: Spiel, Vorstellung, Spieler. Nur Teams mit einem Banner erscheinen.',
 ];

@@ -35,7 +35,7 @@ return [
 	'52c9bbab' => 'Modifier',
 	'b83726b5' => 'Aucune carte',
 	'58a98c98' => 'Ajouter une carte',
-	'cd59c74e' => 'Catalogue de jeux pratiqués — module gaming.',
+	'895213c5' => 'La liste des jeux pratiqués, avec bannière, icône, cartes et modes de jeu ; elle sert de base aux équipes, aux matchs, au palmarès et au recrutement.',
 	'97671a33' => 'Jeux',
 	'df149063' => 'Cartes',
 	'3b7c3ac5' => 'Modifier une carte',

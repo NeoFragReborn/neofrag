@@ -7,7 +7,7 @@ declare(strict_types=1);
 return [
 	'3c710872' => 'Ver el calendario',
 	'539ab4d8' => 'No hay eventos próximos',
-	'72928445' => 'Próximos eventos del calendario.',
+	'b2f24cbb' => 'Los próximos eventos del calendario, con su fecha y su color, y un enlace al calendario completo; el número de eventos mostrados es ajustable.',
 	'baef19d8' => 'Próximos eventos',
 	'fd283f69' => 'Calendario',
 	// i18n 2026-06-11 (code strings)

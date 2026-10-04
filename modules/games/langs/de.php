@@ -34,7 +34,7 @@ return [
 	'f8f21a53' => 'Möchten Sie die Karte <b>%s</b> wirklich löschen?',
 	'b83726b5' => 'Keine Karte',
 	'58a98c98' => 'Karte hinzufügen',
-	'cd59c74e' => 'Katalog gespielter Spiele — Gaming-Modul.',
+	'895213c5' => 'Die Liste der gespielten Spiele, mit Banner, Symbol, Karten und Spielmodi; sie bildet die Grundlage für Teams, Matches, Auszeichnungen und Rekrutierung.',
 	'97671a33' => 'Spiele',
 	'8d9ef7a4' => 'Löschen',
 	'df149063' => 'Karten',

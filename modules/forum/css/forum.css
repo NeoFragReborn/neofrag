@@ -110,6 +110,14 @@
 	padding: 14px 18px;
 }
 
+/* Une image d'un message — collée dans l'éditeur, jusqu'à 2000 px de large — tient dans sa colonne,
+   proportions gardées : une capture d'écran débordait de la page, d'un téléphone surtout (2026-10-04).
+   Les émojis personnalisés gardent leur hauteur, posée sur la balise même. */
+.forum-message-cell img {
+	max-width: 100%;
+	height: auto;
+}
+
 /* Striped : alterne fond gris/blanc une ligne sur deux */
 [data-forum-view="messages"] .forum-message-row:nth-child(even) {
 	background: rgba(0, 0, 0, 0.02);

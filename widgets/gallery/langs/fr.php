@@ -22,7 +22,7 @@ return [
 	'e27e3273' => 'Aucune catégorie pour le moment',
 	'e3202498' => 'Toutes',
 	'ebcb0841' => 'Suivant',
-	'f21e5d9a' => 'Aperçu de la galerie photos avec dernières images.',
+	'f36a1e9e' => 'Quatre affichages de la galerie au choix : ses catégories, les albums d\'une catégorie, une image tirée au hasard ou le diaporama d\'un album.',
 	'51c02c0c' => 'Galerie',
 	'f8594147' => 'Album',
 ];

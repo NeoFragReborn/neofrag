@@ -12,13 +12,24 @@ class Index extends Controller_Widget
 
 	public function signup($config = [])
 	{
+		$module = $this->module('newsletter');
+
+		// Sans le module, ni la table des abonnés ni l'adresse d'inscription n'existent.
+		if (!$module instanceof \NF\Modules\Newsletter\Newsletter || !$module->is_enabled())
+		{
+			return '';
+		}
+
 		$nb = (int)NeoFrag()->db->select('COUNT(*)')->from('nf_newsletter_subscribers')->where('confirmed', 1)->row();
 
+		// L'envoi va à `newsletter/subscribe`, avec le jeton de session du module : posté sur la page
+		// `newsletter`, le champ n'était pas lu par son formulaire (cf. Index::_subscribe du module).
 		$body = '<p class="mb-2"><small>'.$this->lang('Reçois nos actus directement par email.').'</small></p>';
-		$body .= '<form method="post" action="'.url('newsletter').'">';
+		$body .= '<form method="post" action="'.url('newsletter/subscribe').'">';
+		$body .= '<input type="hidden" name="_" value="'.htmlspecialchars($module->jeton_widget()).'">';
 		$body .= '<div class="input-group input-group-sm">';
-		$body .= '<input type="email" name="data[email]" class="form-control" placeholder="'.$this->lang('ton@email.fr').'" required>';
-		$body .= '<button type="submit" class="btn btn-primary"><i class="fas fa-envelope"></i></button>';
+		$body .= '<input type="email" name="email" class="form-control" placeholder="'.$this->lang('ton@email.fr').'" aria-label="'.$this->lang('Adresse email').'" required>';
+		$body .= '<button type="submit" class="btn btn-primary" aria-label="'.$this->lang('S\'inscrire').'"><i class="fas fa-envelope"></i></button>';
 		$body .= '</div>';
 		$body .= '</form>';
 		if ($nb > 0)

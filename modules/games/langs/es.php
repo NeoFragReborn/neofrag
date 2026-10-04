@@ -34,7 +34,7 @@ return [
 	'f8f21a53' => '¿Está seguro de querer eliminar el mapa <b>%s</b>?',
 	'b83726b5' => 'Sin mapa',
 	'58a98c98' => 'Añadir un mapa',
-	'cd59c74e' => 'Catálogo de juegos practicados — módulo de gaming.',
+	'895213c5' => 'La lista de los juegos practicados, con banner, icono, mapas y modos de juego; sirve de base a los equipos, los partidos, el palmarés y el reclutamiento.',
 	'97671a33' => 'Juegos',
 	'8d9ef7a4' => 'Eliminar',
 	'df149063' => 'Mapas',

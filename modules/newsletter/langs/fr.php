@@ -107,4 +107,7 @@ return [
 	'056af2ff' => 'Inscription à la newsletter (double opt-in) et envoi de campagnes.',
 	'79987719' => 'inscription newsletter en attente|inscriptions newsletter en attente',
 	'080b55ee' => 'Gérer la newsletter',
+	'a06e1419' => 'Cette adresse e-mail n\'est pas valide.',
+	'edc6b420' => 'L\'e-mail de confirmation n\'a pas pu partir. Réessaie un peu plus tard.',
+	'ce6fdf8a' => 'Trop de demandes d\'inscription récentes. Réessaie dans %d minute(s).',
 ];

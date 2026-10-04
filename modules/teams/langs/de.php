@@ -70,6 +70,6 @@ return [
 	'3c19f7aa' => 'Gegner',
 	'a415f66e' => 'Event',
 	'f3581855' => 'Ergebnis',
-	'f4cbbafe' => 'Teams und Clans — Gaming-Modul.',
+	'21ba1da3' => 'Eine Seite pro Team: Spiel, Vorstellung, Spieler und Rollen, Ergebnisse und Rekrutierung je nach installierten Modulen. Für eine Gilde oder ein E-Sport-Team.',
 	'8fd9c7ef' => 'Speichern',
 ];

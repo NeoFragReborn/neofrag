@@ -15,7 +15,7 @@ class Events extends Widget
 	{
 		return [
 			'title'       => $this->lang('Événements'),
-			'description' => $this->lang('Calendrier ou liste des événements à venir — module gaming.'),
+			'description' => $this->lang('Six affichages des événements au choix : calendrier, liste par type, un événement en détail, types d\'événements, derniers résultats ou prochains matchs.'),
 			'icon'        => 'fas fa-calendar-check',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

@@ -120,7 +120,19 @@ return $this->form2()
 ```
 
 Les deux portent leur propre jeton CSRF. Une action déclenchée par un **lien** ou un **POST écrit à la
-main** doit le vérifier elle-même : `csrf_url()`, `check_csrf()`, `csrf_token()` (trait `Admin_Helpers`).
+main** doit le vérifier elle-même : `csrf_url()`, `check_csrf()`, `csrf_token()` (trait `Admin_Helpers`) ;
+hors d'un contrôleur, le même jeton se lit par `nf_jeton_csrf()`.
+
+**L'éditeur riche** — le type `editor` en `form()`, `form_textarea()->editor()` en `form2()` — est
+TinyMCE 7, auto-hébergé ; le HTML qui en sort passe par `sanitize_html()`. Une image **collée ou glissée**
+y est envoyée au site (`ajax/user/editeur-image` : membre connecté, jeton de session, débit borné), puis
+insérée par son adresse définitive. Le site lit son vrai type dans ses octets (JPEG, PNG, GIF, WebP),
+refuse un fichier qui porte du code, borne le poids (5 Mo) et les dimensions, la **ré-encode** — plus de
+métadonnées, l'orientation d'une photo appliquée — et la range sous `upload/editeur/AAAA/MM/` avec un nom
+aléatoire. Un `tinymce.init()` écrit à la main (un gabarit, un écran à part) place
+`Editeur_Images::tinymce()` en tête de ses réglages (`NF\NeoFrag\Libraries\Editeur_Images`) : sans lui,
+une image collée reste cassée, puis disparaît à l'enregistrement. `EditeurImagesTest` le vérifie pour
+tout le produit.
 
 **Le captcha** — `->captcha()` en `form2()`, `add_captcha()` en `form()` — affiche le fournisseur choisi
 dans *Paramètres → Captcha* et vérifie sa réponse côté serveur ; un membre connecté n'en voit pas. Le

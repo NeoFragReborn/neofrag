@@ -40,7 +40,7 @@ return [
 	'fecceb4d' => 'Angebot erstellen',
 	'ffa47b9d' => 'Eingereichte Bewerbungen',
 	'67715710' => 'Rekrutierungen',
-	'd81ea07e' => 'Spielerrekrutierung mit Bewerbungen und Abstimmungssystem — Gaming-Modul.',
+	'29a3450c' => 'Rekrutierungsangebote nach Team und Position, jeweils mit eigenen Fragen; die Recruiter geben ihre Meinung ab und nehmen die Bewerbung dann an oder lehnen sie ab.',
 	'03a10bac' => 'Mehr erfahren',
 	'77b3c4db' => 'Bewerben',
 	'1176b162' => 'Ich habe mich beworben!',

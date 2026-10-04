@@ -15,7 +15,7 @@ class Teams extends Widget
 	{
 		return [
 			'title'       => $this->lang('Équipes'),
-			'description' => $this->lang('Équipes du clan avec leurs membres — widget gaming.'),
+			'description' => $this->lang('Les équipes du site en bannières cliquables, chacune menant à sa page : jeu, présentation, joueurs. Seules les équipes qui ont une bannière y figurent.'),
 			'icon'        => 'fas fa-headset',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

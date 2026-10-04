@@ -17,7 +17,7 @@ return [
 	'96b3350e' => '<b>%d</b> anúncio|<b>%d</b> anúncios',
 	'9a13110f' => 'Há %d utilizador no fórum|Há %d utilizadores no fórum',
 	'aac5e9d9' => 'Sem tópicos de momento',
-	'ab1a982a' => 'Tópicos ou mensagens recentes do fórum.',
+	'6fc3c77c' => 'Últimas mensagens, últimos tópicos, números do fórum ou membros online, à escolha; só aparecem as categorias que o visitante tem o direito de ler.',
 	'ab2b6b9e' => 'Estatísticas',
 	'be016bc1' => '<b>%d</b> tópico criado|<b>%d</b> tópicos criados',
 	'd084ce78' => 'Atividade do fórum',

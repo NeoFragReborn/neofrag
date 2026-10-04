@@ -21,6 +21,86 @@ use NF\NeoFrag\Loadables\Model;
 
 class Newsletter extends Model
 {
+	/**
+	 * Le frein des demandes d'inscription, sur le modèle du livre d'or : [essais, fenêtre, blocage],
+	 * en secondes. Par adresse IP, pour qu'une même source ne fasse pas envoyer des e-mails de
+	 * confirmation en masse à des adresses de son choix ; par adresse e-mail, pour qu'une même boîte
+	 * ne soit pas visée en boucle (2026-10-04).
+	 */
+	const FREIN = [
+		'ip'      => [5, 3600, 3600],
+		'adresse' => [3, 86400, 86400],
+	];
+
+	/**
+	 * Les clés du frein (`Rate_Limit`) d'une demande : l'adresse IP, et l'adresse e-mail quand elle en
+	 * est une — hachée, la table du frein n'a pas à garder d'adresses en clair.
+	 *
+	 * @return array<string, string>  type (clé de FREIN) => clé du frein
+	 */
+	public static function cles_du_frein(string $ip, ?string $email): array
+	{
+		$cles = ['ip' => 'newsletter:ip:'.$ip];
+
+		if ($email !== NULL && $email !== '')
+		{
+			$cles['adresse'] = 'newsletter:adresse:'.hash('sha256', $email);
+		}
+
+		return $cles;
+	}
+
+	/** Une adresse saisie, nettoyée (minuscules, sans blancs autour) — NULL si ce n'en est pas une. */
+	public static function adresse($saisie): ?string
+	{
+		$email = strtolower(trim(is_string($saisie) ? $saisie : ''));
+
+		return ($email !== '' && strlen($email) <= 254 && filter_var($email, FILTER_VALIDATE_EMAIL) !== FALSE) ? $email : NULL;
+	}
+
+	/**
+	 * Inscrit une adresse, en attente de sa confirmation (double opt-in). Une seule voie pour la page
+	 * `newsletter` et pour le widget, qui ne disaient pas la même chose.
+	 *
+	 * @return array{statut: string, email: string, jeton: string}  statut : `invalide` (pas une adresse),
+	 *   `inscrit` (déjà confirmée), `en_attente` (déjà demandée, pas confirmée), `nouveau` (ligne créée)
+	 */
+	public function inscrire($saisie, $user_id = NULL): array
+	{
+		if (($email = self::adresse($saisie)) === NULL)
+		{
+			return ['statut' => 'invalide', 'email' => '', 'jeton' => ''];
+		}
+
+		$existant = $this->db	->select('id', 'confirmed')
+								->from('nf_newsletter_subscribers')
+								->where('email', $email)
+								->row();
+
+		if (!empty($existant))
+		{
+			return ['statut' => $existant['confirmed'] ? 'inscrit' : 'en_attente', 'email' => $email, 'jeton' => ''];
+		}
+
+		$jeton = bin2hex(random_bytes(32));
+
+		$this->db->insert('nf_newsletter_subscribers', [
+			'email'   => $email,
+			'token'   => $jeton,
+			'user_id' => $user_id ? (int) $user_id : NULL
+		]);
+
+		return ['statut' => 'nouveau', 'email' => $email, 'jeton' => $jeton];
+	}
+
+	/** Retire une inscription que le courriel de confirmation n'a pas atteinte : l'adresse pourra réessayer. */
+	public function annuler_inscription(string $jeton): void
+	{
+		$this->db	->where('token', $jeton)
+					->where('confirmed', 0)
+					->delete('nf_newsletter_subscribers');
+	}
+
 	/** Abonnés confirmés (= destinataires potentiels d'une campagne). */
 	public function confirmed_count()
 	{
@@ -198,8 +278,10 @@ class Newsletter extends Model
 	// Envoi d'un destinataire (lien de désinscription + pixel de suivi d'ouverture). @return bool succès SMTP.
 	protected function _send_one($row)
 	{
-		$unsub   = url('newsletter/unsubscribe/'.$row['token']);
-		$pixel   = !empty($row['track_token']) ? '<img src="'.url('newsletter/track/'.$row['track_token']).'" width="1" height="1" alt="" style="display:none">' : '';
+		// Adresses ABSOLUES : relatives, le lien de désinscription et le pixel de suivi se résolvaient
+		// contre le domaine du client de messagerie — se désinscrire était impossible depuis le courriel.
+		$unsub   = absolute_url('newsletter/unsubscribe/'.$row['token']);
+		$pixel   = !empty($row['track_token']) ? '<img src="'.absolute_url('newsletter/track/'.$row['track_token']).'" width="1" height="1" alt="" style="display:none">' : '';
 		$content = $row['content']
 			.'<hr><p style="font-size:0.85em;color:#888;text-align:center">'
 			.$this->lang('Tu reçois ce mail car tu es inscrit à la newsletter de %s.', htmlspecialchars((string)$this->config->nf_name)).' '

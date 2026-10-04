@@ -66,7 +66,7 @@ return [
 	'f7423095' => 'Add a category',
 	'fada4b7d' => 'No more news',
 	'fe353392' => 'Category successfully edited',
-	'8e91d04c' => 'Site news with categories and comments.',
+	'43364972' => 'News sorted by categories and tags: scheduled publishing, comments, reactions, subscription by category and edit history.',
 	'52c9bbab' => 'Edit',
 	'8d9ef7a4' => 'Delete',
 	'ca4ae516' => 'Edit a category',

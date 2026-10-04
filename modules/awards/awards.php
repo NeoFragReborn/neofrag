@@ -15,7 +15,7 @@ class Awards extends Module
 	{
 		return [
 			'title'       => $this->lang('Palmarès'),
-			'description' => $this->lang('Récompenses (palmarès) attribuables aux membres ou équipes — module gaming.'),
+			'description' => $this->lang('Le palmarès des équipes : rang obtenu, nombre d\'équipes, date, lieu, jeu et plateforme de chaque compétition, et les podiums comptés par équipe et par jeu.'),
 			'icon'        => 'fas fa-trophy',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

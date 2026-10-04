@@ -9,7 +9,7 @@ return [
 	'08c66025' => 'News',
 	'593f94a6' => 'Alle News ansehen',
 	'868700ab' => 'Im Moment keine News',
-	'a26ed2b8' => 'Liste der zuletzt veröffentlichten News.',
+	'05afd14e' => 'Drei Ansichten der News zur Auswahl: die neuesten, die Liste der Kategorien oder eine Tag-Wolke, deren Größe der Häufigkeit folgt.',
 	'a89c656a' => 'Neueste News',
 	'c8781d5e' => 'Kategorien',
 	'cf8e3b18' => 'Tags',

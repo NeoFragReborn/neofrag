@@ -56,6 +56,7 @@ const FORMATS_MACHINE = [
     'r',                // RFC 2822 (en-têtes HTTP, flux RSS, dumps)
     'U',                // un horodatage
     'Ymd', 'YmdHis', 'Ymd-His', 'Ymd-Hi',   // des noms de fichiers
+    'Y/m',              // le dossier d'un fichier rangé par mois (upload/editeur/AAAA/MM, Editeur_Images)
     'Ymd\THis\Z', 'Y-m-d\TH:i:s\Z',         // l'heure universelle d'un agenda (avec gmdate)
 ];
 

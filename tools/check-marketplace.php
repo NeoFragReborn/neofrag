@@ -20,6 +20,11 @@ declare(strict_types=1);
  * aperçu annoncé mais absent. Rien ne casse bruyamment — le visiteur télécharge simplement une
  * archive périmée, ou clique sur un lien mort.
  *
+ * Chaque entrée doit avoir son APERÇU, au format de `lib/vignettes.php` (960 × 600). Le contrôle
+ * vérifiait l'aperçu annoncé, pas qu'il y en ait un : le 2026-10-04, `api` et `discord` étaient au
+ * catalogue sans vignette, et une fiche de la place de marché sans image passait pour normale. Une
+ * entrée sans aperçu est désormais un écart — sauf exemption écrite et motivée dans `lib/vignettes.php`.
+ *
  * Ce contrôle compare TROIS sources qui doivent s'accorder :
  *
  *   1. le CODE sur le disque   — la version que l'addon déclare dans son `__info()` ;
@@ -58,6 +63,7 @@ declare(strict_types=1);
 
 require __DIR__.'/lib/outil.php';
 require __DIR__.'/lib/depot.php';
+require __DIR__.'/lib/vignettes.php';
 
 [$o, $reste] = nf_options(['verbeux' => FALSE]);
 
@@ -346,10 +352,18 @@ foreach ($entrees as $e)
         $defauts[] = [$cle, 'pas de depends[neofrag] dans __info() : l’installation par archive passerait son chemin, EN SILENCE'];
     }
 
-    // ── 6. L'aperçu annoncé existe ───────────────────────────────────────────
-    $apercu = (string) ($e['preview'] ?? '');
+    // ── 6. L'aperçu : exigé, présent, au format ──────────────────────────────
+    $apercu  = (string) ($e['preview'] ?? '');
+    $origine = (DOSSIERS[$type] ?? 'modules').'/'.$nom;
 
-    if ($apercu !== '')
+    if ($apercu === '')
+    {
+        if (!isset(NF_VIGNETTES_EXEMPTEES[$origine]))
+        {
+            $defauts[] = [$cle, 'aucun aperçu : '.$origine.'/images/thumbnail.jpg manquait au packaging — le produire (capturer-apercus), puis repackager'];
+        }
+    }
+    else
     {
         $fichier = $dossier.'/'.$apercu;
 
@@ -357,9 +371,10 @@ foreach ($entrees as $e)
         {
             $defauts[] = [$cle, 'aperçu annoncé mais absent : '.$apercu];
         }
-        elseif (@getimagesize($fichier) === FALSE)
+        elseif (($defaut = nf_vignette_defaut($fichier)) !== NULL)
         {
-            $defauts[] = [$cle, 'aperçu illisible : '.$apercu];
+            $defauts[] = [$cle, 'aperçu '.$apercu.' : '.$defaut];
+            $attendus[] = realpath($fichier) ?: $fichier;
         }
         else
         {

@@ -6,7 +6,7 @@ return [
 	'1d53170c' => 'Stile logo',
 	'a8e9757a' => 'Logo chiaro',
 	'7237648c' => 'Logo scuro',
-	'2b9c33c7' => 'Partner e sponsor con loghi — widget gaming.',
+	'4099befe' => 'I loghi dei partner e degli sponsor, in una banda scorrevole o in colonna, versione chiara o scura secondo lo sfondo. Per un club, un\'associazione o una squadra.',
 	'54ac9ff9' => 'Partner',
 	'1f88c31b' => 'Opzioni',
 	'dfcd9918' => 'Stile dei loghi',

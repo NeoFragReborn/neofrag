@@ -107,4 +107,7 @@ return [
 	'03158917' => 'Gruppe',
 	'79987719' => 'ausstehende Newsletter-Anmeldung|ausstehende Newsletter-Anmeldungen',
 	'080b55ee' => 'Newsletter verwalten',
+	'a06e1419' => 'Diese E-Mail-Adresse ist ungültig.',
+	'edc6b420' => 'Die Bestätigungs-E-Mail konnte nicht gesendet werden. Versuche es etwas später erneut.',
+	'ce6fdf8a' => 'Zu viele aktuelle Anmeldeanfragen. Versuche es in %d Minute(n) erneut.',
 ];

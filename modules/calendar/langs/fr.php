@@ -49,7 +49,7 @@ return [
 	'fd283f69' => 'Calendrier',
 	'fd943a7a' => 'Calendrier — %s',
 	'881485c2' => 'Éditer : %s',
-	'3de1bc52' => 'Calendrier d\'événements avec export iCal RFC 5545.',
+	'9cd12a22' => 'Calendrier des activités avec lieu et description, export iCal vers un agenda et rappel aux membres qui suivent un événement. Pour une association ou un club.',
 	'eee7511a' => 'Rappel : « %s » commence bientôt',
 	'08585d21' => 'Rappel avant un événement suivi (heures, 0 = désactivé)',
 	'1ce788f2' => 'Configuration modifiée',

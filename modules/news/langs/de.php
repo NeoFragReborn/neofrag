@@ -64,7 +64,7 @@ return [
 	'f7423095' => 'Kategorie hinzufügen',
 	'fada4b7d' => 'Keine weiteren News',
 	'fe353392' => 'Kategorie erfolgreich bearbeitet',
-	'8e91d04c' => 'Site-News mit Kategorien und Kommentaren.',
+	'43364972' => 'News nach Kategorien und Tags geordnet: geplante Veröffentlichung, Kommentare, Reaktionen, Abonnement pro Kategorie und Änderungsverlauf.',
 	'52c9bbab' => 'Bearbeiten',
 	'8d9ef7a4' => 'Löschen',
 	'ca4ae516' => 'Kategorie bearbeiten',

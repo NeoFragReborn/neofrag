@@ -51,7 +51,7 @@ return [
 	'f6fbedbb' => 'iCal export',
 	'fd283f69' => 'Calendar',
 	'fd943a7a' => 'Calendar — %s',
-	'3de1bc52' => 'Event calendar with iCal RFC 5545 export.',
+	'9cd12a22' => 'A calendar of activities with location and description, iCal export to a calendar app and a reminder to members who follow an event. For a nonprofit or a club.',
 	'881485c2' => 'Edit: %s',
 	'960d0854' => 'Manage events',
 	'46b60b4f' => 'F j, Y',

@@ -40,7 +40,7 @@ return [
 	'fecceb4d' => 'Criar uma oferta',
 	'ffa47b9d' => 'Candidaturas enviadas',
 	'67715710' => 'Recrutamentos',
-	'd81ea07e' => 'Recrutamento de jogadores com candidaturas e sistema de votação — módulo de gaming.',
+	'29a3450c' => 'Ofertas de recrutamento por equipa e por posição, cada uma com as suas próprias perguntas; os recrutadores dão a sua opinião e depois aceitam ou recusam a candidatura.',
 	'03a10bac' => 'Saiba mais',
 	'77b3c4db' => 'Candidatar-se',
 	'1176b162' => 'Eu me candidatei!',

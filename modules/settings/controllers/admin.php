@@ -894,11 +894,33 @@ class Admin extends Controller_Module
 			.'</div>';
 	}
 
-	public function registration()
+	/**
+	 * Les inscriptions : ouvertes ou fermées, le règlement, le message de bienvenue.
+	 *
+	 * Le règlement, le titre et le message se traduisent langue par langue (2026-10-04) : ils n'avaient
+	 * qu'une valeur, et un visiteur anglais lisait le règlement en français. Un onglet par langue du site ;
+	 * l'adresse porte la langue (`admin/settings/registration/en`), que le formulaire garde. Chaque langue a
+	 * sa valeur (`nf_registration_charte_en`…) ; une langue qui n'a pas la sienne montre la valeur commune
+	 * (`nf_registration_charte`, la seule jusqu'ici), que le premier enregistrement pose si elle manque —
+	 * un texte écrit une fois sert à toutes les langues tant qu'elles ne sont pas traduites.
+	 */
+	public function registration($langue = '')
 	{
 		$this	->subtitle($this->lang('Gestion des inscriptions'))
 				->icon('fas fa-sign-in-alt fa-rotate-90')
 				->js('admin/status_toggle');
+
+		$langues = [];
+
+		foreach ($this->config->langs ?: [$this->config->lang] as $l)
+		{
+			$langues[(string) $l->info()->name] = $l;
+		}
+
+		if (!isset($langues[$langue]))
+		{
+			$langue = (string) $this->config->lang->info()->name;
+		}
 
 		$users = $this->db	->select('id as user_id', 'username')
 							->from('nf_user')
@@ -913,13 +935,31 @@ class Admin extends Controller_Module
 		}
 		array_natsort($list_users);
 
+		// Une valeur propre à la langue, ou la commune qu'elle montre faute de traduction.
+		$propre = fn (string $nom, string $code): bool => trim(strip_tags((string) ($this->config->{$nom.'_'.$code} ?? ''))) !== '';
+		// `lang()` rend un objet de traduction, pas une chaîne : le convertir, sinon le type de retour fait
+		// tomber la page en 500 (vu au banc d'essai, 2026-10-04).
+		$aide   = fn (string $nom): string => (string) ($propre($nom, $langue)
+			? $this->lang('Texte propre à cette langue.')
+			: $this->lang('Cette langue n\'a pas encore le sien : c\'est le texte commun qui s\'affiche. Enregistrez-le ici pour le traduire.'));
+
+		$enregistrer = function (string $nom, $valeur) use ($langue): void {
+			$this->config($nom.'_'.$langue, (string) $valeur);
+
+			if (trim(strip_tags((string) ($this->config->$nom ?? ''))) === '')
+			{
+				$this->config($nom, (string) $valeur);
+			}
+		};
+
 		// Form 1: Règlement (charte)
 		$form_charte = $this->form()
 			->add_rules([
 				'registration_charte' => [
-					'label' => $this->lang('Règlement'),
-					'value' => $this->config->nf_registration_charte,
-					'type'  => 'editor'
+					'label'       => $this->lang('Règlement'),
+					'value'       => $this->config->traduit('nf_registration_charte', $langue),
+					'type'        => 'editor',
+					'description' => $aide('nf_registration_charte')
 				]
 			])
 			->add_submit($this->lang('Valider'))
@@ -943,14 +983,14 @@ class Admin extends Controller_Module
 				],
 				'welcome_title' => [
 					'label' => $this->lang('Titre du message'),
-					'value' => $this->config->nf_welcome_title,
+					'value' => html_entity_decode($this->config->traduit('nf_welcome_title', $langue), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
 					'type'  => 'text'
 				],
 				'welcome_content' => [
 					'label'       => $this->lang('Message de bienvenue'),
-					'value'       => $this->config->nf_welcome_content,
+					'value'       => $this->config->traduit('nf_welcome_content', $langue),
 					'type'        => 'editor',
-					'description' => $this->lang('Placez [pseudo] pour afficher automatiquement le pseudo du nouveau membre dans le message')
+					'description' => $this->lang('Placez [pseudo] pour afficher automatiquement le pseudo du nouveau membre dans le message').' '.$this->lang('Il arrive en texte dans la messagerie : titres, listes et liens sont gardés, la mise en forme non.').' '.$aide('nf_welcome_content')
 				]
 			])
 			->add_submit($this->lang('Valider'))
@@ -959,7 +999,7 @@ class Admin extends Controller_Module
 
 		if ($form_charte->is_valid($post))
 		{
-			$this->config('nf_registration_charte', $post['registration_charte']);
+			$enregistrer('nf_registration_charte', $post['registration_charte']);
 			$this->_audit('registration');
 			notify($this->lang('Règlement sauvegardé'));
 			refresh();
@@ -967,9 +1007,9 @@ class Admin extends Controller_Module
 		else if ($form_welcome->is_valid($post))
 		{
 			$this	->config('nf_welcome',         in_array('on', (array)$post['welcome']))
-					->config('nf_welcome_user_id', $post['welcome_user_id'])
-					->config('nf_welcome_title',   $post['welcome_title'])
-					->config('nf_welcome_content', $post['welcome_content']);
+					->config('nf_welcome_user_id', $post['welcome_user_id']);
+			$enregistrer('nf_welcome_title',   $post['welcome_title']);
+			$enregistrer('nf_welcome_content', $post['welcome_content']);
 			$this->_audit('welcome');
 			notify($this->lang('Message de bienvenue sauvegardé'));
 			refresh();
@@ -980,6 +1020,25 @@ class Admin extends Controller_Module
 
 		// Status hero
 		$status_view = $this->view('admin/registration');
+
+		// Un onglet par langue, coché quand le règlement et le message y sont traduits.
+		$onglets = '';
+
+		if (count($langues) > 1)
+		{
+			$onglets = '<div class="settings-section-card"><div class="settings-section-body">'
+				.'<p class="text-muted mb-2">'.$this->lang('Le règlement, le titre et le message de bienvenue se traduisent langue par langue. Une langue sans texte propre montre le texte commun.').'</p>'
+				.'<ul class="nav nav-pills">';
+
+			foreach ($langues as $code => $l)
+			{
+				$traduite = $propre('nf_registration_charte', $code) && $propre('nf_welcome_content', $code);
+				$onglets .= '<li class="nav-item"><a class="nav-link'.($code === $langue ? ' active' : '').'" href="'.url('admin/settings/registration/'.$code).'">'
+					.htmlspecialchars((string) $l->info()->title).($traduite ? ' '.icon('fas fa-check') : '').'</a></li>';
+			}
+
+			$onglets .= '</ul></div></div>';
+		}
 
 		// Charte card
 		$charte_card = '<div class="settings-section-card">'
@@ -999,7 +1058,7 @@ class Admin extends Controller_Module
 			.'<div class="settings-section-body">'.$form_welcome->display().'</div>'
 			.'</div>';
 
-		return $back_link.$status_view.$charte_card.$welcome_card;
+		return $back_link.$status_view.$onglets.$charte_card.$welcome_card;
 	}
 
 	public function team()

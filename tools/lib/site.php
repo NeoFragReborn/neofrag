@@ -179,6 +179,53 @@ function nf_reglage_poser(mysqli $db, string $nom, string $valeur): void
         ."' WHERE name = '".$db->real_escape_string($nom)."'");
 }
 
+/**
+ * Pose un réglage le temps d'une mesure, et rend la fonction qui remet l'état d'avant : la valeur
+ * d'origine, ou l'ABSENCE de la ligne. Un réglage qu'aucun administrateur n'a encore enregistré n'a
+ * pas de ligne — `nf_social_discord` sur une installation neuve — et `nf_reglage_poser()` n'en crée
+ * pas. La fonction est aussi inscrite pour la fin de l'outil ; la rappeler ne change plus rien.
+ *
+ * @return callable(): void
+ */
+function nf_reglage_temporaire(mysqli $db, string $nom, string $valeur): callable
+{
+    $origine = nf_reglage($db, $nom);
+    $cle     = $db->real_escape_string($nom);
+
+    if ($origine === NULL)
+    {
+        $db->query("INSERT INTO nf_settings (name, site, lang, value, type) VALUES ('".$cle."', '', '', '"
+            .$db->real_escape_string($valeur)."', 'string')");
+    }
+    else
+    {
+        nf_reglage_poser($db, $nom, $valeur);
+    }
+
+    $fait     = FALSE;
+    $remettre = static function () use ($db, $nom, $cle, $origine, &$fait): void {
+        if ($fait)
+        {
+            return;
+        }
+
+        $fait = TRUE;
+
+        if ($origine === NULL)
+        {
+            $db->query("DELETE FROM nf_settings WHERE name = '".$cle."' AND site = '' AND lang = ''");
+        }
+        else
+        {
+            nf_reglage_poser($db, $nom, $origine);
+        }
+    };
+
+    register_shutdown_function($remettre);
+
+    return $remettre;
+}
+
 /** Les thèmes réellement enregistrés sur CE site (`nf_addon`, type `theme`). */
 function nf_themes_installes(mysqli $db): array
 {

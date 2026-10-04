@@ -231,6 +231,7 @@ class Admin extends Controller_Module
 			function init(){
 				if (typeof tinymce === "undefined") { setTimeout(init, 100); return; }
 				tinymce.init({
+					'.\NF\NeoFrag\Libraries\Editeur_Images::tinymce().'
 					selector: "#nf-staff-chat-editor",
 					height: 240,
 					menubar: false,

@@ -30,7 +30,7 @@ return [
 	'dbcb5bb0' => 'Award successfully edited',
 	'e4701b5e' => 'Our teams\' trophies',
 	'f342c1c7' => 'Awards list',
-	'ec91a486' => 'Awards (palmares) assignable to members or teams — gaming module.',
+	'766f341e' => 'The teams\' track record: rank achieved, number of teams, date, location, game and platform of each competition, with podiums counted per team and per game.',
 	'52c9bbab' => 'Edit',
 	'8d9ef7a4' => 'Delete',
 	// i18n 2026-06-11 (code strings)

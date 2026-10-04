@@ -17,7 +17,7 @@ return [
 	'96b3350e' => '<b>%d</b> Ankündigung|<b>%d</b> Ankündigungen',
 	'9a13110f' => 'Es ist %d Benutzer im Forum|Es sind %d Benutzer im Forum',
 	'aac5e9d9' => 'Im Moment kein Thema',
-	'ab1a982a' => 'Neueste Themen oder Beiträge des Forums.',
+	'6fc3c77c' => 'Neueste Beiträge, neueste Themen, Forumszahlen oder Mitglieder online, nach Wahl; nur die Kategorien, die der Besucher lesen darf, erscheinen darin.',
 	'ab2b6b9e' => 'Statistiken',
 	'be016bc1' => '<b>%d</b> Thema erstellt|<b>%d</b> Themen erstellt',
 	'd084ce78' => 'Forum-Aktivität',

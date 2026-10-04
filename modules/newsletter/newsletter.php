@@ -31,6 +31,8 @@ class Newsletter extends Module
 			],
 			'routes'      => [
 				''                              => 'index',
+				// L'inscription envoyée par le widget « Newsletter » (cf. Index::_subscribe).
+				'subscribe'                     => '_subscribe',
 				'confirm/{url_title}'           => '_confirm',
 				'unsubscribe/{url_title}'       => '_unsubscribe',
 				'track/{url_title}'             => '_track',
@@ -65,5 +67,18 @@ class Newsletter extends Module
 				]
 			]
 		];
+	}
+
+	/**
+	 * Le jeton du formulaire du widget, propre à la session du visiteur.
+	 *
+	 * Le formulaire de la page `newsletter` porte son propre jeton, lié à l'endroit du code qui le
+	 * construit (`Form::token()`) : un widget, ailleurs, ne peut pas le reproduire. Le widget poste
+	 * donc sur `newsletter/subscribe` avec ce jeton-ci — celui des formulaires (`Form2::token()`),
+	 * rangé dans la session sous un nom fixe —, qui prouve que l'envoi part d'une page du site.
+	 */
+	public function jeton_widget(): string
+	{
+		return (string) $this->form2()->token('newsletter-widget');
 	}
 }

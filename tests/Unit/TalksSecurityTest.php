@@ -197,4 +197,32 @@ final class TalksSecurityTest extends TestCase
 
 		self::assertStringNotContainsString('javascript:', strtolower($rendu));
 	}
+
+	/**
+	 * Le message de bienvenue s'écrit dans l'éditeur riche (HTML) et arrive dans une messagerie de texte :
+	 * ses balises s'y affichaient telles quelles (2026-10-04). Mis en texte, il garde sa structure.
+	 */
+	public function test_le_html_de_l_editeur_devient_un_texte_structure(): void
+	{
+		$texte = Security::texte_depuis_html('<h3>🎉 Bienvenue&nbsp;!</h3><p>Salut <strong>toi</strong>,<br>bon retour.</p>'
+			.'<ul><li>Le wiki : https://exemple.test/wiki — à lire</li><li>La démo</li></ul><ol><li>un</li><li>deux</li></ol>');
+
+		self::assertSame("🎉 Bienvenue !\n\nSalut toi,\nbon retour.\n\n• Le wiki : https://exemple.test/wiki — à lire\n• La démo\n\n1. un\n2. deux", str_replace("\u{a0}", ' ', $texte));
+	}
+
+	public function test_un_lien_garde_son_adresse_et_un_script_disparait(): void
+	{
+		$texte = Security::texte_depuis_html('<p><a href="https://exemple.test/forum">le forum</a> <a href="javascript:alert(1)">piège</a></p><script>alert(1)</script>');
+
+		self::assertSame('le forum (https://exemple.test/forum) piège', $texte);
+	}
+
+	public function test_le_texte_rendu_ne_porte_aucune_balise_de_l_editeur(): void
+	{
+		$rendu = Security::render_message(Security::texte_depuis_html('<h3>Titre</h3><p>Voir https://exemple.test/wiki</p>'));
+
+		self::assertStringNotContainsString('<h3', $rendu);
+		self::assertStringNotContainsString('<p>', $rendu);
+		self::assertStringContainsString('<a href="https://exemple.test/wiki"', $rendu);
+	}
 }

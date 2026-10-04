@@ -36,9 +36,13 @@ $nf_theme    = (string) getenv('NF_OUTIL_THEME');
 $nf_sonde    = (string) getenv('NF_OUTIL_SONDE');
 $nf_sonde_ou = getenv('NF_OUTIL_SONDE_OU') ?: 'body';
 
-if ($nf_theme !== '' || ($nf_sonde !== '' && is_file($nf_sonde)))
+// Forcer un mode fige aussi la page ; `NF_OUTIL_FIGER` la fige SANS toucher au mode, que le thème
+// garde tel qu'il le choisit pour un visiteur (les vignettes des thèmes, capturer-apercus).
+$nf_figer    = $nf_theme !== '' || getenv('NF_OUTIL_FIGER') === '1';
+
+if ($nf_figer || ($nf_sonde !== '' && is_file($nf_sonde)))
 {
-    ob_start(static function (string $html) use ($nf_theme, $nf_sonde, $nf_sonde_ou): string {
+    ob_start(static function (string $html) use ($nf_theme, $nf_figer, $nf_sonde, $nf_sonde_ou): string {
         if (stripos($html, '</body>') === FALSE)
         {
             return $html;
@@ -73,14 +77,23 @@ if ($nf_theme !== '' || ($nf_sonde !== '' && is_file($nf_sonde)))
                 .'document.documentElement.setAttribute("data-theme",'.json_encode($nf_theme).');'
                 .'document.documentElement.setAttribute("data-bs-theme",'.json_encode($nf_theme).');';
 
+            if (($i = stripos($html, '</head>')) !== FALSE)
+            {
+                $html = substr($html, 0, $i).'<script'.$nonce.'>'.$js.'</script>'.substr($html, $i);
+            }
+        }
+
+        if ($nf_figer)
+        {
             /*
              * Figer ce qui bouge : le carrousel avance tout seul, et une capture prise pendant la
              * transition attrape une diapositive à zéro pixel de large — la page a l'air CASSÉE alors
              * qu'elle est en mouvement (faux défaut signalé sur `forge` le 2026-09-16). Une mesure doit
-             * montrer un état, pas un instant.
+             * montrer un état, pas un instant. Les transitions aussi : le menu d'`extend` passe en
+             * 140 ms du sombre au clair, et la capture tombait une fois sur deux sur un menu illisible
+             * (2026-10-04).
              */
-            $tete = '<script'.$nonce.'>'.$js.'</script>'
-                .'<style'.$nonce.'>*, *::before, *::after { animation-play-state: paused !important;'
+            $tete = '<style'.$nonce.'>*, *::before, *::after { animation-play-state: paused !important;'
                 .' animation-duration: 0s !important; transition-duration: 0s !important; }</style>';
 
             $html = str_ireplace('data-bs-ride="carousel"', 'data-bs-ride="false"', $html);

@@ -73,13 +73,18 @@ jobs:
             exit 1
           fi
           # CSRF : tout fichier qui émet un lien d'action mutante (csrf_url/csrf_token) doit aussi
-          # vérifier le jeton dans le même fichier (check_csrf) — sinon l'action GET est exposée au CSRF.
+          # vérifier le jeton dans le même fichier (check_csrf, ou csrf_valide pour une réponse JSON) —
+          # sinon l'action GET est exposée au CSRF. Une page qui pose le jeton pour une action d'un AUTRE
+          # fichier le dit (« csrf: vérifié par <chemin> »), et ce fichier-là doit le vérifier (2026-10-04).
           csrf_viol=0
           for f in $(grep -rlE "csrf_url\(|csrf_token\(" --include='*.php' modules/ neofrag/ | grep -v 'admin_helpers.php'); do
-            if ! grep -qE "check_csrf\(" "$f"; then
-              echo "::error::$f émet csrf_url/csrf_token sans check_csrf (action mutante exposée au CSRF)."
-              csrf_viol=1
+            grep -qE "check_csrf\(|csrf_valide\(" "$f" && continue
+            cible=$(grep -oE "csrf: vérifié par [A-Za-z0-9_./-]+\.php" "$f" | head -1 | sed 's/^csrf: vérifié par //')
+            if [ -n "$cible" ] && [ -f "$cible" ] && grep -qE "check_csrf\(|csrf_valide\(" "$cible"; then
+              continue
             fi
+            echo "::error::$f émet csrf_url/csrf_token sans check_csrf (action mutante exposée au CSRF)."
+            csrf_viol=1
           done
           [ "$csrf_viol" = "1" ] && exit 1 || true
       # Les outils eux-mêmes respectent leurs conventions (en-tête, garde par le socle, plomberie
@@ -98,11 +103,13 @@ jobs:
       - name: Garde déclarations d'addons (cœur ↮ optionnel)
         if: ${{ !cancelled() }}
         run: php tools/check-addon-declarations.php
-      # Couplage RÉEL entre addons, lu dans le code par le tokenizer PHP : quel addon lit la table,
-      # nomme la classe, demande le service ou pointe la route d'un autre. Tout couplage FATAL
-      # (table, classe) doit être déclaré dans `requires` ou annoté « couplage: <raison> » à
-      # l'endroit où il a lieu. Sans ce contrôle, la moitié « qui dépend de qui » n'existe nulle
-      # part — c'est ce trou qui a produit le 500 de juin 2026 sur une install allégée.
+      # Couplage RÉEL entre addons, lu dans le code par le tokenizer PHP et dans les SQL livrés : quel
+      # addon lit la table, nomme la classe, fait traduire un texte, demande le service, pointe la route
+      # ou pose le widget d'un autre. Tout couplage FATAL (table, classe, traduction empruntée) doit être
+      # déclaré dans `requires` ou annoté « couplage: <raison> » à l'endroit où il a lieu ; les couplages
+      # VISIBLES (une case vide, un réglage qui désigne un absent) sont listés « à trancher » sous un
+      # cliquet. Sans ce contrôle, la moitié « qui dépend de qui » n'existe nulle part — c'est ce trou
+      # qui a produit le 500 de juin 2026 sur une install allégée.
       - name: Garde couplage entre addons (déclaré ou annoté)
         if: ${{ !cancelled() }}
         run: php tools/check-addon-coupling.php
@@ -201,6 +208,13 @@ jobs:
       - name: Garde zones de thème (déclarées ↔ rendues)
         if: ${{ !cancelled() }}
         run: php tools/check-theme-zones.php
+      # Chaque addon a sa vignette (`images/thumbnail.jpg`, 960 × 600), ou une exemption écrite avec sa
+      # raison dans tools/lib/vignettes.php. Le 2026-10-04, `api` et `discord` étaient au catalogue
+      # sans aperçu et quatre thèmes gardaient un ancien 480 × 270 : rien ne le disait avant une
+      # publication.
+      - name: Garde vignettes d'addons (présentes, au format)
+        if: ${{ !cancelled() }}
+        run: php tools/check-vignettes.php
       # Un widget peut arriver SANS reglages : pose par l'install() d'un theme, ajoute en Live
       # Editor avant qu'on ouvre son formulaire, ou restaure depuis une disposition ancienne. Douze
       # checkers sur trente-huit lisaient leurs cles sans repli ; onze n'y perdaient qu'un

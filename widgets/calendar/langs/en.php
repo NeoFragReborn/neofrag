@@ -7,7 +7,7 @@ declare(strict_types=1);
 return [
 	'3c710872' => 'View the calendar',
 	'539ab4d8' => 'No upcoming event',
-	'72928445' => 'Upcoming events from the calendar.',
+	'b2f24cbb' => 'The upcoming events of the calendar, with their date and color, and a link to the full calendar; the number of events shown is adjustable.',
 	'baef19d8' => 'Upcoming events',
 	'fd283f69' => 'Calendar',
 	// i18n 2026-06-11 (code strings)

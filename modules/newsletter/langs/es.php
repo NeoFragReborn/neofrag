@@ -107,4 +107,7 @@ return [
 	'03158917' => 'Grupo',
 	'79987719' => 'suscripción al boletín pendiente|suscripciones al boletín pendientes',
 	'080b55ee' => 'Gestionar boletín',
+	'a06e1419' => 'Esta dirección de correo no es válida.',
+	'edc6b420' => 'No se ha podido enviar el correo de confirmación. Vuelve a intentarlo un poco más tarde.',
+	'ce6fdf8a' => 'Demasiadas solicitudes de suscripción recientes. Inténtalo de nuevo en %d minuto(s).',
 ];

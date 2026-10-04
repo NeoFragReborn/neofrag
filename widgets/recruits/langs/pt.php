@@ -11,7 +11,7 @@ return [
 	'7353c4ec' => 'Ver todos os anúncios',
 	'3771c1f7' => 'Nenhuma oferta de momento',
 	'82f5d5c2' => 'Descobrir a oferta',
-	'b38e1812' => 'Vagas atualmente abertas para recrutamento — widget de gaming.',
+	'213019c2' => 'As últimas ofertas de recrutamento, com a sua equipa e as vagas ainda por preencher, ou uma oferta em detalhe: função proposta, vagas livres, data limite.',
 	'cf25bc6e' => 'Últimos anúncios',
 	'7712acba' => 'Um anúncio em detalhe',
 	'1f88c31b' => 'Opções',

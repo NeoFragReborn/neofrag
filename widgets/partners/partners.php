@@ -15,7 +15,7 @@ class Partners extends Widget
 	{
 		return [
 			'title'       => $this->lang('Partenaires'),
-			'description' => $this->lang('Partenaires et sponsors avec logos — widget gaming.'),
+			'description' => $this->lang('Les logos des partenaires et sponsors, en bandeau défilant ou en colonne, version claire ou foncée selon le fond. Pour un club, une association ou une équipe.'),
 			'icon'        => 'far fa-handshake',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

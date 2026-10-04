@@ -219,8 +219,8 @@ foreach ($inconnues as $table => $fichiers)
 }
 
 // ── L'historique des migrations dans le schéma d'installation ─────────────────────────────────
-// Lu par motif et non par nf_sql_tuples() : l'historique glisse un commentaire avant chaque ligne,
-// et la lecture générale s'arrête au premier.
+// Lu par motif : seul le nom de chaque migration compte ici. L'historique glisse un commentaire avant
+// chaque ligne ; nf_sql_tuples() les saute aussi depuis le 2026-10-04, elle s'arrêtait au premier.
 $schema    = (string) file_get_contents($racine.'/install/schema.sql');
 $debut     = strpos($schema, 'INSERT INTO `nf_migrations`');
 $fin       = $debut === FALSE ? FALSE : strpos($schema, "');\n", $debut);

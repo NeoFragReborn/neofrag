@@ -95,7 +95,7 @@ return [
 	'fe353392' => 'Category successfully edited',
 	'0e81c33b' => 'All albums',
 	'2f4815d7' => 'Integration <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="Code to embed to display this gallery in free HTML/BBCode content"></i>',
-	'ff1f8094' => 'Photo gallery with albums, thumbnails and descriptions.',
+	'7995ad67' => 'A photo gallery in categories and albums; each album has its own viewing and posting permissions. Images with title, description and comments.',
 	'52c9bbab' => 'Edit',
 	'8d9ef7a4' => 'Delete',
 	'ca4ae516' => 'Edit a category',

@@ -29,7 +29,7 @@ return [
 	'b662eb26' => 'Edit partner',
 	'8caa3140' => 'Our partners',
 	'54ac9ff9' => 'Partners',
-	'5b5532c3' => 'Partners and sponsors — gaming module.',
+	'daedcc3c' => 'A page for partners and sponsors: light or dark logo, website, social networks, promo code and description. For a club, a nonprofit or a team.',
 	'52c9bbab' => 'Edit',
 	'8d9ef7a4' => 'Delete',
 	'a8e9757a' => 'Light logo',

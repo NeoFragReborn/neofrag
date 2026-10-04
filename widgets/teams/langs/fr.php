@@ -10,5 +10,5 @@ return [
 	'be90eefa' => 'Équipes',
 	'c77259fe' => 'Voir toutes nos équipes',
 	'ea2b7448' => 'Nos équipes',
-	'd59108aa' => 'Équipes du clan avec leurs membres — widget gaming.',
+	'd2655a75' => 'Les équipes du site en bannières cliquables, chacune menant à sa page : jeu, présentation, joueurs. Seules les équipes qui ont une bannière y figurent.',
 ];

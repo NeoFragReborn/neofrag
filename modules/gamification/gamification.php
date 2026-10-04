@@ -264,25 +264,15 @@ class Gamification extends Module
 			return $this->get_points($user_id);
 		}
 
-		if ($this->db->from('nf_user_points')->where('user_id', $user_id)->empty())
-		{
-			$this->db->insert('nf_user_points', [
-				'user_id' => $user_id,
-				'total'   => max(0, $amount),
-				'earned'  => $amount > 0 ? $amount : 0,
-				'spent'   => $amount < 0 ? -$amount : 0
-			]);
-		}
-		else
-		{
-			$row = $this->db->select('total', 'earned', 'spent')->from('nf_user_points')->where('user_id', $user_id)->row(FALSE);
+		// Écrit par la base, en une requête : la ligne était lue puis réécrite, et deux crédits
+		// simultanés — un gain de forum pendant un achat de points Stripe — n'en gardaient qu'un
+		// (2026-10-04). La première écriture crée la ligne, les suivantes l'augmentent ; le solde ne
+		// descend jamais sous zéro, comme avant. Que des entiers dans la requête.
+		$credit = max(0, $amount);
+		$debit  = max(0, -$amount);
 
-			$this->db->where('user_id', $user_id)->update('nf_user_points', [
-				'total'  => max(0, (int)$row['total'] + $amount),
-				'earned' => (int)$row['earned'] + ($amount > 0 ? $amount : 0),
-				'spent'  => (int)$row['spent']  + ($amount < 0 ? -$amount : 0)
-			]);
-		}
+		$this->db->execute('INSERT INTO nf_user_points (user_id, total, earned, spent) VALUES ('.$user_id.', '.$credit.', '.$credit.', '.$debit.')'
+			.' ON DUPLICATE KEY UPDATE total = GREATEST(0, total + ('.$amount.')), earned = earned + '.$credit.', spent = spent + '.$debit);
 
 		$this->db->insert('nf_points_log', [
 			'user_id' => $user_id,
@@ -338,18 +328,39 @@ class Gamification extends Module
 		return $amount;
 	}
 
-	/** Dépense de points (refusée si solde insuffisant). @return bool */
+	/**
+	 * Dépense de points (refusée si solde insuffisant). @return bool
+	 *
+	 * Le solde est vérifié et débité par la MÊME requête (`… WHERE total >= montant`) : il était lu,
+	 * puis débité, et deux dépenses simultanées passaient toutes les deux sur un solde qui n'en
+	 * couvrait qu'une (2026-10-04). Dans une transaction, la ligne du membre reste verrouillée
+	 * jusqu'à sa fin (cf. la boutique).
+	 */
 	public function spend_points($user_id, $amount, $reason = '')
 	{
 		$user_id = (int)$user_id;
 		$amount  = (int)$amount;
 
-		if ($amount <= 0 || $this->get_points($user_id) < $amount)
+		if (!$user_id || $amount <= 0)
 		{
 			return FALSE;
 		}
 
-		$this->add_points($user_id, -$amount, 'spend', $reason);
+		$debite = $this->db	->where('user_id', $user_id)
+							->where('total >=', $amount)
+							->update('nf_user_points', 'total = total - '.$amount.', spent = spent + '.$amount);
+
+		if (!$debite)
+		{
+			return FALSE;
+		}
+
+		$this->db->insert('nf_points_log', [
+			'user_id' => $user_id,
+			'amount'  => -$amount,
+			'type'    => 'spend',
+			'reason'  => mb_substr((string)$reason, 0, 255)
+		]);
 
 		return TRUE;
 	}
@@ -376,19 +387,16 @@ class Gamification extends Module
 			return;
 		}
 
-		$exists  = !$this->db->from('nf_vip')->where('user_id', $user_id)->empty();
-		$current = $exists ? $this->db->select('expires_at')->from('nf_vip')->where('user_id', $user_id)->row() : NULL;
-		$base    = ($current && strtotime((string)$current) > time()) ? strtotime((string)$current) : time();
-		$expires = date('Y-m-d H:i:s', $base + $days * 86400);
+		// Écrit par la base, en une requête : l'échéance était lue puis réécrite, et deux octrois
+		// simultanés — un pack VIP payé pendant un achat VIP à la boutique — n'en gardaient qu'un
+		// (2026-10-04). Un VIP en cours est prolongé depuis son échéance, un VIP échu repart de
+		// maintenant ; les heures restent celles de PHP, comme partout où `nf_vip` est lue.
+		$maintenant = date('Y-m-d H:i:s');
+		$echeance   = date('Y-m-d H:i:s', time() + $days * 86400);
+		$origine    = $this->db->escape_string(mb_substr((string)$source, 0, 50));
 
-		if ($exists)
-		{
-			$this->db->where('user_id', $user_id)->update('nf_vip', ['expires_at' => $expires, 'source' => mb_substr((string)$source, 0, 50)]);
-		}
-		else
-		{
-			$this->db->insert('nf_vip', ['user_id' => $user_id, 'expires_at' => $expires, 'source' => mb_substr((string)$source, 0, 50)]);
-		}
+		$this->db->execute('INSERT INTO nf_vip (user_id, expires_at, source) VALUES ('.$user_id.', \''.$echeance.'\', \''.$origine.'\')'
+			.' ON DUPLICATE KEY UPDATE expires_at = IF(expires_at > \''.$maintenant.'\', expires_at + INTERVAL '.$days.' DAY, \''.$echeance.'\'), source = \''.$origine.'\'');
 	}
 
 	/** Date d'expiration VIP si actif, sinon NULL. */

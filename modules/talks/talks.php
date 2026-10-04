@@ -70,7 +70,9 @@ class Talks extends Module
 							 ->row();
 			if (empty($talk) || !is_array($talk)) return;
 
-			$talk_url = \url('talks/'.(int)$payload['talk_id'].'/'.\url_title($talk['name']));
+			// Adresse ABSOLUE : elle part dans un courriel, où un lien relatif se résout contre le
+			// domaine du client de messagerie (même règle que `user.registration`, relevé le 2026-10-04).
+			$talk_url = \absolute_url('talks/'.(int)$payload['talk_id'].'/'.\url_title($talk['name']));
 
 			foreach ($recipients as $r)
 			{

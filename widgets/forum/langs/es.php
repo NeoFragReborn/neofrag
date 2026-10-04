@@ -17,7 +17,7 @@ return [
 	'96b3350e' => '<b>%d</b> anuncio|<b>%d</b> anuncios',
 	'9a13110f' => 'Hay %d usuario en el foro|Hay %d usuarios en el foro',
 	'aac5e9d9' => 'No hay temas por el momento',
-	'ab1a982a' => 'Últimos temas o publicaciones del foro.',
+	'6fc3c77c' => 'Últimos mensajes, últimos temas, cifras del foro o miembros conectados, a elegir; solo aparecen las categorías que el visitante tiene derecho a leer.',
 	'ab2b6b9e' => 'Estadísticas',
 	'be016bc1' => '<b>%d</b> tema creado|<b>%d</b> temas creados',
 	'd084ce78' => 'Actividad del foro',

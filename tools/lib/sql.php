@@ -265,6 +265,10 @@ function nf_sql_jouer_fichier(mysqli $db, string $chemin): ?string
  * réécrire quelques lignes sans le régénérer tout entier. Les valeurs sont rendues désséchappées ;
  * `NULL` reste NULL.
  *
+ * Un commentaire `-- …` glissé ENTRE deux tuples est sauté. La lecture s'y arrêtait : le 2026-10-04,
+ * 59 des 157 réglages de `install/seed.sql` — tous ceux qui suivent la note sur le service worker —
+ * étaient invisibles à qui la lisait, et d'abord au contrôle des clés en double.
+ *
  * @return array{colonnes: list<string>, tuples: list<array{debut: int, fin: int, valeurs: list<?string>}>}
  */
 function nf_sql_tuples(string $sql, string $table): array
@@ -280,11 +284,33 @@ function nf_sql_tuples(string $sql, string $table): array
 
     $echappements = ['0' => "\0", 'n' => "\n", 'r' => "\r", 'Z' => "\x1a", 't' => "\t", 'b' => "\x08"];
 
+    // Ce qui sépare deux tuples : virgules, blancs, et les commentaires d'une ligne.
+    $sauter = static function (string $sql, int $i, int $n): int {
+        while ($i < $n)
+        {
+            if ($sql[$i] === ',' || ctype_space($sql[$i]))
+            {
+                $i++;
+            }
+            elseif (substr($sql, $i, 2) === '--')
+            {
+                $fin = strpos($sql, "\n", $i);
+                $i   = $fin === FALSE ? $n : $fin + 1;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return $i;
+    };
+
     foreach ($entetes[0] as $k => [$texte, $position])
     {
         $colonnes = array_map(static fn (string $c): string => trim($c, " `"), explode(',', $entetes[1][$k][0]));
-        $i        = $position + strlen($texte);
         $n        = strlen($sql);
+        $i        = $sauter($sql, $position + strlen($texte), $n);
 
         // Une suite de tuples séparés par des virgules, jusqu'au point-virgule.
         while ($i < $n && $sql[$i] === '(')
@@ -325,8 +351,7 @@ function nf_sql_tuples(string $sql, string $table): array
             }
 
             $tuples[] = ['debut' => $debut, 'fin' => ++$i, 'valeurs' => $valeurs];
-
-            while ($i < $n && ($sql[$i] === ',' || ctype_space($sql[$i]))) { $i++; }
+            $i        = $sauter($sql, $i, $n);
         }
     }
 

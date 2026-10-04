@@ -403,7 +403,9 @@ class Forum extends Module
 			return;
 		}
 
-		$post_url = \url('forum/topic/'.$payload['topic_id'].'/'.\url_title($topic['title'])).'#'.(int)$payload['message_id'];
+		// Adresse ABSOLUE : elle part dans un courriel, où un lien relatif se résout contre le domaine
+		// du client de messagerie (même règle que `user.registration`, relevé le 2026-10-04).
+		$post_url = \absolute_url('forum/topic/'.$payload['topic_id'].'/'.\url_title($topic['title'])).'#'.(int)$payload['message_id'];
 
 		foreach ($payload['mentioned_users'] as $user)
 		{
@@ -476,7 +478,8 @@ class Forum extends Module
 		// Un auteur venu de Discord sans compte lié : le nom de son identité (cf. _notify_bell).
 		$topic['author'] = $topic['author'] ?: (string) ($payload['author_name'] ?? '');
 
-		$topic_url = \url('forum/topic/'.$payload['topic_id'].'/'.\url_title($topic['title']));
+		// Adresse ABSOLUE : elle part dans un courriel (cf. le rappel des mentions plus haut).
+		$topic_url = \absolute_url('forum/topic/'.$payload['topic_id'].'/'.\url_title($topic['title']));
 
 		$notified_user_ids = [];
 

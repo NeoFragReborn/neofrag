@@ -78,4 +78,45 @@ class User extends Module
 		// Le fuseau horaire du membre s'applique à l'ouverture de la session (core/session.php), et
 		// non plus ici : ce __init() ne s'exécute que sur les pages du module user.
 	}
+
+	/**
+	 * Le message de bienvenue (*Paramètres → Inscription*), envoyé par la messagerie au membre qui vient
+	 * de s'inscrire, dans la langue de la page où il s'est inscrit.
+	 *
+	 * Trois défauts corrigés le 2026-10-04 : le message, écrit dans l'éditeur riche, arrivait en HTML dans
+	 * une messagerie qui l'échappe — ses balises s'affichaient (il est mis en texte, Security::texte_depuis_html()) ;
+	 * son titre, que le formulaire range codé (`communaut&eacute;`), s'affichait codé (il est décodé) ;
+	 * et l'inscription par Discord, GitHub ou Google ne l'envoyait pas. Une erreur de la messagerie ne
+	 * bloque jamais l'inscription.
+	 */
+	public function bienvenue(int $user_id, string $pseudo): void
+	{
+		$config  = $this->config;
+		$auteur  = (int) $config->nf_welcome_user_id;
+		$titre   = trim(html_entity_decode($config->traduit('nf_welcome_title'), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+		$contenu = $config->traduit('nf_welcome_content');
+
+		if (!$config->nf_welcome || !$auteur || $titre === '' || trim(strip_tags($contenu)) === '' || $auteur === $user_id || !($talks = $this->module('talks')))
+		{
+			return;
+		}
+
+		try
+		{
+			require_once NEOFRAG_CMS.'/modules/talks/security.php';
+
+			$texte  = \NF\Modules\Talks\Security::texte_depuis_html(str_replace('[pseudo]', '@'.$pseudo, $contenu));
+			$modele = $talks->model('talks');
+
+			if ($modele instanceof \NF\Modules\Talks\Models\Talks && ($talk_id = $modele->create_conversation($auteur, 'direct', $titre, '', [$user_id])))
+			{
+				$modele->send_message($talk_id, $auteur, $texte);
+			}
+		}
+		catch (\Throwable $e)
+		{
+			// Silencieux pour le membre ; le journal le garde.
+			nf_journaliser_erreur('bienvenue', 'message de bienvenue non envoyé : '.$e->getMessage(), $e->getFile().':'.$e->getLine());
+		}
+	}
 }

@@ -20,6 +20,8 @@ widgets/hello/
 │   └── admin.tpl.php         # gabarit des réglages (optionnel)
 ├── css/
 │   └── hello.css             # styles (optionnel)
+├── images/
+│   └── thumbnail.jpg         # sa vignette, 960 × 600 — photographiée, pas dessinée
 └── js/
     └── hello.js              # optionnel — vanilla, jamais jQuery
 ```
@@ -220,6 +222,10 @@ réel complet : `widgets/about/controllers/checker.php`.
    différents.
 4. Pour le distribuer : zippe le dossier (`widgets/hello/` à la racine de l'archive) — il s'installe via
    **Ajouter (ZIP)** — ou laisse `tools/package-addons.php` l'inscrire au catalogue du marketplace.
+5. Sa vignette : `php tools/capturer-apercus.php --type=widget --nom=hello`, sur un site d'essai peuplé.
+   Le widget y est photographié là où il est posé, ou seul sur la page de contact le temps de la photo ;
+   s'il ne rend rien sans réglages, donne-lui des réglages d'exemple dans la table `REGLAGES` de l'outil.
+   Format et contrôles : [Créer un thème, § 5](create-a-theme.md).
 
 `tools/check-widget-contract.php` interroge réellement chaque couple widget/type pour vérifier qu'aucun
 ne casse à la pose.

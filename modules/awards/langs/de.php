@@ -30,7 +30,7 @@ return [
 	'dbcb5bb0' => 'Auszeichnung erfolgreich bearbeitet',
 	'e4701b5e' => 'Die Trophäen unserer Teams',
 	'f342c1c7' => 'Auszeichnungsliste',
-	'ec91a486' => 'Auszeichnungen (Palmarès), zuweisbar an Mitglieder oder Teams — Gaming-Modul.',
+	'766f341e' => 'Die Erfolge der Teams: erreichte Platzierung, Anzahl der Teams, Datum, Ort, Spiel und Plattform jedes Wettbewerbs, mit Podestplätzen pro Team und pro Spiel.',
 	'52c9bbab' => 'Bearbeiten',
 	'8d9ef7a4' => 'Löschen',
 	// i18n 2026-06-11 (code strings)

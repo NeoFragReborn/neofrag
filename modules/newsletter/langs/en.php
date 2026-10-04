@@ -107,4 +107,7 @@ return [
 	'03158917' => 'Group',
 	'79987719' => 'pending newsletter signup|pending newsletter signups',
 	'080b55ee' => 'Manage newsletter',
+	'a06e1419' => 'This email address is not valid.',
+	'edc6b420' => 'The confirmation email could not be sent. Try again a little later.',
+	'ce6fdf8a' => 'Too many recent subscription requests. Try again in %d minute(s).',
 ];

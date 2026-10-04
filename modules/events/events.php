@@ -14,8 +14,8 @@ class Events extends Module
 	protected function __info()
 	{
 		return [
-			'title'       => $this->lang('Événements gaming'),
-			'description' => $this->lang('Événements et tournois — planning, participants, types — module gaming.'),
+			'title'       => $this->lang('Événements'),
+			'description' => $this->lang('Événements et matchs d\'une guilde ou d\'une équipe eSport : invitations avec réponse présent, absent ou peut-être, scores par manche, récurrence, rappels.'),
 			'icon'        => 'fas fa-trophy',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

@@ -239,4 +239,8 @@ return [
 	'93f5c577' => 'Nur die Startseite wird gemeldet: Kein Modul hat bisher Inhalte, die Besucher lesen können. Ein leerer Bereich wird nicht gemeldet; falls Inhalte vorhanden sind, prüfen Sie die Rechte in der Berechtigungsmatrix.',
 	'e44f4288' => 'Über das DNS der Domain bestätigt. Reichen Sie dort die Sitemap ein: %s',
 	'cda95d5f' => 'Aus der Google Search Console importiert? Dann ist nichts weiter zu tun: Der Import hinterlässt keine Spur, die die Website lesen kann. Andernfalls fügen Sie hier den Bestätigungscode ein.',
+	'841f610f' => 'Eigener Text für diese Sprache.',
+	'f4792dbe' => 'Diese Sprache hat noch keinen eigenen Text: Es wird der gemeinsame Text angezeigt. Speichern Sie ihn hier, um ihn zu übersetzen.',
+	'7be2269f' => 'Sie kommt als Text im Nachrichtensystem an: Überschriften, Listen und Links bleiben erhalten, die Formatierung nicht.',
+	'c7ad5eb2' => 'Die Regeln, der Titel und die Willkommensnachricht werden Sprache für Sprache übersetzt. Eine Sprache ohne eigenen Text zeigt den gemeinsamen Text.',
 ];

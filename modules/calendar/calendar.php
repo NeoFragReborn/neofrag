@@ -16,7 +16,7 @@ class Calendar extends Module
 	{
 		return [
 			'title'       => $this->lang('Calendrier'),
-			'description' => $this->lang('Calendrier d\'événements avec export iCal RFC 5545.'),
+			'description' => $this->lang('Calendrier des activités avec lieu et description, export iCal vers un agenda et rappel aux membres qui suivent un événement. Pour une association ou un club.'),
 			'icon'        => 'far fa-calendar',
 			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'NeoFrag Reborn',

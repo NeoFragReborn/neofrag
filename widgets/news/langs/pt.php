@@ -9,7 +9,7 @@ return [
 	'08c66025' => 'Notícias',
 	'593f94a6' => 'Ver todas as notícias',
 	'868700ab' => 'Sem notícias de momento',
-	'a26ed2b8' => 'Lista das últimas notícias publicadas.',
+	'05afd14e' => 'Três vistas das notícias à escolha: as mais recentes, a lista de categorias ou uma nuvem de etiquetas cujo tamanho segue a frequência.',
 	'a89c656a' => 'Últimas notícias',
 	'c8781d5e' => 'Categorias',
 	'cf8e3b18' => 'Tags',

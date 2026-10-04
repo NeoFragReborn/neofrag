@@ -29,7 +29,7 @@ return [
 	'b662eb26' => 'Éditer le partenaire',
 	'8caa3140' => 'Nos partenaires',
 	'54ac9ff9' => 'Partenaires',
-	'5b5532c3' => 'Partenaires et sponsors — module gaming.',
+	'daedcc3c' => 'Page des partenaires et sponsors : logo clair ou foncé, site, réseaux sociaux, code promo et présentation. Pour un club, une association ou une équipe.',
 	'52c9bbab' => 'Modifier',
 	'8d9ef7a4' => 'Supprimer',
 	'a8e9757a' => 'Logo clair',

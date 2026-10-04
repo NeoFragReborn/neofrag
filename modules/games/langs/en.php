@@ -36,7 +36,7 @@ return [
 	'f8f21a53' => 'Are you sure you want to delete the map <b>%s</b>?',
 	'b83726b5' => 'No map',
 	'58a98c98' => 'Add a map',
-	'cd59c74e' => 'Catalog of games played — gaming module.',
+	'895213c5' => 'The list of games played, with banner, icon, maps and game modes; it is the basis for teams, matches, awards and recruitment.',
 	'97671a33' => 'Games',
 	'8d9ef7a4' => 'Delete',
 	'df149063' => 'Maps',

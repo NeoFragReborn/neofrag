@@ -15,7 +15,7 @@ class About extends Widget
 	{
 		return [
 			'title'       => $this->lang('À propos'),
-			'description' => $this->lang('Bloc de présentation libre éditable en HTML.'),
+			'description' => $this->lang('Présente la structure saisie dans « Notre structure » : nom, type, date de création, logo et biographie, chacun affiché ou masqué, aligné et coloré au choix.'),
 			'icon'        => 'fas fa-address-card',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

@@ -54,7 +54,9 @@ foreach ($messages as $i => $message)
 			echo implode(' ', $title);
 		?>
 		</h6>
-		<?php echo $message['message'] ? strtolink($message['message']) : '<i>'.$this->lang('Message supprimé').'</i>' ?>
+		<?php /* Le même rendu que la conversation (user/view.tpl.php) : le texte d'un message est enregistré tel
+		         que le membre l'a écrit, et cette vue des adresses ajax/talks l'affichait sans l'échapper (2026-10-04). */ ?>
+		<?php echo $message['message'] ? \NF\Modules\Talks\Security::render_message((string) $message['message']) : '<i>'.$this->lang('Message supprimé').'</i>' ?>
 	</div>
 <?php
 	$output = [$avatar, ob_get_clean()];

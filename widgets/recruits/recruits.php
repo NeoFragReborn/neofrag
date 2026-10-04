@@ -15,7 +15,7 @@ class Recruits extends Widget
 	{
 		return [
 			'title'       => $this->lang('Recrutement'),
-			'description' => $this->lang('Postes actuellement ouverts au recrutement — widget gaming.'),
+			'description' => $this->lang('Les dernières offres de recrutement, avec leur équipe et les postes restant à pourvoir, ou une offre en détail : rôle proposé, places libres, date limite.'),
 			'icon'        => 'fas fa-bullhorn',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

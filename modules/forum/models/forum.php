@@ -782,6 +782,15 @@ class Forum extends Model
 		return !($uid && $gam && $gam->is_vip($uid));
 	}
 
+	/**
+	 * La même règle, pour qui affiche le forum ailleurs : le widget « Forum » montrait les derniers
+	 * messages des catégories réservées au VIP à tous les visiteurs (2026-10-04).
+	 */
+	public function reservee_vip(int $category_id): bool
+	{
+		return $this->_vip_locked($category_id);
+	}
+
 	public function check_forum($forum_id, &$title)
 	{
 		$forum = $this->db	->select('f.forum_id', 'f.title AS titre_par_defaut', $this->titre_forum('f').' AS title', $this->titre_forum('f', 'description').' AS description', 'f.parent_id', 'f.is_subforum', 'u.url', 'IFNULL(f3.parent_id, f.parent_id) as category_id', 'COUNT(f2.forum_id) as subforums')

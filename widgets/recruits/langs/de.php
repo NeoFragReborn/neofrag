@@ -11,7 +11,7 @@ return [
 	'7353c4ec' => 'Alle Anzeigen ansehen',
 	'3771c1f7' => 'Derzeit keine Angebote',
 	'82f5d5c2' => 'Angebot ansehen',
-	'b38e1812' => 'Derzeit offene Stellen für die Rekrutierung — Gaming-Widget.',
+	'213019c2' => 'Die neuesten Rekrutierungsangebote, mit ihrem Team und den noch offenen Positionen, oder ein Angebot im Detail: angebotene Rolle, freie Plätze, Frist.',
 	'cf25bc6e' => 'Neueste Anzeigen',
 	'7712acba' => 'Eine Anzeige im Detail',
 	'1f88c31b' => 'Optionen',

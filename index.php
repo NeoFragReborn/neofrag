@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.2.25');
+define('NEOFRAG_VERSION', '1.2.26');
 
 error_reporting(E_ALL);
 
@@ -340,10 +340,15 @@ ob_start(function($html){
 			}
 		} catch (\Throwable $e) {}
 
+		// img-src `blob:` : l'aperçu d'une image collée ou glissée dans l'éditeur riche, le temps de son
+		// envoi. TinyMCE l'affiche sous une adresse `blob:` avant de la remplacer par l'adresse rendue par
+		// le site (cf. Editeur_Images) ; refusée, l'image s'affichait cassée (2026-10-04). Le risque est
+		// nul : une adresse `blob:` ne peut être fabriquée que par un script de la page elle-même, et
+		// `img-src` ne règle que l'affichage d'images — rien ne s'y exécute.
 		header("Content-Security-Policy: default-src 'self'; object-src 'none'; ".
 			"script-src 'self' 'nonce-$nonce'{$captcha['script']}$analytics; ".
 			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com{$captcha['style']}; ".
-			"img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' https:; ".
+			"img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; ".
 			"media-src 'self' data:$media; ".
 			"frame-src 'self'{$captcha['frame']}; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
 	}

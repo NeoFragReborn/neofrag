@@ -17,7 +17,7 @@ return [
 	'96b3350e' => '<b>%d</b> annuncio|<b>%d</b> annunci',
 	'9a13110f' => 'C\'è %d utente sul forum|Ci sono %d utenti sul forum',
 	'aac5e9d9' => 'Nessun argomento al momento',
-	'ab1a982a' => 'Ultimi argomenti o messaggi del forum.',
+	'6fc3c77c' => 'Ultimi messaggi, ultime discussioni, numeri del forum o membri online, a scelta; compaiono solo le categorie che il visitatore ha il diritto di leggere.',
 	'ab2b6b9e' => 'Statistiche',
 	'be016bc1' => '<b>%d</b> argomento creato|<b>%d</b> argomenti creati',
 	'd084ce78' => 'Attività del forum',

@@ -7,8 +7,8 @@ Le détail version par version est dans le [CHANGELOG](CHANGELOG.md) ; la façon
 [.github/CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 > **Rien n'est annoncé ici comme livré sans l'être.** Un jalon reste « prévu » tant qu'on ne peut pas
-> le prendre en main. C'est pourquoi la première publication figure encore dans les jalons à venir,
-> alors même que le produit tourne en production sur le site officiel, version après version.
+> le prendre en main. La première publication n'y est passée qu'une fois les dépôts ouverts, le
+> 4 octobre 2026, alors que le produit tournait déjà en production sur le site officiel.
 
 ---
 
@@ -19,8 +19,9 @@ Le détail version par version est dans le [CHANGELOG](CHANGELOG.md) ; la façon
 propose **35 modules, 24 widgets et 4 thèmes**, ajoutables en un clic depuis l'administration.
 
 Le code est complet et éprouvé à chaque modification — tests automatisés, analyse statique, contrôles
-qui ouvrent un vrai navigateur. **Il n'est pas encore publié** : c'est le prochain jalon, et le seul
-qui sépare le projet de ses premiers utilisateurs.
+qui ouvrent un vrai navigateur. **Il est publié** depuis le 4 octobre 2026 sur
+[GitHub](https://github.com/NeoFragReborn) : le CMS, les addons à la carte et le bot Discord, chacun
+avec ses versions et ses paquets.
 
 ---
 
@@ -71,14 +72,15 @@ qui sépare le projet de ses premiers utilisateurs.
   ses images, ses styles et ses scripts pour s'ouvrir plus vite — jamais ses pages, qui restent toujours
   à jour.
 
+### La publication
+- **Le code ouvert** : depuis le 4 octobre 2026, le CMS ([neofrag](https://github.com/NeoFragReborn/neofrag)),
+  les addons à la carte ([extensions](https://github.com/NeoFragReborn/extensions)) et le bot Discord
+  ([bot-discord](https://github.com/NeoFragReborn/bot-discord)) sont publiés, chacun avec l'historique de
+  ses versions et, à partir de la 1.2.23, ses paquets d'installation.
+
 ---
 
 ## Prévu
-
-### Première publication
-La mise à disposition du code et des paquets d'installation, pour que n'importe qui puisse monter son
-site. Les paquets sont construits et vérifiés à chaque version, et le canal de mise à jour est en
-service sur le site officiel ; il reste à ouvrir le dépôt public.
 
 ### Personnalisation des thèmes
 La **police** se choisit déjà dans les réglages ; viendra le choix des **couleurs**, pour donner au

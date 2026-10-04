@@ -40,7 +40,7 @@ return [
 	'fecceb4d' => 'Create an offer',
 	'ffa47b9d' => 'Submitted applications',
 	'67715710' => 'Recruitments',
-	'd81ea07e' => 'Player recruitment with applications and voting system — gaming module.',
+	'29a3450c' => 'Recruitment offers by team and by position, each with its own questions; recruiters give their opinion, then accept or reject the application.',
 	'03a10bac' => 'Learn more',
 	'77b3c4db' => 'Apply',
 	'1176b162' => 'I applied!',

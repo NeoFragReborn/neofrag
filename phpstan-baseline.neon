@@ -4639,44 +4639,8 @@ parameters:
 			path: modules/payments/controllers/admin.php
 
 		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:create_checkout_session\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/payments/controllers/ajax.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:is_configured\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/payments/controllers/ajax.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:pack\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/payments/controllers/ajax.php
-
-		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$pay_stripe_webhook_secret\.$#'
 			identifier: property.notFound
-			count: 1
-			path: modules/payments/controllers/index.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:fulfill\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/payments/controllers/index.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:is_configured\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/payments/controllers/index.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:verify_signature\(\)\.$#'
-			identifier: method.notFound
 			count: 1
 			path: modules/payments/controllers/index.php
 
@@ -4963,12 +4927,6 @@ parameters:
 			path: modules/recruits/controllers/admin_checker.php
 
 		-
-			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$recruits_hide_unavailable\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/recruits/controllers/checker.php
-
-		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$recruits_per_page\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5006,12 +4964,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$recruits_alert\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/recruits/controllers/index.php
-
-		-
-			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$recruits_hide_unavailable\.$#'
 			identifier: property.notFound
 			count: 1
 			path: modules/recruits/controllers/index.php
@@ -5066,12 +5018,6 @@ parameters:
 
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$recruits_alert\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/recruits/recruits.php
-
-		-
-			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$recruits_hide_unavailable\.$#'
 			identifier: property.notFound
 			count: 1
 			path: modules/recruits/recruits.php
@@ -5495,18 +5441,6 @@ parameters:
 			identifier: variable.undefined
 			count: 12
 			path: modules/shop/controllers/admin.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:get_points\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: modules/shop/controllers/ajax.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:spend_points\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/shop/controllers/ajax.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:get_points\(\)\.$#'
@@ -6448,24 +6382,6 @@ parameters:
 			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Form\:\:compact\(\)\.$#'
 			identifier: method.notFound
 			count: 3
-			path: modules/user/controllers/ajax.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:create_conversation\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/user/controllers/ajax.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:send_message\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/user/controllers/ajax.php
-
-		-
-			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
-			identifier: arguments.count
-			count: 2
 			path: modules/user/controllers/ajax.php
 
 		-
@@ -7606,18 +7522,6 @@ parameters:
 			message: '#^Access to an undefined property NF\\NeoFrag\\Loadables\\Controllers\\Module\:\:\$module\.$#'
 			identifier: property.notFound
 			count: 3
-			path: neofrag/loadables/controllers/module.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:set\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: neofrag/loadables/controllers/module.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Controllers\\Module\:\:session\(\)\.$#'
-			identifier: method.notFound
-			count: 1
 			path: neofrag/loadables/controllers/module.php
 
 		-
@@ -8965,12 +8869,6 @@ parameters:
 			path: widgets/recruits/controllers/checker.php
 
 		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_last_recruits\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: widgets/recruits/controllers/index.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_recruit\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -8979,7 +8877,7 @@ parameters:
 		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 2
+			count: 1
 			path: widgets/recruits/controllers/index.php
 
 		-

@@ -92,7 +92,7 @@ return [
 	'fcc11f52' => 'Multiple',
 	'fe353392' => 'Catégorie modifiée avec succès',
 	'0e81c33b' => 'Tous les albums',
-	'ff1f8094' => 'Galerie photos avec albums, thumbnails et descriptions.',
+	'7995ad67' => 'Galerie photos en catégories et albums ; chaque album a ses droits de consultation et de publication. Images avec titre, description et commentaires.',
 	'52c9bbab' => 'Modifier',
 	'ca4ae516' => 'Modifier une catégorie',
 	'af5fdbe3' => 'Supprimer une catégorie',

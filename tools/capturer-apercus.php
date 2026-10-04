@@ -18,20 +18,28 @@ declare(strict_types=1);
  * Une vignette dessinée à la main serait un troisième inventaire à tenir à jour. Celle-ci est une
  * PHOTO du produit tel qu'il tourne : elle ne peut pas mentir, et se refait en une commande.
  *
- * Les cinq recettes
- * -----------------
- *   thème          la page d'accueil — mais SEULEMENT pour le thème actuellement servi (voir plus bas)
+ * Les recettes
+ * ------------
+ *   thème          la page d'accueil, vue par un VISITEUR — le thème servi, et les autres avec
+ *                  `--basculer-theme` (voir plus bas)
  *   module         sa page publique `/fr/<nom>`, découpée sur le CONTENU (`.module-<nom>`) pour que
  *                  la vignette montre le module et non le bandeau du site, identique partout ;
  *                  à défaut de page publique, sa page d'administration, prise en entier
  *   widget         la zone `.widget-<nom>` découpée dans une page qui le porte — et si aucune page
  *                  ne le porte, un BANC D'ESSAI le pose le temps d'une photo, puis défait tout
  *   langue         la page d'accueil dans cette langue
- *   authentificateur   AUCUNE : son bouton ne vit que dans la fenêtre de connexion, et son icône
- *                  est déjà le logo de la marque
  *
- * L'outil DIT ce qu'il n'a pas pu capturer, et pourquoi. Une vignette absente reste une icône :
- * c'est moins grave qu'une vignette fausse.
+ * Le FORMAT (960 × 600) et les addons EXEMPTÉS — ceux qui n'ont rien à photographier, chacun avec
+ * sa raison — vivent dans `lib/vignettes.php`, que `check-vignettes` et `check-marketplace` lisent
+ * aussi : une vignette absente hors de cette liste est une faute, et ces deux contrôles la voient.
+ *
+ * L'outil DIT ce qu'il n'a pas pu capturer, et pourquoi. Il n'écrit jamais une vignette fausse :
+ * mieux vaut une faute que `check-vignettes` signale qu'une photo qui parle d'autre chose.
+ *
+ * LA PHOTO EST PRISE À DEUX POINTS PAR PIXEL. La page est mise en page à 1 280 px, comme avant, mais
+ * l'image en compte 2 560 : un widget de 400 px découpé puis porté à 960 restait flou — le texte d'un
+ * encart TeamSpeak se lisait à peine (2026-10-04). Toute zone d'au moins 480 px de large est
+ * désormais RÉDUITE à la vignette, jamais agrandie.
  *
  * LA CAPTURE SUIT LA BOÎTE. Une fenêtre de 800 px ne voit que le haut de la page : un widget placé
  * dans une colonne, sous la ligne de flottaison, tombait HORS du cadre. Le découpage échouait alors
@@ -53,20 +61,27 @@ declare(strict_types=1);
  * Et les widgets se photographient sur une installation PEUPLÉE — la démonstration — où ils ont
  * quelque chose à montrer.
  *
- * POURQUOI IL NE BASCULE PAS LE THÈME. La première version écrivait le nom du thème dans les
- * réglages avant de rendre la page. Deux raisons l'en empêchent, et toutes deux donnent le même
- * résultat : SEPT vignettes identiques, toutes dans le thème du site. D'abord le réglage ne
- * s'appelle pas `nf_theme` mais `nf_default_theme`. Ensuite, et surtout, un thème NON INSTALLÉ ne
- * se charge pas : le cœur retombe sur nebula, discrètement, avec une ligne dans le journal.
- * Photographier un thème demande donc de l'installer et de l'activer — une manipulation qui change
- * le site pour de vrai. L'outil s'y refuse : il ne photographie que le thème SERVI, et nomme les
- * autres.
+ * LES THÈMES, ET POURQUOI LA BASCULE EST UN CHOIX. La première version écrivait le nom du thème dans
+ * les réglages avant de rendre la page, et rendait SEPT vignettes identiques : le réglage ne
+ * s'appelle pas `nf_theme` mais `nf_default_theme`, et surtout un thème NON INSTALLÉ ne se charge
+ * pas — le cœur retombe sur nebula, discrètement. Par défaut, l'outil ne photographie donc que le
+ * thème SERVI. Avec `--basculer-theme`, il fait des autres le thème par défaut le temps d'une photo,
+ * s'ils sont INSTALLÉS sur ce site (sinon il les nomme), et rétablit le thème d'origine quoi qu'il
+ * arrive (`nf_theme_temporaire`). Les visiteurs du site voient la bascule : c'est une option pour un
+ * site jetable ou un atelier, jamais pour un site en service. Un second outil, `capture-vignettes`,
+ * faisait la même bascule pour les seuls thèmes, mais en 480 × 270 : il a été retiré le 2026-10-04,
+ * et les quatre thèmes qu'il avait produits refaits ici.
+ *
+ * Un thème se photographie en VISITEUR : la barre d'administration, le nom du compte et le bouton
+ * « Admin » ne sont pas le thème. Les modules et les widgets, eux, se photographient connecté —
+ * certaines de leurs pages n'existent que pour un administrateur.
  *
  * Usage
  * -----
  *   php tools/capturer-apercus.php                    tout
  *   php tools/capturer-apercus.php --type=module      une famille
- *   php tools/capturer-apercus.php --nom=forum        un seul addon
+ *   php tools/capturer-apercus.php --nom=forum        un seul nom (le module ET le widget forum)
+ *   php tools/capturer-apercus.php --type=theme --basculer-theme   chaque thème installé (site jetable)
  *   php tools/capturer-apercus.php --liste            ce qui serait capturé, sans rien faire
  */
 
@@ -76,17 +91,20 @@ require __DIR__.'/lib/site.php';
 require __DIR__.'/lib/serveur.php';
 require __DIR__.'/lib/navigateur.php';
 require __DIR__.'/lib/banc.php';
+require __DIR__.'/lib/vignettes.php';
 
-[$o] = nf_options(['type' => '', 'nom' => '', 'liste' => FALSE, 'port' => 0, 'qualite' => 84]);
+[$o] = nf_options(['type' => '', 'nom' => '', 'liste' => FALSE, 'port' => 0, 'qualite' => 84, 'basculer-theme' => FALSE]);
 
 const LARGEUR = 1280;
 const HAUTEUR = 800;
 
-// La vignette est affichée sur environ 300 px de large dans une carte, et près du double dans la
-// fiche de la place de marché — soit 1 000 px réels sur un écran à deux points par pixel. 960x600
-// donne du net partout sans peser : une quarantaine de kilo-octets pièce.
-const V_LARGEUR = 960;
-const V_HAUTEUR = 600;
+// Les points par pixel de la capture (cf. l'en-tête) : la mise en page reste celle d'un écran de
+// 1 280 px, l'image en a deux fois plus.
+const ECHELLE = 2;
+
+// Le format de la vignette : `lib/vignettes.php`, commun aux trois outils qui la lisent.
+const V_LARGEUR = NF_VIGNETTE_LARGEUR;
+const V_HAUTEUR = NF_VIGNETTE_HAUTEUR;
 
 if (!extension_loaded('gd'))
 {
@@ -124,6 +142,10 @@ function inventaire(string $racine): array
             $sortie[] = ['type' => $vrai, 'nom' => $nom, 'dossier' => $chemin];
         }
     }
+
+    // Les thèmes EN DERNIER : ils se photographient en visiteur, sur un serveur sans session, qui
+    // remplace celui des modules et des widgets une fois ceux-ci faits.
+    usort($sortie, static fn (array $a, array $b): int => ($a['type'] === 'theme') <=> ($b['type'] === 'theme'));
 
     return $sortie;
 }
@@ -171,7 +193,21 @@ if ($o['liste'])
         printf("%-16s %3d : %s\n", $type, count($noms), implode(', ', array_slice($noms, 0, 12)).(count($noms) > 12 ? '…' : ''));
     }
 
-    nf_ok(sprintf('%d addon(s) seraient capturés', count($addons)));
+    $exemptes = array_filter($addons, static fn (array $a): bool => isset(NF_VIGNETTES_EXEMPTEES[nf_relatif($a['dossier'])]));
+
+    if ($exemptes)
+    {
+        printf("\ndont %d exempté(s), qui ne seront pas photographiés (lib/vignettes.php) :\n", count($exemptes));
+
+        foreach ($exemptes as $a)
+        {
+            printf("  %-24s %s\n", $a['nom'], NF_VIGNETTES_EXEMPTEES[nf_relatif($a['dossier'])]);
+        }
+
+        echo "\n";
+    }
+
+    nf_ok(sprintf('%d addon(s) seraient capturés', count($addons) - count($exemptes)));
 }
 
 printf("%d addon(s) à capturer.\n\n", count($addons));
@@ -186,21 +222,32 @@ $session = nf_session_admin($db);
 $fichier_sonde = nf_temp('sonde-apercu.js');
 file_put_contents($fichier_sonde, '');
 
-$serveur = nf_serveur(nf_port($o['port']), [
-    'NF_OUTIL_CONSENT'  => 'all',
-    'NF_OUTIL_SESSION'  => $session,
-    'NF_OUTIL_SONDE'    => $fichier_sonde,
-    'NF_OUTIL_SONDE_OU' => 'body',
-]);
-
-// Le thème SERVI : le seul que l'outil sait photographier sans changer le site.
-$theme_servi = '';
-$r = $db->query("SELECT `value` FROM `nf_settings` WHERE `name` = 'nf_default_theme'");
-
-if ($ligne = $r->fetch_assoc())
+/**
+ * Le serveur d'épreuve : connecté en administrateur, ou en VISITEUR (sans session) pour les thèmes.
+ *
+ * Le serveur des thèmes fige aussi la page (`NF_OUTIL_FIGER`) : carrousel arrêté sur sa première
+ * diapositive, transitions à zéro. Sans cela, le menu d'`extend` sortait une fois sur deux à moitié
+ * de sa transition, sombre sur sombre. Pas pour les widgets : la neige de `seasonal` est une
+ * animation, et c'est elle qu'on photographie.
+ */
+function serveur_apercus(int $port, string $session, string $sonde): NfServeur
 {
-    $theme_servi = (string) $ligne['value'];
+    return nf_serveur($port, array_filter([
+        'NF_OUTIL_CONSENT'  => 'all',
+        'NF_OUTIL_SESSION'  => $session,
+        'NF_OUTIL_FIGER'    => $session === '' ? '1' : '',
+        'NF_OUTIL_SONDE'    => $sonde,
+        'NF_OUTIL_SONDE_OU' => 'body',
+    ], static fn (string $v): bool => $v !== ''));
 }
+
+$port     = nf_port($o['port']);
+$serveur  = serveur_apercus($port, $session, $fichier_sonde);
+$visiteur = FALSE;
+
+// Le thème SERVI : le seul que l'outil photographie sans changer le site, hors `--basculer-theme`.
+$theme_servi = nf_reglage($db, 'nf_default_theme') ?? '';
+$installes   = nf_themes_installes($db);
 
 printf("Thème servi : %s\n\n", $theme_servi !== '' ? $theme_servi : '(inconnu)');
 
@@ -224,22 +271,47 @@ function repond(string $url): bool
  * fidèle à l'instant de la pose, et inutile à qui regarde la place de marché : ce qu'on veut
  * montrer, c'est ce que le widget SAIT faire.
  *
+ * Certains lisent un réglage du SITE plutôt que les leurs — les réseaux sociaux lisent les adresses
+ * de « Réglages → Réseaux sociaux » : `__reglages_site` les pose le temps de la photo, et `$nettoyer`
+ * remet les valeurs d'origine.
+ *
  * @return array{0: string, 1: callable}
  */
 function banc_essai(mysqli $db, string $theme, string $widget, string $base, string $publique): array
 {
     $reglages = REGLAGES[$widget] ?? [];
 
-    // `__type` n'est pas un reglage du widget : il dit LAQUELLE de ses vues photographier.
-    $type = $reglages['__type'] ?? 'index';
-    unset($reglages['__type'], $reglages['__page_entiere']);
+    // `__type` n'est pas un reglage du widget : il dit LAQUELLE de ses vues photographier. Les autres
+    // clés en `__` sont des consignes de l'outil (cf. REGLAGES) : elles ne partent pas dans la base.
+    $type     = $reglages['__type'] ?? 'index';
+    $site     = $reglages['__reglages_site'] ?? [];
+    $colonne  = $reglages['__colonne'] ?? NULL;
+    $reglages = array_filter($reglages, static fn (string $cle): bool => !str_starts_with($cle, '__'), ARRAY_FILTER_USE_KEY);
 
     $json = $reglages === []
         ? NULL
         : str_replace(['URL_SITE', 'URL_PUBLIQUE'], [rtrim($base, '/'), $publique], (string) json_encode($reglages));
 
+    // Chaque réglage du site revient à son état d'avant — y compris l'absence de sa ligne —, et
+    // une interruption ne laisse pas les adresses d'exemple derrière elle (`nf_reglage_temporaire`).
+    $remettre = [];
+
+    foreach ($site as $nom => $valeur)
+    {
+        $remettre[] = nf_reglage_temporaire($db, $nom, $valeur);
+    }
+
     // La pose et le retrait vivent dans `lib/banc.php`, partagés avec `check-widget-contract`.
-    $nettoyer = nf_banc_widget($db, $theme, $widget, $type, $json);
+    $retirer = nf_banc_widget($db, $theme, $widget, $type, $json, taille: $colonne);
+
+    $nettoyer = static function () use ($retirer, $remettre): void {
+        $retirer();
+
+        foreach ($remettre as $remise)
+        {
+            $remise();
+        }
+    };
 
     return ['/fr/contact', $nettoyer];
 }
@@ -247,25 +319,44 @@ function banc_essai(mysqli $db, string $theme, string $widget, string $base, str
 /**
  * La boîte d'un élément dans la page, ou NULL s'il n'y est pas.
  *
- * @return array{x: int, y: int, w: int, h: int}|NULL
+ * Plusieurs sélecteurs donnent la boîte qui les ENGLOBE tous : le menu de la recherche instantanée
+ * est posé en absolu sous son champ, et la boîte du seul widget l'ignorait. Une `$scene` — ce qu'un
+ * visiteur ferait, taper dans le champ — se joue d'abord, et l'on mesure trois secondes plus tard,
+ * l'état qu'elle a produit.
+ *
+ * @param  list<string> $selecteurs
+ * @return array{x: int, y: int, w: int, h: int, texte: int}|NULL
  */
-function boite(string $url, string $selecteur, string $fichier): ?array
+function boite(string $url, array $selecteurs, string $fichier, string $scene = ''): ?array
 {
     $sonde = strtr(<<<'JS'
 (function(){
-    var e = document.querySelector(SELECTEUR);
-    var bal = document.createElement('div');
-    bal.id = 'nf-boite';
-    if (e) {
-        var r = e.getBoundingClientRect();
-        var t = (e.innerText || '').replace(/\s+/g, ' ').trim();
-        bal.setAttribute('data-verdict', JSON.stringify({ x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height), texte: t.length }));
-    } else {
-        bal.setAttribute('data-verdict', JSON.stringify({ absent: true }));
+    function mesurer() {
+        var x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity, texte = 0, vu = false;
+        SELECTEURS.forEach(function (s) {
+            var e = document.querySelector(s);
+            if (!e) { return; }
+            var r = e.getBoundingClientRect();
+            if (r.width < 1 || r.height < 1) { return; }
+            vu = true;
+            x1 = Math.min(x1, r.left); y1 = Math.min(y1, r.top); x2 = Math.max(x2, r.right); y2 = Math.max(y2, r.bottom);
+            texte += (e.innerText || '').replace(/\s+/g, ' ').trim().length;
+        });
+        var bal = document.createElement('div');
+        bal.id = 'nf-boite';
+        bal.setAttribute('data-verdict', JSON.stringify(vu
+            ? { x: Math.round(x1), y: Math.round(y1), w: Math.round(x2 - x1), h: Math.round(y2 - y1), texte: texte }
+            : { absent: true }));
+        document.body.appendChild(bal);
     }
-    document.body.appendChild(bal);
+    SCENE
+    if (SCENE_JOUEE) { setTimeout(mesurer, 3000); } else { mesurer(); }
 })();
-JS, ['SELECTEUR' => json_encode($selecteur) ?: '""']);
+JS, [
+        'SELECTEURS'  => json_encode(array_values($selecteurs)) ?: '[]',
+        'SCENE_JOUEE' => $scene !== '' ? 'true' : 'false',
+        'SCENE'       => $scene,
+    ]);
 
     // Le serveur injecte le CONTENU de ce fichier dans chaque page : on l'écrit juste avant de
     // mesurer, puis on le vide pour que les CAPTURES qui suivent ne portent aucune sonde.
@@ -298,6 +389,16 @@ const TEXTE_MINIMUM = 15;
  * pour que la vignette montre le widget à son avantage. `URL_SITE` est remplacé par l'adresse du
  * serveur d'épreuve, pour que le lecteur de flux lise le flux du site lui-même.
  *
+ * Les clés en `__` sont des consignes de l'OUTIL, jamais enregistrées comme réglages :
+ *   __type            la vue du widget à poser (défaut : `index`)
+ *   __page_entiere    photographier toute la page plutôt que la boîte du widget
+ *   __colonne         la largeur de sa colonne sur le banc (`col-4`), au lieu de toute la zone
+ *   __reglages_site   des réglages du SITE posés le temps de la photo, puis remis
+ *   __scene           du JavaScript joué dans la page avant la mesure ET la photo — un geste de visiteur
+ *   __mesurer         les sélecteurs dont la boîte englobante est photographiée (défaut : le widget)
+ *   __cadre           la largeur minimale de la découpe, en px : un widget étroit se montre dans son
+ *                     contexte plutôt que d'être agrandi jusqu'au flou
+ *
  * @var array<string, array<string, mixed>>
  */
 const REGLAGES = [
@@ -324,6 +425,42 @@ const REGLAGES = [
         'ttl'          => 900,
         'show_date'    => 1,
         'show_summary' => 1,
+    ],
+    'search' => [
+        // Un champ vide n'a RIEN à lire, et la boîte d'un formulaire flottant est nulle : l'outil
+        // l'écartait (« ne rend rien »). On fait ce que fait un visiteur — taper « match » — et l'on
+        // photographie le champ AVEC le menu des résultats instantanés, dans le haut de la page.
+        '__scene'   => "setTimeout(function () { var c = document.querySelector('.widget-search input[name=q]'); if (c) { c.focus(); c.value = 'match'; c.dispatchEvent(new Event('input', { bubbles: true })); } }, 500);",
+        '__mesurer' => ['.widget-search .nf-search', '.widget-search .nf-search-suggest'],
+        '__cadre'   => 640,
+        'align'     => 'float-start',
+    ],
+    'socials' => [
+        // Le widget lit les adresses des RÉGLAGES DU SITE, vides sur une installation neuve comme sur
+        // la démonstration : il ne rendait rien. Des adresses d'exemple, le temps de la photo ; seul
+        // le nom de chaque réseau s'affiche. Une colonne de barre latérale, sa place ordinaire.
+        '__reglages_site' => [
+            'nf_social_discord'   => 'https://example.com/discord',
+            'nf_social_youtube'   => 'https://example.com/youtube',
+            'nf_social_twitch'    => 'https://example.com/twitch',
+            'nf_social_instagram' => 'https://example.com/instagram',
+            'nf_social_steam'     => 'https://example.com/steam',
+            'nf_social_bluesky'   => 'https://example.com/bluesky',
+        ],
+        '__colonne'       => 'col-4',
+        '__cadre'         => 640,
+        'display_panel'   => 'oui',
+        'social_display'  => 'col-12',
+        'social_style'    => 'btn btn-social',
+        'content_display' => 'all',
+        'icon_size'       => 'fa-1x',
+    ],
+    'video' => [
+        // Le lecteur ET sa liste, dans une colonne de barre latérale. Il lit les vidéos de la
+        // médiathèque : il en faut sur le site photographié, sinon il ne rend rien.
+        '__colonne' => 'col-4',
+        '__cadre'   => 640,
+        'count'     => 3,
     ],
     'seasonal' => [
         // Cet effet n'est pas un bloc : c'est une couche de particules posée sur TOUTE la page, dans
@@ -356,8 +493,10 @@ const REGLAGES = [
 /**
  * Découpe puis réduit une capture, et l'écrit en JPEG.
  *
- * Rend 1.0 si la vignette est écrite, et sinon MOINS la part d'encre mesurée — de quoi dire
- * à l'appelant à quel point l'image était vide.
+ * La boîte est mesurée en px de la PAGE ; l'image en compte ECHELLE fois plus, et la découpe se fait
+ * à cette résolution. Rend 1.0 si la vignette est écrite, 0.0 sinon.
+ *
+ * @param array{x: int, y: int, w: int, h: int, texte: int}|NULL $boite
  */
 function vignette(string $png, string $sortie, ?array $boite, int $qualite): float
 {
@@ -368,16 +507,18 @@ function vignette(string $png, string $sortie, ?array $boite, int $qualite): flo
         return 0.0;
     }
 
+    $k = imagesx($source) / LARGEUR;
+
     if ($boite !== NULL)
     {
-        $x = max(0, $boite['x'] - 8);
-        $y = max(0, $boite['y'] - 8);
-        $w = min(imagesx($source) - $x, $boite['w'] + 16);
-        $h = min(imagesy($source) - $y, $boite['h'] + 16);
+        $x = (int) round(max(0, $boite['x'] - 8) * $k);
+        $y = (int) round(max(0, $boite['y'] - 8) * $k);
+        $w = min(imagesx($source) - $x, (int) round(($boite['w'] + 16) * $k));
+        $h = min(imagesy($source) - $y, (int) round(($boite['h'] + 16) * $k));
 
         // HORS CADRE : on refuse. Continuer sans découper rendrait la page entière à la place du
         // widget, ce qui ressemble à une vignette et n'en est pas une.
-        if ($w < 40 || $h < 30)
+        if ($w < 40 * $k || $h < 30 * $k)
         {
             return 0.0;
         }
@@ -419,11 +560,15 @@ function vignette(string $png, string $sortie, ?array $boite, int $qualite): flo
 
     $ok = imagejpeg($cible, $sortie, $qualite);
 
-
     return $ok ? 1.0 : 0.0;
 }
 
-$faits = [];
+// Une page de 3 200 px de haut, prise à deux points par pixel, fait une image de 2 560 × 6 400 :
+// 65 Mo une fois décodée, avant la découpe.
+ini_set('memory_limit', '512M');
+
+$faits    = [];
+$exemptes = [];
 
 foreach ($addons as $a)
 {
@@ -431,13 +576,52 @@ foreach ($addons as $a)
     $dossier = $a['dossier'];
     $page    = NULL;
     $sel     = NULL;
+    $recette = $a['type'] === 'widget' ? (REGLAGES[$nom] ?? []) : [];
+
+    // Rien à photographier, et la raison est écrite : ce n'est pas un manque.
+    if (isset(NF_VIGNETTES_EXEMPTEES[$relatif = nf_relatif($dossier)]))
+    {
+        $exemptes[] = [$nom, NF_VIGNETTES_EXEMPTEES[$relatif]];
+        printf("  %-24s ·  %s\n", $nom, 'exempté');
+        continue;
+    }
 
     if ($a['type'] === 'theme')
     {
-        if ($nom !== $theme_servi)
+        if ($nom !== $theme_servi && !$o['basculer-theme'])
         {
-            $manques[] = [$nom, 'ce n\'est pas le thème servi : l\'activer sur le site, puis relancer avec --nom='.$nom];
+            $manques[] = [$nom, 'ce n\'est pas le thème servi : relancer avec --basculer-theme, sur un site jetable où il est installé'];
             printf("  %-24s —  %s\n", $nom, 'pas le thème servi');
+            continue;
+        }
+
+        if (!in_array($nom, $installes, TRUE))
+        {
+            $manques[] = [$nom, 'non installé sur ce site : il ne se chargerait pas, et la photo montrerait un autre thème'];
+            printf("  %-24s —  %s\n", $nom, 'non installé');
+            continue;
+        }
+
+        // En VISITEUR : le serveur connecté laisse la place, une fois pour tous les thèmes.
+        if (!$visiteur)
+        {
+            $serveur->arreter();
+            $serveur  = serveur_apercus($port, '', $fichier_sonde);
+            $visiteur = TRUE;
+        }
+
+        if ($o['basculer-theme'])
+        {
+            nf_theme_temporaire($db);   // retient le thème d'origine, et le rétablit quoi qu'il arrive
+            nf_reglage_poser($db, 'nf_default_theme', $nom);
+        }
+
+        // Le thème photographié doit être celui qui SERT la page : sept vignettes identiques ont
+        // déjà été produites en croyant le contraire (cf. l'en-tête).
+        if (!str_contains(nf_http($serveur->base.'/fr', ['timeout' => 20])['corps'], 'themes/'.$nom.'/'))
+        {
+            $manques[] = [$nom, 'la page d\'accueil n\'est pas servie par ce thème : la photo en montrerait un autre'];
+            printf("  %-24s —  %s\n", $nom, 'autre thème servi');
             continue;
         }
 
@@ -451,10 +635,9 @@ foreach ($addons as $a)
     {
         // Leur bouton ne vit que dans la FENETRE de connexion, qu'un rendu simple n'ouvre pas :
         // `/fr/user/login` redirige vers l'accueil, et la capture montrait donc l'accueil pour les
-        // quatre connecteurs. Leur icone est le logo de la marque — plus parlante qu'une capture.
-        $manques[] = [$nom, 'son bouton ne s’affiche que dans la fenêtre de connexion ; son icône est son logo'];
-        printf("  %-24s —  %s
-", $nom, 'pas de page a photographier');
+        // quatre connecteurs. Ils sont exemptés (lib/vignettes.php) ; un connecteur NOUVEAU arrive ici.
+        $manques[] = [$nom, 'connecteur sans exemption : son bouton ne s’affiche que dans la fenêtre de connexion'];
+        printf("  %-24s —  %s\n", $nom, 'pas de page à photographier');
         continue;
     }
     elseif ($a['type'] === 'widget')
@@ -465,8 +648,8 @@ foreach ($addons as $a)
     elseif ($a['type'] === 'module')
     {
         // Deux modules ne suivent pas la regle « /fr/admin/<nom> » : leur page d'administration
-        // porte un autre chemin. Les autres modules sans page — `reactions`, `revisions`, `tools` —
-        // n'en ont pas du tout : ils travaillent en arriere-plan, et l'outil le dit.
+        // porte un autre chemin. Les modules SANS page — `reactions`, `revisions`, `tools` — sont
+        // exemptés (lib/vignettes.php).
         $exceptions = [
             'access'      => '/fr/admin/access/matrix',
             'live_editor' => '/fr/admin/live-editor',
@@ -479,10 +662,6 @@ foreach ($addons as $a)
             $page = '/fr/admin/'.$nom;
         }
 
-        // Sur une page PUBLIQUE, le contenu du module vit dans le widget `module`. On y découpe :
-        // sans cela, cinquante vignettes montrent le meme bandeau et la meme colonne laterale, et
-        // l'on ne distingue plus un module d'un autre. Les pages d'administration, elles, sont
-        // prises en entier : elles n'ont pas ce probleme et leur interieur EST le sujet.
         // Le CONTENU, jamais le chrome. Sur une page publique il vit dans `.module-<nom>` ; sur une
         // page d'administration, dans le `<main class="nf-main">` du theme. Sans ce decoupage,
         // cinquante vignettes montrent le meme bandeau, ou la meme barre laterale, et l'on ne
@@ -490,6 +669,14 @@ foreach ($addons as $a)
         $sel = str_starts_with($page, '/fr/admin')
             ? '.nf-main'
             : '.module-'.str_replace('_', '-', $nom);
+
+        // L'éditeur en direct n'est pas une page de l'administration : c'est un écran entier, sa
+        // barre d'outils au-dessus du site en cours d'édition, sans `.nf-main`. La découpe ne trouvait
+        // rien (« ne rend rien », 2026-10-04) : il se photographie en entier, ce qui est son sujet.
+        if ($nom === 'live_editor')
+        {
+            $sel = NULL;
+        }
     }
     else
     {
@@ -503,7 +690,9 @@ foreach ($addons as $a)
         continue;
     }
 
-    $boite    = $sel !== NULL ? boite($serveur->base.$page, $sel, $fichier_sonde) : NULL;
+    $mesurer  = $sel !== NULL ? ($recette['__mesurer'] ?? [$sel]) : [];
+    $scene    = (string) ($recette['__scene'] ?? '');
+    $boite    = $sel !== NULL ? boite($serveur->base.$page, $mesurer, $fichier_sonde, $scene) : NULL;
     $nettoyer = NULL;
 
     // Pas trouvé sur le site : on le pose nous-mêmes, le temps d'une photo.
@@ -513,14 +702,14 @@ foreach ($addons as $a)
 
         // Certains widgets ne sont pas des blocs : ils se posent SUR la page. On la photographie
         // en entier, ce qui est exactement ce qu'ils font.
-        if (!empty(REGLAGES[$nom]['__page_entiere']))
+        if (!empty($recette['__page_entiere']))
         {
             $sel   = NULL;
             $boite = NULL;
         }
         else
         {
-            $boite = boite($serveur->base.$page, $sel, $fichier_sonde);
+            $boite = boite($serveur->base.$page, $mesurer, $fichier_sonde, $scene);
         }
     }
 
@@ -556,6 +745,20 @@ foreach ($addons as $a)
     }
 
     /*
+     * UN WIDGET ÉTROIT SE MONTRE DANS SON CONTEXTE (`__cadre`). Un champ de recherche de 250 px,
+     * porté à 960, devenait une bouillie agrandie quatre fois. La découpe s'élargit autour de lui
+     * jusqu'à la largeur demandée, sans sortir de la page : on voit le widget, et où il vit.
+     */
+    $cadre = (int) ($recette['__cadre'] ?? 0);
+
+    if ($boite !== NULL && $cadre > $boite['w'])
+    {
+        $centre     = $boite['x'] + intdiv($boite['w'], 2);
+        $boite['x'] = max(0, min(LARGEUR - $cadre, $centre - intdiv($cadre, 2)));
+        $boite['w'] = $cadre;
+    }
+
+    /*
      * UN WIDGET MINCE EST ÉLARGI, PAS REFUSÉ.
      *
      * Un menu, un pied de page, une bannière publicitaire tiennent en quarante pixels de haut :
@@ -568,12 +771,19 @@ foreach ($addons as $a)
         // L'elargissement est PLAFONNE. Sans plafond, un widget large de 1 130 px reclamait 706 px
         // de haut pour tenir les proportions : la vignette montrait alors la page entiere, barre
         // de navigation et colonne laterale comprises, et l'on ne distinguait plus un widget d'un
-        // autre. Au-dela de 280 px, on prefere rogner la droite (cf. vignette()).
-        $besoin = min((int) round($boite['w'] / (V_LARGEUR / V_HAUTEUR)), max($boite['h'], 280));
+        // autre. Au-dela de 280 px, on prefere rogner la droite (cf. vignette()). Un cadre demandé,
+        // lui, est déjà borné : il prend ses proportions entières.
+        $plafond = $cadre > 0 ? PHP_INT_MAX : max($boite['h'], 280);
+        $besoin  = min((int) round($boite['w'] / (V_LARGEUR / V_HAUTEUR)), $plafond);
 
         if ($boite['h'] < $besoin)
         {
-            $boite['y'] = max(0, $boite['y'] - (int) (($besoin - $boite['h']) / 2));
+            // Un widget qui tient ENTIER dans une découpe partant du haut de la page y est montré
+            // sous l'en-tête du site, plutôt qu'au milieu d'une découpe qui tranche le logo en deux
+            // (les réseaux sociaux, 2026-10-04). Cadre demandé seulement : c'est là qu'on l'a vu.
+            $boite['y'] = $cadre > 0 && $boite['y'] + $boite['h'] + 8 <= $besoin
+                ? 0
+                : max(0, $boite['y'] - (int) (($besoin - $boite['h']) / 2));
             $boite['h'] = $besoin;
         }
     }
@@ -596,7 +806,15 @@ foreach ($addons as $a)
     // La fenêtre doit contenir la boîte, sinon il n'y a rien à découper à cet endroit.
     $hauteur = $boite === NULL ? HAUTEUR : min(3200, max(HAUTEUR, $boite['y'] + $boite['h'] + 40));
 
-    $capture = nf_chrome_capture($serveur->base.$page, $png, ['largeur' => LARGEUR, 'hauteur' => $hauteur, 'budget' => 20000]) && is_file($png);
+    // La scène se rejoue pour la photo : la page montre l'état que la mesure a vu.
+    file_put_contents($fichier_sonde, $scene);
+
+    // Le visiteur a son propre profil de navigateur : rien de ce que la session d'administrateur y a
+    // laissé — un cookie, un choix de mode — ne doit le suivre.
+    $capture = nf_chrome_capture($serveur->base.$page, $png, ['largeur' => LARGEUR, 'hauteur' => $hauteur, 'budget' => 20000,
+        'echelle' => ECHELLE, 'profil' => $visiteur ? 'visiteur' : 'defaut']) && is_file($png);
+
+    file_put_contents($fichier_sonde, '');
 
     if ($nettoyer !== NULL)
     {
@@ -630,12 +848,18 @@ foreach ($addons as $a)
     printf("  %-24s ✓  %s  (%d Ko)\n", $nom, $page, (int) round((int) filesize($cible) / 1024));
 }
 
+// Le thème d'origine revient TOUT DE SUITE, pas seulement à la sortie de l'outil.
+if ($o['basculer-theme'] && $theme_servi !== '')
+{
+    nf_reglage_poser($db, 'nf_default_theme', $theme_servi);
+}
+
 echo "\n";
-printf("%d vignette(s) écrite(s), %d non capturée(s).\n", count($faits), count($manques));
+printf("%d vignette(s) écrite(s), %d exemptée(s), %d non capturée(s).\n", count($faits), count($exemptes), count($manques));
 
 if ($manques)
 {
-    echo "\nSans vignette — la carte garde son icône :\n";
+    echo "\nNon photographiés — leur vignette précédente reste en place, s'ils en avaient une :\n";
 
     foreach ($manques as [$nom, $raison])
     {
@@ -643,11 +867,7 @@ if ($manques)
     }
 
     echo "\n";
+    nf_echec(sprintf('%d addon(s) non photographié(s) sur %d — php tools/check-vignettes.php dit lesquels restent sans vignette conforme', count($manques), count($addons)));
 }
 
-if (!$faits)
-{
-    nf_echec('aucune vignette produite');
-}
-
-nf_ok(sprintf('%d vignette(s) sur %d addon(s)', count($faits), count($addons)));
+nf_ok(sprintf('%d vignette(s) sur %d addon(s), %d exemptée(s)', count($faits), count($addons), count($exemptes)));

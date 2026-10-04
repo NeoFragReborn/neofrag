@@ -29,6 +29,7 @@ declare(strict_types=1);
  *   NF_OUTIL_CONSENT   valeur du cookie `nf_consent` (`essentials` écarte le bandeau cookies)
  *   NF_OUTIL_THEME     `light` ou `dark` : force le mode dans TOUTES les clés de thème du
  *                      localStorage et fige animations, transitions et carrousel
+ *   NF_OUTIL_FIGER     `1` : fige animations, transitions et carrousel SANS forcer le mode
  *   NF_OUTIL_SONDE     chemin d'un fichier JS injecté avec le nonce de la réponse
  *   NF_OUTIL_SONDE_OU  `head` (en tête de document, avant le premier script) ou `body` (défaut,
  *                      juste avant `</body>`, une fois la page rendue)

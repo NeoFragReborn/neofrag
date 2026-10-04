@@ -27,52 +27,105 @@ class Index extends Controller_Module
 
 		if ($this->form()->is_valid($post))
 		{
-			$email = strtolower(trim($post['email']));
-
-			// Check si déjà inscrit
-			$existing = NeoFrag()->db	->select('id', 'confirmed')
-										->from('nf_newsletter_subscribers')
-										->where('email', $email)
-										->row();
-
-			if (!empty($existing))
-			{
-				if ($existing['confirmed'])
-				{
-					notify($this->lang('Cet email est déjà inscrit à la newsletter.'));
-				}
-				else
-				{
-					notify($this->lang('Cet email a déjà demandé l\'inscription. Vérifie ta boîte mail pour le lien de confirmation.'));
-				}
-				redirect('newsletter');
-			}
-
-			$token = bin2hex(random_bytes(32));
-
-			NeoFrag()->db->insert('nf_newsletter_subscribers', [
-				'email'   => $email,
-				'token'   => $token,
-				'user_id' => $this->user() ? $this->user->id : NULL
-			]);
-
-			$confirm_url = url('newsletter/confirm/'.$token);
-			$unsub_url   = url('newsletter/unsubscribe/'.$token);
-
-			$this	->email
-					->template('newsletter.confirmation', [
-						'confirm_url' => $confirm_url
-					])
-					->to($email)
-					->send();
-
-			notify($this->lang('Email de confirmation envoyé à %s', $email));
+			$this->_inscrire($post['email']);
 			redirect('newsletter');
 		}
 
 		$body = '<p>'.$this->lang('Inscris-toi à la newsletter pour recevoir les actualités du site directement par email.').'</p>'.$this->form()->display();
 
 		return $this->panel()->title($this->lang('Newsletter'), 'far fa-envelope')->body($body);
+	}
+
+	/**
+	 * L'inscription envoyée par le widget « Newsletter ».
+	 *
+	 * Le widget postait `data[email]` sur la page `newsletter`, dont le formulaire lit ses champs sous
+	 * son propre jeton (`Form::is_valid()` → `post($token)`) : l'adresse tapée était ignorée, et le
+	 * visiteur arrivait devant un champ vide (relevé le 2026-10-04). Il poste désormais ici, avec le
+	 * jeton de session que lui donne le module (`Newsletter::jeton_widget()`), et revient à sa page.
+	 */
+	public function _subscribe()
+	{
+		$module = $this->module('newsletter');
+		$jeton  = post('_');
+
+		if (strtolower((string) ($_SERVER['REQUEST_METHOD'] ?? '')) !== 'post' || !$module instanceof \NF\Modules\Newsletter\Newsletter
+			|| !is_string($jeton) || !hash_equals($module->jeton_widget(), $jeton))
+		{
+			redirect('newsletter');
+		}
+
+		$this->_inscrire(post('email'));
+		redirect_back('newsletter');
+	}
+
+	/** Inscrit l'adresse et dit au visiteur ce qu'il en est — même parcours pour la page et le widget. */
+	private function _inscrire($saisie): void
+	{
+		/** @var \NF\Modules\Newsletter\Models\Newsletter $modele */
+		$modele = $this->model('newsletter');
+
+		// Le frein, par adresse IP et par adresse e-mail (Newsletter::FREIN) : sans lui, n'importe qui
+		// pouvait faire envoyer par le site des e-mails de confirmation en masse, à des adresses de
+		// son choix. Même mécanisme que le livre d'or.
+		$frein = new \NF\NeoFrag\Libraries\Rate_Limit($this);
+		$cles  = $modele::cles_du_frein(\NF\NeoFrag\Libraries\Rate_Limit::client_ip(), $modele::adresse($saisie));
+
+		foreach ($cles as $cle)
+		{
+			$etat = $frein->check($cle);
+
+			if (!$etat['allowed'])
+			{
+				notify($this->lang('Trop de demandes d\'inscription récentes. Réessaie dans %d minute(s).', (int) ceil($etat['retry_after'] / 60)), 'danger');
+				return;
+			}
+		}
+
+		foreach ($cles as $type => $cle)
+		{
+			[$essais, $fenetre, $blocage] = $modele::FREIN[$type];
+			$frein->hit($cle, $essais, $fenetre, $blocage);
+		}
+
+		$resultat = $modele->inscrire($saisie, $this->user() ? (int) $this->user->id : NULL);
+
+		switch ($resultat['statut'])
+		{
+			case 'invalide':
+				notify($this->lang('Cette adresse e-mail n\'est pas valide.'), 'danger');
+				break;
+
+			case 'inscrit':
+				notify($this->lang('Cet email est déjà inscrit à la newsletter.'));
+				break;
+
+			case 'en_attente':
+				notify($this->lang('Cet email a déjà demandé l\'inscription. Vérifie ta boîte mail pour le lien de confirmation.'));
+				break;
+
+			default:
+				// Le lien est ABSOLU : il partait relatif (`/fr/newsletter/confirm/…`), qu'un client de
+				// messagerie résout contre son propre domaine — le bouton « Confirmer mon inscription »
+				// ne menait nulle part. Même règle que l'inscription des membres (`user.registration`).
+				$parti = $this->email	->template('newsletter.confirmation', [
+											'confirm_url' => absolute_url('newsletter/confirm/'.$resultat['jeton'])
+										])
+										->to($resultat['email'])
+										->send();
+
+				if ($parti)
+				{
+					notify($this->lang('Email de confirmation envoyé à %s', $resultat['email']));
+				}
+				else
+				{
+					// Sans courriel, l'inscription ne pourrait jamais être confirmée, et l'adresse
+					// resterait « déjà demandée » : on la retire, le visiteur pourra réessayer.
+					$modele->annuler_inscription($resultat['jeton']);
+					notify($this->lang('L\'e-mail de confirmation n\'a pas pu partir. Réessaie un peu plus tard.'), 'danger');
+				}
+		}
 	}
 
 	public function _confirm($sub)

@@ -28,6 +28,9 @@ class Ajax extends Controller_Module
 							->where('date_end >=', $start, 'AND', 'date_end <=', $end, 'OR')
 							->where('date <',      $start, 'AND', 'date_end >',  $end, ') AND')
 							->where('e.published', TRUE)
+							// Publication programmée (cf. Events::get_events) : le calendrier — de la page
+							// comme du widget — montrait l'événement avant son heure de parution.
+							->where('(e.publish_date IS NULL OR e.publish_date <= NOW())')
 							->where('t.type_id', $types)
 							->get() as $event)
 		{

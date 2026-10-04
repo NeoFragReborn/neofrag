@@ -40,7 +40,7 @@ return [
 	'fecceb4d' => 'Crear una oferta',
 	'ffa47b9d' => 'Candidaturas enviadas',
 	'67715710' => 'Reclutamientos',
-	'd81ea07e' => 'Reclutamiento de jugadores con solicitudes y sistema de votación — módulo de gaming.',
+	'29a3450c' => 'Ofertas de reclutamiento por equipo y por puesto, cada una con sus propias preguntas; los reclutadores dan su opinión y luego aceptan o rechazan la candidatura.',
 	'03a10bac' => 'Más información',
 	'77b3c4db' => 'Postular',
 	'1176b162' => '¡He postulado!',

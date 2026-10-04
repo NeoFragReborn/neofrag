@@ -10,5 +10,5 @@ return [
 	'be90eefa' => 'Equipas',
 	'c77259fe' => 'Ver todas as nossas equipas',
 	'ea2b7448' => 'As nossas equipas',
-	'd59108aa' => 'Equipes do clã com seus membros — widget gaming.',
+	'd2655a75' => 'As equipas do site em banners clicáveis, cada um leva à sua página: jogo, apresentação, jogadores. Só aparecem as equipas que têm um banner.',
 ];

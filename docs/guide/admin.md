@@ -14,7 +14,7 @@ L'administration se trouve sous **/admin**. Elle adopte la charte NeoFrag Reborn
   | *Contenu* | Pages, Blog, Actualités, Slider, Citations, Recettes, Menus |
   | *Communauté* | Forum, Discussion, Commentaires, Livre d'or, Emojis |
   | *Animation* | Calendrier, Sondages, Gamification, Petites annonces |
-  | *Gaming* | Événements gaming, Équipes, Jeux / Cartes, Recrutements, Palmarès, Partenaires |
+  | *Gaming* | Événements, Équipes, Jeux / Cartes, Recrutements, Palmarès, Partenaires |
   | *Savoir* | Wiki, FAQ, Dictionnaire, Téléchargements, Annuaire de liens, Carte des lieux |
   | *Médias* | Médias, Galeries, Fichiers, Webradio |
   | *Diffusion* | Newsletter, Templates emails, Flux RSS, Discord, Webhooks, API |
@@ -124,6 +124,20 @@ aux groupes depuis *Système*.
 Dans **Paramètres** : titre et description du site, favicon, email de contact, page
 d'accueil, fuseau horaire, référencement, gestion des inscriptions, sécurité anti-bots (captcha),
 maintenance, copyright, réseaux sociaux. Ces réglages alimentent les thèmes et les widgets.
+
+### Les inscriptions
+
+*Paramètres → Inscription* ouvre ou ferme les inscriptions, et règle deux textes, **langue par langue**
+(un onglet par langue du site) :
+
+- le **règlement**, que le visiteur accepte en s'inscrivant ;
+- le **message de bienvenue**, envoyé par la messagerie au nouveau membre — y compris quand il s'inscrit
+  avec Discord, GitHub ou Google —, dans la langue de la page où il s'est inscrit. `[pseudo]` y devient
+  son pseudo. Il arrive en texte : titres, listes et liens sont gardés, la mise en forme non ; une
+  adresse écrite en clair devient un lien.
+
+Une langue qui n'a pas encore son texte montre le texte commun : le premier texte enregistré sert à toutes
+les langues tant qu'elles ne sont pas traduites.
 
 ### Le référencement
 

@@ -64,7 +64,7 @@ class News extends Module
 	{
 		return [
 			'title'       => $this->lang('Actualités'),
-			'description' => $this->lang('Actualités du site avec catégories et commentaires.'),
+			'description' => $this->lang('Actualités classées par catégories et tags : publication programmée, commentaires, réactions, abonnement par catégorie et historique des modifications.'),
 			'icon'        => 'far fa-file-alt',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

@@ -30,7 +30,11 @@ class Form extends Library
 		'editor',
 		'colorpicker',
 		'iconpicker',
-		'legend'
+		'legend',
+		// Un contenu affiché tel quel à la place d'un champ (le QR code du 2FA) : du HTML écrit par le code,
+		// jamais saisi. Inconnu jusqu'au 2026-10-04, il retombait sur `text` — et la balise <img> du QR code
+		// s'affichait dans une case de saisie.
+		'free'
 	];
 
 	static protected $_form;
@@ -230,7 +234,8 @@ class Form extends Library
 
 		foreach ($this->_rules as $var => $options)
 		{
-			if (isset($options['type']) && $options['type'] == 'legend')
+			// Rien à valider : un titre de section, un contenu affiché.
+			if (isset($options['type']) && in_array($options['type'], ['legend', 'free'], TRUE))
 			{
 				continue;
 			}
@@ -1110,6 +1115,8 @@ class Form extends Library
 				'function __nf_tinymce_attach(){'.
 					'if (typeof tinymce === "undefined") { setTimeout(__nf_tinymce_attach, 80); return; }'.
 					'tinymce.init({'.
+						// Les images collées ou glissées partent au site (cf. Editeur_Images).
+						\NF\NeoFrag\Libraries\Editeur_Images::tinymce().
 						'selector: "textarea.editor:not(.mce-attached)",'.
 							'skin: (document.documentElement.getAttribute("data-theme") === "dark") ? "oxide-dark" : "oxide",'.
 							'content_css: (document.documentElement.getAttribute("data-theme") === "dark") ? "dark" : "default",'.
@@ -1137,6 +1144,12 @@ class Form extends Library
 	private function _display_legend($var, $options, $post)
 	{
 		return '<legend>'.(!empty($options['label']) ? $options['label'] : '').'</legend>';
+	}
+
+	/** Le contenu d'un champ `free` : du HTML du code, affiché sous son libellé, sans rien à saisir. */
+	private function _display_free($var, $options, $post)
+	{
+		return '<div class="nf-field-free">'.(string) ($options['value'] ?? '').'</div>';
 	}
 
 	private function _has_upload()

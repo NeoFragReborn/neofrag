@@ -15,7 +15,7 @@ class Teams extends Module
 	{
 		return [
 			'title'       => $this->lang('Équipes'),
-			'description' => $this->lang('Équipes et clans — module gaming.'),
+			'description' => $this->lang('Une page par équipe : jeu, présentation, joueurs et rôles, résultats et recrutement selon les modules installés. Pour une guilde ou une équipe eSport.'),
 			'icon'        => 'fas fa-headset',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

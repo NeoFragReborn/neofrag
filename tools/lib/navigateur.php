@@ -93,7 +93,7 @@ function nf_chrome_utilisable(string $binaire): bool
  * `--virtual-time-budget` laisse le temps aux feuilles et aux scripts de s'appliquer ; sans lui on
  * mesurerait une page pas encore mise en page.
  *
- * @param array{largeur?: int, hauteur?: int, budget?: int, profil?: string} $options
+ * @param array{largeur?: int, hauteur?: int, budget?: int, profil?: string, echelle?: int} $options
  */
 function nf_chrome_dom(string $url, array $options = []): string
 {
@@ -132,11 +132,15 @@ function nf_chrome_commande(string $url, array $options): string
     $profil    = nf_temp('profil-'.($options['profil'] ?? 'defaut'));
     $budget    = $options['budget'] ?? 6000;
 
+    // `echelle` : les points par pixel de l'écran simulé. À 2, une capture de 1 280 px de large fait
+    // 2 560 px réels — la page est mise en page à l'identique, mais une zone découpée puis agrandie
+    // reste nette (capturer-apercus).
     return sprintf('%s%s --headless=new --disable-gpu --no-sandbox --hide-scrollbars --user-data-dir=%s'
-        .' --window-size=%d,%d --virtual-time-budget=%d',
+        .' --window-size=%d,%d --virtual-time-budget=%d%s',
         $timeout !== '' ? escapeshellarg($timeout).' -k 5 '.(intdiv($budget, 1000) + 45).' ' : '',
         escapeshellarg(nf_chrome()), escapeshellarg($profil),
-        $options['largeur'] ?? 1400, $options['hauteur'] ?? 900, $budget);
+        $options['largeur'] ?? 1400, $options['hauteur'] ?? 900, $budget,
+        isset($options['echelle']) ? ' --force-device-scale-factor='.(int) $options['echelle'] : '');
 }
 
 /**

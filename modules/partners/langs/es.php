@@ -29,7 +29,7 @@ return [
 	'b662eb26' => 'Editar socio',
 	'8caa3140' => 'Nuestros socios',
 	'54ac9ff9' => 'Socios',
-	'5b5532c3' => 'Socios y patrocinadores — módulo de gaming.',
+	'daedcc3c' => 'Página de socios y patrocinadores: logo claro u oscuro, sitio web, redes sociales, código promocional y presentación. Para un club, una asociación o un equipo.',
 	'52c9bbab' => 'Modificar',
 	'8d9ef7a4' => 'Eliminar',
 	'a8e9757a' => 'Logo claro',

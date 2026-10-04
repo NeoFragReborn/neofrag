@@ -51,7 +51,7 @@ return [
 	'f6fbedbb' => 'Esporta iCal',
 	'fd283f69' => 'Calendario',
 	'fd943a7a' => 'Calendario — %s',
-	'3de1bc52' => 'Calendario eventi con esportazione iCal RFC 5545.',
+	'9cd12a22' => 'Calendario delle attività con luogo e descrizione, esportazione iCal verso un\'agenda e promemoria ai membri che seguono un evento. Per un\'associazione o un club.',
 	'881485c2' => 'Modifica: %s',
 	'960d0854' => 'Gestisci gli eventi',
 	'46b60b4f' => 'j F Y',

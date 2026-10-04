@@ -15,7 +15,7 @@ class Forum extends Widget
 	{
 		return [
 			'title'       => $this->lang('Forum'),
-			'description' => $this->lang('Derniers sujets ou messages du forum.'),
+			'description' => $this->lang('Derniers messages, derniers sujets, chiffres du forum ou membres en ligne, au choix ; seules les catégories que le visiteur a le droit de lire y apparaissent.'),
 			'icon'        => 'fas fa-comments',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

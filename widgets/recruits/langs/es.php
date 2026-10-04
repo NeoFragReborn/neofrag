@@ -11,7 +11,7 @@ return [
 	'7353c4ec' => 'Ver todos los anuncios',
 	'3771c1f7' => 'No hay ofertas por el momento',
 	'82f5d5c2' => 'Descubrir la oferta',
-	'b38e1812' => 'Puestos abiertos actualmente para reclutamiento — widget de gaming.',
+	'213019c2' => 'Las últimas ofertas de reclutamiento, con su equipo y los puestos aún por cubrir, o una oferta en detalle: rol propuesto, plazas libres, fecha límite.',
 	'cf25bc6e' => 'Últimos anuncios',
 	'7712acba' => 'Un anuncio en detalle',
 	'1f88c31b' => 'Opciones',

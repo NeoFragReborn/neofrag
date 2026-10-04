@@ -32,23 +32,31 @@ trait Admin_Helpers
 	 * top-level : sans jeton, un simple lien piégé suffit à déclencher l'action sur
 	 * un admin connecté. Pour les formulaires, préférer form2/confirm_deletion()
 	 * qui portent déjà leur propre jeton.
+	 *
+	 * Le jeton lui-même est tiré et gardé par nf_jeton_csrf() (neofrag/helpers/input.php), que l'éditeur
+	 * riche emploie aussi hors d'un contrôleur.
 	 */
 	protected function csrf_token()
 	{
-		$tokens = (array)$this->session('csrf');
-
-		if (empty($tokens['admin']))
-		{
-			$this->session->set('csrf', 'admin', $tokens['admin'] = bin2hex(random_bytes(16)));
-		}
-
-		return $tokens['admin'];
+		return nf_jeton_csrf();
 	}
 
 	/** URL d'action mutante : url() + jeton CSRF en query (?_=token). */
 	protected function csrf_url($url)
 	{
 		return \url($url).'?_='.$this->csrf_token();
+	}
+
+	/**
+	 * Le jeton CSRF de la requête (param `_`, GET ou POST) est-il le bon ? Pour une action qui répond en
+	 * JSON et ne peut pas rediriger comme check_csrf() — l'achat de la boutique, le paiement (2026-10-04).
+	 * La garde de la CI reconnaît cet appel comme une vérification.
+	 */
+	protected function csrf_valide(): bool
+	{
+		$token = $_GET['_'] ?? $_POST['_'] ?? NULL;
+
+		return is_string($token) && hash_equals($this->csrf_token(), $token);
 	}
 
 	/**

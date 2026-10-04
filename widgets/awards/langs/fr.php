@@ -7,7 +7,7 @@ declare(strict_types=1);
 return [
 	'073102ce' => 'Équipe la plus récompensée',
 	'2939c77c' => 'Palmarès',
-	'2c3a6d4a' => 'Affiche les dernières récompenses attribuées — module gaming.',
+	'23a963cf' => 'Le palmarès en bref, au choix : les derniers résultats des équipes, l\'équipe la plus récompensée ou le jeu le plus récompensé.',
 	'3a847859' => 'Derniers palmarès',
 	'801296f0' => 'Jeu le plus récompensé',
 	'89c8752d' => '%dème / %d équipes',

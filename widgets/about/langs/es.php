@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 return [
 	'6f28f1e0' => 'Acerca de',
-	'4d01d503' => 'Bloque de presentación libre, editable en HTML.',
+	'9d7cca2b' => 'Presenta la estructura indicada en «Nuestra estructura»: nombre, tipo, fecha de creación, logo y biografía, cada uno visible u oculto, alineado y coloreado a elección.',
 	'8088964a' => 'Visualización',
 	'f27c976e' => 'Estilo',
 	'7e924eb0' => 'Nombre del equipo',

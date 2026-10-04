@@ -15,7 +15,7 @@ class News extends Widget
 	{
 		return [
 			'title'       => $this->lang('Actualités'),
-			'description' => $this->lang('Liste des dernières actualités publiées.'),
+			'description' => $this->lang('Trois affichages des actualités au choix : les plus récentes, la liste des catégories, ou un nuage de tags dont la taille suit la fréquence.'),
 			'icon'        => 'far fa-file-alt',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

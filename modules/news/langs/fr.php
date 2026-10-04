@@ -103,7 +103,7 @@ return [
 	'4c9e9abd' => 'Vues',
 	'e50e7c03' => 'Dernières actualités',
 	'cf2e7bf8' => 'Actualités d\'une catégorie',
-	'8e91d04c' => 'Actualités du site avec catégories et commentaires.',
+	'43364972' => 'Actualités classées par catégories et tags : publication programmée, commentaires, réactions, abonnement par catégorie et historique des modifications.',
 	'ca4ae516' => 'Modifier une catégorie',
 	'af5fdbe3' => 'Supprimer une catégorie',
 	'93d0faf6' => 'Une date future programme la publication : l\'actualité reste masquée publiquement jusqu\'à cette date (si « Publiée » est cochée).',

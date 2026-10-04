@@ -17,15 +17,15 @@ class Checker extends Module_Checker
 		{
 			// Pas de site (website vide) → ne PAS émettre header('Location: ') vide (= rechargement
 			// de la même URL = boucle infinie, cf. bug forum). Retour à la liste des partenaires.
-			if (empty($partner['website']))
+			// Une adresse au schéma refusé (`javascript:`…) n'est pas suivie non plus : la page des
+			// partenaires ne l'affiche pas en lien (nf_url_sure), la visite ne la sert pas davantage.
+			if (empty($partner['website']) || !nf_url_sure((string) $partner['website']))
 			{
 				redirect('partners');
 			}
 
-			$this->db	->where('partner_id', $partner_id)
-						->update('nf_partners', [
-							'count' => $partner['count'] + 1
-						]);
+			// Compté par la base, pas relu puis réécrit : deux visites simultanées comptent deux.
+			$this->db->execute('UPDATE nf_partners SET `count` = `count` + 1 WHERE partner_id = '.(int) $partner_id);
 
 			header('Location: '.$partner['website']);
 			exit;

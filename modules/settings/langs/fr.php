@@ -237,4 +237,8 @@ return [
 	'93f5c577' => 'Seul l\'accueil est annoncé : aucun module n\'a encore de contenu que les visiteurs peuvent lire. Une rubrique vide n\'est pas annoncée ; si du contenu existe, vérifiez les droits dans la matrice des permissions.',
 	'e44f4288' => 'Vérifié par le DNS du domaine. Soumettez-y le plan du site : %s',
 	'cda95d5f' => 'Importé depuis Google Search Console ? Alors rien d\'autre à faire : l\'import ne laisse aucune trace que le site puisse lire. Sinon, collez ici son code de vérification.',
+	'841f610f' => 'Texte propre à cette langue.',
+	'f4792dbe' => 'Cette langue n\'a pas encore le sien : c\'est le texte commun qui s\'affiche. Enregistrez-le ici pour le traduire.',
+	'7be2269f' => 'Il arrive en texte dans la messagerie : titres, listes et liens sont gardés, la mise en forme non.',
+	'c7ad5eb2' => 'Le règlement, le titre et le message de bienvenue se traduisent langue par langue. Une langue sans texte propre montre le texte commun.',
 ];

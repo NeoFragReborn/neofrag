@@ -239,4 +239,8 @@ return [
 	'93f5c577' => 'Viene annunciata solo la home: nessun modulo ha ancora contenuti leggibili dai visitatori. Una sezione vuota non viene annunciata; se i contenuti esistono, controlla i diritti nella matrice dei permessi.',
 	'e44f4288' => 'Verificato tramite il DNS del dominio. Invia lì la mappa del sito: %s',
 	'cda95d5f' => 'Importato da Google Search Console? Allora non c\'è altro da fare: l\'importazione non lascia tracce leggibili dal sito. Altrimenti, incolla qui il suo codice di verifica.',
+	'841f610f' => 'Testo proprio di questa lingua.',
+	'f4792dbe' => 'Questa lingua non ha ancora il suo: viene mostrato il testo comune. Salvalo qui per tradurlo.',
+	'7be2269f' => 'Arriva come testo nella messaggistica: titoli, elenchi e link vengono mantenuti, la formattazione no.',
+	'c7ad5eb2' => 'Il regolamento, il titolo e il messaggio di benvenuto si traducono lingua per lingua. Una lingua senza testo proprio mostra il testo comune.',
 ];

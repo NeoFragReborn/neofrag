@@ -239,4 +239,8 @@ return [
 	'93f5c577' => 'Só a página inicial é anunciada: nenhum módulo tem ainda conteúdo que os visitantes possam ler. Uma secção vazia não é anunciada; se existir conteúdo, verifique os direitos na matriz de permissões.',
 	'e44f4288' => 'Verificado pelo DNS do domínio. Submeta lá o mapa do site: %s',
 	'cda95d5f' => 'Importado do Google Search Console? Então não há mais nada a fazer: a importação não deixa nenhum rasto que o site possa ler. Caso contrário, cole aqui o código de verificação.',
+	'841f610f' => 'Texto próprio deste idioma.',
+	'f4792dbe' => 'Este idioma ainda não tem o seu: é mostrado o texto comum. Guarde-o aqui para o traduzir.',
+	'7be2269f' => 'Chega como texto à mensagem: os títulos, as listas e as ligações mantêm-se, a formatação não.',
+	'c7ad5eb2' => 'As regras, o título e a mensagem de boas-vindas traduzem-se idioma a idioma. Um idioma sem texto próprio mostra o texto comum.',
 ];

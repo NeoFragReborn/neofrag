@@ -133,7 +133,8 @@ bibliothèque commune des outils sont dans [tools/README.md](../tools/README.md)
 | Une globale JavaScript créée par oubli d'un `var`, un `eval` déguisé, un `innerHTML` calculé | `check-js-lint` (ESLint), après `npm install` |
 | Un service worker qui ne se retire plus, ou qui se mettrait à garder le HTML | `check-service-worker`, qui bascule le réglage et mesure les deux états |
 | Un lien qu'aucun clic n'atteint, une modale qui ne s'ouvre pas, un formulaire qui renvoie sur une page technique | `check-parcours`, le seul contrôle qui CLIQUE (famille cible, hors batterie) |
-| Une archive de la place de marché périmée, un addon qui ne s'installerait pas par ZIP, un aperçu annoncé mais absent | `check-marketplace`, qui compare le code, les archives et le catalogue |
+| Une archive de la place de marché périmée, un addon qui ne s'installerait pas par ZIP, une entrée sans aperçu ou un aperçu hors format | `check-marketplace`, qui compare le code, les archives et le catalogue |
+| Un addon sans vignette, une vignette hors du format 960 × 600, deux vignettes identiques, une exemption devenue fausse | `check-vignettes` (le format et les exemptions motivées dans `tools/lib/vignettes.php`) |
 | Une convention rompue : couplage non déclaré, contrat de carrefour, classe Bootstrap 4, clé de traduction, chiffre de doc faux | les contrôles statiques |
 
 **Écrire un texte d'interface.** Tout texte qu'un visiteur ou un administrateur peut lire — thèmes
@@ -262,15 +263,25 @@ sans toucher au code livré. Deux fichiers homonymes à deux niveaux se masquent
 Trois choses doivent rester d'accord : le code, les archives et le catalogue.
 
 ```bash
-php tools/capturer-apercus.php          # les vignettes, sur une installation PEUPLÉE (la démo)
+php tools/capturer-apercus.php          # les vignettes, sur un site d'essai PEUPLÉ (contenu de démo)
+php tools/check-vignettes.php           # chaque addon a la sienne, en 960 × 600 (statique, joué en CI)
 php tools/package-addons.php            # zippe les addons distribuables + écrit marketplace/catalog.json
 php tools/check-marketplace.php         # le catalogue dit-il la vérité sur ce qu'il propose ?
 php tools/check-marketplace.php /var/www/neofrag    # … et sur une installation servie
 ```
 
-- Les **vignettes** sont des captures d'écran réelles, prises sur la démonstration parce qu'un site
-  vide ne montre rien. Elles vivent dans `<type>s/<nom>/images/thumbnail.jpg`, partent dans l'archive,
-  et sont recopiées à côté d'elle pour que la place de marché les serve sans ouvrir le zip.
+- Les **vignettes** sont des captures d'écran réelles, en JPEG de **960 × 600**. Elles vivent dans
+  `<type>s/<nom>/images/thumbnail.jpg`, partent dans l'archive, et sont recopiées à côté d'elle pour que
+  la place de marché les serve sans ouvrir le zip. Une entrée du catalogue sans aperçu est un écart
+  pour `check-marketplace` ; un addon sans vignette en est un pour `check-vignettes`, dès le dépôt.
+- `capturer-apercus` **écrit dans le site** qu'il photographie : une session d'administrateur, un widget
+  posé le temps d'une photo sur la page de contact, des réglages d'exemple, et avec `--basculer-theme`
+  le thème par défaut. Il se lance donc sur un site d'essai installé avec `install/cli.php --demo` —
+  jamais sur la démonstration publique ni sur la production. Les données qu'une vignette montre —
+  clés d'API, serveur Discord, vidéos — y sont des **exemples** : aucune vraie clé, aucun vrai identifiant.
+- Un addon qui n'a rien à photographier (un module sans page, un connecteur dont le bouton ne vit que
+  dans la fenêtre de connexion) figure dans `tools/lib/vignettes.php` avec sa raison. Toute autre
+  absence est une faute.
 - Après toute modification d'un addon distribuable, **repackager** : `check-marketplace` compare le
   contenu des archives au dépôt, fichier par fichier, et refuse une archive périmée — même si le
   numéro de version n'a pas bougé.

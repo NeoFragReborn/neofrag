@@ -70,6 +70,6 @@ return [
 	'3c19f7aa' => 'Rival',
 	'a415f66e' => 'Evento',
 	'f3581855' => 'Resultado',
-	'f4cbbafe' => 'Equipos y clanes — módulo gaming.',
+	'21ba1da3' => 'Una página por equipo: juego, presentación, jugadores y roles, resultados y reclutamiento según los módulos instalados. Para un clan o un equipo de eSports.',
 	'8fd9c7ef' => 'Guardar',
 ];

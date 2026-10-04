@@ -1,0 +1,153 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Éditeur riche — l'envoi d'une image collée ou glissée</title>
+
+<!--
+  Une image collée (Ctrl+V) dans l'éditeur riche s'affichait cassée et disparaissait à l'enregistrement :
+  TinyMCE la gardait en `blob:`, rien ne l'envoyait au site (signalé le 2026-10-04 sur le forum). Chaque
+  éditeur confie désormais l'image à NFEditeur.televerser() (js/editeur-images.js).
+
+  Ici, `XMLHttpRequest` est remplacé par un double : on éprouve le CONTRAT du VRAI fichier
+  (/src/js/editeur-images.js) — ce qu'il POSTe (le fichier et le jeton), ce qu'il rend à TinyMCE
+  (l'adresse, ou un refus qui RETIRE l'image avec le message du site), et le garde du formulaire, qui
+  attend la fin d'un envoi avant de laisser partir le formulaire.
+-->
+
+<script src="/harness.js"></script>
+
+<body>
+
+<form id="formulaire" action="about:blank" target="cible"><button type="submit" id="bouton">Envoyer</button></form>
+<iframe name="cible" hidden></iframe>
+
+<script>
+// ── Le double de XMLHttpRequest ──────────────────────────────────────────────────────────────────
+var requetes = [];
+var reponse  = { status: 200, texte: '{"location":"/upload/editeur/2026/10/0123456789abcdef0123456789abcdef.png"}' };
+
+function FauxXHR() {
+	this.upload = {};
+	this.timeout = 0;
+	requetes.push(this);
+}
+
+FauxXHR.prototype.open = function (methode, url) { this.methode = methode; this.url = url; };
+FauxXHR.prototype.send = function (donnees) {
+	var xhr = this;
+	xhr.donnees = donnees;
+
+	setTimeout(function () {
+		if (reponse === 'reseau') { xhr.onerror(); return; }
+		if (xhr.upload.onprogress) { xhr.upload.onprogress({ lengthComputable: true, loaded: 50, total: 100 }); }
+		xhr.status = reponse.status;
+		xhr.responseText = reponse.texte;
+		xhr.onload();
+	}, 0);
+};
+
+window.XMLHttpRequest = FauxXHR;
+
+// Ce que TinyMCE passe au gestionnaire : un « blobInfo ».
+var fichier = {
+	blob: function () { return new Blob(['png'], { type: 'image/png' }); },
+	filename: function () { return 'mceclip0.png'; }
+};
+
+var reglages = { url: '/fr/ajax/user/editeur-image', jeton: 'jeton-de-session', refus: '', echec: 'Échec réseau' };
+
+function issue(promesse) {
+	return promesse.then(function (v) { return { ok: v }; }, function (e) { return { refus: e }; });
+}
+</script>
+
+<script src="/src/js/editeur-images.js"></script>
+
+<script>
+(async function () {
+	try {
+		NFTest.verifie('NFEditeur.televerser est exposé', 'function', typeof (window.NFEditeur && window.NFEditeur.televerser));
+
+		// 1. Un envoi réussi : POST du fichier et du jeton, l'adresse rendue à TinyMCE, la progression suivie.
+		var progression = [];
+		var r = await issue(NFEditeur.televerser(fichier, function (p) { progression.push(p); }, reglages));
+		var envoi = requetes[0];
+
+		NFTest.verifie('réussite : l\'adresse du site est rendue à TinyMCE', { ok: '/upload/editeur/2026/10/0123456789abcdef0123456789abcdef.png' }, r);
+		NFTest.verifie('réussite : un POST vers le point d\'envoi', ['POST', '/fr/ajax/user/editeur-image'], [envoi.methode, envoi.url]);
+		NFTest.verifie('réussite : les cookies partent (withCredentials)', true, envoi.withCredentials);
+		NFTest.verifie('réussite : le jeton de session part dans `_`', 'jeton-de-session', envoi.donnees.get('_'));
+		NFTest.verifie('réussite : le fichier part dans `file`, avec son nom', 'mceclip0.png', envoi.donnees.get('file') && envoi.donnees.get('file').name);
+		NFTest.verifie('réussite : la progression est transmise', [50], progression);
+		NFTest.verifie('réussite : un délai borne l\'envoi', true, envoi.timeout > 0);
+
+		// 2. Un refus du site : son message traduit, et l'image RETIRÉE de l'éditeur.
+		reponse = { status: 415, texte: '{"error":"Seules les images JPEG, PNG, GIF et WebP sont acceptées."}' };
+		r = await issue(NFEditeur.televerser(fichier, null, reglages));
+		NFTest.verifie('refus du site : son message, image retirée', { refus: { message: 'Seules les images JPEG, PNG, GIF et WebP sont acceptées.', remove: true } }, r);
+
+		// 3. Une réponse illisible (page d'erreur HTML) : le message d'échec, image retirée.
+		reponse = { status: 500, texte: '<!DOCTYPE html><title>Erreur</title>' };
+		r = await issue(NFEditeur.televerser(fichier, null, reglages));
+		NFTest.verifie('réponse illisible : message d\'échec, image retirée', { refus: { message: 'Échec réseau', remove: true } }, r);
+
+		// 4. Un 200 sans adresse n'est pas une réussite.
+		reponse = { status: 200, texte: '{"location":""}' };
+		r = await issue(NFEditeur.televerser(fichier, null, reglages));
+		NFTest.verifie('200 sans adresse : refusé', true, !!r.refus);
+
+		// 5. Une panne réseau.
+		reponse = 'reseau';
+		r = await issue(NFEditeur.televerser(fichier, null, reglages));
+		NFTest.verifie('panne réseau : message d\'échec, image retirée', { refus: { message: 'Échec réseau', remove: true } }, r);
+
+		// 6. Un refus connu d'avance (visiteur, démonstration) : aucune requête.
+		var avant = requetes.length;
+		r = await issue(NFEditeur.televerser(fichier, null, { url: '', jeton: '', refus: 'Connectez-vous pour ajouter une image.', echec: 'Échec réseau' }));
+		NFTest.verifie('refus d\'avance : le motif, image retirée', { refus: { message: 'Connectez-vous pour ajouter une image.', remove: true } }, r);
+		NFTest.verifie('refus d\'avance : aucune requête', avant, requetes.length);
+
+		// 7. Le garde du formulaire : un envoi en cours retient le formulaire, puis le laisse partir une fois.
+		var formulaire = document.getElementById('formulaire');
+		var corps      = document.createElement('div');
+		var image      = document.createElement('img');
+		image.setAttribute('src', 'blob:http://localhost/0000');
+		corps.appendChild(image);
+
+		var termine;
+		var envoiEnCours = new Promise(function (ok) { termine = ok; });
+		var editeur = {
+			formElement: formulaire,
+			getBody: function () { return corps; },
+			uploadImages: function () { return envoiEnCours; }
+		};
+		window.tinymce = { get: function () { return [editeur]; } };
+
+		var soumissions = 0;
+		formulaire.addEventListener('submit', function (e) { soumissions++; e.preventDefault(); });
+
+		formulaire.requestSubmit(document.getElementById('bouton'));
+		NFTest.verifie('garde : un envoi en cours retient le formulaire', 0, soumissions);
+
+		image.setAttribute('src', '/upload/editeur/2026/10/0123456789abcdef0123456789abcdef.png');
+		termine([]);
+		await new Promise(function (ok) { setTimeout(ok, 10); });
+		NFTest.verifie('garde : l\'envoi fini, le formulaire part une fois', 1, soumissions);
+
+		// 8. Sans image en attente, le garde ne retient rien.
+		formulaire.requestSubmit();
+		NFTest.verifie('garde : sans image en attente, rien n\'est retenu', 2, soumissions);
+
+		// 9. Un envoi en échec ne bloque pas le formulaire pour toujours.
+		image.setAttribute('src', 'blob:http://localhost/0001');
+		editeur.uploadImages = function () { return Promise.reject(new Error('échec')); };
+		formulaire.requestSubmit();
+		await new Promise(function (ok) { setTimeout(ok, 10); });
+		NFTest.verifie('garde : un envoi en échec laisse partir le formulaire', 3, soumissions);
+	}
+	catch (e) {
+		NFTest.echec('exception : ' + (e && e.message ? e.message : e));
+	}
+
+	NFTest.fini();
+})();
+</script>

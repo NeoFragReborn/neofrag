@@ -15,7 +15,7 @@ class Games extends Module
 	{
 		return [
 			'title'       => $this->lang('Jeux / Cartes'),
-			'description' => $this->lang('Catalogue de jeux pratiqués — module gaming.'),
+			'description' => $this->lang('La liste des jeux pratiqués, avec bannière, icône, cartes et modes de jeu ; elle sert de base aux équipes, aux matchs, au palmarès et au recrutement.'),
 			'icon'        => 'fas fa-gamepad',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

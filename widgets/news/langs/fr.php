@@ -9,7 +9,7 @@ return [
 	'08c66025' => 'Actualités',
 	'593f94a6' => 'Voir toutes les actualités',
 	'868700ab' => 'Aucune actualité pour le moment',
-	'a26ed2b8' => 'Liste des dernières actualités publiées.',
+	'05afd14e' => 'Trois affichages des actualités au choix : les plus récentes, la liste des catégories, ou un nuage de tags dont la taille suit la fréquence.',
 	'a89c656a' => 'Actualités récentes',
 	'c8781d5e' => 'Catégories',
 	'cf8e3b18' => 'Tags',

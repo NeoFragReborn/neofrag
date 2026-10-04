@@ -101,3 +101,24 @@ function post_check($args, $post = NULL)
 
 	return $data;
 }
+
+/**
+ * Le jeton CSRF de la session : celui que les contrôleurs posent dans leurs liens d'action
+ * (`csrf_token()`, `csrf_url()`) et vérifient (`check_csrf()`). Tiré une fois par session d'un générateur
+ * cryptographique, il se compare en temps constant (`hash_equals`).
+ *
+ * Il vit ici, et non plus dans le seul trait des contrôleurs, depuis que l'éditeur riche en a besoin hors
+ * d'un contrôleur : une image collée part avec ce jeton (cf. Editeur_Images). Une seule définition, que
+ * le trait reprend : deux copies d'un même jeton finiraient par diverger.
+ */
+function nf_jeton_csrf(): string
+{
+	$jetons = (array) NeoFrag()->session('csrf');
+
+	if (empty($jetons['admin']) || !is_string($jetons['admin']))
+	{
+		NeoFrag()->session->set('csrf', 'admin', $jetons['admin'] = bin2hex(random_bytes(16)));
+	}
+
+	return $jetons['admin'];
+}

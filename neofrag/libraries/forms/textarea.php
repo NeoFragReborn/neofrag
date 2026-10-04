@@ -47,6 +47,8 @@ class Textarea extends Labelable
 						'function __nf_tinymce_attach(){'.
 							'if (typeof tinymce === "undefined") { setTimeout(__nf_tinymce_attach, 80); return; }'.
 							'tinymce.init({'.
+								// Les images collées ou glissées partent au site (cf. Editeur_Images).
+								\NF\NeoFrag\Libraries\Editeur_Images::tinymce().
 								'selector: "textarea.editor:not(.mce-attached)",'.
 								'height: 320,'.
 								'menubar: false,'.

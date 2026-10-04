@@ -18,7 +18,7 @@ return [
 	'96b3350e' => '<b>%d</b> annoucment| <b>%d</b> annoucments',
 	'9a13110f' => 'There are %d user on the forum| There are %d users on the forum',
 	'aac5e9d9' => 'No topic at the moment',
-	'ab1a982a' => 'Latest topics or posts from the forum.',
+	'6fc3c77c' => 'Latest messages, latest topics, forum figures or members online, as you choose; only the categories the visitor is allowed to read appear.',
 	'ab2b6b9e' => 'Statistics',
 	'be016bc1' => '<b>%d</b> topic created| <b>%d</b> topics created',
 	'd084ce78' => 'Forum activity',

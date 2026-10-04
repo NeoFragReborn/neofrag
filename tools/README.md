@@ -58,6 +58,7 @@ Joués par défaut par `check-all`. Ils lisent les sources, sans base ni serveur
 | [`check-textes-en-dur`](check-textes-en-dur.php) | aucun texte d'interface écrit en dur en français : tout passe par les traductions. | `php tools/check-textes-en-dur.php` |
 | [`check-theme-zones`](check-theme-zones.php) | toute zone qu'un thème déclare est rendue par ses gabarits. | `php tools/check-theme-zones.php` |
 | [`check-tools`](check-tools.php) | les outils de `tools/` respectent leurs propres conventions. | `php tools/check-tools.php` |
+| [`check-vignettes`](check-vignettes.php) | chaque addon a sa vignette, au bon format, ou une exemption écrite qui dit pourquoi. | `php tools/check-vignettes.php` |
 | [`check-widget-reglages`](check-widget-reglages.php) | aucun checker de widget ne lit un réglage sans valeur de repli. | `php tools/check-widget-reglages.php` |
 | [`check-wiki-docs`](check-wiki-docs.php) | le wiki livré et celui de la démonstration disent ce que disent les guides. | `php tools/check-wiki-docs.php` |
 
@@ -111,7 +112,6 @@ Ils agissent — construire, publier, régénérer, installer — plutôt qu'ils
 | [`assembler`](assembler.php) | pose les addons à la carte du dépôt extensions dans cet arbre, pour éprouver le produit entier. | `php tools/assembler.php --extensions=../extensions` |
 | [`build-release`](build-release.php) | produit les paquets prêts à uploader par FTP (hébergement mutualisé). | `php tools/build-release.php` |
 | [`capture`](capture.php) | capture d'écran des pages du site, y compris celles qui exigent une session d'administrateur. | `php tools/capture.php` |
-| [`capture-vignettes`](capture-vignettes.php) | refabrique les vignettes d'aperçu des thèmes publics. | `php tools/capture-vignettes.php` |
 | [`changelog-section`](changelog-section.php) | extrait une section de CHANGELOG.md, la source unique des notes de version. | `php tools/changelog-section.php [<sélecteur>] [--html] [--with-title]` |
 | [`check-all`](check-all.php) | lance toute la batterie de contrôles d'un coup, et dit ce qu'elle n'a pas joué. | `php tools/check-all.php` |
 | [`ci-install`](ci-install.php) | installation non interactive, pour la CI ou un montage local rapide. | `php tools/ci-install.php` |
@@ -208,10 +208,11 @@ Engendrée elle aussi par `check-tools`, depuis la première ligne de chaque fic
 | [`profils.php`](lib/profils.php) | ce qu'un site installé selon un profil doit servir, et le vérifier en le frappant. | `NF_ROUTES_COEUR`, `NF_ROUTES_MODULES`, `nf_frapper_profil()`, `nf_tables_hors_profil()` |
 | [`routeur-outil.php`](lib/routeur-outil.php) | le routeur du serveur intégré quand c'est un OUTIL qui sert le site. | — |
 | [`serveur.php`](lib/serveur.php) | servir le site avec le serveur intégré de PHP, et lui parler en HTTP. | `NF_AGENT`, `nf_serveur()`, `nf_encoder_adresse()`, `nf_http()`, `nf_statut()`, `nf_formulaire()`, `nf_balisage()` |
-| [`site.php`](lib/site.php) | l'installation sur laquelle l'outil travaille : sa base, ses réglages, un administrateur. | `nf_config_db()`, `nf_connexion()`, `nf_connexion_admin()`, `nf_scalar()`, `nf_colonne()`, `nf_table_existe()`, `nf_type_id()`, `nf_reglage()`, `nf_reglage_poser()`, `nf_themes_installes()`, `nf_premier_admin()`, `nf_session_admin()`, `nf_session_fermer()`, `nf_mode_demo()`, `nf_theme_temporaire()` |
+| [`site.php`](lib/site.php) | l'installation sur laquelle l'outil travaille : sa base, ses réglages, un administrateur. | `nf_config_db()`, `nf_connexion()`, `nf_connexion_admin()`, `nf_scalar()`, `nf_colonne()`, `nf_table_existe()`, `nf_type_id()`, `nf_reglage()`, `nf_reglage_poser()`, `nf_reglage_temporaire()`, `nf_themes_installes()`, `nf_premier_admin()`, `nf_session_admin()`, `nf_session_fermer()`, `nf_mode_demo()`, `nf_theme_temporaire()` |
 | [`sql.php`](lib/sql.php) | produire et jouer du SQL depuis la base vive. | `nf_sql_entete()`, `nf_sql_tables()`, `nf_sql_show_create()`, `nf_sql_commentaires_de_colonnes()`, `nf_sql_reposer_commentaires()`, `nf_sql_collation_portable()`, `nf_sql_inserts()`, `nf_sql_upserts()`, `nf_sql_lignes()`, `nf_sql_jouer()`, `nf_sql_jouer_fichier()`, `nf_sql_tuples()`, `nf_sql_valeur()` |
 | [`table-map.php`](lib/table-map.php) | quelle table appartient à quel module, pour le SQL embarqué de chaque module. | — |
 | [`vierge.php`](lib/vierge.php) | une installation NEUVE, sans contenu, montée le temps d'un outil, puis détruite. | `nf_site_vierge()` |
+| [`vignettes.php`](lib/vignettes.php) | le format des vignettes d'addons, et la liste motivée de ceux qui n'en ont pas. | `NF_VIGNETTE_LARGEUR`, `NF_VIGNETTE_HAUTEUR`, `NF_VIGNETTE_POIDS_MAX`, `NF_VIGNETTES_EXEMPTEES`, `nf_vignette_defaut()` |
 | [`wiki.php`](lib/wiki.php) | la documentation publique : des guides Markdown (`docs/guide/`) aux pages du module wiki. | `nf_wiki_sections()`, `nf_wiki_convertir()`, `nf_wiki_attendu()` |
 <!-- bibliotheque:fin -->
 

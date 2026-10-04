@@ -30,7 +30,7 @@ return [
 	'dbcb5bb0' => 'Palmarès édité avec succès',
 	'e4701b5e' => 'Les trophées de nos équipes',
 	'f342c1c7' => 'Liste des palmarès',
-	'ec91a486' => 'Récompenses (palmarès) attribuables aux membres ou équipes — module gaming.',
+	'766f341e' => 'Le palmarès des équipes : rang obtenu, nombre d\'équipes, date, lieu, jeu et plateforme de chaque compétition, et les podiums comptés par équipe et par jeu.',
 	'52c9bbab' => 'Modifier',
 	'46ef5764' => 'Récompenses',
 	'8b8988ac' => 'Supprimer ?',

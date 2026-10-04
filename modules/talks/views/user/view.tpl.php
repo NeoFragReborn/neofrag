@@ -110,6 +110,8 @@
 						function init(){
 							if (typeof tinymce === "undefined") { setTimeout(init, 100); return; }
 							tinymce.init({
+								<?php // Les images collées ou glissées partent au site (cf. Editeur_Images). ?>
+								<?php echo \NF\NeoFrag\Libraries\Editeur_Images::tinymce() ?>
 								selector: "#nf-talks-staff-editor",
 								height: 280,
 								menubar: false,

@@ -19,6 +19,9 @@ privé, et quelles versions reçoivent des correctifs.
 - **Envois de fichiers** : le type réel est lu dans le contenu (*magic bytes*, extension PHP `fileinfo`)
   **et** une liste d'extensions est refusée d'office (scripts, exécutables, HTML, SVG) ; l'extension
   écrite sur le disque est contrôlée à part, car un fichier peut être à la fois une image et un script.
+  Une image collée ou glissée dans l'éditeur riche est réservée aux membres connectés (jeton de session,
+  débit borné), refusée si elle porte du code, bornée en poids et en dimensions avant tout décodage, puis
+  **ré-encodée** : seuls ses pixels sont écrits, sous un nom aléatoire.
 - **Sessions** : empreinte de l'agent (contre le détournement d'un cookie), `unserialize` borné par
   `allowed_classes`, adresse IP entrante validée (`FILTER_VALIDATE_IP`).
 - **Adresses dans les e-mails** : construites sur l'origine du site fixée à l'installation
@@ -49,7 +52,9 @@ privé, et quelles versions reçoivent des correctifs.
 
 - La politique de contenu garde `'unsafe-inline'` sur **`style-src`** (styles en ligne de Bootstrap 5
   et de TinyMCE), et accepte toute origine `https:` pour les images, les polices et les connexions
-  (avatars distants, polices Google, widgets Steam et Twitch).
+  (avatars distants, polices Google, widgets Steam et Twitch). Les images acceptent aussi `blob:` :
+  l'aperçu d'une image collée dans l'éditeur, le temps de son envoi — une telle adresse ne se fabrique
+  que depuis la page elle-même.
 
 ## Ce que le CMS attend de l'hébergement
 

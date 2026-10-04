@@ -5,7 +5,7 @@ declare(strict_types=1);
  */
 
 return [
-	'4d01d503' => 'Bloc de présentation libre éditable en HTML.',
+	'9d7cca2b' => 'Présente la structure saisie dans « Notre structure » : nom, type, date de création, logo et biographie, chacun affiché ou masqué, aligné et coloré au choix.',
 	'8088964a' => 'Affichage',
 	'f27c976e' => 'Style',
 	'7e924eb0' => 'Nom de l\'équipe',

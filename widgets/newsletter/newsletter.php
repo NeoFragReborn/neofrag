@@ -14,7 +14,7 @@ class Newsletter extends Widget
 	{
 		return [
 			'title'       => $this->lang('Newsletter'),
-			'description' => $this->lang('Formulaire d\'inscription à la newsletter.'),
+			'description' => $this->lang('Invite à s\'abonner à la newsletter depuis n\'importe quelle page et affiche le nombre d\'abonnés ; l\'inscription se valide par un e-mail de confirmation.'),
 			'icon'        => 'far fa-envelope',
 			'author'      => 'NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',

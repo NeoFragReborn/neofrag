@@ -27,7 +27,7 @@ class Gallery extends Module
 	{
 		return [
 			'title'       => $this->lang('Galeries'),
-			'description' => $this->lang('Galerie photos avec albums, thumbnails et descriptions.'),
+			'description' => $this->lang('Galerie photos en catégories et albums ; chaque album a ses droits de consultation et de publication. Images avec titre, description et commentaires.'),
 			'icon'        => 'far fa-image',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',

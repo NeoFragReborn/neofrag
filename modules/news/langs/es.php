@@ -64,7 +64,7 @@ return [
 	'f7423095' => 'Añadir una categoría',
 	'fada4b7d' => 'No hay más noticias',
 	'fe353392' => 'Categoría editada correctamente',
-	'8e91d04c' => 'Noticias del sitio con categorías y comentarios.',
+	'43364972' => 'Noticias clasificadas por categorías y etiquetas: publicación programada, comentarios, reacciones, suscripción por categoría e historial de cambios.',
 	'52c9bbab' => 'Modificar',
 	'8d9ef7a4' => 'Eliminar',
 	'ca4ae516' => 'Modificar una categoría',

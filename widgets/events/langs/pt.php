@@ -14,7 +14,7 @@ return [
 	'7b9e6ee1' => 'Um evento em detalhe',
 	'81c97d6a' => 'Lista de tipos de eventos',
 	'82f59ca1' => 'Sem resultados...',
-	'91f59323' => 'Calendário ou lista dos próximos eventos — módulo gaming.',
+	'336d6412' => 'Seis vistas dos eventos à escolha: calendário, lista por tipo, um evento em detalhe, tipos de eventos, últimos resultados ou próximos jogos.',
 	'9f993b09' => 'Resultados',
 	'b1a096a2' => 'Eventos',
 	'bde466c1' => 'Todos',

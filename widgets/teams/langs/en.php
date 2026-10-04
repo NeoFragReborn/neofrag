@@ -11,5 +11,5 @@ return [
 	'be90eefa' => 'Teams',
 	'c77259fe' => 'View all our teams',
 	'ea2b7448' => 'Our teams',
-	'd59108aa' => 'Clan teams with their members — gaming widget.',
+	'd2655a75' => 'The site\'s teams as clickable banners, each leading to its page: game, description, players. Only teams that have a banner are shown.',
 ];

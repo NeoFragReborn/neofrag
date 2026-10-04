@@ -70,6 +70,6 @@ return [
 	'3c19f7aa' => 'Avversario',
 	'a415f66e' => 'Evento',
 	'f3581855' => 'Punteggio',
-	'f4cbbafe' => 'Squadre e clan — modulo gaming.',
+	'21ba1da3' => 'Una pagina per squadra: gioco, presentazione, giocatori e ruoli, risultati e reclutamento in base ai moduli installati. Per una gilda o un team eSport.',
 	'8fd9c7ef' => 'Salva',
 ];

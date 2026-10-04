@@ -14,7 +14,7 @@ return [
 	'7b9e6ee1' => 'An event in detail',
 	'81c97d6a' => 'List of event types',
 	'82f59ca1' => 'No result...',
-	'91f59323' => 'Calendar or list of upcoming events — gaming module.',
+	'336d6412' => 'Six views of the events to choose from: calendar, list by type, one event in detail, event types, latest results or upcoming matches.',
 	'9f993b09' => 'Results',
 	'b1a096a2' => 'Events',
 	'bde466c1' => 'All',

@@ -15,7 +15,7 @@ class Partners extends Module
 	{
 		return [
 			'title'       => $this->lang('Partenaires'),
-			'description' => $this->lang('Partenaires et sponsors — module gaming.'),
+			'description' => $this->lang('Page des partenaires et sponsors : logo clair ou foncé, site, réseaux sociaux, code promo et présentation. Pour un club, une association ou une équipe.'),
 			'icon'        => 'far fa-handshake',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
@@ -30,6 +30,12 @@ class Partners extends Module
 				'neofrag' => '0.2.0'
 			],
 			'routes'      => [
+				// La visite d'un partenaire : le checker `_partner` compte le clic, puis renvoie vers
+				// son site. Retirée le 2026-06-01 (d0e8b1fa) comme « déclarée non implémentée » — à
+				// tort : il n'y a pas de méthode de contrôleur parce que le checker redirige lui-même.
+				// Le widget pointait toujours ici : ses logos menaient à un 404, et la colonne
+				// « Visites » de l'administration ne bougeait plus.
+				'{id}/{url_title}'               => '_partner',
 
 				//Admin
 				'admin/{id}/{url_title*}'        => '_edit',

@@ -23,7 +23,9 @@ class Events extends Model
 
 		if (!$this->url->admin)
 		{
-			$this->db->where('e.published', TRUE);
+			// Publication programmée, comme le module : une publish_date future masque l'événement.
+			// Le widget ne lisait que `published`, et montrait l'événement avant son heure.
+			$this->db->where('e.published', TRUE)->where('(e.publish_date IS NULL OR e.publish_date <= NOW())');
 		}
 
 		$event = $this->db->row();
@@ -81,7 +83,8 @@ class Events extends Model
 
 		if (!$this->url->admin)
 		{
-			$this->db->where('e.published', TRUE);
+			// Publication programmée, comme le module (cf. check_event).
+			$this->db->where('e.published', TRUE)->where('(e.publish_date IS NULL OR e.publish_date <= NOW())');
 		}
 
 		return $this->db->group_by('e.event_id')
@@ -101,6 +104,7 @@ class Events extends Model
 									->from('nf_events_types t')
 									->join('nf_events e', 't.type_id = e.type_id')
 									->where('e.published', TRUE)
+									->where('(e.publish_date IS NULL OR e.publish_date <= NOW())')
 									->order_by('t.title')
 									->group_by('t.type_id')
 									->get()

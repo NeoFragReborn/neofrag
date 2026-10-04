@@ -107,4 +107,7 @@ return [
 	'03158917' => 'Grupo',
 	'79987719' => 'inscrição newsletter pendente|inscrições newsletter pendentes',
 	'080b55ee' => 'Gerir newsletter',
+	'a06e1419' => 'Este endereço de e-mail não é válido.',
+	'edc6b420' => 'Não foi possível enviar o e-mail de confirmação. Tenta novamente um pouco mais tarde.',
+	'ce6fdf8a' => 'Demasiados pedidos de subscrição recentes. Tenta novamente em %d minuto(s).',
 ];

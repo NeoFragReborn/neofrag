@@ -30,7 +30,7 @@ return [
 	'dbcb5bb0' => 'Palmarés editado com sucesso',
 	'e4701b5e' => 'Os troféus das nossas equipas',
 	'f342c1c7' => 'Lista de palmarés',
-	'ec91a486' => 'Prêmios (palmares) atribuíveis a membros ou equipes — módulo gaming.',
+	'766f341e' => 'O palmarés das equipas: classificação obtida, número de equipas, data, local, jogo e plataforma de cada competição, com os pódios contados por equipa e por jogo.',
 	'52c9bbab' => 'Modificar',
 	'8d9ef7a4' => 'Excluir',
 	// i18n 2026-06-11 (code strings)

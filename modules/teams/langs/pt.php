@@ -70,6 +70,6 @@ return [
 	'3c19f7aa' => 'Adversário',
 	'a415f66e' => 'Evento',
 	'f3581855' => 'Resultado',
-	'f4cbbafe' => 'Equipas e clãs — módulo gaming.',
+	'21ba1da3' => 'Uma página por equipa: jogo, apresentação, jogadores e funções, resultados e recrutamento consoante os módulos instalados. Para uma guilda ou uma equipa de eSports.',
 	'8fd9c7ef' => 'Guardar',
 ];

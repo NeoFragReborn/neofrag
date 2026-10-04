@@ -34,7 +34,7 @@ return [
 	'f8f21a53' => 'Tem a certeza de que pretende eliminar o mapa <b>%s</b>?',
 	'b83726b5' => 'Sem mapa',
 	'58a98c98' => 'Adicionar um mapa',
-	'cd59c74e' => 'Catálogo de jogos jogados — módulo de gaming.',
+	'895213c5' => 'A lista dos jogos praticados, com banner, ícone, mapas e modos de jogo; serve de base às equipas, aos jogos, ao palmarés e ao recrutamento.',
 	'97671a33' => 'Jogos',
 	'8d9ef7a4' => 'Excluir',
 	'df149063' => 'Mapas',

@@ -7,7 +7,7 @@ declare(strict_types=1);
 return [
 	'073102ce' => 'Meistausgezeichnetes Team',
 	'2939c77c' => 'Auszeichnungen',
-	'2c3a6d4a' => 'Zeigt die zuletzt vergebenen Auszeichnungen an — Gaming-Modul.',
+	'23a963cf' => 'Die Erfolge auf einen Blick, nach Wahl: die neuesten Ergebnisse der Teams, das meistausgezeichnete Team oder das meistausgezeichnete Spiel.',
 	'3a847859' => 'Neueste Auszeichnungen',
 	'801296f0' => 'Meistausgezeichnetes Spiel',
 	'89c8752d' => '%d. / %d Teams',
