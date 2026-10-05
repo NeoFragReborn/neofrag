@@ -14,7 +14,7 @@
 <?php else: ?>
 <ul class="list-group">
 	<?php foreach ($fields as $f): ?>
-	<li class="list-group-item py-1"><?php echo htmlspecialchars($f['label']) ?><?php echo $f['required'] ? ' <span class="text-red">*</span>' : '' ?></li>
+	<li class="list-group-item py-1"><?php echo nf_texte($f['label']) ?><?php echo $f['required'] ? ' <span class="text-red">*</span>' : '' ?></li>
 	<?php endforeach ?>
 </ul>
 <?php endif ?>

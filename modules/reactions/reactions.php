@@ -148,10 +148,10 @@ class Reactions extends Module
 		}
 
 		$main_emoji = ($mine !== NULL) ? self::REACTIONS[$mine] : '🙂';
-		$attrs      = ' data-reaction-type="'.htmlspecialchars((string) ($content_type)).'" data-reaction-id="'.$content_id.'"';
+		$attrs      = ' data-reaction-type="'.nf_texte($content_type).'" data-reaction-id="'.$content_id.'"';
 
 		return '<span class="nf-reactions'.($mine !== NULL ? ' has-mine' : '').($logged ? '' : ' is-guest').'"'.$attrs
-				.($logged ? '' : ' title="'.htmlspecialchars((string) ($this->lang('Connecte-toi pour aimer')), ENT_QUOTES).'"').'>'
+				.($logged ? '' : ' title="'.nf_texte($this->lang('Connecte-toi pour aimer')).'"').'>'
 			.'<span class="nf-reaction-control">'
 				.'<button type="button" class="nf-reaction-main'.($mine !== NULL ? ' reacted' : '').'"'.($logged ? '' : ' disabled').'>'
 					.'<span class="nf-reaction-emoji">'.$main_emoji.'</span>'

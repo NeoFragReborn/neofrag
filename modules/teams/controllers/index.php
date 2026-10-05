@@ -143,10 +143,17 @@ class Index extends Controller_Module
 
 	public function _get_team_events($team_id)
 	{
-		$events = $this->module('events') ? $this->module('events')->model()->get_events('team', $team_id) : NULL;
+		// Sans le module Événements, pas de matchs : la boucle parcourait NULL et écrivait un avertissement
+		// au journal à chaque page d'équipe (relevé le 2026-10-04).
+		if (!$this->module('events'))
+		{
+			return NULL;
+		}
+
+		$events = $this->module('events')->model()->get_events('team', $team_id);
 
 		$team_matches = [];
-		foreach ($events as $key => $event)
+		foreach (is_array($events) ? $events : [] as $key => $event)
 		{
 			if ($event['nb_rounds'] > 0)
 			{

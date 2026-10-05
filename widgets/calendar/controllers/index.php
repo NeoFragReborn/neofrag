@@ -33,8 +33,8 @@ class Index extends Controller_Widget
 			foreach ($events as $e)
 			{
 				$color = $e['color'] ? $e['color'] : '#03c1a2';
-				$body .= '<li class="py-1 border-bottom" style="border-left:3px solid '.htmlspecialchars((string) ($color)).';padding-left:0.5rem">';
-				$body .= '<a href="'.url('calendar/'.$e['id'].'/'.url_title($e['title'])).'"><i class="far fa-calendar me-1"></i>'.htmlspecialchars((string) ($e['title']), ENT_QUOTES, 'UTF-8', FALSE).'</a>';
+				$body .= '<li class="py-1 border-bottom" style="border-left:3px solid '.nf_texte($color).';padding-left:0.5rem">';
+				$body .= '<a href="'.url('calendar/'.$e['id'].'/'.url_title($e['title'])).'"><i class="far fa-calendar me-1"></i>'.nf_texte($e['title']).'</a>';
 				$body .= '<br><small class="text-muted">'.\NF\Modules\Calendar\Calendar::format_dt($e['start_at'], !empty($e['all_day'])).'</small>';
 				$body .= '</li>';
 			}

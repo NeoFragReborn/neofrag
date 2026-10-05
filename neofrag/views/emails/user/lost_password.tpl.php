@@ -3,7 +3,7 @@
  * Email de réinitialisation de mot de passe. Reçoit $user en data.
  */
 ?>
-<p><?php echo $this->lang('Hello') ?> <?php echo htmlspecialchars($user->username) ?>,</p>
+<p><?php echo $this->lang('Hello') ?> <?php echo nf_texte($user->username) ?>,</p>
 
 <p><?php echo $this->lang('You requested a password reset. Click the button below to choose a new password.') ?></p>
 

@@ -71,7 +71,7 @@ $filtres = [
 		$version    = $addon->addon()->info()->version ?? '';
 		$description = $addon->addon()->info()->description ?? '';
 		?>
-		<div class="addon-card mix addon-<?php echo $type_name ?> <?php echo $is_enabled ? 'activated' : 'deactivated' ?>" data-type="<?php echo $type_name ?>" data-texte="<?php echo htmlspecialchars(mb_strtolower(strip_tags($title.' '.$description.' '.($addon->addon()->info()->name ?? ''))), ENT_QUOTES) ?>">
+		<div class="addon-card mix addon-<?php echo $type_name ?> <?php echo $is_enabled ? 'activated' : 'deactivated' ?>" data-type="<?php echo $type_name ?>" data-texte="<?php echo nf_texte(mb_strtolower(strip_tags($title.' '.$description.' '.($addon->addon()->info()->name ?? '')))) ?>">
 			<?php /* La bande d'apercu existe TOUJOURS, avec image ou avec l'icone au centre. Quand
 			         elle n'apparaissait que pour les themes — les seuls a livrer un thumbnail — les
 			         cartes d'une meme ligne differaient de 50 px de haut, et la grille etirait les
@@ -82,7 +82,7 @@ $filtres = [
 			<div class="addon-card-thumbnail addon-card-thumbnail-vide">
 				<div class="addon-card-icon-wrap">
 					<?php if (preg_match('/^fa[bsr]?\s+fa-/', $icon)): ?>
-						<i class="<?php echo htmlspecialchars($icon) ?>"></i>
+						<i class="<?php echo nf_texte($icon) ?>"></i>
 					<?php else: ?>
 						<span class="addon-card-icon-emoji"><?php echo $icon ?></span>
 					<?php endif ?>

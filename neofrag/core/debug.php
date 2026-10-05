@@ -295,7 +295,7 @@ class Debug extends Core
 								}
 								
 								$result .= '		<td><b>'.($i + 1).'</b><div class="float-end">'.$type.'</div></td>
-													<td>'.utf8_htmlentities($text).'</td>
+													<td>'.nf_texte($text).'</td>
 													<td class="text-end">'.$file.' <code>'.$line.'</code></td>
 												</tr>';	
 							

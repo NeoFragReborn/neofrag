@@ -16,8 +16,8 @@
 					<th class="matrix-perm-col"><?php echo $this->lang('Utilisateur') ?></th>
 					<?php foreach ($roles as $role): ?>
 						<th class="text-center matrix-role-col" data-role-id="<?php echo (int)$role['role_id'] ?>">
-							<i class="<?php echo htmlspecialchars($role['icon']) ?>"></i>
-							<div class="role-name"><?php echo htmlspecialchars((string) $this->lang($role['title'])) ?></div>
+							<i class="<?php echo nf_texte($role['icon']) ?>"></i>
+							<div class="role-name"><?php echo nf_texte($this->lang($role['title'])) ?></div>
 							<?php if ($role['built_in']): ?>
 								<small class="text-muted"><i class="fas fa-lock"></i></small>
 							<?php endif ?>
@@ -29,7 +29,7 @@
 				<?php foreach ($users as $u): ?>
 					<tr data-user-id="<?php echo (int)$u['id'] ?>">
 						<td class="matrix-perm-cell">
-							<?php echo htmlspecialchars($u['username']) ?>
+							<?php echo nf_texte($u['username']) ?>
 							<?php if ($u['admin']): ?>
 								<small class="badge text-bg-danger ms-1" data-bs-toggle="tooltip" title="<?php echo $this->lang('Bypass admin actif') ?>"><i class="fas fa-rocket"></i></small>
 							<?php endif ?>

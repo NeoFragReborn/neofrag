@@ -174,6 +174,16 @@ class Webhooks extends Module
 			return;
 		}
 
+		// Un programme lit ces données, pas une page : un pseudo ou un titre rangé codé (« Zo&eacute; »)
+		// part décodé (cf. nf_texte_brut()).
+		array_walk_recursive($payload, static function (mixed &$valeur): void
+		{
+			if (is_string($valeur))
+			{
+				$valeur = nf_texte_brut($valeur);
+			}
+		});
+
 		$body = json_encode([
 			'event'     => $event,
 			'data'      => $payload,
@@ -194,7 +204,7 @@ class Webhooks extends Module
 	/** Émet un payload de test vers UN webhook et renvoie l'issue (bouton admin « Tester »). */
 	public function test(array $hook)
 	{
-		$data = ['message' => 'NeoFrag webhook test', 'webhook' => $hook['title'] ?? ''];
+		$data = ['message' => 'NeoFrag webhook test', 'webhook' => nf_texte_brut($hook['title'] ?? '')];
 		$body = json_encode([
 			'event'     => 'webhook.test',
 			'data'      => $data,

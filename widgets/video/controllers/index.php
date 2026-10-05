@@ -33,7 +33,7 @@ class Index extends Controller_Widget
 		$first = $videos[0];
 
 		$body  = '<div class="nf-video-widget">';
-		$body .= '<video class="nf-video-player" controls preload="metadata" style="width:100%;border-radius:4px;background:#000;" src="'.htmlspecialchars((string) ($base.$first['filename']), ENT_QUOTES).'"></video>';
+		$body .= '<video class="nf-video-player" controls preload="metadata" style="width:100%;border-radius:4px;background:#000;" src="'.nf_texte($base.$first['filename']).'"></video>';
 
 		if (count($videos) > 1)
 		{
@@ -41,8 +41,8 @@ class Index extends Controller_Widget
 			foreach ($videos as $i => $v)
 			{
 				$label = $v['title'] !== '' ? $v['title'] : $v['filename'];
-				$body .= '<button type="button" class="list-group-item list-group-item-action'.($i === 0 ? ' active' : '').'" data-video-src="'.htmlspecialchars((string) ($base.$v['filename']), ENT_QUOTES).'">'
-					.icon('fas fa-play').' '.htmlspecialchars((string) ($label))
+				$body .= '<button type="button" class="list-group-item list-group-item-action'.($i === 0 ? ' active' : '').'" data-video-src="'.nf_texte($base.$v['filename']).'">'
+					.icon('fas fa-play').' '.nf_texte($label)
 					.'</button>';
 			}
 			$body .= '</div>';

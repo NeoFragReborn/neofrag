@@ -10,6 +10,56 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.27] — 2026-10-05
+
+Le bot Discord passe en **version 0.2.4** : les images passent entre le forum et Discord dans les deux sens
+(voir son propre journal des versions). La 0.2.3 continue de fonctionner.
+
+### Ajouté
+
+- **Une image envoyée sur Discord s'affiche dans le forum** (avec le bot Discord 0.2.4) : le bot la garde
+  sur le site, contrôlée comme une image collée dans l'éditeur, au lieu d'un simple lien vers Discord.
+  L'API gagne pour cela l'adresse `POST /api/v1/forum/images`.
+- **La validation de l'inscription par e-mail** (*Paramètres → Inscription*, éteinte par défaut) : le
+  nouveau membre reçoit un lien, valable deux jours, et ne peut pas se connecter avant de l'avoir ouvert ;
+  une tentative de connexion lui en renvoie un. Cette fonction, héritée de NeoFrag, était à moitié
+  écrite : allumée, elle envoyait un lien vers une page absente et laissait le membre sans pouvoir se
+  connecter, sans un mot.
+
+### Corrigé
+
+- **Les textes accentués ne s'affichent plus codés.** Un titre, un pseudo, un libellé ou le nom du site qui
+  contenait « é » ou « — » pouvait apparaître sous la forme `&eacute;` ou `&mdash;` : dans les
+  conversations, la Boutique, les Dons, le sommaire d'un billet, les flux RSS, l'administration… Tous les
+  affichages passent désormais par une même règle, et deux contrôles empêchent la faute de revenir : l'un
+  lit le code, l'autre les pages servies. Les suggestions de mention et de recherche, l'objet des courriels,
+  les données lues par les moteurs de recherche (nom du site, titre et auteur d'un billet) et les webhooks
+  reçoivent aussi le texte en clair.
+- **L'initiale d'un avatar** montrait « & » pour un nom commençant par une lettre accentuée
+  (administration, page d'une collecte de dons, widget Discord).
+- **Une inscription par Discord, GitHub ou Google fait accepter le règlement**, quand le site en a un :
+  un écran le montre, et le compte n'est créé qu'une fois la case cochée — comme par le formulaire
+  d'inscription, que ces comptes contournaient.
+- **Le menu ne mène plus vers un module absent** : un site installé sans le Forum, la Galerie ou les
+  Actualités, ou qui en éteint un, gardait leurs liens dans le menu — un clic, une page introuvable.
+  Ils disparaissent, et reviennent quand le module est rallumé ; une page personnalisée reste.
+- **La liste des équipes sans le module Événements** n'écrit plus d'avertissement au journal.
+- **Le bouton ☰ de l'administration fonctionne sur grand écran** : il y était affiché sans rien faire ; il
+  replie maintenant le menu latéral, et le rouvre, en gardant le choix. Sur un téléphone, il ouvre le menu
+  comme avant.
+- **L'avatar de l'auteur d'un message du forum** est plus grand (80 px, 36 px sur téléphone) : il avait la
+  taille d'une liste dans tous les thèmes.
+- **Une image dans une signature, ou dans la description d'un album de la galerie, s'affiche** : ce que
+  l'éditeur riche y écrivait était rangé codé, et la page montrait le code (`<p><img …></p>`). Les
+  signatures déjà enregistrées s'affichent sans être ressaisies.
+- **La version texte des courriels est lisible** : les paragraphes y étaient collés, les accents codés, et
+  un lien se retrouvait suivi du mot d'après — inutilisable dans une messagerie qui n'affiche que le texte.
+- **Une case à cocher reçue sous une forme inattendue** ne fait plus tomber la page en erreur : la
+  demande est simplement refusée.
+- **Sur une démonstration, le compte de secours reste caché au survol et en modération**, comme sur sa
+  page : la fiche d'un membre au survol montrait son nom et ses dates de passage, l'historique de
+  modération son nom.
+
 ## [1.2.26] — 2026-10-04
 
 Le bot Discord passe en **version 0.2.3** : il n'écrit plus d'avertissement de discord.js à chaque réponse

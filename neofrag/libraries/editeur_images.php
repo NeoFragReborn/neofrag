@@ -485,10 +485,16 @@ final class Editeur_Images
 		};
 	}
 
-	/** Le chemin relatif du fichier à écrire : `upload/editeur/AAAA/MM/<32 caractères hexadécimaux>.<ext>`. */
-	public static function chemin(string $type, int $instant): string
+	/**
+	 * Le chemin relatif du fichier à écrire : `upload/editeur/AAAA/MM/<32 caractères hexadécimaux>.<ext>`.
+	 * Le nom est aléatoire ; `$empreinte` (le SHA-256 du fichier reçu) le rend fixe — la même image renvoyée
+	 * par un programme (un message modifié sur Discord) retrouve alors le même fichier, sans copie de plus.
+	 */
+	public static function chemin(string $type, int $instant, string $empreinte = ''): string
 	{
-		return self::DOSSIER.'/'.date('Y/m', $instant).'/'.bin2hex(random_bytes(16)).'.'.(self::TYPES[$type] ?? 'png');
+		$nom = preg_match('/^[0-9a-f]{64}$/', $empreinte) ? substr($empreinte, 0, 32) : bin2hex(random_bytes(16));
+
+		return self::DOSSIER.'/'.date('Y/m', $instant).'/'.$nom.'.'.(self::TYPES[$type] ?? 'png');
 	}
 
 	/** Le nom d'origine, gardé pour le registre des fichiers (`nf_file`) : lettres, chiffres, `._ -`, 100 caractères. */

@@ -391,7 +391,7 @@ function nf_seo_plan_xml(array $adresses): string
 
 	foreach ($adresses as $adresse)
 	{
-		$xml .= "\t<url>\n\t\t<loc>".htmlspecialchars($adresse['loc'], ENT_XML1 | ENT_QUOTES, 'UTF-8')."</loc>\n";
+		$xml .= "\t<url>\n\t\t<loc>".nf_texte($adresse['loc'])."</loc>\n";
 
 		if (!empty($adresse['lastmod']))
 		{
@@ -415,7 +415,7 @@ function nf_seo_index_xml(array $plans): string
 
 	foreach ($plans as $plan)
 	{
-		$xml .= "\t<sitemap>\n\t\t<loc>".htmlspecialchars($plan, ENT_XML1 | ENT_QUOTES, 'UTF-8')."</loc>\n\t</sitemap>\n";
+		$xml .= "\t<sitemap>\n\t\t<loc>".nf_texte($plan)."</loc>\n\t</sitemap>\n";
 	}
 
 	return $xml.'</sitemapindex>'."\n";

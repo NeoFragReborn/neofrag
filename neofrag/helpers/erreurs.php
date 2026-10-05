@@ -298,7 +298,7 @@ function nf_page_erreur_autonome(int $code, string $reference = '', string $deta
 		}
 	}
 
-	$e    = static fn (string $v): string => htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+	$e    = static fn (string $v): string => nf_texte($v);
 	$base = rtrim(str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '/'))), '/').'/';
 
 	echo '<!DOCTYPE html><html lang="'.$langue.'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>'.$e($titre).'</title>'

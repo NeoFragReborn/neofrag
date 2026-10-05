@@ -369,11 +369,11 @@ class Moderation extends Module
 		$this->css('moderation')->js('moderation');
 
 		$attrs = 'data-moderation-report'
-		       . ' data-target-type="'.htmlspecialchars((string) ($type)).'"'
-		       . ' data-target-id="'.htmlspecialchars((string)$id).'"'
-		       . ' data-url="'.htmlspecialchars((string) ($url)).'"';
+		       . ' data-target-type="'.nf_texte($type).'"'
+		       . ' data-target-id="'.nf_texte($id).'"'
+		       . ' data-url="'.nf_texte($url).'"';
 
-		return '<a href="#" class="btn btn-sm btn-link text-muted nf-report-btn" '.$attrs.' data-bs-toggle="tooltip" title="'.htmlspecialchars((string) ($this->lang('Signaler ce contenu'))).'">'
+		return '<a href="#" class="btn btn-sm btn-link text-muted nf-report-btn" '.$attrs.' data-bs-toggle="tooltip" title="'.nf_texte($this->lang('Signaler ce contenu')).'">'
 		     . '<i class="fas fa-flag"></i>'
 		     . '</a>';
 	}

@@ -196,7 +196,11 @@ Ce qui suit, et comment :
 - Un message venu de Discord est publié sous le **compte du membre** qui a lié son Discord ; sinon
   sous son **identité Discord**, comme il l'a choisi avec `/forum visibility`, marquée du logo Discord.
 - Un message trop long pour Discord (2 000 caractères) y est coupé, avec un lien vers la suite.
-- Les pièces jointes de Discord sont signalées sur le site par un lien vers le message Discord.
+- Les **images** d'un message du site partent sur Discord en aperçus, sous le texte ; les liens du
+  message n'y affichent pas de carte d'aperçu.
+- Une **image jointe sur Discord** (JPEG, PNG, GIF ou WebP, 5 Mo au plus) est gardée sur le site et
+  s'affiche dans le message du forum — un site trop ancien pour la recevoir garde le lien. Les autres
+  pièces jointes, et toutes celles du Bugtracker, sont signalées par un lien vers le message Discord.
 - Réglages : un lien vers le site sous chaque sujet recopié, et le **rattrapage** au démarrage de ce
   qui s'est écrit sur Discord pendant que le bot était éteint.
 - Ne sont pas reportés : la suppression d'un fil entier sur Discord (le sujet reste, le journal le

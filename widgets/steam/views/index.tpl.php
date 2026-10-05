@@ -1,13 +1,13 @@
 <?php
 $online_pct = $members > 0 ? min(100, round($members_online / $members * 100)) : 0;
 $ingame_pct = $members > 0 ? min(100, round($members_ingame / $members * 100)) : 0;
-$group_url  = 'https://steamcommunity.com/groups/'.htmlspecialchars($url);
+$group_url  = 'https://steamcommunity.com/groups/'.nf_texte($url);
 ?>
 <div class="widget-steam widget-steam-<?php echo $display ?>">
 	<?php if ($show_avatar): ?>
 	<div class="widget-steam-avatar-wrap">
 		<div class="widget-steam-avatar-ring" style="--online-pct:<?php echo $online_pct ?>%">
-			<a href="<?php echo $group_url ?>" target="_blank" rel="noopener"><img src="<?php echo $avatar ?>" class="widget-steam-avatar" alt="<?php echo htmlspecialchars($name) ?>" /></a>
+			<a href="<?php echo $group_url ?>" target="_blank" rel="noopener"><img src="<?php echo $avatar ?>" class="widget-steam-avatar" alt="<?php echo nf_texte($name) ?>" /></a>
 		</div>
 		<?php if ($online_pct > 0): ?>
 		<div class="widget-steam-online-badge"><?php echo $online_pct ?>%</div>
@@ -16,7 +16,7 @@ $group_url  = 'https://steamcommunity.com/groups/'.htmlspecialchars($url);
 	<?php endif ?>
 
 	<div class="widget-steam-content">
-		<h6 class="widget-steam-name"><a href="<?php echo $group_url ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($name) ?></a></h6>
+		<h6 class="widget-steam-name"><a href="<?php echo $group_url ?>" target="_blank" rel="noopener"><?php echo nf_texte($name) ?></a></h6>
 
 		<div class="widget-steam-stats">
 			<div class="widget-steam-stat" title="<?php echo $this->lang('Membres') ?>">

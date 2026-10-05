@@ -6,9 +6,9 @@
 					<?php
 						$icon = $talk['type'] === 'public' ? 'fas fa-hashtag' : ($talk['type'] === 'group' ? 'fas fa-users' : 'fas fa-user');
 					?>
-					<h5 class="m-0"><?php echo \icon($icon).' '.htmlspecialchars($talk['name']) ?></h5>
+					<h5 class="m-0"><?php echo \icon($icon).' '.nf_texte($talk['name']) ?></h5>
 					<?php if (!empty($talk['description'])): ?>
-						<small class="text-muted"><?php echo htmlspecialchars($talk['description']) ?></small>
+						<small class="text-muted"><?php echo nf_texte($talk['description']) ?></small>
 					<?php endif ?>
 				</div>
 				<div class="actions">
@@ -32,7 +32,7 @@
 						?>
 						<div class="talks-message mb-2" style="text-align: <?php echo $align ?>;">
 							<?php if (!$is_system): ?>
-								<small class="text-muted"><?php echo htmlspecialchars($m['username'] ?? '?').' · '.\time_span($m['date']) ?></small>
+								<small class="text-muted"><?php echo nf_texte($m['username'] ?? '?').' · '.\time_span($m['date']) ?></small>
 							<?php endif ?>
 							<div style="display: inline-block; max-width: 75%; padding: 8px 12px; background: <?php echo $bg ?>; border-radius: 12px; text-align: left;">
 								<?php if ($is_system): ?>
@@ -65,7 +65,7 @@
 											<?php
 												$is_image = strpos((string)$att['mime_type'], 'image/') === 0;
 												$file_url = \url($att['path']);
-												$name_esc = htmlspecialchars($att['name']);
+												$name_esc = nf_texte($att['name']);
 											?>
 											<?php if ($is_image): ?>
 												<a href="<?php echo $file_url ?>" target="_blank" rel="noopener" title="<?php echo $name_esc ?>">
@@ -141,7 +141,7 @@
 							<span><?php echo $this->lang('Max 2000 caractères.') ?></span>
 							<span class="text-info" id="talk-attached-name" style="margin-left:8px;"></span>
 							<span class="float-end">
-								<?php echo $this->lang('Fichiers : %s · max %s', htmlspecialchars(implode(', ', $allowed_mimes ?? [])), \human_size((int)($max_size_bytes ?? 5242880))) ?>
+								<?php echo $this->lang('Fichiers : %s · max %s', nf_texte(implode(', ', $allowed_mimes ?? [])), \human_size((int)($max_size_bytes ?? 5242880))) ?>
 							</span>
 						</small>
 					</form>

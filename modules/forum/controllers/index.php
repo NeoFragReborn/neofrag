@@ -847,7 +847,7 @@ class Index extends Controller_Module
 
 		foreach ($prefixes as $p)
 		{
-			$html .= '<a class="'.($actif === $p['prefix_id'] ? 'actif' : '').'" href="'.$adresse.'?prefixe='.$p['prefix_id'].'">'.htmlspecialchars($p['title']).'</a>';
+			$html .= '<a class="'.($actif === $p['prefix_id'] ? 'actif' : '').'" href="'.$adresse.'?prefixe='.$p['prefix_id'].'">'.nf_texte($p['title']).'</a>';
 		}
 
 		return $html.'</nav>';

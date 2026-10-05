@@ -12,7 +12,7 @@ $is_admin = $logged && $this->access->effective_admin();
 	<div class="nb-nav-in">
 		<a class="nb-logo" href="<?php echo url('') ?>">
 			<span class="nb-mark"><i class="fas fa-meteor"></i></span>
-			<span class="nb-logo-text"><?php echo htmlspecialchars($this->config->nf_name) ?></span>
+			<span class="nb-logo-text"><?php echo nf_texte($this->config->nf_name) ?></span>
 		</a>
 		<?php /* LE MENU vient de la zone « Navigation », rendue ICI, dans la barre. Il etait ecrit
 		        en dur jusqu'au 2026-09-22 : cinq liens que personne ne pouvait corriger depuis
@@ -28,7 +28,7 @@ $is_admin = $logged && $this->access->effective_admin();
 				<button class="nb-burger" id="nb-burger" type="button" aria-label="<?php echo $this->lang('Menu') ?>" aria-expanded="false" aria-controls="nb-links"><i class="fas fa-bars"></i></button>
 			<?php endif ?>
 			<?php if ($logged): ?>
-				<a class="nb-btn nb-btn-ghost" href="<?php echo url('user') ?>"><i class="fas fa-user-astronaut"></i> <span><?php echo htmlspecialchars($this->user->username) ?></span></a>
+				<a class="nb-btn nb-btn-ghost" href="<?php echo url('user') ?>"><i class="fas fa-user-astronaut"></i> <span><?php echo nf_texte($this->user->username) ?></span></a>
 				<?php if ($is_admin): ?><a class="nb-btn nb-btn-primary" href="<?php echo url('admin') ?>"><i class="fas fa-gauge-high"></i> <span><?php echo $this->lang('Admin') ?></span></a><?php endif ?>
 			<?php else: ?>
 				<?php /* Masqué quand les inscriptions sont fermées : la route répond 404 par conception. */ ?>
@@ -51,9 +51,9 @@ $is_admin = $logged && $this->access->effective_admin();
 		<div class="nb-hero-bg" aria-hidden="true"></div>
 		<div class="nb-hero-in">
 			<span class="nb-chip"><i class="fas fa-meteor"></i> <?php echo $this->lang('Communauté') ?></span>
-			<h1><?php echo $this->lang('Bienvenue sur') ?> <span class="nb-grad"><?php echo htmlspecialchars($this->config->nf_name) ?></span></h1>
+			<h1><?php echo $this->lang('Bienvenue sur') ?> <span class="nb-grad"><?php echo nf_texte($this->config->nf_name) ?></span></h1>
 			<?php if ($desc = $this->config->nf_description): ?>
-			<p class="nb-hero-lead"><?php echo htmlspecialchars($desc) ?></p>
+			<p class="nb-hero-lead"><?php echo nf_texte($desc) ?></p>
 			<?php endif ?>
 		</div>
 	</header>
@@ -82,24 +82,24 @@ $is_admin = $logged && $this->access->effective_admin();
 		<div class="nb-foot-top">
 			<a class="nb-logo nb-logo-foot" href="<?php echo url('') ?>">
 				<span class="nb-mark"><i class="fas fa-meteor"></i></span>
-				<span class="nb-logo-text"><?php echo htmlspecialchars($this->config->nf_name) ?></span>
+				<span class="nb-logo-text"><?php echo nf_texte($this->config->nf_name) ?></span>
 			</a>
 			<?php echo $this->view('socials') ?>
 		</div>
 		<div class="nb-foot-bar">
 			<div class="nb-copy">
-				© <?php echo date('Y') ?> <span class="fg-site-name"><?php echo htmlspecialchars($this->config->nf_name) ?></span>
+				© <?php echo date('Y') ?> <span class="fg-site-name"><?php echo nf_texte($this->config->nf_name) ?></span>
 				· <?php echo $this->lang('Propulsé par') ?> <a href="https://neofr.ag" target="_blank" rel="noopener">NeoFrag Reborn</a>
 			</div>
 			<div class="nb-foot-tools">
 				<?php echo nf_selecteur_theme() ?>
 				<?php if (count($this->config->langs) > 1): $cur = $this->config->lang->info(); ?>
 				<form method="post" action="<?php echo url('ajax/settings/languages') ?>" class="fg-lang dropup">
-					<input type="hidden" name="url" value="<?php echo htmlspecialchars($this->url->base.trim($cur->name.'/'.nf_chemin_public(), '/').$this->url->query) ?>" />
+					<input type="hidden" name="url" value="<?php echo nf_texte($this->url->base.trim($cur->name.'/'.nf_chemin_public(), '/').$this->url->query) ?>" />
 					<button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $cur->icon ?> <?php echo strtoupper($cur->name) ?></button>
 					<div class="dropdown-menu dropdown-menu-end">
 						<?php foreach ($this->config->langs as $l): $i = $l->info(); ?>
-						<button type="submit" name="language" value="<?php echo $i->name ?>" class="dropdown-item<?php echo $i->name === $cur->name ? ' active' : '' ?>"><?php echo $i->icon ?> <?php echo htmlspecialchars((string)$i->title) ?></button>
+						<button type="submit" name="language" value="<?php echo $i->name ?>" class="dropdown-item<?php echo $i->name === $cur->name ? ' active' : '' ?>"><?php echo $i->icon ?> <?php echo nf_texte($i->title) ?></button>
 						<?php endforeach ?>
 					</div>
 				</form>

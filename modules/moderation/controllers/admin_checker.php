@@ -67,6 +67,11 @@ class Admin_Checker extends Module_Checker
 			$this->error->unauthorized();
 			return;
 		}
+		// Le compte de secours d'une démonstration est introuvable ici comme partout (nf_compte_masque()).
+		if ((int)$id === nf_compte_masque())
+		{
+			return;
+		}
 		return [(int)$id];
 	}
 

@@ -270,7 +270,7 @@ class Index extends Controller_Module
 							{
 								$sender_id = (int)$this->user->id ?: (int)$recipients[0]['id'];
 								$body      = '<div class="alert alert-info m-0"><b>'.$this->lang('Message automatique.').'</b><br />'
-								           .$this->lang('Une nouvelle candidature vient d\'être déposée par %s.', htmlspecialchars((string) ($this->user->id ? $this->user->username : $post['pseudo'])))
+								           .$this->lang('Une nouvelle candidature vient d\'être déposée par %s.', nf_texte($this->user->id ? $this->user->username : $post['pseudo']))
 								           .'<br /><br />'.$this->lang('Pour la visualiser, <a href="%s">cliquer ici</a>.', url('admin/recruits/candidacy/'.$candidacy_id.'/'.url_title($title))).'</div>';
 
 								foreach ($recipients as $recipient)

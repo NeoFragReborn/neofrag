@@ -32,14 +32,14 @@ foreach ($modules as $m)
 		<?php if (empty($groupes[$nom])) continue ?>
 		<div class="matrix-rubrique">
 			<div class="matrix-rubrique-titre">
-				<i class="<?php echo $rubrique['icon'] ?>"></i> <?php echo htmlspecialchars($rubrique['title']) ?>
+				<i class="<?php echo $rubrique['icon'] ?>"></i> <?php echo nf_texte($rubrique['title']) ?>
 				<span class="matrix-rubrique-compte"><?php echo count($groupes[$nom]) ?></span>
 			</div>
 			<div class="matrix-modules">
 				<?php foreach ($groupes[$nom] as $m): ?>
-					<a class="matrix-module-btn" href="<?php echo url('admin/access/matrix/'.urlencode($m['name'])) ?>" title="<?php echo htmlspecialchars($m['name']) ?>">
-						<i class="<?php echo htmlspecialchars($m['icon']) ?> fa-fw"></i>
-						<span><?php echo htmlspecialchars($m['title']) ?></span>
+					<a class="matrix-module-btn" href="<?php echo url('admin/access/matrix/'.urlencode($m['name'])) ?>" title="<?php echo nf_texte($m['name']) ?>">
+						<i class="<?php echo nf_texte($m['icon']) ?> fa-fw"></i>
+						<span><?php echo nf_texte($m['title']) ?></span>
 					</a>
 				<?php endforeach ?>
 			</div>

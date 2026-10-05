@@ -322,4 +322,13 @@ return [
 	'92330b9f' => '%d entry, kept for 365 days|%d entries, kept for 365 days',
 	'7ecafebb' => 'No member matches “%s”.',
 	'f4f7e9a1' => 'Search a username or an email…',
+	'8322fb2c' => 'I have read the rules and I accept them',
+	'64af90e0' => 'Create my account',
+	'3d7f5bc9' => 'Before creating your account with %s, please read the site rules.',
+	'0a0d7675' => 'Your account has been created: open the link sent to %s to activate it.',
+	'4ab39f09' => 'Your account has been created, but the validation email could not be sent: log in a little later to receive a new one.',
+	'e316c550' => 'This validation link is no longer valid: log in and a new link will be sent to you.',
+	'84a10ad9' => 'Your address is validated: welcome!',
+	'6f65c0fc' => 'Your registration has not been validated yet: a new link has just been sent to %s. Open it to activate your account.',
+	'cfbbd188' => 'Your registration has not been validated yet: open the link sent to %s. A new link can be sent a little later.',
 ];

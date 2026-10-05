@@ -145,11 +145,11 @@ class Output extends Core
 		{
 			http_response_code(403);
 			header('Content-Type: text/html; charset=UTF-8');
-			$titre  = htmlspecialchars((string) $this->lang('Accès refusé'));
-			$reason = $refus['raison'] !== '' ? htmlspecialchars($refus['raison']) : $titre;
+			$titre  = nf_texte($this->lang('Accès refusé'));
+			$reason = $refus['raison'] !== '' ? nf_texte($refus['raison']) : $titre;
 			echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>403 — '.$titre.'</title><style>body{font-family:-apple-system,sans-serif;max-width:600px;margin:80px auto;padding:24px;color:#333;}h1{color:#dc3545;}code{background:#f5f5f5;padding:2px 6px;border-radius:3px;}</style></head><body>'
 				.'<h1>403 — '.$titre.'</h1>'
-				.'<p>'.$this->lang('Ton IP %s est bloquée sur ce site.', '<code>'.htmlspecialchars($refus['ip']).'</code>').'</p>'
+				.'<p>'.$this->lang('Ton IP %s est bloquée sur ce site.', '<code>'.nf_texte($refus['ip']).'</code>').'</p>'
 				.'<p><strong>'.$this->lang('Raison :').'</strong> '.$reason.'</p>'
 				.'<p>'.$this->lang('Si tu penses qu\'il s\'agit d\'une erreur, contacte un administrateur.').'</p>'
 				.'</body></html>';
@@ -643,7 +643,7 @@ class Output extends Core
 
 				if ($this->live_editor())
 				{
-					$body = '<div id="live_editor" data-module-title="'.utf8_htmlentities($this->url->segments[0] == 'index' ? $this->label('Accueil', 'fas fa-map-marker-alt') : $this->data->get('module', 'title')).'"></div>';
+					$body = '<div id="live_editor" data-module-title="'.utf8_htmlentities($this->url->segments[0] == 'index' ? $this->label('Accueil', 'fas fa-map-marker-alt') : $this->data->get('module', 'title')) /* codage: du HTML posé dans un attribut — le décoder réveillerait les balises qu’il cite */.'"></div>';
 
 					parent	::css('fonts/open-sans')
 							->css('live-editor')
@@ -1040,9 +1040,9 @@ class Output extends Core
 		return '<div class="alert alert-info d-flex align-items-center gap-2" role="alert">'
 			.'<i class="fas fa-language" aria-hidden="true"></i>'
 			.'<span>'
-			.utf8_htmlentities($this->lang('Ce contenu n\'existe pas en %s. Voici la version en %s.', $nom($demandee), $nom($servie)))
-			.' <a href="'.utf8_htmlentities($lien).'" hreflang="'.utf8_htmlentities($servie).'">'
-			.utf8_htmlentities($this->lang('Ouvrir la version d\'origine'))
+			.nf_texte($this->lang('Ce contenu n\'existe pas en %s. Voici la version en %s.', $nom($demandee), $nom($servie)))
+			.' <a href="'.nf_texte($lien).'" hreflang="'.nf_texte($servie).'">'
+			.nf_texte($this->lang('Ouvrir la version d\'origine'))
 			.'</a>'
 			.'</span>'
 			.'</div>';

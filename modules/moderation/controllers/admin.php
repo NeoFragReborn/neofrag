@@ -406,11 +406,11 @@ class Admin extends Controller_Module
 			foreach ($bans as $b)
 			{
 				$expires = empty($b['expires_at']) ? '<span class="badge text-bg-danger">'.$this->lang('Permanent').'</span>' : nf_date_heure($b['expires_at']);
-				$by      = !empty($b['banned_by_username']) ? htmlspecialchars((string) ($b['banned_by_username'])) : '<em class="text-muted">'.$this->lang('Système').'</em>';
+				$by      = !empty($b['banned_by_username']) ? nf_texte($b['banned_by_username']) : '<em class="text-muted">'.$this->lang('Système').'</em>';
 
 				$body .= '<tr>';
-				$body .= '<td><code>'.htmlspecialchars((string) ($b['ip'])).'</code></td>';
-				$body .= '<td>'.htmlspecialchars((string) ($b['reason'] ?? '')).'</td>';
+				$body .= '<td><code>'.nf_texte($b['ip']).'</code></td>';
+				$body .= '<td>'.nf_texte($b['reason'] ?? '').'</td>';
 				$body .= '<td>'.$by.'</td>';
 				$body .= '<td>'.$expires.'</td>';
 				$body .= '<td>'.nf_date_heure($b['created_at']).'</td>';

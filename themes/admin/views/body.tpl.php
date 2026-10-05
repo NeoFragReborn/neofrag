@@ -42,7 +42,7 @@ if (!$is_dashboard) {
 		<?php if ($maj = $this->__caller->update()): ?>
 		<a href="#" class="nf-sb-update" data-modal-ajax="<?php echo url('admin/monitoring/update') ?>">
 			<i class="fas fa-rocket"></i>
-			<span class="nf-sb-update-text"><strong><?php echo $this->lang('Mise à jour disponible') ?></strong><small>NeoFrag <?php echo utf8_htmlentities((string) $maj->version) ?></small></span>
+			<span class="nf-sb-update-text"><strong><?php echo $this->lang('Mise à jour disponible') ?></strong><small>NeoFrag <?php echo nf_texte($maj->version) ?></small></span>
 			<i class="fas fa-chevron-right"></i>
 		</a>
 		<?php endif ?>
@@ -59,10 +59,10 @@ if (!$is_dashboard) {
 				if (empty($items)) continue;
 				$open = ($sec['id'] === $active_section);
 			?>
-			<div class="nf-sb-section<?php echo $open ? ' open' : '' ?>" data-section="<?php echo htmlspecialchars($sec['id']) ?>">
+			<div class="nf-sb-section<?php echo $open ? ' open' : '' ?>" data-section="<?php echo nf_texte($sec['id']) ?>">
 				<button type="button" class="nf-sb-sec-head">
-					<i class="nf-sb-sec-ico <?php echo htmlspecialchars($sec['icon'] ?? 'fas fa-folder') ?>"></i>
-					<span class="nf-sb-sec-title"><?php echo htmlspecialchars($sec['title']) ?></span>
+					<i class="nf-sb-sec-ico <?php echo nf_texte($sec['icon'] ?? 'fas fa-folder') ?>"></i>
+					<span class="nf-sb-sec-title"><?php echo nf_texte($sec['title']) ?></span>
 					<i class="nf-sb-chev fas fa-chevron-down"></i>
 				</button>
 				<ul class="nf-sb-items">
@@ -74,12 +74,12 @@ if (!$is_dashboard) {
 						$pinnable = ($sec['id'] !== 'pinned' && $pin_name !== '' && $u !== 'admin');
 					?>
 					<li>
-						<a class="nf-sb-item<?php echo $active ? ' active' : '' ?><?php echo $pinnable ? ' has-pin' : '' ?>" href="<?php echo url($u) ?>" data-name="<?php echo htmlspecialchars($pin_name) ?>">
-							<i class="<?php echo htmlspecialchars($it['icon'] ?? 'fas fa-circle') ?>"></i>
-							<span><?php echo htmlspecialchars($it['title']) ?></span>
+						<a class="nf-sb-item<?php echo $active ? ' active' : '' ?><?php echo $pinnable ? ' has-pin' : '' ?>" href="<?php echo url($u) ?>" data-name="<?php echo nf_texte($pin_name) ?>">
+							<i class="<?php echo nf_texte($it['icon'] ?? 'fas fa-circle') ?>"></i>
+							<span><?php echo nf_texte($it['title']) ?></span>
 						</a>
 						<?php if ($pinnable): ?>
-						<button type="button" class="nf-sb-pin" data-pin="<?php echo htmlspecialchars($pin_name) ?>" title="<?php echo $this->lang('Épingler') ?>" aria-label="<?php echo $this->lang('Épingler') ?>"><i class="fas fa-thumbtack"></i></button>
+						<button type="button" class="nf-sb-pin" data-pin="<?php echo nf_texte($pin_name) ?>" title="<?php echo $this->lang('Épingler') ?>" aria-label="<?php echo $this->lang('Épingler') ?>"><i class="fas fa-thumbtack"></i></button>
 						<?php endif ?>
 					</li>
 					<?php endforeach ?>
@@ -89,18 +89,18 @@ if (!$is_dashboard) {
 		</nav>
 
 		<div class="nf-sb-user">
-			<a href="<?php echo url('user') ?>" class="nf-sb-user-link" title="<?php echo htmlspecialchars($this->user->username) ?>">
+			<a href="<?php echo url('user') ?>" class="nf-sb-user-link" title="<?php echo nf_texte($this->user->username) ?>">
 				<?php
 				// La photo du membre, s'il en a une ; sinon l'initiale de son pseudo, dans sa casse et
 				// lettre entière (mb_ : un pseudo peut commencer par « É »).
 				$photo = $this->user->profile()->avatar() ? $this->user->profile()->avatar->path() : '';
 				?>
 				<?php if ($photo): ?>
-				<span class="nf-avatar nf-avatar-photo"><img src="<?php echo htmlspecialchars((string) $photo) ?>" alt=""></span>
+				<span class="nf-avatar nf-avatar-photo"><img src="<?php echo nf_texte($photo) ?>" alt=""></span>
 				<?php else: ?>
-				<span class="nf-avatar"><?php echo htmlspecialchars(mb_strtoupper(mb_substr((string) $this->user->username, 0, 1))) ?></span>
+				<span class="nf-avatar"><?php echo nf_texte(mb_strtoupper(mb_substr(nf_texte_brut($this->user->username), 0, 1))) ?></span>
 				<?php endif ?>
-				<span class="nf-sb-user-name"><?php echo htmlspecialchars($this->user->username) ?></span>
+				<span class="nf-sb-user-name"><?php echo nf_texte($this->user->username) ?></span>
 			</a>
 			<a class="nf-icon-btn" href="<?php echo url('user/logout') ?>" title="<?php echo $this->lang('Se déconnecter') ?>" aria-label="<?php echo $this->lang('Se déconnecter') ?>">
 				<i class="fas fa-sign-out-alt"></i>
@@ -156,9 +156,9 @@ if (!$is_dashboard) {
 				<?php if ($titre_module && $module_name !== 'admin'): ?>
 				<span class="nf-breadcrumb-sep">/</span>
 				<?php if (!$sur_index && $a_un_accueil): ?>
-				<a class="nf-breadcrumb-current" href="<?php echo url('admin/'.$module_name) ?>"><?php if ($module_icon): ?><i class="<?php echo htmlspecialchars($module_icon) ?>"></i> <?php endif ?><?php echo $titre_module ?></a>
+				<a class="nf-breadcrumb-current" href="<?php echo url('admin/'.$module_name) ?>"><?php if ($module_icon): ?><i class="<?php echo nf_texte($module_icon) ?>"></i> <?php endif ?><?php echo $titre_module ?></a>
 				<?php else: ?>
-				<span class="nf-breadcrumb-current"><?php if ($module_icon): ?><i class="<?php echo htmlspecialchars($module_icon) ?>"></i> <?php endif ?><?php echo $titre_module ?></span>
+				<span class="nf-breadcrumb-current"><?php if ($module_icon): ?><i class="<?php echo nf_texte($module_icon) ?>"></i> <?php endif ?><?php echo $titre_module ?></span>
 				<?php endif ?>
 				<?php endif ?>
 				<?php if ($titre_courant): ?>
@@ -179,7 +179,7 @@ if (!$is_dashboard) {
 				<?php endif ?>
 				<?php if ($update = $this->__caller->update()): ?>
 				<a href="#" class="nf-update-pill" data-modal-ajax="<?php echo url('admin/monitoring/update') ?>" title="<?php echo $this->lang('Mise à jour disponible : NeoFrag %s', $update->version) ?>">
-					<i class="far fa-bell"></i><span><?php echo $this->lang('Mise à jour %s', utf8_htmlentities((string) $update->version)) ?></span>
+					<i class="far fa-bell"></i><span><?php echo $this->lang('Mise à jour %s', nf_texte($update->version)) ?></span>
 				</a>
 				<?php endif ?>
 				<a href="<?php echo url() ?>" class="nf-icon-btn" title="<?php echo $this->lang('Voir le site') ?>" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i></a>

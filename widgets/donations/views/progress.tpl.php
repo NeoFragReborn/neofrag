@@ -1,8 +1,8 @@
 <div class="widget-donation">
 	<div class="widget-donation-amount-row">
 		<div>
-			<div class="widget-donation-raised"><?php echo number_format($c['raised'], 0, ',', ' ') ?> <span class="widget-donation-currency"><?php echo htmlspecialchars($c['currency']) ?></span></div>
-			<div class="widget-donation-goal"><?php echo $this->lang('sur %s', '<strong>'.number_format($c['goal_amount'], 0, ',', ' ').' '.htmlspecialchars($c['currency']).'</strong>') ?></div>
+			<div class="widget-donation-raised"><?php echo number_format($c['raised'], 0, ',', ' ') ?> <span class="widget-donation-currency"><?php echo nf_texte($c['currency']) ?></span></div>
+			<div class="widget-donation-goal"><?php echo $this->lang('sur %s', '<strong>'.number_format($c['goal_amount'], 0, ',', ' ').' '.nf_texte($c['currency']).'</strong>') ?></div>
 		</div>
 		<div class="widget-donation-pct"><?php echo (int)$c['percentage'] ?>%</div>
 	</div>
@@ -22,8 +22,8 @@
 	<div class="widget-donation-top">
 		<i class="fas fa-trophy"></i>
 		<span class="widget-donation-top-label"><?php echo $this->lang('Top donateur') ?></span>
-		<strong><?php echo htmlspecialchars($top_donor['donor_name']) ?></strong>
-		<span class="widget-donation-top-amount"><?php echo number_format($top_donor['total'], 2, ',', ' ') ?> <?php echo htmlspecialchars($c['currency']) ?></span>
+		<strong><?php echo nf_texte($top_donor['donor_name']) ?></strong>
+		<span class="widget-donation-top-amount"><?php echo number_format($top_donor['total'], 2, ',', ' ') ?> <?php echo nf_texte($c['currency']) ?></span>
 	</div>
 	<?php endif ?>
 
@@ -34,18 +34,18 @@
 		?>
 		<div class="widget-donation-recent-item">
 			<span class="widget-donation-recent-avatar"><?php echo mb_strtoupper(mb_substr($display, 0, 1)) ?></span>
-			<span class="widget-donation-recent-name"><?php echo htmlspecialchars($display) ?></span>
-			<span class="widget-donation-recent-amount"><?php echo number_format($r['amount'], 0, ',', ' ') ?>&nbsp;<?php echo htmlspecialchars($r['currency']) ?></span>
+			<span class="widget-donation-recent-name"><?php echo nf_texte($display) ?></span>
+			<span class="widget-donation-recent-amount"><?php echo number_format($r['amount'], 0, ',', ' ') ?>&nbsp;<?php echo nf_texte($r['currency']) ?></span>
 		</div>
 		<?php endforeach ?>
 	</div>
 	<?php endif ?>
 
 	<?php if ($donate_url): ?>
-	<a href="<?php echo htmlspecialchars($donate_url) ?>" target="_blank" rel="noopener" class="widget-donation-cta">
+	<a href="<?php echo nf_texte($donate_url) ?>" target="_blank" rel="noopener" class="widget-donation-cta">
 		<i class="fab fa-paypal"></i> <?php echo $this->lang('Faire un don') ?>
 	</a>
 	<?php endif ?>
 
-	<a href="<?php echo htmlspecialchars($campaign_url) ?>" class="widget-donation-link"><?php echo $this->lang('Voir la campagne') ?> →</a>
+	<a href="<?php echo nf_texte($campaign_url) ?>" class="widget-donation-link"><?php echo $this->lang('Voir la campagne') ?> →</a>
 </div>

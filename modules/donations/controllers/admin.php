@@ -175,7 +175,7 @@ class Admin extends Controller_Module
 
 		return $this->admin_card('fas fa-list', $campaign['title'], $corps,
 			(int) $totals['count'].' '.$this->lang($totals['count'] > 1 ? 'dons' : 'don')
-			.' · '.number_format($totals['total'], 2, ',', ' ').' '.utf8_htmlentities($campaign['currency']),
+			.' · '.number_format($totals['total'], 2, ',', ' ').' '.nf_texte($campaign['currency']),
 			$this->admin_create('admin/donations/'.$id.'/donation/add', $this->lang('Ajouter un don')));
 	}
 

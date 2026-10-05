@@ -44,6 +44,7 @@ Joués par défaut par `check-all`. Ils lisent les sources, sans base ni serveur
 | [`check-db-delete`](check-db-delete.php) | une suppression par le constructeur de requêtes nomme sa table : `->delete('nf_…')`, jamais `->delete()`. | `php tools/check-db-delete.php` |
 | [`check-demo-lock`](check-demo-lock.php) | le verrou de la démonstration et sa remise à zéro se répondent, et l'instantané publié n'emporte aucun secret. | `php tools/check-demo-lock.php` |
 | [`check-docs`](check-docs.php) | la documentation respecte ses règles : chiffres justes, renvois vivants, rien d'orphelin ni de recopié. | `php tools/check-docs.php` |
+| [`check-double-codage`](check-double-codage.php) | un texte se pose dans une page par nf_texte(), qui décode puis échappe : jamais codé deux fois. | `php tools/check-double-codage.php` |
 | [`check-heures`](check-heures.php) | une heure montrée à quelqu'un passe par timetostr(), qui la met dans SON fuseau horaire. | `php tools/check-heures.php` |
 | [`check-htaccess`](check-htaccess.php) | les trois configurations livrées (Apache, nginx, Caddy) refusent les mêmes dossiers et fichiers sensibles. | `php tools/check-htaccess.php` |
 | [`check-instantanes`](check-instantanes.php) | les SQL livrés s'importent (aucune clé en double) ; l'historique des migrations est complet. | `php tools/check-instantanes.php` |

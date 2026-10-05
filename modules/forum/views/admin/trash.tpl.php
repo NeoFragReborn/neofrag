@@ -25,17 +25,17 @@
 			<?php foreach ($trashed as $m): ?>
 				<tr>
 					<td><input type="checkbox" name="select_msg[]" value="<?php echo (int)$m['message_id'] ?>" class="trash-row-cb" /></td>
-					<td><a href="<?php echo url('forum/topic/'.(int)$m['topic_id'].'/'.url_title($m['topic_title'])) ?>"><?php echo htmlspecialchars($m['topic_title']) ?></a></td>
-					<td><small><?php echo htmlspecialchars($m['forum_title']) ?></small></td>
-					<td><?php echo htmlspecialchars($m['username'] ?: '?') ?></td>
-					<td><?php echo htmlspecialchars($m['deleter_username'] ?: '?') ?></td>
-					<td><small><code><?php echo htmlspecialchars($m['deleted_reason'] ?: '—') ?></code></small></td>
+					<td><a href="<?php echo url('forum/topic/'.(int)$m['topic_id'].'/'.url_title($m['topic_title'])) ?>"><?php echo nf_texte($m['topic_title']) ?></a></td>
+					<td><small><?php echo nf_texte($m['forum_title']) ?></small></td>
+					<td><?php echo nf_texte($m['username'] ?: '?') ?></td>
+					<td><?php echo nf_texte($m['deleter_username'] ?: '?') ?></td>
+					<td><small><code><?php echo nf_texte($m['deleted_reason'] ?: '—') ?></code></small></td>
 					<td><small><?php echo time_span(strtotime($m['deleted_at'])) ?></small></td>
 					<td class="text-center">
 						<button type="submit" name="restore[]" value="<?php echo (int)$m['message_id'] ?>" class="btn btn-outline-success btn-sm" data-bs-toggle="tooltip" title="<?php echo $this->lang('Restaurer') ?>"><?php echo icon('fas fa-undo') ?></button>
 						<button type="submit" name="purge[]" value="<?php echo (int)$m['message_id'] ?>" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="<?php echo $this->lang('Purger définitivement') ?>"
-								data-confirm="<?php echo htmlspecialchars($this->lang('Confirmer la suppression définitive de ce message ?'), ENT_QUOTES) ?>"
-								data-confirm-title="<?php echo htmlspecialchars($this->lang('Purger définitivement'), ENT_QUOTES) ?>"
+								data-confirm="<?php echo nf_texte($this->lang('Confirmer la suppression définitive de ce message ?')) ?>"
+								data-confirm-title="<?php echo nf_texte($this->lang('Purger définitivement')) ?>"
 								data-confirm-icon="fas fa-times"><?php echo icon('far fa-trash-alt') ?></button>
 					</td>
 				</tr>

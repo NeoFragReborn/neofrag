@@ -66,9 +66,9 @@ $_col_laterale   = $_user ? 'col-12 mt-3' : 'col-12 col-lg-5';
 					<?php foreach ($recent_reports as $r): ?>
 						<tr>
 							<td><small class="text-muted"><?php echo time_span(strtotime($r['created_at'])) ?></small></td>
-							<td><span class="badge text-bg-secondary"><?php echo htmlspecialchars($this->module('moderation')->libelle('cible', $r['target_type'])) ?></span></td>
-							<td><?php echo $r['target_username'] ? '<a href="'.url($_modbase.'/users/'.(int)$r['target_user_id']).'">@'.htmlspecialchars($r['target_username']).'</a>' : '<i class="text-muted">'.$this->lang('inconnu').'</i>' ?></td>
-							<td><?php echo htmlspecialchars($this->module('moderation')->libelle('raison', $r['reason'])) ?></td>
+							<td><span class="badge text-bg-secondary"><?php echo nf_texte($this->module('moderation')->libelle('cible', $r['target_type'])) ?></span></td>
+							<td><?php echo $r['target_username'] ? '<a href="'.url($_modbase.'/users/'.(int)$r['target_user_id']).'">@'.nf_texte($r['target_username']).'</a>' : '<i class="text-muted">'.$this->lang('inconnu').'</i>' ?></td>
+							<td><?php echo nf_texte($this->module('moderation')->libelle('raison', $r['reason'])) ?></td>
 							<td class="text-end">
 								<a class="btn btn-sm btn-outline-primary" href="<?php echo url($_modbase.'/reports/'.(int)$r['id']) ?>"><i class="fas fa-eye"></i></a>
 							</td>
@@ -93,7 +93,7 @@ $_col_laterale   = $_user ? 'col-12 mt-3' : 'col-12 col-lg-5';
 					<tbody>
 					<?php foreach ($top_reported as $u): ?>
 						<tr>
-							<td><a href="<?php echo url($_modbase.'/users/'.(int)$u['target_user_id']) ?>">@<?php echo htmlspecialchars($u['username']) ?></a></td>
+							<td><a href="<?php echo url($_modbase.'/users/'.(int)$u['target_user_id']) ?>">@<?php echo nf_texte($u['username']) ?></a></td>
 							<td class="text-end"><span class="badge text-bg-warning"><?php echo (int)$u['report_count'] ?></span></td>
 						</tr>
 					<?php endforeach ?>
@@ -117,7 +117,7 @@ $_col_laterale   = $_user ? 'col-12 mt-3' : 'col-12 col-lg-5';
 						$score = (int)$u['actioned'] - (int)$u['dismissed'];
 					?>
 						<tr<?php echo (int)$u['report_count'] >= 5 && $score < 0 ? ' class="text-danger" title="'.$this->lang('Reporter suspect (faux signalements)').'"' : '' ?>>
-							<td><a href="<?php echo url($_modbase.'/users/'.(int)$u['reporter_id']) ?>">@<?php echo htmlspecialchars($u['username']) ?></a></td>
+							<td><a href="<?php echo url($_modbase.'/users/'.(int)$u['reporter_id']) ?>">@<?php echo nf_texte($u['username']) ?></a></td>
 							<td class="text-end"><?php echo (int)$u['report_count'] ?></td>
 							<td class="text-end text-success"><?php echo (int)$u['actioned'] ?></td>
 							<td class="text-end text-danger"><?php echo (int)$u['dismissed'] ?></td>

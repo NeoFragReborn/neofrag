@@ -48,8 +48,8 @@
 				<a class="forum-reply-to" href="#<?php echo (int)$message['parent_id'] ?>">
 					<?php echo icon('fas fa-reply') ?>
 					<?php echo $this->lang('En réponse à') ?>
-					<span class="forum-reply-to-author">@<?php echo htmlspecialchars($message['parent_username']) ?></span> ·
-					<span class="forum-reply-to-excerpt"><?php echo htmlspecialchars(mb_strimwidth($excerpt, 0, 100, '…')) ?></span>
+					<span class="forum-reply-to-author">@<?php echo nf_texte($message['parent_username']) ?></span> ·
+					<span class="forum-reply-to-excerpt"><?php echo nf_texte($excerpt, 100) ?></span>
 				</a>
 				<?php endif ?>
 				<?php echo $message['message'] !== NULL ? $this->output->module()->render_mentions($this->output->module()->forum_render($message['message'])) : $this->lang('<i>Message supprimé</i>') ?>
@@ -59,7 +59,7 @@
 				<?php endif ?>
 				<?php if (!empty($profile['signature'])): ?>
 				<hr />
-				<?php echo bbcode($profile['signature']) ?>
+				<?php echo nf_contenu_editeur($profile['signature']) ?>
 				<?php endif ?>
 			</div>
 		</div>

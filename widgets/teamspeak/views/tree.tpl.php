@@ -2,7 +2,7 @@
 	<div class="widget-ts-header">
 		<div class="widget-ts-icon"><i class="fas fa-microphone-alt"></i></div>
 		<div class="widget-ts-meta">
-			<div class="widget-ts-name"><?php echo htmlspecialchars($server_name) ?></div>
+			<div class="widget-ts-name"><?php echo nf_texte($server_name) ?></div>
 			<div class="widget-ts-stats">
 				<span class="widget-ts-dot"></span>
 				<strong><?php echo (int)$clients_online ?></strong> /
@@ -31,11 +31,11 @@
 			foreach ($nodes as $n) {
 				if (!empty($n['is_spacer'])) {
 					$lbl = $spacer_label($n['name']);
-					echo '<li class="widget-ts-spacer">'.($lbl !== '' ? '<span>'.htmlspecialchars($lbl).'</span>' : '').'</li>';
+					echo '<li class="widget-ts-spacer">'.($lbl !== '' ? '<span>'.nf_texte($lbl).'</span>' : '').'</li>';
 					continue;
 				}
 				echo '<li class="widget-ts-channel">';
-				echo '<div class="widget-ts-channel-name"><i class="fas fa-comment-dots"></i> <span class="widget-ts-channel-label">'.htmlspecialchars($n['name']).'</span>';
+				echo '<div class="widget-ts-channel-name"><i class="fas fa-comment-dots"></i> <span class="widget-ts-channel-label">'.nf_texte($n['name']).'</span>';
 				if (!empty($n['clients'])) {
 					echo ' <span class="widget-ts-channel-count">'.count($n['clients']).'</span>';
 				}
@@ -44,7 +44,7 @@
 					echo '<ul class="widget-ts-clients">';
 					foreach ($n['clients'] as $c) {
 						$away = !empty($c['away']) ? ' is-away' : '';
-						echo '<li class="widget-ts-client'.$away.'"><i class="fas '.$client_icon($c).'"></i> '.htmlspecialchars($c['name']).'</li>';
+						echo '<li class="widget-ts-client'.$away.'"><i class="fas '.$client_icon($c).'"></i> '.nf_texte($c['name']).'</li>';
 					}
 					echo '</ul>';
 				}
@@ -60,7 +60,7 @@
 		?>
 	</div>
 
-	<a href="<?php echo htmlspecialchars($ts_url) ?>" class="widget-ts-cta">
+	<a href="<?php echo nf_texte($ts_url) ?>" class="widget-ts-cta">
 		<i class="fas fa-sign-in-alt"></i> <?php echo $this->lang('Rejoindre TeamSpeak') ?>
 	</a>
 </div>

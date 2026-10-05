@@ -15,15 +15,15 @@ $sans_secours = $sans_secours ?? FALSE;
 	<?php foreach ($lignes as $l): ?>
 	<li class="list-group-item d-flex align-items-center gap-3">
 		<?php if ($l['avatar'] !== '' && str_starts_with($l['avatar'], 'https://')): ?>
-		<img src="<?php echo htmlspecialchars($l['avatar']) ?>" alt="" width="40" height="40" class="rounded-circle" loading="lazy" referrerpolicy="no-referrer" />
+		<img src="<?php echo nf_texte($l['avatar']) ?>" alt="" width="40" height="40" class="rounded-circle" loading="lazy" referrerpolicy="no-referrer" />
 		<?php else: ?>
 		<span class="fs-4"><?php echo icon($l['fournisseur']['icone']) ?></span>
 		<?php endif ?>
 		<div class="flex-grow-1">
-			<strong><?php echo icon($l['fournisseur']['icone']).' '.htmlspecialchars($l['fournisseur']['titre']) ?></strong>
-			<?php if ($l['pseudo'] !== ''): ?><br /><small class="text-muted"><?php echo htmlspecialchars($l['pseudo']) ?></small><?php endif ?>
+			<strong><?php echo icon($l['fournisseur']['icone']).' '.nf_texte($l['fournisseur']['titre']) ?></strong>
+			<?php if ($l['pseudo'] !== ''): ?><br /><small class="text-muted"><?php echo nf_texte($l['pseudo']) ?></small><?php endif ?>
 		</div>
-		<a class="btn btn-sm btn-outline-danger" href="<?php echo $l['delier'] ?>" data-confirm="<?php echo htmlspecialchars((string) $this->lang('Délier ce compte ? Vous ne pourrez plus vous connecter avec lui.'), ENT_QUOTES) ?>"><?php echo icon('fas fa-unlink').' '.$this->lang('Délier') ?></a>
+		<a class="btn btn-sm btn-outline-danger" href="<?php echo $l['delier'] ?>" data-confirm="<?php echo nf_texte($this->lang('Délier ce compte ? Vous ne pourrez plus vous connecter avec lui.')) ?>"><?php echo icon('fas fa-unlink').' '.$this->lang('Délier') ?></a>
 	</li>
 	<?php endforeach ?>
 </ul>
@@ -39,7 +39,7 @@ $sans_secours = $sans_secours ?? FALSE;
 <h3 class="h6 mt-4"><?php echo $this->lang('Lier un compte') ?></h3>
 <div class="d-flex flex-wrap gap-2">
 	<?php foreach ($a_lier as $f): ?>
-	<a class="btn btn-outline-primary" href="<?php echo $f['lier'] ?>"><?php echo icon($f['icone']).' '.htmlspecialchars($f['titre']) ?></a>
+	<a class="btn btn-outline-primary" href="<?php echo $f['lier'] ?>"><?php echo icon($f['icone']).' '.nf_texte($f['titre']) ?></a>
 	<?php endforeach ?>
 </div>
 <?php endif ?>

@@ -16,8 +16,8 @@
 					<th class="matrix-perm-col"><?php echo $this->lang('Groupe') ?></th>
 					<?php foreach ($roles as $role): ?>
 						<th class="text-center matrix-role-col" data-role-id="<?php echo (int)$role['role_id'] ?>">
-							<i class="<?php echo htmlspecialchars($role['icon']) ?>"></i>
-							<div class="role-name"><?php echo htmlspecialchars((string) $this->lang($role['title'])) ?></div>
+							<i class="<?php echo nf_texte($role['icon']) ?>"></i>
+							<div class="role-name"><?php echo nf_texte($this->lang($role['title'])) ?></div>
 						</th>
 					<?php endforeach ?>
 				</tr>
@@ -27,8 +27,8 @@
 					<tr data-group-id="<?php echo (int)$g['group_id'] ?>">
 						<td class="matrix-perm-cell">
 							<span class="badge <?php echo badge_class($g['color']) ?>">
-								<i class="<?php echo htmlspecialchars($g['icon']) ?>"></i>
-								<?php echo htmlspecialchars($g['title']) ?>
+								<i class="<?php echo nf_texte($g['icon']) ?>"></i>
+								<?php echo nf_texte($g['title']) ?>
 							</span>
 						</td>
 						<?php foreach ($roles as $role): ?>

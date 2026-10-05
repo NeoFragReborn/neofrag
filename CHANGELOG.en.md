@@ -12,6 +12,53 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.27] — 2026-10-05
+
+The Discord bot moves to **version 0.2.4**: images travel between the forum and Discord in both directions
+(see its own changelog). Version 0.2.3 keeps working.
+
+### Added
+
+- **An image sent on Discord shows up in the forum** (with Discord bot 0.2.4): the bot keeps it on the
+  site, checked like an image pasted in the editor, instead of a mere link to Discord. The API gains the
+  `POST /api/v1/forum/images` endpoint for this.
+- **Email validation of sign-ups** (*Settings → Registration*, off by default): the new member receives
+  a link, valid for two days, and cannot log in before opening it; a login attempt sends a new one. This
+  feature, inherited from NeoFrag, was half written: turned on, it sent a link to a missing page and left
+  the member unable to log in, without a word.
+
+### Fixed
+
+- **Accented text no longer shows up encoded.** A title, a username, a label or the site name containing
+  “é” or “—” could appear as `&eacute;` or `&mdash;`: in conversations, the Shop, Donations, a post's
+  table of contents, RSS feeds, the administration… Every display now goes through one rule, and two
+  checks keep the mistake from coming back: one reads the code, the other the pages served. Mention and
+  search suggestions, email subjects, the data read by search engines (site name, a post's title and
+  author) and webhooks also receive plain text.
+- **An avatar's initial** showed “&” for a name starting with an accented letter (administration, a
+  donation campaign page, Discord widget).
+- **Signing up with Discord, GitHub or Google requires accepting the rules**, when the site has some: a
+  screen shows them, and the account is only created once the box is ticked — as with the sign-up
+  form, which these accounts bypassed.
+- **The menu no longer leads to a missing module**: a site installed without the Forum, the Gallery or
+  News, or that turns one off, kept their links in the menu — one click, a page not found. They
+  disappear, and come back when the module is turned on again; a custom page stays.
+- **The team list without the Events module** no longer writes a warning to the log.
+- **The ☰ button of the administration works on large screens**: it was shown there without doing
+  anything; it now folds the side menu, and opens it again, remembering the choice. On a phone, it opens
+  the menu as before.
+- **The avatar of a forum post's author** is larger (80 px, 36 px on a phone): it had the size of a list
+  in every theme.
+- **An image in a signature, or in a gallery album's description, is displayed**: what the rich editor
+  wrote there was stored encoded, and the page showed the code (`<p><img …></p>`). Signatures already
+  saved are displayed without being entered again.
+- **The plain-text version of emails is readable**: paragraphs were glued together, accents encoded, and
+  a link ended up followed by the next word — unusable in a mail client that only shows text.
+- **A checkbox received in an unexpected form** no longer crashes the page with an error: the request
+  is simply refused.
+- **On a demo site, the rescue account stays hidden on hover and in moderation**, as on its page: the
+  member card shown on hover gave its name and visit dates, the moderation history its name.
+
 ## [1.2.26] — 2026-10-04
 
 The Discord bot moves to **version 0.2.3**: it no longer writes a discord.js warning on every private

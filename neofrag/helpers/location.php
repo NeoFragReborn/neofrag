@@ -97,7 +97,7 @@ function share_buttons($url, $title = ''): string
 	$t     = rawurlencode($title);
 
 	$attr = function($v){
-		return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
+		return nf_texte($v);
 	};
 
 	$link = function($href, $ico, $label) use ($attr){

@@ -29,20 +29,20 @@ class Admin extends Controller_Module
 
 				$body .= '<div class="nf-content-card">';
 				$body .= '<div class="nf-content-card-head">';
-				$body .= '<div class="nf-content-card-title">'.htmlspecialchars((string) ($a['name'])).'</div>';
+				$body .= '<div class="nf-content-card-title">'.nf_texte($a['name']).'</div>';
 				$body .= '<span class="nf-content-card-status published" title="'.$this->lang('Rang %d sur %d équipe|Rang %d sur %d équipes', (int)$a['participants'], $rank, (int)$a['participants']).'"><i class="fas fa-trophy '.$rank_class.'"></i> '.$rank_label.'</span>';
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-meta">';
 				if (!empty($a['date']))       $body .= '<span><i class="far fa-calendar"></i> '.timetostr(NeoFrag()->lang('d/m/Y'), $a['date']).'</span>';
-				if (!empty($a['team_title'])) $body .= '<span><i class="fas fa-users"></i> '.htmlspecialchars((string) ($a['team_title'])).'</span>';
-				if (!empty($a['game_title'])) $body .= '<span><i class="fas fa-gamepad"></i> '.htmlspecialchars((string) ($a['game_title'])).'</span>';
-				if (!empty($a['platform']))   $body .= '<span><i class="fas fa-tv"></i> '.htmlspecialchars((string) ($a['platform'])).'</span>';
-				if (!empty($a['location']))   $body .= '<span><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars((string) ($a['location'])).'</span>';
+				if (!empty($a['team_title'])) $body .= '<span><i class="fas fa-users"></i> '.nf_texte($a['team_title']).'</span>';
+				if (!empty($a['game_title'])) $body .= '<span><i class="fas fa-gamepad"></i> '.nf_texte($a['game_title']).'</span>';
+				if (!empty($a['platform']))   $body .= '<span><i class="fas fa-tv"></i> '.nf_texte($a['platform']).'</span>';
+				if (!empty($a['location']))   $body .= '<span><i class="fas fa-map-marker-alt"></i> '.nf_texte($a['location']).'</span>';
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-foot">';
 				$body .= '<span class="nf-content-card-spacer"></span>';
 				if ($this->is_authorized('modify_awards')) $body .= '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/awards/'.$a['award_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
-				if ($this->is_authorized('delete_awards')) $body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/awards/delete/'.$a['award_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				if ($this->is_authorized('delete_awards')) $body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/awards/delete/'.$a['award_id'].'/'.$slug).'" data-confirm="'.nf_texte($this->lang('Supprimer ?')).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$body .= '</div>';
 				$body .= '</div>';
 			}

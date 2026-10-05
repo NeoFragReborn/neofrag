@@ -610,4 +610,6 @@ return [
 	'f30497d4' => 'Das Bild konnte nicht auf der Website gespeichert werden.',
 	'c6e6b32b' => 'Dieses Bild konnte nicht gelesen werden.',
 	'2cb256bb' => 'Das Bild konnte nicht gesendet werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es dann erneut.',
+	'2c1b9bbb' => 'Anmeldung verweigert: Registrierung noch nicht bestätigt',
+	'080a7879' => 'E-Mail-Adresse bestätigt',
 ];

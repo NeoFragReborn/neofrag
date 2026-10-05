@@ -320,4 +320,13 @@ return [
 	'92330b9f' => '%d voce, conservata 365 giorni|%d voci, conservate 365 giorni',
 	'7ecafebb' => 'Nessun membro corrisponde a «%s».',
 	'f4f7e9a1' => 'Cerca un nome utente o un\'email…',
+	'8322fb2c' => 'Ho letto il regolamento e lo accetto',
+	'64af90e0' => 'Crea il mio account',
+	'3d7f5bc9' => 'Prima di creare il tuo account con %s, leggi il regolamento del sito.',
+	'0a0d7675' => 'Il tuo account è stato creato: apri il link inviato a %s per attivarlo.',
+	'4ab39f09' => 'Il tuo account è stato creato, ma l\'e-mail di convalida non è potuta partire: accedi un po\' più tardi per riceverne una nuova.',
+	'e316c550' => 'Questo link di convalida non è più valido: accedi e te ne verrà inviato uno nuovo.',
+	'84a10ad9' => 'Il tuo indirizzo è convalidato: benvenuto!',
+	'6f65c0fc' => 'La tua iscrizione non è ancora convalidata: un nuovo link è appena partito verso %s. Aprilo per attivare il tuo account.',
+	'cfbbd188' => 'La tua iscrizione non è ancora convalidata: apri il link inviato a %s. Un nuovo link potrà partire un po\' più tardi.',
 ];

@@ -69,11 +69,11 @@ $nf_accueil      = $nf_chemin === '';
 <?php if (count($this->config->langs) > 1): ?>
 <?php foreach ($this->config->langs as $lang): ?>
 <?php if (!$nf_langues_page || in_array($lang->info()->name, $nf_langues_page, TRUE)): ?>
-<link rel="alternate" hreflang="<?php echo $lang->info()->name ?>" href="<?php echo htmlspecialchars(nf_seo_adresse($nf_origin, $this->url->base, $lang->info()->name, $nf_chemin), ENT_QUOTES) ?>">
+<link rel="alternate" hreflang="<?php echo $lang->info()->name ?>" href="<?php echo nf_texte(nf_seo_adresse($nf_origin, $this->url->base, $lang->info()->name, $nf_chemin)) ?>">
 <?php endif ?>
 <?php endforeach ?>
 <?php if (!$nf_langues_page): ?>
-<link rel="alternate" hreflang="x-default" href="<?php echo htmlspecialchars(nf_seo_adresse($nf_origin, $this->url->base, '', $nf_chemin), ENT_QUOTES) ?>">
+<link rel="alternate" hreflang="x-default" href="<?php echo nf_texte(nf_seo_adresse($nf_origin, $this->url->base, '', $nf_chemin)) ?>">
 <?php endif ?>
 <?php endif ?>
 <?php
@@ -125,7 +125,7 @@ if ($nf_accueil)
 	$nf_jsonld = nf_seo_jsonld_fusion(
 		nf_seo_jsonld_site(
 			$nf_origin,
-			(string) $this->config->nf_name,
+			nf_texte_brut($this->config->nf_name),
 			$nf_canonical,
 			$nf_langue_page,
 			$nf_logo !== '' ? rtrim($nf_origin, '/').'/'.ltrim($nf_logo, '/') : '',
@@ -144,12 +144,12 @@ if ($nf_accueil)
 $nf_robots = $this->url->admin ? 'noindex, nofollow' : (string) ($this->output->data->get('module', 'robots') ?: '');
 ?>
 <?php if ($nf_seo_desc !== ''): ?>
-<meta name="description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES) ?>">
+<meta name="description" content="<?php echo nf_texte($nf_seo_desc) ?>">
 <?php endif ?>
 <?php if ($nf_robots !== ''): ?>
-<meta name="robots" content="<?php echo htmlspecialchars($nf_robots, ENT_QUOTES) ?>">
+<meta name="robots" content="<?php echo nf_texte($nf_robots) ?>">
 <?php endif ?>
-<link rel="canonical" href="<?php echo htmlspecialchars($nf_canonical, ENT_QUOTES) ?>">
+<link rel="canonical" href="<?php echo nf_texte($nf_canonical) ?>">
 <?php if (($nf_code = nf_seo_code_verification(nf_seo_reglage('google'))) !== ''): ?>
 <meta name="google-site-verification" content="<?php echo $nf_code ?>">
 <?php endif ?>
@@ -159,30 +159,30 @@ $nf_robots = $this->url->admin ? 'noindex, nofollow' : (string) ($this->output->
 <?php if ($nf_jsonld): ?>
 <script type="application/ld+json"><?php echo json_encode($nf_jsonld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
 <?php endif ?>
-<meta property="og:type" content="<?php echo htmlspecialchars($nf_og_type, ENT_QUOTES) ?>">
-<meta property="og:site_name" content="<?php echo htmlspecialchars((string)$this->config->nf_name, ENT_QUOTES, 'UTF-8', FALSE) ?>">
-<meta property="og:title" content="<?php echo htmlspecialchars((string)$title, ENT_QUOTES, 'UTF-8', FALSE) ?>">
+<meta property="og:type" content="<?php echo nf_texte($nf_og_type) ?>">
+<meta property="og:site_name" content="<?php echo nf_texte($this->config->nf_name) ?>">
+<meta property="og:title" content="<?php echo nf_texte($title) ?>">
 <?php if ($nf_seo_desc !== ''): ?>
-<meta property="og:description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES) ?>">
+<meta property="og:description" content="<?php echo nf_texte($nf_seo_desc) ?>">
 <?php endif ?>
-<meta property="og:url" content="<?php echo htmlspecialchars($nf_canonical, ENT_QUOTES) ?>">
-<meta property="og:locale" content="<?php echo htmlspecialchars(nf_seo_locale($this->config->lang->locale()), ENT_QUOTES) ?>">
+<meta property="og:url" content="<?php echo nf_texte($nf_canonical) ?>">
+<meta property="og:locale" content="<?php echo nf_texte(nf_seo_locale($this->config->lang->locale())) ?>">
 <?php foreach ($this->config->langs as $lang): ?>
 <?php if ($lang->info()->name !== $this->config->lang->info()->name && (!$nf_langues_page || in_array($lang->info()->name, $nf_langues_page, TRUE))): ?>
-<meta property="og:locale:alternate" content="<?php echo htmlspecialchars(nf_seo_locale($lang->locale()), ENT_QUOTES) ?>">
+<meta property="og:locale:alternate" content="<?php echo nf_texte(nf_seo_locale($lang->locale())) ?>">
 <?php endif ?>
 <?php endforeach ?>
 <?php if ($nf_og_image !== ''): ?>
-<meta property="og:image" content="<?php echo htmlspecialchars($nf_og_image, ENT_QUOTES) ?>">
-<meta property="og:image:alt" content="<?php echo htmlspecialchars((string)$this->config->nf_name, ENT_QUOTES, 'UTF-8', FALSE) ?>">
+<meta property="og:image" content="<?php echo nf_texte($nf_og_image) ?>">
+<meta property="og:image:alt" content="<?php echo nf_texte($this->config->nf_name) ?>">
 <?php endif ?>
 <meta name="twitter:card" content="<?php echo $nf_og_grande ? 'summary_large_image' : 'summary' ?>">
-<meta name="twitter:title" content="<?php echo htmlspecialchars((string)$title, ENT_QUOTES, 'UTF-8', FALSE) ?>">
+<meta name="twitter:title" content="<?php echo nf_texte($title) ?>">
 <?php if ($nf_seo_desc !== ''): ?>
-<meta name="twitter:description" content="<?php echo htmlspecialchars($nf_seo_desc, ENT_QUOTES) ?>">
+<meta name="twitter:description" content="<?php echo nf_texte($nf_seo_desc) ?>">
 <?php endif ?>
 <?php if ($nf_og_image !== ''): ?>
-<meta name="twitter:image" content="<?php echo htmlspecialchars($nf_og_image, ENT_QUOTES) ?>">
+<meta name="twitter:image" content="<?php echo nf_texte($nf_og_image) ?>">
 <?php endif ?>
 <?php
 /*
@@ -192,7 +192,7 @@ $nf_robots = $this->url->admin ? 'noindex, nofollow' : (string) ($this->output->
  * auraient pu fermer la balise <title> (2026-10-01).
  */
 ?>
-<title><?php echo htmlspecialchars((string)$title, ENT_QUOTES, 'UTF-8', FALSE) ?></title>
+<title><?php echo nf_texte($title) ?></title>
 </head>
 <body>
 <?php if ($this->config->nf_maintenance && !$this->url->admin && isset($this->user) && $this->access->effective_admin() && $this->output->module()->name != 'live_editor'): ?>
@@ -229,7 +229,7 @@ if (isset($this->user) && $this->user->admin && method_exists($this->access, 'ge
 				<div class="col">
 					<i class="fas fa-eye"></i>
 					<strong><?php echo $this->lang('Mode preview actif') ?></strong> ·
-					<?php echo $this->lang('Tu vois le site comme %s : <strong>%s</strong>', $preview['type'] === 'role' ? $this->lang('rôle') : $this->lang('user'), htmlspecialchars($preview['label'])) ?>
+					<?php echo $this->lang('Tu vois le site comme %s : <strong>%s</strong>', $preview['type'] === 'role' ? $this->lang('rôle') : $this->lang('user'), nf_texte($preview['label'])) ?>
 					<small class="ms-2 text-muted">
 						<?php echo $this->lang('(actif depuis %s, expire dans %d min)', timetostr('H:i', $preview['started_at']), max(0, ceil((1800 - (time() - $preview['started_at'])) / 60))) ?>
 					</small>

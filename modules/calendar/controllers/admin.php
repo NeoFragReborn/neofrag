@@ -23,20 +23,20 @@ class Admin extends Controller_Module
 
 				$body .= '<div class="nf-content-card">';
 				$body .= '<div class="nf-content-card-head">';
-				$body .= '<div class="nf-content-card-title">'.htmlspecialchars((string) ($e['title']), ENT_QUOTES, 'UTF-8', FALSE).'</div>';
+				$body .= '<div class="nf-content-card-title">'.nf_texte($e['title']).'</div>';
 				$body .= '<span class="nf-content-card-status '.($published ? 'published' : 'draft').'">';
 				$body .= '<i class="fas '.($published ? 'fa-check' : 'fa-clock').'"></i> '.($published ? $this->lang('Publié') : $this->lang('Brouillon'));
 				$body .= '</span>';
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-meta">';
 				$body .= '<span><i class="far fa-calendar-alt"></i> '.Calendar::format_dt($e['start_at'], (bool)$e['all_day'], $e['end_at']).'</span>';
-				if (!empty($e['location'])) $body .= '<span><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars((string) ($e['location']), ENT_QUOTES, 'UTF-8', FALSE).'</span>';
-				if (!empty($e['username']))  $body .= '<span><i class="fas fa-user"></i> '.htmlspecialchars((string) ($e['username'])).'</span>';
+				if (!empty($e['location'])) $body .= '<span><i class="fas fa-map-marker-alt"></i> '.nf_texte($e['location']).'</span>';
+				if (!empty($e['username']))  $body .= '<span><i class="fas fa-user"></i> '.nf_texte($e['username']).'</span>';
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-foot">';
 				$body .= '<span class="nf-content-card-spacer"></span>';
 				$body .= '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/calendar/'.$e['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
-				$body .= '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/calendar/delete/'.$e['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				$body .= '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/calendar/delete/'.$e['id'].'/'.$slug).'" data-confirm="'.nf_texte($this->lang('Supprimer ?')).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$body .= '</div>';
 				$body .= '</div>';
 			}

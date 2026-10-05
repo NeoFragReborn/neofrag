@@ -2,7 +2,7 @@
 	<div class="card-body">
 		<form method="get" action="<?php echo url('forum/search') ?>" class="nf-form-inline">
 			<div class="nf-field flex-grow-1 me-2 mb-2">
-				<input type="text" name="q" class="form-control w-100" placeholder="<?php echo $this->lang('Rechercher dans le forum (min 3 caractères)') ?>" value="<?php echo htmlspecialchars($query) ?>" />
+				<input type="text" name="q" class="form-control w-100" placeholder="<?php echo $this->lang('Rechercher dans le forum (min 3 caractères)') ?>" value="<?php echo nf_texte($query) ?>" />
 			</div>
 			<div class="nf-field me-2 mb-2">
 				<select name="forum" class="form-select">
@@ -16,7 +16,7 @@
 				</select>
 			</div>
 			<div class="nf-field me-2 mb-2">
-				<input type="text" name="author" class="form-control" placeholder="<?php echo $this->lang('Auteur') ?>" value="<?php echo htmlspecialchars((string)$author) ?>" />
+				<input type="text" name="author" class="form-control" placeholder="<?php echo $this->lang('Auteur') ?>" value="<?php echo nf_texte($author) ?>" />
 			</div>
 			<div class="nf-field me-2 mb-2">
 				<select name="sort" class="form-select">
@@ -34,7 +34,7 @@
 	<div class="alert alert-warning"><?php echo $this->lang('Tape au moins 3 caractères pour chercher.') ?></div>
 <?php elseif ($query !== ''): ?>
 	<?php if (empty($results)): ?>
-		<div class="alert alert-info"><?php echo $this->lang('Aucun résultat pour "%s"', htmlspecialchars($query)) ?></div>
+		<div class="alert alert-info"><?php echo $this->lang('Aucun résultat pour "%s"', nf_texte($query)) ?></div>
 	<?php else: ?>
 		<div class="card mb-3">
 			<div class="card-header">
@@ -44,10 +44,10 @@
 				<?php foreach ($results as $r): ?>
 					<div class="forum-search-result mb-3 pb-3" style="border-bottom: 1px solid rgba(0,0,0,0.08);">
 						<h5 class="m-0">
-							<a href="<?php echo url('forum/topic/'.$r['topic_id'].'/'.url_title($r['topic_title']).'#'.$r['message_id']) ?>"><?php echo htmlspecialchars($r['topic_title']) ?></a>
+							<a href="<?php echo url('forum/topic/'.$r['topic_id'].'/'.url_title($r['topic_title']).'#'.$r['message_id']) ?>"><?php echo nf_texte($r['topic_title']) ?></a>
 						</h5>
 						<div class="text-muted small mb-1">
-							<?php echo icon('fas fa-folder').' '.htmlspecialchars($r['forum_title']) ?>
+							<?php echo icon('fas fa-folder').' '.nf_texte($r['forum_title']) ?>
 							·
 							<?php echo icon('fas fa-user').' '.($r['user_id'] ? $this->user->link($r['user_id'], $r['username']) : '<i>'.$this->lang('Visiteur').'</i>') ?>
 							·

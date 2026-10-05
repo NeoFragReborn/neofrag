@@ -66,6 +66,7 @@ s'exécute pas.
 | `GET /api/v1/events?after={id}&limit={n}` | `events:read` | Le fil d'événements (voir ci-dessous) |
 | `POST /api/v1/forum/topics` | `forum:write` | Crée un sujet (voir « Écrire sur le forum ») et rend le sujet, en **201** |
 | `POST /api/v1/forum/topics/{id}/messages` | `forum:write` | Répond à un sujet et rend le message, en 201 |
+| `POST /api/v1/forum/images?name={nom}` | `forum:write` | Garde une image pour un message : le corps de la requête **est** l'image (JPEG, PNG, GIF ou WebP, 5 Mo au plus, contrôlée et ré-encodée comme celles de l'éditeur). Rend `path` — à écrire dans le contenu, `![nom](path)` — et `url`, en 201 la première fois ; la même image renvoyée rend la même adresse |
 | `PATCH /api/v1/forum/messages/{id}` | `forum:write` | Modifie un message — au nom de son auteur seulement |
 | `DELETE /api/v1/forum/messages/{id}` | `forum:write` | Met un message à la corbeille du forum — au nom de son auteur ; pas le premier message d'un sujet |
 | `PATCH /api/v1/forum/topics/{id}` | `forum:write` | Change le préfixe d'un sujet : `prefix_id` (`null` pour aucun) ; rend le sujet |

@@ -6,7 +6,7 @@
 		<div class="nf-field row">
 			<label for="settings-steam-group" class="col-12 col-lg-4 col-form-label"><i class="fab fa-steam"></i> <?php echo $this->lang('Groupe Steam') ?></label>
 			<div class="col-12 col-lg-7">
-				<input type="text" class="form-control" name="settings[group]" id="settings-steam-group" value="<?php echo htmlspecialchars($group) ?>" placeholder="ex: Valve OU 103582791429521408" autocomplete="off" />
+				<input type="text" class="form-control" name="settings[group]" id="settings-steam-group" value="<?php echo nf_texte($group) ?>" placeholder="ex: Valve OU 103582791429521408" autocomplete="off" />
 				<small class="form-text text-muted"><?php echo $this->lang('URL personnalisée du groupe (vanity URL) OU son SteamID64 numérique. Visible dans l\'URL https://steamcommunity.com/groups/<b>VOTRE-GROUPE</b>.') ?></small>
 			</div>
 		</div>

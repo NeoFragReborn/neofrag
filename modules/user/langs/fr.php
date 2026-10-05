@@ -316,4 +316,13 @@ return [
 	'92330b9f' => '%d entrée, conservée 365 jours|%d entrées, conservées 365 jours',
 	'7ecafebb' => 'Aucun membre ne correspond à « %s ».',
 	'f4f7e9a1' => 'Rechercher un pseudo ou un e-mail…',
+	'8322fb2c' => 'J\'ai lu le règlement et je l\'accepte',
+	'64af90e0' => 'Créer mon compte',
+	'3d7f5bc9' => 'Avant de créer votre compte avec %s, lisez le règlement du site.',
+	'0a0d7675' => 'Votre compte est créé : ouvrez le lien envoyé à %s pour l\'activer.',
+	'4ab39f09' => 'Votre compte est créé, mais l\'e-mail de validation n\'a pas pu partir : connectez-vous un peu plus tard pour en recevoir un nouveau.',
+	'e316c550' => 'Ce lien de validation n\'est plus valable : connectez-vous, un nouveau lien vous sera envoyé.',
+	'84a10ad9' => 'Votre adresse est validée : bienvenue !',
+	'6f65c0fc' => 'Votre inscription n\'est pas encore validée : un nouveau lien vient de partir à %s. Ouvrez-le pour activer votre compte.',
+	'cfbbd188' => 'Votre inscription n\'est pas encore validée : ouvrez le lien envoyé à %s. Un nouveau lien pourra partir un peu plus tard.',
 ];

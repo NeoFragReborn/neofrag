@@ -19,6 +19,7 @@ declare(strict_types=1);
  *   $p['html']      liste des chemins qui ont rendu une page HTML du site (200)
  *   $p['casses']    liens internes morts : chemin, code, page qui le portait, raison
  *   $p['restantes'] adresses connues mais non ouvertes, faute de budget
+ *   $p['codes']     pages qui montrent un texte codé deux fois (« &eacute; » à l'écran) : chemin, extrait
  */
 
 require_once __DIR__.'/outil.php';
@@ -38,7 +39,7 @@ const NF_ADRESSES_QUI_AGISSENT = '#/(delete|supprimer|disable|enable|toggle|purg
 /**
  * @param  list<string> $departs les chemins d'où partir
  * @param  list<string> $ignorer préfixes servis par une AUTRE installation (la démonstration sous `/demo`)
- * @return array{html: list<string>, casses: list<array{chemin: string, code: int, depuis: string, raison: string}>, ouverts: int, connues: int, restantes: int}
+ * @return array{html: list<string>, casses: list<array{chemin: string, code: int, depuis: string, raison: string}>, codes: list<array{chemin: string, extrait: string}>, ouverts: int, connues: int, restantes: int}
  */
 function nf_parcourir_site(string $base, array $departs, int $max, array $ignorer = []): array
 {
@@ -47,6 +48,7 @@ function nf_parcourir_site(string $base, array $departs, int $max, array $ignore
     $origine = [];
     $html    = [];
     $casses  = [];
+    $codes   = [];
     $ouverts = 0;
 
     foreach ($departs as $d)
@@ -88,6 +90,16 @@ function nf_parcourir_site(string $base, array $departs, int $max, array $ignore
 
         $html[] = $chemin;
 
+        // Un texte codé deux fois — `&amp;eacute;` dans le HTML servi, « &eacute; » à l'écran (vu par
+        // le mainteneur le 2026-10-05, 1 080 appels en cause). Le code, les champs et les scripts montrent
+        // légitimement des entités ; le reste de la page, jamais.
+        $visible = (string) preg_replace('#<(script|style|textarea|pre|code)\b.*?</\1>#is', '', $corps);
+
+        if (preg_match('/.{0,40}&amp;(?:[a-z][a-z0-9]{1,7}|#\d{2,5}|#x[0-9a-f]{2,4});.{0,30}/iu', $visible, $double))
+        {
+            $codes[] = ['chemin' => $chemin, 'extrait' => trim($double[0])];
+        }
+
         // Délimiteur `~` et non `#` : la classe de caractères contient un `#` (on coupe l'ancre).
         preg_match_all('~<a\b[^>]+href="([^"#]+)~i', $corps, $trouves);
 
@@ -126,5 +138,5 @@ function nf_parcourir_site(string $base, array $departs, int $max, array $ignore
         }
     }
 
-    return ['html' => $html, 'casses' => $casses, 'ouverts' => $ouverts, 'connues' => count($vus), 'restantes' => count($file)];
+    return ['html' => $html, 'casses' => $casses, 'codes' => $codes, 'ouverts' => $ouverts, 'connues' => count($vus), 'restantes' => count($file)];
 }

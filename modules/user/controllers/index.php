@@ -394,11 +394,9 @@ class Index extends Controller_Module
 										$user->reset('password');
 									}
 
-									if ($user->has_changed('email') && $this->config->nf_registration_validation)
-									{
-										//TODO
-									}
-
+									// La validation par e-mail porte sur l'INSCRIPTION (User::a_valider()). Confirmer une
+									// nouvelle adresse — la garder en attente jusqu'au clic sur un lien — demande de la ranger
+									// à part : une suite notée au tableau de bord, pas une branche vide ici.
 									$user->update();
 
 									notify($this->lang('Informations modifiées'));
@@ -759,6 +757,17 @@ class Index extends Controller_Module
 			}
 			else if ($this->config->nf_registration_status)
 			{
+				// Le site a un règlement : il s'accepte AVANT que le compte soit créé, comme par le formulaire
+				// d'inscription. Le compte externe créait le membre aussitôt, sans le montrer (2026-10-04).
+				if ($this->_reglement_a_accepter())
+				{
+					$this->session->set('inscription_externe', 'authenticator', (string) $authenticator->info()->name);
+					$this->session->set('inscription_externe', 'data', $data);
+					$this->session->set('inscription_externe', 'expire', time() + 900);
+
+					redirect('user/reglement');
+				}
+
 				$this->_inscription_externe($authenticator, $data);
 			}
 			else
@@ -770,6 +779,55 @@ class Index extends Controller_Module
 		}
 
 		$this->url->redirect($provider->makeAuthUrl());
+	}
+
+	/** Le site a-t-il un règlement à faire accepter à l'inscription ? (même règle que le formulaire, ajax.php) */
+	private function _reglement_a_accepter(): bool
+	{
+		return trim(strip_tags((string) $this->config->traduit('nf_registration_charte'))) !== '';
+	}
+
+	/**
+	 * `user/reglement` — l'inscription par un compte externe, quand le site a un règlement : on le montre,
+	 * et le compte n'est créé qu'une fois la case cochée (le contrôle d'accès a validé l'attente, rangée en
+	 * session pour un quart d'heure au retour du connecteur).
+	 */
+	public function reglement($authenticator, array $data)
+	{
+		$this	->title($this->lang('Règlement'))
+				->icon('fas fa-file-contract')
+				->breadcrumb()
+				->form()
+				->add_rules([
+					'reglement' => [
+						'type'   => 'checkbox',
+						'values' => ['on' => $this->lang('J\'ai lu le règlement et je l\'accepte')],
+						'rules'  => 'required',
+					],
+				])
+				->add_submit($this->lang('Créer mon compte'), 'fas fa-user-plus');
+
+		if ($this->form()->is_valid())
+		{
+			$this->session->destroy('inscription_externe');
+
+			// Le règlement a pu être retiré entre-temps : rien de plus à demander, le compte se crée.
+			$this->_inscription_externe($authenticator, $data);
+
+			redirect();
+		}
+
+		$intro = '<p>'.$this->lang('Avant de créer votre compte avec %s, lisez le règlement du site.', nf_texte($authenticator->info()->title)).'</p>'
+			.'<div class="card card-body mb-3">'.bbcode($this->config->traduit('nf_registration_charte')).'</div>';
+
+		// Sans _layout() : son menu est celui d'un compte, et le visiteur n'en a pas encore.
+		return $this->row($this	->col()
+								->append($this	->panel()
+												->heading()
+												->body($intro.$this->form()->display())
+								)
+								->size('col-12 col-lg-8 mx-auto')
+		);
 	}
 
 	/**
@@ -940,6 +998,41 @@ class Index extends Controller_Module
 	public function lost_password($token)
 	{
 		$this->session->append('modals', 'ajax/user/lost-password/'.$token->id);
+		redirect();
+	}
+
+	/**
+	 * `user/validation/{jeton}` — le lien de l'e-mail de validation : l'adresse est prouvée, le compte est
+	 * ouvert et le membre connecté (le contrôle d'accès a vérifié le jeton). Mêmes gardes que le lien de
+	 * mot de passe oublié : ni un compte banni, ni un compte à double authentification sans son code.
+	 */
+	public function validation($token)
+	{
+		$user = $token->delete()->user;
+
+		// La première activité est ce qui marque un compte validé (Models\User, User::a_valider()).
+		$user->set('last_activity_date', NeoFrag()->date())->update();
+
+		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('user.validated', ['user_id' => (int) $user->id, 'username' => $user->username]);
+
+		if ($this->moderation->is_banned((int) $user->id, 'global'))
+		{
+			$msg = $this->moderation->block_message_for_user((int) $user->id, 'global');
+			notify($msg ?: $this->lang('Ce compte est banni.'), 'danger');
+		}
+		else if ($user->totp_enabled)
+		{
+			$this->session->set('totp', 'pending_user_id', $user->id);
+			$this->session->set('totp', 'pending_remember', 0);
+			$this->session->set('totp', 'pending_expires', time() + 300);
+			$this->session->append('modals', 'ajax/user/login');
+		}
+		else
+		{
+			$this->session->login($user);
+			notify($this->lang('Votre adresse est validée : bienvenue !'));
+		}
+
 		redirect();
 	}
 

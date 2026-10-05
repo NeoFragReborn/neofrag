@@ -43,6 +43,13 @@ declare(strict_types=1);
  * des centaines de pages ; il relit donc aussi ce qu'elles ont écrit au journal, et
  * refuse toute erreur PHP et toute ligne du produit — le classement est celui de `lib/journal.php`,
  * le même que `check-journal`.
+ *
+ * Et le texte codé deux fois
+ * --------------------------
+ * Le site range ses textes codés (`&eacute;`) ; une page qui les recodait affichait « &eacute; » au
+ * lieu de « é » (1 080 appels, vus par le mainteneur le 2026-10-05). `check-double-codage` lit le code ; ce
+ * parcours lit ce que les pages SERVENT, administration comprise, et refuse tout `&amp;eacute;` hors
+ * du code, des champs et des scripts. Un texte qui cite une entité exprès l'écrit en code.
  */
 
 require __DIR__.'/lib/outil.php';
@@ -76,6 +83,7 @@ $journal_avant = nf_journal_taille($o['journal']);
 // (Les adresses qui agissent n'y sont jamais ouvertes : NF_ADRESSES_QUI_AGISSENT.)
 $parcours = nf_parcourir_site($base, $departs, $o['max'], $o['ignorer']);
 $casses   = $parcours['casses'];
+$codes    = $parcours['codes'];
 $ouverts  = $parcours['ouverts'];
 
 // ── Le rapport ──────────────────────────────────────────────────────────────
@@ -103,6 +111,16 @@ else
 
 $au_journal = count($journal['php']) + count($journal['produit']);
 
+if ($codes)
+{
+    printf("\n%d page(s) montrent un texte codé deux fois (« &eacute; » à l'écran) — écrire nf_texte() :\n\n", count($codes));
+
+    foreach ($codes as $x)
+    {
+        printf("  ✗ %s\n           %s\n", $x['chemin'], $x['extrait']);
+    }
+}
+
 if ($casses)
 {
     printf("\n%d lien(s) interne(s) mort(s) :\n\n", count($casses));
@@ -116,8 +134,9 @@ if ($casses)
         printf("  ✗ %-14s %s\n           depuis : %s\n", $etat, $x['chemin'], $x['depuis']);
     }
 
-    nf_echec(sprintf('%d lien(s) mort(s) sur %d page(s)%s', count($casses), $ouverts,
-        $au_journal ? sprintf(', et %d ligne(s) fautive(s) au journal', $au_journal) : ''));
+    nf_echec(sprintf('%d lien(s) mort(s) sur %d page(s)%s%s', count($casses), $ouverts,
+        $au_journal ? sprintf(', et %d ligne(s) fautive(s) au journal', $au_journal) : '',
+        $codes ? sprintf(', et %d page(s) au texte codé deux fois', count($codes)) : ''));
 }
 
 if ($au_journal)
@@ -126,4 +145,9 @@ if ($au_journal)
         $au_journal, $ouverts, count($journal['php']), count($journal['produit'])));
 }
 
-nf_ok('aucun lien interne mort'.($journal_lu ? ", et rien d'écrit au journal pendant le parcours" : ' (journal non lu)'));
+if ($codes)
+{
+    nf_echec(sprintf('aucun lien mort, mais %d page(s) au texte codé deux fois sur %d', count($codes), $ouverts));
+}
+
+nf_ok('aucun lien interne mort, aucun texte codé deux fois'.($journal_lu ? ", et rien d'écrit au journal pendant le parcours" : ' (journal non lu)'));

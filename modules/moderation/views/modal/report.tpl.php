@@ -31,9 +31,9 @@
 	<?php endif ?>
 
 	<form id="moderation-report-form">
-		<input type="hidden" name="target_type" value="<?php echo htmlspecialchars($target_type) ?>" />
-		<input type="hidden" name="target_id" value="<?php echo htmlspecialchars($target_id) ?>" />
-		<input type="hidden" name="url" value="<?php echo htmlspecialchars($url) ?>" />
+		<input type="hidden" name="target_type" value="<?php echo nf_texte($target_type) ?>" />
+		<input type="hidden" name="target_id" value="<?php echo nf_texte($target_id) ?>" />
+		<input type="hidden" name="url" value="<?php echo nf_texte($url) ?>" />
 
 		<div class="nf-field">
 			<label class="fw-bold"><?php echo $this->lang('Raison du signalement') ?></label>
@@ -52,7 +52,7 @@
 			<div class="form-check">
 				<input class="form-check-input" type="radio" name="reason" id="reason-<?php echo $value ?>" value="<?php echo $value ?>"<?php echo $value === 'other' ? '' : '' ?> required />
 				<label class="form-check-label" for="reason-<?php echo $value ?>">
-					<?php echo $info[0].' '.htmlspecialchars($info[1]) ?>
+					<?php echo $info[0].' '.nf_texte($info[1]) ?>
 				</label>
 			</div>
 			<?php endforeach ?>

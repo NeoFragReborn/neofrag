@@ -58,10 +58,23 @@ $this	->compact()
 					return;
 				}
 
-				if ($this->config->nf_registration_validation && !$user->last_activity_date)
+				// L'adresse n'est pas encore validée : pas de connexion. Un nouveau lien part — trois par heure au
+				// plus —, et on le dit. Cette branche était vide : le membre restait devant le formulaire, sans un mot.
+				if (($module_user = $this->module('user')) instanceof \NF\Modules\User\User && $module_user->a_valider($user))
 				{
-					//Vous devez valider votre inscription, recevoir un nouveau mail de validation
-					//TODO
+					$cle_lien = 'validation:user:'.(int) $user->id;
+					$envoye   = $rateLimit->check($cle_lien)['allowed'] && $module_user->envoyer_validation($user);
+
+					if ($envoye)
+					{
+						$rateLimit->hit($cle_lien, 3, 3600, 3600);
+					}
+
+					$auditLog->log('login.unvalidated', ['user_id' => $user->id, 'username' => $user->username]);
+					$form->error($envoye
+						? $this->lang('Votre inscription n\'est pas encore validée : un nouveau lien vient de partir à %s. Ouvrez-le pour activer votre compte.', nf_texte($user->email))
+						: $this->lang('Votre inscription n\'est pas encore validée : ouvrez le lien envoyé à %s. Un nouveau lien pourra partir un peu plus tard.', nf_texte($user->email)));
+					return;
 				}
 				else if ($user->totp_enabled)
 				{

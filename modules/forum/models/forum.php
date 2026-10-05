@@ -120,7 +120,7 @@ class Forum extends Model
 			return '';
 		}
 
-		return '<span class="forum-prefixe badge '.badge_class((string) $prefixe['color']).'">'.htmlspecialchars((string) $prefixe['title']).'</span>';
+		return '<span class="forum-prefixe badge '.badge_class((string) $prefixe['color']).'">'.nf_texte($prefixe['title']).'</span>';
 	}
 
 	public function add_prefix(string $title, string $color, int $order): int

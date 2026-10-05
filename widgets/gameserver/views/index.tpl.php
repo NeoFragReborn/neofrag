@@ -12,20 +12,20 @@ if ($online && in_array($engine, ['source', 'goldsource'], TRUE)) {
 }
 $ip_string = $host.':'.$port;
 ?>
-<div class="widget-gs widget-gs-<?php echo htmlspecialchars($engine) ?> <?php echo $online ? 'is-online' : 'is-offline' ?>">
+<div class="widget-gs widget-gs-<?php echo nf_texte($engine) ?> <?php echo $online ? 'is-online' : 'is-offline' ?>">
 	<?php if (!$online): ?>
 	<div class="widget-gs-offline">
 		<i class="fas fa-power-off"></i>
 		<div class="widget-gs-offline-text">
 			<strong><?php echo $this->lang('Hors ligne') ?></strong>
-			<small><?php echo htmlspecialchars($ip_string) ?></small>
+			<small><?php echo nf_texte($ip_string) ?></small>
 		</div>
 	</div>
 	<?php else: ?>
 
 	<?php if (in_array($engine, ['mc-java', 'mc-bedrock'], TRUE) && !empty($data['icon'])): ?>
 	<div class="widget-gs-icon">
-		<img src="<?php echo htmlspecialchars($data['icon']) ?>" alt="" width="64" height="64" />
+		<img src="<?php echo nf_texte($data['icon']) ?>" alt="" width="64" height="64" />
 	</div>
 	<?php endif ?>
 
@@ -47,13 +47,13 @@ $ip_string = $host.':'.$port;
 	<?php if (!empty($data['map']) || !empty($data['version']) || !empty($data['game'])): ?>
 	<div class="widget-gs-meta">
 		<?php if (!empty($data['game'])): ?>
-		<span class="widget-gs-pill"><i class="fas fa-gamepad"></i> <?php echo htmlspecialchars($data['game']) ?></span>
+		<span class="widget-gs-pill"><i class="fas fa-gamepad"></i> <?php echo nf_texte($data['game']) ?></span>
 		<?php endif ?>
 		<?php if (!empty($data['map'])): ?>
-		<span class="widget-gs-pill"><i class="fas fa-map"></i> <?php echo htmlspecialchars($data['map']) ?></span>
+		<span class="widget-gs-pill"><i class="fas fa-map"></i> <?php echo nf_texte($data['map']) ?></span>
 		<?php endif ?>
 		<?php if (!empty($data['version'])): ?>
-		<span class="widget-gs-pill"><i class="fas fa-code-branch"></i> <?php echo htmlspecialchars(strip_tags($data['version'])) ?></span>
+		<span class="widget-gs-pill"><i class="fas fa-code-branch"></i> <?php echo nf_texte(strip_tags($data['version'])) ?></span>
 		<?php endif ?>
 		<?php if (!empty($data['vac'])): ?>
 		<span class="widget-gs-pill widget-gs-pill-vac" title="VAC secured"><i class="fas fa-shield-alt"></i> VAC</span>
@@ -71,7 +71,7 @@ $ip_string = $host.':'.$port;
 			?>
 			<li>
 				<i class="fas fa-user"></i>
-				<span><?php echo htmlspecialchars($pname) ?></span>
+				<span><?php echo nf_texte($pname) ?></span>
 				<?php if ($pscore !== NULL): ?><span class="widget-gs-player-score"><?php echo (int)$pscore ?></span><?php endif ?>
 			</li>
 			<?php endforeach ?>
@@ -80,9 +80,9 @@ $ip_string = $host.':'.$port;
 	<?php endif ?>
 
 	<?php if ($connect_url): ?>
-	<a href="<?php echo htmlspecialchars($connect_url) ?>" class="widget-gs-cta"><i class="fas fa-sign-in-alt"></i> <?php echo $connect_label ?></a>
+	<a href="<?php echo nf_texte($connect_url) ?>" class="widget-gs-cta"><i class="fas fa-sign-in-alt"></i> <?php echo $connect_label ?></a>
 	<?php else: ?>
-	<button type="button" class="widget-gs-cta widget-gs-copy" data-ip="<?php echo htmlspecialchars($ip_string) ?>"><i class="fas fa-copy"></i> <?php echo $ip_string ?></button>
+	<button type="button" class="widget-gs-cta widget-gs-copy" data-ip="<?php echo nf_texte($ip_string) ?>"><i class="fas fa-copy"></i> <?php echo $ip_string ?></button>
 	<?php endif ?>
 
 	<?php endif ?>

@@ -30,18 +30,18 @@ $cid = $campaign['id'];
 				<td>
 					<?php if ($d['is_anonymous']): ?>
 						<i class="fas fa-user-secret text-muted"></i> <em><?php echo $this->lang('Anonyme') ?></em>
-						<small class="text-muted">(<?php echo htmlspecialchars($d['donor_name']) ?>)</small>
+						<small class="text-muted">(<?php echo nf_texte($d['donor_name']) ?>)</small>
 					<?php else: ?>
-						<i class="fas fa-user"></i> <?php echo htmlspecialchars($d['donor_name']) ?>
+						<i class="fas fa-user"></i> <?php echo nf_texte($d['donor_name']) ?>
 					<?php endif ?>
 					<?php if (!empty($d['message'])): ?>
-					<br><small class="text-muted"><i class="far fa-comment"></i> <?php echo htmlspecialchars(mb_strimwidth($d['message'], 0, 80, '...')) ?></small>
+					<br><small class="text-muted"><i class="far fa-comment"></i> <?php echo nf_texte($d['message'], 80) ?></small>
 					<?php endif ?>
 				</td>
-				<td class="text-end"><strong><?php echo number_format($d['amount'], 2, ',', ' ') ?> <?php echo htmlspecialchars($d['currency']) ?></strong></td>
+				<td class="text-end"><strong><?php echo number_format($d['amount'], 2, ',', ' ') ?> <?php echo nf_texte($d['currency']) ?></strong></td>
 				<td><?php echo $d['source'] === 'paypal' ? '<i class="fab fa-paypal"></i> PayPal' : '<i class="fas fa-keyboard"></i> '.$this->lang('Manuel') ?></td>
 				<?php $status_labels = ['pending' => $this->lang('En attente'), 'completed' => $this->lang('Validé'), 'refunded' => $this->lang('Remboursé')]; ?>
-				<td class="text-center"><span class="badge <?php echo badge_class($status_badges[$d['status']] ?? 'secondary') ?>"><?php echo $status_labels[$d['status']] ?? htmlspecialchars($d['status']) ?></span></td>
+				<td class="text-center"><span class="badge <?php echo badge_class($status_badges[$d['status']] ?? 'secondary') ?>"><?php echo $status_labels[$d['status']] ?? nf_texte($d['status']) ?></span></td>
 				<td class="text-center">
 					<?php if ($d['is_public']): ?>
 						<i class="far fa-eye text-success" title="<?php echo $this->lang('Public') ?>"></i>

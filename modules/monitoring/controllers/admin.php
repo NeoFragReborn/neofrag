@@ -105,7 +105,7 @@ class Admin extends Controller_Module
 		$fichiers = '<div class="card">'
 			.'<div class="nf-card-header">'
 			.'<span><i class="fas fa-heartbeat"></i> '.$this->lang('Votre installation NeoFrag').'</span>'
-			.'<a class="btn btn-secondary btn-sm" href="'.url('admin/monitoring/files').'" title="'.htmlspecialchars((string) ($this->lang('Gérer / éditer les fichiers')), ENT_QUOTES).'"><i class="fas fa-folder-tree"></i> '.$this->lang('Gérer les fichiers').'</a>'
+			.'<a class="btn btn-secondary btn-sm" href="'.url('admin/monitoring/files').'" title="'.nf_texte($this->lang('Gérer / éditer les fichiers')).'"><i class="fas fa-folder-tree"></i> '.$this->lang('Gérer les fichiers').'</a>'
 			.'</div>'
 			.'<div class="card-body" style="max-height:640px;overflow-y:auto;"><div id="tree"></div></div>'
 			.'</div>';
@@ -185,7 +185,7 @@ class Admin extends Controller_Module
 	private function _cron_section()
 	{
 		$key   = nf_demo() ? 'demonstration' : (string)$this->config->nf_cron_key;
-		$reset = nf_demo() ? '' : '<a class="btn btn-secondary btn-sm" href="'.url('admin/monitoring/cron/reset').'?_='.$this->_csrf_token().'" data-confirm="'.htmlspecialchars((string) ($this->lang('Générer une nouvelle clé ? L\'ancienne URL de cron cessera de fonctionner.')), ENT_QUOTES).'"><i class="fas fa-key"></i> '.$this->lang('Régénérer la clé').'</a>';
+		$reset = nf_demo() ? '' : '<a class="btn btn-secondary btn-sm" href="'.url('admin/monitoring/cron/reset').'?_='.$this->_csrf_token().'" data-confirm="'.nf_texte($this->lang('Générer une nouvelle clé ? L\'ancienne URL de cron cessera de fonctionner.')).'"><i class="fas fa-key"></i> '.$this->lang('Régénérer la clé').'</a>';
 
 		$header = '<div class="nf-card-header"><span><i class="far fa-clock"></i> '.$this->lang('Parution programmée (cron)').'</span>'.$reset.'</div>';
 
@@ -200,7 +200,7 @@ class Admin extends Controller_Module
 		$origin = ($this->url->https ? 'https' : 'http').'://'.($_SERVER['HTTP_HOST'] ?? '');
 		// Sur la démonstration, la vraie clé ne s'affiche pas : la remise à zéro en dépend.
 		$url    = $origin.url('monitoring/cron').'?key='.(nf_demo() ? '••••••••' : rawurlencode($key));
-		$esc    = htmlspecialchars((string) ($url), ENT_QUOTES);
+		$esc    = nf_texte($url);
 
 		$body = '<div class="card-body">'
 			.'<p class="text-muted mb-2">'.$this->lang('NeoFrag n\'a pas d\'ordonnanceur : un cron externe doit appeler cette URL régulièrement (toutes les 5 min) pour publier news et articles programmés à l\'heure réelle — notifications, webhooks et gamification compris.').'</p>'
@@ -415,7 +415,7 @@ class Admin extends Controller_Module
 
 		$actions = $existe
 			? '<a class="btn btn-outline-secondary btn-sm" href="'.url('admin/monitoring/journal/telecharger').'"><i class="fas fa-download"></i> '.$this->lang('Télécharger').'</a>'
-			 .' <a class="btn btn-outline-danger btn-sm" href="'.$this->csrf_url('admin/monitoring/journal/vider').'" data-confirm="'.htmlspecialchars((string) $this->lang('Vider le journal ? L’actuel est gardé à côté (logs/php.log.1), à la place du précédent.'), ENT_QUOTES).'"><i class="far fa-trash-alt"></i> '.$this->lang('Vider').'</a>'
+			 .' <a class="btn btn-outline-danger btn-sm" href="'.$this->csrf_url('admin/monitoring/journal/vider').'" data-confirm="'.nf_texte($this->lang('Vider le journal ? L’actuel est gardé à côté (logs/php.log.1), à la place du précédent.')).'"><i class="far fa-trash-alt"></i> '.$this->lang('Vider').'</a>'
 			: '';
 
 		return $this->admin_back('admin/monitoring')
@@ -650,7 +650,7 @@ class Admin extends Controller_Module
 
 		$actions = $existe
 			? '<a class="btn btn-outline-secondary btn-sm" href="'.url('admin/monitoring/trace/telecharger').'"><i class="fas fa-download"></i> '.$this->lang('Télécharger').'</a>'
-			 .' <a class="btn btn-outline-danger btn-sm" href="'.$this->csrf_url('admin/monitoring/trace/vider').'" data-confirm="'.htmlspecialchars((string) $this->lang('Vider la trace ? L’actuelle est gardée à côté (logs/neofrag.log.1), à la place de la précédente.'), ENT_QUOTES).'"><i class="far fa-trash-alt"></i> '.$this->lang('Vider').'</a>'
+			 .' <a class="btn btn-outline-danger btn-sm" href="'.$this->csrf_url('admin/monitoring/trace/vider').'" data-confirm="'.nf_texte($this->lang('Vider la trace ? L’actuelle est gardée à côté (logs/neofrag.log.1), à la place de la précédente.')).'"><i class="far fa-trash-alt"></i> '.$this->lang('Vider').'</a>'
 			: '';
 
 		return $this->admin_back('admin/monitoring')
@@ -740,19 +740,19 @@ class Admin extends Controller_Module
 			.'</p>';
 
 		$actions = $lignes
-			? '<a class="btn btn-outline-danger btn-sm" href="'.$this->csrf_url('admin/monitoring/traductions/vider').'" data-confirm="'.htmlspecialchars((string) $this->lang('Vider la liste des traductions manquantes ?'), ENT_QUOTES).'"><i class="far fa-trash-alt"></i> '.$this->lang('Vider').'</a>'
+			? '<a class="btn btn-outline-danger btn-sm" href="'.$this->csrf_url('admin/monitoring/traductions/vider').'" data-confirm="'.nf_texte($this->lang('Vider la liste des traductions manquantes ?')).'"><i class="far fa-trash-alt"></i> '.$this->lang('Vider').'</a>'
 			: '';
 
 		$corps = '';
 
 		foreach ($par_langue as $langue => $textes)
 		{
-			$corps .= '<h3 class="h6 mt-3">'.htmlspecialchars(strtoupper($langue)).' <span class="badge text-bg-secondary">'.count($textes).'</span></h3>'
+			$corps .= '<h3 class="h6 mt-3">'.nf_texte(strtoupper($langue)).' <span class="badge text-bg-secondary">'.count($textes).'</span></h3>'
 				.'<div class="table-responsive"><table class="table table-sm small align-middle"><thead><tr><th>'.$this->lang('Texte d’origine').'</th><th>'.$this->lang('Extension').'</th><th>'.$this->lang('Clé').'</th></tr></thead><tbody>';
 
 			foreach ($textes as $t)
 			{
-				$corps .= '<tr><td style="overflow-wrap:anywhere">'.htmlspecialchars($t['texte'], ENT_QUOTES, 'UTF-8', FALSE).'</td><td><code>'.htmlspecialchars($t['origine']).'</code></td><td><code>'.htmlspecialchars($t['cle']).'</code></td></tr>';
+				$corps .= '<tr><td style="overflow-wrap:anywhere">'.nf_texte($t['texte']).'</td><td><code>'.nf_texte($t['origine']).'</code></td><td><code>'.nf_texte($t['cle']).'</code></td></tr>';
 			}
 
 			$corps .= '</tbody></table></div>';
@@ -787,16 +787,16 @@ class Admin extends Controller_Module
 		{
 			return '<div class="card">'
 				.'<div class="nf-card-header"><span><i class="fas fa-globe"></i> '.$this->lang('Adresse du site').'</span><span class="badge text-bg-success">'.$this->lang('À jour').'</span></div>'
-				.'<div class="card-body small"><p class="mb-0"><code>'.htmlspecialchars($enregistree).'</code> — '.$this->lang('les liens des courriels et des partages pointent ici.').'</p></div>'
+				.'<div class="card-body small"><p class="mb-0"><code>'.nf_texte($enregistree).'</code> — '.$this->lang('les liens des courriels et des partages pointent ici.').'</p></div>'
 				.'</div>';
 		}
 
 		$texte = $enregistree === ''
 			? $this->lang('Aucune adresse n’est enregistrée : les liens des courriels se construisent sur l’adresse demandée par chaque visiteur, qu’un tiers peut falsifier.')
-			: $this->lang('L’adresse enregistrée, %s, n’est pas celle par laquelle vous consultez le site : les liens des courriels, des connexions externes et des partages y mènent encore.', '<code>'.htmlspecialchars($enregistree).'</code>');
+			: $this->lang('L’adresse enregistrée, %s, n’est pas celle par laquelle vous consultez le site : les liens des courriels, des connexions externes et des partages y mènent encore.', '<code>'.nf_texte($enregistree).'</code>');
 
 		$bouton = $actuelle !== '' && !nf_demo()
-			? '<a class="btn btn-outline-primary btn-sm" href="'.$this->csrf_url('admin/monitoring/adresse').'" data-confirm="'.htmlspecialchars((string) $this->lang('Enregistrer %s comme adresse du site ?', $actuelle), ENT_QUOTES).'"><i class="fas fa-check"></i> '.$this->lang('Utiliser %s', htmlspecialchars($actuelle)).'</a>'
+			? '<a class="btn btn-outline-primary btn-sm" href="'.$this->csrf_url('admin/monitoring/adresse').'" data-confirm="'.nf_texte($this->lang('Enregistrer %s comme adresse du site ?', $actuelle)).'"><i class="fas fa-check"></i> '.$this->lang('Utiliser %s', nf_texte($actuelle)).'</a>'
 			: '';
 
 		return '<div class="card">'
@@ -914,7 +914,7 @@ class Admin extends Controller_Module
 
 		$wm         = new \NF\NeoFrag\Libraries\Webmaster($this);
 		$configured = $wm->is_configured();
-		$csrf       = htmlspecialchars((string) ($this->_csrf_token()), ENT_QUOTES);
+		$csrf       = nf_texte($this->_csrf_token());
 
 		$status = $configured
 			? '<span class="badge text-bg-success">'.$this->lang('Défini').'</span>'
@@ -925,7 +925,7 @@ class Admin extends Controller_Module
 			: '<div class="alert alert-warning mb-2"><i class="fas fa-exclamation-triangle"></i> '.$this->lang('Aucun mot de passe webmaster. Définis-en un pour débloquer les actions sensibles.').'</div>';
 
 		$current = $configured
-			? '<input type="password" name="current" class="form-control form-control-sm mb-2" autocomplete="off" placeholder="'.htmlspecialchars((string) ($this->lang('Mot de passe webmaster actuel')), ENT_QUOTES).'" required>'
+			? '<input type="password" name="current" class="form-control form-control-sm mb-2" autocomplete="off" placeholder="'.nf_texte($this->lang('Mot de passe webmaster actuel')).'" required>'
 			: '';
 
 		$sudo_line = '';
@@ -941,8 +941,8 @@ class Admin extends Controller_Module
 			.'<form method="post" action="'.url('admin/monitoring/webmaster').'" autocomplete="off">'
 			.'<input type="hidden" name="csrf" value="'.$csrf.'">'
 			.$current
-			.'<input type="password" name="password" class="form-control form-control-sm mb-2" autocomplete="new-password" placeholder="'.htmlspecialchars((string) ($this->lang('Nouveau mot de passe (8 car. min., distinct du login)')), ENT_QUOTES).'" required>'
-			.'<input type="password" name="password2" class="form-control form-control-sm mb-2" autocomplete="new-password" placeholder="'.htmlspecialchars((string) ($this->lang('Confirmation')), ENT_QUOTES).'" required>'
+			.'<input type="password" name="password" class="form-control form-control-sm mb-2" autocomplete="new-password" placeholder="'.nf_texte($this->lang('Nouveau mot de passe (8 car. min., distinct du login)')).'" required>'
+			.'<input type="password" name="password2" class="form-control form-control-sm mb-2" autocomplete="new-password" placeholder="'.nf_texte($this->lang('Confirmation')).'" required>'
 			.'<button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-key"></i> '.($configured ? $this->lang('Changer') : $this->lang('Définir')).'</button>'
 			.'</form></div>';
 
@@ -1098,9 +1098,9 @@ class Admin extends Controller_Module
 	private function _stat_card($label, $value, $icon, $trend = '')
 	{
 		$h  = '<div class="nf-stat-card">';
-		$h .= '<div class="nf-stat-label"><i class="'.$icon.'"></i> '.htmlspecialchars((string) ($label)).'</div>';
-		$h .= '<div class="nf-stat-value" style="font-size:18px;font-family:\'JetBrains Mono\',monospace;letter-spacing:0;">'.htmlspecialchars((string) ($value)).'</div>';
-		if ($trend) $h .= '<div class="nf-stat-trend">'.htmlspecialchars((string) ($trend)).'</div>';
+		$h .= '<div class="nf-stat-label"><i class="'.$icon.'"></i> '.nf_texte($label).'</div>';
+		$h .= '<div class="nf-stat-value" style="font-size:18px;font-family:\'JetBrains Mono\',monospace;letter-spacing:0;">'.nf_texte($value).'</div>';
+		if ($trend) $h .= '<div class="nf-stat-trend">'.nf_texte($trend).'</div>';
 		$h .= '</div>';
 		return $h;
 	}
@@ -1137,7 +1137,7 @@ class Admin extends Controller_Module
 		// Le lien mène à la version annoncée dans le journal (ancre « 1-2-14 », cf. l'ancre du wiki), et
 		// non au haut de la page, où se lisait la version d'avant tant que la nouvelle n'y était pas.
 		$numero     = preg_match('/^\d+(?:\.\d+)+$/', (string) $version->version) ? (string) $version->version : '';
-		$nouveautes = '<p class="mb-1">'.$this->lang('NeoFrag %s est disponible.', utf8_htmlentities((string) $version->version)).'</p>'
+		$nouveautes = '<p class="mb-1">'.$this->lang('NeoFrag %s est disponible.', nf_texte($version->version)).'</p>'
 			.'<p class="text-muted small mb-0">'.$this->lang('Une sauvegarde complète du site est faite avant de commencer ; en cas d’échec, le site revient à son état d’avant.')
 			.' <a href="'.\NF\NeoFrag\Installer::CHANGELOG_URL.($numero !== '' ? '#'.str_replace('.', '-', $numero) : '').'" target="_blank" rel="noopener">'.$this->lang('Ce qu’apporte cette version').'</a></p>';
 

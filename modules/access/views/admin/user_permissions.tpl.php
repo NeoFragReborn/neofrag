@@ -3,15 +3,15 @@
 ?>
 <div class="alert alert-info small d-flex justify-content-between align-items-center">
 	<div>
-		<?php echo icon('fas fa-info-circle').' '.$this->lang('Cette page liste les permissions <strong>effectives</strong> de %s — c\'est-à-dire ce qu\'il peut <em>réellement</em> faire en tenant compte de ses rôles directs, des rôles via ses groupes, de l\'inheritance, et du bypass admin si actif.', '<strong>'.htmlspecialchars($user['username']).'</strong>') ?>
+		<?php echo icon('fas fa-info-circle').' '.$this->lang('Cette page liste les permissions <strong>effectives</strong> de %s — c\'est-à-dire ce qu\'il peut <em>réellement</em> faire en tenant compte de ses rôles directs, des rôles via ses groupes, de l\'inheritance, et du bypass admin si actif.', '<strong>'.nf_texte($user['username']).'</strong>') ?>
 	</div>
 	<div>
 		<a class="btn btn-sm btn-warning ms-3" href="<?php echo url('admin/access/preview/user/'.(int)$user['id']) ?>"
-			data-confirm="<?php echo htmlspecialchars($this->lang('Activer le mode preview "voir comme %s" ? Tu verras le site avec ses permissions, son admin status, etc.', $user['username']), ENT_QUOTES) ?>"
-			data-confirm-title="<?php echo htmlspecialchars($this->lang('Voir comme cet utilisateur'), ENT_QUOTES) ?>"
+			data-confirm="<?php echo nf_texte($this->lang('Activer le mode preview "voir comme %s" ? Tu verras le site avec ses permissions, son admin status, etc.', $user['username'])) ?>"
+			data-confirm-title="<?php echo nf_texte($this->lang('Voir comme cet utilisateur')) ?>"
 			data-confirm-style="warning"
 			data-confirm-icon="fas fa-eye"
-			data-confirm-ok="<?php echo htmlspecialchars($this->lang('Activer'), ENT_QUOTES) ?>">
+			data-confirm-ok="<?php echo nf_texte($this->lang('Activer')) ?>">
 			<i class="fas fa-eye"></i> <?php echo $this->lang('Voir comme cet user') ?>
 		</a>
 	</div>
@@ -41,7 +41,7 @@
 			<?php foreach ($effective as $perm => $scopes): ?>
 				<?php foreach ($scopes as $scope_id => $info): ?>
 					<tr>
-						<td><code><?php echo htmlspecialchars($perm) ?></code></td>
+						<td><code><?php echo nf_texte($perm) ?></code></td>
 						<td class="text-center">
 							<?php if ($scope_id == 0): ?>
 								<small class="text-muted"><?php echo $this->lang('global') ?></small>
@@ -58,7 +58,7 @@
 								<span class="badge text-bg-secondary">default</span>
 							<?php endif ?>
 						</td>
-						<td><small><?php echo htmlspecialchars($info['source']) ?></small></td>
+						<td><small><?php echo nf_texte($info['source']) ?></small></td>
 					</tr>
 				<?php endforeach ?>
 			<?php endforeach ?>

@@ -132,7 +132,7 @@ class Admin extends Controller_Module
 			.'<option value="">'.$this->lang('Tous les types').'</option>';
 		foreach ($types as $type => $cfg)
 		{
-			$toolbar .= '<option value="'.$type.'"'.($filter === $type ? ' selected' : '').'>'.htmlspecialchars((string) $this->libelle($cfg)).'</option>';
+			$toolbar .= '<option value="'.$type.'"'.($filter === $type ? ' selected' : '').'>'.nf_texte($this->libelle($cfg)).'</option>';
 		}
 		$toolbar .= '</select></form>';
 
@@ -145,15 +145,15 @@ class Admin extends Controller_Module
 		foreach ($items as $it)
 		{
 			$rows .= '<tr>'
-				.'<td><input type="checkbox" name="selected[]" value="'.htmlspecialchars((string) ($it['type'].':'.(int)$it['id'])).'" class="nf-trash-cb"></td>'
-				.'<td><span class="badge text-bg-secondary">'.htmlspecialchars((string) ($it['label'])).'</span></td>'
-				.'<td>'.htmlspecialchars((string) (str_shortener(trim(strip_tags((string)$it['title'])), 80, '…'))).'</td>'
+				.'<td><input type="checkbox" name="selected[]" value="'.nf_texte($it['type'].':'.(int)$it['id']).'" class="nf-trash-cb"></td>'
+				.'<td><span class="badge text-bg-secondary">'.nf_texte($it['label']).'</span></td>'
+				.'<td>'.nf_texte(str_shortener(trim(strip_tags((string)$it['title'])), 80, '…')).'</td>'
 				.'<td><small>'.nf_date_heure($it['deleted_at']).'</small></td>'
-				.'<td><small>'.($it['deleted_by'] ? htmlspecialchars((string)$it['deleted_by']) : '—').'</small></td>'
+				.'<td><small>'.($it['deleted_by'] ? nf_texte($it['deleted_by']) : '—').'</small></td>'
 				.'</tr>';
 		}
 
-		$confirm_purge = htmlspecialchars((string) ($this->lang('Purger définitivement la sélection ? Action irréversible.')), ENT_QUOTES);
+		$confirm_purge = nf_texte($this->lang('Purger définitivement la sélection ? Action irréversible.'));
 
 		return $toolbar
 			.'<form method="post" action="'.url('admin/trash').'"><input type="hidden" name="_" value="'.$this->csrf_token().'">'

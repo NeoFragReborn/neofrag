@@ -7,7 +7,7 @@
 		<div class="nf-field row">
 			<label for="settings-discord-server" class="col-12 col-lg-4 col-form-label"><i class="fab fa-discord"></i> <?php echo $this->lang('ID du serveur') ?></label>
 			<div class="col-12 col-lg-7">
-				<input type="text" class="form-control" name="settings[server_id]" id="settings-discord-server" value="<?php echo htmlspecialchars($server_id) ?>" placeholder="ex: 81384788765712384" autocomplete="off" />
+				<input type="text" class="form-control" name="settings[server_id]" id="settings-discord-server" value="<?php echo nf_texte($server_id) ?>" placeholder="ex: 81384788765712384" autocomplete="off" />
 				<small class="form-text text-muted"><?php echo $this->lang('Snowflake ID numérique du serveur (clic-droit sur le nom du serveur dans Discord → "Copier l\'ID du serveur"). Mode dev requis.') ?></small>
 			</div>
 		</div>
@@ -23,7 +23,7 @@
 		<div class="nf-field row">
 			<label for="settings-discord-invite" class="col-12 col-lg-4 col-form-label"><i class="fas fa-link"></i> <?php echo $this->lang('Lien d\'invitation') ?></label>
 			<div class="col-12 col-lg-7">
-				<input type="text" class="form-control" name="settings[invite]" id="settings-discord-invite" value="<?php echo htmlspecialchars($invite) ?>" placeholder="https://discord.gg/abcdef" autocomplete="off" />
+				<input type="text" class="form-control" name="settings[invite]" id="settings-discord-invite" value="<?php echo nf_texte($invite) ?>" placeholder="https://discord.gg/abcdef" autocomplete="off" />
 				<small class="form-text text-muted"><?php echo $this->lang('Optionnel. Sinon le lien est récupéré automatiquement depuis Discord.') ?></small>
 			</div>
 		</div>

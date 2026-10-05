@@ -243,4 +243,8 @@ return [
 	'f4792dbe' => 'Este idioma aún no tiene el suyo: se muestra el texto común. Guárdelo aquí para traducirlo.',
 	'7be2269f' => 'Llega como texto a la mensajería: se conservan los títulos, las listas y los enlaces, pero no el formato.',
 	'c7ad5eb2' => 'Las normas, el título y el mensaje de bienvenida se traducen idioma por idioma. Un idioma sin texto propio muestra el texto común.',
+	'44c87c41' => 'Hacer que un nuevo miembro valide su dirección de correo antes de su primer inicio de sesión',
+	'e9fca0d8' => 'El miembro recibe un enlace, válido durante dos días; mientras no lo abra, no puede iniciar sesión, y un intento de inicio de sesión le envía uno nuevo. Un registro con Discord, GitHub o Google no lo necesita.',
+	'ad809125' => 'Validación de registros guardada',
+	'0c522b30' => 'Validación por correo',
 ];

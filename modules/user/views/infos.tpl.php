@@ -31,17 +31,17 @@ if ($nf_champs):
 <div class="row">
 <?php foreach ($nf_champs as $nf_champ): ?>
 	<div class="col-12 col-sm-4 mb-2">
-		<b><?php echo htmlspecialchars($nf_champ['label']) ?></b><br />
+		<b><?php echo nf_texte($nf_champ['label']) ?></b><br />
 		<?php
 		// Le type `url` est le seul rendu en lien, et seulement si l'adresse en est vraiment une :
 		// une valeur saisie librement ne devient pas cliquable sur la seule foi du type choisi.
 		if ($nf_champ['type'] === 'url' && filter_var($nf_champ['value'], FILTER_VALIDATE_URL)):
 		?>
-		<a href="<?php echo htmlspecialchars($nf_champ['value'], ENT_QUOTES) ?>" target="_blank" rel="noopener nofollow"><?php echo htmlspecialchars($nf_champ['value']) ?></a>
+		<a href="<?php echo nf_texte($nf_champ['value']) ?>" target="_blank" rel="noopener nofollow"><?php echo nf_texte($nf_champ['value']) ?></a>
 		<?php elseif ($nf_champ['type'] === 'checkbox'): ?>
 		<i class="fas fa-check text-success"></i>
 		<?php else: ?>
-		<?php echo nl2br(htmlspecialchars($nf_champ['value'])) ?>
+		<?php echo nl2br(nf_texte($nf_champ['value'])) ?>
 		<?php endif ?>
 	</div>
 <?php endforeach ?>

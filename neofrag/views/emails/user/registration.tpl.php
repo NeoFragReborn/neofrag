@@ -3,7 +3,7 @@
  * Email de validation d'inscription. Reçoit $user en data.
  */
 ?>
-<p><?php echo $this->lang('Hello') ?> <?php echo htmlspecialchars($user->username) ?>,</p>
+<p><?php echo $this->lang('Hello') ?> <?php echo nf_texte($user->username) ?>,</p>
 
 <p><?php echo $this->lang('To validate your registration on our site, please click the button below:') ?></p>
 

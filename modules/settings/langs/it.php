@@ -243,4 +243,8 @@ return [
 	'f4792dbe' => 'Questa lingua non ha ancora il suo: viene mostrato il testo comune. Salvalo qui per tradurlo.',
 	'7be2269f' => 'Arriva come testo nella messaggistica: titoli, elenchi e link vengono mantenuti, la formattazione no.',
 	'c7ad5eb2' => 'Il regolamento, il titolo e il messaggio di benvenuto si traducono lingua per lingua. Una lingua senza testo proprio mostra il testo comune.',
+	'44c87c41' => 'Far convalidare l\'indirizzo e-mail a un nuovo membro prima del suo primo accesso',
+	'e9fca0d8' => 'Il membro riceve un link, valido due giorni; finché non lo apre non può accedere, e un tentativo di accesso gliene invia uno nuovo. Un\'iscrizione con Discord, GitHub o Google non ne ha bisogno.',
+	'ad809125' => 'Convalida delle iscrizioni salvata',
+	'0c522b30' => 'Convalida via e-mail',
 ];

@@ -40,7 +40,7 @@ class Admin extends Controller_Module
 
 				$recruits_body .= '<div class="nf-content-card">';
 				$recruits_body .= '<div class="nf-content-card-head">';
-				$recruits_body .= '<div class="nf-content-card-title"><a href="'.url('recruits/'.$r['recruit_id'].'/'.$slug).'">'.htmlspecialchars((string) ($r['title'])).'</a></div>';
+				$recruits_body .= '<div class="nf-content-card-title"><a href="'.url('recruits/'.$r['recruit_id'].'/'.$slug).'">'.nf_texte($r['title']).'</a></div>';
 				$recruits_body .= '<span class="nf-content-card-status '.$status_class.'"><i class="fas '.($is_closed ? 'fa-lock' : 'fa-check').'"></i> '.$status_text.'</span>';
 				$recruits_body .= '</div>';
 				$recruits_body .= '<div class="nf-content-card-meta">';
@@ -53,7 +53,7 @@ class Admin extends Controller_Module
 				$recruits_body .= '<span class="nf-content-card-spacer"></span>';
 				if ($this->access->effective_admin()) $recruits_body .= (string)$this->button_access($r['recruit_id'], 'recruit');
 				if ($this->is_authorized('modify_recruit')) $recruits_body .= '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/recruits/'.$r['recruit_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
-				if ($this->is_authorized('delete_recruit')) $recruits_body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/recruits/delete/'.$r['recruit_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				if ($this->is_authorized('delete_recruit')) $recruits_body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/recruits/delete/'.$r['recruit_id'].'/'.$slug).'" data-confirm="'.nf_texte($this->lang('Supprimer ?')).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$recruits_body .= '</div>';
 				$recruits_body .= '</div>';
 			}
@@ -644,7 +644,7 @@ class Admin extends Controller_Module
 						->color($statut_color)
 						->footer(icon('fas fa-arrow-circle-left').' '.$this->lang('Retour aux candidatures de cette offre')),
 				$this	->panel()
-						->heading($this->lang('Candidature de %s', '<b>'.htmlspecialchars((string) ($pseudo)).'</b>').' <a href="mailto:'.$email.'" class="btn btn-outline-secondary btn-sm ms-2" data-bs-toggle="tooltip" title="'.$this->lang('Contacter par e-mail').'">'.icon('far fa-envelope').'</a>', 'fab fa-black-tie')
+						->heading($this->lang('Candidature de %s', '<b>'.nf_texte($pseudo).'</b>').' <a href="mailto:'.$email.'" class="btn btn-outline-secondary btn-sm ms-2" data-bs-toggle="tooltip" title="'.$this->lang('Contacter par e-mail').'">'.icon('far fa-envelope').'</a>', 'fab fa-black-tie')
 						->body($this->view('candidacy', [
 							'candidacy_id'  => $candidacy_id,
 							'custom'        => $this->model()->get_candidacy_custom($candidacy_id),
@@ -796,8 +796,8 @@ class Admin extends Controller_Module
 				$meta .= $f['required'] ? ', '.$this->lang('obligatoire') : '';
 
 				$list .= '<li class="list-group-item d-flex justify-content-between align-items-center">'
-						.'<span>'.htmlspecialchars((string) ($f['label'])).' <small class="text-muted">('.$meta.')</small></span>'
-						.'<a href="'.url('admin/recruits/fields/delete/'.$f['field_id'].'/'.url_title($title)).'" class="btn btn-sm btn-outline-danger" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce champ ?'))).'">'.icon('far fa-trash-alt').'</a>'
+						.'<span>'.nf_texte($f['label']).' <small class="text-muted">('.$meta.')</small></span>'
+						.'<a href="'.url('admin/recruits/fields/delete/'.$f['field_id'].'/'.url_title($title)).'" class="btn btn-sm btn-outline-danger" data-confirm="'.nf_texte($this->lang('Supprimer ce champ ?')).'">'.icon('far fa-trash-alt').'</a>'
 						.'</li>';
 			}
 
@@ -805,7 +805,7 @@ class Admin extends Controller_Module
 		}
 
 		return $this->panel()
-					->heading($this->lang('Personnaliser le formulaire').' — '.htmlspecialchars((string) ($title)), 'fas fa-sliders-h')
+					->heading($this->lang('Personnaliser le formulaire').' — '.nf_texte($title), 'fas fa-sliders-h')
 					->body($list.'<hr />'.$this->form()->display())
 					->size('col-12');
 	}

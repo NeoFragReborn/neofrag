@@ -17,16 +17,16 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 	<div class="card-body">
 		<dl class="row">
 			<dt class="col-sm-3"><?php echo $this->lang('Type') ?></dt>
-			<dd class="col-sm-9"><span class="badge text-bg-danger"><?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $sanction['type'])) ?></span></dd>
+			<dd class="col-sm-9"><span class="badge text-bg-danger"><?php echo nf_texte($this->module('moderation')->libelle('sanction', $sanction['type'])) ?></span></dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('Scope') ?></dt>
-			<dd class="col-sm-9"><?php echo htmlspecialchars($sanction['scope']) ?></dd>
+			<dd class="col-sm-9"><?php echo nf_texte($sanction['scope']) ?></dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('User sanctionné') ?></dt>
-			<dd class="col-sm-9"><a href="<?php echo url($_modbase.'/users/'.(int)$sanction['user_id']) ?>">@<?php echo htmlspecialchars((string)$sanction['user_username']) ?></a></dd>
+			<dd class="col-sm-9"><a href="<?php echo url($_modbase.'/users/'.(int)$sanction['user_id']) ?>">@<?php echo nf_texte($sanction['user_username']) ?></a></dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('Émise par') ?></dt>
-			<dd class="col-sm-9">@<?php echo htmlspecialchars((string)$sanction['issuer_username']) ?> <small class="text-muted">(<?php echo nf_date_heure($sanction['created_at']) ?>)</small></dd>
+			<dd class="col-sm-9">@<?php echo nf_texte($sanction['issuer_username']) ?> <small class="text-muted">(<?php echo nf_date_heure($sanction['created_at']) ?>)</small></dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('Démarre le') ?></dt>
 			<dd class="col-sm-9"><?php echo nf_date_heure($sanction['starts_at']) ?></dd>
@@ -44,13 +44,13 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 			</dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('Raison') ?></dt>
-			<dd class="col-sm-9"><blockquote class="m-0"><?php echo nl2br(htmlspecialchars($sanction['reason'])) ?></blockquote></dd>
+			<dd class="col-sm-9"><blockquote class="m-0"><?php echo nl2br(nf_texte($sanction['reason'])) ?></blockquote></dd>
 
 			<?php if ($sanction['requires_approval']): ?>
 			<dt class="col-sm-3"><?php echo $this->lang('Validation hiérarchique') ?></dt>
 			<dd class="col-sm-9">
 				<?php if (!empty($sanction['approved_at'])): ?>
-					<span class="badge text-bg-success"><i class="fas fa-check"></i> <?php echo $this->lang('Approuvée par @%s le %s', htmlspecialchars((string)$sanction['approver_username']), nf_date_heure($sanction['approved_at'])) ?></span>
+					<span class="badge text-bg-success"><i class="fas fa-check"></i> <?php echo $this->lang('Approuvée par @%s le %s', nf_texte($sanction['approver_username']), nf_date_heure($sanction['approved_at'])) ?></span>
 				<?php else: ?>
 					<span class="badge text-bg-warning"><?php echo $this->lang('En attente d\'approbation') ?></span>
 				<?php endif ?>
@@ -60,8 +60,8 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 			<?php if ($is_revoked): ?>
 			<dt class="col-sm-3"><?php echo $this->lang('Levée') ?></dt>
 			<dd class="col-sm-9">
-				<small class="text-muted"><?php echo $this->lang('Par @%s le %s', htmlspecialchars((string)$sanction['revoker_username']), nf_date_heure($sanction['revoked_at'])) ?></small><br>
-				<strong><?php echo $this->lang('Raison de la levée :') ?></strong> <?php echo htmlspecialchars($sanction['revoke_reason']) ?>
+				<small class="text-muted"><?php echo $this->lang('Par @%s le %s', nf_texte($sanction['revoker_username']), nf_date_heure($sanction['revoked_at'])) ?></small><br>
+				<strong><?php echo $this->lang('Raison de la levée :') ?></strong> <?php echo nf_texte($sanction['revoke_reason']) ?>
 			</dd>
 			<?php endif ?>
 
@@ -76,12 +76,12 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 		<div class="text-end">
 			<?php if ($is_pending && $can_approve): ?>
 			<form method="post" action="<?php echo url($_modbase.'/sanctions/'.(int)$sanction['id'].'/approve') ?>" style="display:inline;"
-				data-confirm="<?php echo htmlspecialchars($this->lang('Approuver cette sanction ? Elle deviendra immédiatement active.'), ENT_QUOTES) ?>"
-				data-confirm-title="<?php echo htmlspecialchars($this->lang('Approuver la sanction'), ENT_QUOTES) ?>"
+				data-confirm="<?php echo nf_texte($this->lang('Approuver cette sanction ? Elle deviendra immédiatement active.')) ?>"
+				data-confirm-title="<?php echo nf_texte($this->lang('Approuver la sanction')) ?>"
 				data-confirm-style="success"
 				data-confirm-icon="fas fa-check-double"
-				data-confirm-ok="<?php echo htmlspecialchars($this->lang('Approuver'), ENT_QUOTES) ?>"
-				data-confirm-cancel="<?php echo htmlspecialchars($this->lang('Annuler'), ENT_QUOTES) ?>">
+				data-confirm-ok="<?php echo nf_texte($this->lang('Approuver')) ?>"
+				data-confirm-cancel="<?php echo nf_texte($this->lang('Annuler')) ?>">
 				<input type="hidden" name="_" value="<?php echo $csrf ?>"><button type="submit" class="btn btn-success"><i class="fas fa-check-double"></i> <?php echo $this->lang('Approuver') ?></button>
 			</form>
 			<?php endif ?>
@@ -110,7 +110,7 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 				<div class="modal-body">
 					<div class="alert alert-info mb-3">
 						<i class="fas fa-info-circle"></i>
-						<?php echo $this->lang('Tu vas lever la sanction <strong>%s</strong> appliquée à <strong>@%s</strong>. Cette action est tracée dans l\'audit log.', htmlspecialchars($this->module('moderation')->libelle('sanction', $sanction['type'])), htmlspecialchars((string)$sanction['user_username'])) ?>
+						<?php echo $this->lang('Tu vas lever la sanction <strong>%s</strong> appliquée à <strong>@%s</strong>. Cette action est tracée dans l\'audit log.', nf_texte($this->module('moderation')->libelle('sanction', $sanction['type'])), nf_texte($sanction['user_username'])) ?>
 					</div>
 					<div class="nf-field">
 						<label for="nf-revoke-reason" class="fw-bold">

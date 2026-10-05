@@ -57,13 +57,13 @@
 							<div class="d-flex justify-content-between align-items-start">
 								<div class="flex-grow-1">
 									<a href="<?php echo $href ?>" class="fw-bold">
-										<?php echo \icon($icon).' '.htmlspecialchars($c['name']) ?>
+										<?php echo \icon($icon).' '.nf_texte($c['name']) ?>
 									</a>
 									<?php if ((int)$c['unread_count'] > 0): ?>
 										<span class="badge text-bg-danger ms-1"><?php echo (int)$c['unread_count'] ?></span>
 									<?php endif ?>
 									<?php if (!empty($c['description'])): ?>
-										<div class="small text-muted"><?php echo htmlspecialchars(mb_substr($c['description'], 0, 100)) ?></div>
+										<div class="small text-muted"><?php echo nf_texte($c['description'], 100) ?></div>
 									<?php endif ?>
 									<div class="small text-muted">
 										<?php echo $this->lang('%d participant|%d participants', (int)$c['participants_count'], (int)$c['participants_count']) ?>
@@ -96,9 +96,9 @@
 						<?php $href = url('talks/'.(int)$p['talk_id'].'/'.\url_title($p['name'])); ?>
 						<li class="list-group-item d-flex justify-content-between align-items-center">
 							<div>
-								<a href="<?php echo $href ?>"><?php echo \icon('fas fa-hashtag').' '.htmlspecialchars($p['name']) ?></a>
+								<a href="<?php echo $href ?>"><?php echo \icon('fas fa-hashtag').' '.nf_texte($p['name']) ?></a>
 								<?php if (!empty($p['description'])): ?>
-									<div class="small text-muted"><?php echo htmlspecialchars(mb_substr($p['description'], 0, 80)) ?></div>
+									<div class="small text-muted"><?php echo nf_texte($p['description'], 80) ?></div>
 								<?php endif ?>
 								<small class="text-muted">
 									<?php echo (int)$p['participants_count'].' '.$this->lang('membres') ?>

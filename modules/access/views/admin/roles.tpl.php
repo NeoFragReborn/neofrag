@@ -24,17 +24,17 @@ $jeton = $jeton ?? '';
 				<tr>
 					<td>
 						<span class="badge <?php echo badge_class($r['color']) ?>">
-							<i class="<?php echo htmlspecialchars($r['icon']) ?>"></i>
-							<?php echo htmlspecialchars((string) $this->lang($r['title'])) ?>
+							<i class="<?php echo nf_texte($r['icon']) ?>"></i>
+							<?php echo nf_texte($this->lang($r['title'])) ?>
 						</span>
-						<small class="text-muted ms-2"><code><?php echo htmlspecialchars($r['name']) ?></code></small>
+						<small class="text-muted ms-2"><code><?php echo nf_texte($r['name']) ?></code></small>
 						<?php if (!empty($r['description'])): ?>
-							<div class="small text-muted mt-1"><?php echo htmlspecialchars((string) $this->lang($r['description'])) ?></div>
+							<div class="small text-muted mt-1"><?php echo nf_texte($this->lang($r['description'])) ?></div>
 						<?php endif ?>
 					</td>
 					<td>
 						<?php if ($r['parent_title']): ?>
-							<small><?php echo icon('fas fa-arrow-down').' '.htmlspecialchars((string) $this->lang($r['parent_title'])) ?></small>
+							<small><?php echo icon('fas fa-arrow-down').' '.nf_texte($this->lang($r['parent_title'])) ?></small>
 						<?php else: ?>
 							<small class="text-muted">—</small>
 						<?php endif ?>
@@ -62,19 +62,19 @@ $jeton = $jeton ?? '';
 					<td class="text-end">
 						<?php if ($r['name'] !== 'super_admin'): ?>
 							<a class="btn btn-sm btn-outline-warning" href="<?php echo url('admin/access/preview/role/'.(int)$r['role_id']) ?>"
-								data-confirm="<?php echo htmlspecialchars($this->lang('Activer le mode preview "voir comme %s" ? Tu verras le site avec les permissions de ce rôle (et non plus avec ton accès super-admin) jusqu\'à ce que tu cliques "Quitter".', $this->lang($r['title'])), ENT_QUOTES) ?>"
-								data-confirm-title="<?php echo htmlspecialchars($this->lang('Voir comme ce rôle'), ENT_QUOTES) ?>"
+								data-confirm="<?php echo nf_texte($this->lang('Activer le mode preview "voir comme %s" ? Tu verras le site avec les permissions de ce rôle (et non plus avec ton accès super-admin) jusqu\'à ce que tu cliques "Quitter".', $this->lang($r['title']))) ?>"
+								data-confirm-title="<?php echo nf_texte($this->lang('Voir comme ce rôle')) ?>"
 								data-confirm-style="warning"
 								data-confirm-icon="fas fa-eye"
-								data-confirm-ok="<?php echo htmlspecialchars($this->lang('Activer'), ENT_QUOTES) ?>"
+								data-confirm-ok="<?php echo nf_texte($this->lang('Activer')) ?>"
 								data-bs-toggle="tooltip" title="<?php echo $this->lang('Voir le site comme ce rôle') ?>"><i class="fas fa-eye"></i></a>
 						<?php endif ?>
 						<a class="btn btn-sm btn-outline-secondary" href="<?php echo url('admin/access/roles/edit/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Éditer') ?>"><i class="fas fa-pen"></i></a>
 						<a class="btn btn-sm btn-outline-secondary" href="<?php echo url('admin/access/roles/clone/'.(int)$r['role_id'].'/'.url_title($r['title'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Cloner') ?>"><i class="fas fa-copy"></i></a>
 						<?php if (!$r['built_in']): ?>
 							<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/access/roles/delete/'.(int)$r['role_id'].'/'.url_title($r['title'])).'?_='.$jeton ?>"
-								data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer le rôle "%s" ? Tous ses %d utilisateurs perdront ces permissions.', $this->lang($r['title']), (int)$r['user_count']), ENT_QUOTES) ?>"
-								data-confirm-title="<?php echo htmlspecialchars($this->lang('Supprimer le rôle'), ENT_QUOTES) ?>"
+								data-confirm="<?php echo nf_texte($this->lang('Supprimer le rôle "%s" ? Tous ses %d utilisateurs perdront ces permissions.', $this->lang($r['title']), (int)$r['user_count'])) ?>"
+								data-confirm-title="<?php echo nf_texte($this->lang('Supprimer le rôle')) ?>"
 								data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>"><i class="far fa-trash-alt"></i></a>
 						<?php else: ?>
 							<button class="btn btn-sm btn-outline-danger" disabled data-bs-toggle="tooltip" title="<?php echo $this->lang('Built-in non supprimable') ?>"><i class="far fa-trash-alt"></i></button>

@@ -13,7 +13,7 @@
 					<select class="form-select" id="forum-prefixe" name="<?php echo $form_id ?>[prefix]">
 						<option value=""><?php echo $this->lang('Aucun') ?></option>
 						<?php foreach ($prefixes as $p): ?>
-						<option value="<?php echo (int) $p['prefix_id'] ?>"<?php echo $choisi === (int) $p['prefix_id'] ? ' selected="selected"' : '' ?>><?php echo htmlspecialchars($p['title']) ?></option>
+						<option value="<?php echo (int) $p['prefix_id'] ?>"<?php echo $choisi === (int) $p['prefix_id'] ? ' selected="selected"' : '' ?>><?php echo nf_texte($p['title']) ?></option>
 						<?php endforeach ?>
 					</select>
 				</td>
@@ -38,7 +38,7 @@
 						?>
 						<small class="form-text text-muted">
 							<?php // Une espace après chaque virgule : écrite d'un bloc, la liste formait un seul mot de 400 px que le navigateur ne pouvait pas couper, et le formulaire débordait d'un téléphone (2026-09-23). ?>
-							<?php echo $this->lang('Types autorisés : %s', htmlspecialchars(implode(', ', array_map('trim', explode(',', $mimes_setting))))) ?>
+							<?php echo $this->lang('Types autorisés : %s', nf_texte(implode(', ', array_map('trim', explode(',', $mimes_setting))))) ?>
 							·
 							<?php echo $this->lang('Taille max : %s', human_size($size_kb * 1024)) ?>
 						</small>

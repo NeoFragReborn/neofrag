@@ -34,7 +34,7 @@ $couleurs  = ['fatale' => 'danger', 'erreur' => 'danger', 'avertissement' => 'wa
 	</div>
 	<div class="flex-grow-1" style="min-width:12rem">
 		<label class="form-label small mb-1" for="journal-recherche"><?php echo $this->lang('Rechercher (texte ou référence)') ?></label>
-		<input class="form-control form-control-sm" type="search" id="journal-recherche" name="q" value="<?php echo htmlspecialchars($recherche) ?>" maxlength="100">
+		<input class="form-control form-control-sm" type="search" id="journal-recherche" name="q" value="<?php echo nf_texte($recherche) ?>" maxlength="100">
 	</div>
 	<button class="btn btn-primary btn-sm" type="submit"><?php echo icon('fas fa-filter').' '.$this->lang('Filtrer') ?></button>
 </form>
@@ -47,13 +47,13 @@ $couleurs  = ['fatale' => 'danger', 'erreur' => 'danger', 'avertissement' => 'wa
 	<details class="list-group-item">
 		<summary class="d-flex flex-wrap gap-2 align-items-start" style="cursor:pointer;list-style:none">
 			<span class="badge text-bg-<?php echo $couleurs[$g['gravite']] ?? 'secondary' ?>"><?php echo $etiquettes[$g['gravite']] ?? '' ?></span>
-			<span class="flex-grow-1 small" style="min-width:0;overflow-wrap:anywhere"><?php echo htmlspecialchars($g['message']) ?></span>
+			<span class="flex-grow-1 small" style="min-width:0;overflow-wrap:anywhere"><?php echo nf_texte($g['message']) ?></span>
 			<span class="small text-body-secondary text-nowrap"><?php echo $this->lang('%d×', $g['nombre']) ?> · <?php echo $g['dernier'] ?></span>
 		</summary>
 		<?php if ($g['references']): ?>
 		<p class="small mt-2 mb-1"><?php echo $this->lang('Références') ?> : <?php foreach ($g['references'] as $r): ?><code class="me-1"><?php echo $r ?></code><?php endforeach ?></p>
 		<?php endif ?>
-		<pre class="small bg-body-tertiary border rounded p-2 mt-2 mb-1" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:24rem;overflow:auto"><?php echo htmlspecialchars($g['exemple']) ?></pre>
+		<pre class="small bg-body-tertiary border rounded p-2 mt-2 mb-1" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:24rem;overflow:auto"><?php echo htmlspecialchars($g['exemple']) /* codage: la ligne du journal, telle quelle */ ?></pre>
 	</details>
 	<?php endforeach ?>
 </div>

@@ -68,7 +68,7 @@
 				<div class="card p-2 col-12 col-lg-3 text-center">
 					<span class="badge text-bg-dark"><?php echo $this->lang('Manche %d', $i + 1) ?></span>
 					<h4 class="my-2"><?php echo $rounds[$i]['score1'] ?>:<?php echo $rounds[$i]['score2'] ?></h4>
-					<a href="#"><?php echo $this->label($rounds[$i]['title'], 'far fa-map')->popover_if($rounds[$i]['image_id'], function($id){ return utf8_htmlentities('<img src="'.NeoFrag()->model2('file', $id)->path().'" class="img-fluid" alt="" />'); })?></a>
+					<a href="#"><?php echo $this->label($rounds[$i]['title'], 'far fa-map')->popover_if($rounds[$i]['image_id'], function($id){ return utf8_htmlentities('<img src="'.NeoFrag()->model2('file', $id)->path().'" class="img-fluid" alt="" />') /* codage: du HTML posé dans un attribut — le décoder réveillerait les balises qu’il cite */; })?></a>
 				</div>
 				<div class="card text-center justify-content-center">
 					<h6 class="m-0"><?php echo $this->model('matches')->display_scores([$rounds[$i]['score1'], $rounds[$i]['score2']], $color, TRUE).' '.($match['opponent']['title'] ?? '') ?></h6>

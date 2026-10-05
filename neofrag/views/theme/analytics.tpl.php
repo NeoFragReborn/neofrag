@@ -30,5 +30,5 @@ if (($_COOKIE['nf_consent'] ?? '') === 'full'):
 	gtag('config', <?php echo json_encode($id) ?>);
 </script>
 <?php else: ?>
-<script src="<?php echo path('analytics-consent.js', 'js') ?>?v=<?php echo asset_version('analytics-consent.js', 'js') ?: (int) $this->config->nf_version_css ?>" data-analytics-id="<?php echo htmlspecialchars($id, ENT_QUOTES) ?>"></script>
+<script src="<?php echo path('analytics-consent.js', 'js') ?>?v=<?php echo asset_version('analytics-consent.js', 'js') ?: (int) $this->config->nf_version_css ?>" data-analytics-id="<?php echo nf_texte($id) ?>"></script>
 <?php endif;

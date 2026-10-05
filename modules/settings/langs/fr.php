@@ -241,4 +241,8 @@ return [
 	'f4792dbe' => 'Cette langue n\'a pas encore le sien : c\'est le texte commun qui s\'affiche. Enregistrez-le ici pour le traduire.',
 	'7be2269f' => 'Il arrive en texte dans la messagerie : titres, listes et liens sont gardés, la mise en forme non.',
 	'c7ad5eb2' => 'Le règlement, le titre et le message de bienvenue se traduisent langue par langue. Une langue sans texte propre montre le texte commun.',
+	'44c87c41' => 'Faire valider l\'adresse e-mail d\'un nouveau membre avant sa première connexion',
+	'e9fca0d8' => 'Le membre reçoit un lien, valable deux jours ; tant qu\'il ne l\'a pas ouvert, il ne peut pas se connecter, et une tentative de connexion lui en renvoie un. Une inscription par Discord, GitHub ou Google n\'en a pas besoin.',
+	'ad809125' => 'Validation des inscriptions sauvegardée',
+	'0c522b30' => 'Validation par e-mail',
 ];

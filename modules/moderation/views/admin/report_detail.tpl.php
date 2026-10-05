@@ -15,11 +15,11 @@ $status_class = [
 		<!-- En-tête report -->
 		<div class="card mb-3">
 			<div class="nf-card-header">
-				<span><i class="fas fa-flag"></i> <?php echo $this->lang('Signalement #%d', (int)$report['id']) ?> <span class="badge <?php echo badge_class($status_class) ?>"><?php echo htmlspecialchars($this->module('moderation')->libelle('statut', $report['status'])) ?></span></span>
+				<span><i class="fas fa-flag"></i> <?php echo $this->lang('Signalement #%d', (int)$report['id']) ?> <span class="badge <?php echo badge_class($status_class) ?>"><?php echo nf_texte($this->module('moderation')->libelle('statut', $report['status'])) ?></span></span>
 				<?php if (!empty($report['url'])): ?>
-				<a class="btn btn-sm btn-outline-secondary" href="<?php echo htmlspecialchars(nf_url_sure((string) $report['url']) ? (string) $report['url'] : '#') ?>" target="_blank"><i class="fas fa-external-link-alt"></i> <?php echo $this->lang('Voir le contenu en contexte') ?></a>
+				<a class="btn btn-sm btn-outline-secondary" href="<?php echo nf_texte(nf_url_sure((string) $report['url']) ? (string) $report['url'] : '#') ?>" target="_blank"><i class="fas fa-external-link-alt"></i> <?php echo $this->lang('Voir le contenu en contexte') ?></a>
 				<?php else: ?>
-				<span class="badge text-bg-light" title="<?php echo htmlspecialchars($this->lang('Aucune URL de contexte fournie. Voir le commentaire du reporter pour situer le contenu.')) ?>"><i class="fas fa-unlink"></i> <?php echo $this->lang('Pas de contexte URL') ?></span>
+				<span class="badge text-bg-light" title="<?php echo nf_texte($this->lang('Aucune URL de contexte fournie. Voir le commentaire du reporter pour situer le contenu.')) ?>"><i class="fas fa-unlink"></i> <?php echo $this->lang('Pas de contexte URL') ?></span>
 				<?php endif ?>
 			</div>
 			<div class="card-body">
@@ -28,19 +28,19 @@ $status_class = [
 					<dd class="col-sm-9"><?php echo nf_date_heure($report['created_at']) ?> <small class="text-muted">(<?php echo time_span(strtotime($report['created_at'])) ?>)</small></dd>
 
 					<dt class="col-sm-3"><?php echo $this->lang('Type cible') ?></dt>
-					<dd class="col-sm-9"><span class="badge text-bg-light"><?php echo htmlspecialchars($this->module('moderation')->libelle('cible', $report['target_type'])) ?></span> <code><?php echo htmlspecialchars($report['target_id']) ?></code></dd>
+					<dd class="col-sm-9"><span class="badge text-bg-light"><?php echo nf_texte($this->module('moderation')->libelle('cible', $report['target_type'])) ?></span> <code><?php echo nf_texte($report['target_id']) ?></code></dd>
 
 					<dt class="col-sm-3"><?php echo $this->lang('Raison') ?></dt>
-					<dd class="col-sm-9"><span class="badge text-bg-secondary"><?php echo htmlspecialchars($this->module('moderation')->libelle('raison', $report['reason'])) ?></span></dd>
+					<dd class="col-sm-9"><span class="badge text-bg-secondary"><?php echo nf_texte($this->module('moderation')->libelle('raison', $report['reason'])) ?></span></dd>
 
 					<?php if (!empty($report['comment'])): ?>
 					<dt class="col-sm-3"><?php echo $this->lang('Commentaire reporter') ?></dt>
-					<dd class="col-sm-9"><blockquote class="m-0"><?php echo nl2br(htmlspecialchars($report['comment'])) ?></blockquote></dd>
+					<dd class="col-sm-9"><blockquote class="m-0"><?php echo nl2br(nf_texte($report['comment'])) ?></blockquote></dd>
 					<?php endif ?>
 
 					<?php if (!empty($report['url'])): ?>
 					<dt class="col-sm-3"><?php echo $this->lang('URL') ?></dt>
-					<dd class="col-sm-9"><a href="<?php echo htmlspecialchars(nf_url_sure((string) $report['url']) ? (string) $report['url'] : '#') ?>" target="_blank"><?php echo htmlspecialchars($report['url']) ?></a></dd>
+					<dd class="col-sm-9"><a href="<?php echo nf_texte(nf_url_sure((string) $report['url']) ? (string) $report['url'] : '#') ?>" target="_blank"><?php echo nf_texte($report['url']) ?></a></dd>
 					<?php endif ?>
 				</dl>
 			</div>
@@ -91,10 +91,10 @@ $status_class = [
 				<tbody>
 				<?php foreach ($snapshot_attachments as $a): ?>
 					<tr>
-						<td><i class="fas fa-file"></i> <?php echo htmlspecialchars($a['original_name']) ?></td>
-						<td><small class="text-muted"><code><?php echo htmlspecialchars($a['mime_type']) ?></code></small></td>
+						<td><i class="fas fa-file"></i> <?php echo nf_texte($a['original_name']) ?></td>
+						<td><small class="text-muted"><code><?php echo nf_texte($a['mime_type']) ?></code></small></td>
 						<td class="text-end"><small><?php echo round((int)$a['file_size'] / 1024, 1) ?> KB</small></td>
-						<td><small class="text-muted" title="<?php echo htmlspecialchars($a['sha256_hash']) ?>"><code><?php echo htmlspecialchars(substr((string)$a['sha256_hash'], 0, 12)) ?>…</code></small></td>
+						<td><small class="text-muted" title="<?php echo nf_texte($a['sha256_hash']) ?>"><code><?php echo nf_texte(substr((string)$a['sha256_hash'], 0, 12)) ?>…</code></small></td>
 						<td class="text-end">
 							<a class="btn btn-sm btn-outline-primary" href="<?php echo url($_modbase.'/snapshot/download/'.(int)$a['id']) ?>" download>
 								<i class="fas fa-download"></i> <?php echo $this->lang('Télécharger') ?>
@@ -132,7 +132,7 @@ $status_class = [
 									'shadow_ban'        => $this->lang('Shadow ban (silencieux, sans notif)')
 								];
 								foreach ($types as $val => $label): ?>
-								<option value="<?php echo $val ?>"><?php echo htmlspecialchars($label) ?></option>
+								<option value="<?php echo $val ?>"><?php echo nf_texte($label) ?></option>
 								<?php endforeach ?>
 							</select>
 						</div>
@@ -212,12 +212,12 @@ $status_class = [
 		</div>
 		<?php else: ?>
 		<div class="alert alert-info">
-			<?php echo $this->lang('Ce signalement a déjà été traité (statut : <strong>%s</strong>).', htmlspecialchars($this->module('moderation')->libelle('statut', $report['status']))) ?>
+			<?php echo $this->lang('Ce signalement a déjà été traité (statut : <strong>%s</strong>).', nf_texte($this->module('moderation')->libelle('statut', $report['status']))) ?>
 			<?php if ($report['handled_by']): ?>
 				<br><small><?php echo $this->lang('Traité le %s', nf_date_heure($report['handled_at'])) ?></small>
 			<?php endif ?>
 			<?php if (!empty($report['handled_note'])): ?>
-				<br><strong><?php echo $this->lang('Note :') ?></strong> <?php echo htmlspecialchars($report['handled_note']) ?>
+				<br><strong><?php echo $this->lang('Note :') ?></strong> <?php echo nf_texte($report['handled_note']) ?>
 			<?php endif ?>
 		</div>
 		<?php endif ?>
@@ -232,7 +232,7 @@ $status_class = [
 			<div class="nf-card-header"><span><i class="fas fa-user-shield"></i> <?php echo $this->lang('Reporter') ?></span></div>
 			<div class="card-body">
 				<?php if ($show_reporter): ?>
-					<strong><a href="<?php echo url($_modbase.'/users/'.(int)$report['reporter_id']) ?>">@<?php echo htmlspecialchars((string)$report['reporter_username']) ?></a></strong>
+					<strong><a href="<?php echo url($_modbase.'/users/'.(int)$report['reporter_id']) ?>">@<?php echo nf_texte($report['reporter_username']) ?></a></strong>
 				<?php else: ?>
 					<small class="text-muted"><i class="fas fa-user-secret"></i> <?php echo $this->lang('Identité masquée selon vos permissions') ?></small>
 				<?php endif ?>
@@ -253,7 +253,7 @@ $status_class = [
 		<?php else: ?>
 		<div class="card mb-3">
 			<div class="nf-card-header"><span><i class="fas fa-user-secret"></i> <?php echo $this->lang('Reporter anonyme') ?></span></div>
-			<div class="card-body"><small class="text-muted"><?php echo $this->lang('IP : %s', htmlspecialchars($report['reporter_ip'])) ?></small></div>
+			<div class="card-body"><small class="text-muted"><?php echo $this->lang('IP : %s', nf_texte($report['reporter_ip'])) ?></small></div>
 		</div>
 		<?php endif ?>
 
@@ -265,7 +265,7 @@ $status_class = [
 				<a class="btn btn-sm btn-outline-primary" href="<?php echo url($_modbase.'/users/'.(int)$report['target_user_id']) ?>"><?php echo $this->lang('Historique complet') ?> →</a>
 			</div>
 			<div class="card-body">
-				<strong><a href="<?php echo url($_modbase.'/users/'.(int)$report['target_user_id']) ?>">@<?php echo htmlspecialchars((string)$report['target_username']) ?></a></strong>
+				<strong><a href="<?php echo url($_modbase.'/users/'.(int)$report['target_user_id']) ?>">@<?php echo nf_texte($report['target_username']) ?></a></strong>
 				<hr class="my-2" />
 				<small class="d-block text-muted mb-1"><?php echo $this->lang('Signalements reçus (20 derniers)') ?></small>
 				<span class="badge text-bg-warning"><?php echo count($target_history['reports_received']) ?></span>
@@ -274,7 +274,7 @@ $status_class = [
 				<small class="d-block text-muted mb-1"><?php echo $this->lang('Sanctions actives') ?></small>
 				<?php foreach ($target_history['active_sanctions'] as $s): ?>
 				<div class="badge text-bg-danger d-block mb-1 text-start p-2">
-					<?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $s['type'])) ?> · <?php echo htmlspecialchars($this->module('moderation')->libelle('portee', $s['scope'])) ?>
+					<?php echo nf_texte($this->module('moderation')->libelle('sanction', $s['type'])) ?> · <?php echo nf_texte($this->module('moderation')->libelle('portee', $s['scope'])) ?>
 					<?php if (!empty($s['expires_at'])): ?> · <?php echo $this->lang('jusqu\'au %s', nf_date_heure($s['expires_at'])) ?><?php endif ?>
 				</div>
 				<?php endforeach ?>

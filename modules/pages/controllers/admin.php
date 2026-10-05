@@ -208,8 +208,8 @@ class Admin extends Controller_Module
 
 			$example .= ']';
 
-			$items .= '<li><code>'.htmlspecialchars((string) ($example)).'</code> — '.htmlspecialchars((string) ($def['title']))
-				.($legend ? ' <small class="text-muted">— '.htmlspecialchars((string) (implode(', ', $legend))).'</small>' : '').'</li>';
+			$items .= '<li><code>'.nf_texte($example).'</code> — '.nf_texte($def['title'])
+				.($legend ? ' <small class="text-muted">— '.nf_texte(implode(', ', $legend)).'</small>' : '').'</li>';
 		}
 
 		return '<div class="alert alert-info mt-3"><i class="fas fa-puzzle-piece"></i> '

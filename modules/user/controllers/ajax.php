@@ -197,31 +197,6 @@ class Ajax extends Controller_Module
 						}
 						$rateLimit->hit($rl_key, 3, 1800, 1800);
 
-						if ($this->config->nf_registration_validation)
-						{
-							$sent = $this	->anti_flood()
-											->email
-											->template('user.registration', [
-												'username'       => $user->username,
-												// URL ABSOLUE : un lien relatif dans un email est résolu contre le domaine du
-												// client mail → cassé. (Même chose pour reset_url plus bas.)
-												'validation_url' => absolute_url('user/validation/'.$user->token())
-											])
-											->to($user->email)
-											->send();
-
-							if ($sent)
-							{
-								notify($this->lang('Message envoyé'));
-								$this->modal->dispose();
-							}
-							else
-							{
-								$form->error($this->lang('Une erreur s\'est produite lors de l\'envoi du message'));
-								return;
-							}
-						}
-
 						$user->set_password($user->password)->create();
 
 						if ($wh = $this->module('webhooks'))
@@ -236,6 +211,20 @@ class Ajax extends Controller_Module
 						if (($module_user = $this->module('user')) instanceof \NF\Modules\User\User)
 						{
 							$module_user->bienvenue((int) $user->id, (string) $user->username);
+
+							// La validation par e-mail : le compte attend que son adresse soit prouvée, sans connexion
+							// d'ici là. Le lien partait AVANT que le compte existe, et menait à une page absente.
+							if ($module_user->a_valider($user))
+							{
+								$envoye = $module_user->envoyer_validation($user);
+
+								notify($envoye
+									? $this->lang('Votre compte est créé : ouvrez le lien envoyé à %s pour l\'activer.', nf_texte($user->email))
+									: $this->lang('Votre compte est créé, mais l\'e-mail de validation n\'a pas pu partir : connectez-vous un peu plus tard pour en recevoir un nouveau.'),
+									$envoye ? 'success' : 'warning');
+
+								refresh();
+							}
 						}
 
 						notify($this->lang('Votre compte à bien été créé, bienvenue !'));

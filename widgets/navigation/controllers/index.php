@@ -21,6 +21,45 @@ class Index extends Controller_Widget
 		return $this->_display($settings, 'vertical', !isset($settings['panel']) || $settings['panel']);
 	}
 
+	/**
+	 * Le lien mène-t-il à une page que le site sert ? Le menu livré par l'installation pointe vers des
+	 * modules (Actualités, Forum, Galerie…) qu'un profil « Cœur seul » n'installe pas, et un module
+	 * désinstallé laissait son lien : un clic, une page 404 (relevé le 2026-10-04). On suit la règle du
+	 * routeur (neofrag/core/output.php) : un module installé est servi s'il est activé ; un segment qui
+	 * n'est pas un module revient au module Pages, qui ne sert que les pages qui existent. Un lien
+	 * externe, une ancre, l'accueil ou une fenêtre (`modal`) ne se jugent pas ici.
+	 */
+	protected function _cible_servie(array $link): bool
+	{
+		$url = $link['url'];
+
+		if (isset($link['modal']) || !is_string($url) || preg_match('#^(?:[a-z][a-z0-9+.-]*:|//|\#)#i', $url))
+		{
+			return TRUE;
+		}
+
+		$segment = (string) strtok(trim($url, '/'), '/?#');
+
+		if ($segment === '' || $segment === 'index')
+		{
+			return TRUE;
+		}
+
+		if ($module = @NeoFrag()->module(str_replace('-', '_', $segment)))
+		{
+			return $module->is_enabled();
+		}
+
+		if (!($pages = @NeoFrag()->module('pages')) || !$pages->is_enabled())
+		{
+			return FALSE;
+		}
+
+		$modele = $pages->model('pages');
+
+		return $modele instanceof \NF\Modules\Pages\Models\Pages && (bool) $modele->page_publique($segment);
+	}
+
 	protected function _display($settings, $type, $panel)
 	{
 		$this->js('navigation');
@@ -71,7 +110,7 @@ class Index extends Controller_Widget
 		};
 
 		$show_link = function($link, &$active = FALSE) use (&$actives, &$nav_link){
-			if ($link['access'])
+			if ($link['access'] && $this->_cible_servie($link))
 			{
 				return $this->html('li')
 							->attr('class', 'nav-item')

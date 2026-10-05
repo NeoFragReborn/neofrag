@@ -150,20 +150,20 @@ class Revisions extends Module
 			$fields   = $rev ? $rev['fields'] : [];
 			$title    = isset($fields['title']) ? (string)$fields['title'] : '';
 			$body     = isset($fields['content']) ? (string)$fields['content'] : '';
-			$author   = $row['username'] ? htmlspecialchars((string) ($row['username'])) : '<i>'.$this->lang('Système').'</i>';
+			$author   = $row['username'] ? nf_texte($row['username']) : '<i>'.$this->lang('Système').'</i>';
 			$is_first = ($i === 0);
 
-			$preview  = '<details><summary>'.htmlspecialchars((string) (mb_strimwidth($title, 0, 60, '…'))).'</summary>'
+			$preview  = '<details><summary>'.nf_texte($title, 60).'</summary>'
 				.'<div style="max-height:240px;overflow:auto;border:1px solid var(--nf-border,#444);padding:8px;margin-top:6px;border-radius:4px;">'
-				.'<strong>'.htmlspecialchars((string) ($title)).'</strong>'
-				.'<pre style="white-space:pre-wrap;word-break:break-word;margin:6px 0 0;">'.htmlspecialchars((string) ($body)).'</pre>'
+				.'<strong>'.nf_texte($title).'</strong>'
+				.'<pre style="white-space:pre-wrap;word-break:break-word;margin:6px 0 0;">'.htmlspecialchars((string) ($body)) /* codage: le texte enregistré, tel quel (entités comprises) */.'</pre>'
 				.'</div></details>';
 
 			$restore = '';
 			if ($can_restore && !$is_first)
 			{
 				$restore = '<a class="btn btn-sm btn-outline-warning" href="'.url($restore_base.'/'.(int)$row['id']).'" '
-					.'data-confirm="'.htmlspecialchars((string) ($this->lang('Restaurer cette version ? La version actuelle sera conservée dans l\'historique.')), ENT_QUOTES).'">'
+					.'data-confirm="'.nf_texte($this->lang('Restaurer cette version ? La version actuelle sera conservée dans l\'historique.')).'">'
 					.icon('fas fa-undo').' '.$this->lang('Restaurer').'</a>';
 			}
 			else if ($is_first)
@@ -173,9 +173,9 @@ class Revisions extends Module
 
 			$out .= '<tr>'
 				.'<td>'.(int)$row['id'].'</td>'
-				.'<td><small>'.htmlspecialchars((string) ($row['created_at'])).'</small></td>'
+				.'<td><small>'.nf_texte($row['created_at']).'</small></td>'
 				.'<td>'.$author.'</td>'
-				.'<td><small>'.htmlspecialchars((string) ($row['summary'])).($row['lang'] ? ' ('.htmlspecialchars((string) ($row['lang'])).')' : '').'</small></td>'
+				.'<td><small>'.nf_texte($row['summary']).($row['lang'] ? ' ('.nf_texte($row['lang']).')' : '').'</small></td>'
 				.'<td>'.$preview.'</td>'
 				.($can_restore ? '<td class="text-end">'.$restore.'</td>' : '')
 				.'</tr>';

@@ -715,7 +715,7 @@ class Admin extends Controller_Module
 		{
 			$html .= '<li class="files-tree-node">'
 					.'<a class="'.($path === $current ? 'active' : '').'" href="'.$this->index_url($path).'">'
-						.icon('far fa-folder').' '.utf8_htmlentities($title)
+						.icon('far fa-folder').' '.nf_texte($title)
 					.'</a>'
 					.$this->render_tree_branch($path, $current)
 				.'</li>';
@@ -745,7 +745,7 @@ class Admin extends Controller_Module
 		foreach (array_filter(explode('/', $dir)) as $part)
 		{
 			$path .= ($path !== '' ? '/' : '').$part;
-			$html .= '<span>/</span><a href="'.$this->index_url($path).'">'.utf8_htmlentities($part).'</a>';
+			$html .= '<span>/</span><a href="'.$this->index_url($path).'">'.nf_texte($part).'</a>';
 		}
 
 		return $html.'<span class="files-breadcrumb-access">'.$this->button_access($this->directory_id($dir), 'directory', 'files', $this->lang('Permissions de lecture du dossier')).'</span></nav>';
@@ -762,7 +762,7 @@ class Admin extends Controller_Module
 
 		foreach ($this->directories() as $path => $label)
 		{
-			$html .= '<option value="'.utf8_htmlentities($this->directory_value($path)).'">';
+			$html .= '<option value="'.nf_texte($this->directory_value($path)).'">';
 		}
 
 		return $html.'</datalist>';
@@ -770,7 +770,7 @@ class Admin extends Controller_Module
 
 	private function render_path_input($selected = '', $name = 'target_dir')
 	{
-		return '<input class="form-control form-control-sm files-path-input" type="text" name="'.$name.'" list="files-directory-paths" value="'.utf8_htmlentities($this->directory_value($selected)).'" placeholder="'.$this->lang('Chemin du dossier').'">';
+		return '<input class="form-control form-control-sm files-path-input" type="text" name="'.$name.'" list="files-directory-paths" value="'.nf_texte($this->directory_value($selected)).'" placeholder="'.$this->lang('Chemin du dossier').'">';
 	}
 
 	private function render_items($dir)
@@ -846,7 +846,7 @@ class Admin extends Controller_Module
 
 		foreach ($items as $item)
 		{
-			$name = utf8_htmlentities($item['name']);
+			$name = nf_texte($item['name']);
 			$icon = $item['dir'] ? 'far fa-folder' : 'far fa-file';
 			$title = $item['dir'] ? '<a href="'.$this->index_url($item['path']).'">'.$name.'</a>' : '<a href="'.url('files/'.$item['slug']).'" target="_blank" rel="noopener">'.$name.'</a>';
 			$size = $item['dir'] ? '-' : human_size($item['size']);
@@ -854,8 +854,8 @@ class Admin extends Controller_Module
 			$value = $item['type'] === 'file' ? 'file:'.$item['id'] : 'dir:'.$item['path'];
 			$access = $item['type'] === 'file' ? $this->button_access($item['id'], 'file', 'files', $this->lang('Permissions de lecture')) : $this->button_access($item['id'], 'directory', 'files', $this->lang('Permissions de lecture'));
 
-			$rows .= '<tr data-file-row data-path="'.utf8_htmlentities($value).'" data-name="'.$name.'">'
-					.'<td class="files-select"><input type="checkbox" class="files-select-item" value="'.utf8_htmlentities($value).'" data-name="'.$name.'"></td>'
+			$rows .= '<tr data-file-row data-path="'.nf_texte($value).'" data-name="'.$name.'">'
+					.'<td class="files-select"><input type="checkbox" class="files-select-item" value="'.nf_texte($value).'" data-name="'.$name.'"></td>'
 					.'<td class="files-name">'.icon($icon).' '.$title.'</td>'
 					.'<td class="files-size">'.$size.'</td>'
 					.'<td class="files-date">'.$date.'</td>'

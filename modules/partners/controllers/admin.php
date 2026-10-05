@@ -28,19 +28,19 @@ class Admin extends Controller_Module
 					}
 				}
 				$body .= '<div class="nf-content-card-head">';
-				$body .= '<div class="nf-content-card-title">'.htmlspecialchars((string) ($p['title'])).'</div>';
+				$body .= '<div class="nf-content-card-title">'.nf_texte($p['title']).'</div>';
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-meta">';
 				if (!empty($p['website'])) {
 					$host = parse_url($p['website'], PHP_URL_HOST) ?: $p['website'];
-					$body .= '<span><i class="fas fa-globe"></i> <a href="'.htmlspecialchars((string) ($p['website'])).'" target="_blank" rel="noopener">'.htmlspecialchars((string) ($host)).'</a></span>';
+					$body .= '<span><i class="fas fa-globe"></i> <a href="'.nf_texte($p['website']).'" target="_blank" rel="noopener">'.nf_texte($host).'</a></span>';
 				}
 				$body .= '<span title="'.$this->lang('Visites').'"><i class="fas fa-chart-line"></i> '.(int)$p['count'].'</span>';
 				$body .= '</div>';
 				$body .= '<div class="nf-content-card-foot">';
 				$body .= '<span class="nf-content-card-spacer"></span>';
 				if ($this->is_authorized('modify_partners')) $body .= '<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/partners/'.$p['partner_id'].'/'.$p['name']).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a>';
-				if ($this->is_authorized('delete_partners')) $body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/partners/delete/'.$p['partner_id'].'/'.$p['name']).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				if ($this->is_authorized('delete_partners')) $body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/partners/delete/'.$p['partner_id'].'/'.$p['name']).'" data-confirm="'.nf_texte($this->lang('Supprimer ?')).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 				$body .= '</div>';
 				$body .= '</div>';
 			}

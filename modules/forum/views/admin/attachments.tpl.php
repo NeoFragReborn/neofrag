@@ -32,7 +32,7 @@
 		<div id="orphan-list" class="collapse mt-2">
 			<ul class="small">
 				<?php foreach ($orphans as $o): ?>
-					<li><code><?php echo htmlspecialchars($o['path']) ?></code> · <?php echo htmlspecialchars($o['name']) ?> (file_id=<?php echo (int)$o['file_id'] ?>)</li>
+					<li><code><?php echo nf_texte($o['path']) ?></code> · <?php echo nf_texte($o['name']) ?> (file_id=<?php echo (int)$o['file_id'] ?>)</li>
 				<?php endforeach ?>
 			</ul>
 		</div>
@@ -64,22 +64,22 @@
 				<tr>
 					<td>
 						<?php if (strpos((string)$a['mime_type'], 'image/') === 0): ?>
-							<i class="fas fa-image" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($a['name']) ?>"></i>
+							<i class="fas fa-image" data-bs-toggle="tooltip" title="<?php echo nf_texte($a['name']) ?>"></i>
 						<?php else: ?>
 							<i class="fas fa-file"></i>
 						<?php endif ?>
 					</td>
-					<td><a href="<?php echo url($a['path']) ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($a['name']) ?></a></td>
+					<td><a href="<?php echo url($a['path']) ?>" target="_blank" rel="noopener"><?php echo nf_texte($a['name']) ?></a></td>
 					<td><small><?php echo human_size((int)$a['file_size']) ?></small></td>
-					<td><small><code><?php echo htmlspecialchars($a['mime_type']) ?></code></small></td>
-					<td><a href="<?php echo url('forum/topic/'.(int)$a['topic_id'].'/'.url_title($a['topic_title']).'#'.(int)$a['message_id']) ?>"><?php echo htmlspecialchars($a['topic_title']) ?></a></td>
-					<td><small><?php echo htmlspecialchars($a['forum_title']) ?></small></td>
-					<td><?php echo htmlspecialchars($a['uploader_username']) ?></td>
+					<td><small><code><?php echo nf_texte($a['mime_type']) ?></code></small></td>
+					<td><a href="<?php echo url('forum/topic/'.(int)$a['topic_id'].'/'.url_title($a['topic_title']).'#'.(int)$a['message_id']) ?>"><?php echo nf_texte($a['topic_title']) ?></a></td>
+					<td><small><?php echo nf_texte($a['forum_title']) ?></small></td>
+					<td><?php echo nf_texte($a['uploader_username']) ?></td>
 					<td><small><?php echo time_span(strtotime($a['uploaded_at'])) ?></small></td>
 					<td class="text-center">
 						<button type="submit" name="delete_attachment[]" value="<?php echo (int)$a['attachment_id'] ?>" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>"
-							data-confirm="<?php echo htmlspecialchars($this->lang('Confirmer la suppression de cette pièce jointe ?'), ENT_QUOTES) ?>"
-							data-confirm-title="<?php echo htmlspecialchars($this->lang('Supprimer la pièce jointe'), ENT_QUOTES) ?>"
+							data-confirm="<?php echo nf_texte($this->lang('Confirmer la suppression de cette pièce jointe ?')) ?>"
+							data-confirm-title="<?php echo nf_texte($this->lang('Supprimer la pièce jointe')) ?>"
 							data-confirm-icon="fas fa-paperclip"><?php echo icon('far fa-trash-alt') ?></button>
 					</td>
 				</tr>

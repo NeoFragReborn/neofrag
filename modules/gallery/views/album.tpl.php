@@ -7,7 +7,7 @@
 	<h5 class="card-title mb-0"><?php echo $title ?></h5>
 	<p><a href="<?php echo url('gallery/'.$category_id.'/'.$category_name) ?>" class="badge text-bg-dark"><?php echo $category_title ?></a></p>
 	<?php if ($description): ?>
-		<p><?php echo bbcode($description) ?></p>
+		<div class="gallery-album-description"><?php echo nf_contenu_editeur($description) ?></div>
 	<?php endif ?>
 	<p class="card-text"><small class="text-muted"><?php echo icon('far fa-image').' '.$this->lang('%d image|%d images', $count, $count) ?></small></p>
 </div>

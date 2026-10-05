@@ -28,7 +28,7 @@ $resolve_image = function($src) {
 	<?php if (count($slides) > 1): ?>
 		<div class="carousel-indicators">
 			<?php foreach ($slides as $i => $slide): ?>
-				<button type="button" data-bs-target="#<?php echo $slider_uid ?>" data-bs-slide-to="<?php echo $i ?>"<?php echo $i === 0 ? ' class="active" aria-current="true"' : '' ?> aria-label="<?php echo htmlspecialchars((string) $this->lang('Diapositive %d', $i + 1)) ?>"></button>
+				<button type="button" data-bs-target="#<?php echo $slider_uid ?>" data-bs-slide-to="<?php echo $i ?>"<?php echo $i === 0 ? ' class="active" aria-current="true"' : '' ?> aria-label="<?php echo nf_texte($this->lang('Diapositive %d', $i + 1)) ?>"></button>
 			<?php endforeach ?>
 		</div>
 	<?php endif ?>
@@ -39,16 +39,16 @@ $resolve_image = function($src) {
 					$img_src = $resolve_image($slide['image_url'] ?? '');
 					$has_link = !empty($slide['link']) && nf_url_sure((string) $slide['link']);
 				?>
-				<?php if ($has_link): ?><a href="<?php echo htmlspecialchars($slide['link']) ?>"><?php endif ?>
+				<?php if ($has_link): ?><a href="<?php echo nf_texte($slide['link']) ?>"><?php endif ?>
 				<?php if ($img_src): ?>
-					<img class="d-block w-100" src="<?php echo htmlspecialchars($img_src) ?>" alt="<?php echo htmlspecialchars($slide['title'] ?? '') ?>" />
+					<img class="d-block w-100" src="<?php echo nf_texte($img_src) ?>" alt="<?php echo nf_texte($slide['title'] ?? '') ?>" />
 				<?php else: ?>
 					<div class="d-block w-100" style="height:300px;background:linear-gradient(135deg,var(--nf-accent,#667eea),color-mix(in srgb,var(--nf-accent,#764ba2) 55%,#000));"></div>
 				<?php endif ?>
 				<?php if (!empty($slide['title']) || !empty($slide['caption'])): ?>
 					<div class="carousel-caption d-none d-md-block">
-						<?php if (!empty($slide['title'])): ?><h3><?php echo htmlspecialchars($slide['title']) ?></h3><?php endif ?>
-						<?php if (!empty($slide['caption'])): ?><p><?php echo nl2br(htmlspecialchars($slide['caption'])) ?></p><?php endif ?>
+						<?php if (!empty($slide['title'])): ?><h3><?php echo nf_texte($slide['title']) ?></h3><?php endif ?>
+						<?php if (!empty($slide['caption'])): ?><p><?php echo nl2br(nf_texte($slide['caption'])) ?></p><?php endif ?>
 					</div>
 				<?php endif ?>
 				<?php if ($has_link): ?></a><?php endif ?>

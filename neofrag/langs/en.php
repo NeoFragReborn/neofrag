@@ -609,4 +609,6 @@ return [
 	'f30497d4' => 'The image could not be saved on the site.',
 	'c6e6b32b' => 'This image could not be read.',
 	'2cb256bb' => 'The image could not be sent. Check your connection, then try again.',
+	'2c1b9bbb' => 'Login refused: registration not yet validated',
+	'080a7879' => 'Email address validated',
 ];

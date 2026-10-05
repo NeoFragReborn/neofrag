@@ -145,7 +145,7 @@ class Index extends Controller_Module
 							]);
 
 			$body = '<div class="alert alert-success">'
-				.'<i class="fas fa-check-circle"></i> '.$this->lang('Inscription confirmée ! Tu recevras les prochaines newsletters à <strong>%s</strong>.', htmlspecialchars((string) ($sub['email'])))
+				.'<i class="fas fa-check-circle"></i> '.$this->lang('Inscription confirmée ! Tu recevras les prochaines newsletters à <strong>%s</strong>.', nf_texte($sub['email']))
 				.'</div>';
 		}
 
@@ -177,7 +177,7 @@ class Index extends Controller_Module
 						->delete('nf_newsletter_subscribers');
 
 		$body = '<div class="alert alert-success">'
-			.'<i class="fas fa-check-circle"></i> '.$this->lang('Tu as bien été désinscrit de la newsletter. <strong>%s</strong> ne recevra plus de newsletters.', htmlspecialchars((string) ($sub['email'])))
+			.'<i class="fas fa-check-circle"></i> '.$this->lang('Tu as bien été désinscrit de la newsletter. <strong>%s</strong> ne recevra plus de newsletters.', nf_texte($sub['email']))
 			.'</div>';
 
 		return $this->panel()->title($this->lang('Newsletter'), 'far fa-envelope')->body($body);

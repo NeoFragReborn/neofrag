@@ -127,10 +127,16 @@ maintenance, copyright, réseaux sociaux. Ces réglages alimentent les thèmes e
 
 ### Les inscriptions
 
-*Paramètres → Inscription* ouvre ou ferme les inscriptions, et règle deux textes, **langue par langue**
-(un onglet par langue du site) :
+*Paramètres → Inscription* ouvre ou ferme les inscriptions, peut faire **valider l'adresse e-mail** des
+nouveaux membres, et règle deux textes, **langue par langue** (un onglet par langue du site).
 
-- le **règlement**, que le visiteur accepte en s'inscrivant ;
+La **validation par e-mail** (éteinte par défaut) : à l'inscription, le membre reçoit un lien, valable deux
+jours, et ne peut pas se connecter avant de l'avoir ouvert ; une tentative de connexion lui en renvoie un
+(trois par heure au plus). Une inscription par Discord, GitHub ou Google n'en a pas besoin. Les deux
+textes :
+
+- le **règlement**, que le visiteur accepte en s'inscrivant — par le formulaire comme par Discord, GitHub
+  ou Google, qui le montrent avant de créer le compte ;
 - le **message de bienvenue**, envoyé par la messagerie au nouveau membre — y compris quand il s'inscrit
   avec Discord, GitHub ou Google —, dans la langue de la page où il s'est inscrit. `[pseudo]` y devient
   son pseudo. Il arrive en texte : titres, listes et liens sont gardés, la mise en forme non ; une

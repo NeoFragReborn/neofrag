@@ -45,20 +45,20 @@ class Admin extends Controller_Module
 			$count++;
 			$module_name = preg_replace('/_.*$/', '', $comment->module);
 			$module_info = $this->module($module_name) ? $this->module($module_name)->info() : NULL;
-			$module_label = $module_info ? '<i class="'.$module_info->icon.'"></i> '.htmlspecialchars((string) ($module_info->title)) : htmlspecialchars((string) ($module_name));
+			$module_label = $module_info ? '<i class="'.$module_info->icon.'"></i> '.nf_texte($module_info->title) : nf_texte($module_name);
 
 			$body .= '<div class="nf-content-card">';
 			$body .= '<div class="nf-content-card-head">';
 			$body .= '<div class="nf-content-card-title"><input type="checkbox" name="selected[]" value="'.(int)$comment->id.'" class="nf-bulk-cb" style="margin-right:6px;vertical-align:middle;">'.$comment->user->link().'</div>';
 			$body .= '<span class="nf-content-card-status published"><i class="far fa-comments"></i> '.$module_label.'</span>';
 			$body .= '</div>';
-			$body .= '<div class="nf-content-card-desc">'.htmlspecialchars((string) (strip_tags((string)$comment->content))).'</div>';
+			$body .= '<div class="nf-content-card-desc">'.nf_texte(strip_tags((string)$comment->content)).'</div>';
 			$body .= '<div class="nf-content-card-meta">';
 			$body .= '<span><i class="far fa-clock"></i> '.(string) $comment->date.'</span>';   // un objet Date : du HTML sûr (<time>), à ne pas encoder une seconde fois
 			$body .= '</div>';
 			$body .= '<div class="nf-content-card-foot">';
 			$body .= '<span class="nf-content-card-spacer"></span>';
-			$body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('ajax/comments/delete/'.$comment->id).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce commentaire ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+			$body .= '<a class="btn btn-sm btn-outline-danger" href="'.url('ajax/comments/delete/'.$comment->id).'" data-confirm="'.nf_texte($this->lang('Supprimer ce commentaire ?')).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 			$body .= '</div>';
 			$body .= '</div>';
 		}
@@ -82,10 +82,10 @@ class Admin extends Controller_Module
 		{
 			$bulk_bar = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">'
 				.'<label style="display:flex;align-items:center;gap:6px;font-size:13px;margin:0;cursor:pointer;"><input type="checkbox" id="nf-bulk-all"> '.$this->lang('Tout sélectionner').'</label>'
-				.'<button type="submit" name="bulk_delete" value="1" class="btn btn-sm btn-outline-danger" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer les commentaires sélectionnés ?')), ENT_QUOTES).'"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer la sélection').'</button>'
+				.'<button type="submit" name="bulk_delete" value="1" class="btn btn-sm btn-outline-danger" data-confirm="'.nf_texte($this->lang('Supprimer les commentaires sélectionnés ?')).'"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer la sélection').'</button>'
 				.'</div>';
 
-			$body = '<form method="post" action="'.htmlspecialchars((string) (url($this->url->request)), ENT_QUOTES).'"><input type="hidden" name="_" value="'.$this->csrf_token().'">'.$bulk_bar.$body.'</form>'
+			$body = '<form method="post" action="'.nf_texte(url($this->url->request)).'"><input type="hidden" name="_" value="'.$this->csrf_token().'">'.$bulk_bar.$body.'</form>'
 				.'<script>(function(){var a=document.getElementById("nf-bulk-all");if(a){a.addEventListener("change",function(){document.querySelectorAll(".nf-bulk-cb").forEach(function(c){c.checked=a.checked;});});}})();</script>';
 		}
 

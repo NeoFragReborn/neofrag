@@ -245,4 +245,8 @@ return [
 	'f4792dbe' => 'This language does not have its own yet: the shared text is shown. Save it here to translate it.',
 	'7be2269f' => 'It arrives as text in the messaging: headings, lists and links are kept, the formatting is not.',
 	'c7ad5eb2' => 'The rules, the title and the welcome message are translated language by language. A language without its own text shows the shared text.',
+	'44c87c41' => 'Have a new member validate their email address before their first login',
+	'e9fca0d8' => 'The member receives a link, valid for two days; until they open it, they cannot log in, and a login attempt sends them a new one. Signing up with Discord, GitHub or Google does not need it.',
+	'ad809125' => 'Registration validation saved',
+	'0c522b30' => 'Email validation',
 ];

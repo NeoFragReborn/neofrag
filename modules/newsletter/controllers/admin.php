@@ -63,10 +63,10 @@ class Admin extends Controller_Module
 					: '<span class="badge text-bg-warning"><span class="dot"></span> '.$this->lang('En attente').'</span>';
 				$body .= '<tr>'
 					.'<td style="font-family:\'JetBrains Mono\',monospace;font-size:12px;color:var(--nf-text-muted);">#'.(int)$s['id'].'</td>'
-					.'<td><strong>'.htmlspecialchars((string) ($s['email'])).'</strong></td>'
+					.'<td><strong>'.nf_texte($s['email']).'</strong></td>'
 					.'<td>'.$status.'</td>'
 					.'<td style="color:var(--nf-text-muted);font-feature-settings:\'tnum\';">'.nf_date_heure($s['ts']).'</td>'
-					.'<td class="text-end"><a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/newsletter/subscribers/delete/'.$s['id']).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer cet abonné ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a></td>'
+					.'<td class="text-end"><a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/newsletter/subscribers/delete/'.$s['id']).'" data-confirm="'.nf_texte($this->lang('Supprimer cet abonné ?')).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a></td>'
 					.'</tr>';
 			}
 			$body .= '</tbody></table>';
@@ -97,7 +97,7 @@ class Admin extends Controller_Module
 
 				$seg_label = '';
 				if (($c['segment'] ?? 'all') === 'members')    { $seg_label = ' <small class="text-muted">· <i class="fas fa-user-friends"></i> '.$this->lang('Membres').'</small>'; }
-				else if (($c['segment'] ?? 'all') === 'group') { $seg_label = ' <small class="text-muted">· <i class="fas fa-users"></i> '.htmlspecialchars((string) ($c['segment_group_title'] ?: $this->lang('Groupe'))).'</small>'; }
+				else if (($c['segment'] ?? 'all') === 'group') { $seg_label = ' <small class="text-muted">· <i class="fas fa-users"></i> '.nf_texte($c['segment_group_title'] ?: $this->lang('Groupe')).'</small>'; }
 
 				switch ($status) {
 					case 'scheduled':
@@ -117,20 +117,20 @@ class Admin extends Controller_Module
 						break;
 					default:
 						$badge = '<span class="badge text-bg-success"><i class="fas fa-check"></i> '.$this->lang('Envoyée').'</span>'
-							.($failed > 0 ? ' <span class="badge text-bg-danger" title="'.htmlspecialchars((string) ($this->lang('Échecs d\'envoi')), ENT_QUOTES).'">'.$failed.' ⚠</span>' : '');
-						$recip = $sent.($sent > 0 ? ' <small class="text-muted" title="'.htmlspecialchars((string) ($this->lang('Taux d\'ouverture')), ENT_QUOTES).'">· '.$opened.' '.$this->lang('ouv.').' ('.round($opened / $sent * 100).'%)</small>' : '');
+							.($failed > 0 ? ' <span class="badge text-bg-danger" title="'.nf_texte($this->lang('Échecs d\'envoi')).'">'.$failed.' ⚠</span>' : '');
+						$recip = $sent.($sent > 0 ? ' <small class="text-muted" title="'.nf_texte($this->lang('Taux d\'ouverture')).'">· '.$opened.' '.$this->lang('ouv.').' ('.round($opened / $sent * 100).'%)</small>' : '');
 						$date  = $c['sent_at'] ? timetostr('j M Y H:i', $c['sent_at']) : '—';
 				}
 
 				$actions = '';
 				if ($status === 'scheduled') {
-					$actions = '<a class="btn btn-sm btn-outline-primary" href="'.$this->csrf_url('admin/newsletter/campaigns/send/'.$c['id']).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Envoyer cette campagne maintenant ?')), ENT_QUOTES).'" title="'.$this->lang('Envoyer maintenant').'"><i class="fas fa-paper-plane"></i></a> '
-						.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/newsletter/campaigns/cancel/'.$c['id']).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Annuler cette campagne programmée ?')), ENT_QUOTES).'" title="'.$this->lang('Annuler').'"><i class="fas fa-ban"></i></a>';
+					$actions = '<a class="btn btn-sm btn-outline-primary" href="'.$this->csrf_url('admin/newsletter/campaigns/send/'.$c['id']).'" data-confirm="'.nf_texte($this->lang('Envoyer cette campagne maintenant ?')).'" title="'.$this->lang('Envoyer maintenant').'"><i class="fas fa-paper-plane"></i></a> '
+						.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/newsletter/campaigns/cancel/'.$c['id']).'" data-confirm="'.nf_texte($this->lang('Annuler cette campagne programmée ?')).'" title="'.$this->lang('Annuler').'"><i class="fas fa-ban"></i></a>';
 				}
 
 				$body .= '<tr>'
 					.'<td style="font-family:\'JetBrains Mono\',monospace;font-size:12px;color:var(--nf-text-muted);">#'.(int)$c['id'].'</td>'
-					.'<td><strong>'.htmlspecialchars((string) ($c['subject'])).'</strong>'.$seg_label.'<br><small class="text-muted">'.htmlspecialchars((string) ($c['username'] ?? '—')).'</small></td>'
+					.'<td><strong>'.nf_texte($c['subject']).'</strong>'.$seg_label.'<br><small class="text-muted">'.nf_texte($c['username'] ?? '—').'</small></td>'
 					.'<td>'.$badge.'</td>'
 					.'<td class="text-end" style="font-feature-settings:\'tnum\';">'.$recip.'</td>'
 					.'<td style="color:var(--nf-text-muted);font-feature-settings:\'tnum\';">'.$date.'</td>'
@@ -161,14 +161,14 @@ class Admin extends Controller_Module
 			foreach ($tpl_rows as $t)
 			{
 				$map[(int)$t['id']] = ['subject' => $t['subject'], 'content' => $t['content']];
-				$options .= '<option value="'.(int)$t['id'].'">'.htmlspecialchars((string) ($t['name'])).'</option>';
+				$options .= '<option value="'.(int)$t['id'].'">'.nf_texte($t['name']).'</option>';
 			}
 
 			$this->js('newsletter-compose');
 
 			$loader = '<div class="card" style="margin-bottom:12px;"><div class="card-body">'
 				.'<label class="form-label" style="margin-right:8px;font-weight:600;">'.$this->lang('Modèle').'</label>'
-				.'<select id="nf-nl-template" class="form-select" style="max-width:320px;display:inline-block;width:auto;" data-templates="'.htmlspecialchars((string) (json_encode($map)), ENT_QUOTES).'">'.$options.'</select>'
+				.'<select id="nf-nl-template" class="form-select" style="max-width:320px;display:inline-block;width:auto;" data-templates="'.htmlspecialchars((string) (json_encode($map)), ENT_QUOTES) /* codage: du JSON posé dans un attribut, tel quel */.'">'.$options.'</select>'
 				.' <small class="text-muted">'.$this->lang('Remplit le sujet et le contenu ci-dessous.').'</small>'
 				.'</div></div>';
 		}
@@ -294,11 +294,11 @@ class Admin extends Controller_Module
 			$body = '<table class="table table-hover" style="margin:0;"><thead><tr><th>'.$this->lang('Nom').'</th><th>'.$this->lang('Sujet').'</th><th class="text-end"></th></tr></thead><tbody>';
 			foreach ($templates as $t) {
 				$body .= '<tr>'
-					.'<td><strong>'.htmlspecialchars((string) ($t['name'])).'</strong></td>'
-					.'<td><small class="text-muted">'.htmlspecialchars((string) ($t['subject'])).'</small></td>'
+					.'<td><strong>'.nf_texte($t['name']).'</strong></td>'
+					.'<td><small class="text-muted">'.nf_texte($t['subject']).'</small></td>'
 					.'<td class="text-end" style="white-space:nowrap;">'
 					.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/newsletter/templates/edit/'.$t['id']).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
-					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/newsletter/templates/delete/'.$t['id']).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce modèle ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
+					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/newsletter/templates/delete/'.$t['id']).'" data-confirm="'.nf_texte($this->lang('Supprimer ce modèle ?')).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 			}
 			$body .= '</tbody></table>';

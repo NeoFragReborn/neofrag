@@ -11,7 +11,7 @@
 ?>
 <div class="matrix-toolbar mb-3 d-flex justify-content-between align-items-center">
 	<div>
-		<?php echo $this->lang('Module : <strong>%s</strong>', htmlspecialchars($module_title)) ?>
+		<?php echo $this->lang('Module : <strong>%s</strong>', nf_texte($module_title)) ?>
 		<?php if ($scope_id > 0): ?>
 			<span class="badge text-bg-info ms-2"><?php echo $this->lang('Scope %d', $scope_id) ?></span>
 		<?php endif ?>
@@ -25,16 +25,16 @@
 </div>
 
 <div class="table-responsive matrix-table-wrapper">
-	<table class="table table-bordered table-sm matrix-table" data-module="<?php echo htmlspecialchars($module_name) ?>" data-scope-id="<?php echo (int)$scope_id ?>">
+	<table class="table table-bordered table-sm matrix-table" data-module="<?php echo nf_texte($module_name) ?>" data-scope-id="<?php echo (int)$scope_id ?>">
 		<thead>
 			<tr>
 				<th class="matrix-perm-col"><?php echo $this->lang('Permission') ?></th>
 				<?php foreach ($roles as $role): ?>
 					<th class="text-center matrix-role-col" data-role-id="<?php echo (int)$role['role_id'] ?>">
-						<i class="<?php echo htmlspecialchars((string) ($role['icon'] ?? '')) ?>"></i>
-						<div class="role-name"><?php echo htmlspecialchars((string) $this->lang($role['title'])) ?></div>
+						<i class="<?php echo nf_texte($role['icon'] ?? '') ?>"></i>
+						<div class="role-name"><?php echo nf_texte($this->lang($role['title'])) ?></div>
 						<?php if ($role['parent_role_id']): ?>
-							<small class="text-muted">↓ <?php echo htmlspecialchars(isset($roles[$role['parent_role_id']]['title']) ? (string) $this->lang($roles[$role['parent_role_id']]['title']) : '') ?></small>
+							<small class="text-muted">↓ <?php echo nf_texte(isset($roles[$role['parent_role_id']]['title']) ? (string) $this->lang($roles[$role['parent_role_id']]['title']) : '') ?></small>
 						<?php endif ?>
 					</th>
 				<?php endforeach ?>
@@ -44,16 +44,16 @@
 			<?php foreach ($access['access'] as $cat_idx => $category): ?>
 				<tr class="matrix-category-row">
 					<td colspan="<?php echo count($roles) + 1 ?>" class="bg-light">
-						<strong><i class="<?php echo htmlspecialchars((string) ($category['icon'] ?? '')) ?>"></i> <?php echo htmlspecialchars($category['title']) ?></strong>
+						<strong><i class="<?php echo nf_texte($category['icon'] ?? '') ?>"></i> <?php echo nf_texte($category['title']) ?></strong>
 					</td>
 				</tr>
 				<?php foreach ($category['access'] as $action => $info): ?>
 					<?php $perm = $module_name.'.'.$action ?>
-					<tr data-permission="<?php echo htmlspecialchars($perm) ?>">
+					<tr data-permission="<?php echo nf_texte($perm) ?>">
 						<td class="matrix-perm-cell">
-							<i class="<?php echo htmlspecialchars((string) ($info['icon'] ?? '')) ?> text-primary"></i>
-							<?php echo htmlspecialchars($info['title']) ?>
-							<small class="d-block text-muted"><?php echo htmlspecialchars($action) ?></small>
+							<i class="<?php echo nf_texte($info['icon'] ?? '') ?> text-primary"></i>
+							<?php echo nf_texte($info['title']) ?>
+							<small class="d-block text-muted"><?php echo nf_texte($action) ?></small>
 						</td>
 						<?php foreach ($roles as $role): ?>
 							<?php
@@ -68,17 +68,17 @@
 									$tooltip = $this->lang('Via wildcard %s.*', explode('.', $perm)[0]);
 								}
 							?>
-							<td class="<?php echo $cell_class ?>" data-role-id="<?php echo (int)$role['role_id'] ?>" data-current="<?php echo htmlspecialchars($value) ?>" <?php if ($tooltip): ?>data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($tooltip, ENT_QUOTES) ?>"<?php endif ?>>
+							<td class="<?php echo $cell_class ?>" data-role-id="<?php echo (int)$role['role_id'] ?>" data-current="<?php echo nf_texte($value) ?>" <?php if ($tooltip): ?>data-bs-toggle="tooltip" title="<?php echo nf_texte($tooltip) ?>"<?php endif ?>>
 								<div class="matrix-radios">
-									<label class="matrix-radio matrix-radio-allow" title="<?php echo htmlspecialchars($this->lang('Autoriser'), ENT_QUOTES) ?>">
+									<label class="matrix-radio matrix-radio-allow" title="<?php echo nf_texte($this->lang('Autoriser')) ?>">
 										<input type="radio" name="cell-<?php echo (int)$role['role_id'] ?>-<?php echo md5($perm) ?>" value="allow" <?php if ($source === 'direct' && $value === 'allow') echo 'checked' ?> <?php if ($source !== 'direct') echo 'data-inherited="1"' ?> />
 										<i class="fas fa-check"></i>
 									</label>
-									<label class="matrix-radio matrix-radio-default" title="<?php echo htmlspecialchars($this->lang('Défaut (pas d\'override)'), ENT_QUOTES) ?>">
+									<label class="matrix-radio matrix-radio-default" title="<?php echo nf_texte($this->lang('Défaut (pas d\'override)')) ?>">
 										<input type="radio" name="cell-<?php echo (int)$role['role_id'] ?>-<?php echo md5($perm) ?>" value="default" <?php if ($source !== 'direct' || $value === 'default') echo 'checked' ?> />
 										<i class="fas fa-minus"></i>
 									</label>
-									<label class="matrix-radio matrix-radio-never" title="<?php echo htmlspecialchars($this->lang('Jamais (override-block)'), ENT_QUOTES) ?>">
+									<label class="matrix-radio matrix-radio-never" title="<?php echo nf_texte($this->lang('Jamais (override-block)')) ?>">
 										<input type="radio" name="cell-<?php echo (int)$role['role_id'] ?>-<?php echo md5($perm) ?>" value="never" <?php if ($source === 'direct' && $value === 'never') echo 'checked' ?> />
 										<i class="fas fa-ban"></i>
 									</label>

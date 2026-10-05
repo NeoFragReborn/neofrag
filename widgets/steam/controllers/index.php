@@ -51,7 +51,7 @@ class Index extends Controller_Widget
 						'display'        => $display
 					]), FALSE)
 					->footer_if($show_summary && !empty($data['summary']),
-						'<div class="widget-steam-summary"><strong>'.$this->lang('À propos de %s', '<a href="https://steamcommunity.com/groups/'.htmlspecialchars((string) ($data['url'])).'" target="_blank" rel="noopener">'.htmlspecialchars((string) ($data['name'])).'</a>').'</strong>'
+						'<div class="widget-steam-summary"><strong>'.$this->lang('À propos de %s', '<a href="https://steamcommunity.com/groups/'.nf_texte($data['url']).'" target="_blank" rel="noopener">'.nf_texte($data['name']).'</a>').'</strong>'
 						.'<div class="widget-steam-summary-text">'.strip_tags((string)$data['summary'], '<br><a><b><i>').'</div></div>',
 						'left'
 					);

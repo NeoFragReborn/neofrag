@@ -163,8 +163,10 @@ function changelog_section_matches(string $selector, string $id): bool
 
     if ($sel === 'unreleased' || $sel === 'non-publie' || $sel === 'non publié' || $sel === 'non-publié')
     {
-        // « Non publié », insensible aux accents/casse.
-        return str_starts_with(changelog_section_ascii(strtolower($id)), 'non publ');
+        // « Non publié », insensible aux accents/casse — « Unreleased » dans CHANGELOG.en.md.
+        $id = changelog_section_ascii(strtolower($id));
+
+        return str_starts_with($id, 'non publ') || str_starts_with($id, 'unreleased');
     }
 
     if ($sel === 'latest')

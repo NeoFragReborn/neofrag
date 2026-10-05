@@ -22,9 +22,9 @@ class Index extends Controller_Module
 				$url_img = url('upload/media/'.$m['filename']);
 				$body .= '<div class="col-12 col-lg-6 col-md-3 mb-3">';
 				$body .= '<a href="'.$url_img.'" target="_blank" class="d-block">';
-				$body .= '<img src="'.$url_img.'" alt="'.htmlspecialchars((string) ($m['title'] ?? $m['original_name'])).'" class="img-fluid img-thumbnail" loading="lazy">';
+				$body .= '<img src="'.$url_img.'" alt="'.nf_texte($m['title'] ?? $m['original_name']).'" class="img-fluid img-thumbnail" loading="lazy">';
 				$body .= '</a>';
-				$body .= '<small class="text-muted d-block">'.htmlspecialchars((string) ($m['title'] ?? $m['original_name'])).'</small>';
+				$body .= '<small class="text-muted d-block">'.nf_texte($m['title'] ?? $m['original_name']).'</small>';
 				$body .= '</div>';
 			}
 			$body .= '</div>';

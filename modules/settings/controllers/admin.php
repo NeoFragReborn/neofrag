@@ -101,8 +101,8 @@ class Admin extends Controller_Module
 			$html .= '<a class="settings-hub-card settings-hub-card--'.$s['color'].'" href="'.url($s['url']).'">';
 			$html .= '<div class="settings-hub-icon"><i class="'.$s['icon'].'"></i></div>';
 			$html .= '<div class="settings-hub-text">';
-			$html .= '<div class="settings-hub-title">'.htmlspecialchars((string) ($s['title'])).'</div>';
-			$html .= '<div class="settings-hub-desc">'.htmlspecialchars((string) ($s['desc'])).'</div>';
+			$html .= '<div class="settings-hub-title">'.nf_texte($s['title']).'</div>';
+			$html .= '<div class="settings-hub-desc">'.nf_texte($s['desc']).'</div>';
 			$html .= '</div>';
 			$html .= '<div class="settings-hub-arrow"><i class="fas fa-arrow-right"></i></div>';
 			$html .= '</a>';
@@ -300,8 +300,8 @@ class Admin extends Controller_Module
 		}
 
 		// Live preview values
-		$site_name        = htmlspecialchars((string) ($this->config->nf_name ?: 'NeoFrag'));
-		$site_description = htmlspecialchars((string) ($this->config->nf_description ?: ''));
+		$site_name        = nf_texte($this->config->nf_name ?: 'NeoFrag');
+		$site_description = nf_texte($this->config->nf_description ?: '');
 		$favicon_url      = $this->config->nf_favicon
 			? url(NeoFrag()->model2('file', $this->config->nf_favicon)->path())
 			: '';
@@ -344,7 +344,7 @@ class Admin extends Controller_Module
 			.'<i class="fas fa-times identity-preview-tab-close"></i>'
 			.'</div>'
 			.'<div class="identity-preview-url">'
-			.'<i class="fas fa-lock"></i> '.htmlspecialchars((string) ($site_url))
+			.'<i class="fas fa-lock"></i> '.nf_texte($site_url)
 			.'</div>'
 			.'</div>';
 
@@ -574,8 +574,8 @@ class Admin extends Controller_Module
 		foreach ($lignes as $ligne)
 		{
 			$liste .= '<tr>'
-				.'<td><code>/'.htmlspecialchars((string) $ligne['source'], ENT_QUOTES).'</code></td>'
-				.'<td><code>'.htmlspecialchars(preg_match('#^https?://#', (string) $ligne['target']) ? (string) $ligne['target'] : '/'.$ligne['target'], ENT_QUOTES).'</code></td>'
+				.'<td><code>/'.nf_texte($ligne['source']).'</code></td>'
+				.'<td><code>'.nf_texte(preg_match('#^https?://#', (string) $ligne['target']) ? (string) $ligne['target'] : '/'.$ligne['target']).'</code></td>'
 				.'<td class="text-end">'.(int) $ligne['hits'].'</td>'
 				.'<td>'.($ligne['last_hit_at'] ? timetostr($this->lang('d/m/Y'), (string) $ligne['last_hit_at']) : '—').'</td>'
 				.'<td class="text-end"><a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/settings/seo-redirections-supprimer/'.(int) $ligne['id']).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a></td>'
@@ -768,9 +768,9 @@ class Admin extends Controller_Module
 		{
 			$liste .= '<li class="list-group-item d-flex align-items-start gap-3">'
 				.'<i class="'.$icones[$etat].' mt-1"></i>'
-				.'<div class="flex-grow-1"><div class="fw-semibold">'.htmlspecialchars($titre, ENT_QUOTES).'</div>'
-				.'<div class="text-muted small">'.htmlspecialchars($detail, ENT_QUOTES).'</div></div>'
-				.($lien !== '' ? '<a class="btn btn-sm btn-light text-nowrap" href="'.htmlspecialchars($lien, ENT_QUOTES).'"'.(str_starts_with($lien, 'http') ? ' target="_blank" rel="noopener"' : '').'>'.htmlspecialchars($action, ENT_QUOTES).'</a>' : '')
+				.'<div class="flex-grow-1"><div class="fw-semibold">'.nf_texte($titre).'</div>'
+				.'<div class="text-muted small">'.nf_texte($detail).'</div></div>'
+				.($lien !== '' ? '<a class="btn btn-sm btn-light text-nowrap" href="'.nf_texte($lien).'"'.(str_starts_with($lien, 'http') ? ' target="_blank" rel="noopener"' : '').'>'.nf_texte($action).'</a>' : '')
 				.'</li>';
 		}
 
@@ -881,7 +881,7 @@ class Admin extends Controller_Module
 		}
 
 		$adresse = \NF\NeoFrag\Addons\Module::content_url_of($type, $id);
-		$voir    = $adresse !== '' ? ' <a class="btn btn-secondary btn-sm" href="'.htmlspecialchars($adresse, ENT_QUOTES).'" target="_blank" rel="noopener">'.icon('fas fa-external-link-alt').' '.$this->lang('Voir la page').'</a>' : '';
+		$voir    = $adresse !== '' ? ' <a class="btn btn-secondary btn-sm" href="'.nf_texte($adresse).'" target="_blank" rel="noopener">'.icon('fas fa-external-link-alt').' '.$this->lang('Voir la page').'</a>' : '';
 
 		return '<div class="settings-section-back"><a href="'.url('admin/settings/seo').'" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> '.$this->lang('Référencement').'</a>'.$voir.'</div>'
 			.'<div class="settings-section-card">'
@@ -997,7 +997,28 @@ class Admin extends Controller_Module
 			->display_required(FALSE)
 			->save();
 
-		if ($form_charte->is_valid($post))
+		// Form 3: Validation de l'inscription par e-mail (éteinte par défaut : rien ne change sans ce choix)
+		$form_validation = $this->form()
+			->add_rules([
+				'validation' => [
+					'type'        => 'checkbox',
+					'checked'     => ['on' => (bool) $this->config->nf_registration_validation],
+					'values'      => ['on' => $this->lang('Faire valider l\'adresse e-mail d\'un nouveau membre avant sa première connexion')],
+					'description' => $this->lang('Le membre reçoit un lien, valable deux jours ; tant qu\'il ne l\'a pas ouvert, il ne peut pas se connecter, et une tentative de connexion lui en renvoie un. Une inscription par Discord, GitHub ou Google n\'en a pas besoin.')
+				]
+			])
+			->add_submit($this->lang('Valider'))
+			->display_required(FALSE)
+			->save();
+
+		if ($form_validation->is_valid($post))
+		{
+			$this->config('nf_registration_validation', in_array('on', (array) $post['validation']));
+			$this->_audit('registration_validation');
+			notify($this->lang('Validation des inscriptions sauvegardée'));
+			refresh();
+		}
+		else if ($form_charte->is_valid($post))
 		{
 			$enregistrer('nf_registration_charte', $post['registration_charte']);
 			$this->_audit('registration');
@@ -1034,7 +1055,7 @@ class Admin extends Controller_Module
 			{
 				$traduite = $propre('nf_registration_charte', $code) && $propre('nf_welcome_content', $code);
 				$onglets .= '<li class="nav-item"><a class="nav-link'.($code === $langue ? ' active' : '').'" href="'.url('admin/settings/registration/'.$code).'">'
-					.htmlspecialchars((string) $l->info()->title).($traduite ? ' '.icon('fas fa-check') : '').'</a></li>';
+					.nf_texte($l->info()->title).($traduite ? ' '.icon('fas fa-check') : '').'</a></li>';
 			}
 
 			$onglets .= '</ul></div></div>';
@@ -1058,7 +1079,16 @@ class Admin extends Controller_Module
 			.'<div class="settings-section-body">'.$form_welcome->display().'</div>'
 			.'</div>';
 
-		return $back_link.$status_view.$onglets.$charte_card.$welcome_card;
+		// Validation card
+		$validation_card = '<div class="settings-section-card">'
+			.'<div class="settings-section-header">'
+			.'<div class="settings-section-icon"><i class="fas fa-envelope-open-text"></i></div>'
+			.'<div class="settings-section-meta"><div class="settings-section-title">'.$this->lang('Validation par e-mail').'</div></div>'
+			.'</div>'
+			.'<div class="settings-section-body">'.$form_validation->display().'</div>'
+			.'</div>';
+
+		return $back_link.$status_view.$validation_card.$onglets.$charte_card.$welcome_card;
 	}
 
 	public function team()
@@ -1197,13 +1227,13 @@ class Admin extends Controller_Module
 				.'<div class="social-card-icon" style="background:'.$color.'"><i class="'.$icon.'"></i></div>'
 				.'<div class="social-card-name">'.$label.'</div>';
 			if ($has_value) {
-				$grid_html .= '<a href="'.htmlspecialchars((string) ($current)).'" target="_blank" rel="noopener" class="social-card-visit" title="'.$this->lang('Ouvrir le profil').'"><i class="fas fa-external-link-alt"></i></a>';
+				$grid_html .= '<a href="'.nf_texte($current).'" target="_blank" rel="noopener" class="social-card-visit" title="'.$this->lang('Ouvrir le profil').'"><i class="fas fa-external-link-alt"></i></a>';
 			}
 			$grid_html .= '</div>'
 				.'<input type="url" class="form-control social-card-input" '
 				.'name="'.$token.'[social_'.$key.']" '
-				.'value="'.htmlspecialchars((string) ($current)).'" '
-				.'placeholder="'.htmlspecialchars((string) ($placeholder)).'" />'
+				.'value="'.nf_texte($current).'" '
+				.'placeholder="'.nf_texte($placeholder).'" />'
 				.'</div>';
 		}
 		$grid_html .= '</div>';
@@ -1572,10 +1602,10 @@ class Admin extends Controller_Module
 		$text_color  = $this->config->nf_maintenance_text_color ?: '#ffffff';
 		$bg_repeat   = $this->config->nf_maintenance_background_repeat ?: 'no-repeat';
 		$bg_position = $this->config->nf_maintenance_background_position ?: 'center top';
-		$title       = htmlspecialchars((string) ($this->config->nf_maintenance_title ?: $this->lang('Site en maintenance')));
+		$title       = nf_texte($this->config->nf_maintenance_title ?: $this->lang('Site en maintenance'));
 		// Le même texte par défaut que la page de maintenance elle-même (views/maintenance.tpl.php) : l'aperçu
 		// montrait une autre phrase que celle que le visiteur lit.
-		$content     = htmlspecialchars((string) ($this->config->nf_maintenance_content ?: $this->lang('Le site est momentanément indisponible, le temps d’une mise à jour. Merci de revenir dans quelques instants.')));
+		$content     = nf_texte($this->config->nf_maintenance_content ?: $this->lang('Le site est momentanément indisponible, le temps d’une mise à jour. Merci de revenir dans quelques instants.'));
 
 		$preview_styles = 'background-color:'.$bg_color.';';
 		if ($bg_url) {

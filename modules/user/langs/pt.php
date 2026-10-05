@@ -320,4 +320,13 @@ return [
 	'92330b9f' => '%d entrada, guardada 365 dias|%d entradas, guardadas 365 dias',
 	'7ecafebb' => 'Nenhum membro corresponde a «%s».',
 	'f4f7e9a1' => 'Pesquisar um nome de utilizador ou um e-mail…',
+	'8322fb2c' => 'Li o regulamento e aceito-o',
+	'64af90e0' => 'Criar a minha conta',
+	'3d7f5bc9' => 'Antes de criar a sua conta com %s, leia o regulamento do site.',
+	'0a0d7675' => 'A sua conta foi criada: abra a ligação enviada para %s para a ativar.',
+	'4ab39f09' => 'A sua conta foi criada, mas o e-mail de validação não pôde ser enviado: inicie sessão um pouco mais tarde para receber um novo.',
+	'e316c550' => 'Esta ligação de validação já não é válida: inicie sessão e ser-lhe-á enviada uma nova.',
+	'84a10ad9' => 'O seu endereço está validado: bem-vindo!',
+	'6f65c0fc' => 'O seu registo ainda não foi validado: acaba de ser enviada uma nova ligação para %s. Abra-a para ativar a sua conta.',
+	'cfbbd188' => 'O seu registo ainda não foi validado: abra a ligação enviada para %s. Poderá ser enviada uma nova ligação um pouco mais tarde.',
 ];

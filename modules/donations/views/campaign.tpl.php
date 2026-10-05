@@ -2,7 +2,7 @@
 	<div class="col-lg-8">
 		<div class="card">
 			<div class="card-body">
-				<h2 class="donation-title"><?php echo htmlspecialchars($c['title']) ?></h2>
+				<h2 class="donation-title"><?php echo nf_texte($c['title']) ?></h2>
 
 				<?php if ($c['description']): ?>
 				<div class="donation-description mb-4"><?php echo render_content($c['description']) ?></div>
@@ -11,8 +11,8 @@
 				<div class="donation-progress-card mb-4">
 					<div class="donation-progress-meta">
 						<div>
-							<div class="donation-amount"><?php echo number_format($c['raised'], 2, ',', ' ') ?> <span class="donation-currency"><?php echo htmlspecialchars($c['currency']) ?></span></div>
-							<div class="donation-goal"><?php echo $this->lang('sur %s d\'objectif', '<strong>'.number_format($c['goal_amount'], 2, ',', ' ').' '.htmlspecialchars($c['currency']).'</strong>') ?></div>
+							<div class="donation-amount"><?php echo number_format($c['raised'], 2, ',', ' ') ?> <span class="donation-currency"><?php echo nf_texte($c['currency']) ?></span></div>
+							<div class="donation-goal"><?php echo $this->lang('sur %s d\'objectif', '<strong>'.number_format($c['goal_amount'], 2, ',', ' ').' '.nf_texte($c['currency']).'</strong>') ?></div>
 						</div>
 						<div class="donation-pct"><?php echo $c['percentage'] ?>%</div>
 					</div>
@@ -28,7 +28,7 @@
 				</div>
 
 				<?php if ($donate_url): ?>
-				<a href="<?php echo htmlspecialchars($donate_url) ?>" target="_blank" rel="noopener" class="btn btn-paypal d-block w-100 btn-lg">
+				<a href="<?php echo nf_texte($donate_url) ?>" target="_blank" rel="noopener" class="btn btn-paypal d-block w-100 btn-lg">
 					<i class="fab fa-paypal"></i> <?php echo $this->lang('Faire un don via PayPal') ?>
 				</a>
 				<small class="text-muted d-block mt-2 text-center">
@@ -54,15 +54,15 @@
 				?>
 				<li class="list-group-item donation-item">
 					<div class="d-flex align-items-start">
-						<div class="donation-avatar"><?php echo mb_strtoupper(mb_substr($display_name, 0, 1)) ?></div>
+						<div class="donation-avatar"><?php echo nf_texte(mb_strtoupper(mb_substr(nf_texte_brut($display_name), 0, 1))) ?></div>
 						<div class="flex-grow-1 ms-3">
 							<div class="donation-donor-row">
-								<strong><?php echo htmlspecialchars($display_name) ?></strong>
-								<span class="donation-donor-amount"><?php echo number_format($d['amount'], 2, ',', ' ') ?> <?php echo htmlspecialchars($d['currency']) ?></span>
+								<strong><?php echo nf_texte($display_name) ?></strong>
+								<span class="donation-donor-amount"><?php echo number_format($d['amount'], 2, ',', ' ') ?> <?php echo nf_texte($d['currency']) ?></span>
 							</div>
 							<small class="text-muted"><?php echo timetostr('j F, H:i', $d['created_at']) ?></small>
 							<?php if (!empty($d['message'])): ?>
-							<div class="donation-message">"<?php echo htmlspecialchars($d['message']) ?>"</div>
+							<div class="donation-message">"<?php echo nf_texte($d['message']) ?>"</div>
 							<?php endif ?>
 						</div>
 					</div>

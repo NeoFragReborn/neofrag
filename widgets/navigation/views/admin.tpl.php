@@ -10,7 +10,7 @@ $current_menu = isset($menu) ? $menu : '';
 			<select class="form-select" name="settings[menu]">
 				<option value=""><?php echo $this->lang('— Liens manuels (ci-dessous) —') ?></option>
 				<?php foreach ($menus as $mm): ?>
-				<option value="<?php echo $mm['name'] ?>"<?php echo $current_menu === $mm['name'] ? ' selected' : '' ?>><?php echo htmlspecialchars($mm['title']) ?></option>
+				<option value="<?php echo $mm['name'] ?>"<?php echo $current_menu === $mm['name'] ? ' selected' : '' ?>><?php echo nf_texte($mm['title']) ?></option>
 				<?php endforeach ?>
 			</select>
 			<small class="text-muted"><?php echo $this->lang('Affiche un menu créé dans « Menus » (remplace les liens manuels ci-dessous).') ?></small>

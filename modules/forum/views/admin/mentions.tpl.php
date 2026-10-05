@@ -3,7 +3,7 @@
 <form action="<?php echo url($this->url->request) ?>" method="get" class="row mb-3">
 	<div class="col-md-5 mb-1">
 		<label class="visually-hidden" for="filter-user"><?php echo $this->lang('Utilisateur') ?></label>
-		<input type="text" id="filter-user" name="user" class="form-control form-control-sm w-100" placeholder="<?php echo htmlspecialchars($this->lang('Filtrer par utilisateur (mentionné ou auteur)…'), ENT_QUOTES) ?>" value="<?php echo htmlspecialchars($f['user']) ?>" />
+		<input type="text" id="filter-user" name="user" class="form-control form-control-sm w-100" placeholder="<?php echo nf_texte($this->lang('Filtrer par utilisateur (mentionné ou auteur)…')) ?>" value="<?php echo nf_texte($f['user']) ?>" />
 	</div>
 	<div class="col-md-3 mb-1">
 		<label class="visually-hidden" for="filter-status"><?php echo $this->lang('Statut') ?></label>
@@ -28,7 +28,7 @@
 	<table class="table table-hover table-sm">
 		<thead>
 			<tr>
-				<th width="40"><input type="checkbox" id="mentions-select-all" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($this->lang('Tout sélectionner'), ENT_QUOTES) ?>" /></th>
+				<th width="40"><input type="checkbox" id="mentions-select-all" data-bs-toggle="tooltip" title="<?php echo nf_texte($this->lang('Tout sélectionner')) ?>" /></th>
 				<th><?php echo $this->lang('De') ?></th>
 				<th><?php echo $this->lang('Vers') ?></th>
 				<th><?php echo $this->lang('Sujet') ?></th>
@@ -41,23 +41,23 @@
 			<?php foreach ($mentions as $m): ?>
 				<tr>
 					<td><input type="checkbox" name="select_mention[]" value="<?php echo (int)$m['mention_id'] ?>" class="mention-row-cb" /></td>
-					<td><?php echo htmlspecialchars($m['mentioner_username']) ?></td>
-					<td><span class="badge text-bg-primary">@<?php echo htmlspecialchars($m['mentioned_username']) ?></span></td>
-					<td><a href="<?php echo url('forum/topic/'.(int)$m['topic_id'].'/'.url_title($m['topic_title']).'#'.(int)$m['message_id']) ?>"><?php echo htmlspecialchars($m['topic_title']) ?></a></td>
+					<td><?php echo nf_texte($m['mentioner_username']) ?></td>
+					<td><span class="badge text-bg-primary">@<?php echo nf_texte($m['mentioned_username']) ?></span></td>
+					<td><a href="<?php echo url('forum/topic/'.(int)$m['topic_id'].'/'.url_title($m['topic_title']).'#'.(int)$m['message_id']) ?>"><?php echo nf_texte($m['topic_title']) ?></a></td>
 					<td><small><?php echo time_span(strtotime($m['created_at'])) ?></small></td>
 					<td>
 						<?php if ($m['read_at']): ?>
-							<span class="badge text-bg-success" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($this->lang('Lue %s', time_span(strtotime($m['read_at']))), ENT_QUOTES) ?>"><?php echo $this->lang('Lue') ?></span>
+							<span class="badge text-bg-success" data-bs-toggle="tooltip" title="<?php echo nf_texte($this->lang('Lue %s', time_span(strtotime($m['read_at'])))) ?>"><?php echo $this->lang('Lue') ?></span>
 						<?php else: ?>
 							<span class="badge text-bg-warning"><?php echo $this->lang('Non lue') ?></span>
 						<?php endif ?>
 					</td>
 					<td class="text-center">
 						<?php if (!$m['read_at']): ?>
-							<button type="submit" name="mark_read[]" value="<?php echo (int)$m['mention_id'] ?>" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($this->lang('Marquer comme lue'), ENT_QUOTES) ?>"><?php echo icon('fas fa-check') ?></button>
+							<button type="submit" name="mark_read[]" value="<?php echo (int)$m['mention_id'] ?>" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="<?php echo nf_texte($this->lang('Marquer comme lue')) ?>"><?php echo icon('fas fa-check') ?></button>
 						<?php endif ?>
-						<button type="submit" name="delete[]" value="<?php echo (int)$m['mention_id'] ?>" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($this->lang('Supprimer'), ENT_QUOTES) ?>"
-								data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer cette mention ?'), ENT_QUOTES) ?>"
+						<button type="submit" name="delete[]" value="<?php echo (int)$m['mention_id'] ?>" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="<?php echo nf_texte($this->lang('Supprimer')) ?>"
+								data-confirm="<?php echo nf_texte($this->lang('Supprimer cette mention ?')) ?>"
 								data-confirm-icon="fas fa-at"><?php echo icon('far fa-trash-alt') ?></button>
 					</td>
 				</tr>
@@ -70,7 +70,7 @@
 			<?php echo icon('fas fa-check').' '.$this->lang('Marquer comme lues') ?>
 		</button>
 		<button type="submit" name="bulk-action-delete" class="btn btn-sm btn-danger"
-				data-confirm="<?php echo htmlspecialchars($this->lang('Supprimer toutes les mentions sélectionnées ?'), ENT_QUOTES) ?>"
+				data-confirm="<?php echo nf_texte($this->lang('Supprimer toutes les mentions sélectionnées ?')) ?>"
 				data-confirm-icon="fas fa-at"
 				data-bulk-field="delete">
 			<?php echo icon('fas fa-trash-alt').' '.$this->lang('Supprimer les sélectionnées') ?>

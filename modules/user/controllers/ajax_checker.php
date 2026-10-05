@@ -13,7 +13,8 @@ class Ajax_Checker extends Module_Checker
 {
 	public function _member($id, $username)
 	{
-		if (($user = $this->model2('user', $id)->check($username)) && !$user->deleted)
+		// Le compte de secours d'une démonstration est caché ici comme sur sa page (checker.php).
+		if (($user = $this->model2('user', $id)->check($username)) && !$user->deleted && (int) $user->id !== nf_compte_masque())
 		{
 			return [$user];
 		}

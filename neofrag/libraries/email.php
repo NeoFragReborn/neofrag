@@ -122,7 +122,7 @@ class Email extends Library
 
 		if ((string)$name !== '')
 		{
-			$this->_reply_to[] = utf8_html_entity_decode($name);
+			$this->_reply_to[] = nf_texte_brut($name);
 		}
 
 		return $this;
@@ -233,7 +233,7 @@ class Email extends Library
 		{
 			if ($name === '')
 			{
-				$name = utf8_html_entity_decode($file->name);
+				$name = nf_texte_brut($file->name);
 			}
 
 			$file = $file->path;
@@ -311,7 +311,7 @@ class Email extends Library
 		}
 
 		$PHPMailer->setFrom(strtolower($this->_from && array_key_exists(0, $this->_from) ? $this->_from[0] : $this->config->nf_contact),
-							utf8_html_entity_decode($this->_from && array_key_exists(1, $this->_from) ? $this->_from[1] : $this->config->nf_name),
+							nf_texte_brut($this->_from && array_key_exists(1, $this->_from) ? $this->_from[1] : $this->config->nf_name),
 							!ini_get('sendmail_from')
 		);
 
@@ -324,7 +324,7 @@ class Email extends Library
 		$PHPMailer->XMailer  = ' ';
 		$PHPMailer->Encoding = 'quoted-printable';
 		$PHPMailer->CharSet  = 'UTF-8';
-		$PHPMailer->Subject  = utf8_html_entity_decode($this->_subject);
+		$PHPMailer->Subject  = nf_texte_brut($this->_subject);
 		$PHPMailer->isHTML(TRUE);
 
 		foreach (array_unique($this->_to) as $to)
@@ -360,7 +360,9 @@ class Email extends Library
 				'body' => $this->view('emails/'.$this->_view, $data)
 			]);
 
-			$PHPMailer->AltBody = trim(strip_tags($PHPMailer->Body));
+			// Une vraie mise en texte (nf_texte_depuis_html()) : strip_tags() collait les paragraphes et
+			// gardait les entités — un lien suivi du mot d'après, inutilisable en texte seul.
+			$PHPMailer->AltBody = nf_texte_depuis_html($PHPMailer->Body);
 		});
 
 		if (!empty($this->_config['smtp']['host']))

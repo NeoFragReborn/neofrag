@@ -210,8 +210,8 @@ class Notifications extends Module
 		$following  = (string) $this->lang('Suivi');
 
 		return '<button type="button" class="btn btn-sm nf-follow-btn'.($subscribed ? ' following btn-secondary' : ' btn-outline-secondary').'"'
-			.' data-follow-toggle data-follow-type="'.htmlspecialchars((string) ($type)).'" data-follow-id="'.(int)$id.'"'
-			.' data-label-follow="'.htmlspecialchars((string) ($follow), ENT_QUOTES).'" data-label-following="'.htmlspecialchars((string) ($following), ENT_QUOTES).'">'
+			.' data-follow-toggle data-follow-type="'.nf_texte($type).'" data-follow-id="'.(int)$id.'"'
+			.' data-label-follow="'.nf_texte($follow).'" data-label-following="'.nf_texte($following).'">'
 			.'<i class="'.($subscribed ? 'fas' : 'far').' fa-bell"></i> <span class="nf-follow-label">'.($subscribed ? $following : $follow).'</span>'
 			.'</button>';
 	}
@@ -296,8 +296,8 @@ class Notifications extends Module
 			foreach ($items as $n)
 			{
 				$list .= '<a class="dropdown-item nf-notif-item'.(empty($n['is_read']) ? ' unread' : '').'" href="'.url($n['url'] ?: 'notifications').'" data-notif-id="'.(int)$n['id'].'">'
-					.'<span class="nf-notif-title">'.htmlspecialchars((string) ($n['title'])).'</span>'
-					.'<small class="text-muted d-block">'.htmlspecialchars((string) ($n['created_at'])).'</small>'
+					.'<span class="nf-notif-title">'.nf_texte($n['title']).'</span>'
+					.'<small class="text-muted d-block">'.nf_texte($n['created_at']).'</small>'
 					.'</a>';
 			}
 		}
@@ -305,7 +305,7 @@ class Notifications extends Module
 		$badge = $count > 0 ? '<span class="badge text-bg-danger nf-notif-badge">'.($count > 99 ? '99+' : $count).'</span>' : '';
 
 		return '<li class="nav-item dropdown nf-notif">'
-			.'<a class="nav-link" href="#" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="'.htmlspecialchars((string) ($this->lang('Notifications')), ENT_QUOTES).'">'
+			.'<a class="nav-link" href="#" data-bs-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="'.nf_texte($this->lang('Notifications')).'">'
 			.icon('far fa-bell').$badge
 			.'</a>'
 			.'<div class="dropdown-menu dropdown-menu-end nf-notif-menu">'

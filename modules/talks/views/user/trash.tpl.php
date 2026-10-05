@@ -50,10 +50,10 @@
 				<li class="list-group-item d-flex justify-content-between align-items-center">
 					<div class="flex-grow-1">
 						<span class="fw-bold text-muted">
-							<?php echo \icon($icon).' '.htmlspecialchars($c['name']) ?>
+							<?php echo \icon($icon).' '.nf_texte($c['name']) ?>
 						</span>
 						<?php if (!empty($c['description'])): ?>
-							<div class="small text-muted"><?php echo htmlspecialchars(mb_substr($c['description'], 0, 100)) ?></div>
+							<div class="small text-muted"><?php echo nf_texte($c['description'], 100) ?></div>
 						<?php endif ?>
 						<div class="small text-muted">
 							<?php echo \icon('far fa-trash-alt').' '.$this->lang('Supprimée le %s', nf_date_heure($c['deleted_at'])) ?>

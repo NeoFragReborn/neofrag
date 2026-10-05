@@ -23,12 +23,12 @@ else
 ?>
 <div class="card-body text-center">
 	<?php echo $display_avatar ?>
-	<div class="user-name mt-3"><?php if (!$preview_active): ?><a href="<?php echo url('user') ?>"><?php echo $display_name ?></a><?php else: ?><?php echo htmlspecialchars($display_name) ?><?php endif ?></div>
+	<div class="user-name mt-3"><?php if (!$preview_active): ?><a href="<?php echo url('user') ?>"><?php echo $display_name ?></a><?php else: ?><?php echo nf_texte($display_name) ?><?php endif ?></div>
 	<?php if ($display_title): ?>
 	<div class="user-role"><?php echo $display_title ?></div>
 	<?php endif ?>
 	<?php if ($preview_active && $preview_target['type'] === 'role'): ?>
-	<div class="text-muted small mt-2"><?php echo icon('fas fa-user-shield').' '.htmlspecialchars($preview_target['label']) ?></div>
+	<div class="text-muted small mt-2"><?php echo icon('fas fa-user-shield').' '.nf_texte($preview_target['label']) ?></div>
 	<?php endif ?>
 	<?php if ($preview_active): ?>
 	<div class="alert alert-warning mt-3 mb-0 py-2 px-3 small text-start">

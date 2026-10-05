@@ -88,7 +88,7 @@ trait Admin_Helpers
 		}
 
 		return '<a class="settings-section-back" href="'.\url($url).'">'
-			.'<i class="fas fa-arrow-left"></i> '.htmlspecialchars((string) ($label))
+			.'<i class="fas fa-arrow-left"></i> '.nf_texte($label)
 			.'</a>';
 	}
 
@@ -108,11 +108,11 @@ trait Admin_Helpers
 
 		$html  = '<div class="settings-section-card">';
 		$html .= '<div class="settings-section-header">';
-		$html .= '<div class="settings-section-icon"><i class="'.htmlspecialchars((string) ($icon)).'"></i></div>';
+		$html .= '<div class="settings-section-icon"><i class="'.nf_texte($icon).'"></i></div>';
 		$html .= '<div class="settings-section-meta">';
 		// Sans double encodage : un titre venu d'un formulaire est déjà encodé (« journ&eacute;e »), et
 		// s'affichait tel quel — le titre d'une campagne de dons, d'un événement du calendrier.
-		$html .= '<div class="settings-section-title">'.htmlspecialchars((string) ($title), ENT_QUOTES, 'UTF-8', FALSE).'</div>';
+		$html .= '<div class="settings-section-title">'.nf_texte($title).'</div>';
 		if ($subtitle !== '')
 		{
 			$html .= '<div class="settings-section-subtitle">'.$subtitle.'</div>';
@@ -194,11 +194,11 @@ trait Admin_Helpers
 	protected function admin_empty($icon, $title, $desc = '', $cta = '')
 	{
 		$html  = '<div class="nf-empty">';
-		$html .= '<i class="'.htmlspecialchars((string) ($icon)).'"></i>';
-		$html .= '<div class="nf-empty-title">'.htmlspecialchars((string) ($title)).'</div>';
+		$html .= '<i class="'.nf_texte($icon).'"></i>';
+		$html .= '<div class="nf-empty-title">'.nf_texte($title).'</div>';
 		if ($desc !== '')
 		{
-			$html .= '<div class="nf-empty-desc">'.htmlspecialchars((string) ($desc)).'</div>';
+			$html .= '<div class="nf-empty-desc">'.nf_texte($desc).'</div>';
 		}
 		if ($cta !== '')
 		{
@@ -230,10 +230,10 @@ trait Admin_Helpers
 			$html .= '<div class="nf-stat-label">';
 			if (!empty($s['icon']))
 			{
-				$html .= '<i class="'.htmlspecialchars((string) ($s['icon'])).'"></i> ';
+				$html .= '<i class="'.nf_texte($s['icon']).'"></i> ';
 			}
-			$html .= htmlspecialchars((string) ($s['label'])).'</div>';
-			$html .= '<div class="nf-stat-value">'.htmlspecialchars((string)$s['value']).'</div>';
+			$html .= nf_texte($s['label']).'</div>';
+			$html .= '<div class="nf-stat-value">'.nf_texte($s['value']).'</div>';
 
 			if (!empty($s['trend']))
 			{
@@ -242,7 +242,7 @@ trait Admin_Helpers
 				{
 					$cls = 'flat';
 				}
-				$html .= '<div class="nf-stat-trend '.$cls.'">'.htmlspecialchars((string) ($s['trend'])).'</div>';
+				$html .= '<div class="nf-stat-trend '.$cls.'">'.nf_texte($s['trend']).'</div>';
 			}
 
 			$html .= '</div>';
@@ -269,7 +269,7 @@ trait Admin_Helpers
 		$html .= '<select name="sort" class="form-select form-select-sm" style="width:auto;">';
 		foreach ($cols as $key => $label)
 		{
-			$html .= '<option value="'.htmlspecialchars((string)$key).'"'.(($state['key'] ?? '') === $key ? ' selected' : '').'>'.htmlspecialchars((string)$label).'</option>';
+			$html .= '<option value="'.nf_texte($key).'"'.(($state['key'] ?? '') === $key ? ' selected' : '').'>'.nf_texte($label).'</option>';
 		}
 		$html .= '</select>';
 

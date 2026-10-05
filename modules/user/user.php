@@ -39,6 +39,7 @@ class User extends Module
 				'security/export'                            => 'security_export',
 				'security/delete'                            => 'security_delete',
 				'auth{pages}'                                => '_auth',
+				'reglement'                                  => 'reglement',
 				'auth/unlink/{id}'                           => '_auth_unlink',
 				'sessions/delete/{key_id}'                   => '_session_delete',
 				'{id}/{url_title}'                           => '_member',
@@ -89,6 +90,39 @@ class User extends Module
 	 * et l'inscription par Discord, GitHub ou Google ne l'envoyait pas. Une erreur de la messagerie ne
 	 * bloque jamais l'inscription.
 	 */
+	/** Le lien de validation d'une inscription reste valable deux jours : on ne lit pas toujours ses e-mails dans l'heure. */
+	public const VALIDATION_DUREE = 172800;
+
+	/**
+	 * La validation de l'inscription par e-mail (*Paramètres → Inscription*) : le lien part à l'adresse du
+	 * membre, qui ne peut pas se connecter avant de l'avoir ouvert. Un nouveau jeton remplace les précédents
+	 * (Models\User::token()). Envoyé à l'inscription, puis de nouveau à une tentative de connexion.
+	 *
+	 * @return bool l'e-mail est parti
+	 */
+	public function envoyer_validation($user): bool
+	{
+		// `$this->email`, comme les autres modules (forum, modération) : l'inscription et le renvoi ont déjà
+		// leurs limites de débit (par adresse IP, par membre).
+		return (bool) $this	->email
+							->template('user.registration', [
+								'username'       => $user->username,
+								// Une adresse ABSOLUE : un lien relatif se résoudrait contre le domaine du client mail.
+								'validation_url' => absolute_url('user/validation/'.$user->token()),
+							])
+							->to($user->email)
+							->send();
+	}
+
+	/**
+	 * Un compte qui doit encore valider son adresse : la validation est allumée, et le compte n'a jamais été
+	 * ouvert (sa première connexion pose `last_activity_date`). Un compte sans adresse ne peut rien valider.
+	 */
+	public function a_valider($user): bool
+	{
+		return (bool) $this->config->nf_registration_validation && !$user->last_activity_date && (string) $user->email !== '';
+	}
+
 	public function bienvenue(int $user_id, string $pseudo): void
 	{
 		$config  = $this->config;

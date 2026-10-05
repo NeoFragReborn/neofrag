@@ -123,7 +123,7 @@ function nf_selecteur_theme(): string
 	$affiche = NeoFrag()->output->theme();
 	$courant = $affiche ? (string) $affiche->info()->name : (string) NeoFrag()->config->nf_default_theme;
 	$cookie  = nf_theme_cookie();
-	$h       = static fn (string $texte): string => htmlspecialchars($texte, ENT_QUOTES);
+	$h       = static fn (string $texte): string => nf_texte($texte);
 
 	NeoFrag()->js('theme-visiteur');
 

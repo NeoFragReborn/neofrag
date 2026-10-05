@@ -16,7 +16,7 @@
 		<div class="nf-field row">
 			<label for="settings-ts-host" class="col-12 col-lg-4 col-form-label"><i class="fas fa-server"></i> <?php echo $this->lang('Adresse du serveur') ?></label>
 			<div class="col-12 col-lg-7">
-				<input type="text" class="form-control" name="settings[host]" id="settings-ts-host" value="<?php echo htmlspecialchars($host) ?>" placeholder="ex: ts.example.com" autocomplete="off" />
+				<input type="text" class="form-control" name="settings[host]" id="settings-ts-host" value="<?php echo nf_texte($host) ?>" placeholder="ex: ts.example.com" autocomplete="off" />
 			</div>
 		</div>
 		<div class="nf-field row">
@@ -29,7 +29,7 @@
 		<div class="nf-field row">
 			<label for="settings-ts-label" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Titre personnalisé') ?></label>
 			<div class="col-12 col-lg-7">
-				<input type="text" class="form-control" name="settings[label]" id="settings-ts-label" value="<?php echo htmlspecialchars($label) ?>" placeholder="<?php echo $this->lang('Optionnel : remplace le nom du serveur') ?>" maxlength="60" />
+				<input type="text" class="form-control" name="settings[label]" id="settings-ts-label" value="<?php echo nf_texte($label) ?>" placeholder="<?php echo $this->lang('Optionnel : remplace le nom du serveur') ?>" maxlength="60" />
 			</div>
 		</div>
 
@@ -48,13 +48,13 @@
 		<div class="nf-field row" data-show-when-mode="tree">
 			<label for="settings-ts-quser" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Utilisateur Query') ?></label>
 			<div class="col-12 col-lg-7">
-				<input type="text" class="form-control" name="settings[query_user]" id="settings-ts-quser" value="<?php echo htmlspecialchars($query_user) ?>" autocomplete="off" />
+				<input type="text" class="form-control" name="settings[query_user]" id="settings-ts-quser" value="<?php echo nf_texte($query_user) ?>" autocomplete="off" />
 			</div>
 		</div>
 		<div class="nf-field row" data-show-when-mode="tree">
 			<label for="settings-ts-qpass" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Mot de passe Query') ?></label>
 			<div class="col-12 col-lg-7">
-				<input type="password" class="form-control" name="settings[query_pass]" id="settings-ts-qpass" value="<?php echo htmlspecialchars($query_pass) ?>" autocomplete="new-password" />
+				<input type="password" class="form-control" name="settings[query_pass]" id="settings-ts-qpass" value="<?php echo nf_texte($query_pass) ?>" autocomplete="new-password" />
 			</div>
 		</div>
 	</div>

@@ -239,7 +239,7 @@ class Gamification extends Module
 		$tier  = $this->tier($score);
 
 		return '<span class="nf-karma-badge" title="'.$score.' karma" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;color:'.couleur_lisible_sur($tier['color']).';background:'.$tier['color'].';">'
-			.icon($tier['icon']).' '.htmlspecialchars((string) ($tier['name']))
+			.icon($tier['icon']).' '.nf_texte($tier['name'])
 			.'</span>';
 	}
 

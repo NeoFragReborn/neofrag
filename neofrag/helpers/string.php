@@ -216,12 +216,162 @@ function utf8_htmlentities($string, $flags = ENT_COMPAT): string
 {
 	// (string) : appelé avec des objets stringables (Label, Lang…) ; strict_types ferait sinon
 	// lever une TypeError à htmlentities().
-	return htmlentities((string)$string, $flags, 'UTF-8');
+	return htmlentities((string)$string, $flags, 'UTF-8') /* codage: la fonction d’enregistrement elle-même */;
 }
 
 function utf8_html_entity_decode($string, $flags = ENT_COMPAT): string
 {
 	return html_entity_decode((string)$string, $flags, 'UTF-8');
+}
+
+/**
+ * Un texte, prêt à poser dans une page — en contenu comme en attribut.
+ *
+ * Le site range ses textes codés pour le web : le formulaire écrit « é » `&eacute;` et « — » `&mdash;`
+ * (`utf8_htmlentities()` à l'enregistrement), l'API code les balises. D'autres arrivent bruts : le SQL
+ * livré, un service extérieur, une traduction. Échapper un texte déjà codé le codait une seconde fois
+ * — `&amp;eacute;`, que la page affichait « &eacute; » (titres de conversation, Boutique, Dons, nom
+ * du site… vu par le mainteneur le 2026-10-05) ; ne pas l'échapper laissait passer la balise d'un texte
+ * brut. On décode donc d'abord, puis on échappe une seule fois : juste, quelle que soit l'origine.
+ *
+ * `$max` raccourcit le texte DÉCODÉ — une entité n'est jamais coupée en deux — et finit par « … ».
+ *
+ * Seule exception, que `check-double-codage` demande d'annoter : ce qui doit se lire tel quel,
+ * entités comprises (une ligne du journal, le JSON posé dans un attribut).
+ */
+function nf_texte(mixed $texte, int $max = 0): string
+{
+	$texte = nf_texte_brut($texte);
+
+	if ($max > 0 && mb_strlen($texte) > $max)
+	{
+		$texte = rtrim(mb_substr($texte, 0, $max - 1)).'…';
+	}
+
+	return htmlspecialchars($texte, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); // codage: la fonction elle-même
+}
+
+/**
+ * Un texte saisi dans l'éditeur riche, prêt pour la page : son HTML assaini s'il en est, sinon l'ancien
+ * texte mis en forme par bbcode(). Les valeurs qu'un formulaire form2 rangeait CODÉES (`&lt;p&gt;&lt;img…`,
+ * jusqu'au 2026-10-05 : une image de signature s'affichait en code) sont d'abord décodées — elles
+ * s'affichent sans être ressaisies.
+ */
+function nf_contenu_editeur(mixed $valeur): string
+{
+	$texte = trim((string) $valeur);
+
+	if (preg_match('#^&lt;(?:p|div|h[1-6]|ul|ol|blockquote|figure|pre|table|img|a|strong|em|span)\b#i', $texte))
+	{
+		$texte = nf_texte_brut($texte);
+	}
+
+	if (preg_match('#^<(?:p|div|h[1-6]|ul|ol|blockquote|figure|pre|table|hr|img)[\s>/]#i', $texte))
+	{
+		return custom_emojis(sanitize_html($texte));
+	}
+
+	return bbcode($texte);
+}
+
+/**
+ * Du HTML (celui de l'éditeur riche, d'un modèle de courriel) mis en TEXTE lisible : les titres et
+ * paragraphes deviennent des blocs séparés d'une ligne vide, les listes des puces « • » ou des numéros,
+ * un lien son texte suivi de son adresse ; les entités sont décodées, styles et scripts écartés.
+ *
+ * Écrite pour le message de bienvenue de la messagerie (Talks\Security::texte_depuis_html(), 2026-10-04),
+ * elle sert aussi la version texte des courriels : un simple strip_tags() y collait les paragraphes — le
+ * lien de validation d'une inscription se lisait « navigateur :https://…/validation/…Si tu n'es pas… »,
+ * cassé dans une messagerie qui n'affiche que le texte (épreuve du 2026-10-05).
+ */
+function nf_texte_depuis_html(string $html): string
+{
+	if (trim($html) === '')
+	{
+		return '';
+	}
+
+	$document = new \DOMDocument();
+	$ancien   = libxml_use_internal_errors(TRUE);
+	$document->loadHTML('<?xml encoding="utf-8"?><div>'.$html.'</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+	libxml_clear_errors();
+	libxml_use_internal_errors($ancien);
+
+	$blocs = ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'blockquote', 'pre', 'table', 'tr', 'hr'];
+
+	$parcourir = function (\DOMNode $noeud) use (&$parcourir, $blocs): string {
+		$texte = '';
+
+		foreach ($noeud->childNodes as $enfant)
+		{
+			if ($enfant instanceof \DOMText)
+			{
+				$texte .= preg_replace('/\s+/u', ' ', $enfant->nodeValue ?? '');
+				continue;
+			}
+
+			if (!$enfant instanceof \DOMElement)
+			{
+				continue;
+			}
+
+			$balise = strtolower($enfant->tagName);
+
+			if (in_array($balise, ['script', 'style'], TRUE))
+			{
+				continue;
+			}
+
+			if ($balise === 'br')
+			{
+				$texte .= "\n";
+			}
+			else if ($balise === 'li')
+			{
+				$liste  = $enfant->parentNode instanceof \DOMElement ? strtolower($enfant->parentNode->tagName) : 'ul';
+				$rang   = 1;
+
+				for ($frere = $enfant->previousSibling; $frere; $frere = $frere->previousSibling)
+				{
+					$rang += $frere instanceof \DOMElement && strtolower($frere->tagName) === 'li' ? 1 : 0;
+				}
+
+				$texte .= "\n".($liste === 'ol' ? $rang.'. ' : '• ').trim($parcourir($enfant));
+			}
+			else if ($balise === 'a')
+			{
+				$libelle = trim($parcourir($enfant));
+				$adresse = trim($enfant->getAttribute('href'));
+				$texte  .= $adresse !== '' && $adresse !== $libelle && preg_match('#^(https?://|mailto:)#i', $adresse) ? ($libelle !== '' ? $libelle.' ('.$adresse.')' : $adresse) : $libelle;
+			}
+			else if (in_array($balise, $blocs, TRUE))
+			{
+				$texte .= "\n\n".trim($parcourir($enfant))."\n\n";
+			}
+			else
+			{
+				$texte .= $parcourir($enfant);
+			}
+		}
+
+		return $texte;
+	};
+
+	$texte = html_entity_decode($parcourir($document->documentElement ?? $document), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+	$texte = preg_replace('/[ \t]+\n/u', "\n", $texte);
+	$texte = preg_replace('/\n[ \t]+/u', "\n", $texte);
+	$texte = preg_replace('/\n{3,}/u', "\n\n", $texte);
+
+	return trim((string) $texte);
+}
+
+/**
+ * Le même texte, tel qu'il se lit hors d'une page : l'objet d'un courriel, un message Discord, une
+ * donnée qu'un script pose avec `textContent`. Cf. nf_texte().
+ */
+function nf_texte_brut(mixed $texte): string
+{
+	return html_entity_decode((string) $texte, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 }
 
 function utf8_string($string, $default = '')
@@ -289,7 +439,7 @@ function custom_emojis_map(): array
 				if (!empty($e['image_id']) && ($url = NeoFrag()->model2('file', (int)$e['image_id'])->path()))
 				{
 					$token       = ':'.$e['name'].':';
-					$map[$token] = '<img class="nf-emoji" src="'.$url.'" alt="'.htmlspecialchars((string) ($token), ENT_QUOTES).'" title="'.htmlspecialchars((string) ($token), ENT_QUOTES).'" style="height:1.4em;width:auto;vertical-align:text-bottom;">';
+					$map[$token] = '<img class="nf-emoji" src="'.$url.'" alt="'.nf_texte($token).'" title="'.nf_texte($token).'" style="height:1.4em;width:auto;vertical-align:text-bottom;">';
 				}
 			}
 		}
@@ -374,7 +524,7 @@ function highlight($string, $keywords, $max_length = 256): string
 		$motifs[] = $motif;
 	}
 
-	$texte = htmlspecialchars((string) (utf8_html_entity_decode(strip_tags(bbcode($string)))), ENT_COMPAT, 'UTF-8');
+	$texte = nf_texte(strip_tags(bbcode($string)));
 
 	// Sans ce garde, une liste de mots vide produisait le motif `//i` — une alternance vide, qui
 	// marque CHAQUE position du texte.

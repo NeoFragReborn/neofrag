@@ -47,8 +47,8 @@ class Index extends Controller_Module
 			// `pages/…`, et le titre n'est pas le nom. Chaque lien de cette liste rendait 404 (2026-10-03).
 			$url = url($p['name']);
 			$html .= '<li class="list-group-item">'
-				   . '<a href="'.$url.'">'.icon('far fa-file-alt').' '.htmlspecialchars((string) ($p['title'])).'</a>'
-				   . (!empty($p['subtitle']) ? ' <small class="text-muted">— '.htmlspecialchars((string) ($p['subtitle'])).'</small>' : '')
+				   . '<a href="'.$url.'">'.icon('far fa-file-alt').' '.nf_texte($p['title']).'</a>'
+				   . (!empty($p['subtitle']) ? ' <small class="text-muted">— '.nf_texte($p['subtitle']).'</small>' : '')
 				   . '</li>';
 		}
 		$html .= '</ul>';

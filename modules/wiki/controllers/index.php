@@ -29,7 +29,7 @@ class Index extends Controller_Module
 				$body .= '<section class="wiki-cat">'
 					   .  '<a class="wiki-cat-head" href="'.url('wiki/'.$cat['slug']).'">'
 					   .  '<span class="wiki-cat-ico"><i class="'.($children ? 'fas fa-folder-open' : 'far fa-file-lines').'"></i></span>'
-					   .  '<span class="wiki-cat-title">'.htmlspecialchars((string) ($cat['title'])).'</span>'
+					   .  '<span class="wiki-cat-title">'.nf_texte($cat['title']).'</span>'
 					   .  ($children ? '<span class="wiki-cat-count">'.count($children).'</span>' : '')
 					   .  '</a>';
 				if ($children)
@@ -37,7 +37,7 @@ class Index extends Controller_Module
 					$body .= '<ul class="wiki-cat-list">';
 					foreach ($children as $p)
 					{
-						$body .= '<li><a href="'.url('wiki/'.$p['slug']).'"><i class="far fa-file-lines"></i><span>'.htmlspecialchars((string) ($p['title'])).'</span><i class="fas fa-chevron-right wiki-go"></i></a></li>';
+						$body .= '<li><a href="'.url('wiki/'.$p['slug']).'"><i class="far fa-file-lines"></i><span>'.nf_texte($p['title']).'</span><i class="fas fa-chevron-right wiki-go"></i></a></li>';
 					}
 					$body .= '</ul>';
 				}
@@ -74,14 +74,14 @@ class Index extends Controller_Module
 			// Une page de premier niveau sans sous-pages est un lien, pas un titre de rubrique.
 			if (empty($kids[$cat['id']]))
 			{
-				$nav .= '<ul class="wiki-nav-seule"><li><a href="'.url('wiki/'.$cat['slug']).'"'.($cat['slug'] === $page['slug'] ? ' class="active"' : '').'>'.htmlspecialchars((string) ($cat['title'])).'</a></li></ul>';
+				$nav .= '<ul class="wiki-nav-seule"><li><a href="'.url('wiki/'.$cat['slug']).'"'.($cat['slug'] === $page['slug'] ? ' class="active"' : '').'>'.nf_texte($cat['title']).'</a></li></ul>';
 				continue;
 			}
 
-			$nav .= '<div class="wiki-nav-cat">'.htmlspecialchars((string) ($cat['title'])).'</div><ul>';
+			$nav .= '<div class="wiki-nav-cat">'.nf_texte($cat['title']).'</div><ul>';
 			foreach ($kids[$cat['id']] ?? [] as $c)
 			{
-				$nav .= '<li><a href="'.url('wiki/'.$c['slug']).'"'.($c['slug'] === $page['slug'] ? ' class="active"' : '').'>'.htmlspecialchars((string) ($c['title'])).'</a></li>';
+				$nav .= '<li><a href="'.url('wiki/'.$c['slug']).'"'.($c['slug'] === $page['slug'] ? ' class="active"' : '').'>'.nf_texte($c['title']).'</a></li>';
 			}
 			$nav .= '</ul>';
 		}
@@ -133,8 +133,8 @@ class Index extends Controller_Module
 				$body .= '<tr>'
 					.'<td>'.nf_date_heure($r['ts']).'</td>'
 					.'<td>'.($r['user_id'] ? $this->user->link($r['user_id'], $r['username']) : $this->lang('Anonyme')).'</td>'
-					.'<td>'.htmlspecialchars((string) ($r['title'])).'</td>'
-					.'<td><small>'.htmlspecialchars((string) ($r['comment'] ?? '')).'</small></td>'
+					.'<td>'.nf_texte($r['title']).'</td>'
+					.'<td><small>'.nf_texte($r['comment'] ?? '').'</small></td>'
 					.'<td>'.$actions.'</td>'
 					.'</tr>';
 			}
@@ -151,7 +151,7 @@ class Index extends Controller_Module
 		$body = '<div class="alert alert-warning"><i class="fas fa-info-circle"></i> '.$this->lang('Tu visualises une <strong>ancienne version</strong> de cette page (révision du %s par %s).', nf_date_heure($rev['ts']), $rev['user_id'] ? $this->user->link($rev['user_id'], $rev['username']) : $this->lang('Anonyme'));
 		if (!empty($rev['comment']))
 		{
-			$body .= ' '.$this->lang('Commentaire : %s', '<em>'.htmlspecialchars((string) ($rev['comment'])).'</em>');
+			$body .= ' '.$this->lang('Commentaire : %s', '<em>'.nf_texte($rev['comment']).'</em>');
 		}
 		$body .= '</div>';
 
@@ -186,9 +186,9 @@ class Index extends Controller_Module
 		if ($from['title'] !== $to['title'])
 		{
 			$title_diff = '<div class="wiki-diff-titlerow"><span class="wiki-diff-tag">'.$this->lang('Titre').'</span> '
-				.'<span class="wiki-diff-inline del">'.htmlspecialchars((string) ($from['title'])).'</span> '
+				.'<span class="wiki-diff-inline del">'.nf_texte($from['title']).'</span> '
 				.'<i class="fas fa-arrow-right text-muted"></i> '
-				.'<span class="wiki-diff-inline add">'.htmlspecialchars((string) ($to['title'])).'</span></div>';
+				.'<span class="wiki-diff-inline add">'.nf_texte($to['title']).'</span></div>';
 		}
 
 		$ops     = $this->_diff_ops($this->_diff_lines($from['content']), $this->_diff_lines($to['content']));
@@ -205,7 +205,7 @@ class Index extends Controller_Module
 			{
 				$cls = $op[0] === '+' ? 'add' : ($op[0] === '-' ? 'del' : 'ctx');
 				$sym = $op[0] === '+' ? '+' : ($op[0] === '-' ? '−' : '');
-				$diff_body .= '<div class="wiki-diff-line '.$cls.'"><span class="wiki-diff-sym">'.$sym.'</span><span class="wiki-diff-txt">'.htmlspecialchars((string) ($op[1])).'</span></div>';
+				$diff_body .= '<div class="wiki-diff-line '.$cls.'"><span class="wiki-diff-sym">'.$sym.'</span><span class="wiki-diff-txt">'.nf_texte($op[1]).'</span></div>';
 			}
 			$diff_body .= '</div>';
 		}
@@ -234,7 +234,7 @@ class Index extends Controller_Module
 
 			foreach ($titres as $t)
 			{
-				$html .= '<li><a href="'.$lien.'#'.self::ancre($t).'"><i class="fas fa-hashtag"></i><span>'.htmlspecialchars($t).'</span><i class="fas fa-chevron-right wiki-go"></i></a></li>';
+				$html .= '<li><a href="'.$lien.'#'.self::ancre($t).'"><i class="fas fa-hashtag"></i><span>'.nf_texte($t).'</span><i class="fas fa-chevron-right wiki-go"></i></a></li>';
 			}
 
 			return $html.'</ul>';
@@ -243,7 +243,7 @@ class Index extends Controller_Module
 		$texte = trim((string) preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags((string) preg_replace('#<h1\b.*?</h1>#is', '', $contenu)), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
 		$debut = mb_strlen($texte) > 200 ? rtrim(mb_substr($texte, 0, (int) (mb_strrpos(mb_substr($texte, 0, 200), ' ') ?: 200))).'…' : $texte;
 
-		return '<div class="wiki-cat-resume"><p>'.htmlspecialchars($debut).'</p><a href="'.$lien.'">'.$this->lang('Lire la page').' <i class="fas fa-chevron-right"></i></a></div>';
+		return '<div class="wiki-cat-resume"><p>'.nf_texte($debut).'</p><a href="'.$lien.'">'.$this->lang('Lire la page').' <i class="fas fa-chevron-right"></i></a></div>';
 	}
 
 	/**
@@ -264,7 +264,7 @@ class Index extends Controller_Module
 	/** Une ancre sur chaque titre de niveau 2 qui n'en a pas : les cartes de l'accueil y mènent. */
 	private static function ancres(string $html): string
 	{
-		return (string) preg_replace_callback('#<h2>(.*?)</h2>#is', static fn (array $m): string => '<h2 id="'.htmlspecialchars(self::ancre(trim(html_entity_decode(strip_tags($m[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8')))).'">'.$m[1].'</h2>', $html);
+		return (string) preg_replace_callback('#<h2>(.*?)</h2>#is', static fn (array $m): string => '<h2 id="'.nf_texte(self::ancre(trim(html_entity_decode(strip_tags($m[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8')))).'">'.$m[1].'</h2>', $html);
 	}
 
 	/** Contenu HTML -> lignes de texte lisibles (frontières de blocs = sauts de ligne). */

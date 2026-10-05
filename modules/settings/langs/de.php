@@ -243,4 +243,8 @@ return [
 	'f4792dbe' => 'Diese Sprache hat noch keinen eigenen Text: Es wird der gemeinsame Text angezeigt. Speichern Sie ihn hier, um ihn zu übersetzen.',
 	'7be2269f' => 'Sie kommt als Text im Nachrichtensystem an: Überschriften, Listen und Links bleiben erhalten, die Formatierung nicht.',
 	'c7ad5eb2' => 'Die Regeln, der Titel und die Willkommensnachricht werden Sprache für Sprache übersetzt. Eine Sprache ohne eigenen Text zeigt den gemeinsamen Text.',
+	'44c87c41' => 'Neue Mitglieder vor ihrer ersten Anmeldung ihre E-Mail-Adresse bestätigen lassen',
+	'e9fca0d8' => 'Das Mitglied erhält einen Link, der zwei Tage gültig ist; solange es ihn nicht geöffnet hat, kann es sich nicht anmelden, und ein Anmeldeversuch schickt ihm einen neuen. Eine Registrierung über Discord, GitHub oder Google braucht ihn nicht.',
+	'ad809125' => 'Bestätigung der Registrierungen gespeichert',
+	'0c522b30' => 'Bestätigung per E-Mail',
 ];

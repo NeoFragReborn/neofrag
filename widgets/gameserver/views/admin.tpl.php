@@ -18,7 +18,7 @@
 		<div class="nf-field row">
 			<label for="settings-gs-host" class="col-12 col-lg-4 col-form-label"><i class="fas fa-server"></i> <?php echo $this->lang('Adresse') ?></label>
 			<div class="col-12 col-lg-7">
-				<input type="text" class="form-control" name="settings[host]" id="settings-gs-host" value="<?php echo htmlspecialchars($host) ?>" placeholder="ex: play.example.com OU 88.123.45.67" autocomplete="off" />
+				<input type="text" class="form-control" name="settings[host]" id="settings-gs-host" value="<?php echo nf_texte($host) ?>" placeholder="ex: play.example.com OU 88.123.45.67" autocomplete="off" />
 				<small class="form-text text-muted"><?php echo $this->lang('Nom de domaine ou adresse IP du serveur (sans le port).') ?></small>
 			</div>
 		</div>
@@ -32,7 +32,7 @@
 		<div class="nf-field row">
 			<label for="settings-gs-label" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Titre personnalisé') ?></label>
 			<div class="col-12 col-lg-7">
-				<input type="text" class="form-control" name="settings[label]" id="settings-gs-label" value="<?php echo htmlspecialchars($label) ?>" placeholder="<?php echo $this->lang('Optionnel : remplace le nom du serveur') ?>" maxlength="60" />
+				<input type="text" class="form-control" name="settings[label]" id="settings-gs-label" value="<?php echo nf_texte($label) ?>" placeholder="<?php echo $this->lang('Optionnel : remplace le nom du serveur') ?>" maxlength="60" />
 			</div>
 		</div>
 	</div>

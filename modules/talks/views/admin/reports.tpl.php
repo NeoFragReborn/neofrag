@@ -21,16 +21,16 @@
 			<?php foreach ($reports as $r): ?>
 				<tr>
 					<td><small><?php echo time_span((int)$r['date']) ?></small></td>
-					<td><?php echo htmlspecialchars($r['reporter_username'] ?: '?') ?></td>
+					<td><?php echo nf_texte($r['reporter_username'] ?: '?') ?></td>
 					<td>
 						<?php if (!empty($r['talk_id'])): ?>
-							<a href="<?php echo url('talks/'.(int)$r['talk_id'].'/'.url_title($r['talk_name'] ?? 'conversation')) ?>"><?php echo htmlspecialchars($r['talk_name'] ?? '?') ?></a>
+							<a href="<?php echo url('talks/'.(int)$r['talk_id'].'/'.url_title($r['talk_name'] ?? 'conversation')) ?>"><?php echo nf_texte($r['talk_name'] ?? '?') ?></a>
 						<?php else: ?>
 							<small class="text-muted">—</small>
 						<?php endif ?>
 					</td>
-					<td><?php echo htmlspecialchars($r['message_author'] ?? '?') ?></td>
-					<td><small><?php echo htmlspecialchars(mb_substr((string)($r['message_text'] ?? ''), 0, 200)) ?></small></td>
+					<td><?php echo nf_texte($r['message_author'] ?? '?') ?></td>
+					<td><small><?php echo nf_texte($r['message_text'] ?? '', 200) ?></small></td>
 					<td class="text-center">
 						<?php if (!empty($r['message_id'])): ?>
 							<a href="<?php echo url('talks/'.(int)$r['talk_id'].'/'.url_title($r['talk_name'] ?? 'conversation')) ?>" class="btn btn-sm btn-light" data-bs-toggle="tooltip" title="<?php echo $this->lang('Voir et modérer') ?>"><?php echo icon('fas fa-eye') ?></a>

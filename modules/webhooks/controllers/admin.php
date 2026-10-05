@@ -27,14 +27,14 @@ class Admin extends Controller_Module
 				$slug   = url_title($h['title']);
 				$events = $h['events'] === '*' ? $this->lang('Tous') : (string)count(array_filter(explode(',', $h['events']))).' '.$this->lang('événement|événements', count(array_filter(explode(',', $h['events']))));
 				$body  .= '<tr>'
-					.'<td><strong>'.htmlspecialchars((string) ($h['title'])).'</strong></td>'
-					.'<td><small class="text-muted">'.htmlspecialchars((string) ($h['url'])).'</small></td>'
-					.'<td>'.htmlspecialchars((string) ($events)).'</td>'
+					.'<td><strong>'.nf_texte($h['title']).'</strong></td>'
+					.'<td><small class="text-muted">'.nf_texte($h['url']).'</small></td>'
+					.'<td>'.nf_texte($events).'</td>'
 					.'<td class="text-end">'.(!empty($h['enabled']) ? '<span class="badge text-bg-success">'.$this->lang('Oui').'</span>' : '<span class="badge text-bg-secondary">'.$this->lang('Non').'</span>').'</td>'
 					.'<td class="text-end" style="white-space:nowrap;">'
 					.'<a class="btn btn-sm btn-outline-secondary" href="'.$this->csrf_url('admin/webhooks/test/'.$h['id'].'/'.$slug).'" title="'.$this->lang('Tester').'"><i class="fas fa-paper-plane"></i></a> '
 					.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/webhooks/edit/'.$h['id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
-					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/webhooks/delete/'.$h['id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce webhook ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
+					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/webhooks/delete/'.$h['id'].'/'.$slug).'" data-confirm="'.nf_texte($this->lang('Supprimer ce webhook ?')).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 			}
 			$body .= '</tbody></table>';

@@ -122,8 +122,12 @@ function nf_parcourir(string $base, array $dossiers_ignores = []): Generator
  * Supprime un dossier et tout ce qu'il contient — sans suivre un lien symbolique, et en levant la
  * lecture seule que git pose sur ses objets (sous Windows, `unlink()` les refuse sinon). Écrite une fois :
  * cinq outils en tenaient chacun leur copie le 2026-10-04.
+ *
+ * `$obligatoire` à FALSE : un dossier de travail qui résiste (l'antivirus tient un fichier) est signalé et
+ * laissé, au lieu d'arrêter l'outil — la publication de la 1.2.26 s'est arrêtée ainsi, release en brouillon,
+ * pour un dossier temporaire déjà vérifié (2026-10-05).
  */
-function nf_supprimer(string $dossier): void
+function nf_supprimer(string $dossier, bool $obligatoire = TRUE): void
 {
     if (!is_dir($dossier) || is_link($dossier))
     {
@@ -156,6 +160,13 @@ function nf_supprimer(string $dossier): void
 
         if ($essai >= 10)
         {
+            if (!$obligatoire)
+            {
+                nf_avertir("  ⚠ {$dossier} n'a pas pu être supprimé (un fichier y reste tenu) : à effacer plus tard");
+
+                return;
+            }
+
             nf_refus("impossible de supprimer {$dossier} : un fichier y reste tenu");
         }
 

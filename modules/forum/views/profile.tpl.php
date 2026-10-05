@@ -27,7 +27,7 @@ if (!empty($user_id))
 	// Contenu du popover (stats + autres groupes)
 	$stats_str = $this->lang('%d sujet|%d sujets', $topics, $topics).' · '.$this->lang('%d réponse|%d réponses', $replies, $replies);
 	$popover_html  = '<div class="forum-profile-popover">';
-	$popover_html .= '<div class="mb-2"><i class="far fa-comment-dots"></i> '.htmlspecialchars(strip_tags($stats_str)).'</div>';
+	$popover_html .= '<div class="mb-2"><i class="far fa-comment-dots"></i> '.nf_texte(strip_tags($stats_str)).'</div>';
 	if (!empty($user_groups_html))
 	{
 		$popover_html .= '<div class="forum-profile-popover-groups">'.implode(' ', $user_groups_html).'</div>';
@@ -42,7 +42,7 @@ if (!empty($user_id))
 		data-bs-placement="right"
 		data-bs-html="true"
 		data-bs-delay='{"show":2000,"hide":150}'
-		data-bs-content="<?php echo htmlspecialchars($popover_html, ENT_QUOTES) ?>"
+		data-bs-content="<?php echo htmlspecialchars($popover_html, ENT_QUOTES) /* codage: du HTML posé dans un attribut — le décoder réveillerait les balises qu’il cite */ ?>"
 	<?php endif ?>
 >
 	<div class="forum-profile-avatar">
@@ -63,12 +63,12 @@ else if (!empty($identite))
 <div class="forum-profile forum-profile-externe">
 	<div class="forum-profile-avatar">
 		<?php if (!empty($identite['avatar'])): ?>
-		<img class="forum-profile-avatar-img avatar" src="<?php echo htmlspecialchars((string) $identite['avatar']) ?>" alt="" loading="lazy" referrerpolicy="no-referrer" />
+		<img class="forum-profile-avatar-img avatar" src="<?php echo nf_texte($identite['avatar']) ?>" alt="" loading="lazy" referrerpolicy="no-referrer" />
 		<?php else: ?>
 		<?php echo $this->module('user')->model2('user')->avatar()->append_attr('class', 'forum-profile-avatar-img') ?>
 		<?php endif ?>
 	</div>
-	<div class="forum-profile-username"><?php echo htmlspecialchars((string) $identite['nom']) ?></div>
+	<div class="forum-profile-username"><?php echo nf_texte($identite['nom']) ?></div>
 	<div class="forum-profile-role"><span class="badge text-bg-secondary"><?php echo icon('fab fa-discord').' '.$this->lang('Discord') ?></span></div>
 </div>
 <?php

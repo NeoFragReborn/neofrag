@@ -80,6 +80,7 @@ class Index extends Controller_Module
 			['GET', ['events'],                    'events:read',  fn () => $this->_evenements()],
 			['POST',   ['forum', 'topics'],                  'forum:write', fn () => $this->_creer_sujet()],
 			['POST',   ['forum', 'topics', '#', 'messages'], 'forum:write', fn (array $p) => $this->_repondre_sujet((int) $p[0])],
+			['POST',   ['forum', 'images'],                  'forum:write', fn () => $this->_envoyer_image()],
 			['PATCH',  ['forum', 'messages', '#'],           'forum:write', fn (array $p) => $this->_modifier_message((int) $p[0])],
 			['DELETE', ['forum', 'messages', '#'],           'forum:write', fn (array $p) => $this->_supprimer_message((int) $p[0])],
 			['PATCH',  ['forum', 'topics', '#'],             'forum:write', fn (array $p) => $this->_modifier_sujet((int) $p[0])],
@@ -1406,7 +1407,7 @@ class Index extends Controller_Module
 	 */
 	private function _texte_brut(mixed $texte): string
 	{
-		return html_entity_decode((string) $texte, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+		return nf_texte_brut($texte);
 	}
 
 	/**
@@ -1419,15 +1420,121 @@ class Index extends Controller_Module
 	 */
 	private function _texte_du_site(string $texte, int $max = 0): string
 	{
-		$encode = htmlspecialchars($texte, ENT_COMPAT, 'UTF-8');
+		$encode = htmlspecialchars($texte, ENT_COMPAT, 'UTF-8') /* codage: à l’enregistrement, comme le formulaire */;
 
 		while ($max && mb_strlen($encode) > $max)
 		{
 			$texte  = mb_substr($texte, 0, -1);
-			$encode = htmlspecialchars($texte, ENT_COMPAT, 'UTF-8');
+			$encode = htmlspecialchars($texte, ENT_COMPAT, 'UTF-8') /* codage: à l’enregistrement, comme le formulaire */;
 		}
 
 		return $encode;
+	}
+
+	/** Images reçues par l'API, par clé et par heure : un programme qui s'emballe ne remplit pas le disque. */
+	private const IMAGES_PAR_HEURE = 200;
+
+	/**
+	 * `POST forum/images` — une image jointe à un message venu d'ailleurs (une image envoyée sur Discord),
+	 * gardée sur le site pour que le message du forum la montre : les adresses des fichiers de Discord
+	 * expirent. Le corps de la requête EST l'image ; `?name=` son nom d'origine, pour le registre des fichiers.
+	 *
+	 * Les règles sont celles des images de l'éditeur (Editeur_Images) : 5 Mo, le vrai type lu dans les
+	 * octets (JPEG, PNG, GIF, WebP), aucun code, des dimensions bornées, le ré-encodage qui ne garde que les
+	 * pixels. Le nom du fichier vient de son empreinte : renvoyer la même image — un message modifié sur
+	 * Discord la renvoie — rend la même adresse, sans copie de plus.
+	 *
+	 * Rend `path` (`/upload/editeur/…`, à mettre dans le contenu du message : elle suit le site s'il change
+	 * de domaine) et `url` (l'adresse complète), en 201 quand le fichier est nouveau.
+	 */
+	private function _envoyer_image(): array
+	{
+		$images = \NF\NeoFrag\Libraries\Editeur_Images::class;
+
+		// La démonstration ne garde aucun fichier : sa remise à zéro restaure la base, pas le disque.
+		if (nf_demo())
+		{
+			$this->_erreur(403, 'demo', $images::message('demo'));
+		}
+
+		$cle = 'api:images:'.(int) ($this->_jeton_courant['token_id'] ?? 0);
+
+		if (!($etat = $this->rate_limit->check($cle))['allowed'])
+		{
+			$this->_erreur(429, 'too_many_requests', $this->lang('Trop de requêtes. Réessayez plus tard.'), ['Retry-After' => (string) $etat['retry_after']]);
+		}
+
+		$this->rate_limit->hit($cle, self::IMAGES_PAR_HEURE, 3600, 3600);
+
+		if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > $images::TAILLE_MAX)
+		{
+			$this->_erreur($images::statut('taille'), 'taille', $images::message('taille'));
+		}
+
+		// Le corps, recopié dans un fichier temporaire sans jamais dépasser la taille permise d'un octet :
+		// un envoi qui ment sur sa longueur n'occupe pas plus.
+		$temporaire = (string) tempnam(sys_get_temp_dir(), 'nf-api-image-');
+
+		// Effacé en fin de requête, quelle qu'en soit l'issue : un refus termine par exit(), qui saute `finally`.
+		register_shutdown_function(static function () use ($temporaire): void
+		{
+			if ($temporaire !== '' && is_file($temporaire))
+			{
+				@unlink($temporaire);
+			}
+		});
+
+		$entree     = fopen('php://input', 'rb');
+		$sortie     = $temporaire !== '' ? fopen($temporaire, 'wb') : FALSE;
+
+		if ($entree === FALSE || $sortie === FALSE)
+		{
+			$this->_erreur($images::statut('ecriture'), 'ecriture', $images::message('ecriture'));
+		}
+
+		stream_copy_to_stream($entree, $sortie, $images::TAILLE_MAX + 1);
+		fclose($entree);
+		fclose($sortie);
+
+		$controle = $images::controler($temporaire);
+
+		if (is_string($controle))
+		{
+			$this->_erreur($images::statut($controle), $controle, $images::message($controle));
+		}
+
+		$relatif = $images::chemin($controle['type'], time(), (string) hash_file('sha256', $temporaire));
+		$absolu  = NEOFRAG_CMS.'/'.$relatif;
+
+		if (!is_file($absolu))
+		{
+			dir_create(dirname($absolu));
+
+			if (!is_dir(dirname($absolu)) || !is_writable(dirname($absolu)))
+			{
+				nf_journaliser_erreur('editeur', 'dossier des images de l\'éditeur non inscriptible : '.dirname($relatif), nf_chemin_relatif(__FILE__).':'.__LINE__);
+				$this->_erreur($images::statut('ecriture'), 'ecriture', $images::message('ecriture'));
+			}
+
+			// Rien n'est écrit quand le ré-encodage échoue : une image que GD ne sait pas relire n'est pas gardée.
+			if (!$images::reencoder($temporaire, $controle['type'], $absolu))
+			{
+				$this->_erreur($images::statut('illisible'), 'illisible', $images::message('illisible'));
+			}
+
+			// Le chemin est unique au registre : un fichier effacé du disque dont la ligne est restée y est déjà.
+			if (!$this->db->select('id')->from('nf_file')->where('path', $relatif)->row())
+			{
+				\NF\NeoFrag\Models\File::add($relatif, $images::nom((string) ($_GET['name'] ?? ''), $controle['type']));
+			}
+
+			$this->_code = 201;
+		}
+
+		return [
+			'path' => $this->url->base.$relatif,
+			'url'  => site_origin().$this->url->base.$relatif,
+		];
 	}
 
 	private function _contenu(array $corps, array &$erreurs): string

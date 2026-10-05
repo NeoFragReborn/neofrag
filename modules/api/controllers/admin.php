@@ -22,19 +22,19 @@ class Admin extends Controller_Module
 		foreach ($this->_modele()->liste() as $cle)
 		{
 			$active  = empty($cle['revoked_at']);
-			$droits  = implode(', ', array_map(static fn (string $d): string => htmlspecialchars($libelles[$d] ?? $d), array_filter(explode(',', (string) $cle['scopes']))));
-			$usage   = !empty($cle['last_used_at']) ? time_span((string) $cle['last_used_at']).' <small class="text-muted">'.htmlspecialchars((string) $cle['last_ip']).'</small>' : '<span class="text-muted">'.$this->lang('Jamais').'</span>';
-			$lignes .= '<tr'.($active ? '' : ' class="text-muted"').'><td><strong>'.htmlspecialchars((string) $cle['name']).'</strong><br /><code>'.htmlspecialchars((string) $cle['prefix']).'…</code></td>'
+			$droits  = implode(', ', array_map(static fn (string $d): string => nf_texte($libelles[$d] ?? $d), array_filter(explode(',', (string) $cle['scopes']))));
+			$usage   = !empty($cle['last_used_at']) ? time_span((string) $cle['last_used_at']).' <small class="text-muted">'.nf_texte($cle['last_ip']).'</small>' : '<span class="text-muted">'.$this->lang('Jamais').'</span>';
+			$lignes .= '<tr'.($active ? '' : ' class="text-muted"').'><td><strong>'.nf_texte($cle['name']).'</strong><br /><code>'.nf_texte($cle['prefix']).'…</code></td>'
 				.'<td>'.($droits ?: '—').'</td><td>'.$usage.'</td>'
 				.'<td>'.($active ? '<span class="badge text-bg-success">'.$this->lang('Active').'</span>' : '<span class="badge text-bg-secondary">'.$this->lang('Révoquée').'</span>').'</td>'
-				.'<td class="text-end">'.($active ? '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/api/revoke/'.$cle['token_id'].'/'.url_title((string) $cle['name'])).'" data-confirm="'.htmlspecialchars((string) $this->lang('Révoquer cette clé ? Le programme qui l’utilise perdra l’accès immédiatement.'), ENT_QUOTES).'">'.icon('fas fa-ban').' '.$this->lang('Révoquer').'</a>' : '').'</td></tr>';
+				.'<td class="text-end">'.($active ? '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/api/revoke/'.$cle['token_id'].'/'.url_title((string) $cle['name'])).'" data-confirm="'.nf_texte($this->lang('Révoquer cette clé ? Le programme qui l’utilise perdra l’accès immédiatement.')).'">'.icon('fas fa-ban').' '.$this->lang('Révoquer').'</a>' : '').'</td></tr>';
 		}
 
 		$corps = $lignes
 			? '<div class="table-responsive"><table class="table table-sm align-middle mb-0"><thead><tr><th>'.$this->lang('Clé').'</th><th>'.$this->lang('Droits').'</th><th>'.$this->lang('Dernier usage').'</th><th>'.$this->lang('État').'</th><th></th></tr></thead><tbody>'.$lignes.'</tbody></table></div>'
 			: $this->admin_empty('fas fa-key', $this->lang('Aucune clé d’accès pour le moment.'), $this->lang('Une clé permet à un programme — le bot Discord, une intégration — de lire ou d’écrire sur le site par l’API, avec les seuls droits que vous lui donnez.'));
 
-		$aide = '<p class="text-muted mb-3">'.$this->lang('Adresse de l’API : %s — chaque requête porte l’en-tête %s.', '<code>'.htmlspecialchars(site_origin().$this->url->base.'api/v1/').'</code>', '<code>Authorization: Bearer nfr_…</code>').'</p>';
+		$aide = '<p class="text-muted mb-3">'.$this->lang('Adresse de l’API : %s — chaque requête porte l’en-tête %s.', '<code>'.nf_texte(site_origin().$this->url->base.'api/v1/').'</code>', '<code>Authorization: Bearer nfr_…</code>').'</p>';
 
 		return $this->admin_card('fas fa-plug', $this->lang('Clés d’accès'), $aide.$corps, '',
 			'<a class="btn btn-primary btn-sm" href="'.url('admin/api/add').'"><i class="fas fa-plus"></i> '.$this->lang('Nouvelle clé').'</a>');
@@ -66,7 +66,7 @@ class Admin extends Controller_Module
 				'<div class="alert alert-warning">'.icon('fas fa-exclamation-triangle').' '.$this->lang('Copiez cette clé maintenant : elle ne sera plus jamais affichée. Si vous la perdez, révoquez-la et créez-en une autre.').'</div>'
 				// Pas de bouton « Copier » : il demanderait du JavaScript en ligne, que la politique de
 				// sécurité du site refuse. Le champ se sélectionne et se copie.
-				.'<input type="text" class="form-control font-monospace mb-3" readonly="readonly" value="'.htmlspecialchars($cle).'" aria-label="'.$this->lang('Clé d’accès').'" />'
+				.'<input type="text" class="form-control font-monospace mb-3" readonly="readonly" value="'.nf_texte($cle).'" aria-label="'.$this->lang('Clé d’accès').'" />'
 				.'<a class="btn btn-light" href="'.url('admin/api').'">'.$this->lang('Retour aux clés').'</a>');
 		}
 

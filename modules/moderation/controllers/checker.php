@@ -18,7 +18,8 @@ class Checker extends Module_Checker
 	public function _report_detail($id)  { return $this->_check([(int)$id]); }
 	public function _sanctions($page = '') { return $this->_check([$page]); }
 	public function _sanction_detail($id)  { return $this->_check([(int)$id]); }
-	public function _user_history($id)   { return $this->_check([(int)$id]); }
+	// Le compte de secours d'une démonstration est introuvable ici comme partout (nf_compte_masque()).
+	public function _user_history($id)   { return ($args = $this->_check([(int)$id])) && (int)$id !== nf_compte_masque() ? $args : NULL; }
 
 	public function _report_dismiss($id)    { return $this->_check([(int)$id]); }
 	public function _report_sanction($id)   { return $this->_check([(int)$id]); }

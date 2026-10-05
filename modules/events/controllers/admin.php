@@ -135,7 +135,7 @@ class Admin extends Controller_Module
 							[
 								'title'   => $this->lang('Titre'),
 								'content' => function($data){
-									$series = !empty($data['series_id']) ? ' <span class="badge text-bg-secondary" data-bs-toggle="tooltip" title="'.htmlspecialchars((string) ($this->lang('Occurrence d\'une série récurrente')), ENT_QUOTES).'"><i class="fas fa-repeat"></i></span>' : '';
+									$series = !empty($data['series_id']) ? ' <span class="badge text-bg-secondary" data-bs-toggle="tooltip" title="'.nf_texte($this->lang('Occurrence d\'une série récurrente')).'"><i class="fas fa-repeat"></i></span>' : '';
 									return '<a href="'.url('events/'.$data['event_id'].'/'.url_title($data['title'])).'">'.$data['title'].'</a>'.$series;
 								},
 								'sort'    => function($data){

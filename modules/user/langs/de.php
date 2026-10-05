@@ -320,4 +320,13 @@ return [
 	'92330b9f' => '%d Eintrag, 365 Tage aufbewahrt|%d Einträge, 365 Tage aufbewahrt',
 	'7ecafebb' => 'Kein Mitglied entspricht „%s“.',
 	'f4f7e9a1' => 'Benutzername oder E-Mail suchen…',
+	'8322fb2c' => 'Ich habe die Regeln gelesen und akzeptiere sie',
+	'64af90e0' => 'Mein Konto erstellen',
+	'3d7f5bc9' => 'Bevor Sie Ihr Konto mit %s erstellen, lesen Sie bitte die Regeln der Website.',
+	'0a0d7675' => 'Ihr Konto wurde erstellt: Öffnen Sie den an %s gesendeten Link, um es zu aktivieren.',
+	'4ab39f09' => 'Ihr Konto wurde erstellt, aber die Bestätigungs-E-Mail konnte nicht gesendet werden: Melden Sie sich etwas später an, um eine neue zu erhalten.',
+	'e316c550' => 'Dieser Bestätigungslink ist nicht mehr gültig: Melden Sie sich an, dann wird Ihnen ein neuer Link gesendet.',
+	'84a10ad9' => 'Ihre Adresse ist bestätigt: Willkommen!',
+	'6f65c0fc' => 'Ihre Registrierung ist noch nicht bestätigt: Ein neuer Link wurde soeben an %s gesendet. Öffnen Sie ihn, um Ihr Konto zu aktivieren.',
+	'cfbbd188' => 'Ihre Registrierung ist noch nicht bestätigt: Öffnen Sie den an %s gesendeten Link. Ein neuer Link kann etwas später gesendet werden.',
 ];

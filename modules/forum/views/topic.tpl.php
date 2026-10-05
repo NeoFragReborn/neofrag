@@ -36,13 +36,13 @@
 				<?php if (!empty($solution)): ?>
 				<a class="forum-solution-encart" href="#<?php echo (int) $solution['message_id'] ?>">
 					<strong><?php echo icon('fas fa-check-circle').' '.$this->lang('Résolu') ?></strong>
-					<span><?php echo $this->lang('La réponse de %s résout ce sujet.', htmlspecialchars((string) ($this->db->select('username')->from('nf_user')->where('id', (int) $solution['user_id'])->row() ?: $this->lang('Visiteur')))) ?></span>
-					<em><?php echo htmlspecialchars(mb_strimwidth(trim(preg_replace('/\s+/', ' ', strip_tags(str_replace(['<br>', '<br/>', '<br />'], ' ', (string) $solution['message'])))), 0, 160, '…')) ?></em>
+					<span><?php echo $this->lang('La réponse de %s résout ce sujet.', nf_texte($this->db->select('username')->from('nf_user')->where('id', (int) $solution['user_id'])->row() ?: $this->lang('Visiteur'))) ?></span>
+					<em><?php echo nf_texte(trim(preg_replace('/\s+/', ' ', strip_tags(str_replace(['<br>', '<br/>', '<br />'], ' ', (string) $solution['message'])))), 160) ?></em>
 				</a>
 				<?php endif ?>
 				<?php if (!empty($profile['signature'])): ?>
 				<hr />
-				<?php echo bbcode($profile['signature']) ?>
+				<?php echo nf_contenu_editeur($profile['signature']) ?>
 				<?php endif ?>
 			</div>
 		</div>

@@ -38,11 +38,42 @@ runs:
         owner: NeoFragReborn
         repositories: extensions
 
+    # Une VERSION publiée (une étiquette vX.Y.Z sur ce commit) se juge avec les addons de la même version.
+    # Les deux dépôts partent l'un après l'autre : le 2026-10-04, neofrag 1.2.26 a été testé avec les
+    # addons de la 1.2.25, encore sur main, et sa CI est restée rouge. On attend donc l'étiquette jumelle,
+    # un quart d'heure au plus ; hors version (une pull request), main.
+    - name: La version d'extensions à poser
+      id: partenaire
+      if: ${{ steps.besoin.outputs.poser == 'oui' }}
+      shell: bash
+      env:
+        JETON: ${{ steps.jeton.outputs.token }}
+      run: |
+        acces="https://github.com"
+        [ -n "$JETON" ] && acces="https://x-access-token:${JETON}@github.com"
+        version=$(git ls-remote --tags "https://github.com/${GITHUB_REPOSITORY}.git" 'v*' \
+          | awk -v sha="$GITHUB_SHA" '$1 == sha { sub("refs/tags/", "", $2); sub(/\^\{\}$/, "", $2); print $2; exit }')
+        ref=main
+        if [ -n "$version" ]; then
+          for i in $(seq 1 30); do
+            if git ls-remote --exit-code --tags "${acces}/NeoFragReborn/extensions.git" "refs/tags/${version}" > /dev/null; then
+              ref="$version"
+              break
+            fi
+            echo "extensions n'a pas encore ${version} : on l'attend (${i}/30)…"
+            sleep 30
+          done
+          [ "$ref" = main ] && echo "::warning::extensions n'a pas reçu ${version} en un quart d'heure : sa branche main est posée."
+        fi
+        echo "extensions posé : ${ref}"
+        echo "ref=${ref}" >> "$GITHUB_OUTPUT"
+
     - name: Cloner extensions
       if: ${{ steps.besoin.outputs.poser == 'oui' }}
       uses: actions/checkout@v7
       with:
         repository: NeoFragReborn/extensions
+        ref: ${{ steps.partenaire.outputs.ref }}
         path: _extensions
         token: ${{ steps.jeton.outputs.token || github.token }}
 

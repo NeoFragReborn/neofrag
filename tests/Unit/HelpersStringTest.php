@@ -151,4 +151,71 @@ final class HelpersStringTest extends TestCase
         // position du texte et rendait l'extrait illisible.
         $this->assertStringNotContainsString('<mark>', highlight('Texte quelconque', []));
     }
+
+    /**
+     * Le texte rangé codé par le formulaire (`&eacute;`) et le même texte arrivé brut donnent la même
+     * sortie : codée UNE fois. `htmlspecialchars()` faisait `&amp;eacute;`, que la page affichait
+     * « &eacute; » (vu par le mainteneur le 2026-10-05).
+     */
+    public function test_nf_texte_encodes_once_whatever_the_origin(): void
+    {
+        $range = utf8_htmlentities('Réunion — l\'été <b>"R&D"</b>');
+        $brut  = 'Réunion — l\'été <b>"R&D"</b>';
+
+        $this->assertSame(nf_texte($brut), nf_texte($range));
+        $this->assertSame('Réunion — l&#039;été &lt;b&gt;&quot;R&amp;D&quot;&lt;/b&gt;', nf_texte($range));
+
+        // Une balise reçue d'un service extérieur reste du texte.
+        $this->assertSame('&lt;script&gt;', nf_texte('<script>'));
+        // Une entité tapée telle quelle par quelqu'un (rangée « &amp;eacute; ») se relit telle quelle.
+        $this->assertSame('&amp;eacute;', nf_texte(utf8_htmlentities('&eacute;')));
+        $this->assertSame('', nf_texte(NULL));
+    }
+
+    public function test_nf_texte_shortens_the_decoded_text_without_cutting_an_entity(): void
+    {
+        $this->assertSame('Été…', nf_texte('&Eacute;t&eacute; indien', 4));
+        $this->assertSame('Court', nf_texte('Court', 10));
+    }
+
+    /**
+     * La version texte d'un courriel : strip_tags() collait les paragraphes, et le lien de validation se
+     * lisait « navigateur :https://…/validation/…Si tu n'es pas… » (épreuve du 2026-10-05).
+     */
+    public function test_nf_texte_depuis_html_keeps_a_mail_link_usable(): void
+    {
+        $html  = '<style>p{color:red}</style><p>Copie cette URL dans ton navigateur :</p><p>https://site.test/user/validation/abc</p>'
+            .'<p>Si tu n&#039;es pas à l&eacute;origine</p><p><a href="https://site.test/user/validation/abc">Valider</a></p>';
+        $texte = nf_texte_depuis_html($html);
+
+        $this->assertStringContainsString("navigateur :\n\nhttps://site.test/user/validation/abc\n\nSi tu n'es pas à léorigine", $texte);
+        $this->assertStringContainsString('Valider (https://site.test/user/validation/abc)', $texte);
+        $this->assertStringNotContainsString('color:red', $texte);
+    }
+
+    /**
+     * Une signature écrite dans l'éditeur riche : rangée codée par form2 jusqu'au 2026-10-05, elle
+     * s'affichait en code (`<p><img …></p>` à l'écran) ; décodée, elle redevient une image.
+     */
+    public function test_nf_contenu_editeur_shows_html_once_and_keeps_old_text(): void
+    {
+        $range = utf8_htmlentities('<p><img src="/upload/editeur/2026/10/a.jpg" alt="" width="800" height="420"></p>');
+        $this->assertStringContainsString('<img src="/upload/editeur/2026/10/a.jpg"', nf_contenu_editeur($range));
+        $this->assertStringNotContainsString('&lt;', nf_contenu_editeur($range));
+
+        // Du HTML neuf : assaini (le script part), pas de <br /> glissé entre les paragraphes.
+        $html = nf_contenu_editeur("<p>Un</p>\n<p>Deux<script>alert(1)</script></p>");
+        $this->assertStringNotContainsString('<script', $html);
+        $this->assertStringNotContainsString('<br', $html);
+
+        // Un ancien texte simple : mis en forme comme avant (sauts de ligne, liens).
+        $this->assertStringContainsString('<br', nf_contenu_editeur("ligne 1\nligne 2"));
+    }
+
+    public function test_nf_texte_brut_decodes_for_plain_text_readers(): void
+    {
+        // L'objet d'un courriel, un message Discord : « é », jamais « &eacute; » ni « &#039; ».
+        $this->assertSame('l\'été "R&D"', nf_texte_brut('l&#039;&eacute;t&eacute; &quot;R&amp;D&quot;'));
+        $this->assertSame('l\'été', nf_texte_brut('l&apos;été'));
+    }
 }

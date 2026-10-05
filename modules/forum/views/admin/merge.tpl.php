@@ -8,7 +8,7 @@
 		<select name="<?php echo $form_id ?>[target_topic_id]" class="form-select" required>
 			<option value=""><?php echo $this->lang('— Choisir un sujet —') ?></option>
 			<?php foreach ($other_topics as $t): ?>
-				<option value="<?php echo (int)$t['topic_id'] ?>"><?php echo htmlspecialchars($t['title']).' ('.((int)$t['count_messages'] + 1).' messages)' ?></option>
+				<option value="<?php echo (int)$t['topic_id'] ?>"><?php echo nf_texte($t['title']).' ('.((int)$t['count_messages'] + 1).' messages)' ?></option>
 			<?php endforeach ?>
 		</select>
 		<?php if (empty($other_topics)): ?>

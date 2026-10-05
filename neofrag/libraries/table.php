@@ -281,7 +281,7 @@ class Table extends Library
 			{
 				$search_input = '	<div class="table-search float-start">
 										<div class="position-relative">
-											<input class="form-control" data-provide="typeahead" data-items="5" data-source="'.utf8_htmlentities('['.implode(', ', array_unique(array_filter($words))).']').'" type="text"'.(!empty($search) ? ' value="'.$search.'"' : '').' placeholder="'.NeoFrag()->lang('Rechercher').'" autocomplete="off" />
+											<input class="form-control" data-provide="typeahead" data-items="5" data-source="'.utf8_htmlentities('['.implode(', ', array_unique(array_filter($words))).']') /* codage: du JSON posé dans un attribut, tel quel */.'" type="text"'.(!empty($search) ? ' value="'.$search.'"' : '').' placeholder="'.NeoFrag()->lang('Rechercher').'" autocomplete="off" />
 										</div>
 									</div>';
 			}

@@ -11,6 +11,6 @@
 <?php echo $experiences ? $experiences : $this->lang('Non renseigné.') ?>
 <?php if (!empty($custom)): foreach ($custom as $c): ?>
 <hr />
-<h4><?php echo htmlspecialchars($c['label']) ?></h4>
-<?php echo (isset($c['value']) && $c['value'] !== '') ? nl2br(htmlspecialchars($c['value'])) : $this->lang('Non renseigné.') ?>
+<h4><?php echo nf_texte($c['label']) ?></h4>
+<?php echo (isset($c['value']) && $c['value'] !== '') ? nl2br(nf_texte($c['value'])) : $this->lang('Non renseigné.') ?>
 <?php endforeach; endif ?>

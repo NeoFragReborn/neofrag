@@ -24,7 +24,7 @@
 			</div>
 		<?php endforeach ?>
 		<div class="float-end">
-			<p class="d-none d-md-block"><?php echo '<span class="badge">'.(post() ? 'POST' : 'GET').'</span> '.implode(' ', array_map(function($a){ return '<span class="badge">'.utf8_htmlentities($a).'</span>'; }, $this->url->segments)) ?></p>
+			<p class="d-none d-md-block"><?php echo '<span class="badge">'.(post() ? 'POST' : 'GET').'</span> '.implode(' ', array_map(function($a){ return '<span class="badge">'.nf_texte($a).'</span>'; }, $this->url->segments)) ?></p>
 			<p><?php echo icon('far fa-clock').' '.round((microtime(TRUE) - NEOFRAG_TIME) * 1000, 2).' ms' ?></p>
 			<p><?php echo icon('fas fa-cogs').' '.ceil((memory_get_peak_usage() - NEOFRAG_MEMORY) / 1024).' kB' ?></p>
 			<div class="debug-bar-close<?php if ($active) echo ' active' ?>"><?php echo icon('fas fa-times') ?></div>

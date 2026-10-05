@@ -53,7 +53,7 @@ class Admin extends Controller_Module
 			$news_html .= '<div class="nf-content-card-head">';
 			$news_html .= '<div class="nf-content-card-title">';
 			if ($this->is_authorized('modify_news')) $news_html .= '<input type="checkbox" name="selected[]" value="'.(int)$n['news_id'].'" class="nf-bulk-cb" style="margin-right:6px;vertical-align:middle;">';
-			$news_html .= '<a href="'.url('news/'.$n['news_id'].'/'.$slug).'">'.htmlspecialchars((string) ($n['title'])).'</a></div>';
+			$news_html .= '<a href="'.url('news/'.$n['news_id'].'/'.$slug).'">'.nf_texte($n['title']).'</a></div>';
 			$is_scheduled = $published && !empty($n['date']) && strtotime($n['date']) > time();
 			if (!$published)         { $st_cls = 'draft';     $st_icon = 'fa-clock';            $st_lbl = $this->lang('Brouillon'); }
 			elseif ($is_scheduled)   { $st_cls = 'scheduled'; $st_icon = 'fa-calendar-alt';     $st_lbl = $this->lang('Programmée le %s', timetostr($this->lang('d/m/Y H:i'), $n['date'])); }
@@ -64,7 +64,7 @@ class Admin extends Controller_Module
 			$news_html .= '</div>';
 
 			$news_html .= '<div class="nf-content-card-meta">';
-			$news_html .= '<span><i class="fas fa-folder"></i> '.htmlspecialchars((string) ($n['category_title'] ?? '—')).'</span>';
+			$news_html .= '<span><i class="fas fa-folder"></i> '.nf_texte($n['category_title'] ?? '—').'</span>';
 			$news_html .= '<span><i class="fas fa-user"></i> '.$author.'</span>';
 			$news_html .= '<span><i class="far fa-clock"></i> '.time_span($n['date']).'</span>';
 			$news_html .= '<span><i class="far fa-comments"></i> '.$comments.'</span>';
@@ -78,7 +78,7 @@ class Admin extends Controller_Module
 			}
 			if ($this->is_authorized('delete_news'))
 			{
-				$news_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/news/delete/'.$n['news_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer "%s" ?', $n['title']))).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
+				$news_html .= '<a class="btn btn-sm btn-outline-danger" href="'.url('admin/news/delete/'.$n['news_id'].'/'.$slug).'" data-confirm="'.nf_texte($this->lang('Supprimer "%s" ?', $n['title'])).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>';
 			}
 			$news_html .= '</div>';
 
@@ -96,18 +96,18 @@ class Admin extends Controller_Module
 		// Barre recherche / filtre (GET). $_GET préservé à travers la pagination par get_pagination().
 		$form_action = url($this->module->pagination->get_url());
 		$toolbar  = '<form method="get" action="'.$form_action.'" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">';
-		$toolbar .= '<input type="text" name="q" value="'.htmlspecialchars((string) ($filters['q'])).'" class="form-control form-control-sm" placeholder="'.htmlspecialchars((string) ($this->lang('Rechercher un titre…')), ENT_QUOTES).'" style="max-width:240px;">';
+		$toolbar .= '<input type="text" name="q" value="'.nf_texte($filters['q']).'" class="form-control form-control-sm" placeholder="'.nf_texte($this->lang('Rechercher un titre…')).'" style="max-width:240px;">';
 		$toolbar .= '<select name="category" class="form-select form-select-sm" style="width:auto;">';
 		$toolbar .= '<option value="0">'.$this->lang('Toutes les catégories').'</option>';
 		foreach ($filters['categories'] as $cid => $ctitle)
 		{
-			$toolbar .= '<option value="'.(int)$cid.'"'.((int)$filters['category'] === (int)$cid ? ' selected' : '').'>'.htmlspecialchars((string) ($ctitle)).'</option>';
+			$toolbar .= '<option value="'.(int)$cid.'"'.((int)$filters['category'] === (int)$cid ? ' selected' : '').'>'.nf_texte($ctitle).'</option>';
 		}
 		$toolbar .= '</select>';
 		$toolbar .= '<select name="status" class="form-select form-select-sm" style="width:auto;">';
 		foreach (['' => $this->lang('Tous les statuts'), 'published' => $this->lang('Publiées'), 'draft' => $this->lang('Brouillons')] as $val => $label)
 		{
-			$toolbar .= '<option value="'.$val.'"'.($filters['status'] === $val ? ' selected' : '').'>'.htmlspecialchars((string) ($label)).'</option>';
+			$toolbar .= '<option value="'.$val.'"'.($filters['status'] === $val ? ' selected' : '').'>'.nf_texte($label).'</option>';
 		}
 		$toolbar .= '</select>';
 		$toolbar .= $this->sort_select($filters['sort_cols'], $filters['sort']);
@@ -138,7 +138,7 @@ class Admin extends Controller_Module
 				.'<button type="submit" class="btn btn-sm btn-primary">'.$this->lang('Appliquer').'</button>'
 				.'</div>';
 
-			$news_html = '<form method="post" action="'.htmlspecialchars((string) (url($this->url->request)), ENT_QUOTES).'">'.$bulk_bar.$news_html.'</form>'
+			$news_html = '<form method="post" action="'.nf_texte(url($this->url->request)).'">'.$bulk_bar.$news_html.'</form>'
 				.'<script>(function(){var a=document.getElementById("nf-bulk-all-news");if(a){a.addEventListener("change",function(){document.querySelectorAll(".nf-bulk-cb").forEach(function(c){c.checked=a.checked;});});}})();</script>';
 		}
 

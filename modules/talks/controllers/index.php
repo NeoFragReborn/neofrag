@@ -292,12 +292,12 @@ class Index extends Controller_Module
 		// "Quitter" = sortir du groupe/salon (hard, perd l'accès) — uniquement pour group/public
 		if (in_array($talk['type'], ['group', 'public'], TRUE))
 		{
-			$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/leave').'" class="btn btn-sm btn-outline-warning" data-confirm="'.htmlspecialchars((string) ($this->lang('Quitter cette conversation ? Tu ne pourras plus la voir ni y répondre.')), ENT_QUOTES).'" data-confirm-style="warning">'.\icon('fas fa-sign-out-alt').' '.$this->lang('Quitter').'</a>';
+			$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/leave').'" class="btn btn-sm btn-outline-warning" data-confirm="'.nf_texte($this->lang('Quitter cette conversation ? Tu ne pourras plus la voir ni y répondre.')).'" data-confirm-style="warning">'.\icon('fas fa-sign-out-alt').' '.$this->lang('Quitter').'</a>';
 		}
 		// "Archiver" = soft hide, retrouvable dans /talks/archives, ne quitte pas
 		$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/archive').'" class="btn btn-sm btn-outline-secondary">'.\icon('fas fa-archive').' '.$this->lang('Archiver').'</a>';
 		// "Supprimer pour moi" = soft-delete user-side, conservé 14j dans /talks/trash, restaurable
-		$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/delete').'" class="btn btn-sm btn-outline-danger" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer cette conversation pour toi ? Elle reste accessible aux autres participants. Tu peux la restaurer pendant 14 jours depuis la corbeille.')), ENT_QUOTES).'">'.\icon('far fa-trash-alt').' '.$this->lang('Supprimer').'</a>';
+		$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/delete').'" class="btn btn-sm btn-outline-danger" data-confirm="'.nf_texte($this->lang('Supprimer cette conversation pour toi ? Elle reste accessible aux autres participants. Tu peux la restaurer pendant 14 jours depuis la corbeille.')).'">'.\icon('far fa-trash-alt').' '.$this->lang('Supprimer').'</a>';
 
 		return $this->view('user/view', [
 			'talk'            => $talk,

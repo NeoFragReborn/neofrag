@@ -54,22 +54,22 @@ $labels = [
 			$tmeta = $types[$a['type']] ?? ['one' => $a['type'], 'icon' => 'fas fa-cube'];
 			$size  = $a['size'] > 1048576 ? $this->lang('%s Mo', round($a['size'] / 1048576, 1)) : $this->lang('%s Ko', round($a['size'] / 1024));
 		?>
-		<div class="mkt-card" data-type="<?php echo htmlspecialchars($a['type']) ?>" data-key="<?php echo htmlspecialchars($a['type'].':'.$a['name']) ?>" role="button" tabindex="0" title="<?php echo $this->lang('Voir le détail') ?>">
+		<div class="mkt-card" data-type="<?php echo nf_texte($a['type']) ?>" data-key="<?php echo nf_texte($a['type'].':'.$a['name']) ?>" role="button" tabindex="0" title="<?php echo $this->lang('Voir le détail') ?>">
 			<div class="mkt-card-top">
-				<span class="mkt-ico mkt-ico-<?php echo htmlspecialchars($a['type']) ?>"><i class="<?php echo $tmeta['icon'] ?>"></i></span>
-				<span class="mkt-badge"><?php echo htmlspecialchars((string) $tmeta['one']) ?></span>
-				<span class="mkt-ver">v<?php echo htmlspecialchars($a['version']) ?></span>
+				<span class="mkt-ico mkt-ico-<?php echo nf_texte($a['type']) ?>"><i class="<?php echo $tmeta['icon'] ?>"></i></span>
+				<span class="mkt-badge"><?php echo nf_texte($tmeta['one']) ?></span>
+				<span class="mkt-ver">v<?php echo nf_texte($a['version']) ?></span>
 			</div>
 			<?php /* L'apercu n'est rendu que s'il existe : une bande vide dirait moins que rien. */ ?>
 			<?php if (!empty($a['preview'])): ?>
 				<?php $ap = $base_url !== '' ? $base_url.'/'.$a['preview'] : $this->url->base.'marketplace/'.$a['preview']; ?>
-				<img class="mkt-apercu" src="<?php echo htmlspecialchars($ap) ?>" alt="" loading="lazy" width="640" height="400" />
+				<img class="mkt-apercu" src="<?php echo nf_texte($ap) ?>" alt="" loading="lazy" width="640" height="400" />
 			<?php endif ?>
-			<h3 class="mkt-title"><?php echo htmlspecialchars($a['title']) ?></h3>
-			<p class="mkt-desc"><?php echo htmlspecialchars($a['description'] ?: $this->lang('Addon NeoFrag Reborn.')) ?></p>
+			<h3 class="mkt-title"><?php echo nf_texte($a['title']) ?></h3>
+			<p class="mkt-desc"><?php echo nf_texte($a['description'] ?: $this->lang('Addon NeoFrag Reborn.')) ?></p>
 			<div class="mkt-card-foot">
 				<?php $dl = $base_url !== '' ? $base_url . '/' . $a['file'] : $this->url->base . 'marketplace/' . $a['file']; ?>
-				<a class="mkt-dl" href="<?php echo htmlspecialchars($dl) ?>" download>
+				<a class="mkt-dl" href="<?php echo nf_texte($dl) ?>" download>
 					<i class="fas fa-download"></i> <?php echo $this->lang('Télécharger') ?> <span><?php echo $size ?></span>
 				</a>
 				<span class="mkt-more"><?php echo $this->lang('Détails') ?> <i class="fas fa-circle-info"></i></span>

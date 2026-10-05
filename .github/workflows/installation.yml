@@ -322,12 +322,14 @@ jobs:
           app-id: ${{ vars.NF_APP_ID }}
           private-key: ${{ secrets.NF_APP_CLE }}
           owner: ${{ github.repository_owner }}
+      # Un 429 dit que le site existe et nous freine, pas que le lien est mort (gnu.org l'a fait).
       - uses: lycheeverse/lychee-action@v2
         with:
           token: ${{ steps.app.outputs.token || github.token }}
           fail: true
           args: >-
             --no-progress --max-retries 3 --timeout 30
+            --accept '200..=299,429'
             --exclude '^https?://(localhost|127\.0\.0\.1|example\.(org|com|test))'
             --exclude 'neofrag-reborn\.xyz/.+/admin'
             './**/*.md'

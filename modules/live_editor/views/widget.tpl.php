@@ -24,8 +24,8 @@
       data-lang-aucun-reglage="<?php echo $this->lang('Ce widget n\'a rien à régler.') ?>"
       data-lang-aucun-resultat="<?php echo $this->lang('Aucun widget ne correspond.') ?>">
 
-	<input type="hidden" name="widget" id="live-editor-settings-widget" value="<?php echo utf8_htmlentities($widget) ?>">
-	<input type="hidden" name="type"   id="live-editor-settings-type"   value="<?php echo utf8_htmlentities($type) ?>">
+	<input type="hidden" name="widget" id="live-editor-settings-widget" value="<?php echo nf_texte($widget) ?>">
+	<input type="hidden" name="type"   id="live-editor-settings-type"   value="<?php echo nf_texte($type) ?>">
 
 	<div class="nf-le-wiz-steps" role="tablist">
 		<?php foreach ([
@@ -55,8 +55,8 @@
 			<div class="nf-le-wiz-cards" role="listbox" aria-label="<?php echo $this->lang('Widget') ?>" data-role="widgets">
 				<?php foreach ($widgets as $nom => $libelle): ?>
 					<button type="button" class="nf-le-wiz-card" role="option"
-					        data-value="<?php echo utf8_htmlentities($nom) ?>"
-					        data-recherche="<?php echo utf8_htmlentities(mb_strtolower($libelle . ' ' . $nom)) ?>"
+					        data-value="<?php echo nf_texte($nom) ?>"
+					        data-recherche="<?php echo nf_texte(mb_strtolower($libelle . ' ' . $nom)) ?>"
 					        aria-selected="<?php echo $nom === $widget ? 'true' : 'false' ?>"
 					        tabindex="<?php echo $nom === $widget ? '0' : '-1' ?>">
 						<span class="nf-le-wiz-card-i" aria-hidden="true"><?php echo icon($icones[$nom] ?? 'fas fa-puzzle-piece') ?></span>
@@ -73,7 +73,7 @@
 				<?php foreach ($types as $w => $liste): ?>
 					<?php foreach ($liste as $nom => $libelle): ?>
 						<button type="button" class="nf-le-wiz-card nf-le-wiz-card--texte" role="option"
-						        data-widget="<?php echo utf8_htmlentities($w) ?>" data-value="<?php echo utf8_htmlentities($nom) ?>"
+						        data-widget="<?php echo nf_texte($w) ?>" data-value="<?php echo nf_texte($nom) ?>"
 						        aria-selected="false" tabindex="-1" hidden>
 							<span class="nf-le-wiz-card-l"><?php echo $libelle ?></span>
 						</button>
@@ -85,7 +85,7 @@
 		<section class="nf-le-wiz-panel" data-panel="title" role="tabpanel" hidden>
 			<label class="form-label" for="live-editor-settings-title"><?php echo $this->lang('Titre') ?></label>
 			<input type="text" class="form-control" id="live-editor-settings-title" name="title"
-			       value="<?php echo utf8_htmlentities($title) ?>"
+			       value="<?php echo nf_texte($title) ?>"
 			       placeholder="<?php echo $this->lang('Titre par défaut') ?>">
 			<p class="nf-le-wiz-aide"><?php echo $this->lang('Laissez vide pour garder le titre par défaut du widget.') ?></p>
 		</section>
@@ -93,8 +93,8 @@
 		<section class="nf-le-wiz-panel" data-panel="settings" role="tabpanel" hidden>
 			<div id="live-editor-settings"
 			     data-widget-id="<?php echo (int) $widget_id ?>"
-			     data-original-widget="<?php echo utf8_htmlentities($widget) ?>"
-			     data-original-type="<?php echo utf8_htmlentities($type) ?>"></div>
+			     data-original-widget="<?php echo nf_texte($widget) ?>"
+			     data-original-type="<?php echo nf_texte($type) ?>"></div>
 		</section>
 
 	</div>

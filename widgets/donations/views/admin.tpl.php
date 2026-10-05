@@ -9,7 +9,7 @@
 				<select class="form-select" name="settings[campaign_id]" id="settings-don-campaign">
 					<option value=""<?php if ((string)$campaign_id === '' || $campaign_id === '0') echo ' selected="selected"' ?>><?php echo $this->lang('Première campagne active (auto)') ?></option>
 					<?php foreach ($campaigns as $c): ?>
-					<option value="<?php echo $c['id'] ?>"<?php if ((int)$campaign_id === (int)$c['id']) echo ' selected="selected"' ?>><?php echo htmlspecialchars($c['title']) ?> (<?php echo $c['status'] ?>)</option>
+					<option value="<?php echo $c['id'] ?>"<?php if ((int)$campaign_id === (int)$c['id']) echo ' selected="selected"' ?>><?php echo nf_texte($c['title']) ?> (<?php echo $c['status'] ?>)</option>
 					<?php endforeach ?>
 				</select>
 				<?php if (empty($campaigns)): ?>

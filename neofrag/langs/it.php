@@ -610,4 +610,6 @@ return [
 	'f30497d4' => 'Non è stato possibile salvare l\'immagine sul sito.',
 	'c6e6b32b' => 'Non è stato possibile leggere questa immagine.',
 	'2cb256bb' => 'Non è stato possibile inviare l\'immagine. Controlla la connessione, poi riprova.',
+	'2c1b9bbb' => 'Accesso rifiutato: iscrizione non ancora convalidata',
+	'080a7879' => 'Indirizzo e-mail convalidato',
 ];

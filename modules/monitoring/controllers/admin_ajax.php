@@ -116,7 +116,7 @@ class Admin_Ajax extends Controller_Module
 
 			if ($checksum && $publiee !== '' && version_compare(version_format($publiee), version_format(NEOFRAG_VERSION), '!='))
 			{
-				$this->_notify($this->lang('La vérification des fichiers reprendra une fois le site au niveau de la version publiée (%s) : la liste de contrôle disponible est la sienne.', htmlspecialchars($publiee)), 'info');
+				$this->_notify($this->lang('La vérification des fichiers reprendra une fois le site au niveau de la version publiée (%s) : la liste de contrôle disponible est la sienne.', nf_texte($publiee)), 'info');
 				$checksum      = NULL;
 				$autre_version = TRUE;
 			}

@@ -407,8 +407,10 @@ class Form extends Library
 
 	private function _check_checkbox(&$post, $var, $options)
 	{
-		$post[$var] = array_filter(isset($post[$var]) ? $post[$var] : [], function($a){
-			return strlen($a);
+		// Seules les valeurs texte comptent : une requête forgée (`case[][0]=…`) portait un tableau, et
+		// strlen() levait une TypeError — une page 500 au lieu d'un refus (épreuve du 2026-10-05).
+		$post[$var] = array_filter(isset($post[$var]) && is_array($post[$var]) ? $post[$var] : [], function($a){
+			return is_string($a) && strlen($a);
 		});
 		return $this->_check_text($post, $var, $options);
 	}
@@ -682,7 +684,7 @@ class Form extends Library
 			}
 			else
 			{
-				return utf8_htmlentities(trim($post[$this->token()][$var]));
+				return nf_texte(trim($post[$this->token()][$var]));
 			}
 		}
 		else if (isset($options['checked']))
@@ -714,13 +716,12 @@ class Form extends Library
 	 * check-mise-en-page, qui y a trouvé une « image cassée » (2026-09-23).
 	 *
 	 * Les valeurs enregistrées PAR CE FORMULAIRE sont déjà encodées à l'entrée (is_valid) ; celles qui
-	 * arrivent par un autre chemin (import, API, SQL de démonstration) ne le sont pas. D'où
-	 * `double_encode = FALSE` : l'entité existante reste telle quelle — le rendu ne change pas — et
-	 * seul le caractère brut est encodé.
+	 * arrivent par un autre chemin (import, API, SQL de démonstration) ne le sont pas. nf_texte()
+	 * décode puis échappe une seule fois : juste dans les deux cas.
 	 */
 	static private function _attr($value): string
 	{
-		return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8', FALSE);
+		return nf_texte($value);
 	}
 
 	private function _display_popover($var, $options, &$icons = '')
@@ -741,7 +742,7 @@ class Form extends Library
 
 		if ($popover)
 		{
-			return ' data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="right" data-bs-html="true" data-bs-content="'.utf8_htmlentities(implode('<br /><br />', $popover)).'"';
+			return ' data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="right" data-bs-html="true" data-bs-content="'.utf8_htmlentities(implode('<br /><br />', $popover)) /* codage: du HTML posé dans un attribut — le décoder réveillerait les balises qu’il cite */.'"';
 		}
 	}
 

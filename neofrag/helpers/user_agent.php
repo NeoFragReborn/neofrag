@@ -104,7 +104,7 @@ function user_agent($user_agent): string
 	if (is_empty($user_agent))
 	{
 		return '<i class="fas fa-circle-question text-muted" data-bs-toggle="tooltip" title="'
-			.htmlspecialchars((string) NeoFrag()->lang('Agent inconnu'), ENT_QUOTES).'"></i>';
+			.nf_texte(NeoFrag()->lang('Agent inconnu')).'"></i>';
 	}
 
 	$a      = analyser_user_agent((string) $user_agent);
@@ -113,12 +113,12 @@ function user_agent($user_agent): string
 	if ($a['icone'])
 	{
 		$titre = trim($a['navigateur'].' '.$a['version']);
-		$sortie .= '<i class="'.$a['icone'].'" data-bs-toggle="tooltip" title="'.htmlspecialchars((string) ($titre), ENT_QUOTES).'"></i> ';
+		$sortie .= '<i class="'.$a['icone'].'" data-bs-toggle="tooltip" title="'.nf_texte($titre).'"></i> ';
 	}
 
 	if ($a['icone_systeme'])
 	{
-		$sortie .= '<i class="'.$a['icone_systeme'].'" data-bs-toggle="tooltip" title="'.htmlspecialchars((string) ($a['systeme']), ENT_QUOTES).'"></i>';
+		$sortie .= '<i class="'.$a['icone_systeme'].'" data-bs-toggle="tooltip" title="'.nf_texte($a['systeme']).'"></i>';
 	}
 
 	if ($sortie === '')
@@ -126,7 +126,7 @@ function user_agent($user_agent): string
 		// Agent non reconnu : on montre la chaîne brute en infobulle plutôt qu'une icône muette,
 		// pour que la ligne reste exploitable.
 		return '<i class="fas fa-circle-question text-muted" data-bs-toggle="tooltip" title="'
-			.htmlspecialchars((string) (mb_substr((string) $user_agent, 0, 200)), ENT_QUOTES).'"></i>';
+			.nf_texte($user_agent, 200).'"></i>';
 	}
 
 	return trim($sortie);

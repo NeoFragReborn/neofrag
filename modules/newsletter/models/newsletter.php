@@ -284,7 +284,7 @@ class Newsletter extends Model
 		$pixel   = !empty($row['track_token']) ? '<img src="'.absolute_url('newsletter/track/'.$row['track_token']).'" width="1" height="1" alt="" style="display:none">' : '';
 		$content = $row['content']
 			.'<hr><p style="font-size:0.85em;color:#888;text-align:center">'
-			.$this->lang('Tu reçois ce mail car tu es inscrit à la newsletter de %s.', htmlspecialchars((string)$this->config->nf_name)).' '
+			.$this->lang('Tu reçois ce mail car tu es inscrit à la newsletter de %s.', nf_texte($this->config->nf_name)).' '
 			.'<a href="'.$unsub.'">'.$this->lang('Se désinscrire').'</a></p>'
 			.$pixel;
 

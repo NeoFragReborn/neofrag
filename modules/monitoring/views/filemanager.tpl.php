@@ -40,7 +40,7 @@ $CM = dirname(js('codemirror/5.65.16/codemirror.min.js'));
 	<div class="nf-fm-body">
 		<div class="nf-fm-tree"><ul id="fm-tree" class="nf-fm-ul"></ul></div>
 		<div class="nf-fm-editor">
-			<textarea id="fm-editor" spellcheck="false" placeholder="<?php echo htmlspecialchars($this->lang('Sélectionne un fichier dans l\'arbre.'), ENT_QUOTES) ?>"></textarea>
+			<textarea id="fm-editor" spellcheck="false" placeholder="<?php echo nf_texte($this->lang('Sélectionne un fichier dans l\'arbre.')) ?>"></textarea>
 		</div>
 	</div>
 </div>

@@ -4,7 +4,7 @@
 		<div class="card-body">
 			<div class="d-flex align-items-start mb-2">
 				<div class="flex-grow-1">
-					<h4 class="mb-1"><a href="<?php echo url('donations/'.$c['name']) ?>"><?php echo htmlspecialchars($c['title']) ?></a></h4>
+					<h4 class="mb-1"><a href="<?php echo url('donations/'.$c['name']) ?>"><?php echo nf_texte($c['title']) ?></a></h4>
 					<?php if ($c['deadline']): ?>
 					<small class="text-muted"><i class="far fa-calendar"></i> <?php echo $this->lang('Jusqu\'au %s', timetostr('j F Y', $c['deadline'])) ?></small>
 					<?php endif ?>
@@ -17,7 +17,7 @@
 			</div>
 
 			<div class="d-flex justify-content-between donation-stats">
-				<span><strong><?php echo number_format($c['raised'], 2, ',', ' ') ?> <?php echo htmlspecialchars($c['currency']) ?></strong> / <?php echo number_format($c['goal_amount'], 2, ',', ' ') ?> <?php echo htmlspecialchars($c['currency']) ?></span>
+				<span><strong><?php echo number_format($c['raised'], 2, ',', ' ') ?> <?php echo nf_texte($c['currency']) ?></strong> / <?php echo number_format($c['goal_amount'], 2, ',', ' ') ?> <?php echo nf_texte($c['currency']) ?></span>
 				<span class="text-muted"><i class="fas fa-users"></i> <?php echo $c['count'] ?> <?php echo $this->lang($c['count'] > 1 ? 'donateurs' : 'donateur') ?></span>
 			</div>
 

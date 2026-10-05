@@ -10,7 +10,7 @@ function geolocalisation($address_ip): string
 	if (!is_empty($address_ip))
 	{
 		NeoFrag()->js('geolocalisation');
-		return '<img src="'.image('ajax-loader.gif').'" style="margin-right: 10px;" data-geolocalisation="'.htmlspecialchars((string)$address_ip, ENT_QUOTES).'" alt="" />';
+		return '<img src="'.image('ajax-loader.gif').'" style="margin-right: 10px;" data-geolocalisation="'.nf_texte($address_ip).'" alt="" />';
 	}
 	else
 	{

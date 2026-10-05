@@ -38,14 +38,14 @@ class Index extends Controller_Module
 			{
 				$slug = url_title($e['title']);
 				$color = $e['color'] ? $e['color'] : '#03c1a2';
-				$body .= '<a href="'.url('calendar/'.$e['id'].'/'.$slug).'" class="list-group-item list-group-item-action" style="border-left:4px solid '.htmlspecialchars((string) ($color)).'">';
+				$body .= '<a href="'.url('calendar/'.$e['id'].'/'.$slug).'" class="list-group-item list-group-item-action" style="border-left:4px solid '.nf_texte($color).'">';
 				$body .= '<div class="d-flex justify-content-between mb-1">';
-				$body .= '<strong>'.htmlspecialchars((string) ($e['title']), ENT_QUOTES, 'UTF-8', FALSE).'</strong>';
+				$body .= '<strong>'.nf_texte($e['title']).'</strong>';
 				$body .= '<small class="text-muted">'.Calendar::format_dt($e['start_at'], (bool)$e['all_day'], $e['end_at']).'</small>';
 				$body .= '</div>';
 				if (!empty($e['location']))
 				{
-					$body .= '<small class="text-muted"><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars((string) ($e['location']), ENT_QUOTES, 'UTF-8', FALSE).'</small>';
+					$body .= '<small class="text-muted"><i class="fas fa-map-marker-alt"></i> '.nf_texte($e['location']).'</small>';
 				}
 				$body .= '</a>';
 			}
@@ -59,11 +59,11 @@ class Index extends Controller_Module
 	{
 		$this->title($e['title'])->icon('far fa-calendar')->breadcrumb();
 
-		$body = '<div class="mb-3"><h2>'.htmlspecialchars((string) ($e['title']), ENT_QUOTES, 'UTF-8', FALSE).'</h2>';
+		$body = '<div class="mb-3"><h2>'.nf_texte($e['title']).'</h2>';
 		$body .= '<p class="text-muted"><i class="far fa-clock"></i> '.Calendar::format_dt($e['start_at'], (bool)$e['all_day'], $e['end_at']).'</p>';
 		if (!empty($e['location']))
 		{
-			$body .= '<p><i class="fas fa-map-marker-alt"></i> '.htmlspecialchars((string) ($e['location']), ENT_QUOTES, 'UTF-8', FALSE).'</p>';
+			$body .= '<p><i class="fas fa-map-marker-alt"></i> '.nf_texte($e['location']).'</p>';
 		}
 		if ($e['user_id'])
 		{

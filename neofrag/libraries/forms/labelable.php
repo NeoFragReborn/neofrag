@@ -270,6 +270,7 @@ abstract class Labelable extends Library
 					->attr('data-bs-trigger',   'hover')
 					->attr('data-bs-placement', 'auto')
 					->attr('data-bs-html',      'true')
+					// codage: du HTML posé dans un attribut — le décoder réveillerait les balises qu’il cite
 					->attr('data-bs-content',   utf8_htmlentities(implode('<br /><br />', array_filter([
 						$this->_info   ? $this->label($this->_info, $icon) : '',
 						$this->_errors ? $this->label(implode('<br />', $this->_errors), 'fas fa-exclamation-triangle')->attr('class', 'text-danger') : ''

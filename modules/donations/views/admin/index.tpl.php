@@ -27,11 +27,11 @@
 			<?php foreach ($campaigns as $c): ?>
 			<tr>
 				<td>
-					<strong><?php echo htmlspecialchars($c['title']) ?></strong><br>
-					<small class="text-muted"><code>/donations/<?php echo htmlspecialchars($c['name']) ?></code> · <?php echo (int)$c['count'] ?> <?php echo $this->lang($c['count'] > 1 ? 'donateurs' : 'donateur') ?></small>
+					<strong><?php echo nf_texte($c['title']) ?></strong><br>
+					<small class="text-muted"><code>/donations/<?php echo nf_texte($c['name']) ?></code> · <?php echo (int)$c['count'] ?> <?php echo $this->lang($c['count'] > 1 ? 'donateurs' : 'donateur') ?></small>
 				</td>
 				<td class="text-end">
-					<strong><?php echo number_format($c['raised'], 2, ',', ' ') ?> <?php echo htmlspecialchars($c['currency']) ?></strong><br>
+					<strong><?php echo number_format($c['raised'], 2, ',', ' ') ?> <?php echo nf_texte($c['currency']) ?></strong><br>
 					<small class="text-muted">/ <?php echo number_format($c['goal_amount'], 2, ',', ' ') ?></small>
 				</td>
 				<td style="min-width: 180px;">

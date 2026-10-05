@@ -26,7 +26,7 @@ class Index extends Controller_Widget
 		// `newsletter`, le champ n'était pas lu par son formulaire (cf. Index::_subscribe du module).
 		$body = '<p class="mb-2"><small>'.$this->lang('Reçois nos actus directement par email.').'</small></p>';
 		$body .= '<form method="post" action="'.url('newsletter/subscribe').'">';
-		$body .= '<input type="hidden" name="_" value="'.htmlspecialchars($module->jeton_widget()).'">';
+		$body .= '<input type="hidden" name="_" value="'.nf_texte($module->jeton_widget()).'">';
 		$body .= '<div class="input-group input-group-sm">';
 		$body .= '<input type="email" name="email" class="form-control" placeholder="'.$this->lang('ton@email.fr').'" aria-label="'.$this->lang('Adresse email').'" required>';
 		$body .= '<button type="submit" class="btn btn-primary" aria-label="'.$this->lang('S\'inscrire').'"><i class="fas fa-envelope"></i></button>';

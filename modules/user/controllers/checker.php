@@ -127,6 +127,55 @@ class Checker extends Module_Checker
 		}
 	}
 
+	/**
+	 * `user/validation/{jeton}` : le lien de l'e-mail de validation d'une inscription (Index::validation),
+	 * valable deux jours. Un lien inconnu, déjà servi ou expiré le dit, et renvoie à la connexion — qui fait
+	 * partir un nouveau lien.
+	 */
+	public function validation($token)
+	{
+		if ($this->user())
+		{
+			redirect();
+		}
+
+		$jeton = $this->model2('token', $token);
+
+		if ($jeton && $jeton() && !($jeton->date && $jeton->date->timestamp() < time() - \NF\Modules\User\User::VALIDATION_DUREE))
+		{
+			return [$jeton];
+		}
+
+		if ($jeton && $jeton())
+		{
+			$jeton->delete();
+		}
+
+		notify($this->lang('Ce lien de validation n\'est plus valable : connectez-vous, un nouveau lien vous sera envoyé.'), 'warning');
+		redirect();
+	}
+
+	/**
+	 * `user/reglement` : une inscription par un compte externe, en attente de l'acceptation du règlement
+	 * (Index::reglement). Rien en attente, une attente expirée, un visiteur déjà connecté, ou un connecteur
+	 * qui n'est plus réglé : retour à l'accueil.
+	 */
+	public function reglement()
+	{
+		$nom           = $this->session('inscription_externe', 'authenticator');
+		$donnees       = $this->session('inscription_externe', 'data');
+		$expire        = (int) $this->session('inscription_externe', 'expire');
+		$authenticator = is_string($nom) ? $this->authenticator($nom) : NULL;
+
+		if ($this->user() || !is_array($donnees) || $expire < time() || !$authenticator || !$authenticator->is_setup())
+		{
+			$this->session->destroy('inscription_externe');
+			redirect();
+		}
+
+		return [$authenticator, $donnees];
+	}
+
 	public function _auth($page = '')
 	{
 		$this->error->unconnected();

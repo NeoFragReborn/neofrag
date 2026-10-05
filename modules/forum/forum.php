@@ -561,7 +561,7 @@ class Forum extends Module
 					return $match[0]; // Pas un user valide → laissé brut
 				}
 
-				return $prefix.'<a class="forum-mention" href="'.\url('user/'.(int)$resolved[$username].'/'.\url_title($username)).'" data-bs-toggle="tooltip" title="'.htmlspecialchars((string) ($username)).'">@'.htmlspecialchars((string) ($username)).'</a>';
+				return $prefix.'<a class="forum-mention" href="'.\url('user/'.(int)$resolved[$username].'/'.\url_title($username)).'" data-bs-toggle="tooltip" title="'.nf_texte($username).'">@'.nf_texte($username).'</a>';
 			},
 			$content
 		);
@@ -595,7 +595,7 @@ class Forum extends Module
 		{
 			$is_image = strpos((string)$att['mime_type'], 'image/') === 0;
 			$file_url = \url($att['path']);
-			$name_esc = htmlspecialchars((string) ($att['name']));
+			$name_esc = nf_texte($att['name']);
 			$size_str = \human_size((int)$att['file_size']);
 
 			if ($is_image)
@@ -628,7 +628,7 @@ class Forum extends Module
 			return '<i>'.$this->lang('Visiteur').'</i>';
 		}
 
-		return '<span class="forum-auteur-externe" title="'.$this->lang('Écrit depuis Discord').'">'.icon('fab fa-discord').' '.htmlspecialchars($nom_identite).'</span>';
+		return '<span class="forum-auteur-externe" title="'.$this->lang('Écrit depuis Discord').'">'.icon('fab fa-discord').' '.nf_texte($nom_identite).'</span>';
 	}
 
 	/**

@@ -28,13 +28,13 @@ class Admin extends Controller_Module
 		foreach ($stats as $s)
 		{
 			$cards .= '<div class="nf-stat-card">';
-			$cards .= '<div class="nf-stat-label"><i class="'.$s['icon'].'"></i> '.htmlspecialchars((string) ($s['label'])).'</div>';
+			$cards .= '<div class="nf-stat-label"><i class="'.$s['icon'].'"></i> '.nf_texte($s['label']).'</div>';
 			$cards .= '<div class="nf-stat-value">'.$s['value'].'</div>';
 			if (!empty($s['trend']))
 			{
 				$cards .= '<div class="nf-stat-trend '.($s['trend_class'] ?? '').'">';
 				if (!empty($s['trend_icon'])) $cards .= '<i class="'.$s['trend_icon'].'"></i> ';
-				$cards .= htmlspecialchars((string) ($s['trend']));
+				$cards .= nf_texte($s['trend']);
 				$cards .= '</div>';
 			}
 			$cards .= '</div>';

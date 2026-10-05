@@ -298,6 +298,13 @@ final class EditeurImagesTest extends TestCase
 		self::assertMatchesRegularExpression('#^upload/editeur/2026/10/[0-9a-f]{32}\.webp$#', Editeur_Images::chemin('image/webp', $instant));
 		self::assertNotSame(Editeur_Images::chemin('image/png', $instant), Editeur_Images::chemin('image/png', $instant));
 		self::assertLessThanOrEqual(100, strlen(Editeur_Images::chemin('image/webp', $instant)), 'nf_file.path : 100 caractères');
+
+		// L'empreinte fixe le nom : la même image renvoyée par l'API retrouve le même fichier.
+		$empreinte = hash('sha256', 'une image');
+		self::assertSame('upload/editeur/2026/10/'.substr($empreinte, 0, 32).'.jpg', Editeur_Images::chemin('image/jpeg', $instant, $empreinte));
+		self::assertSame(Editeur_Images::chemin('image/jpeg', $instant, $empreinte), Editeur_Images::chemin('image/jpeg', $instant, $empreinte));
+		// Une empreinte qui n'en est pas une ne choisit rien : le nom redevient aléatoire.
+		self::assertNotSame(Editeur_Images::chemin('image/png', $instant, '../x'), Editeur_Images::chemin('image/png', $instant, '../x'));
 	}
 
 	public function test_le_nom_d_origine_est_nettoye(): void

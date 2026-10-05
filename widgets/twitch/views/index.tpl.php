@@ -15,13 +15,13 @@ $embed_full = function($c) use ($host) {
 	<div class="widget-twitch <?php echo $is_live ? 'is-live' : 'is-offline' ?>">
 		<?php if ($is_live && !empty($c['thumbnail'])): ?>
 		<div class="widget-twitch-thumb">
-			<img src="<?php echo htmlspecialchars($c['thumbnail']).'?_='.time() ?>" alt="" loading="lazy" />
+			<img src="<?php echo nf_texte($c['thumbnail']).'?_='.time() ?>" alt="" loading="lazy" />
 			<div class="widget-twitch-live-badge"><span class="dot"></span> LIVE</div>
 			<?php if (!empty($c['viewers'])): ?>
 			<div class="widget-twitch-viewers"><i class="fas fa-eye"></i> <?php echo number_format((int)$c['viewers'], 0, ',', ' ') ?></div>
 			<?php endif ?>
 			<?php if ($embed): ?>
-			<button type="button" class="widget-twitch-play" data-channel="<?php echo htmlspecialchars($c['display_name']) ?>" data-embed="<?php echo htmlspecialchars($embed) ?>" data-mode="<?php echo htmlspecialchars($open_mode) ?>" data-channel-url="<?php echo htmlspecialchars($c['channel_url']) ?>"><i class="fas fa-play"></i></button>
+			<button type="button" class="widget-twitch-play" data-channel="<?php echo nf_texte($c['display_name']) ?>" data-embed="<?php echo nf_texte($embed) ?>" data-mode="<?php echo nf_texte($open_mode) ?>" data-channel-url="<?php echo nf_texte($c['channel_url']) ?>"><i class="fas fa-play"></i></button>
 			<?php endif ?>
 		</div>
 		<?php endif ?>
@@ -29,12 +29,12 @@ $embed_full = function($c) use ($host) {
 		<div class="widget-twitch-body">
 			<div class="widget-twitch-streamer">
 				<?php if (!empty($c['avatar'])): ?>
-					<img src="<?php echo htmlspecialchars($c['avatar']) ?>" class="widget-twitch-avatar" alt="" />
+					<img src="<?php echo nf_texte($c['avatar']) ?>" class="widget-twitch-avatar" alt="" />
 				<?php else: ?>
 					<div class="widget-twitch-avatar widget-twitch-avatar-fallback"><i class="<?php echo $picon ?>"></i></div>
 				<?php endif ?>
 				<div class="widget-twitch-meta">
-					<a href="<?php echo htmlspecialchars($c['channel_url']) ?>" target="_blank" rel="noopener" class="widget-twitch-name"><i class="<?php echo $picon ?>"></i> <?php echo htmlspecialchars($c['display_name']) ?></a>
+					<a href="<?php echo nf_texte($c['channel_url']) ?>" target="_blank" rel="noopener" class="widget-twitch-name"><i class="<?php echo $picon ?>"></i> <?php echo nf_texte($c['display_name']) ?></a>
 					<?php if ($unknown): ?>
 					<div class="widget-twitch-status widget-twitch-status-unknown"><i class="fas fa-question-circle"></i> <?php echo $this->lang('Statut indisponible (sans API)') ?></div>
 					<?php elseif ($is_live): ?>
@@ -46,17 +46,17 @@ $embed_full = function($c) use ($host) {
 			</div>
 
 			<?php if ($is_live && !empty($c['title'])): ?>
-			<div class="widget-twitch-title" title="<?php echo htmlspecialchars($c['title']) ?>"><?php echo htmlspecialchars($c['title']) ?></div>
+			<div class="widget-twitch-title" title="<?php echo nf_texte($c['title']) ?>"><?php echo nf_texte($c['title']) ?></div>
 			<?php endif ?>
 
 			<?php if ($is_live && !empty($c['game'])): ?>
-			<div class="widget-twitch-game"><i class="fas fa-gamepad"></i> <?php echo htmlspecialchars($c['game']) ?></div>
+			<div class="widget-twitch-game"><i class="fas fa-gamepad"></i> <?php echo nf_texte($c['game']) ?></div>
 			<?php endif ?>
 
 			<?php if ($is_live && $embed): ?>
-				<button type="button" class="widget-twitch-cta widget-twitch-play" data-channel="<?php echo htmlspecialchars($c['display_name']) ?>" data-embed="<?php echo htmlspecialchars($embed) ?>" data-mode="<?php echo htmlspecialchars($open_mode) ?>" data-channel-url="<?php echo htmlspecialchars($c['channel_url']) ?>"><i class="fas fa-play"></i> <?php echo $this->lang('Regarder le live') ?></button>
+				<button type="button" class="widget-twitch-cta widget-twitch-play" data-channel="<?php echo nf_texte($c['display_name']) ?>" data-embed="<?php echo nf_texte($embed) ?>" data-mode="<?php echo nf_texte($open_mode) ?>" data-channel-url="<?php echo nf_texte($c['channel_url']) ?>"><i class="fas fa-play"></i> <?php echo $this->lang('Regarder le live') ?></button>
 			<?php else: ?>
-				<a href="<?php echo htmlspecialchars($c['channel_url']) ?>" target="_blank" rel="noopener" class="widget-twitch-cta widget-twitch-cta-secondary"><i class="<?php echo $picon ?>"></i> <?php echo $this->lang('Voir la chaîne') ?></a>
+				<a href="<?php echo nf_texte($c['channel_url']) ?>" target="_blank" rel="noopener" class="widget-twitch-cta widget-twitch-cta-secondary"><i class="<?php echo $picon ?>"></i> <?php echo $this->lang('Voir la chaîne') ?></a>
 			<?php endif ?>
 		</div>
 	</div>

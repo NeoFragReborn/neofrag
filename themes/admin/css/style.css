@@ -296,11 +296,9 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 	box-shadow: var(--nf-shadow-sm);
 }
 
-.nf-sidebar-toggle { display: none; }
-
-@media (max-width: 991.98px) {
-	.nf-sidebar-toggle { display: inline-flex; }
-}
+/* Le bouton ☰ (.nf-sidebar-toggle) s'affiche à toutes les largeurs : il ouvre le menu en tiroir sous
+   992px, et le replie au-dessus (theme.js). Il était caché ici sur grand écran, mais .nf-icon-btn, plus
+   bas, le réaffichait — un bouton qui ne faisait rien (2026-10-05). */
 
 .nf-breadcrumb {
 	display: flex;
@@ -3682,6 +3680,13 @@ button.nf-local-tab {
 		z-index: 200;
 	}
 	.nf-sidebar.is-open { transform: translateX(0); }
+}
+
+/* Sur un grand écran, le bouton ☰ replie le menu latéral, et le rouvre (theme.js, choix gardé) : le contenu
+   prend toute la largeur. */
+@media (min-width: 992px) {
+	.nf-sidebar-masquee .nf-app { grid-template-columns: 1fr; }
+	.nf-sidebar-masquee .nf-sidebar { display: none; }
 }
 
 

@@ -17,7 +17,7 @@ class Ajax extends Controller_Module
 		$q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
 		$users = $this->model()->search_users_for_autocomplete($q, 8);
 		echo json_encode(array_map(function($u){
-			return ['id' => (int)$u['id'], 'username' => (string)$u['username']];
+			return ['id' => (int)$u['id'], 'username' => nf_texte_brut($u['username'])];
 		}, $users));
 		exit;
 	}

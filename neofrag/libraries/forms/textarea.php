@@ -30,7 +30,7 @@ class Textarea extends Labelable
 							// `</textarea>` fermait la zone et injectait la suite dans la page —
 							// même famille que form.php (2026-09-23). Le navigateur décode les
 							// entités d'une zone de texte : l'éditeur reçoit le même contenu.
-							->content(htmlspecialchars((string) $this->_value, ENT_QUOTES, 'UTF-8', FALSE));
+							->content(nf_texte($this->_value));
 
 			$this->_placeholder($input);
 
@@ -75,10 +75,13 @@ class Textarea extends Labelable
 		{
 			// Contenu HTML riche (TinyMCE) non fiable → sanitize serveur dès le submit (allow-list
 			// stricte, anti XSS stocké). Idempotent avec la sanitization au rendu.
+			// form2 code TOUTES les valeurs reçues (`&lt;p&gt;…`) : l'assainisseur ne voyait que du texte, et le
+			// HTML de l'éditeur était rangé codé — une image de signature s'affichait en code (2026-10-05). On
+			// décode d'abord, puis on assainit : c'est le HTML voulu, sûr, qui est rangé.
 			$this->_check[] = function($post, &$data){
 				if (isset($data[$this->_name]) && is_string($data[$this->_name]))
 				{
-					$data[$this->_name] = sanitize_html($data[$this->_name]);
+					$data[$this->_name] = sanitize_html(nf_texte_brut($data[$this->_name]));
 				}
 			};
 		}

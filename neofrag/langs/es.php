@@ -610,4 +610,6 @@ return [
 	'f30497d4' => 'No se ha podido guardar la imagen en el sitio.',
 	'c6e6b32b' => 'No se ha podido leer esta imagen.',
 	'2cb256bb' => 'No se ha podido enviar la imagen. Comprueba tu conexión y vuelve a intentarlo.',
+	'2c1b9bbb' => 'Inicio de sesión rechazado: registro aún no validado',
+	'080a7879' => 'Dirección de correo validada',
 ];

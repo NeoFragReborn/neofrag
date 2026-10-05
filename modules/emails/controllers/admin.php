@@ -62,7 +62,7 @@ class Admin extends Controller_Module
 			$count  = count($list);
 			$total += $count;
 
-			$lignes .= '<tr class="nf-table-groupe"><th colspan="5"><i class="'.$meta['icon'].'"></i> '.htmlspecialchars((string) ($meta['label'])).' <span class="nf-table-groupe-compte">'.$count.' '.($count > 1 ? $this->lang('templates') : $this->lang('template')).'</span></th></tr>';
+			$lignes .= '<tr class="nf-table-groupe"><th colspan="5"><i class="'.$meta['icon'].'"></i> '.nf_texte($meta['label']).' <span class="nf-table-groupe-compte">'.$count.' '.($count > 1 ? $this->lang('templates') : $this->lang('template')).'</span></th></tr>';
 
 			foreach ($list as $t)
 			{
@@ -82,11 +82,11 @@ class Admin extends Controller_Module
 				// traduisent à l'affichage (un modèle renommé par l'administrateur reste son texte).
 				$lignes .= '<tr>'
 					.'<td>'
-						.'<div class="fw-semibold">'.htmlspecialchars((string) $this->lang($t['title'])).'</div>'
-						.'<code class="small">'.htmlspecialchars((string) ($t['key'])).'</code>'
-						.(!empty($t['description']) ? '<div class="small text-body-secondary">'.htmlspecialchars((string) $this->lang($t['description'])).'</div>' : '')
+						.'<div class="fw-semibold">'.nf_texte($this->lang($t['title'])).'</div>'
+						.'<code class="small">'.nf_texte($t['key']).'</code>'
+						.(!empty($t['description']) ? '<div class="small text-body-secondary">'.nf_texte($this->lang($t['description'])).'</div>' : '')
 					.'</td>'
-					.'<td class="small">'.($subject !== '' ? htmlspecialchars((string) $subject) : '<span class="text-body-secondary">—</span>').'</td>'
+					.'<td class="small">'.($subject !== '' ? nf_texte($subject) : '<span class="text-body-secondary">—</span>').'</td>'
 					.'<td class="text-center"><span class="badge text-bg-light" title="'.$this->lang('Langues').'">'.icon('fas fa-language').' '.(int)$t['lang_count'].'</span></td>'
 					.'<td class="text-center">'.($enabled ? '<span class="badge text-bg-success">'.$this->lang('Actif').'</span>' : '<span class="badge text-bg-secondary">'.$this->lang('Désactivé').'</span>').'</td>'
 					.'<td class="text-end">'
@@ -199,12 +199,12 @@ class Admin extends Controller_Module
 		$meta .= '<div class="settings-section-header">';
 		$meta .= '<div class="settings-section-icon"><i class="fas fa-envelope-open-text"></i></div>';
 		$meta .= '<div class="settings-section-meta">';
-		$meta .= '<div class="settings-section-title">'.htmlspecialchars((string) $this->lang($template['title'])).'</div>';
+		$meta .= '<div class="settings-section-title">'.nf_texte($this->lang($template['title'])).'</div>';
 		$meta .= '<div class="settings-section-subtitle">';
-		$meta .= '<code>'.htmlspecialchars((string) ($template['key'])).'</code>';
+		$meta .= '<code>'.nf_texte($template['key']).'</code>';
 		if (!empty($template['module']))
 		{
-			$meta .= ' &mdash; '.icon('fas fa-cube').' '.htmlspecialchars((string) ($template['module']));
+			$meta .= ' &mdash; '.icon('fas fa-cube').' '.nf_texte($template['module']);
 		}
 		$meta .= ' &mdash; '.icon('fas fa-language').' '.count($template['translations']).' / '.count($site_langs).' '.$this->lang('langues');
 		$meta .= '</div>';
@@ -219,7 +219,7 @@ class Admin extends Controller_Module
 		{
 			$active = ($l === $lang) ? ' active' : '';
 			$miss   = isset($template['translations'][$l]) ? '' : '<i class="fas fa-exclamation-circle miss"></i>';
-			$lang_tabs .= '<a class="emails-lang-tab'.$active.'" href="'.url('admin/emails/edit/'.$template['template_id'].'/'.$slug).'?lang='.urlencode($l).'">'.strtoupper(htmlspecialchars((string) ($l))).$miss.'</a>';
+			$lang_tabs .= '<a class="emails-lang-tab'.$active.'" href="'.url('admin/emails/edit/'.$template['template_id'].'/'.$slug).'?lang='.urlencode($l).'">'.strtoupper(nf_texte($l)).$miss.'</a>';
 		}
 		$lang_tabs .= '</div>';
 
@@ -231,7 +231,7 @@ class Admin extends Controller_Module
 			$ph_bar .= '<span class="label">'.icon('fas fa-magic').' '.$this->lang('Placeholders').'</span>';
 			foreach ($placeholders as $ph)
 			{
-				$ph_bar .= '<code class="emails-ph" data-ph="'.htmlspecialchars((string) ($ph)).'">'.htmlspecialchars((string) ($ph)).'</code>';
+				$ph_bar .= '<code class="emails-ph" data-ph="'.nf_texte($ph).'">'.nf_texte($ph).'</code>';
 			}
 			$ph_bar .= '</div>';
 		}
@@ -241,7 +241,7 @@ class Admin extends Controller_Module
 		$form_card .= '<div class="settings-section-header">';
 		$form_card .= '<div class="settings-section-icon"><i class="fas fa-edit"></i></div>';
 		$form_card .= '<div class="settings-section-meta">';
-		$form_card .= '<div class="settings-section-title">'.$this->lang('Édition').' &mdash; '.strtoupper(htmlspecialchars((string) ($lang))).'</div>';
+		$form_card .= '<div class="settings-section-title">'.$this->lang('Édition').' &mdash; '.strtoupper(nf_texte($lang)).'</div>';
 		$form_card .= '</div>';
 		$form_card .= '</div>';
 		$form_card .= '<div class="settings-section-body">';
@@ -331,9 +331,9 @@ class Admin extends Controller_Module
 		$card .= '<div class="emails-preview-frame">';
 		$card .= '<div class="emails-preview-mail">';
 		$card .= '<div class="emails-preview-mail-head">';
-		$card .= '<div class="emails-preview-mail-subject">'.htmlspecialchars((string) ($rendered_subject)).'</div>';
+		$card .= '<div class="emails-preview-mail-subject">'.nf_texte($rendered_subject).'</div>';
 		$card .= '<div class="emails-preview-mail-meta">';
-		$card .= '<div><strong>'.$this->lang('De').' :</strong> '.htmlspecialchars((string) ($site_name)).' &lt;'.htmlspecialchars((string) ($this->config->nf_contact ?: 'noreply@example.com')).'&gt;</div>';
+		$card .= '<div><strong>'.$this->lang('De').' :</strong> '.nf_texte($site_name).' &lt;'.nf_texte($this->config->nf_contact ?: 'noreply@example.com').'&gt;</div>';
 		$card .= '<div><strong>'.$this->lang('À').' :</strong> jean.dupont@example.com</div>';
 		$card .= '</div>';
 		$card .= '</div>';
@@ -442,7 +442,7 @@ class Admin extends Controller_Module
 				else
 				{
 					$err = $this->email->last_error();
-					notify($this->lang('Échec de l\'envoi').($err ? ' — '.htmlspecialchars((string) ($err)) : ''), 'danger');
+					notify($this->lang('Échec de l\'envoi').($err ? ' — '.nf_texte($err) : ''), 'danger');
 				}
 
 				redirect('admin/emails');
@@ -459,11 +459,11 @@ class Admin extends Controller_Module
 		$info_card .= '<div class="settings-section-header">';
 		$info_card .= '<div class="settings-section-icon"><i class="fas fa-paper-plane"></i></div>';
 		$info_card .= '<div class="settings-section-meta">';
-		$info_card .= '<div class="settings-section-title">'.htmlspecialchars((string) $this->lang($template['title'])).'</div>';
-		$info_card .= '<div class="settings-section-subtitle"><code>'.htmlspecialchars((string) ($template['key'])).'</code>';
+		$info_card .= '<div class="settings-section-title">'.nf_texte($this->lang($template['title'])).'</div>';
+		$info_card .= '<div class="settings-section-subtitle"><code>'.nf_texte($template['key']).'</code>';
 		if (!empty($template['module']))
 		{
-			$info_card .= ' &mdash; '.htmlspecialchars((string) ($template['module']));
+			$info_card .= ' &mdash; '.nf_texte($template['module']);
 		}
 		$info_card .= '</div>';
 		$info_card .= '</div>';

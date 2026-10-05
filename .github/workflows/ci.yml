@@ -257,6 +257,11 @@ jobs:
       - name: Garde heures affichées (fuseau de qui regarde, format de la langue)
         if: ${{ !cancelled() }}
         run: php tools/check-heures.php
+      # Le site range ses textes codés (`&eacute;`) : les échapper encore les affichait « &eacute; »
+      # (1 080 appels dans 213 fichiers, vus par le mainteneur le 2026-10-05). nf_texte() décode, puis échappe.
+      - name: Garde double codage (un texte passe par nf_texte)
+        if: ${{ !cancelled() }}
+        run: php tools/check-double-codage.php
       - name: Garde pagination (une liste découpée affiche ses pages)
         if: ${{ !cancelled() }}
         run: php tools/check-pagination.php

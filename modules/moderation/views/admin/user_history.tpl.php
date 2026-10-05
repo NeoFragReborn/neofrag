@@ -4,7 +4,7 @@
 		<div class="card mb-3">
 			<div class="nf-card-header"><span><i class="fas fa-user"></i> <?php echo $this->lang('Profil') ?></span></div>
 			<div class="card-body">
-				<h5>@<?php echo htmlspecialchars($user['username']) ?></h5>
+				<h5>@<?php echo nf_texte($user['username']) ?></h5>
 				<dl class="row mb-0">
 					<dt class="col-sm-5"><?php echo $this->lang('ID') ?></dt><dd class="col-sm-7"><?php echo (int)$user['id'] ?></dd>
 					<dt class="col-sm-5"><?php echo $this->lang('Inscrit') ?></dt><dd class="col-sm-7"><small><?php echo nf_date_heure($user['registration_date']) ?></small></dd>
@@ -24,8 +24,8 @@
 					<?php foreach ($active_sanctions as $s): ?>
 					<li class="list-group-item">
 						<a href="<?php echo url($_modbase.'/sanctions/'.(int)$s['id']) ?>">
-							<span class="badge text-bg-danger"><?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $s['type'])) ?></span>
-							<small class="text-muted"><?php echo htmlspecialchars($s['scope']) ?></small>
+							<span class="badge text-bg-danger"><?php echo nf_texte($this->module('moderation')->libelle('sanction', $s['type'])) ?></span>
+							<small class="text-muted"><?php echo nf_texte($s['scope']) ?></small>
 						</a>
 						<div class="small text-muted mt-1">
 							<?php if (empty($s['expires_at'])): ?>
@@ -79,29 +79,29 @@
 						<li class="list-group-item">
 							<i class="fas fa-gavel text-danger"></i>
 							<strong><?php echo $this->lang('Sanction') ?> :</strong>
-							<a href="<?php echo url($_modbase.'/sanctions/'.(int)$event['id']) ?>"><?php echo htmlspecialchars($this->module('moderation')->libelle('sanction', $event['type'])) ?> · <?php echo htmlspecialchars($this->module('moderation')->libelle('portee', $event['scope'])) ?></a>
+							<a href="<?php echo url($_modbase.'/sanctions/'.(int)$event['id']) ?>"><?php echo nf_texte($this->module('moderation')->libelle('sanction', $event['type'])) ?> · <?php echo nf_texte($this->module('moderation')->libelle('portee', $event['scope'])) ?></a>
 							<?php if (!empty($event['revoked_at'])): ?><span class="badge text-bg-secondary"><?php echo $this->lang('Levée') ?></span><?php endif ?>
 							<small class="float-end text-muted" title="<?php echo nf_date_heure($event['created_at']) ?>"><?php echo time_span(strtotime($event['created_at'])) ?></small>
 							<?php if (!empty($event['reason'])): ?>
-							<div class="text-muted mt-1 small"><?php echo htmlspecialchars(mb_strimwidth((string)$event['reason'], 0, 200, '…')) ?></div>
+							<div class="text-muted mt-1 small"><?php echo nf_texte($event['reason'], 200) ?></div>
 							<?php endif ?>
 						</li>
 					<?php elseif ($event['event_type'] === 'report_received'): ?>
 						<li class="list-group-item">
 							<i class="fas fa-flag text-warning"></i>
 							<strong><?php echo $this->lang('Signalé') ?> :</strong>
-							<a href="<?php echo url($_modbase.'/reports/'.(int)$event['id']) ?>"><?php echo htmlspecialchars($this->module('moderation')->libelle('cible', $event['target_type'])) ?> #<?php echo htmlspecialchars($event['target_id']) ?></a>
-							<small class="text-muted">(<?php echo htmlspecialchars($this->module('moderation')->libelle('raison', $event['reason'])) ?>)</small>
-							<span class="badge text-bg-light"><?php echo htmlspecialchars($this->module('moderation')->libelle('statut', $event['status'])) ?></span>
+							<a href="<?php echo url($_modbase.'/reports/'.(int)$event['id']) ?>"><?php echo nf_texte($this->module('moderation')->libelle('cible', $event['target_type'])) ?> #<?php echo nf_texte($event['target_id']) ?></a>
+							<small class="text-muted">(<?php echo nf_texte($this->module('moderation')->libelle('raison', $event['reason'])) ?>)</small>
+							<span class="badge text-bg-light"><?php echo nf_texte($this->module('moderation')->libelle('statut', $event['status'])) ?></span>
 							<small class="float-end text-muted"><?php echo time_span(strtotime($event['created_at'])) ?></small>
 						</li>
 					<?php elseif ($event['event_type'] === 'report_made'): ?>
 						<li class="list-group-item">
 							<i class="fas fa-bullhorn text-info"></i>
 							<strong><?php echo $this->lang('A signalé') ?> :</strong>
-							<a href="<?php echo url($_modbase.'/reports/'.(int)$event['id']) ?>"><?php echo htmlspecialchars($this->module('moderation')->libelle('cible', $event['target_type'])) ?> #<?php echo htmlspecialchars($event['target_id']) ?></a>
-							<small class="text-muted">(<?php echo htmlspecialchars($this->module('moderation')->libelle('raison', $event['reason'])) ?>)</small>
-							<span class="badge text-bg-light"><?php echo htmlspecialchars($this->module('moderation')->libelle('statut', $event['status'])) ?></span>
+							<a href="<?php echo url($_modbase.'/reports/'.(int)$event['id']) ?>"><?php echo nf_texte($this->module('moderation')->libelle('cible', $event['target_type'])) ?> #<?php echo nf_texte($event['target_id']) ?></a>
+							<small class="text-muted">(<?php echo nf_texte($this->module('moderation')->libelle('raison', $event['reason'])) ?>)</small>
+							<span class="badge text-bg-light"><?php echo nf_texte($this->module('moderation')->libelle('statut', $event['status'])) ?></span>
 							<small class="float-end text-muted"><?php echo time_span(strtotime($event['created_at'])) ?></small>
 						</li>
 					<?php endif; endforeach ?>

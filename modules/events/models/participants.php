@@ -117,7 +117,7 @@ class Participants extends Model
 				{
 					$inviter_id = (int)$this->user->id;
 					$content    = '<div class="alert alert-info m-0"><b>'.$this->lang('Message automatique.').'</b><br />'
-						.$this->lang('Vous êtes invité à participer à l\'événement <b>%s</b>.', htmlspecialchars((string) $title)).'<br /><br />'
+						.$this->lang('Vous êtes invité à participer à l\'événement <b>%s</b>.', nf_texte($title)).'<br /><br />'
 						.$this->lang('Pour indiquer votre disponibilité, <a href="%s">cliquez ici</a>.', url('events/'.$event_id.'/'.url_title($title))).'</div>';
 
 					foreach ($users as $user_id)

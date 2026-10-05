@@ -25,12 +25,12 @@ class Admin extends Controller_Module
 			{
 				$slug  = url_title($m['title']);
 				$body .= '<tr>'
-					.'<td><strong>'.htmlspecialchars((string) ($m['title'])).'</strong></td>'
-					.'<td><code>'.htmlspecialchars((string) ($m['name'])).'</code></td>'
+					.'<td><strong>'.nf_texte($m['title']).'</strong></td>'
+					.'<td><code>'.nf_texte($m['name']).'</code></td>'
 					.'<td class="text-end">'.(int)$m['nb'].'</td>'
 					.'<td class="text-end" style="white-space:nowrap;">'
 					.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/menu/edit/'.$m['menu_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
-					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/menu/delete/'.$m['menu_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer ce menu et tous ses items ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
+					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/menu/delete/'.$m['menu_id'].'/'.$slug).'" data-confirm="'.nf_texte($this->lang('Supprimer ce menu et tous ses items ?')).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 			}
 			$body .= '</tbody></table>';
@@ -112,11 +112,11 @@ class Admin extends Controller_Module
 				$slug   = url_title($it['title']);
 				$pad    = $depth ? 'padding-left:'.(18 + $depth * 22).'px;' : '';
 				$body  .= '<tr>'
-					.'<td style="'.$pad.'">'.($depth ? '<i class="fas fa-level-up-alt fa-rotate-90 text-muted" style="margin-right:6px;"></i>' : '').($it['icon'] ? '<i class="'.htmlspecialchars((string) ($it['icon'])).'" style="margin-right:6px;"></i>' : '').'<strong>'.htmlspecialchars((string) ($it['title'])).'</strong>'
-					.($it['url'] ? ' <small class="text-muted">'.htmlspecialchars((string) ($it['url'])).'</small>' : '').'</td>'
+					.'<td style="'.$pad.'">'.($depth ? '<i class="fas fa-level-up-alt fa-rotate-90 text-muted" style="margin-right:6px;"></i>' : '').($it['icon'] ? '<i class="'.nf_texte($it['icon']).'" style="margin-right:6px;"></i>' : '').'<strong>'.nf_texte($it['title']).'</strong>'
+					.($it['url'] ? ' <small class="text-muted">'.nf_texte($it['url']).'</small>' : '').'</td>'
 					.'<td class="text-end" style="white-space:nowrap;">'
 					.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/menu/item/edit/'.$it['item_id'].'/'.$slug).'" title="'.$this->lang('Éditer').'"><i class="fas fa-pen"></i></a> '
-					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/menu/item/delete/'.$it['item_id'].'/'.$slug).'" data-confirm="'.htmlspecialchars((string) ($this->lang('Supprimer cet item (et ses sous-items) ?')), ENT_QUOTES).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
+					.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/menu/item/delete/'.$it['item_id'].'/'.$slug).'" data-confirm="'.nf_texte($this->lang('Supprimer cet item (et ses sous-items) ?')).'" title="'.$this->lang('Supprimer').'"><i class="far fa-trash-alt"></i></a>'
 					.'</td></tr>';
 				foreach ($children[$it['item_id']] ?? [] as $child)
 				{

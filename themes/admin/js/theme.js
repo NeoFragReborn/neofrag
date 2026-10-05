@@ -33,14 +33,29 @@
 	}
 	applyTheme(getStored(STORAGE_THEME) || (sysDark() ? 'dark' : 'light'));
 
-	// ============ MOBILE SIDEBAR ============
+	// ============ SIDEBAR ============
+	// Le bouton ☰ : sur un grand écran, il replie le menu latéral (et le rouvre), et le choix est gardé ;
+	// sous 992px, il ouvre le menu en tiroir. Il ne servait qu'au tiroir, mais une règle du thème
+	// l'affichait aussi sur grand écran, où il ne faisait rien (signalé par le mainteneur, 2026-10-05).
+	var STORAGE_SIDEBAR = 'nf-admin-sidebar-masquee';
+	var grandEcran = window.matchMedia ? window.matchMedia('(min-width: 992px)') : { matches: true };
+	if (getStored(STORAGE_SIDEBAR) === '1') { document.documentElement.classList.add('nf-sidebar-masquee'); }
+
 	function initMobileSidebar() {
 		var btn = document.getElementById('nfSidebarToggle');
 		var sidebar = document.getElementById('nfSidebar');
 		if (!btn || !sidebar) return;
+		btn.setAttribute('aria-controls', 'nfSidebar');
 		btn.addEventListener('click', function(e) {
 			e.stopPropagation();
+			if (grandEcran.matches) {
+				var masquee = document.documentElement.classList.toggle('nf-sidebar-masquee');
+				setStored(STORAGE_SIDEBAR, masquee ? '1' : '0');
+				btn.setAttribute('aria-expanded', masquee ? 'false' : 'true');
+				return;
+			}
 			sidebar.classList.toggle('is-open');
+			btn.setAttribute('aria-expanded', sidebar.classList.contains('is-open') ? 'true' : 'false');
 		});
 		document.addEventListener('click', function(e) {
 			if (!sidebar.classList.contains('is-open')) return;

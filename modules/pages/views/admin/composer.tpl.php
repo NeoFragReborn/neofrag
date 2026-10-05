@@ -15,7 +15,7 @@ $instances = $instances ?? [];
 		<div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
 			<select class="form-select" style="max-width:340px" data-composer-select>
 				<?php foreach ($blocks as $key => $b): ?>
-				<option value="<?php echo htmlspecialchars($key, ENT_QUOTES) ?>"><?php echo htmlspecialchars($b['title']) ?> — <?php echo htmlspecialchars($key) ?></option>
+				<option value="<?php echo nf_texte($key) ?>"><?php echo nf_texte($b['title']) ?> — <?php echo nf_texte($key) ?></option>
 				<?php endforeach ?>
 			</select>
 			<button type="button" class="btn btn-secondary" data-composer-add><?php echo icon('fas fa-plus') ?> <?php echo $this->lang('Ajouter') ?></button>

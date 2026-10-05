@@ -36,20 +36,20 @@
 								$resolved = (strpos($src, 'http') === 0 || strpos($src, '//') === 0) ? $src : (empty($src) ? '' : url(ltrim($src, '/')));
 							?>
 							<?php if ($resolved): ?>
-								<img src="<?php echo htmlspecialchars($resolved) ?>" alt="" style="max-width: 160px; max-height: 80px; border-radius: 4px;" />
+								<img src="<?php echo nf_texte($resolved) ?>" alt="" style="max-width: 160px; max-height: 80px; border-radius: 4px;" />
 							<?php else: ?>
 								<span class="text-muted"><?php echo icon('fas fa-image').' '.$this->lang('Pas d\'image') ?></span>
 							<?php endif ?>
 						</td>
 						<td>
-							<strong><?php echo htmlspecialchars($slide['title'] ?: $this->lang('(sans titre)')) ?></strong>
+							<strong><?php echo nf_texte($slide['title'] ?: $this->lang('(sans titre)')) ?></strong>
 							<?php if (!empty($slide['caption'])): ?>
-								<div class="small text-muted"><?php echo nl2br(htmlspecialchars($slide['caption'])) ?></div>
+								<div class="small text-muted"><?php echo nl2br(nf_texte($slide['caption'])) ?></div>
 							<?php endif ?>
 						</td>
 						<td>
 							<?php if (!empty($slide['link'])): ?>
-								<small><a href="<?php echo htmlspecialchars(nf_url_sure((string) $slide['link']) ? (string) $slide['link'] : '#') ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars(mb_substr($slide['link'], 0, 50)) ?></a></small>
+								<small><a href="<?php echo nf_texte(nf_url_sure((string) $slide['link']) ? (string) $slide['link'] : '#') ?>" target="_blank" rel="noopener"><?php echo nf_texte($slide['link'], 50) ?></a></small>
 							<?php else: ?>
 								<small class="text-muted">—</small>
 							<?php endif ?>
@@ -68,7 +68,7 @@
 							<a class="btn btn-sm btn-outline-secondary" href="<?php echo url('admin/slider/edit/'.(int)$slide['id']) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Modifier') ?>">
 								<?php echo icon('fas fa-edit') ?>
 							</a>
-							<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/slider/delete/'.(int)$slide['id']) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>" data-confirm="<?php echo htmlspecialchars($this->lang('Confirmer la suppression de cette slide ?'), ENT_QUOTES) ?>">
+							<a class="btn btn-sm btn-outline-danger" href="<?php echo url('admin/slider/delete/'.(int)$slide['id']) ?>?_=<?php echo $csrf ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Supprimer') ?>" data-confirm="<?php echo nf_texte($this->lang('Confirmer la suppression de cette slide ?')) ?>">
 								<?php echo icon('far fa-trash-alt') ?>
 							</a>
 						</td>

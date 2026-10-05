@@ -642,7 +642,7 @@ final class Installer
 		// le MÊME encodage — sinon un mot de passe ou identifiant avec accent/caractère spécial
 		// (é, â, &, <, "…) ne se vérifierait jamais (hash brut côté install vs vérif encodée côté
 		// login → « mot de passe incorrect » juste après l'installation).
-		$enc = static fn($v): string => htmlentities(trim((string) $v), ENT_COMPAT, 'UTF-8');
+		$enc = static fn($v): string => htmlentities(trim((string) $v), ENT_COMPAT, 'UTF-8') /* codage: à l’enregistrement, comme le formulaire */;
 
 		$username = $enc($admin['username']);
 		$email    = $enc($admin['email']);

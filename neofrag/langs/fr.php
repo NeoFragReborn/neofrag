@@ -469,4 +469,6 @@ return [
 	'f30497d4' => 'L\'image n\'a pas pu être enregistrée sur le site.',
 	'c6e6b32b' => 'Cette image n\'a pas pu être lue.',
 	'2cb256bb' => 'L\'image n\'a pas pu être envoyée. Vérifiez votre connexion, puis réessayez.',
+	'2c1b9bbb' => 'Connexion refusée : inscription pas encore validée',
+	'080a7879' => 'Adresse e-mail validée',
 ];

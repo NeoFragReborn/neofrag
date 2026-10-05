@@ -5,7 +5,7 @@
 
 	<div class="nf-field">
 		<label><?php echo $this->lang('Titre du nouveau sujet') ?></label>
-		<input type="text" class="form-control" name="<?php echo $form_id ?>[new_title]" value="<?php echo htmlspecialchars($this->lang('Re: %s', $title)) ?>" required />
+		<input type="text" class="form-control" name="<?php echo $form_id ?>[new_title]" value="<?php echo nf_texte($this->lang('Re: %s', $title)) ?>" required />
 	</div>
 
 	<div class="nf-field">
@@ -30,9 +30,9 @@
 								<i class="fas fa-flag" data-bs-toggle="tooltip" title="<?php echo $this->lang('Starter (non déplaçable)') ?>"></i>
 							<?php endif ?>
 						</td>
-						<td><?php echo htmlspecialchars($users[(int)$message['user_id']] ?? '?') ?></td>
+						<td><?php echo nf_texte($users[(int)$message['user_id']] ?? '?') ?></td>
 						<td><small><?php echo time_span($message['date']) ?></small></td>
-						<td><small><?php echo htmlspecialchars(mb_substr(strip_tags(str_replace('<br />', ' ', (string)$message['message'])), 0, 120)) ?>...</small></td>
+						<td><small><?php echo nf_texte(strip_tags(str_replace('<br />', ' ', (string)$message['message'])), 120) ?>...</small></td>
 					</tr>
 				<?php endforeach ?>
 			</tbody>

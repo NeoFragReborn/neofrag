@@ -60,7 +60,7 @@ class Ajax extends Controller_Module
 					if (!empty($s['title']) && !empty($s['url']))
 					{
 						$out[] = [
-							'title'  => mb_strimwidth(trim(strip_tags((string)$s['title'])), 0, 90, '…'),
+							'title'  => mb_strimwidth(trim(nf_texte_brut(strip_tags((string)$s['title']))), 0, 90, '…'),
 							'url'    => $s['url'],
 							'module' => $module->info()->title,
 							'icon'   => $module->info()->icon

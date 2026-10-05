@@ -11,7 +11,7 @@ $this	->col(function($session){
 		->col($this->lang('Adresse IP'), function($session){
 			// host_name = reverse DNS, contrôlé par le propriétaire de l'IP → échappé.
 			$ip_address = $session->data->session?->ip_address;
-			return geolocalisation($ip_address).'<span data-bs-toggle="tooltip" data-original-title="'.htmlspecialchars((string)($session->data->session?->host_name ?? ''), ENT_QUOTES).'">'.htmlspecialchars((string)$ip_address, ENT_QUOTES).'</span>';
+			return geolocalisation($ip_address).'<span data-bs-toggle="tooltip" data-original-title="'.nf_texte($session->data->session?->host_name ?? '').'">'.nf_texte($ip_address).'</span>';
 		})
 		->col($this->lang('Site référent'), function($session){
 			return ($referer = $session->data->session?->referer) ? urltolink($referer) : $this->lang('Aucun');

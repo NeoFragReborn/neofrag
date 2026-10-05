@@ -22,6 +22,14 @@
 	margin: 0 auto 8px auto;
 }
 
+/* L'avatar de l'auteur, à gauche d'un message : chaque thème donne 40 px à `.avatar` — la taille d'une
+   liste —, trop petit dans cette colonne (signalé par le mainteneur le 2026-10-05). Deux classes : la
+   règle passe devant celle du thème. */
+.forum-profile-avatar .avatar {
+	width: 80px;
+	height: 80px;
+}
+
 .forum-profile-avatar img,
 .forum-profile-avatar .img-fluid {
 	object-fit: cover;
@@ -326,6 +334,11 @@
 
 	.forum-user-cell .forum-profile-avatar {
 		margin: 0;
+	}
+
+	.forum-user-cell .forum-profile-avatar .avatar {
+		width: 36px;
+		height: 36px;
 	}
 
 	.forum-user-cell .forum-profile-avatar img,
