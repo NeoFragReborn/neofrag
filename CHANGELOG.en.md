@@ -12,6 +12,37 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.31] — 2026-10-06
+
+The member area, final steps: account security — signed-in devices can be logged out, moderation sanctions
+finally apply — and notifications, moved into the member area with each member choosing what they receive. The
+member area overhaul is complete.
+
+### Added
+
+- **"Security" shows the devices where the account is signed in**, and they can be logged out: each session with
+  its browser, system, address and last activity, "This device" for the one you are looking from; "Log out" for
+  another, or "Log out all other devices". "Manage my sessions" only showed a history, and a session open
+  elsewhere could not be closed. On a demo, whose account is shared, nothing closes there.
+- **Each member chooses the notifications they receive**, on the site and by email: one box per kind of
+  notification (a private message, a reply in a followed topic, a mention, a comment, a reaction, an event
+  reminder…), in "Notification preferences". Without any setting, they receive everything, as before. A module
+  declares its own through `types_de_notification()`.
+- **"My notifications" joins the member area**, with its menu, twenty per page: the page lived apart, under
+  `notifications`, and only showed the last fifty. The old address leads to the new one.
+
+### Fixed
+
+- **Avatar and signature sanctions now apply.** A moderator could issue them, but the profile never checked them:
+  a sanctioned member changed their avatar and signature as before. They now see what the sanction forbids, its
+  reason and until when.
+- **Core models read their own table, wherever they are loaded from**: loaded from a module, a model such as the
+  sessions one targeted a table prefixed with the module's name, which does not exist — the same family as the
+  favicon missing from the manifest.
+- **A forum mention no longer swallows the reply**: a member mentioned in a topic they follow only received the
+  mention — and nothing at all when mentions were turned off, by the site or by them. The reply now reaches
+  them.
+
 ## [1.2.30] — 2026-10-05
 
 The member area, second step: the public profile, and what everyone chooses to show on it. And a fix that

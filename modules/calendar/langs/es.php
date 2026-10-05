@@ -58,4 +58,5 @@ return [
 	'0c3ae1ce' => 'j \\d\\e F \\d\\e Y, H:i',
 	'f5ae0a85' => 'Inicio',
 	'eae6f46e' => 'Fin (opcional)',
+	'18bd33e4' => 'El recordatorio de una cita del calendario',
 ];

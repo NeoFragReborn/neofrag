@@ -313,4 +313,6 @@ return [
 	'8fd9c7ef' => 'Save',
 	'a4193a31' => 'Topics started',
 	'f3530fd8' => 'Latest posts',
+	'4adff5cc' => 'A reply in a topic I follow',
+	'b4708dd3' => 'A mention of my username on the forum',
 ];

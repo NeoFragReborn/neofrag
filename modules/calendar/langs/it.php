@@ -58,4 +58,5 @@ return [
 	'0c3ae1ce' => 'j F Y, H:i',
 	'f5ae0a85' => 'Inizio',
 	'eae6f46e' => 'Fine (opzionale)',
+	'18bd33e4' => 'Il promemoria di un appuntamento del calendario',
 ];

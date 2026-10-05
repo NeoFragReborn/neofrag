@@ -58,4 +58,5 @@ return [
 	'0c3ae1ce' => 'j. F Y, H:i',
 	'f5ae0a85' => 'Beginn',
 	'eae6f46e' => 'Ende (optional)',
+	'18bd33e4' => 'Die Erinnerung an einen Kalendertermin',
 ];

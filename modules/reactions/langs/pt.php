@@ -8,4 +8,5 @@ return [
 	'd4fe5eb3' => '%s gostou da tua publicação',
 	// i18n 2026-06-11 (code strings)
 	'f2be8bce' => 'Sistema de «gosto» reutilizável (comentários, fórum, artigos…).',
+	'99f57b01' => 'Uma reação a algo que publiquei',
 ];

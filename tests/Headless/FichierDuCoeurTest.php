@@ -58,6 +58,22 @@ final class FichierDuCoeurTest extends HeadlessTestCase
 		}
 	}
 
+	/**
+	 * La même famille, pour tous les modèles du cœur (neofrag/models/) : la liste des sessions de « Sécurité » lisait
+	 * `nf_user_session` (chantier A, étape A3). Chacun déclare sa table, d'où qu'on le charge.
+	 */
+	public function test_chaque_modele_du_coeur_vise_sa_table_depuis_un_module(): void
+	{
+		$modeles = array_map(fn ($chemin) => basename($chemin, '.php'), glob(NEOFRAG_CMS.'/neofrag/models/*.php') ?: []);
+
+		$this->assertNotEmpty($modeles);
+
+		foreach ($modeles as $nom)
+		{
+			$this->assertSame($nom, \NeoFrag()->module('user')->model2($nom)->__table, "Chargé depuis un module, le modèle « {$nom} » doit viser nf_{$nom}.");
+		}
+	}
+
 	public function test_supprimer_depuis_un_module_efface_la_ligne_et_le_fichier(): void
 	{
 		foreach (self::MODULES as $nom)

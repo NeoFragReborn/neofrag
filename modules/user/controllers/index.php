@@ -64,8 +64,10 @@ class Index extends Controller_Module
 							->heading($this->lang('Historique des connexions'), 'fas fa-clock-rotate-left')
 							->body('<p class="mb-3">'.$this->lang('Chaque connexion à ton compte : la date, l’adresse IP et le navigateur. Une connexion que tu ne reconnais pas ? Change ton mot de passe.').'</p><a class="btn btn-outline-primary" href="'.url('user/sessions').'">'.icon('fas fa-list').' '.$this->lang('Voir l’historique').'</a>');
 
-		return $this->_layout(function($row) use ($totp_panel, $historique){
-			$row->append($this->col($totp_panel, $historique)->size('col-12'));
+		$appareils = $this->_panneau_appareils();
+
+		return $this->_layout(function($row) use ($totp_panel, $appareils, $historique){
+			$row->append($this->col($totp_panel, $appareils, $historique)->size('col-12'));
 		}, 'user/security');
 	}
 
@@ -95,6 +97,114 @@ class Index extends Controller_Module
 		return $this->_layout(function($row) use ($panneaux){
 			$row->append($this->col(...$panneaux)->size('col-12'));
 		}, 'user/privacy');
+	}
+
+	/**
+	 * Mes notifications (chantier A, étape A4), dans le cadre de l'espace membre : la page vivait sous
+	 * notifications/, où les thèmes la serraient dans leur colonne de droite. L'ouvrir les marque lues.
+	 */
+	public function notifications(\NF\Modules\Notifications\Notifications $module, $notifications)
+	{
+		$this	->title($this->lang('Notifications'))
+				->icon('far fa-bell')
+				->breadcrumb();
+
+		$module->mark_all_read();
+
+		$panneau = $this->panel()
+						->heading($this->lang('Mes notifications'), 'far fa-bell')
+						->body($this->view('notifications', ['notifications' => $notifications, 'pagination' => (string) $this->module->pagination->get_pagination()]));
+
+		return $this->_layout(function($row) use ($panneau){
+			$row->append($this->col($panneau)->size('col-12'));
+		}, 'user/notifications');
+	}
+
+	/**
+	 * Préférences de notifications (chantier A, étape A4) : chaque sorte de notification que les modules installés
+	 * envoient (Notifications::types()) se reçoit sur le site — la cloche — et, quand le module sait l'écrire, par
+	 * e-mail. Sans réglage, le membre reçoit tout, comme avant ; une ligne de `nf_notifications_preferences` ne
+	 * garde que ce qu'il a coupé.
+	 */
+	public function notifications_preferences(\NF\Modules\Notifications\Notifications $notifications)
+	{
+		$this	->title($this->lang('Préférences de notifications'))
+				->icon('fas fa-sliders')
+				->breadcrumb();
+
+		$types         = $notifications->types();
+		$user_id       = (int) $this->user->id;
+		$site          = array_column($types, 'titre', 'type');
+		$email         = array_column(array_filter($types, fn ($t) => !empty($t['email'])), 'titre', 'type');
+		$recus         = fn (array $choix, string $canal) => array_values(array_filter(array_keys($choix), fn ($type) => $notifications->veut($user_id, (string) $type, $canal)));
+
+		if (!$types)
+		{
+			$panneau = $this->panel()
+							->heading($this->lang('Préférences de notifications'), 'fas fa-sliders')
+							->body('<div class="alert alert-info mb-0">'.$this->lang('Aucun module installé n’envoie de notification.').'</div>');
+		}
+		else
+		{
+			$formulaire = $this	->form2()
+								->rule($this->form_checkbox('site')
+											->title($this->lang('Sur le site'))
+											->info($this->lang('Dans la cloche, en haut de chaque page.'))
+											->data($site)
+											->inline(FALSE)
+											->value($recus($site, 'site'))
+								);
+
+			if ($email)
+			{
+				$formulaire->rule($this	->form_checkbox('email')
+										->title($this->lang('Par e-mail'))
+										->info($this->lang('À l’adresse de ton compte, pour ce que le site sait aussi envoyer ainsi.'))
+										->data($email)
+										->inline(FALSE)
+										->value($recus($email, 'email'))
+				);
+			}
+
+			$panneau = $formulaire	->success(function($data) use ($types, $user_id, $notifications){
+										$site  = (array) ($data['site'] ?? []);
+										$email = (array) ($data['email'] ?? []);
+
+										foreach ($types as $type)
+										{
+											$par_site  = in_array($type['type'], $site, TRUE);
+
+											// Un type que le site n'écrit pas par e-mail garde le choix déjà fait (le forum peut l'avoir coupé).
+											$par_email = !empty($type['email']) ? in_array($type['type'], $email, TRUE) : $notifications->veut($user_id, (string) $type['type'], 'email');
+
+											if ($par_site && $par_email)
+											{
+												$this->db	->where('user_id', $user_id)
+															->where('type', (string) $type['type'])
+															->delete('nf_notifications_preferences');
+											}
+											else
+											{
+												$this->db->replace('nf_notifications_preferences', [
+													'user_id' => $user_id,
+													'type'    => (string) $type['type'],
+													'site'    => (int) $par_site,
+													'email'   => (int) $par_email,
+												]);
+											}
+										}
+
+										notify($this->lang('Tes préférences de notifications sont enregistrées.'));
+										refresh();
+									})
+									->submit($this->lang('Enregistrer'))
+									->panel()
+									->title($this->lang('Ce que je reçois'), 'fas fa-sliders');
+		}
+
+		return $this->_layout(function($row) use ($panneau){
+			$row->append($this->col($panneau)->size('col-12'));
+		}, 'user/notifications/preferences');
 	}
 
 	public function security_export()
@@ -372,7 +482,7 @@ class Index extends Controller_Module
 			$this->model2('file', $fichier)->delete();
 		}
 
-		foreach (['nf_user_auth', 'nf_session_history', 'nf_user_totp_recovery', 'nf_user_token', 'nf_user_fields_values', 'nf_notifications', 'nf_users_roles', 'nf_users_groups'] as $table)
+		foreach (['nf_user_auth', 'nf_session_history', 'nf_user_totp_recovery', 'nf_user_token', 'nf_user_fields_values', 'nf_notifications', 'nf_notifications_preferences', 'nf_users_roles', 'nf_users_groups'] as $table)
 		{
 			if ($this->db->table_exists($table))
 			{
@@ -868,12 +978,19 @@ class Index extends Controller_Module
 				->icon('fas fa-pen')
 				->breadcrumb();
 
-		return $this->_layout(function($row){
+		// Les sanctions d'avatar et de signature, prononcées par la modération, ne s'appliquaient nulle part (0.30) :
+		// le formulaire n'est plus construit — il ne peut donc rien enregistrer —, et le panneau dit pourquoi.
+		$avatar_refuse    = $this->_sanction('restrict_avatar');
+		$signature_refuse = $this->_sanction('restrict_signature');
+
+		return $this->_layout(function($row) use ($avatar_refuse, $signature_refuse){
 			$row->append($this	->col()
 								->size('col-12 col-xl-7')
+								// Sans la signature quand une sanction l'interdit : forms/profile.php consulte la modération.
 								->append($this	->form2('profile', $this->user->profile())
 												->panel()
 								)
+								->append_if($signature_refuse, fn () => $this->_panneau_sanction($signature_refuse, (string) $this->lang('Signature'), 'fas fa-signature', (string) $this->lang('Une sanction de modération t’empêche de changer ta signature')))
 								->append($this	->form2('profile_socials', $this->user->profile())
 												->panel()
 												->title($this->lang('Liens'), 'fas fa-globe')
@@ -882,9 +999,11 @@ class Index extends Controller_Module
 				)
 				->append($this	->col()
 								->size('col-12 col-xl-5')
-								->append($this	->form2('avatar', $this->user->profile())
-												->panel()
-												->title($this->lang('Avatar'), 'fas fa-user-circle')
+								->append($avatar_refuse
+									? $this->_panneau_sanction($avatar_refuse, (string) $this->lang('Avatar'), 'fas fa-user-circle', (string) $this->lang('Une sanction de modération t’empêche de changer ton avatar'))
+									: $this	->form2('avatar', $this->user->profile())
+											->panel()
+											->title($this->lang('Avatar'), 'fas fa-user-circle')
 								)
 								->append($this	->form2('cover', $this->user->profile())
 												->panel()
@@ -907,21 +1026,95 @@ class Index extends Controller_Module
 		}, 'user/security');
 	}
 
-	public function _session_delete($session_id)
+	/** Déconnecter l'un de ses appareils (chantier A, étape A3) : un lien porteur du jeton de session. */
+	public function _session_fermer($session_id)
 	{
-		$this	->title($this->lang('Confirmation de suppression'))
-				->form()
-				->confirm_deletion($this->lang('Confirmation de suppression'), $this->lang('Êtes-vous sûr(e) de vouloir supprimer la session de l\'utilisateur <b>%s</b> ?'));
+		$this->check_csrf('user/security');
 
-		if ($this->form()->is_valid())
+		// Sur une démonstration, le compte est partagé : fermer « un autre appareil » déconnecterait un autre visiteur.
+		if (!nf_demo())
 		{
-			$this->db	->where('id', $session_id)
+			$this->db	->where('user_id', (int) $this->user->id)
+						->where('id', (string) $session_id)
 						->delete('nf_session');
 
-			return 'OK';
+			notify($this->lang('Cet appareil est déconnecté.'));
 		}
 
-		return $this->form()->display();
+		redirect('user/security');
+	}
+
+	/** Déconnecter tous ses autres appareils, en gardant celui-ci. */
+	public function _sessions_fermer_autres()
+	{
+		$this->check_csrf('user/security');
+
+		if (!nf_demo())
+		{
+			$this->db	->where('user_id', (int) $this->user->id)
+						->where('id <>', (string) $this->session->id)
+						->delete('nf_session');
+
+			notify($this->lang('Tes autres appareils sont déconnectés.'));
+		}
+
+		redirect('user/security');
+	}
+
+	/**
+	 * Les appareils où le membre est connecté (chantier A, étape A3) : chaque session ouverte, son navigateur et son
+	 * système, son adresse, sa dernière activité ; « Cet appareil » pour celle-ci. « Gérer mes sessions » ne
+	 * montrait qu'un historique en lecture seule, et une session ouverte ailleurs ne se fermait pas.
+	 */
+	private function _panneau_appareils()
+	{
+		$appareils = [];
+
+		foreach ($this->collection('session')->where('_.user_id', (int) $this->user->id)->order_by('_.last_activity DESC')->get() as $session)
+		{
+			$donnees = is_object($session->data) ? $session->data : NULL;
+			$agent   = $donnees ? (string) $donnees->get('session', 'user_agent') : '';
+
+			$appareils[] = [
+				'id'      => (string) $session->id,
+				'actuel'  => (string) $session->id === (string) $this->session->id,
+				'agent'   => analyser_user_agent(html_entity_decode($agent, ENT_QUOTES | ENT_HTML5, 'UTF-8')),
+				'ip'      => $donnees ? (string) $donnees->get('session', 'ip_address') : '',
+				'activite'=> $session->last_activity,
+				'fermer'  => $this->csrf_url('user/sessions/fermer/'.$session->id),
+			];
+		}
+
+		return $this	->panel()
+						->heading($this->lang('Appareils connectés'), 'fas fa-laptop')
+						->body($this->view('appareils', ['appareils' => $appareils, 'demo' => nf_demo(), 'fermer_autres' => $this->csrf_url('user/sessions/fermer-autres')]));
+	}
+
+	/** La sanction de modération `$type` qui pèse sur le membre (restrict_avatar, restrict_signature…), ou NULL. */
+	private function _sanction(string $type): ?array
+	{
+		foreach ($this->moderation->active_sanctions((int) $this->user->id) as $sanction)
+		{
+			if ($sanction['type'] === $type)
+			{
+				return $sanction;
+			}
+		}
+
+		return NULL;
+	}
+
+	/** Le panneau qui dit au membre ce qu'une sanction l'empêche de faire, et jusqu'à quand. */
+	private function _panneau_sanction(array $sanction, string $titre, string $icone, string $message)
+	{
+		$fin = !empty($sanction['expires_at'])
+			? (string) $this->lang('jusqu’au %s', timetostr($this->lang('d/m/Y à H:i'), $sanction['expires_at']))
+			: (string) $this->lang('jusqu’à nouvel ordre');
+
+		return $this	->panel()
+						->heading($titre, $icone)
+						->body('<div class="alert alert-warning mb-0">'.icon('fas fa-gavel').' '.$message.' ('.nf_texte($fin).')'
+							.(!empty($sanction['reason']) ? '<br /><small>'.$this->lang('Motif : %s', nf_texte($sanction['reason'])).'</small>' : '').'</div>');
 	}
 
 	public function auth($authenticator)

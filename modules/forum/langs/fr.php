@@ -309,4 +309,6 @@ return [
 	'8fd9c7ef' => 'Enregistrer',
 	'a4193a31' => 'Sujets lancés',
 	'f3530fd8' => 'Derniers messages',
+	'4adff5cc' => 'Une réponse dans un sujet que je suis',
+	'b4708dd3' => 'Une mention de mon pseudo au forum',
 ];

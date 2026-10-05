@@ -158,4 +158,6 @@ return [
 	'04fb541f' => 'Duration',
 	'bbc46366' => 'Invite',
 	'8fd9c7ef' => 'Save',
+	'992d9fb3' => 'An invitation to an event',
+	'c58bcb5d' => 'A reminder for an event I am attending',
 ];

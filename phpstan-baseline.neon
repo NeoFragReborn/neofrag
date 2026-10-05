@@ -6427,15 +6427,15 @@ parameters:
 			path: modules/user/controllers/ajax_checker.php
 
 		-
-			message: '#^Access to an undefined property NF\\NeoFrag\\Loadables\\Model2\:\:\$date\.$#'
+			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Session\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: modules/user/controllers/checker.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\User\\Controllers\\Checker\:\:ajax\(\)\.$#'
-			identifier: method.notFound
-			count: 1
+			message: '#^Access to an undefined property NF\\NeoFrag\\Loadables\\Model2\:\:\$date\.$#'
+			identifier: property.notFound
+			count: 2
 			path: modules/user/controllers/checker.php
 
 		-
@@ -6465,13 +6465,13 @@ parameters:
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Session\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 3
 			path: modules/user/controllers/index.php
 
 		-
 			message: '#^Call to an undefined method NF\\Modules\\User\\Controllers\\Index\:\:form_checkbox\(\)\.$#'
 			identifier: method.notFound
-			count: 1
+			count: 3
 			path: modules/user/controllers/index.php
 
 		-
@@ -6507,13 +6507,13 @@ parameters:
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Collection\:\:where\(\)\.$#'
 			identifier: method.notFound
-			count: 1
+			count: 2
 			path: modules/user/controllers/index.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Form\:\:rule\(\)\.$#'
 			identifier: method.notFound
-			count: 2
+			count: 3
 			path: modules/user/controllers/index.php
 
 		-
@@ -6605,6 +6605,24 @@ parameters:
 			identifier: variable.undefined
 			count: 1
 			path: modules/user/views/admin/groups.tpl.php
+
+		-
+			message: '#^Variable \$appareils might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: modules/user/views/appareils.tpl.php
+
+		-
+			message: '#^Variable \$demo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: modules/user/views/appareils.tpl.php
+
+		-
+			message: '#^Variable \$fermer_autres might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/user/views/appareils.tpl.php
 
 		-
 			message: '#^Variable \$authenticators might not be defined\.$#'

@@ -63,16 +63,53 @@ class Checker extends Module_Checker
 		return is_array($lien) && $lien ? [$lien] : NULL;
 	}
 
-	public function _session_delete($session_id)
+	/**
+	 * Fermer l'une de ses sessions ouvertes (chantier A, étape A3) : la sienne seulement, et pas celle-ci — la
+	 * déconnexion est là pour elle.
+	 */
+	public function _session_fermer($session_id)
 	{
 		$this->error->unconnected();
 
-		if (!$this->db->from('nf_session')->where('user_id', $this->user->id)->where('id', $session_id)->empty())
+		if ((string) $session_id !== (string) $this->session->id
+			&& !$this->db->from('nf_session')->where('user_id', $this->user->id)->where('id', $session_id)->empty())
 		{
-			$this->ajax();
-
-			return [$session_id];
+			return [(string) $session_id];
 		}
+	}
+
+	public function _sessions_fermer_autres()
+	{
+		$this->error->unconnected();
+
+		return [];
+	}
+
+	/**
+	 * Mes notifications (chantier A, étape A4) : vingt par page parmi les cinq cents dernières, la plus récente
+	 * d'abord. Le module est du cœur ; sans lui, pas de page. Le contrôleur le reçoit, avec la page à montrer.
+	 */
+	public function notifications($page = '')
+	{
+		$this->error->unconnected();
+
+		$notifications = $this->module('notifications');
+
+		if (!$notifications instanceof \NF\Modules\Notifications\Notifications)
+		{
+			return NULL;
+		}
+
+		return [$notifications, $this->module->pagination->fix_items_per_page(20)->get_data($notifications->recent(500), $page)];
+	}
+
+	public function notifications_preferences()
+	{
+		$this->error->unconnected();
+
+		$notifications = $this->module('notifications');
+
+		return $notifications instanceof \NF\Modules\Notifications\Notifications ? [$notifications] : NULL;
 	}
 
 	public function security()

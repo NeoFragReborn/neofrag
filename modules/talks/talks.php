@@ -74,8 +74,16 @@ class Talks extends Module
 			// domaine du client de messagerie (même règle que `user.registration`, relevé le 2026-10-04).
 			$talk_url = \absolute_url('talks/'.(int)$payload['talk_id'].'/'.\url_title($talk['name']));
 
+			// Le membre qui ne veut plus de courriel pour ses messages (préférences, chantier A, étape A4).
+			$notifications = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['notifications']);
+
 			foreach ($recipients as $r)
 			{
+				if ($notifications && !$notifications->veut((int) $r['user_id'], 'talks_message', 'email'))
+				{
+					continue;
+				}
+
 				try
 				{
 					$this->email->template('talks.new_message', [
@@ -291,5 +299,18 @@ class Talks extends Module
 		$talks = $this->model('talks');
 
 		return [['url' => 'talks', 'titre' => (string) $this->lang('Messagerie'), 'icone' => 'far fa-envelope', 'badge' => (int) $talks->get_unread_count((int) $user->id), 'compact' => TRUE, 'ordre' => 10]];
+	}
+
+	/**
+	 * Les notifications que ce module envoie, pour les préférences de chaque membre (Notifications::types(),
+	 * chantier A, étape A4).
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function types_de_notification(): array
+	{
+		return [
+			['type' => 'talks_message', 'titre' => (string) $this->lang('Un nouveau message privé'), 'email' => TRUE, 'ordre' => 10],
+		];
 	}
 }

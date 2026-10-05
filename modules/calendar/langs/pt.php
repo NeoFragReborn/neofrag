@@ -58,4 +58,5 @@ return [
 	'0c3ae1ce' => 'j \\d\\e F \\d\\e Y, H:i',
 	'f5ae0a85' => 'Início',
 	'eae6f46e' => 'Fim (opcional)',
+	'18bd33e4' => 'O lembrete de um compromisso do calendário',
 ];

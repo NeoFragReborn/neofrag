@@ -12,4 +12,5 @@ return [
 	'd4fe5eb3' => '%s liked your post',
 	// i18n 2026-06-11 (code strings)
 	'f2be8bce' => 'Reusable "like" system (comments, forum, articles…).',
+	'99f57b01' => 'A reaction to something I published',
 ];

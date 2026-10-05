@@ -113,4 +113,5 @@ return [
 	'cf2e7bf8' => 'News from a category',
 	'32795d48' => 'Draft',
 	'8fd9c7ef' => 'Save',
+	'ed1a0152' => 'A news item in a category I follow',
 ];

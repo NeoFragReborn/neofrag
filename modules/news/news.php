@@ -179,4 +179,17 @@ class News extends Module
 			];
 		}
 	}
+
+	/**
+	 * Les notifications que ce module envoie, pour les préférences de chaque membre (Notifications::types(),
+	 * chantier A, étape A4).
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function types_de_notification(): array
+	{
+		return [
+			['type' => 'news', 'titre' => (string) $this->lang('Une actualité dans une catégorie que je suis'), 'ordre' => 60],
+		];
+	}
 }

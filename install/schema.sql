@@ -369,6 +369,17 @@ CREATE TABLE `nf_notifications` (
   CONSTRAINT `fk_notif_user` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Les préférences de notifications de chaque membre (chantier A, étape A4). Cf. migrations/2026_10_05_preferences_de_notifications.
+DROP TABLE IF EXISTS `nf_notifications_preferences`;
+CREATE TABLE `nf_notifications_preferences` (
+  `user_id` int(11) unsigned NOT NULL,
+  `type` varchar(50) NOT NULL,
+  `site` tinyint(1) unsigned NOT NULL DEFAULT 1,
+  `email` tinyint(1) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`user_id`,`type`),
+  CONSTRAINT `nf_notifications_preferences_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `nf_subscriptions`;
 CREATE TABLE `nf_subscriptions` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -953,7 +964,11 @@ INSERT INTO `nf_migrations` (`id`, `name`, `batch`, `applied_at`) VALUES
 
 -- Les droits des membres : install/seed.sql leur donne deja ce que les visiteurs ont.
 -- Cf. migrations/2026_10_05_droits_des_membres.
-('59', '2026_10_05_droits_des_membres', '47', '2026-10-05 00:00:00');
+('59', '2026_10_05_droits_des_membres', '47', '2026-10-05 00:00:00'),
+
+-- Les préférences de notifications : nf_notifications_preferences ci-dessus.
+-- Cf. migrations/2026_10_05_preferences_de_notifications.
+('60', '2026_10_05_preferences_de_notifications', '48', '2026-10-05 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -136,4 +136,5 @@ return [
 	'215a962f' => 'Enlace acortado — precaución',
 	'8fd9c7ef' => 'Guardar',
 	'5bb5f5dc' => 'Mensajería',
+	'0d5008d3' => 'Un nuevo mensaje privado',
 ];

@@ -136,4 +136,5 @@ return [
 	'215a962f' => 'Link abbreviato — attenzione',
 	'8fd9c7ef' => 'Salva',
 	'5bb5f5dc' => 'Messaggistica',
+	'0d5008d3' => 'Un nuovo messaggio privato',
 ];

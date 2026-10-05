@@ -357,8 +357,12 @@ class Forum extends Module
 		{
 			foreach ($payload['mentioned_users'] as $u)
 			{
-				$notifications->push((int)$u['id'], 'forum_mention', $this->lang('%s vous a mentionné dans « %s »', $topic['actor'], $topic['title']), $msg_url, $actor);
-				$seen[(int)$u['id']] = TRUE;
+				// Seule une mention REÇUE dispense de la notification de réponse : le membre qui a coupé ses
+				// mentions (préférences, chantier A, étape A4) reçoit celle-ci s'il suit le sujet.
+				if ($notifications->push((int)$u['id'], 'forum_mention', $this->lang('%s vous a mentionné dans « %s »', $topic['actor'], $topic['title']), $msg_url, $actor) !== NULL)
+				{
+					$seen[(int)$u['id']] = TRUE;
+				}
 			}
 		}
 
@@ -407,9 +411,12 @@ class Forum extends Module
 		// du client de messagerie (même règle que `user.registration`, relevé le 2026-10-04).
 		$post_url = \absolute_url('forum/topic/'.$payload['topic_id'].'/'.\url_title($topic['title'])).'#'.(int)$payload['message_id'];
 
+		$notifications = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['notifications']);
+
 		foreach ($payload['mentioned_users'] as $user)
 		{
-			if (empty($user['email']))
+			// Sans adresse, ou sans plus vouloir de courriel pour ses mentions (préférences, chantier A, étape A4).
+			if (empty($user['email']) || ($notifications && !$notifications->veut((int) $user['id'], 'forum_mention', 'email')))
 			{
 				continue;
 			}
@@ -453,13 +460,19 @@ class Forum extends Module
 			return;
 		}
 
-		// Exclure les users déjà notifiés via @mention pour éviter double email
+		$notifications = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['notifications']);
+
+		// Exclure les users déjà notifiés via @mention pour éviter double email — ceux qui l'ont REÇU : une mention
+		// coupée (réglage du site, ou préférences du membre, chantier A, étape A4) laisse passer la réponse.
 		$mentioned_ids = [];
-		if (!empty($payload['mentioned_users']))
+		if (!empty($payload['mentioned_users']) && (!isset($this->config->forum_mentions_email) || $this->config->forum_mentions_email))
 		{
 			foreach ($payload['mentioned_users'] as $u)
 			{
-				$mentioned_ids[(int)$u['id']] = TRUE;
+				if (!empty($u['email']) && (!$notifications || $notifications->veut((int)$u['id'], 'forum_mention', 'email')))
+				{
+					$mentioned_ids[(int)$u['id']] = TRUE;
+				}
 			}
 		}
 
@@ -488,6 +501,12 @@ class Forum extends Module
 			if (isset($mentioned_ids[(int)$subscriber['user_id']]))
 			{
 				continue; // Déjà notifié via mention
+			}
+
+			// Le membre qui ne veut plus de courriel pour les réponses (préférences, chantier A, étape A4).
+			if ($notifications && !$notifications->veut((int) $subscriber['user_id'], 'forum_reply', 'email'))
+			{
+				continue;
 			}
 
 			try
@@ -730,5 +749,19 @@ class Forum extends Module
 				'messages' => (array) $lisibles()->select('m.message_id', 'm.topic_id', 't.title', 'm.message', 'UNIX_TIMESTAMP(m.date) AS date')->order_by('m.date DESC')->limit(15)->get(),
 			]),
 		]];
+	}
+
+	/**
+	 * Les notifications que ce module envoie, pour les préférences de chaque membre (Notifications::types(),
+	 * chantier A, étape A4).
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function types_de_notification(): array
+	{
+		return [
+			['type' => 'forum_reply',   'titre' => (string) $this->lang('Une réponse dans un sujet que je suis'), 'email' => !isset($this->config->forum_subscriptions_email) || (bool) $this->config->forum_subscriptions_email, 'ordre' => 20],
+			['type' => 'forum_mention', 'titre' => (string) $this->lang('Une mention de mon pseudo au forum'), 'email' => !isset($this->config->forum_mentions_email) || (bool) $this->config->forum_mentions_email, 'ordre' => 21],
+		];
 	}
 }

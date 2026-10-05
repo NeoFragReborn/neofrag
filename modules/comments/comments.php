@@ -242,4 +242,17 @@ class Comments extends Module
 
 		return $comments[$module][$module_id];
 	}
+
+	/**
+	 * Les notifications que ce module envoie, pour les préférences de chaque membre (Notifications::types(),
+	 * chantier A, étape A4).
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function types_de_notification(): array
+	{
+		return [
+			['type' => 'comment', 'titre' => (string) $this->lang('Un commentaire sur ce que j’ai publié ou ce que je suis'), 'ordre' => 30],
+		];
+	}
 }

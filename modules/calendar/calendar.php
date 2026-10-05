@@ -152,4 +152,17 @@ class Calendar extends Module
 		}
 		return $out;
 	}
+
+	/**
+	 * Les notifications que ce module envoie, pour les préférences de chaque membre (Notifications::types(),
+	 * chantier A, étape A4).
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function types_de_notification(): array
+	{
+		return [
+			['type' => 'calendar-reminder', 'titre' => (string) $this->lang('Le rappel d’un rendez-vous du calendrier'), 'ordre' => 42],
+		];
+	}
 }

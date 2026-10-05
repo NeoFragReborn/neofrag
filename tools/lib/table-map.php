@@ -80,7 +80,7 @@ return [
         'nf_roles', 'nf_roles_lang', 'nf_role_permissions',
         'nf_settings', 'nf_dispositions', 'nf_widgets',
         'nf_pages', 'nf_pages_lang', 'nf_pages_instances', 'nf_menus', 'nf_menus_items',
-        'nf_comment', 'nf_reactions', 'nf_revisions', 'nf_notifications', 'nf_subscriptions',
+        'nf_comment', 'nf_reactions', 'nf_revisions', 'nf_notifications', 'nf_notifications_preferences', 'nf_subscriptions',
         'nf_sanctions', 'nf_reports', 'nf_reports_attachments_snapshot',
         'nf_talks', 'nf_talks_participants', 'nf_talks_messages', 'nf_talks_attachments',
         'nf_media', 'nf_file', 'nf_slider_slides', 'nf_statistics', 'nf_webhooks',

@@ -316,7 +316,7 @@ paramètre obligatoire de plus, l'erreur n'apparaît qu'à l'ouverture de la pag
 
 ### L'espace membre et le profil public
 
-Deux méthodes de la **classe** du module, facultatives, et lues seulement si elles existent :
+Trois méthodes de la **classe** du module, facultatives, et lues seulement si elles existent :
 
 - **`espace_membre($user)`** ajoute des pages au **menu de l'espace membre** — la colonne de gauche sur
   ordinateur, la bande d'onglets au téléphone, repris aussi dans la barre du haut des thèmes et le widget
@@ -327,6 +327,11 @@ Deux méthodes de la **classe** du module, facultatives, et lues seulement si el
   minuscules, chiffres et tirets), `titre`, `icone`, `ordre`, au besoin `nombre` (montré à côté du titre et
   dans « En chiffres »), et `contenu`, une fonction qui rend la page de l'onglet — appelée seulement quand on
   l'ouvre. **Rien à montrer, rien à rendre** : un onglet vide n'apparaît pas, et son adresse répond 404.
+- **`types_de_notification()`** déclare les notifications que le module envoie, pour les **préférences** de
+  chaque membre (`user/notifications/preferences`) : `type` (celui que reçoit `push()`), `titre` (ce que le
+  membre lit, « Une réponse dans un sujet que je suis »), `email` à `TRUE` si le module sait aussi l'envoyer
+  par e-mail, et `ordre`. **Un type envoyé doit être déclaré** : sinon le membre ne peut pas le couper —
+  `tests/Unit/TypesDeNotificationTest.php` lit les envois du dépôt et le refuse.
 
 ```php
 public function profil_membre($membre): array
@@ -348,6 +353,13 @@ Le profil montre ce que **celui qui regarde** peut lire : un onglet qui liste de
 propres pages (`$this->access(…)`) — le forum n'y montre que les catégories lisibles. Ce que le membre
 choisit de cacher de lui (points, karma, VIP, âge, présence en ligne) se demande à son modèle :
 `$membre->montre('statut')`. Exemples réels : `modules/forum/forum.php`, `modules/teams/teams.php`.
+
+Une notification part par `push($user_id, $type, $titre, $adresse, $acteur)` du module `notifications`
+(ou `push_unique()`, qui n'en ajoute pas une seconde du même type à la même adresse tant que la première n'est pas lue) : ce que le membre a coupé **sur le site**
+n'est pas écrit. Un module qui l'envoie aussi par e-mail pose d'abord la question lui-même,
+`$notifications->veut($user_id, $type, 'email')`, et n'écrit pas s'il répond non. Depuis la classe du
+module, charge-le par `\NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['notifications'])` — `$this->module()`
+s'y trompe de type d'addon. Exemple réel : `modules/talks/talks.php`.
 
 ## 6. Les permissions (optionnel)
 

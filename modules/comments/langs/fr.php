@@ -30,4 +30,5 @@ return [
 	'93ac18cc' => '%s n°%d',
 	'016d7125' => 'Système de commentaires réutilisable par les modules (news, articles, etc.).',
 	'e16ce76b' => 'Commentaire',
+	'472a9d35' => 'Un commentaire sur ce que j’ai publié ou ce que je suis',
 ];

@@ -311,4 +311,6 @@ return [
 	'8fd9c7ef' => 'Guardar',
 	'a4193a31' => 'Temas iniciados',
 	'f3530fd8' => 'Últimas publicaciones',
+	'4adff5cc' => 'Una respuesta en un tema que sigo',
+	'b4708dd3' => 'Una mención de mi nombre de usuario en el foro',
 ];

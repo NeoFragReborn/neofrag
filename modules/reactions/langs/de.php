@@ -8,4 +8,5 @@ return [
 	'd4fe5eb3' => '%s gefällt dein Beitrag',
 	// i18n 2026-06-11 (code strings)
 	'f2be8bce' => 'Wiederverwendbares „Gefällt mir"-System (Kommentare, Forum, Artikel…).',
+	'99f57b01' => 'Eine Reaktion auf etwas, das ich veröffentlicht habe',
 ];

@@ -158,4 +158,6 @@ return [
 	'04fb541f' => 'Dauer',
 	'bbc46366' => 'Einladen',
 	'8fd9c7ef' => 'Speichern',
+	'992d9fb3' => 'Eine Einladung zu einem Event',
+	'c58bcb5d' => 'Die Erinnerung an ein Event, an dem ich teilnehme',
 ];

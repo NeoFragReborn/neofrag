@@ -82,9 +82,11 @@ const CONTENT_TABLES = [
     // OUVERTS écrivent, et que l'instantané ne rétablissait pas. Un rôle d'équipe renommé ou une
     // carte de jeu supprimée l'étaient pour toujours, et publiquement ; les notifications et les
     // points d'une publication s'accumulaient ; créer une galerie ou une page écrit des permissions.
+    // Les préférences de notifications (chantier A, étape A4, 2026-10-05) : le compte partagé peut tout
+    // couper, et la démonstration ne recevrait plus rien, pour tous ses visiteurs.
     'nf_games_maps', 'nf_games_modes', 'nf_teams_roles',
     'nf_articles_series', 'nf_articles_series_lang',
-    'nf_notifications', 'nf_points_log',
+    'nf_notifications', 'nf_notifications_preferences', 'nf_points_log',
     'nf_role_permissions',
     // La modération est verrouillée ; ses deux tables sont rétablies quand même, par sûreté.
     'nf_sanctions', 'nf_ip_banlist',

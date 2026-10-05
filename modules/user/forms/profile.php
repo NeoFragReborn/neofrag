@@ -42,13 +42,20 @@ $this	->rule($this->form_text('first_name')
 		)
 		->rule($this->form_text('quote')
 					->title($this->lang('Citation'))
-		)
-		->rule($this->form_textarea('signature')
+		);
+
+// La signature, sauf si une sanction de modération l'interdit (restrict_signature) : prononcée, elle restait sans
+// effet (0.30) ; le champ absent, rien ne peut l'enregistrer. La page le dit dans un panneau (chantier A, étape A3).
+if (NeoFrag()->moderation->can_change_signature((int) NeoFrag()->user->id))
+{
+	$this->rule($this->form_textarea('signature')
 					->title($this->lang('Signature'))
 					->rows(5)
 					->editor()
-		)
-		->success(function($profile){
+		);
+}
+
+$this	->success(function($profile){
 			$profile->commit();
 			notify($this->lang('Profil modifié'));
 			refresh();

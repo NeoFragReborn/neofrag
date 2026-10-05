@@ -311,4 +311,6 @@ return [
 	'8fd9c7ef' => 'Speichern',
 	'a4193a31' => 'Eröffnete Themen',
 	'f3530fd8' => 'Neueste Beiträge',
+	'4adff5cc' => 'Eine Antwort in einem Thema, dem ich folge',
+	'b4708dd3' => 'Eine Erwähnung meines Benutzernamens im Forum',
 ];

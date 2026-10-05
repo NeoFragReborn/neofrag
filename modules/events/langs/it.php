@@ -158,4 +158,6 @@ return [
 	'04fb541f' => 'Durata',
 	'bbc46366' => 'Invita',
 	'8fd9c7ef' => 'Salva',
+	'992d9fb3' => 'Un invito a un evento',
+	'c58bcb5d' => 'Il promemoria di un evento a cui partecipo',
 ];

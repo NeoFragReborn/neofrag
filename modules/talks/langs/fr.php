@@ -134,4 +134,5 @@ return [
 	'215a962f' => 'Lien raccourci — prudence',
 	'8fd9c7ef' => 'Enregistrer',
 	'5bb5f5dc' => 'Messagerie',
+	'0d5008d3' => 'Un nouveau message privé',
 ];

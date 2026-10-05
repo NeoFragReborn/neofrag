@@ -58,4 +58,5 @@ return [
 	'0c3ae1ce' => 'j F Y H:i',
 	'f5ae0a85' => 'Début',
 	'eae6f46e' => 'Fin (optionnel)',
+	'18bd33e4' => 'Le rappel d’un rendez-vous du calendrier',
 ];

@@ -35,4 +35,5 @@ return [
 	'93ac18cc' => '%s no.%d',
 	'016d7125' => 'Comment system reusable by modules (news, articles, etc.).',
 	'e16ce76b' => 'Comment',
+	'472a9d35' => 'A comment on something I published or follow',
 ];

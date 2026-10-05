@@ -223,3 +223,11 @@
 .module-user .nf-field-row {
 	row-gap: 4px;
 }
+
+/* ── Mes notifications (étape A4) ──────────────────────────────────────────
+ * Une non lue ressort par un filet de la couleur du thème, en plus du gras. */
+
+.nf-notifs .nf-notif-unread {
+	font-weight: 600;
+	box-shadow: inset 3px 0 0 var(--nf-accent);
+}

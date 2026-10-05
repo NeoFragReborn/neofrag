@@ -311,4 +311,6 @@ return [
 	'8fd9c7ef' => 'Salva',
 	'a4193a31' => 'Discussioni avviate',
 	'f3530fd8' => 'Ultimi messaggi',
+	'4adff5cc' => 'Una risposta in una discussione che seguo',
+	'b4708dd3' => 'Una menzione del mio nome utente nel forum',
 ];

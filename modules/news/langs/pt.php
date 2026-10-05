@@ -111,4 +111,5 @@ return [
 	'cf2e7bf8' => 'Notícias de uma categoria',
 	'32795d48' => 'Rascunho',
 	'8fd9c7ef' => 'Guardar',
+	'ed1a0152' => 'Uma notícia numa categoria que sigo',
 ];

@@ -11,6 +11,9 @@ use NF\NeoFrag\Loadables\Model2;
 
 class Tracking extends Model2
 {
+	/** La table du cœur, d'où qu'on charge le modèle : sans elle, le chargeur préfixe celle du module appelant (voir Models\File, 2026-10-05). */
+	public $__table = 'tracking';
+
 	static public function __schema()
 	{
 		return [

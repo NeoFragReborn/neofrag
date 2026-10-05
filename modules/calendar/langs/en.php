@@ -58,4 +58,5 @@ return [
 	'0c3ae1ce' => 'F j, Y, H:i',
 	'f5ae0a85' => 'Start',
 	'eae6f46e' => 'End (optional)',
+	'18bd33e4' => 'A reminder for a calendar appointment',
 ];

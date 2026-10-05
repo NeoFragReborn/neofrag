@@ -10,6 +10,38 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.31] — 2026-10-06
+
+L'espace membre, dernières étapes : la sécurité du compte — les appareils connectés se déconnectent, les sanctions
+de modération s'appliquent enfin — et les notifications, rangées dans l'espace membre avec le choix de ce que
+chacun reçoit. Le chantier de l'espace membre est terminé.
+
+### Ajouté
+
+- **« Sécurité » montre les appareils où le compte est ouvert**, et ils se déconnectent : chaque session avec
+  son navigateur, son système, son adresse et sa dernière activité, « Cet appareil » pour celle d'où l'on
+  regarde ; « Déconnecter » pour un autre, ou « Déconnecter tous les autres appareils ». « Gérer mes sessions »
+  ne montrait qu'un historique, et une session ouverte ailleurs ne se fermait pas. Sur une démonstration, dont le
+  compte est partagé, rien ne s'y ferme.
+- **Chaque membre choisit les notifications qu'il reçoit**, sur le site et par e-mail : une case par sorte de
+  notification (un message privé, une réponse dans un sujet suivi, une mention, un commentaire, une réaction, un
+  rappel d'événement…), dans « Préférences de notifications ». Sans réglage, il reçoit tout, comme avant. Un
+  module déclare les siennes par `types_de_notification()`.
+- **« Mes notifications » rejoint l'espace membre**, avec son menu, vingt par page : la page vivait à part, sous
+  `notifications`, et n'en montrait que les cinquante dernières. L'ancienne adresse mène à la nouvelle.
+
+### Corrigé
+
+- **Les sanctions d'avatar et de signature s'appliquent.** Un modérateur pouvait les prononcer, mais le profil ne
+  les consultait pas : le membre sanctionné changeait son avatar et sa signature comme avant. Il voit maintenant
+  ce que la sanction lui interdit, son motif et jusqu'à quand.
+- **Les modèles du cœur lisent leur table, d'où qu'on les charge** : chargé depuis un module, un modèle comme
+  celui des sessions visait une table préfixée du nom du module, qui n'existe pas — la même famille que le favicon
+  manquant au manifeste.
+- **Une mention au forum ne fait plus perdre la réponse** : un membre mentionné dans un sujet qu'il suit ne
+  recevait que la mention — et rien du tout si les mentions étaient coupées, par le site ou par lui. La réponse
+  lui arrive désormais.
+
 ## [1.2.30] — 2026-10-05
 
 L'espace membre, deuxième étape : le profil public, et ce que chacun choisit d'y montrer. Et une correction qui

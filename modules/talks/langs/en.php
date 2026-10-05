@@ -138,4 +138,5 @@ return [
 	'215a962f' => 'Shortened link — be careful',
 	'8fd9c7ef' => 'Save',
 	'5bb5f5dc' => 'Messages',
+	'0d5008d3' => 'A new private message',
 ];

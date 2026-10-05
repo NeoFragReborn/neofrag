@@ -161,4 +161,17 @@ class Reactions extends Module
 			.'<span class="nf-reaction-summary">'.self::summary_html($counts).'</span>'
 		.'</span>';
 	}
+
+	/**
+	 * Les notifications que ce module envoie, pour les préférences de chaque membre (Notifications::types(),
+	 * chantier A, étape A4).
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function types_de_notification(): array
+	{
+		return [
+			['type' => 'reaction', 'titre' => (string) $this->lang('Une réaction à ce que j’ai publié'), 'ordre' => 31],
+		];
+	}
 }

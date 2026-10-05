@@ -108,4 +108,5 @@ return [
 	'af5fdbe3' => 'Supprimer une catégorie',
 	'93d0faf6' => 'Une date future programme la publication : l\'actualité reste masquée publiquement jusqu\'à cette date (si « Publiée » est cochée).',
 	'8fd9c7ef' => 'Enregistrer',
+	'ed1a0152' => 'Une actualité dans une catégorie que je suis',
 ];

@@ -8,4 +8,5 @@ return [
 	'd4fe5eb3' => 'A %s piace il tuo post',
 	// i18n 2026-06-11 (code strings)
 	'f2be8bce' => 'Sistema di «mi piace» riutilizzabile (commenti, forum, articoli…).',
+	'99f57b01' => 'Una reazione a ciò che ho pubblicato',
 ];

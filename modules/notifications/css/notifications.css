@@ -26,10 +26,6 @@
 	display: block;
 }
 
-.nf-notif-unread {
-	font-weight: 600;
-}
-
 .nf-follow-btn.nf-follow-loading {
 	opacity: .6;
 	pointer-events: none;

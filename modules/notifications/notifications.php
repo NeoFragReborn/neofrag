@@ -42,6 +42,69 @@ class Notifications extends Module
 		];
 	}
 
+	/**
+	 * Les TYPES de notifications que le site envoie (chantier A, étape A4) : chaque module installé déclare les
+	 * siens par une méthode types_de_notification() de sa classe — `type` (celui de `nf_notifications.type`),
+	 * `titre` (ce que le membre lit dans ses préférences), `email` (TRUE si le module sait aussi l'envoyer par
+	 * e-mail) et `ordre`. C'est la liste que montrent les préférences.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function types(): array
+	{
+		if ($this->_types !== NULL)
+		{
+			return $this->_types;
+		}
+
+		$types = [];
+
+		foreach (NeoFrag()->model2('addon')->get('module') as $module)
+		{
+			if ($module instanceof Module && method_exists($module, 'types_de_notification'))
+			{
+				foreach ((array) $module->types_de_notification() as $type)
+				{
+					if (is_array($type) && !empty($type['type']) && !empty($type['titre']))
+					{
+						$types[(string) $type['type']] = $type + ['email' => FALSE, 'ordre' => 50];
+					}
+				}
+			}
+		}
+
+		usort($types, fn ($a, $b) => (int) $a['ordre'] <=> (int) $b['ordre']);
+
+		return $this->_types = $types;
+	}
+
+	/** @var list<array<string, mixed>>|null les types déjà rassemblés */
+	private ?array $_types = NULL;
+
+	/**
+	 * Le membre veut-il recevoir ce type de notification, sur ce canal (`site` : la cloche, `email`) ? Sans réglage
+	 * de sa part, oui : il reçoit tout, comme avant les préférences.
+	 */
+	public function veut(int $user_id, string $type, string $canal = 'site'): bool
+	{
+		static $preferences = [];
+
+		if (!isset($preferences[$user_id]))
+		{
+			$preferences[$user_id] = [];
+
+			if ($user_id && $this->db->table_exists('nf_notifications_preferences'))
+			{
+				foreach ((array) $this->db->select('type', 'site', 'email')->from('nf_notifications_preferences')->where('user_id', $user_id)->get() as $ligne)
+				{
+					$preferences[$user_id][(string) $ligne['type']] = ['site' => (bool) $ligne['site'], 'email' => (bool) $ligne['email']];
+				}
+			}
+		}
+
+		return $preferences[$user_id][$type][$canal] ?? TRUE;
+	}
+
 	/** Crée une notification. Ignore l'auto-notification (acteur == destinataire). @return int|null */
 	public function push($user_id, $type, $title, $url = '', $actor_id = NULL)
 	{
@@ -49,6 +112,12 @@ class Notifications extends Module
 		$actor_id = $actor_id !== NULL ? (int)$actor_id : NULL;
 
 		if (!$user_id || ($actor_id !== NULL && $actor_id === $user_id))
+		{
+			return NULL;
+		}
+
+		// Ce que le membre a choisi de ne plus recevoir sur le site (préférences, chantier A, étape A4).
+		if (!$this->veut($user_id, (string) $type, 'site'))
 		{
 			return NULL;
 		}
@@ -295,7 +364,7 @@ class Notifications extends Module
 		{
 			foreach ($items as $n)
 			{
-				$list .= '<a class="dropdown-item nf-notif-item'.(empty($n['is_read']) ? ' unread' : '').'" href="'.url($n['url'] ?: 'notifications').'" data-notif-id="'.(int)$n['id'].'">'
+				$list .= '<a class="dropdown-item nf-notif-item'.(empty($n['is_read']) ? ' unread' : '').'" href="'.url($n['url'] ?: 'user/notifications').'" data-notif-id="'.(int)$n['id'].'">'
 					.'<span class="nf-notif-title">'.nf_texte($n['title']).'</span>'
 					.'<small class="text-muted d-block">'.nf_texte($n['created_at']).'</small>'
 					.'</a>';
@@ -316,7 +385,7 @@ class Notifications extends Module
 			.'<div class="dropdown-divider"></div>'
 			.$list
 			.'<div class="dropdown-divider"></div>'
-			.'<a class="dropdown-item text-center small" href="'.url('notifications').'">'.$this->lang('Voir tout').'</a>'
+			.'<a class="dropdown-item text-center small" href="'.url('user/notifications').'">'.$this->lang('Voir tout').'</a>'
 			.'</div>'
 			.'</li>';
 	}
@@ -329,6 +398,6 @@ class Notifications extends Module
 	 */
 	public function espace_membre($user): array
 	{
-		return [['url' => 'notifications', 'titre' => (string) $this->lang('Notifications'), 'icone' => 'far fa-bell', 'badge' => (int) $this->unread_count((int) $user->id), 'ordre' => 20]];
+		return [['url' => 'user/notifications', 'titre' => (string) $this->lang('Notifications'), 'icone' => 'far fa-bell', 'badge' => (int) $this->unread_count((int) $user->id), 'ordre' => 20]];
 	}
 }

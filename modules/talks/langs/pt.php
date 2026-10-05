@@ -136,4 +136,5 @@ return [
 	'215a962f' => 'Link encurtado — cuidado',
 	'8fd9c7ef' => 'Guardar',
 	'5bb5f5dc' => 'Mensagens',
+	'0d5008d3' => 'Uma nova mensagem privada',
 ];
