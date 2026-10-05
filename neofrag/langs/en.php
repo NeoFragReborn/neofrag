@@ -19,7 +19,7 @@ return [
 	'0ecb1d77' => 'Search...',
 	'105e0f88' => 'There is nothing here at the moment',
 	'10c6a1ca' => 'Theme activation',
-	'119a7b3f' => 'Connection',
+	'119a7b3f' => 'Log in',
 	'11db7719' => 'Avatar',
 	'12db61a9' => 'Appearance',
 	'15e4d51b' => '* All fields marked with a star are required',
@@ -611,4 +611,5 @@ return [
 	'2cb256bb' => 'The image could not be sent. Check your connection, then try again.',
 	'2c1b9bbb' => 'Login refused: registration not yet validated',
 	'080a7879' => 'Email address validated',
+	'5d034ca4' => 'Successful login',
 ];

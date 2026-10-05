@@ -20,7 +20,7 @@ return [
 	'0ecb1d77' => 'Suchen...',
 	'105e0f88' => 'Hier gibt es im Moment nichts',
 	'10c6a1ca' => 'Theme aktivieren',
-	'119a7b3f' => 'Verbindung',
+	'119a7b3f' => 'Anmelden',
 	'11db7719' => 'Avatar',
 	'12db61a9' => 'Erscheinungsbild',
 	'15e4d51b' => '* Alle mit einem Stern markierten Felder sind Pflichtfelder',
@@ -612,4 +612,5 @@ return [
 	'2cb256bb' => 'Das Bild konnte nicht gesendet werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es dann erneut.',
 	'2c1b9bbb' => 'Anmeldung verweigert: Registrierung noch nicht bestätigt',
 	'080a7879' => 'E-Mail-Adresse bestätigt',
+	'5d034ca4' => 'Erfolgreiche Anmeldung',
 ];

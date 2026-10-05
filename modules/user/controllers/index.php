@@ -53,7 +53,11 @@ class Index extends Controller_Module
 
 		$totp_panel = $this->panel()->title($this->lang('Authentification à deux facteurs (2FA)'), 'fas fa-mobile-alt');
 
-		if ($this->user->totp_enabled)
+		if (nf_demo())
+		{
+			$totp_panel = $this->_panneau_demo();
+		}
+		else if ($this->user->totp_enabled)
 		{
 			$totp = new \NF\NeoFrag\Libraries\Totp_Service($this);
 			$remaining = $totp->count_unused_recovery_codes($this->user->id);
@@ -66,7 +70,7 @@ class Index extends Controller_Module
 		}
 
 		$rgpd_panel = $this->panel()->title($this->lang('Mes données (RGPD)'), 'fas fa-user-shield')
-									->body('<p>'.$this->lang('Conformément au RGPD, tu peux à tout moment :').'</p><ul><li>'.$this->lang('Récupérer une copie complète de tes données personnelles').'</li><li>'.$this->lang('Demander la suppression de ton compte (droit à l\'oubli)').'</li></ul><a class="btn btn-secondary" href="'.url('user/security/export').'"><i class="fas fa-download"></i> '.$this->lang('Exporter mes données (JSON)').'</a> <a class="btn btn-outline-danger" href="'.url('user/security/delete').'"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer mon compte').'</a>');
+									->body('<p>'.$this->lang('Conformément au RGPD, tu peux à tout moment :').'</p><ul><li>'.$this->lang('Récupérer une copie complète de tes données personnelles').'</li><li>'.$this->lang('Demander la suppression de ton compte (droit à l\'oubli)').'</li></ul><a class="btn btn-secondary" href="'.url('user/security/export').'"><i class="fas fa-download"></i> '.$this->lang('Exporter mes données (JSON)').'</a>'.(nf_demo() ? '' : ' <a class="btn btn-outline-danger" href="'.url('user/security/delete').'"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer mon compte').'</a>'));
 
 		return $this->_layout(function($row) use ($totp_panel, $rgpd_panel){
 			$row->append($this->col($totp_panel, $rgpd_panel)->size('col-12 col-lg-8 mx-auto'));
@@ -76,12 +80,25 @@ class Index extends Controller_Module
 	public function security_export()
 	{
 		$user = $this->user;
+		$id   = (int) $user->id;
 
 		// Le forum est un module optionnel : sur une installation qui ne l'embarque pas, ses tables
 		// n'existent pas et la requete fataliserait — au beau milieu d'un export RGPD, donc sur
 		// l'exercice d'un droit legal de l'utilisateur. On ne liste ses contributions que si le
 		// module est effectivement installe.
 		$forum = $this->db->table_exists('nf_forum_topics') && $this->db->table_exists('nf_forum_messages');
+
+		$profil = $this->db->from('nf_user_profile')->where('id', $id)->row(FALSE);
+		$profil = is_array($profil) ? $profil : [];
+
+		// L'avatar et la couverture sont des fichiers : leur adresse, pas leur numéro.
+		foreach (['avatar', 'cover'] as $image)
+		{
+			$chemin = !empty($profil[$image]) ? (string) $this->db->select('path')->from('nf_file')->where('id', (int) $profil[$image])->row() : '';
+			$profil[$image] = $chemin !== '' ? url($chemin) : NULL;
+		}
+
+		unset($profil['id']);
 
 		$data = [
 			'export_meta' => [
@@ -91,78 +108,178 @@ class Index extends Controller_Module
 				'username'     => $user->username,
 				'rgpd_notice'  => $this->lang('Cette archive contient toutes les données personnelles que ce site a collectées sur toi (Article 15 du RGPD).')
 			],
-			'profile' => [
-				'id'                 => $user->id,
-				'username'           => $user->username,
-				'email'              => $user->email,
-				'registration_date'  => $user->registration_date,
-				'last_activity_date' => $user->last_activity_date,
-				'language'           => $user->language,
-				'admin'              => (bool)$user->admin,
-				'totp_enabled'       => (bool)$user->totp_enabled
-			],
+			// Lu en base, en valeurs simples : la langue du modèle est un objet (son module), et son graphe
+			// entier faisait échouer json_encode — l'archive partait VIDE (2026-10-05).
+			'profile' => $this->db	->select('u.id', 'u.username', 'u.email', 'u.registration_date', 'u.last_activity_date', 'l.name AS language', 'u.admin', 'u.totp_enabled')
+									->from('nf_user u')
+									->join('nf_addon l', 'l.id = u.language', 'LEFT')
+									->where('u.id', $id)
+									->row(FALSE),
+			// Le profil (nom, naissance, lieu, signature, liens…) manquait à l'archive jusqu'au 2026-10-05,
+			// comme les comptes liés, l'historique des connexions et les notifications.
+			'profil_public' => $profil,
 			// Les champs definis par l'administrateur font partie des donnees personnelles : les
 			// omettre rendrait l'archive incomplete au sens de l'article 15.
-			'champs_personnalises' => $this->_champs_values((int) $user->id),
-			'sessions_actives' => $this->db	->select('id', 'UNIX_TIMESTAMP(last_activity) AS last_activity', 'data')
+			'champs_personnalises' => $this->_champs_values($id),
+			'comptes_lies' => $this->db	->select('ad.name AS service', 'a.key AS identifiant', 'a.username AS pseudo', 'a.avatar')
+										->from('nf_user_auth a')
+										->join('nf_addon ad', 'ad.id = a.authenticator_id', 'INNER')
+										->where('a.user_id', $id)
+										->get(),
+			'historique_connexions' => $this->db	->select('date', 'ip_address', 'host_name', 'user_agent', 'referer', 'auth')
+													->from('nf_session_history')
+													->where('user_id', $id)
+													->order_by('date DESC')
+													->get(),
+			// Ni le numéro de session, ni ses données : ils valent une clé d'accès, et l'archive peut traîner.
+			'sessions_actives' => $this->db	->select('UNIX_TIMESTAMP(last_activity) AS last_activity')
 											->from('nf_session')
-											->where('user_id', $user->id)
-											->get(),
+											->where('user_id', $id)
+											->get(FALSE),
+			'notifications' => !$this->db->table_exists('nf_notifications') ? [] : $this->db	->from('nf_notifications')
+																								->where('user_id', $id)
+																								->get(FALSE),
 			'forum_topics' => !$forum ? [] : $this->db	->select('topic_id', 'title', 'UNIX_TIMESTAMP(date) AS created_at')
 														->from('nf_forum_topics')
-														->where('user_id', $user->id)
+														->where('user_id', $id)
 														->get(),
 			'forum_messages' => !$forum ? [] : $this->db	->select('message_id', 'topic_id', 'message', 'UNIX_TIMESTAMP(date) AS created_at')
 														->from('nf_forum_messages')
-														->where('user_id', $user->id)
+														->where('user_id', $id)
 														->get(),
 			'comments' => $this->db	->select('comment_id', 'module', 'object_id', 'content', 'UNIX_TIMESTAMP(date) AS created_at')
 									->from('nf_comment')
-									->where('user_id', $user->id)
+									->where('user_id', $id)
 									->get(),
 			'messages_envoyes' => $this->db	->select('t.talk_id', 't.name AS title', 't.type', 'm.content', 'UNIX_TIMESTAMP(m.date) AS sent_at')
 											->from('nf_talks_messages m')
 											->join('nf_talks t', 't.talk_id = m.talk_id')
-											->where('m.user_id', $user->id)
+											->where('m.user_id', $id)
 											->where('m.deleted_at', NULL)
 											->get(),
 			'cookie_consent' => $this->db	->select('consent_essentials', 'consent_analytics', 'consent_marketing', 'UNIX_TIMESTAMP(created_at) AS at')
 											->from('nf_cookie_consent')
-											->where('user_id', $user->id)
+											->where('user_id', $id)
 											->get()
 		];
 
-		$json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-		$filename = 'neofrag-export-'.$user->username.'-'.date('Ymd-His').'.json';
+		$data['autres_donnees'] = $this->_autres_donnees($id);
+
+		// Le site range ses textes codés (« &eacute; ») : l'archive se lit en clair.
+		array_walk_recursive($data, function(&$valeur){
+			if (is_string($valeur))
+			{
+				$valeur = nf_texte_brut($valeur);
+			}
+		});
+
+		// Une valeur que JSON ne sait pas écrire devient `null` au lieu de vider toute l'archive ; le journal le dit.
+		$json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR);
+
+		if (json_last_error() !== JSON_ERROR_NONE)
+		{
+			nf_journaliser_erreur('export', 'export des données incomplet : '.json_last_error_msg(), __FILE__.':'.__LINE__);
+		}
+		$filename = 'neofrag-export-'.url_title((string) $user->username).'-'.date('Ymd-His').'.json';
 
 		header('Content-Type: application/json; charset=utf-8');
 		header('Content-Disposition: attachment; filename="'.$filename.'"');
-		header('Content-Length: '.strlen($json));
+		header('Content-Length: '.strlen((string) $json));
 		echo $json;
 		exit;
 	}
 
+	/**
+	 * Tout ce que les autres tables gardent au nom du membre : chaque table du site qui a une colonne
+	 * « user_id » (celles des modules installés, d'hier comme de demain), hors celles que l'archive
+	 * présente déjà et celles qui ne gardent que des secrets. Les colonnes qui portent un secret (mot de
+	 * passe, jeton, empreinte) sont retirées. Au-delà de 10 000 lignes, la table le dit.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function _autres_donnees(int $user_id): array
+	{
+		$deja   = ['nf_user_auth', 'nf_session', 'nf_session_history', 'nf_notifications', 'nf_user_fields_values', 'nf_forum_messages', 'nf_comment', 'nf_talks_messages', 'nf_cookie_consent', 'nf_user_token', 'nf_user_totp_recovery'];
+		$autres = [];
+
+		foreach ($this->db->tables() as $table)
+		{
+			$colonnes = array_keys((array) $this->db->table_columns($table));
+
+			if (in_array($table, $deja, TRUE) || !in_array('user_id', $colonnes, TRUE))
+			{
+				continue;
+			}
+
+			$gardees = array_values(array_filter($colonnes, fn ($c) => !preg_match('/pass|token|secret|hash|salt/i', (string) $c)));
+
+			// L'export sert un droit légal : une table qu'on ne sait pas lire est signalée, jamais fatale.
+			try
+			{
+				$lignes = (array) $this->db->select(...$gardees)->from($table)->where('user_id', $user_id)->limit(10001)->get(FALSE);
+			}
+			catch (\Throwable $e)
+			{
+				nf_journaliser_erreur('export', 'table '.$table.' illisible pour l’export : '.$e->getMessage(), $e->getFile().':'.$e->getLine());
+				$autres[substr((string) $table, 3)] = ['erreur' => 'lecture impossible'];
+				continue;
+			}
+
+			if ($lignes)
+			{
+				$autres[substr((string) $table, 3)] = count($lignes) > 10000 ? ['tronque' => TRUE, 'lignes' => array_slice($lignes, 0, 10000)] : $lignes;
+			}
+		}
+
+		return $autres;
+	}
+
 	public function security_delete()
 	{
+		if (nf_demo())
+		{
+			notify($this->lang('Sur ce site de démonstration, le compte partagé ne se supprime pas.'), 'info');
+			redirect('user/security');
+		}
+
 		// Le mot à recopier se traduit comme le reste : on ne demande pas « SUPPRIMER » à un Anglais.
-		$mot = (string) $this->lang('SUPPRIMER');
+		$mot  = (string) $this->lang('SUPPRIMER');
+		$sans = $this->_sans_mot_de_passe();
 
 		$this	->title($this->lang('Supprimer mon compte'))
 				->icon('fas fa-trash-alt')
-				->breadcrumb()
-				->form()
-				->add_rules([
-					'confirm_text' => [
-						'label' => $this->lang('Tape « %s » pour confirmer', $mot),
-						'type'  => 'text',
-						'rules' => 'required'
-					],
-					'password' => [
-						'label' => $this->lang('Confirme avec ton mot de passe'),
-						'type'  => 'password',
-						'rules' => 'required'
-					]
-				])
+				->breadcrumb();
+
+		// Sans mot de passe à taper, l'identité se confirme par le service relié (ligne 0.32) : le membre ne
+		// pouvait jusqu'ici exercer son droit à l'effacement qu'en passant par un administrateur.
+		if ($sans && !$this->_confirmation_recente())
+		{
+			$panneau = $this->_panneau_confirmation('user/security/delete', $this->lang('Pour supprimer ton compte, confirme d’abord que c’est bien toi.'));
+
+			return $this->_layout(function($row) use ($panneau){
+				$row->append($this->col($panneau)->size('col-12 col-lg-6 mx-auto'));
+			});
+		}
+
+		$regles = [
+			'confirm_text' => [
+				'label' => $this->lang('Tape « %s » pour confirmer', $mot),
+				'type'  => 'text',
+				'rules' => 'required'
+			]
+		];
+
+		if (!$sans)
+		{
+			$regles['password'] = [
+				'label' => $this->lang('Confirme avec ton mot de passe'),
+				'type'  => 'password',
+				'rules' => 'required'
+			];
+		}
+
+		$this	->form()
+				->add_rules($regles)
 				->add_submit($this->lang('Supprimer définitivement mon compte'), 'fas fa-trash');
 
 		if ($this->form()->is_valid($post))
@@ -171,25 +288,16 @@ class Index extends Controller_Module
 			{
 				$this->form()->error($this->lang('Tape exactement « %s » (en majuscules) pour confirmer.', $mot));
 			}
-			else if (!$this->user->password($post['password']))
+			else if (!$sans && !$this->user->password($post['password']))
 			{
 				$this->form()->error($this->lang('Mot de passe incorrect.'));
 			}
 			else
 			{
-				$user_id = $this->user->id;
-				$username = $this->user->username;
+				$user_id  = (int) $this->user->id;
+				$username = (string) $this->user->username;
 
-				// Soft delete : marque deleted=TRUE, supprime sessions, anonymise email
-				$this->user	->set('deleted', 1)
-							->set('email', 'deleted-'.$user_id.'@deleted.local')
-							->set('totp_secret', NULL)
-							->set('totp_enabled', 0);
-				$this->user->update();
-
-				// Cleanup données liées
-				$this->db->where('user_id', $user_id)->delete('nf_session');
-				$this->db->where('user_id', $user_id)->delete('nf_user_totp_recovery');
+				$this->_effacer_compte($user_id);
 
 				(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('user.account_deleted', ['user_id' => $user_id, 'username' => $username]);
 
@@ -211,9 +319,68 @@ class Index extends Controller_Module
 		});
 	}
 
+	/**
+	 * Ce que la suppression d'un compte efface, demandée par son membre (2026-10-05). Elle promettait
+	 * « tes posts resteront mais seront anonymisés » et ne retirait que l'adresse : le pseudo restait sur
+	 * chaque message, le profil (nom, naissance, lieu, signature, liens), les comptes liés, l'historique
+	 * des connexions et les notifications restaient en base — et un compte Discord lié ne pouvait plus
+	 * jamais servir à se réinscrire.
+	 *
+	 * Ce qui reste : ce que le membre a publié (sous un pseudo neutre, `supprime-<id>`), les journaux de
+	 * sécurité et les consentements, qui se gardent pour prouver. Une suppression faite par un
+	 * administrateur (Models\User::delete()) ne passe pas ici : elle ne fait que fermer le compte.
+	 */
+	private function _effacer_compte(int $user_id): void
+	{
+		// Les comptes externes liés : leur clé identifie la personne chez le service. Le bot Discord du site
+		// apprend la déliaison et retire les rôles du membre.
+		foreach ((array) $this->db->select('a.key', 'ad.name')->from('nf_user_auth a')->join('nf_addon ad', 'ad.id = a.authenticator_id', 'INNER')->where('a.user_id', $user_id)->get() as $lien)
+		{
+			$this->_compte_externe_change('unlinked', (string) $lien['name'], $user_id, (string) $lien['key']);
+		}
+
+		$profil = $this->db->select('avatar', 'cover')->from('nf_user_profile')->where('id', $user_id)->row(FALSE);
+
+		// Vides, ou NULL pour les colonnes qui l'admettent (la signature et les textes ne l'admettent pas).
+		$this->db	->where('id', $user_id)
+					->update('nf_user_profile', array_fill_keys(['first_name', 'last_name', 'signature', 'country', 'timezone', 'location', 'quote', 'website', 'linkedin', 'github', 'instagram', 'twitch'], '') + array_fill_keys(['avatar', 'cover', 'date_of_birth', 'sex'], NULL));
+
+		foreach (is_array($profil) ? array_filter([(int) ($profil['avatar'] ?? 0), (int) ($profil['cover'] ?? 0)]) : [] as $fichier)
+		{
+			$this->model2('file', $fichier)->delete();
+		}
+
+		foreach (['nf_user_auth', 'nf_session_history', 'nf_user_totp_recovery', 'nf_user_token', 'nf_user_fields_values', 'nf_notifications', 'nf_users_roles', 'nf_users_groups'] as $table)
+		{
+			if ($this->db->table_exists($table))
+			{
+				$this->db->where('user_id', $user_id)->delete($table);
+			}
+		}
+
+		// Ses sessions sur les autres appareils sont fermées ; celle-ci est déconnectée, et non effacée :
+		// effacée, elle emportait le message « Ton compte a été supprimé », qui ne s'affichait jamais.
+		$this->db->where('user_id', $user_id)->where('id <>', (string) $this->session->id)->delete('nf_session');
+		$this->session->logout();
+
+		$this->db	->where('id', $user_id)
+					->update('nf_user', [
+						'username'     => 'supprime-'.$user_id,
+						'email'        => 'deleted-'.$user_id.'@deleted.local',
+						'password'     => '',
+						'salt'         => '',
+						'data'         => '',
+						'totp_secret'  => NULL,
+						'totp_enabled' => 0,
+						'deleted'      => '1',
+					]);
+	}
+
 	public function security_setup()
 	{
-		if ($this->user->totp_enabled)
+		// Sur une démonstration, un visiteur qui activait la double authentification du compte partagé
+		// en fermait l'accès à tous les autres jusqu'à la remise à zéro.
+		if ($this->user->totp_enabled || nf_demo())
 		{
 			redirect('user/security');
 		}
@@ -319,16 +486,29 @@ class Index extends Controller_Module
 
 	public function security_disable()
 	{
-		if (!$this->user->totp_enabled)
+		if (!$this->user->totp_enabled || nf_demo())
 		{
 			redirect('user/security');
 		}
 
+		$sans = $this->_sans_mot_de_passe();
+
 		$this	->title($this->lang('Désactiver le 2FA'))
 				->icon('fas fa-shield-alt')
-				->breadcrumb()
-				->form()
-				->add_rules([
+				->breadcrumb();
+
+		// Un compte sans mot de passe confirme par son service (ligne 0.32) : il ne pouvait plus couper le 2FA.
+		if ($sans && !$this->_confirmation_recente())
+		{
+			$panneau = $this->_panneau_confirmation('user/security/disable', $this->lang('Pour désactiver la double authentification, confirme d’abord que c’est bien toi.'));
+
+			return $this->_layout(function($row) use ($panneau){
+				$row->append($this->col($panneau)->size('col-12 col-lg-6 mx-auto'));
+			});
+		}
+
+		$this	->form()
+				->add_rules($sans ? [] : [
 					'password' => [
 						'label' => $this->lang('Confirme avec ton mot de passe'),
 						'type'  => 'password',
@@ -339,7 +519,7 @@ class Index extends Controller_Module
 
 		if ($this->form()->is_valid($post))
 		{
-			if (!$this->user->password($post['password']))
+			if (!$sans && !$this->user->password($post['password']))
 			{
 				$this->form()->error($this->lang('Mot de passe incorrect.'));
 			}
@@ -370,8 +550,30 @@ class Index extends Controller_Module
 		});
 	}
 
-	public function account($sessions)
+	public function account()
 	{
+		// Le titre suit le menu : « Connexion » nommait ici la page de réglage du compte, et se traduit
+		// désormais par « se connecter » (ligne 0.31).
+		$this	->title($this->lang('Info de connexion'))
+				->icon('fas fa-sign-in-alt')
+				->breadcrumb();
+
+		$sans_mot_de_passe = $this->_sans_mot_de_passe();
+
+		if (nf_demo())
+		{
+			$contenu = $this->_panneau_demo();
+		}
+		// Un compte sans mot de passe ne peut pas taper « l'actuel » : il confirme son identité par son service.
+		else if ($sans_mot_de_passe && !$this->_confirmation_recente())
+		{
+			$contenu = $this->_panneau_confirmation('user/account', $this->lang('Pour changer ton identifiant, ton adresse ou créer un mot de passe, confirme d’abord que c’est bien toi.'));
+		}
+		else
+		{
+			$contenu = $this->_formulaire_compte($sans_mot_de_passe);
+		}
+
 		return $this->row([
 						$this->col(
 							$this	->panel()
@@ -379,107 +581,36 @@ class Index extends Controller_Module
 									->body($this->user->view('profile')),
 							$this->_panel_navigation()
 						)->size('col-12 col-lg-4'),
-						$this->col(
-							$this->title($this->lang('Connexion'))
-								->icon('fas fa-sign-in-alt')
-								->breadcrumb()
-								->form2('username current_password new_password email', $this->user)
-								->success(function($user){
-									if ($user->password_new)
-									{
-										$user->set_password($user->password_new);
-									}
-									else
-									{
-										$user->reset('password');
-									}
-
-									// La validation par e-mail porte sur l'INSCRIPTION (User::a_valider()). Confirmer une
-									// nouvelle adresse — la garder en attente jusqu'au clic sur un lien — demande de la ranger
-									// à part : une suite notée au tableau de bord, pas une branche vide ici.
-									$user->update();
-
-									notify($this->lang('Informations modifiées'));
-
-									refresh();
-								})
-								->submit($this->lang('Modifier'))
-								->panel()
-								->title($this->lang('Info de connexion'))
-						)->size('col-12 col-lg-8')
+						$this->col($contenu)->size('col-12 col-lg-8')
 					]);
+	}
 
-					/* TODO
-					->row()
-					->append(
-						$this	->col()
-								->size('col-12 col-lg-6')
-								->append(
-									$this
-								)
-					)
-					->append(
-						$this	->col()
-								->size('col-12 col-lg-6')
-								->append(
-									$this	->table2($sessions)
-											->col(function($session){
-												return user_agent($session->data->session->user_agent);
-											})
-											->col($this->lang('Adresse IP'), function($session){
-												// host_name = reverse DNS, contrôlé par le propriétaire de l'IP → échappé.
-												$ip_address = $session->data->session->ip_address;
-												return geolocalisation($ip_address).'<span data-bs-toggle="tooltip" data-original-title="'.htmlspecialchars((string)$session->data->session->host_name, ENT_QUOTES).'">'.htmlspecialchars((string)$ip_address, ENT_QUOTES).'</span>';
-											})
-											->col($this->lang('Site référent'), function($session){
-												return $session->data->session->referer ? urltolink($session->data->session->referer) : $this->lang('Aucun');
-											})
-											->col($this->lang('Date'), function($session){
-												return $session->data->session->date;
-											})
-											->col($this->lang('Compte tiers'), function($session){
-												return $session->auth ? $session->auth : '';
-											})
-											->delete()
-											->panel()
-											->title('Sessions actives', 'fas fa-globe')
-								)
-								->append(
-									$this	->form2()
-											->rule($this->form_checkbox('delete')
-														->data([
-															'account'   => 'Je souhaite supprimer mon compte',
-															//'keep_data' => 'J\'accepte que mes contributions soient conservées de façon anonyme'
-														])
-											)
-											->form('current_password')
-											->success(function($data){
-												if (in_array('account', $data['delete']))
-												{
-													//TODO
-													if (1 || in_array('keep_data', $data['delete']))
-													{
-														$this->user->set('deleted', TRUE)->update();
-													}
-													else
-													{
-														$this->user->delete();
-													}
+	/** Le formulaire du compte : identifiant, mot de passe, adresse — sans « mot de passe actuel » pour qui n'en a pas. */
+	private function _formulaire_compte(bool $sans_mot_de_passe)
+	{
+		return $this	->form2($sans_mot_de_passe ? 'username new_password email' : 'username current_password new_password email', $this->user)
+						->success(function($user){
+							if ($user->password_new)
+							{
+								$user->set_password($user->password_new);
+							}
+							else
+							{
+								$user->reset('password');
+							}
 
-													NeoFrag()->collection('session')->where('user_id', $this->user->id)->update([
-														'user_id' => NULL
-													]);
+							// La validation par e-mail porte sur l'INSCRIPTION (User::a_valider()). Confirmer une
+							// nouvelle adresse — la garder en attente jusqu'au clic sur un lien — demande de la ranger
+							// à part : une suite notée au tableau de bord, pas une branche vide ici.
+							$user->update();
 
-													notify($this->lang('Compte supprimé'));
+							notify($this->lang('Informations modifiées'));
 
-													redirect();
-												}
-											})
-											->submit($this->lang('Supprimer'), 'danger')
-											->panel()
-											->title('Supprimer mon compte', 'fas fa-times')
-								)
-					);*/
+							refresh();
+						})
+						->submit($this->lang('Modifier'))
+						->panel()
+						->title($this->lang('Info de connexion'));
 	}
 
 	/**
@@ -702,7 +833,18 @@ class Index extends Controller_Module
 		{
 			$data = array_merge(array_fill_keys(['id', 'username', 'avatar'], ''), $callback($provider->getIdentity($provider->getAccessTokenByRequestParameters($params))));
 
-			if (($auth = $this->collection('auth')->where('authenticator_id', $authenticator->__addon->id)->where('key', $data['id'])->row()) && $auth->key == $data['id'])
+			$auth = $this->collection('auth')->where('authenticator_id', $authenticator->__addon->id)->where('key', $data['id'])->row();
+
+			// Le lien d'un membre SUPPRIMÉ est périmé : la suppression efface les comptes liés depuis le
+			// 2026-10-05, mais pas avant. On l'efface, et ce compte externe redevient libre — sans quoi il
+			// retombait sur le compte supprimé, refusé, et ne pouvait plus jamais servir à s'inscrire.
+			if ($auth && $auth->key == $data['id'] && (!$auth->user->id || $auth->user->deleted))
+			{
+				$this->db->where('id', (int) $auth->id)->delete('nf_user_auth');
+				$auth = $this->model2('auth');
+			}
+
+			if ($auth && $auth->key == $data['id'])
 			{
 				// Connecté, et ce compte externe appartient à un AUTRE membre : on refuse. On basculait
 				// jusqu'ici la session sur cet autre membre — lier son Discord connectait alors au
@@ -712,7 +854,15 @@ class Index extends Controller_Module
 					notify($this->lang('Ce compte %s est déjà lié à un autre membre.', $authenticator->info()->title), 'danger');
 					redirect('user/auth');
 				}
-				else if ($this->user->id != $auth->user->id)
+				// Connecté, et c'est SON compte : une confirmation d'identité, demandée par une action sensible
+				// d'un compte sans mot de passe (_confirmation_recente()). On revient à la page qui l'a demandée.
+				else if ($this->user())
+				{
+					$this->_noter_confirmation((int) $this->user->id);
+					notify($this->lang('Identité confirmée avec %s.', $authenticator->info()->title));
+					redirect($this->_retour_confirmation());
+				}
+				else
 				{
 					$auth	->set_if($data['username'], 'username', $data['username'])
 							->set_if($data['avatar'],   'avatar',   $data['avatar'])
@@ -738,6 +888,9 @@ class Index extends Controller_Module
 					else
 					{
 						$this->session->login($user);
+
+						// Se connecter par le service vaut confirmation d'identité pour les dix minutes qui suivent.
+						$this->_noter_confirmation((int) $user->id);
 					}
 				}
 			}
@@ -778,7 +931,98 @@ class Index extends Controller_Module
 			redirect();
 		}
 
+		// Une confirmation d'identité : on reviendra à la page qui l'a demandée (une page de l'espace membre).
+		if ($this->user() && is_string($retour = $_GET['retour'] ?? NULL) && $this->_retour_valide($retour))
+		{
+			$this->session->set('confirmation_externe', 'retour', $retour);
+		}
+
 		$this->url->redirect($provider->makeAuthUrl());
+	}
+
+	/**
+	 * Un compte inscrit par Discord, GitHub ou Google n'a pas de mot de passe (ligne 0.32, 2026-10-05) :
+	 * il ne peut pas confirmer une action sensible en le tapant — changer d'identifiant, d'adresse, créer un
+	 * mot de passe, couper la double authentification, supprimer son compte —, et il en était empêché. Il la
+	 * confirme en repassant par le service qui lui est relié, comme le « mode sudo » d'autres sites : la
+	 * confirmation vaut dix minutes, et se connecter par ce service en est une.
+	 */
+	private const CONFIRMATION_DUREE = 600;
+
+	private function _sans_mot_de_passe(): bool
+	{
+		return (string) $this->user->password === '';
+	}
+
+	private function _noter_confirmation(int $user_id): void
+	{
+		$this->session->set('confirmation_externe', 'user_id', $user_id);
+		$this->session->set('confirmation_externe', 'at', time());
+	}
+
+	private function _confirmation_recente(): bool
+	{
+		return $this->user()
+			&& (int) $this->session('confirmation_externe', 'user_id') === (int) $this->user->id
+			&& (int) $this->session('confirmation_externe', 'at') >= time() - self::CONFIRMATION_DUREE;
+	}
+
+	/** La page où revenir après une confirmation : une page de l'espace membre, et rien d'autre. */
+	private function _retour_valide(string $retour): bool
+	{
+		return (bool) preg_match('#^user(/[a-z0-9_-]+)*$#', $retour);
+	}
+
+	private function _retour_confirmation(): string
+	{
+		$retour = (string) $this->session('confirmation_externe', 'retour');
+		$this->session->destroy('confirmation_externe', 'retour');
+
+		return $this->_retour_valide($retour) ? $retour : 'user/account';
+	}
+
+	/**
+	 * Le panneau qui demande à un compte sans mot de passe de confirmer son identité par un service relié
+	 * avant `$retour`. Sans service disponible (ses clés retirées par l'administrateur), il le dit.
+	 */
+	private function _panneau_confirmation(string $retour, \Stringable|string $pourquoi)
+	{
+		// $this->lang() rend un objet de traduction, pas une chaîne : sous strict_types, le typer `string`
+		// faisait tomber la page (vu à l'épreuve de l'atelier).
+		$pourquoi = (string) $pourquoi;
+
+		$boutons = [];
+
+		foreach ((array) $this->db	->select('ad.name')
+									->from('nf_user_auth a')
+									->join('nf_addon ad', 'ad.id = a.authenticator_id', 'INNER')
+									->where('a.user_id', (int) $this->user->id)
+									->order_by('a.id')
+									->get() as $nom)
+		{
+			if (($a = \NF\NeoFrag\Addons\Authenticator::__load(\NeoFrag(), [(string) $nom])) instanceof \NF\NeoFrag\Addons\Authenticator && $a->is_setup())
+			{
+				$boutons[] = '<a class="btn btn-primary" href="'.url('user/auth/'.url_title((string) $nom)).'?retour='.rawurlencode($retour).'">'.icon((string) $a->info()->icon).' '.$this->lang('Confirmer avec %s', nf_texte($a->info()->title)).'</a>';
+			}
+		}
+
+		$corps = '<p>'.$pourquoi.'</p><p class="text-muted">'.$this->lang('Ton compte n’a pas encore de mot de passe : tu te connectes par un service relié. Confirme que c’est bien toi en repassant par lui ; la confirmation vaut dix minutes.').'</p>';
+
+		$corps .= $boutons
+			? '<div class="d-flex flex-wrap gap-2">'.implode('', $boutons).'</div>'
+			: '<div class="alert alert-warning mb-0">'.$this->lang('Aucun des services reliés à ton compte n’est disponible en ce moment : un administrateur du site peut t’aider.').'</div>';
+
+		return $this->panel()
+					->heading($this->lang('Confirme ton identité'), 'fas fa-user-shield')
+					->body($corps);
+	}
+
+	/** Sur une démonstration, le compte partagé ne se modifie pas : un visiteur le fermait aux autres. */
+	private function _panneau_demo()
+	{
+		return $this->panel()
+					->heading($this->lang('Site de démonstration'), 'fas fa-lock')
+					->body('<div class="alert alert-info mb-0">'.$this->lang('Sur ce site de démonstration, le compte est partagé par tous les visiteurs : son identifiant, son adresse, son mot de passe et sa sécurité ne se modifient pas, et il ne se supprime pas.').'</div>');
 	}
 
 	/** Le site a-t-il un règlement à faire accepter à l'inscription ? (même règle que le formulaire, ajax.php) */
@@ -886,6 +1130,7 @@ class Index extends Controller_Module
 		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('user.registered.external', ['user_id' => (int) $user->id, 'username' => $nom, 'details' => $authenticator->info()->name]);
 
 		$this->session->login($user);
+		$this->_noter_confirmation((int) $user->id);
 
 		// Le message de bienvenue, comme pour une inscription par le formulaire : il ne partait pas (2026-10-04).
 		if (($module_user = $this->module('user')) instanceof \NF\Modules\User\User)
@@ -893,7 +1138,7 @@ class Index extends Controller_Module
 			$module_user->bienvenue((int) $user->id, $nom);
 		}
 
-		notify($this->lang('Votre compte a été créé avec %s, bienvenue ! Ajoutez une adresse e-mail et un mot de passe dans votre profil pour pouvoir aussi vous connecter sans lui.', $authenticator->info()->title));
+		notify($this->lang('Votre compte a été créé avec %s, bienvenue ! Ajoutez une adresse e-mail et un mot de passe dans « Info de connexion » pour pouvoir aussi vous connecter sans lui.', $authenticator->info()->title));
 	}
 
 	/**
@@ -955,7 +1200,7 @@ class Index extends Controller_Module
 
 		if ((string) $this->user->password === '' && !$autres)
 		{
-			notify($this->lang('Ce compte est votre seul moyen de connexion : définissez d’abord un mot de passe dans votre profil.'), 'danger');
+			notify($this->lang('Ce compte est votre seul moyen de connexion : créez d’abord un mot de passe dans « Info de connexion ».'), 'danger');
 			redirect('user/auth');
 		}
 

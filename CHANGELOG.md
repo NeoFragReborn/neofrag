@@ -10,6 +10,34 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.28] — 2026-10-05
+
+Une version de correction : l'espace membre d'un compte inscrit par Discord, GitHub ou Google, l'export et la
+suppression des données personnelles, et la démonstration.
+
+### Corrigé
+
+- **Un membre inscrit par Discord, GitHub ou Google n'est plus enfermé dans son compte.** Sans mot de passe,
+  il ne pouvait ni changer d'identifiant ou d'adresse, ni se créer un mot de passe, ni couper sa double
+  authentification, ni supprimer son compte : chaque formulaire demandait le mot de passe actuel. Il
+  confirme désormais son identité en repassant par le service relié ; la confirmation vaut dix minutes, et
+  se connecter par ce service en est une.
+- **L'export « Mes données » fonctionne, et il est complet.** Il tombait en erreur : le membre téléchargeait
+  une page d'erreur au lieu de ses données. L'archive contient aussi, désormais, le profil (nom, date de
+  naissance, lieu, signature, liens), les comptes liés, l'historique des connexions, les notifications et
+  tout ce que les autres tables gardent à son nom, en clair et sans aucun secret, pas même le numéro de ses
+  sessions.
+- **Supprimer son compte efface ce que la page promettait.** Le pseudo est anonymisé sur les messages, le
+  profil vidé ; les comptes liés, l'historique des connexions et les notifications sont effacés, et un
+  compte Discord lié redevient libre pour une nouvelle inscription. Le message « Ton compte a été
+  supprimé » s'affiche enfin.
+- **Sur une démonstration, le compte partagé ne se modifie plus** : un visiteur pouvait changer son mot de
+  passe, activer sa double authentification ou le supprimer, et le fermer aux autres jusqu'à la remise à
+  zéro.
+- **« Connexion » se traduit au sens « se connecter »** (Log in, Anmelden, Iniciar sesión, Accedi, Entrar) :
+  les cinq autres langues disaient « liaison réseau ». Le bouton de l'administration Discord qui relie le
+  bot devient « Connecter le bot ».
+
 ## [1.2.27] — 2026-10-05
 
 Le bot Discord passe en **version 0.2.4** : les images passent entre le forum et Discord dans les deux sens

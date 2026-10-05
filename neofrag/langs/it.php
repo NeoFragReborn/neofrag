@@ -20,7 +20,7 @@ return [
 	'0ecb1d77' => 'Cerca...',
 	'105e0f88' => 'Non c\'è nulla qui al momento',
 	'10c6a1ca' => 'Attivazione del tema',
-	'119a7b3f' => 'Connessione',
+	'119a7b3f' => 'Accedi',
 	'11db7719' => 'Avatar',
 	'12db61a9' => 'Aspetto',
 	'15e4d51b' => '* Tutti i campi contrassegnati con un asterisco sono obbligatori',
@@ -612,4 +612,5 @@ return [
 	'2cb256bb' => 'Non è stato possibile inviare l\'immagine. Controlla la connessione, poi riprova.',
 	'2c1b9bbb' => 'Accesso rifiutato: iscrizione non ancora convalidata',
 	'080a7879' => 'Indirizzo e-mail convalidato',
+	'5d034ca4' => 'Accesso riuscito',
 ];

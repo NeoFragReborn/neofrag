@@ -12,6 +12,32 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.28] — 2026-10-05
+
+A bug-fix release: the member area of an account created with Discord, GitHub or Google, the export and
+deletion of personal data, and the demo site.
+
+### Fixed
+
+- **A member who signed up with Discord, GitHub or Google is no longer locked into their account.** Without
+  a password, they could neither change their username or email address, nor create a password, nor turn
+  off two-factor authentication, nor delete their account: every form asked for the current password. They
+  now confirm their identity by going through the linked service again; the confirmation lasts ten minutes,
+  and logging in through that service counts as one.
+- **The "My data" export works, and it is complete.** It failed with an error: the member downloaded an
+  error page instead of their data. The archive now also contains the profile (name, date of birth,
+  location, signature, links), linked accounts, login history, notifications and everything other tables
+  keep under their name, in plain text and without any secret, not even their session numbers.
+- **Deleting your account erases what the page promised.** The username is anonymised on posts and the
+  profile emptied; linked accounts, login history and notifications are erased, and a linked Discord
+  account becomes free again for a new sign-up. The "Your account has been deleted" message is finally
+  shown.
+- **On a demo site, the shared account can no longer be changed**: a visitor could change its password,
+  turn on its two-factor authentication or delete it, locking everyone else out until the reset.
+- **"Connexion" is translated in the sense of "log in"** (Log in, Anmelden, Iniciar sesión, Accedi,
+  Entrar): the five other languages said "network connection". The Discord administration button that
+  links the bot becomes "Connect the bot".
+
 ## [1.2.27] — 2026-10-05
 
 The Discord bot moves to **version 0.2.4**: images travel between the forum and Discord in both directions

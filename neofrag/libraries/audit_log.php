@@ -70,7 +70,7 @@ class Audit_Log extends Library
 			'discord.connexion'                      => NeoFrag()->lang('Connexion du bot Discord'),
 			'discord.fonctionnalite'                 => NeoFrag()->lang('Fonctionnalité Discord réglée'),
 			'discord.mise_en_place'                  => NeoFrag()->lang('Serveur Discord mis en place'),
-			'login.success'                          => NeoFrag()->lang('Connexion'),
+			'login.success'                          => NeoFrag()->lang('Connexion réussie'),
 			'login.failed'                           => NeoFrag()->lang('Échec de connexion'),
 			'login.banned_blocked'                   => NeoFrag()->lang('Connexion refusée : compte banni'),
 			'login.unvalidated'                      => NeoFrag()->lang('Connexion refusée : inscription pas encore validée'),

@@ -471,4 +471,5 @@ return [
 	'2cb256bb' => 'L\'image n\'a pas pu être envoyée. Vérifiez votre connexion, puis réessayez.',
 	'2c1b9bbb' => 'Connexion refusée : inscription pas encore validée',
 	'080a7879' => 'Adresse e-mail validée',
+	'5d034ca4' => 'Connexion réussie',
 ];

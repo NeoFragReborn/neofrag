@@ -18,11 +18,13 @@ class Checker extends Module_Checker
 		return [];
 	}
 
-	public function account($page = '')
+	public function account()
 	{
 		$this->error->unconnected();
 
-		return [$this->user->sessions()->order_by('_.last_activity DESC')->paginate($page)];
+		// La liste des sessions qu'on calculait ici n'était affichée nulle part (son tableau dormait en
+		// commentaire) : les sessions ouvertes viendront avec l'étape A3 du chantier de l'espace membre.
+		return [];
 	}
 
 	public function profile()

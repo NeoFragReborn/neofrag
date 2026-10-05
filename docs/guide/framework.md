@@ -259,6 +259,10 @@ La démonstration est partagée : son compte `demo` est administrateur. Le filet
   montre : `->where('u.id !=', nf_compte_masque())`. Hors démonstration, il vaut 0.
 - En démonstration, `File::delete()` ne supprime rien et l'envoi de fichiers est refusé. Une page qui
   montrerait un fichier, un journal ou un réglage sensible montre un exemple à la place.
+- Le compte partagé ne se modifie pas depuis l'espace membre : ni identifiant, ni adresse, ni mot de
+  passe, ni double authentification, ni suppression — un visiteur le fermait aux autres jusqu'à la
+  remise à zéro. Le filet ne couvrant que l'administration, ces pages font le test elles-mêmes
+  (`nf_demo()`, `modules/user/controllers/index.php`).
 
 ## Événements
 

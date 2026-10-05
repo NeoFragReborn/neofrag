@@ -20,7 +20,7 @@ return [
 	'0ecb1d77' => 'Buscar...',
 	'105e0f88' => 'No hay nada aquí por el momento',
 	'10c6a1ca' => 'Activación del tema',
-	'119a7b3f' => 'Conexión',
+	'119a7b3f' => 'Iniciar sesión',
 	'11db7719' => 'Avatar',
 	'12db61a9' => 'Apariencia',
 	'15e4d51b' => '* Todos los campos marcados con un asterisco son obligatorios',
@@ -612,4 +612,5 @@ return [
 	'2cb256bb' => 'No se ha podido enviar la imagen. Comprueba tu conexión y vuelve a intentarlo.',
 	'2c1b9bbb' => 'Inicio de sesión rechazado: registro aún no validado',
 	'080a7879' => 'Dirección de correo validada',
+	'5d034ca4' => 'Inicio de sesión correcto',
 ];

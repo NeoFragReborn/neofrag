@@ -6433,6 +6433,12 @@ parameters:
 			path: modules/user/controllers/checker.php
 
 		-
+			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Session\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: modules/user/controllers/index.php
+
+		-
 			message: '#^Call to an undefined method NF\\Modules\\User\\Controllers\\Index\:\:array\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -6447,7 +6453,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method NF\\Modules\\User\\Controllers\\Index\:\:session\(\)\.$#'
 			identifier: method.notFound
-			count: 4
+			count: 7
 			path: modules/user/controllers/index.php
 
 		-
@@ -6459,7 +6465,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:set\(\)\.$#'
 			identifier: method.notFound
-			count: 13
+			count: 16
 			path: modules/user/controllers/index.php
 
 		-
