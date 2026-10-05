@@ -314,6 +314,41 @@ paramètre obligatoire de plus, l'erreur n'apparaît qu'à l'ouverture de la pag
 | `controllers/search.php` | `search()` **et** `suggest()` | la recherche globale et la suggestion instantanée — un module qui n'a que `search()` est **ignoré en silence** |
 | `controllers/sitemap.php` | `sitemap()` | le plan du site (`/sitemap.xml`, un par langue) : rend `[['adresse' => 'monmodule/12/titre', 'date' => …], …]`, des chemins comme ceux que prend `url()`, seulement ce qu'un **visiteur** peut lire (`$this->access('monmodule', 'lire', $id, 'visitors')`) et ce qui existe **dans la langue du plan** — **une rubrique vide rend `[]`** : sa page n'aurait que « rien pour l'instant » à montrer ; sans le carrefour, le module est absent des moteurs, et IndexNow ne signale pas ses pages : la tâche planifiée compare ce même plan d'un passage à l'autre |
 
+### L'espace membre et le profil public
+
+Deux méthodes de la **classe** du module, facultatives, et lues seulement si elles existent :
+
+- **`espace_membre($user)`** ajoute des pages au **menu de l'espace membre** — la colonne de gauche sur
+  ordinateur, la bande d'onglets au téléphone, repris aussi dans la barre du haut des thèmes et le widget
+  « Espace membre ». Elle rend une liste d'entrées : `url`, `titre`, `icone`, au besoin `badge` (un nombre à
+  signaler) et `compact` (montrée aussi dans les menus courts), et `ordre` pour les ranger entre elles.
+- **`profil_membre($membre)`** ajoute des **onglets au profil public** d'un membre, chacun à son adresse
+  `user/<id>/<pseudo>/<onglet>`. Elle rend une liste d'onglets : `onglet` (le segment d'adresse : lettres
+  minuscules, chiffres et tirets), `titre`, `icone`, `ordre`, au besoin `nombre` (montré à côté du titre et
+  dans « En chiffres »), et `contenu`, une fonction qui rend la page de l'onglet — appelée seulement quand on
+  l'ouvre. **Rien à montrer, rien à rendre** : un onglet vide n'apparaît pas, et son adresse répond 404.
+
+```php
+public function profil_membre($membre): array
+{
+    $notes = $this->db->from('nf_notes')->where('user_id', (int) $membre->id)->count();
+
+    return $notes ? [[
+        'onglet'  => 'notes',
+        'titre'   => (string) $this->lang('Notes'),
+        'icone'   => 'fas fa-note-sticky',
+        'ordre'   => 50,
+        'nombre'  => $notes,
+        'contenu' => fn () => $this->view('profil-membre', ['notes' => $this->model()->du_membre((int) $membre->id)]),
+    ]] : [];
+}
+```
+
+Le profil montre ce que **celui qui regarde** peut lire : un onglet qui liste des contenus filtre comme ses
+propres pages (`$this->access(…)`) — le forum n'y montre que les catégories lisibles. Ce que le membre
+choisit de cacher de lui (points, karma, VIP, âge, présence en ligne) se demande à son modèle :
+`$membre->montre('statut')`. Exemples réels : `modules/forum/forum.php`, `modules/teams/teams.php`.
+
 ## 6. Les permissions (optionnel)
 
 ```php
@@ -338,6 +373,14 @@ public function permissions()
 
 Les permissions deviennent éditables dans **Administration → Permissions** (matrice rôle × action).
 Dans le code : `$this->access('notes', 'add_note')`. Exemple réel : `modules/news/news.php`.
+
+Une permission **par élément** (une catégorie, une galerie) déclare ses valeurs de départ dans `init`, que
+`$this->access->init('notes', 'categorie', $id)` pose à la création de l'élément. Le rôle « membre »
+n'héritant pas du rôle « visiteur », `init` suit les règles d'origine de NeoFrag quand `members` n'est pas
+nommé : une liste **vide** rend l'action publique (visiteurs et membres) ; `['visitors', TRUE]` vaut aussi
+pour les membres ; `['visitors', FALSE]` ne refuse que les visiteurs — les membres gardent l'action ; et
+`['admins', TRUE]` la réserve aux administrateurs. Exemple réel : `modules/forum/forum.php` (lire, écrire,
+modérer une catégorie).
 
 ## 7. L'administration (optionnel)
 

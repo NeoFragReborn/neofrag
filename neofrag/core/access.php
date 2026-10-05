@@ -458,6 +458,25 @@ class Access extends Core
 		{
 			$permission = $module_name.'.'.$action;
 
+			/*
+			 * Le rôle « member » n'hérite pas du rôle « visitor » : seul, `init` laissait les membres sans droit là où
+			 * le NeoFrag d'origine leur en donnait — un membre connecté ne lisait plus le forum ni les galeries, et
+			 * n'écrivait nulle part (vu le 2026-10-05 ; la refonte des droits de mai 2026 l'avait perdu). Les règles
+			 * d'origine, quand `members` n'est pas nommé : une liste VIDE rend l'action publique (visiteurs et
+			 * membres) ; ce qu'un visiteur peut, un membre le peut ; ce qui n'est refusé qu'aux visiteurs reste
+			 * permis aux membres.
+			 */
+			$nommes = array_column((array) $entities, 0);
+
+			if ($nommes === [])
+			{
+				$entities = [['visitors', TRUE], ['members', TRUE]];
+			}
+			else if (in_array('visitors', $nommes, TRUE) && !in_array('members', $nommes, TRUE))
+			{
+				$entities[] = ['members', TRUE];
+			}
+
 			foreach ($entities as $entity_pair)
 			{
 				list($entity, $authorized) = $entity_pair;

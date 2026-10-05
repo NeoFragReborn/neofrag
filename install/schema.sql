@@ -83,6 +83,11 @@ CREATE TABLE `nf_user_profile` (
   `github` varchar(100) NOT NULL,
   `instagram` varchar(100) NOT NULL,
   `twitch` varchar(100) NOT NULL,
+  `montrer_points` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `montrer_karma` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `montrer_vip` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `montrer_age` tinyint(1) unsigned NOT NULL DEFAULT 1,
+  `montrer_statut` tinyint(1) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   KEY `avatar` (`avatar`),
   KEY `cover` (`cover`),
@@ -940,7 +945,15 @@ INSERT INTO `nf_migrations` (`id`, `name`, `batch`, `applied_at`) VALUES
 
 -- Le référencement : nf_seo_meta, nf_redirects et nf_indexnow sont ci-dessus.
 -- Cf. migrations/2026_10_03_referencement.
-('57', '2026_10_03_referencement', '45', '2026-10-03 00:00:00');
+('57', '2026_10_03_referencement', '45', '2026-10-03 00:00:00'),
+
+-- Ce que montre le profil public : nf_user_profile ci-dessus porte deja les colonnes montrer_*.
+-- Cf. migrations/2026_10_05_profil_visibilite.
+('58', '2026_10_05_profil_visibilite', '46', '2026-10-05 00:00:00'),
+
+-- Les droits des membres : install/seed.sql leur donne deja ce que les visiteurs ont.
+-- Cf. migrations/2026_10_05_droits_des_membres.
+('59', '2026_10_05_droits_des_membres', '47', '2026-10-05 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

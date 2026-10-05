@@ -16,6 +16,9 @@ class Clock extends Model
 							->from('nf_user_profile up')
 							->join('nf_user u', 'up.id = u.id AND u.deleted = "0"', 'INNER')
 							->where('up.date_of_birth IS NOT NULL')
+							// Ni le compte masqué d'une démonstration, ni un membre qui cache son âge (chantier A, étape A2).
+							->where('u.id !=', nf_compte_masque())
+							->where('up.montrer_age', 1)
 							->where('DATE_FORMAT(up.date_of_birth, "%m-%d") = DATE_FORMAT(NOW(), "%m-%d")')
 							->get();
 	}

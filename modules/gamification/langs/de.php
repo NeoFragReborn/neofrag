@@ -26,4 +26,10 @@ return [
 	'498a2706' => 'Tageslimit — Reaktion vergeben',
 	'd6d8eab6' => 'Tageslimit — News / Artikel (0=unbegrenzt)',
 	'ff1fe341' => 'Tageslimit — Anmeldung',
+	'e5a8887f' => 'Neuling',
+	'b944bcbf' => 'Bronze',
+	'b22ffeb8' => 'Silber',
+	'88335125' => 'Gold',
+	'0020b38f' => 'Platin',
+	'8acef3be' => 'Diamant',
 ];

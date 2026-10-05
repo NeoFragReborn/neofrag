@@ -10,6 +10,45 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.30] — 2026-10-05
+
+L'espace membre, deuxième étape : le profil public, et ce que chacun choisit d'y montrer. Et une correction qui
+compte : un membre connecté lit et écrit de nouveau dans le forum.
+
+### Ajouté
+
+- **Le profil public d'un membre devient une vraie page.** Sa couverture en bannière (téléversée, elle ne
+  s'affichait nulle part), son avatar qui la chevauche, son pseudo, son rang, ses groupes et sa présence ;
+  « Contacter » et « Signaler », ou « Modifier mon profil » sur le sien ; puis des onglets, chacun à son
+  adresse : À propos (citation, identité, liens, champs publics du site, et ses chiffres), Activité, et ceux
+  que les modules installés apportent — Forum, Blog, Équipes, Petites annonces. Un module sans rien à montrer de
+  ce membre n'ajoute pas d'onglet vide.
+- **Chaque membre choisit ce que son profil montre**, dans « Confidentialité et données » : ses points, son
+  karma et ses jours de VIP lui sont réservés tant qu'il ne les montre pas (ils étaient visibles de tous,
+  visiteurs compris) ; son âge et sa présence en ligne restent montrés tant qu'il ne les cache pas. Son rang reste
+  public. Le choix vaut partout : la fiche qui s'ouvre au survol d'un pseudo, la pastille de l'avatar, l'effectif
+  des équipes, les widgets « Qui est en ligne » et « Activité du forum », la recherche de membres, les
+  anniversaires de l'horloge. Sur son propre profil, le membre voit tout, un cadenas sur ce qu'il est seul à voir.
+
+### Corrigé
+
+- **Un membre connecté lit et écrit de nouveau dans le forum**, et voit les galeries, les pages, les types
+  d'événements et les dossiers ouverts aux visiteurs. Depuis la refonte des droits, le rôle « membre » n'avait
+  que ce qu'on lui donnait expressément : un membre voyait « Aucun forum » là où un visiteur lisait tout, et
+  n'écrivait nulle part — seuls les administrateurs, qui passent outre les droits, ne voyaient rien. Les règles
+  d'origine reviennent : ce qu'un visiteur peut, un membre le peut ; ce qui n'est refusé qu'aux visiteurs reste
+  permis aux membres. Une migration les rétablit sur chaque site, sans toucher une règle déjà posée pour les
+  membres.
+- **Les rangs de réputation (Novice, Bronze, Argent…) se traduisent** : ils s'affichaient en français dans
+  toutes les langues. Et la bulle d'un rang ne dit plus le score de karma.
+- **Le widget « Activité du forum » ne montre plus le compte masqué d'une démonstration** parmi ceux en ligne ;
+  « Qui est en ligne » l'écartait déjà.
+- **Un site web saisi sans « https:// » dans un profil** devenait un lien vers une page du site lui-même.
+- **Une mise à jour ne remplace plus le catalogue du marketplace d'un site.** Le paquet de mise à jour portait
+  un catalogue fabriqué des versions plus tôt : sur le site qui sert le marketplace, il ne correspondait plus aux
+  archives, et chaque installation d'un addon était refusée jusqu'à ce que le catalogue soit refait.
+- **Dans « Mon espace », le groupe du membre s'affiche sous son pseudo** : il flottait au milieu de l'en-tête.
+
 ## [1.2.29] — 2026-10-05
 
 L'espace membre, première étape de sa refonte : un seul cadre, un seul menu, des réglages rangés là où on les

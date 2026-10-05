@@ -198,6 +198,12 @@
 	overflow-wrap: anywhere;
 }
 
+/* Les thèmes centrent les groupes, pour la carte de profil : sous le pseudo, ils partent de la gauche (la
+   pastille flottait au milieu de l'en-tête, vu sur la vitrine en 1.2.29). */
+.nf-espace-accueil-nom .user-profile-groups {
+	justify-content: flex-start;
+}
+
 .nf-espace-accueil-actions {
 	display: flex;
 	flex-wrap: wrap;

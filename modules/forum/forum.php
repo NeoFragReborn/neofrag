@@ -687,4 +687,48 @@ class Forum extends Module
 	{
 		return [['url' => 'forum/subscriptions', 'titre' => (string) $this->lang('Mes abonnements'), 'icone' => 'far fa-bookmark', 'ordre' => 30]];
 	}
+
+	/**
+	 * L'onglet « Forum » du profil public d'un membre (User::onglets_profil(), chantier A, étape A2) : les sujets
+	 * qu'il a lancés et ses derniers messages, dans les catégories que celui qui regarde peut lire — la règle de
+	 * son activité (controllers/activity.php). Rien qu'il puisse lire : pas d'onglet.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function profil_membre($membre): array
+	{
+		$categories = array_values(array_filter((array) $this->db->select('category_id')->from('nf_forum_categories')->get(), function($categorie){
+			return $this->access('forum', 'category_read', $categorie);
+		}));
+
+		if (!$categories)
+		{
+			return [];
+		}
+
+		$lisibles = fn () => $this->db	->from('nf_forum_messages m')
+										->join('nf_forum_topics t',  'm.topic_id  = t.topic_id')
+										->join('nf_forum        f',  't.forum_id  = f.forum_id')
+										->join('nf_forum        f2', 'f.parent_id = f2.forum_id AND f.is_subforum = "1"')
+										->where('m.user_id', (int) $membre->id)
+										->where('m.deleted_at IS NULL')
+										->where('IFNULL(f2.parent_id, f.parent_id)', $categories);
+
+		if (!($nombre = (int) $lisibles()->count()))
+		{
+			return [];
+		}
+
+		return [[
+			'onglet'  => 'forum',
+			'titre'   => (string) $this->lang('Forum'),
+			'icone'   => 'far fa-comments',
+			'ordre'   => 20,
+			'nombre'  => $nombre,
+			'contenu' => fn () => $this->view('profil-membre', [
+				'sujets'   => (array) $lisibles()->select('t.topic_id', 't.title', 't.count_messages', 'UNIX_TIMESTAMP(m.date) AS date')->where('t.message_id = m.message_id')->order_by('m.date DESC')->limit(10)->get(),
+				'messages' => (array) $lisibles()->select('m.message_id', 'm.topic_id', 't.title', 'm.message', 'UNIX_TIMESTAMP(m.date) AS date')->order_by('m.date DESC')->limit(15)->get(),
+			]),
+		]];
+	}
 }

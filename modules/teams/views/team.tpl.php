@@ -25,11 +25,11 @@
 	<?php if ($players): ?>
 	<h4 class="mt-4"><?php echo $this->lang('Nos joueurs') ?></h4>
 	<ul class="list-inline mb-0">
-		<?php foreach ($players as $player): ?>
-		<li class="list-inline-item text-center" data-bs-toggle="tooltip" title="<?php echo $player['username'].' — '.($player['online'] ? $this->lang('En ligne') : $this->lang('Hors ligne')) ?>">
+		<?php foreach ($players as $player): $membre = $this->module('user')->model2('user', $player['user_id']); $presence = $membre->montre('statut') // un joueur qui cache sa présence n'a pas de pastille (chantier A, étape A2) ?>
+		<li class="list-inline-item text-center" data-bs-toggle="tooltip" title="<?php echo nf_texte($player['username']).($presence ? ' — '.($player['online'] ? $this->lang('En ligne') : $this->lang('Hors ligne')) : '') ?>">
 			<span style="position:relative;display:inline-block;">
-				<?php echo $this->module('user')->model2('user', $player['user_id'])->avatar()->append_attr('class', 'm-auto') ?>
-				<span style="position:absolute;right:2px;bottom:2px;width:10px;height:10px;border-radius:50%;border:2px solid var(--nf-bg,#fff);background:<?php echo $player['online'] ? '#2ecc71' : '#9aa0a6' ?>;"></span>
+				<?php echo $membre->avatar()->append_attr('class', 'm-auto') ?>
+				<?php if ($presence): ?><span style="position:absolute;right:2px;bottom:2px;width:10px;height:10px;border-radius:50%;border:2px solid var(--nf-bg,#fff);background:<?php echo $player['online'] ? '#2ecc71' : '#9aa0a6' ?>;"></span><?php endif ?>
 			</span>
 			<small class="text-muted d-block"><?php echo $player['title'] ?></small>
 		</li>

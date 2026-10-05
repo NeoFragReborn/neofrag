@@ -120,10 +120,14 @@ $out .= "DELETE FROM `nf_widgets` WHERE `widget` = 'landing';\n";
 
 // Forum, galerie, pages et événements lisibles par les VISITEURS (rôle 3) : le seed crée les
 // catégories en SQL sans grant de lecture → 403 sur le détail. Permission `module.action`, scope 0.
+// Et par les MEMBRES (rôle 2) : leur rôle n'hérite pas de celui des visiteurs (2026-10-05).
 foreach (['forum.category_read', 'gallery.gallery_see', 'pages.access_page', 'events.access_events_type'] as $permission)
 {
-    $out .= "DELETE FROM `nf_role_permissions` WHERE `role_id` = 3 AND `permission` = '{$permission}';\n";
-    $out .= "INSERT INTO `nf_role_permissions` (`role_id`, `permission`, `scope_id`, `authorized`) VALUES (3, '{$permission}', 0, 'allow');\n";
+    foreach ([3, 2] as $role)
+    {
+        $out .= "DELETE FROM `nf_role_permissions` WHERE `role_id` = {$role} AND `permission` = '{$permission}';\n";
+        $out .= "INSERT INTO `nf_role_permissions` (`role_id`, `permission`, `scope_id`, `authorized`) VALUES ({$role}, '{$permission}', 0, 'allow');\n";
+    }
 }
 
 $out .= "\n";

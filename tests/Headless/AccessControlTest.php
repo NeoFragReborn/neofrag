@@ -98,4 +98,72 @@ final class AccessControlTest extends HeadlessTestCase
 		$access = $this->access();
 		$this->assertTrue($access->can_for_group($group, 'scoped.act', 5), 'Un scope spécifique retombe sur le grant global (scope 0).');
 	}
+
+	/** Le rôle intégré d'un nom, ou le test sauté s'il manque à la base. */
+	private function role(string $nom): int
+	{
+		$id = (int) $this->db()->select('role_id')->from('nf_roles')->where('name', $nom)->row();
+
+		if (!$id)
+		{
+			$this->markTestSkipped("rôle « {$nom} » absent de la base de test");
+		}
+
+		return $id;
+	}
+
+	/**
+	 * Les droits que `init` sème pour un forum neuf (2026-10-05). Le rôle « member » n'héritant pas du rôle
+	 * « visitor », un membre connecté ne lisait plus le forum et n'y écrivait plus ; les règles d'origine sont
+	 * rétablies : ce qu'un visiteur peut, un membre le peut ; ce qui n'est refusé qu'aux visiteurs reste permis
+	 * aux membres ; ce qui est réservé aux administrateurs le reste.
+	 */
+	public function test_init_donne_aux_membres_ce_que_l_origine_leur_donnait(): void
+	{
+		$this->role('member');
+		$scope  = 900000 + random_int(1, 99999);
+		$access = $this->access();
+		$access->init('forum', 'category', $scope);
+
+		$this->assertTrue($access->can_for_group('visitors', 'forum.category_read', $scope));
+		$this->assertTrue($access->can_for_group('members', 'forum.category_read', $scope), 'Un membre lit ce qu\'un visiteur lit.');
+		$this->assertFalse($access->can_for_group('visitors', 'forum.category_write', $scope));
+		$this->assertTrue($access->can_for_group('members', 'forum.category_write', $scope), 'Refusé aux seuls visiteurs : permis aux membres.');
+		$this->assertFalse($access->can_for_group('members', 'forum.category_modify', $scope), 'Réservé aux administrateurs.');
+	}
+
+	/** Une liste vide dans `init` rend l'action publique, comme à l'origine : visiteurs et membres. */
+	public function test_init_liste_vide_rend_l_action_publique(): void
+	{
+		$this->role('member');
+		$scope  = 900000 + random_int(1, 99999);
+		$access = $this->access();
+		$access->init('gallery', 'gallery', $scope);
+
+		$this->assertTrue($access->can_for_group('visitors', 'gallery.gallery_see', $scope));
+		$this->assertTrue($access->can_for_group('members', 'gallery.gallery_see', $scope));
+		$this->assertFalse($access->can_for_group('members', 'gallery.gallery_post', $scope), 'Réservé aux administrateurs.');
+	}
+
+	/** La migration des sites existants : les règles des visiteurs gagnent leur double pour les membres, sans rien écraser. */
+	public function test_la_migration_donne_aux_membres_les_droits_des_visiteurs(): void
+	{
+		$membre   = $this->role('member');
+		$visiteur = $this->role('visitor');
+		$a = 800000 + random_int(1, 49999);
+		$b = $a + 50000;
+
+		$this->grant($visiteur, 'forum.category_read', 'allow', $a);
+		$this->grant($visiteur, 'forum.category_write', 'never', $a);
+		$this->grant($visiteur, 'forum.category_read', 'allow', $b);
+		$this->grant($membre, 'forum.category_read', 'never', $b);   // une règle déjà posée pour les membres
+
+		$resultat = $this->db()->import((string) file_get_contents(NEOFRAG_CMS.'/migrations/2026_10_05_droits_des_membres.up.sql'));
+		$this->assertTrue($resultat === TRUE, 'La migration s\'exécute : '.(is_string($resultat) ? $resultat : ''));
+
+		$access = $this->access();
+		$this->assertTrue($access->can_for_group('members', 'forum.category_read', $a), 'Le membre lit ce que le visiteur lit.');
+		$this->assertTrue($access->can_for_group('members', 'forum.category_write', $a), 'Il écrit là où seuls les visiteurs sont refusés.');
+		$this->assertFalse($access->can_for_group('members', 'forum.category_read', $b), 'Une règle des membres déjà posée reste.');
+	}
 }

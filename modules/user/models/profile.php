@@ -30,7 +30,14 @@ class Profile extends Model2
 			'linkedin'      => self::field()->text(100),
 			'github'        => self::field()->text(100),
 			'instagram'     => self::field()->text(100),
-			'twitch'        => self::field()->text(100)
+			'twitch'        => self::field()->text(100),
+			// Ce que le profil public montre aux autres (A2, 2026-10-05) : points, karma et VIP réservés au membre
+			// jusqu'à ce qu'il choisisse de les montrer ; âge et présence en ligne montrés, comme avant.
+			'montrer_points' => self::field()->bool(),
+			'montrer_karma'  => self::field()->bool(),
+			'montrer_vip'    => self::field()->bool(),
+			'montrer_age'    => self::field()->bool()->default(TRUE),
+			'montrer_statut' => self::field()->bool()->default(TRUE)
 		];
 	}
 }

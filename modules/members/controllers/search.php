@@ -50,7 +50,7 @@ class Search extends Controller_Module
 
 	public function search()
 	{
-		$this->db	->select('u.id', 'u.username', 'u.last_activity_date', 'p.first_name', 'p.last_name')
+		$this->db	->select('u.id', 'u.username', 'u.last_activity_date', 'p.first_name', 'p.last_name', 'IFNULL(p.montrer_statut, 1) AS montrer_statut')
 					->from('nf_user u')
 					->join('nf_user_profile p', 'u.id = p.id', 'LEFT')
 					->where('u.deleted', FALSE)

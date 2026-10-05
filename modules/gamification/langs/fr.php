@@ -29,4 +29,10 @@ return [
 	'498a2706' => 'Plafond/jour — réaction donnée',
 	'd6d8eab6' => 'Plafond/jour — news / article (0=illimité)',
 	'ff1fe341' => 'Plafond/jour — connexion',
+	'e5a8887f' => 'Novice',
+	'b944bcbf' => 'Bronze',
+	'b22ffeb8' => 'Argent',
+	'88335125' => 'Or',
+	'0020b38f' => 'Platine',
+	'8acef3be' => 'Diamant',
 ];

@@ -112,6 +112,39 @@ class Teams extends Module
 		];
 	}
 
+	/**
+	 * L'onglet « Équipes » du profil public d'un membre (User::onglets_profil(), chantier A, étape A2) : les équipes
+	 * où il joue, son rôle et leur jeu. Aucune équipe : pas d'onglet.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function profil_membre($membre): array
+	{
+		$equipes = (array) $this->db	->select('t.team_id', 't.name', 'tl.title', 't.icon_id', 'r.title AS role', 'gl.title AS jeu')
+										->from('nf_teams_users tu')
+										->join('nf_teams t', 't.team_id = tu.team_id', 'INNER')
+										->join_lang('nf_teams_lang tl', 'team_id', 't.team_id')
+										->join('nf_teams_roles r', 'r.role_id = tu.role_id')
+										->join_lang('nf_games_lang gl', 'game_id', 't.game_id')
+										->where('tu.user_id', (int) $membre->id)
+										->order_by('t.order', 't.team_id')
+										->get();
+
+		if (!$equipes)
+		{
+			return [];
+		}
+
+		return [[
+			'onglet'  => 'equipes',
+			'titre'   => (string) $this->lang('Équipes'),
+			'icone'   => 'fas fa-headset',
+			'ordre'   => 30,
+			'nombre'  => count($equipes),
+			'contenu' => fn () => $this->view('profil-membre', ['equipes' => $equipes]),
+		]];
+	}
+
 	public function groups()
 	{
 		$teams = NeoFrag()->db	->select('t.team_id', 't.name', 'tl.title')

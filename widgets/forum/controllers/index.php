@@ -71,7 +71,16 @@ class Index extends Controller_Widget
 
 	public function activity($config = [])
 	{
-		$users = $this->db->select('DISTINCT u.id as user_id', 'u.username')->from('nf_session s')->join('nf_user u', 'u.id = s.user_id AND u.deleted = "0"', 'INNER')->where('s.last_activity > DATE_SUB(NOW(), INTERVAL 5 MINUTE)')->get();
+		// Ni le compte masqué d'une démonstration (nf_compte_masque()), que le widget « Qui est en ligne » écartait
+		// déjà, ni un membre qui cache sa présence (chantier A, étape A2).
+		$users = $this->db	->select('DISTINCT u.id as user_id', 'u.username')
+							->from('nf_session s')
+							->join('nf_user u', 'u.id = s.user_id AND u.deleted = "0"', 'INNER')
+							->join('nf_user_profile up', 'up.id = u.id')
+							->where('s.last_activity > DATE_SUB(NOW(), INTERVAL 5 MINUTE)')
+							->where('u.id !=', nf_compte_masque())
+							->where('IFNULL(up.montrer_statut, 1) = 1')
+							->get();
 
 		array_natsort($users, function($a){
 			return $a['username'];

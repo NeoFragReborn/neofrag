@@ -307,4 +307,6 @@ return [
 	'7642b2d9' => 'Invité %s',
 	'816f205c' => 'Discord',
 	'8fd9c7ef' => 'Enregistrer',
+	'a4193a31' => 'Sujets lancés',
+	'f3530fd8' => 'Derniers messages',
 ];

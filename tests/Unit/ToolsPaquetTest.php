@@ -53,6 +53,7 @@ final class ToolsPaquetTest extends TestCase
         $this->assertFalse(nf_paquet_exclu('upload/.htaccess', 'public'));
         $this->assertTrue(nf_paquet_exclu('marketplace/modules/forum.zip', 'public'), 'les archives sont servies à part');
         $this->assertFalse(nf_paquet_exclu('marketplace/catalog.json', 'public'));
+        $this->assertTrue(nf_paquet_exclu('marketplace/catalog.json', 'update'), 'la mise à jour ne remplace pas le catalogue vivant de la vitrine');
     }
 
     public function test_le_site_entre(): void

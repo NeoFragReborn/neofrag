@@ -309,4 +309,6 @@ return [
 	'7642b2d9' => 'Invitado %s',
 	'816f205c' => 'Discord',
 	'8fd9c7ef' => 'Guardar',
+	'a4193a31' => 'Temas iniciados',
+	'f3530fd8' => 'Últimas publicaciones',
 ];

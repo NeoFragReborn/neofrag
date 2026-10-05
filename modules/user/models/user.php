@@ -103,12 +103,36 @@ class User extends Model2
 		return '<a data-popover-ajax="'.url('ajax/user/'.$user_id.'/'.url_title($username)).'" href="'.url('///user/'.$user_id.'/'.url_title($username)).'">'.$prefix.$username.'</a>';
 	}
 
+	/**
+	 * Ce que le membre montre aux autres, s'il n'a rien choisi (chantier A, étape A2, 2026-10-05) : ses points,
+	 * son karma et ses jours de VIP lui sont réservés ; son âge et sa présence en ligne (`statut`, avec sa
+	 * dernière visite) sont montrés, comme avant. Il en décide dans « Confidentialité et données ».
+	 */
+	public const MONTRE_PAR_DEFAUT = ['points' => FALSE, 'karma' => FALSE, 'vip' => FALSE, 'age' => TRUE, 'statut' => TRUE];
+
+	/** Le membre montre-t-il `$quoi` (une clé de MONTRE_PAR_DEFAUT) aux autres ? */
+	public function montre_aux_autres(string $quoi): bool
+	{
+		$profil = $this->profile();
+
+		return $profil() ? (bool) $profil->{'montrer_'.$quoi} : self::MONTRE_PAR_DEFAUT[$quoi];
+	}
+
+	/** Celui qui regarde voit-il `$quoi` de ce membre ? Le membre voit toujours le sien ; les autres, ce qu'il montre. */
+	public function montre(string $quoi): bool
+	{
+		return ($this->id && (int) $this->user->id === (int) $this->id) || $this->montre_aux_autres($quoi);
+	}
+
 	public function avatar()
 	{
+		// Un membre qui cache sa présence n'a ni pastille « en ligne » ni pastille « hors ligne ».
+		$presence = $this->montre('statut');
+
 		return $this->html()
 					->attr('class', 'avatar')
-					->append_attr_if($this->is_online(),  'class', 'online')
-					->append_attr_if(!$this->is_online(), 'class', 'offline')
+					->append_attr_if($presence && $this->is_online(),  'class', 'online')
+					->append_attr_if($presence && !$this->is_online(), 'class', 'offline')
 					->content($this->view('avatar'));
 	}
 

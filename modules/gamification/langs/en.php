@@ -26,4 +26,10 @@ return [
 	'498a2706' => 'Daily cap — reaction given',
 	'd6d8eab6' => 'Daily cap — news / article (0=unlimited)',
 	'ff1fe341' => 'Daily cap — login',
+	'e5a8887f' => 'Novice',
+	'b944bcbf' => 'Bronze',
+	'b22ffeb8' => 'Silver',
+	'88335125' => 'Gold',
+	'0020b38f' => 'Platinum',
+	'8acef3be' => 'Diamond',
 ];

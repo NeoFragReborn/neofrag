@@ -225,11 +225,13 @@ class Checker extends Module_Checker
 		return [];
 	}
 
-	public function _member($id, $username)
+	public function _member($id, $username, $onglet = '')
 	{
-		if (($user = $this->model2('user', $id)->check($username)) && !$user->deleted && (int) $user->id !== nf_compte_masque())
+		if (($user = $this->model2('user', $id)->check($username)) && !$user->deleted && (int) $user->id !== nf_compte_masque()
+			// Un onglet que ce profil n'a pas (module absent, rien à montrer) : page introuvable.
+			&& in_array((string) $onglet, array_column($this->module->onglets_profil($user), 'onglet'), TRUE))
 		{
-			return [$user];
+			return [$user, (string) $onglet];
 		}
 	}
 }

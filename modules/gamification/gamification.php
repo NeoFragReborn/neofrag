@@ -232,14 +232,32 @@ class Gamification extends Module
 		return $tier;
 	}
 
+	/**
+	 * Le nom d'un palier dans la langue du site : TIERS les écrit en français, et le profil les montrait tels quels
+	 * dans les six langues (vu au chantier A, étape A2, 2026-10-05).
+	 */
+	public function nom_palier(string $nom): string
+	{
+		return (string) match ($nom) {
+			'Novice'  => $this->lang('Novice'),
+			'Bronze'  => $this->lang('Bronze'),
+			'Argent'  => $this->lang('Argent'),
+			'Or'      => $this->lang('Or'),
+			'Platine' => $this->lang('Platine'),
+			'Diamant' => $this->lang('Diamant'),
+			default   => $nom,
+		};
+	}
+
 	/** Badge HTML (palier + score en tooltip). Réutilisable (profil, forum…). */
 	public function badge($user_id)
 	{
 		$score = $this->get($user_id);
 		$tier  = $this->tier($score);
 
-		return '<span class="nf-karma-badge" title="'.$score.' karma" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;color:'.couleur_lisible_sur($tier['color']).';background:'.$tier['color'].';">'
-			.icon($tier['icon']).' '.nf_texte($tier['name'])
+		// Le rang est public, le karma non (chantier A, étape A2) : la bulle ne dit plus le score.
+		return '<span class="nf-karma-badge" style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;color:'.couleur_lisible_sur($tier['color']).';background:'.$tier['color'].';">'
+			.icon($tier['icon']).' '.nf_texte($this->nom_palier($tier['name']))
 			.'</span>';
 	}
 

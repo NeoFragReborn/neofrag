@@ -1,0 +1,390 @@
+/*
+ * Le profil public d'un membre (chantier A, étape A2, 2026-10-05) : la couverture en bannière, l'avatar qui la
+ * chevauche, puis les onglets. Commun aux sept thèmes, dessiné avec le vocabulaire que chacun définit (`--nf-*`,
+ * cf. docs/guide/create-a-theme.md), comme le cadre de l'espace membre (user-space.css).
+ */
+
+.nf-membre {
+	display: grid;
+	gap: 16px;
+}
+
+/* ── L'en-tête : couverture, avatar, nom, actions ────────────────────────── */
+
+.nf-membre-entete {
+	overflow: hidden;
+	border: 1px solid var(--nf-border);
+	border-radius: var(--nf-radius);
+	background: var(--nf-surface);
+}
+
+/* La couverture se téléverse en 1920 × 400 : le même rapport, borné pour ne pas manger l'écran. */
+.nf-membre-couverture {
+	aspect-ratio: 24 / 5;
+	min-height: 110px;
+	max-height: 280px;
+	width: 100%;
+	background-color: var(--nf-accent-soft);
+	background-position: center;
+	background-size: cover;
+}
+
+/* Sans couverture, un dégradé de l'accent du thème plutôt qu'un trou. */
+.nf-membre-couverture-vide {
+	aspect-ratio: auto;
+	height: 110px;
+	background-image: linear-gradient(135deg, var(--nf-accent-soft), transparent 70%), radial-gradient(circle at 85% 20%, var(--nf-accent-soft), transparent 55%);
+}
+
+.nf-membre-identite {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 14px 18px;
+	padding: 0 20px 18px;
+}
+
+.nf-membre-identite > .avatar {
+	flex: 0 0 auto;
+	width: 112px;
+	height: 112px;
+	margin: -56px 0 0;
+	border: 4px solid var(--nf-surface);
+	border-radius: 50%;
+	background: var(--nf-surface);
+}
+
+.nf-membre-nom {
+	flex: 1 1 260px;
+	min-width: 0;
+	padding-top: 10px;
+}
+
+.nf-membre-nom h1 {
+	margin: 0 0 6px;
+	font-size: 1.6rem;
+	line-height: 1.2;
+	color: var(--nf-text-strong);
+	overflow-wrap: anywhere;
+}
+
+.nf-membre-etiquettes {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+}
+
+.nf-membre-presence {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+	color: var(--nf-text-muted);
+}
+
+.nf-membre-presence::before {
+	content: "";
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--nf-text-muted);
+}
+
+.nf-membre-presence.is-online::before {
+	background: var(--nf-success);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--nf-success) 25%, transparent);
+}
+
+.nf-membre-prive {
+	margin-left: 2px;
+	font-size: 11px;
+	color: var(--nf-text-muted);
+	cursor: help;
+}
+
+.nf-membre-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+/* ── Les onglets : une bande, qui défile de côté au téléphone ────────────── */
+
+.nf-membre-onglets {
+	display: flex;
+	gap: 4px;
+	padding: 6px;
+	border: 1px solid var(--nf-border);
+	border-radius: var(--nf-radius);
+	background: var(--nf-surface);
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+
+.nf-membre-onglet {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 14px;
+	border-radius: var(--nf-radius-sm);
+	color: var(--nf-text-soft);
+	font-size: 14px;
+	font-weight: 500;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background-color 140ms ease, color 140ms ease;
+}
+
+.nf-membre-onglet > i {
+	color: var(--nf-text-muted);
+	transition: color 140ms ease;
+}
+
+.nf-membre-onglet:hover,
+.nf-membre-onglet:focus-visible {
+	background: var(--nf-hover);
+	color: var(--nf-text-strong);
+}
+
+.nf-membre-onglet.is-actif {
+	background: var(--nf-accent);
+	color: var(--nf-on-accent);
+	font-weight: 600;
+}
+
+.nf-membre-onglet.is-actif > i {
+	color: inherit;
+}
+
+.nf-membre-nombre {
+	min-width: 20px;
+	padding: 0 6px;
+	border-radius: 999px;
+	background: var(--nf-accent-soft);
+	color: var(--nf-text-strong);
+	font-size: 12px;
+	font-weight: 700;
+	text-align: center;
+}
+
+.nf-membre-onglet.is-actif .nf-membre-nombre {
+	background: color-mix(in srgb, var(--nf-on-accent) 22%, transparent);
+	color: inherit;
+}
+
+/* ── La page de l'onglet ─────────────────────────────────────────────────── */
+
+.nf-membre-page {
+	padding: 20px;
+	border: 1px solid var(--nf-border);
+	border-radius: var(--nf-radius);
+	background: var(--nf-surface);
+}
+
+.nf-membre-a-propos {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+	gap: 24px;
+}
+
+.nf-membre-colonne {
+	display: grid;
+	align-content: start;
+	gap: 16px;
+	min-width: 0;
+}
+
+.nf-membre-citation {
+	margin: 0;
+	padding: 4px 0 4px 14px;
+	border-left: 3px solid var(--nf-accent);
+	font-size: 1.05rem;
+	font-style: italic;
+	color: var(--nf-text);
+}
+
+.nf-membre-details {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 18px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	color: var(--nf-text-soft);
+}
+
+.nf-membre-details li {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+}
+
+.nf-membre-details i {
+	color: var(--nf-text-muted);
+}
+
+.nf-membre-drapeau {
+	width: 18px;
+	height: auto;
+	border-radius: 2px;
+}
+
+.nf-membre-liens {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.nf-membre-champs {
+	display: grid;
+	grid-template-columns: minmax(120px, max-content) minmax(0, 1fr);
+	gap: 6px 16px;
+	margin: 0;
+}
+
+.nf-membre-champs dt {
+	font-weight: 600;
+	color: var(--nf-text-soft);
+}
+
+.nf-membre-champs dd {
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+.nf-membre-vide {
+	margin: 0;
+	color: var(--nf-text-muted);
+}
+
+.nf-membre-chiffres {
+	align-self: start;
+	padding: 14px 16px;
+	border-radius: var(--nf-radius-sm);
+	background: var(--nf-bg-elevated, var(--nf-hover));
+}
+
+.nf-membre-chiffres h2 {
+	margin: 0 0 10px;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+	color: var(--nf-text-muted);
+}
+
+.nf-membre-chiffres dl {
+	display: grid;
+	gap: 8px;
+	margin: 0;
+}
+
+.nf-membre-chiffres dl > div {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.nf-membre-chiffres dt {
+	font-weight: 500;
+	color: var(--nf-text-soft);
+}
+
+.nf-membre-chiffres dt i {
+	width: 16px;
+	color: var(--nf-text-muted);
+	text-align: center;
+}
+
+.nf-membre-chiffres dd {
+	margin: 0;
+	font-weight: 700;
+	color: var(--nf-text-strong);
+	text-align: right;
+}
+
+/* Les listes des onglets de modules (forum, équipes, annonces…) : une ligne par élément. */
+.nf-membre-liste {
+	display: grid;
+	gap: 2px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.nf-membre-liste > li {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 4px 14px;
+	padding: 10px 4px;
+	border-bottom: 1px solid var(--nf-border);
+}
+
+.nf-membre-liste > li:last-child {
+	border-bottom: 0;
+}
+
+.nf-membre-liste small {
+	color: var(--nf-text-muted);
+}
+
+.nf-membre-page h3 {
+	margin: 0 0 10px;
+	font-size: 1rem;
+	font-weight: 700;
+}
+
+.nf-membre-page h3 + .nf-membre-liste {
+	margin-bottom: 20px;
+}
+
+/* ── Au téléphone ────────────────────────────────────────────────────────── */
+
+@media (max-width: 767.98px) {
+	.nf-membre-identite {
+		padding: 0 14px 16px;
+	}
+
+	.nf-membre-identite > .avatar {
+		width: 88px;
+		height: 88px;
+		margin-top: -44px;
+	}
+
+	.nf-membre-nom h1 {
+		font-size: 1.35rem;
+	}
+
+	.nf-membre-actions {
+		width: 100%;
+	}
+
+	.nf-membre-page {
+		padding: 16px 14px;
+	}
+
+	.nf-membre-a-propos {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.nf-membre-champs {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 2px;
+	}
+
+	.nf-membre-champs dd {
+		margin-bottom: 8px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nf-membre-onglet,
+	.nf-membre-onglet > i {
+		transition: none;
+	}
+}

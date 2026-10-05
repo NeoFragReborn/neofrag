@@ -12,6 +12,43 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.30] — 2026-10-05
+
+The member area, second step: the public profile, and what everyone chooses to show on it. And a fix that
+matters: a logged-in member can read and write in the forum again.
+
+### Added
+
+- **A member's public profile becomes a real page.** Their cover as a banner (it could be uploaded but showed
+  nowhere), their avatar overlapping it, their username, rank, groups and presence; "Contact" and "Report", or
+  "Edit my profile" on your own; then tabs, each at its own address: About (quote, identity, links, the site's
+  public fields, and their numbers), Activity, and the ones installed modules bring — Forum, Blog, Teams,
+  Classifieds. A module with nothing to show about this member adds no empty tab.
+- **Each member chooses what their profile shows**, in "Privacy and data": their points, karma and VIP days are
+  kept to themselves until they show them (they were visible to everyone, visitors included); their age and
+  online presence stay shown until they hide them. Their rank stays public. The choice applies everywhere: the
+  card that opens when hovering a username, the avatar's dot, team rosters, the "Who's online" and "Forum
+  activity" widgets, the member search, the clock's birthdays. On their own profile, a member sees everything,
+  with a padlock on what only they can see.
+
+### Fixed
+
+- **A logged-in member can read and write in the forum again**, and sees the galleries, pages, event types and
+  folders open to visitors. Since the permissions overhaul, the "member" role only had what it was explicitly
+  given: a member saw "No forum" where a visitor could read everything, and could write nowhere — only
+  administrators, who bypass permissions, saw nothing wrong. The original rules are back: what a visitor can do,
+  a member can do; what is refused to visitors only stays allowed to members. A migration restores them on every
+  site, without touching a rule already set for members.
+- **Reputation ranks (Novice, Bronze, Silver…) are translated**: they showed in French in every language. And a
+  rank's tooltip no longer gives away the karma score.
+- **The "Forum activity" widget no longer shows a demo's hidden account** among those online; "Who's online"
+  already left it out.
+- **A website entered without "https://" in a profile** became a link to a page of the site itself.
+- **An update no longer replaces a site's marketplace catalogue.** The update package carried a catalogue built
+  several versions earlier: on the site that serves the marketplace, it no longer matched the archives, and every
+  addon installation was refused until the catalogue was rebuilt.
+- **In "My space", the member's group appears under their username**: it floated in the middle of the header.
+
 ## [1.2.29] — 2026-10-05
 
 The member area, first step of its overhaul: a single frame, a single menu, settings where you look for them.

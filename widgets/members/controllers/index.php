@@ -49,6 +49,8 @@ class Index extends Controller_Widget
 							->join('nf_user_profile up', 'u.id = up.id')
 							->where('s.last_activity > DATE_SUB(NOW(), INTERVAL 5 MINUTE)')
 							->where('u.id !=', nf_compte_masque())
+							// Un membre qui cache sa présence n'apparaît pas parmi ceux en ligne (chantier A, étape A2).
+							->where('IFNULL(up.montrer_statut, 1) = 1')
 							->group_by('u.id')
 							->order_by('u.username')
 							->get() as $user)

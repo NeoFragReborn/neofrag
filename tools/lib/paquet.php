@@ -97,5 +97,14 @@ function nf_paquet_exclu(string $rel, string $variant): bool
         return TRUE;
     }
 
+    // Le catalogue part avec une installation, pas avec une mise à jour : sur la vitrine, c'est le marketplace
+    // VIVANT. Le paquet de la 1.2.29 portait celui du dépôt, fabriqué à la 1.2.22 : le clic de mise à jour l'a
+    // posé sur la vitrine, à côté des archives de la 1.2.28, et chaque installation par le marketplace refusait
+    // son empreinte jusqu'à ce que l'étape d'après le clic repose le bon (2026-10-05, une dizaine de minutes).
+    if ($rel === 'marketplace/catalog.json')
+    {
+        return $variant === 'update';
+    }
+
     return in_array(strtolower(pathinfo($rel, PATHINFO_EXTENSION)), ['log', 'map', 'scssc'], TRUE);
 }

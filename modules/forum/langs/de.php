@@ -309,4 +309,6 @@ return [
 	'7642b2d9' => 'Gast %s',
 	'816f205c' => 'Discord',
 	'8fd9c7ef' => 'Speichern',
+	'a4193a31' => 'Eröffnete Themen',
+	'f3530fd8' => 'Neueste Beiträge',
 ];

@@ -26,4 +26,10 @@ return [
 	'498a2706' => 'Limite diário — reação dada',
 	'd6d8eab6' => 'Limite diário — notícia / artigo (0=ilimitado)',
 	'ff1fe341' => 'Limite diário — início de sessão',
+	'e5a8887f' => 'Novato',
+	'b944bcbf' => 'Bronze',
+	'b22ffeb8' => 'Prata',
+	'88335125' => 'Ouro',
+	'0020b38f' => 'Platina',
+	'8acef3be' => 'Diamante',
 ];

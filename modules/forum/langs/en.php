@@ -311,4 +311,6 @@ return [
 	'7642b2d9' => 'Guest %s',
 	'816f205c' => 'Discord',
 	'8fd9c7ef' => 'Save',
+	'a4193a31' => 'Topics started',
+	'f3530fd8' => 'Latest posts',
 ];

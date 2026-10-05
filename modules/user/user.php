@@ -44,6 +44,7 @@ class User extends Module
 				'auth/unlink/{id}'                           => '_auth_unlink',
 				'sessions/delete/{key_id}'                   => '_session_delete',
 				'{id}/{url_title}'                           => '_member',
+				'{id}/{url_title}/{url_title}'               => '_member',
 				'ajax/{id}/{url_title}'                      => '_member',
 				'ajax/lost-password/{url_title}'             => '_lost_password',
 
@@ -265,6 +266,54 @@ class User extends Module
 
 		return $html;
 	}
+
+	/**
+	 * Les ONGLETS du profil public de `$membre` (chantier A, étape A2, 2026-10-05) : « À propos » et « Activité »,
+	 * puis ceux que les modules installés apportent par une méthode profil_membre($membre) de leur classe — un
+	 * module qui n'a rien à montrer de ce membre n'en rend aucun : pas d'onglet vide.
+	 *
+	 * Un onglet : `onglet` (le dernier segment de son adresse, `user/<id>/<pseudo>/<onglet>` ; vide pour le
+	 * premier), `titre`, `icone`, `ordre` qui range ceux des modules entre eux, au besoin `nombre` (montré à côté
+	 * du titre), et `contenu`, une fonction qui rend la page de l'onglet, appelée seulement quand il est ouvert —
+	 * celle des deux premiers est dans le contrôleur.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function onglets_profil($membre): array
+	{
+		// Le vérificateur de l'adresse et la page les demandent tous deux : les modules ne comptent qu'une fois.
+		if (isset($this->_onglets_profil[$cle = (int) $membre->id]))
+		{
+			return $this->_onglets_profil[$cle];
+		}
+
+		$onglets = [];
+
+		foreach (NeoFrag()->model2('addon')->get('module') as $module)
+		{
+			if ($module instanceof Module && $module !== $this && method_exists($module, 'profil_membre'))
+			{
+				foreach ((array) $module->profil_membre($membre) as $onglet)
+				{
+					if (is_array($onglet) && is_string($onglet['onglet'] ?? NULL) && preg_match('/^[a-z0-9-]+$/', $onglet['onglet'])
+						&& $onglet['onglet'] !== 'activite' && !empty($onglet['titre']) && is_callable($onglet['contenu'] ?? NULL))
+					{
+						$onglets[$onglet['onglet']] = $onglet + ['icone' => 'fas fa-circle', 'ordre' => 50];
+					}
+				}
+			}
+		}
+
+		usort($onglets, fn ($a, $b) => (int) $a['ordre'] <=> (int) $b['ordre']);
+
+		return $this->_onglets_profil[$cle] = array_merge([
+			['onglet' => '',         'titre' => (string) $this->lang('À propos'), 'icone' => 'far fa-id-card', 'ordre' => 0],
+			['onglet' => 'activite', 'titre' => (string) $this->lang('Activité'), 'icone' => 'fas fa-bolt',    'ordre' => 10],
+		], $onglets);
+	}
+
+	/** @var array<int, list<array<string, mixed>>> les onglets déjà rassemblés, par membre */
+	private array $_onglets_profil = [];
 
 	/**
 	 * Le cadre de l'espace membre : le menu, puis la page. Une colonne à gauche sur ordinateur, une bande

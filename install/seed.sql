@@ -270,6 +270,7 @@ INSERT INTO `nf_roles_lang` (`role_id`, `lang`, `title`, `description`) VALUES
 
 INSERT INTO `nf_role_permissions` (`role_id`, `permission`, `scope_id`, `authorized`) VALUES
 ('1', '*.*', '0', 'allow'),
+('2', 'forum.category_read', '0', 'allow'),
 ('3', 'forum.category_read', '0', 'allow'),
 ('4', 'moderation.handle_reports', '0', 'allow'),
 ('4', 'moderation.mediation', '0', 'allow'),

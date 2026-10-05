@@ -463,6 +463,12 @@ parameters:
 			path: modules/articles/models/articles.php
 
 		-
+			message: '#^Variable \$billets might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/articles/views/profil-membre.tpl.php
+
+		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:add_awards\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -803,6 +809,12 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: modules/classifieds/controllers/index.php
+
+		-
+			message: '#^Variable \$annonces might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/classifieds/views/profil-membre.tpl.php
 
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Loadables\\Model2\:\:\$id\.$#'
@@ -2431,6 +2443,18 @@ parameters:
 			path: modules/forum/views/new.tpl.php
 
 		-
+			message: '#^Variable \$messages might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/forum/views/profil-membre.tpl.php
+
+		-
+			message: '#^Variable \$sujets might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/forum/views/profil-membre.tpl.php
+
+		-
 			message: '#^Variable \$replies might not be defined\.$#'
 			identifier: variable.undefined
 			count: 3
@@ -3369,7 +3393,7 @@ parameters:
 		-
 			message: '#^Variable \$id might not be defined\.$#'
 			identifier: variable.undefined
-			count: 1
+			count: 2
 			path: modules/members/views/search/index.tpl.php
 
 		-
@@ -6175,6 +6199,12 @@ parameters:
 			path: modules/teams/views/index.tpl.php
 
 		-
+			message: '#^Variable \$equipes might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/teams/views/profil-membre.tpl.php
+
+		-
 			message: '#^Variable \$description might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
@@ -6439,13 +6469,13 @@ parameters:
 			path: modules/user/controllers/index.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\User\\Controllers\\Index\:\:form_select\(\)\.$#'
+			message: '#^Call to an undefined method NF\\Modules\\User\\Controllers\\Index\:\:form_checkbox\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: modules/user/controllers/index.php
 
 		-
-			message: '#^Call to an undefined method NF\\Modules\\User\\Controllers\\Index\:\:panel_back\(\)\.$#'
+			message: '#^Call to an undefined method NF\\Modules\\User\\Controllers\\Index\:\:form_select\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: modules/user/controllers/index.php
@@ -6483,7 +6513,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Form\:\:rule\(\)\.$#'
 			identifier: method.notFound
-			count: 1
+			count: 2
 			path: modules/user/controllers/index.php
 
 		-
@@ -6513,7 +6543,7 @@ parameters:
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Models\\User\:\:\$id\.$#'
 			identifier: property.notFound
-			count: 9
+			count: 10
 			path: modules/user/models/user.php
 
 		-
@@ -6589,16 +6619,40 @@ parameters:
 			path: modules/user/views/avatar.tpl.php
 
 		-
-			message: '#^Variable \$user might not be defined\.$#'
+			message: '#^Variable \$chiffres might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
-			path: modules/user/views/cover.tpl.php
+			path: modules/user/views/membre-a-propos.tpl.php
 
 		-
 			message: '#^Variable \$user might not be defined\.$#'
 			identifier: variable.undefined
-			count: 4
-			path: modules/user/views/infos.tpl.php
+			count: 5
+			path: modules/user/views/membre-a-propos.tpl.php
+
+		-
+			message: '#^Variable \$actif might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: modules/user/views/membre.tpl.php
+
+		-
+			message: '#^Variable \$contenu might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/user/views/membre.tpl.php
+
+		-
+			message: '#^Variable \$onglets might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/user/views/membre.tpl.php
+
+		-
+			message: '#^Variable \$user might not be defined\.$#'
+			identifier: variable.undefined
+			count: 19
+			path: modules/user/views/membre.tpl.php
 
 		-
 			message: '#^Variable \$user might not be defined\.$#'
@@ -6609,14 +6663,8 @@ parameters:
 		-
 			message: '#^Variable \$user might not be defined\.$#'
 			identifier: variable.undefined
-			count: 22
+			count: 31
 			path: modules/user/views/profile.tpl.php
-
-		-
-			message: '#^Variable \$user might not be defined\.$#'
-			identifier: variable.undefined
-			count: 4
-			path: modules/user/views/profile_mini.tpl.php
 
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$webradio_name\.$#'

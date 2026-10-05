@@ -83,7 +83,7 @@ class Index extends Controller_Module
 						->heading($this->lang('Mes données'), 'fas fa-download')
 						->body('<p>'.$this->lang('Une copie de tout ce que le site garde sur toi : ton compte, ton profil, tes connexions, tes messages et tes contributions, dans un fichier que tu peux ouvrir ou transmettre ailleurs (article 15 du RGPD).').'</p><a class="btn btn-secondary" href="'.url('user/security/export').'">'.icon('fas fa-download').' '.$this->lang('Exporter mes données (JSON)').'</a>');
 
-		$panneaux = [$donnees];
+		$panneaux = [$this->_formulaire_visibilite(), $donnees];
 
 		if (!nf_demo())
 		{
@@ -363,7 +363,9 @@ class Index extends Controller_Module
 
 		// Vides, ou NULL pour les colonnes qui l'admettent (la signature et les textes ne l'admettent pas).
 		$this->db	->where('id', $user_id)
-					->update('nf_user_profile', array_fill_keys(['first_name', 'last_name', 'signature', 'country', 'timezone', 'location', 'quote', 'website', 'linkedin', 'github', 'instagram', 'twitch'], '') + array_fill_keys(['avatar', 'cover', 'date_of_birth', 'sex'], NULL));
+					->update('nf_user_profile', array_fill_keys(['first_name', 'last_name', 'signature', 'country', 'timezone', 'location', 'quote', 'website', 'linkedin', 'github', 'instagram', 'twitch'], '') + array_fill_keys(['avatar', 'cover', 'date_of_birth', 'sex'], NULL)
+						// Un compte effacé ne montre plus rien de lui.
+						+ array_fill_keys(['montrer_points', 'montrer_karma', 'montrer_vip', 'montrer_age', 'montrer_statut'], 0));
 
 		foreach (is_array($profil) ? array_filter([(int) ($profil['avatar'] ?? 0), (int) ($profil['cover'] ?? 0)]) : [] as $fichier)
 		{
@@ -643,6 +645,50 @@ class Index extends Controller_Module
 						->submit($this->lang('Enregistrer'))
 						->panel()
 						->title($this->lang('Langue'), 'fas fa-language');
+	}
+
+	/**
+	 * Ce que mon profil montre aux autres (chantier A, étape A2, 2026-10-05) : mes points, mon karma et mes jours
+	 * de VIP me sont réservés tant que je ne les montre pas ; mon âge et ma présence en ligne sont montrés tant que
+	 * je ne les cache pas (Models\User::MONTRE_PAR_DEFAUT). Mon rang et mes badges restent publics.
+	 */
+	private function _formulaire_visibilite()
+	{
+		$choix = [];
+
+		if ($this->module('gamification'))
+		{
+			$choix['points'] = $this->lang('Mes points');
+			$choix['karma']  = $this->lang('Mon karma — mon rang, lui, reste visible');
+			$choix['vip']    = $this->lang('Mes jours de VIP');
+		}
+
+		$choix['age']    = $this->lang('Mon âge');
+		$choix['statut'] = $this->lang('Quand je suis en ligne, et ma dernière visite');
+
+		return $this	->form2()
+						->rule($this->form_checkbox('montrer')
+									->title($this->lang('Montrer aux autres'))
+									->data($choix)
+									->inline(FALSE)
+									->value(array_values(array_filter(array_keys($choix), fn ($quoi) => $this->user->montre_aux_autres($quoi))))
+						)
+						->success(function($data) use ($choix){
+							$profil  = $this->user->profile();
+							$montrer = (array) ($data['montrer'] ?? []);
+
+							foreach (array_keys($choix) as $quoi)
+							{
+								$profil->set('montrer_'.$quoi, in_array($quoi, $montrer, TRUE));
+							}
+
+							$profil->commit();
+							notify($this->lang('Ce que ton profil montre est enregistré.'));
+							refresh();
+						})
+						->submit($this->lang('Enregistrer'))
+						->panel()
+						->title($this->lang('Ce que mon profil montre'), 'far fa-eye');
 	}
 
 	/** Le fuseau horaire du membre : les dates du site s'affichent à son heure (nf_fuseau()). */
@@ -1372,70 +1418,130 @@ class Index extends Controller_Module
 		redirect();
 	}
 
-	public function _member($user)
+	/**
+	 * Le PROFIL PUBLIC d'un membre (chantier A, étape A2, 2026-10-05) : sa couverture en bannière, son avatar qui
+	 * la chevauche, son pseudo, son rang et sa présence ; « Contacter » et « Signaler », ou « Modifier mon profil »
+	 * si c'est le mien ; puis des onglets — À propos, Activité, et ceux des modules installés
+	 * (User::onglets_profil()), chacun à son adresse. Il reprenait la carte de l'espace privé : la couverture n'y
+	 * paraissait pas, « Voir le profil » y menait à lui-même, dates et groupes y figuraient deux fois.
+	 */
+	public function _member($user, $onglet = '')
 	{
 		// Le profil d'un membre ne s'indexe pas : peu de texte, et un membre n'a pas à se retrouver dans
 		// un moteur de recherche sans l'avoir choisi. Ses liens, eux, se suivent.
 		$this->output->data->set('module', 'robots', 'noindex, follow');
 
-		return $this->title($user->username)
-					->breadcrumb($this->lang('Profil'))
-					->breadcrumb($user->username)
-					->row()
-					->append($this	->col()
-									->size('col-12 col-lg-4 user-col')
-									->append($this	->panel()
-													->body($user->view('profile'))
-									)
-					)
-					->append($this	->col()
-									->size('col-12 col-lg-8')
-									->append($this	->panel()
-													->body($this->_panel_infos($user))
-									)
-									->append($this->_panel_activities($user->id))
-									->append($this->panel_back())
-					);
-	}
+		$onglets = $this->module->onglets_profil($user);
+		$actif   = current(array_filter($onglets, fn ($o) => $o['onglet'] === $onglet));
 
-	public function _panel_infos($user = NULL)
-	{
-		return $this->view('infos', [
-			'user' => $user ?: $this->user
+		$this->css('membre');
+
+		$this	->title($onglet === '' ? $user->username : $user->username.' — '.$actif['titre'])
+				->breadcrumb($this->lang('Profil'))
+				->breadcrumb($user->username, 'user/'.(int) $user->id.'/'.url_title((string) $user->username));
+
+		if ($onglet !== '')
+		{
+			$this->breadcrumb($actif['titre']);
+		}
+
+		if ($onglet === 'activite')
+		{
+			$this->css('activities');
+		}
+
+		return $this->view('membre', [
+			'user'    => $user,
+			'onglets' => $onglets,
+			'actif'   => $onglet,
+			'contenu' => match ($onglet) {
+				''         => $this->view('membre-a-propos', ['user' => $user, 'chiffres' => $this->_chiffres($user)]),
+				'activite' => $this->view('activity', ['user_activity' => $this->_activites((int) $user->id, 30)]),
+				default    => ($actif['contenu'])($user),
+			},
 		]);
 	}
 
-	private function _panel_activities($user_id = NULL)
+	/**
+	 * Les chiffres de la rubrique « En chiffres » : l'inscription, la dernière visite, puis le nombre que chaque
+	 * onglet de module annonce (`nombre`) — et, s'il les montre, les points et le karma.
+	 *
+	 * @return list<array{icone: string, titre: string, valeur: string, html?: string, prive?: bool}>
+	 */
+	private function _chiffres($user): array
 	{
-		$this->css('activities');
+		$chiffres = [];
 
-		if ($user_id === NULL)
+		if ($user->registration_date)
 		{
-			$user_id = $this->user->id;
+			$chiffres[] = ['icone' => 'far fa-calendar-plus', 'titre' => (string) $this->lang('Inscrit le'), 'valeur' => timetostr($this->lang('d/m/Y'), $user->registration_date)];
 		}
 
-		// Carrefour « activity » : chaque module expose controllers/activity.php → activity($user_id, $limit)
+		if ($user->last_activity_date && $user->montre('statut'))
+		{
+			// time_span() rend une balise <time> : elle passe telle quelle (`html`), le reste est du texte.
+			$chiffres[] = ['icone' => 'far fa-clock', 'titre' => (string) $this->lang('Dernière visite'), 'valeur' => '', 'html' => time_span($user->last_activity_date), 'prive' => !$user->montre_aux_autres('statut')];
+		}
+
+		foreach ($this->module->onglets_profil($user) as $onglet)
+		{
+			if (isset($onglet['nombre']))
+			{
+				$chiffres[] = ['icone' => (string) $onglet['icone'], 'titre' => (string) $onglet['titre'], 'valeur' => (string) (int) $onglet['nombre']];
+			}
+		}
+
+		// couplage: la gamification est facultative — module() rend NULL sans elle, et instanceof la garde.
+		if (($gamification = $this->module('gamification')) instanceof \NF\Modules\Gamification\Gamification)
+		{
+			if ($user->montre('points'))
+			{
+				$chiffres[] = ['icone' => 'fas fa-coins', 'titre' => (string) $this->lang('Points'), 'valeur' => (string) $gamification->get_points($user->id), 'prive' => !$user->montre_aux_autres('points')];
+			}
+
+			if ($user->montre('karma'))
+			{
+				$chiffres[] = ['icone' => 'fas fa-star', 'titre' => (string) $this->lang('Karma'), 'valeur' => (string) $gamification->get($user->id), 'prive' => !$user->montre_aux_autres('karma')];
+			}
+		}
+
+		return $chiffres;
+	}
+
+	/**
+	 * L'activité récente d'un membre, du plus récent au plus ancien : le carrefour « activity », où chaque module
+	 * expose controllers/activity.php → activity($user_id, $limit), chacun selon ses droits de lecture.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	private function _activites(int $user_id, int $nombre): array
+	{
 		$items = [];
 
 		foreach (NeoFrag()->model2('addon')->get('module') as $module)
 		{
 			if ($controller = @$module->controller('activity'))
 			{
-				foreach ($controller->activity($user_id, 10) as $item)
+				foreach ($controller->activity($user_id, $nombre) as $item)
 				{
 					$items[] = $item;
 				}
 			}
 		}
 
-		usort($items, function($a, $b){
-			return $b['date'] <=> $a['date'];
-		});
+		usort($items, fn ($a, $b) => $b['date'] <=> $a['date']);
+
+		return array_slice($items, 0, $nombre);
+	}
+
+	private function _panel_activities($user_id = NULL)
+	{
+		$this->css('activities');
 
 		return $this->panel()
 					->heading($this->lang('Activité récente'))
 					->body($this->view('activity', [
-						'user_activity' => array_slice($items, 0, 15)
+						'user_activity' => $this->_activites((int) ($user_id ?? $this->user->id), 15)
 					]));
 	}
 
