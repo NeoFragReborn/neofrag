@@ -37,6 +37,8 @@ class Index extends Controller_Module
 			$body .= '</div>';
 		}
 
+		// Hors du cadre de l'espace membre pour l'instant : les thèmes donnent à cette page leur colonne de
+		// droite, où le cadre se trouvait coincé. Elle le rejoindra sous user/ avec ses préférences (étape A4).
 		return $this->panel()->title($this->lang('Notifications'), 'far fa-bell')->body($body);
 	}
 }

@@ -93,4 +93,5 @@ return [
 	'd3fe1369' => 'Grille',
 	'45002a02' => 'Aucune extension ne correspond.',
 	'79e64a05' => '<b>NeoFrag %s</b> est disponible (tu utilises %s) : <a href="%s">Monitoring</a> le met à jour en un clic, avec une sauvegarde avant d\'écrire.',
+	'62ad9179' => '%d addon(s) du marketplace demandent une version plus récente de NeoFrag : mets d\'abord ton site à jour.',
 ];

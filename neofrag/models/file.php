@@ -11,6 +11,15 @@ use NF\NeoFrag\Loadables\Model2;
 
 class File extends Model2
 {
+	/**
+	 * La table des fichiers est celle du cœur, d'où qu'on charge le modèle. Sans cette déclaration, le chargeur
+	 * préfixe la table du module appelant : `$this->model2('file', …)` dans un module lisait `nf_settings_file`,
+	 * `nf_forum_file`, `nf_talks_file`, `nf_user_file` — qui n'existent pas (2026-10-05). Le favicon du site
+	 * manquait au manifeste des téléphones (23 avertissements à la vitrine), et supprimer une pièce jointe du
+	 * forum ou de la messagerie, ou effacer un compte, laissait le fichier sur le disque. Comme Comment et User.
+	 */
+	public $__table = 'file';
+
 	static public function __schema()
 	{
 		return [

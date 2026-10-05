@@ -377,4 +377,22 @@ class Moderation extends Module
 		     . '<i class="fas fa-flag"></i>'
 		     . '</a>';
 	}
+
+	/**
+	 * La modération dans le menu de l'espace membre (User::menu_espace(), chantier A), pour qui a le droit de
+	 * lire les signalements, avec le nombre de ceux qui attendent — comme le widget « Espace membre ».
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function espace_membre($user): array
+	{
+		if (!$this->access('moderation', 'view_reports'))
+		{
+			return [];
+		}
+
+		$en_attente = (int) $this->db->select('COUNT(*)')->from('nf_reports')->where('status', 'pending')->row();
+
+		return [['url' => 'moderation', 'titre' => (string) $this->lang('Modération'), 'icone' => 'fas fa-shield-alt', 'badge' => $en_attente, 'compact' => TRUE, 'ordre' => 90]];
+	}
 }

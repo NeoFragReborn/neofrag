@@ -18,31 +18,20 @@ class Index extends Controller_Module
 {
 	public function index()
 	{
-		return $this->title($this->lang('Mon activité'))
-					->icon('far fa-star')
-					->row([
-						$this->col(
-							$this	->panel()
-									->heading($this->lang('Mon profil'))
-									->body($this->user->view('profile')),
-							$this->_panel_navigation()
-						)->size('col-12 col-lg-4'),
-						$this->col(
-							$this->row($this->col($this->panel()->body($this->_panel_infos()))),
-							$this	->row()
-									->append($this	->col()
-													->size('col-12 col-lg-6')
-													->append($this	->panel()
-																	->heading($this->lang('Messagerie'))
-																	->body($this->view('index'))
-													)
-									)
-									->append($this	->col()
-													->size('col-12 col-lg-6')
-													->append($this->_panel_activities())
-									)
-						)->size('col-12 col-lg-8')
-					]);
+		$this	->title($this->lang('Mon espace'))
+				->icon('fas fa-house-user')
+				->breadcrumb();
+
+		return $this->_layout(function($row){
+			$row->append($this	->col($this->panel()->body($this->view('espace-accueil', ['user' => $this->user])))
+								->size('col-12'))
+				->append($this	->col($this	->panel()
+											->heading($this->lang('Messagerie'), 'far fa-envelope')
+											->body($this->view('index')))
+								->size('col-12 col-xl-6'))
+				->append($this	->col($this->_panel_activities())
+								->size('col-12 col-xl-6'));
+		}, 'user');
 	}
 
 	public function security()
@@ -69,12 +58,43 @@ class Index extends Controller_Module
 			$totp_panel->body('<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> '.$this->lang('2FA <b>désactivé</b>.').'</div><p>'.$this->lang('Active le 2FA pour ajouter une couche de sécurité à ton compte. Tu auras besoin d\'une appli comme Google Authenticator, Authy ou FreeOTP.').'</p><a class="btn btn-primary" href="'.url('user/security/setup').'"><i class="fas fa-shield-alt"></i> '.$this->lang('Activer le 2FA').'</a>');
 		}
 
-		$rgpd_panel = $this->panel()->title($this->lang('Mes données (RGPD)'), 'fas fa-user-shield')
-									->body('<p>'.$this->lang('Conformément au RGPD, tu peux à tout moment :').'</p><ul><li>'.$this->lang('Récupérer une copie complète de tes données personnelles').'</li><li>'.$this->lang('Demander la suppression de ton compte (droit à l\'oubli)').'</li></ul><a class="btn btn-secondary" href="'.url('user/security/export').'"><i class="fas fa-download"></i> '.$this->lang('Exporter mes données (JSON)').'</a>'.(nf_demo() ? '' : ' <a class="btn btn-outline-danger" href="'.url('user/security/delete').'"><i class="far fa-trash-alt"></i> '.$this->lang('Supprimer mon compte').'</a>'));
+		// Les connexions récentes, pour repérer un accès inattendu ; l'export et la suppression du compte
+		// sont rangés dans « Confidentialité et données » depuis le chantier A (étape A1).
+		$historique = $this->panel()
+							->heading($this->lang('Historique des connexions'), 'fas fa-clock-rotate-left')
+							->body('<p class="mb-3">'.$this->lang('Chaque connexion à ton compte : la date, l’adresse IP et le navigateur. Une connexion que tu ne reconnais pas ? Change ton mot de passe.').'</p><a class="btn btn-outline-primary" href="'.url('user/sessions').'">'.icon('fas fa-list').' '.$this->lang('Voir l’historique').'</a>');
 
-		return $this->_layout(function($row) use ($totp_panel, $rgpd_panel){
-			$row->append($this->col($totp_panel, $rgpd_panel)->size('col-12 col-lg-8 mx-auto'));
-		});
+		return $this->_layout(function($row) use ($totp_panel, $historique){
+			$row->append($this->col($totp_panel, $historique)->size('col-12'));
+		}, 'user/security');
+	}
+
+	/**
+	 * Confidentialité et données (chantier A, étape A1) : l'export de ses données et la suppression de son
+	 * compte, rangés jusqu'ici sous « Sécurité (2FA) ». Ce que le profil public montre s'y réglera (étape A2).
+	 */
+	public function privacy()
+	{
+		$this	->title($this->lang('Confidentialité et données'))
+				->icon('fas fa-user-shield')
+				->breadcrumb();
+
+		$donnees = $this->panel()
+						->heading($this->lang('Mes données'), 'fas fa-download')
+						->body('<p>'.$this->lang('Une copie de tout ce que le site garde sur toi : ton compte, ton profil, tes connexions, tes messages et tes contributions, dans un fichier que tu peux ouvrir ou transmettre ailleurs (article 15 du RGPD).').'</p><a class="btn btn-secondary" href="'.url('user/security/export').'">'.icon('fas fa-download').' '.$this->lang('Exporter mes données (JSON)').'</a>');
+
+		$panneaux = [$donnees];
+
+		if (!nf_demo())
+		{
+			$panneaux[] = $this->panel()
+								->heading($this->lang('Supprimer mon compte'), 'far fa-trash-alt')
+								->body('<p>'.$this->lang('Ton compte et tes données personnelles sont effacés ; tes messages restent, sous un pseudo anonyme. C’est définitif.').'</p><a class="btn btn-outline-danger" href="'.url('user/security/delete').'">'.icon('far fa-trash-alt').' '.$this->lang('Supprimer mon compte').'</a>');
+		}
+
+		return $this->_layout(function($row) use ($panneaux){
+			$row->append($this->col(...$panneaux)->size('col-12'));
+		}, 'user/privacy');
 	}
 
 	public function security_export()
@@ -257,8 +277,8 @@ class Index extends Controller_Module
 			$panneau = $this->_panneau_confirmation('user/security/delete', $this->lang('Pour supprimer ton compte, confirme d’abord que c’est bien toi.'));
 
 			return $this->_layout(function($row) use ($panneau){
-				$row->append($this->col($panneau)->size('col-12 col-lg-6 mx-auto'));
-			});
+				$row->append($this->col($panneau)->size('col-12'));
+			}, 'user/privacy');
 		}
 
 		$regles = [
@@ -314,9 +334,9 @@ class Index extends Controller_Module
 												->heading()
 												->body($intro.$this->form()->display())
 								)
-								->size('col-12 col-lg-6 mx-auto')
+								->size('col-12')
 			);
-		});
+		}, 'user/privacy');
 	}
 
 	/**
@@ -452,9 +472,9 @@ class Index extends Controller_Module
 												->heading()
 												->body($this->form()->display())
 								)
-								->size('col-12 col-lg-8 mx-auto')
+								->size('col-12')
 			);
-		});
+		}, 'user/security');
 	}
 
 	public function security_codes()
@@ -480,8 +500,8 @@ class Index extends Controller_Module
 		$body .= '<a class="btn btn-primary" href="'.url('user/security').'">'.$this->lang('J\'ai sauvegardé mes codes').'</a>';
 
 		return $this->_layout(function($row) use ($body){
-			$row->append($this->col($this->panel()->title($this->lang('Codes de récupération 2FA'), 'fas fa-key')->body($body))->size('col-12 col-lg-8 mx-auto'));
-		});
+			$row->append($this->col($this->panel()->title($this->lang('Codes de récupération 2FA'), 'fas fa-key')->body($body))->size('col-12'));
+		}, 'user/security');
 	}
 
 	public function security_disable()
@@ -503,8 +523,8 @@ class Index extends Controller_Module
 			$panneau = $this->_panneau_confirmation('user/security/disable', $this->lang('Pour désactiver la double authentification, confirme d’abord que c’est bien toi.'));
 
 			return $this->_layout(function($row) use ($panneau){
-				$row->append($this->col($panneau)->size('col-12 col-lg-6 mx-auto'));
-			});
+				$row->append($this->col($panneau)->size('col-12'));
+			}, 'user/security');
 		}
 
 		$this	->form()
@@ -545,17 +565,17 @@ class Index extends Controller_Module
 												->heading()
 												->body($this->form()->display())
 								)
-								->size('col-12 col-lg-6 mx-auto')
+								->size('col-12')
 			);
-		});
+		}, 'user/security');
 	}
 
 	public function account()
 	{
-		// Le titre suit le menu : « Connexion » nommait ici la page de réglage du compte, et se traduit
-		// désormais par « se connecter » (ligne 0.31).
-		$this	->title($this->lang('Info de connexion'))
-				->icon('fas fa-sign-in-alt')
+		// Le titre suit le menu (User::menu_espace()) : la même page s'appelait « Connexion » ici, « Info de
+		// connexion » dans un menu et « Gérer mon compte » dans un autre.
+		$this	->title($this->lang('Mon compte'))
+				->icon('fas fa-user-gear')
 				->breadcrumb();
 
 		$sans_mot_de_passe = $this->_sans_mot_de_passe();
@@ -574,15 +594,64 @@ class Index extends Controller_Module
 			$contenu = $this->_formulaire_compte($sans_mot_de_passe);
 		}
 
-		return $this->row([
-						$this->col(
-							$this	->panel()
-									->heading($this->lang('Mon profil'))
-									->body($this->user->view('profile')),
-							$this->_panel_navigation()
-						)->size('col-12 col-lg-4'),
-						$this->col($contenu)->size('col-12 col-lg-8')
-					]);
+		// La langue et le fuseau horaire, rangés ici depuis le chantier A (le fuseau était au milieu du profil
+		// public) ; sur une démonstration, le compte partagé garde les siens.
+		return $this->_layout(function($row) use ($contenu){
+			$row->append($this->col($contenu)->size('col-12'));
+
+			if (!nf_demo())
+			{
+				$row->append($this->col($this->_formulaire_langue())->size('col-12 col-xl-6'))
+					->append($this->col($this->_formulaire_fuseau())->size('col-12 col-xl-6'));
+			}
+		}, 'user/account');
+	}
+
+	/**
+	 * La langue du membre : celle des pages et des e-mails que le site lui envoie. Elle ne se choisissait
+	 * que par le sélecteur du site ; elle s'enregistre de même (settings, Ajax::languages()), et la page
+	 * revient dans la langue choisie.
+	 */
+	private function _formulaire_langue()
+	{
+		$choix = [];
+
+		foreach ($this->config->langs as $langue)
+		{
+			$choix[(string) $langue->info()->name] = [(string) $langue->info()->title];
+		}
+
+		return $this	->form2()
+						->rule($this->form_select('langue')
+									->title($this->lang('Langue du site'))
+									->data($choix)
+									->value((string) $this->config->lang->info()->name)
+									->required()
+						)
+						->success(function($data){
+							foreach ($this->config->langs as $langue)
+							{
+								if ((string) $langue->info()->name === (string) $data['langue'])
+								{
+									$this->user->set('language', $langue->__addon)->update();
+									$this->url->redirect_http($this->url->base.$langue->info()->name.'/user/account');
+								}
+							}
+
+							refresh();
+						})
+						->submit($this->lang('Enregistrer'))
+						->panel()
+						->title($this->lang('Langue'), 'fas fa-language');
+	}
+
+	/** Le fuseau horaire du membre : les dates du site s'affichent à son heure (nf_fuseau()). */
+	private function _formulaire_fuseau()
+	{
+		return $this	->form2('fuseau', $this->user->profile())
+						->submit($this->lang('Enregistrer'))
+						->panel()
+						->title($this->lang('Fuseau horaire'), 'far fa-clock');
 	}
 
 	/** Le formulaire du compte : identifiant, mot de passe, adresse — sans « mot de passe actuel » pour qui n'en a pas. */
@@ -610,7 +679,7 @@ class Index extends Controller_Module
 						})
 						->submit($this->lang('Modifier'))
 						->panel()
-						->title($this->lang('Info de connexion'));
+						->title($this->lang('Identifiant, adresse et mot de passe'), 'fas fa-key');
 	}
 
 	/**
@@ -749,13 +818,13 @@ class Index extends Controller_Module
 
 	public function profile()
 	{
-		$this	->title($this->lang('Profil'))
-				->icon('fas fa-pencil-alt')
+		$this	->title($this->lang('Modifier mon profil'))
+				->icon('fas fa-pen')
 				->breadcrumb();
 
 		return $this->_layout(function($row){
 			$row->append($this	->col()
-								->size('col-12 col-lg-7')
+								->size('col-12 col-xl-7')
 								->append($this	->form2('profile', $this->user->profile())
 												->panel()
 								)
@@ -766,7 +835,7 @@ class Index extends Controller_Module
 								->append_if(($champs = $this->_champs_personnalises()) !== '', $champs)
 				)
 				->append($this	->col()
-								->size('col-12 col-lg-5')
+								->size('col-12 col-xl-5')
 								->append($this	->form2('avatar', $this->user->profile())
 												->panel()
 												->title($this->lang('Avatar'), 'fas fa-user-circle')
@@ -776,26 +845,20 @@ class Index extends Controller_Module
 												->title($this->lang('Photo de couverture'), 'far fa-image')
 								)
 				);
-		});
+		}, 'user/profile');
 	}
 
 	public function sessions($sessions)
 	{
-		return $this->row([
-						$this->col(
-							$this	->panel()
-									->heading($this->lang('Mon profil'))
-									->body($this->user->view('profile')),
-							$this->_panel_navigation()
-						)->size('col-12 col-lg-4'),
-						$this->col(
-							$this	->title($this->lang('Historique des sessions'))
-									->icon('fas fa-history')
-									->breadcrumb()
-									->table2('session_history', $sessions, $this->lang('Aucun historique'))
-									->panel()
-						)->size('col-12 col-lg-8')
-					]);
+		$this	->title($this->lang('Historique des connexions'))
+				->icon('fas fa-clock-rotate-left')
+				->breadcrumb();
+
+		return $this->_layout(function($row) use ($sessions){
+			$row->append($this->col($this	->table2('session_history', $sessions, $this->lang('Aucun historique'))
+											->panel())
+								->size('col-12'));
+		}, 'user/security');
 	}
 
 	public function _session_delete($session_id)
@@ -1138,7 +1201,7 @@ class Index extends Controller_Module
 			$module_user->bienvenue((int) $user->id, $nom);
 		}
 
-		notify($this->lang('Votre compte a été créé avec %s, bienvenue ! Ajoutez une adresse e-mail et un mot de passe dans « Info de connexion » pour pouvoir aussi vous connecter sans lui.', $authenticator->info()->title));
+		notify($this->lang('Votre compte a été créé avec %s, bienvenue ! Ajoutez une adresse e-mail et un mot de passe dans « Mon compte » pour pouvoir aussi vous connecter sans lui.', $authenticator->info()->title));
 	}
 
 	/**
@@ -1182,13 +1245,17 @@ class Index extends Controller_Module
 			unset($fournisseurs[(string) $l['name']]);
 		}
 
-		return $this->panel()
-					->heading($this->lang('Mes comptes liés'), 'fas fa-link')
-					->body($this->view('auth', [
-						'lignes'       => $lignes,
-						'a_lier'       => $fournisseurs,
-						'sans_secours' => (string) $this->user->password === '',
-					]));
+		$panneau = $this->panel()
+						->heading($this->lang('Mes comptes liés'), 'fas fa-link')
+						->body($this->view('auth', [
+							'lignes'       => $lignes,
+							'a_lier'       => $fournisseurs,
+							'sans_secours' => (string) $this->user->password === '',
+						]));
+
+		return $this->_layout(function($row) use ($panneau){
+			$row->append($this->col($panneau)->size('col-12'));
+		}, 'user/auth');
 	}
 
 	/** Délier un compte externe — sauf s'il est le seul moyen de se connecter. */
@@ -1200,7 +1267,7 @@ class Index extends Controller_Module
 
 		if ((string) $this->user->password === '' && !$autres)
 		{
-			notify($this->lang('Ce compte est votre seul moyen de connexion : créez d’abord un mot de passe dans « Info de connexion ».'), 'danger');
+			notify($this->lang('Ce compte est votre seul moyen de connexion : créez d’abord un mot de passe dans « Mon compte ».'), 'danger');
 			redirect('user/auth');
 		}
 
@@ -1331,43 +1398,6 @@ class Index extends Controller_Module
 					);
 	}
 
-	public function _panel_profile(&$user_profile = NULL)
-	{
-		$this->css('profile');
-
-		return $this->panel()
-					->heading('Mon profil', 'fas fa-user')
-					->body($this->view('profile', $user_profile = $this->model()->get_user_profile($this->user->id)))
-					->size('col-12 col-md-4 col-lg-3');
-	}
-
-	public function _panel_navigation($output = 'vertical')
-	{
-		// Le menu est présent sur toutes les pages de l'espace membre : le charger ici suffit à
-		// couvrir l'ensemble de l'espace, sur les sept thèmes.
-		$this->css('user-space');
-
-		$navigation_links = [
-			['title' => $this->lang('Mon espace'),         'icon' => 'fas fa-user',         'url' => 'user'],
-			['title' => $this->lang('Info de connexion'),  'icon' => 'fas fa-sign-in-alt',  'url' => 'user/account'],
-			['title' => $this->lang('Éditer mon profil'),  'icon' => 'fas fa-pencil-alt',   'url' => 'user/profile'],
-			['title' => $this->lang('Messagerie privée'),  'icon' => 'far fa-envelope',     'url' => 'talks?type=private']
-		];
-		if ($this->access('moderation', 'view_reports'))
-		{
-			$navigation_links[] = ['title' => $this->lang('Modération'), 'icon' => 'fas fa-shield-alt', 'url' => 'moderation'];
-		}
-		$navigation_links = array_merge($navigation_links, [
-			['title' => $this->lang('Gérer mes sessions'), 'icon' => 'fas fa-globe',         'url' => 'user/sessions'],
-			['title' => $this->lang('Sécurité (2FA)'),     'icon' => 'fas fa-shield-alt',    'url' => 'user/security'],
-			['title' => $this->lang('Mes comptes liés'),   'icon' => 'fas fa-link',          'url' => 'user/auth'],
-			['title' => $this->lang('Déconnexion'),        'icon' => 'fas fa-times',         'url' => 'user/logout']
-		]);
-
-		$navigation = ['panel' => TRUE, 'links' => $navigation_links];
-		return $this->widget('navigation')->output($output, $navigation);
-	}
-
 	public function _panel_infos($user = NULL)
 	{
 		return $this->view('infos', [
@@ -1409,12 +1439,14 @@ class Index extends Controller_Module
 					]));
 	}
 
-	private function _layout($callback)
+	/**
+	 * Le cadre de l'espace membre autour de la page que `$callback` remplit (User::espace()) : le même menu, au
+	 * même endroit, sur toutes les pages. `$actif` est l'adresse de l'entrée du menu à marquer.
+	 */
+	private function _layout(callable $callback, string $actif)
 	{
 		$callback($row = $this->row());
 
-		return $this->array()
-					->append($this->row($this->col($this->_panel_navigation('index'))))
-					->append($row);
+		return $this->module->espace($row, $actif);
 	}
 }

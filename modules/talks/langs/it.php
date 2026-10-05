@@ -135,4 +135,5 @@ return [
 	'584e9133' => 'File sospetto (rilevato contenuto eseguibile)',
 	'215a962f' => 'Link abbreviato — attenzione',
 	'8fd9c7ef' => 'Salva',
+	'5bb5f5dc' => 'Messaggistica',
 ];

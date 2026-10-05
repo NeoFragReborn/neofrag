@@ -10,6 +10,49 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.29] — 2026-10-05
+
+L'espace membre, première étape de sa refonte : un seul cadre, un seul menu, des réglages rangés là où on les
+cherche. Et le marketplace ne propose plus à un site un addon fait pour une version plus récente de NeoFrag.
+
+### Ajouté
+
+- **Un nouveau mot de passe compte au moins 10 caractères**, et ne peut être ni le pseudo, ni fait de deux
+  caractères répétés, ni l'un des plus courants : à l'inscription, à la réinitialisation et au changement.
+  Les mots de passe existants restent valables.
+
+### Modifié
+
+- **L'espace membre a un seul cadre et un seul menu.** Il changeait de forme d'une page à l'autre — un menu à
+  gauche sous la carte du profil, une barre « Menu » repliée en haut, rien du tout — et une même page portait
+  trois noms. Toutes ses pages ont désormais le même menu, au même endroit : une colonne à gauche sur
+  ordinateur, une bande d'onglets qui défile au téléphone, la page courante marquée. Les modules y ajoutent
+  leurs pages : la messagerie et les notifications avec leurs non-lus, les abonnements du forum (qu'aucun lien
+  n'atteignait), la modération. La barre du haut des thèmes, le widget « Espace membre » et la vitrine
+  reprennent ce menu, avec les mêmes mots.
+- **Les réglages sont rangés là où on les cherche.** « Mon compte » réunit l'identifiant, l'adresse, le mot de
+  passe, la langue (qui ne se choisissait que par le sélecteur du site) et le fuseau horaire (qui était au
+  milieu du profil public) ; « Sécurité » garde la double authentification et l'historique des connexions ;
+  une page « Confidentialité et données » accueille l'export de ses données et la suppression du compte,
+  rangés jusqu'ici sous « Sécurité (2FA) ».
+- **« Mon espace » s'ouvre sur un en-tête compact** — avatar, pseudo, groupes, « Voir mon profil » et
+  « Modifier mon profil » — au lieu de la grande carte du profil, qui repoussait le menu d'un écran entier au
+  téléphone.
+
+### Corrigé
+
+- **Le marketplace ne propose plus à un site un addon fait pour une version plus récente de NeoFrag.** Seule
+  la mise à jour d'un addon vérifiait la version du cœur qu'il exige, pas son installation : un site resté en
+  arrière pouvait installer un addon qui appelait des fonctions absentes de son cœur, et tomber en erreur. Le
+  marketplace officiel sert désormais à chaque site le catalogue de sa version ; la fenêtre du marketplace
+  écarte en plus un addon trop récent et dit de mettre le site à jour d'abord ; « Mises à jour » annonce la
+  nouvelle version du cœur d'après le canal de mise à jour.
+- **Le favicon choisi par l'administrateur entre dans le manifeste du site, et un fichier supprimé quitte
+  vraiment le disque.** Chargé depuis un module, le modèle des fichiers cherchait une table qui n'existe pas :
+  le favicon manquait aux icônes que propose un téléphone (avec un avertissement au journal à chaque lecture
+  du manifeste), le fichier d'une pièce jointe supprimée du forum ou de la messagerie restait sur le disque et
+  dans la base, comme l'avatar et la couverture d'un membre qui efface son compte.
+
 ## [1.2.28] — 2026-10-05
 
 Une version de correction : l'espace membre d'un compte inscrit par Discord, GitHub ou Google, l'export et la

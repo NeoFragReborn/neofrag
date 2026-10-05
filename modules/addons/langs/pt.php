@@ -94,4 +94,5 @@ return [
 	'd3fe1369' => 'Grelha',
 	'45002a02' => 'Nenhuma extensão corresponde.',
 	'79e64a05' => '<b>NeoFrag %s</b> está disponível (estás a usar %s): <a href="%s">Monitoring</a> atualiza-o com um clique, com uma cópia de segurança antes de escrever.',
+	'62ad9179' => '%d addon(s) do marketplace exigem uma versão mais recente do NeoFrag: atualiza primeiro o teu site.',
 ];

@@ -35,4 +35,5 @@ return [
 	'eb68e801' => 'Bienvenue <a href="',
 	'1f88c31b' => 'Options',
 	'8a4c99cf' => 'Bienvenue %s',
+	'b03d6bc5' => 'Modifier mon profil',
 ];

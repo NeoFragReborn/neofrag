@@ -1,74 +1,96 @@
 /*
- * Espace membre — menu latéral et cohérence des écrans.
+ * L'espace membre — son cadre et son menu (chantier A, étape A1, 2026-10-05).
  *
- * Les vues de l'espace membre (mon espace, informations de connexion, édition du profil,
- * sessions, sécurité) sont COMMUNES aux sept thèmes : aucun thème ne les surcharge, et chacun ne
- * déclare qu'une seule règle pour cet espace, celle de l'avatar. Tout ce qui n'était pas prévu
- * par Bootstrap retombait donc sur ses valeurs par défaut — au premier rang desquelles le bleu
- * des liens, posé au milieu d'un thème turquoise.
- *
- * Cette feuille comble ce vide une seule fois, pour les sept thèmes, en passant par leurs jetons
- * (`--fg-*` sur le site public, `--nf-*` en administration) avec un repli neutre.
+ * Les pages de l'espace membre sont COMMUNES aux sept thèmes : cette feuille les dessine une seule fois,
+ * avec le vocabulaire que chaque thème définit (`--nf-*`, cf. docs/guide/create-a-theme.md). Le menu
+ * existait sous trois formes — une colonne sous la carte du profil, une barre « Menu » repliée en haut,
+ * rien du tout — et quatre vocabulaires : il n'en a plus qu'une, rendue par User::espace() à partir de
+ * User::menu_espace().
  */
 
-/* ── Menu latéral ──────────────────────────────────────────────────────────
- * Le menu sortait en liens bleus Bootstrap, sans espacement, et la page courante n'était
- * signalée nulle part : rien ne disait où l'on se trouvait. */
+/* ── Le menu : une colonne, sur ordinateur ───────────────────────────────── */
 
-/* Le menu existe sous DEUX formes selon la page : en colonne a gauche (mon espace,
-   informations de connexion) et en barre horizontale (edition du profil, securite). Les regles
-   ci-dessous valent pour les deux — c'est bien la meme liste de liens, elle doit se ressembler
-   d'une page a l'autre. */
-.module-user .nav {
-	gap: 2px;
-	flex-wrap: wrap;
+.nf-espace-menu {
+	position: sticky;
+	top: 16px;
+	display: grid;
+	gap: 6px;
+	padding: 10px;
+	border: 1px solid var(--nf-border);
+	border-radius: var(--nf-radius);
+	background: var(--nf-surface);
 }
 
-.module-user .nav .nav-link {
+.nf-espace-groupe {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 2px;
+}
+
+.nf-espace-groupe + .nf-espace-groupe {
+	border-top: 1px solid var(--nf-border);
+	padding-top: 6px;
+}
+
+.nf-espace-titre {
+	padding: 6px 10px 2px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+	color: var(--nf-text-muted);
+}
+
+.nf-espace-lien {
+	position: relative;
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	padding: 9px 12px;
-	border-radius: 8px;
-	color: var(--nf-text-soft, var(--nf-text-soft, var(--nf-text, #333)));
-	font-size: 13.5px;
+	padding: 8px 10px;
+	border-radius: var(--nf-radius-sm);
+	color: var(--nf-text-soft);
+	font-size: 14px;
 	font-weight: 500;
 	line-height: 1.3;
+	text-decoration: none;
 	transition: background-color 140ms ease, color 140ms ease;
 }
 
-.module-user .nav .nav-link i {
-	width: 16px;
+.nf-espace-lien > i,
+.nf-espace-lien > .icon {
+	width: 18px;
 	flex: 0 0 auto;
 	text-align: center;
-	color: var(--nf-muted, var(--nf-muted, #6b7280));
+	color: var(--nf-text-muted);
 	transition: color 140ms ease;
 }
 
-.module-user .nav .nav-link:hover,
-.module-user .nav .nav-link:focus {
-	background: var(--nf-surface-2, var(--nf-surface-2, rgba(127, 127, 127, .10)));
-	color: var(--nf-text, var(--nf-text, #111));
+.nf-espace-lien:hover,
+.nf-espace-lien:focus-visible {
+	background: var(--nf-hover);
+	color: var(--nf-text-strong);
 }
 
-.module-user .nav .nav-link:hover i,
-.module-user .nav .nav-link:focus i {
-	color: var(--nf-accent-text, var(--nf-accent, #0d9488));
+.nf-espace-lien:hover > i,
+.nf-espace-lien:focus-visible > i {
+	color: var(--nf-accent);
 }
 
 /* La page courante : fond d'accent doux et barre latérale, comme dans l'administration. */
-.module-user .nav .nav-link.active {
-	position: relative;
-	background: var(--nf-accent-soft, var(--nf-accent-soft, rgba(13, 148, 136, .12)));
-	color: var(--nf-accent-text, var(--nf-accent, #0d9488));
+.nf-espace-lien.actif {
+	background: var(--nf-accent-soft);
+	color: var(--nf-text-strong);
 	font-weight: 600;
 }
 
-.module-user .nav .nav-link.active i {
-	color: var(--nf-accent-text, var(--nf-accent, #0d9488));
+.nf-espace-lien.actif > i,
+.nf-espace-lien.actif > .icon {
+	color: var(--nf-accent);
 }
 
-.module-user .nav.flex-column .nav-link.active::before {
+.nf-espace-lien.actif::before {
 	content: "";
 	position: absolute;
 	left: 0;
@@ -76,23 +98,114 @@
 	bottom: 8px;
 	width: 3px;
 	border-radius: 3px;
-	background: var(--nf-accent, var(--nf-accent, #0d9488));
+	background: var(--nf-accent);
 }
 
-/* La déconnexion est la seule action destructrice du menu : elle se signale au survol,
-   sans crier en permanence. */
-.module-user .nav .nav-link[href$="/logout"]:hover {
-	background: var(--nf-danger-soft, var(--nf-danger-soft, rgba(220, 38, 38, .12)));
-	color: var(--bs-danger-text-emphasis, var(--nf-danger, #dc2626));
+.nf-espace-badge {
+	margin-left: auto;
+	min-width: 20px;
+	padding: 1px 7px;
+	border-radius: 999px;
+	background: var(--nf-accent);
+	color: var(--nf-on-accent);
+	font-size: 12px;
+	font-weight: 700;
+	text-align: center;
 }
 
-.module-user .nav .nav-link[href$="/logout"]:hover i {
+/* La déconnexion est la seule action qui fait sortir : elle se signale au survol, sans crier. */
+.nf-espace-lien[href$="/logout"]:hover,
+.nf-espace-lien[href$="/logout"]:focus-visible {
+	background: var(--nf-danger-soft);
+	color: var(--nf-danger);
+}
+
+.nf-espace-lien[href$="/logout"]:hover > i {
 	color: inherit;
 }
 
+/* ── Le menu : une bande d'onglets, au téléphone et sur tablette ──────────────
+ * Une colonne de dix entrées au-dessus de la page la repoussait d'un écran entier : le menu devient une
+ * bande qui défile de côté, la page courante ramenée au centre (js/espace.js). */
+
+@media (max-width: 991.98px) {
+	.nf-espace-menu {
+		position: static;
+		display: flex;
+		gap: 6px;
+		margin-bottom: 16px;
+		padding: 6px;
+		overflow-x: auto;
+		scroll-snap-type: x proximity;
+		scrollbar-width: thin;
+	}
+
+	.nf-espace-groupe {
+		display: contents;
+	}
+
+	.nf-espace-titre {
+		display: none;
+	}
+
+	.nf-espace-lien {
+		flex: 0 0 auto;
+		padding: 7px 12px;
+		border-radius: 999px;
+		white-space: nowrap;
+		scroll-snap-align: start;
+	}
+
+	.nf-espace-lien.actif {
+		background: var(--nf-accent);
+		color: var(--nf-on-accent);
+	}
+
+	.nf-espace-lien.actif > i,
+	.nf-espace-lien.actif > .icon {
+		color: inherit;
+	}
+
+	.nf-espace-lien.actif::before {
+		display: none;
+	}
+}
+
+/* ── L'accueil de l'espace ───────────────────────────────────────────────── */
+
+.nf-espace-accueil {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 16px;
+}
+
+.nf-espace-accueil .avatar {
+	width: 72px;
+	height: 72px;
+}
+
+.nf-espace-accueil-nom {
+	flex: 1 1 220px;
+	min-width: 0;
+	display: grid;
+	gap: 4px;
+}
+
+.nf-espace-accueil-nom h2 {
+	margin: 0;
+	font-size: 1.35rem;
+	overflow-wrap: anywhere;
+}
+
+.nf-espace-accueil-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
 /* ── Formulaires de l'espace membre ────────────────────────────────────────
- * L'astérisque des champs requis était collé au libellé, et le pied de carte laissait le
- * bouton seul à droite au-dessus d'une bande vide. */
+ * L'astérisque des champs requis était collé au libellé. */
 
 .module-user .nf-field label .text-danger,
 .module-user label > .required {

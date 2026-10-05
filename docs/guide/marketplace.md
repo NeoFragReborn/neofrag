@@ -9,6 +9,11 @@ Le catalogue et les archives sont servis depuis **neofrag-reborn.xyz**, en HTTPS
 vérifiée par **empreinte SHA-256** au téléchargement. Chaque version les publie aussi, avec le catalogue,
 sur la [page des versions](https://github.com/NeoFragReborn/extensions/releases) du dépôt des addons à la carte.
 
+Ton site reçoit **le catalogue de sa version** : un site qui n'est pas encore à jour se voit proposer les
+addons faits pour la version qu'il fait tourner, pas ceux de la dernière, qui pourraient appeler des
+fonctions que son cœur n'a pas encore. Et si un addon demande une version plus récente de NeoFrag, la
+fenêtre du marketplace ne le propose pas : elle te dit de mettre ton site à jour d'abord.
+
 ## Installer un addon
 
 Deux chemins :
@@ -80,8 +85,9 @@ s'installe sur n'importe quel site par *Thèmes & Addons → Ajouter*.
 
 ## Mise à jour du cœur (NeoFrag lui-même)
 
-Le catalogue porte `base_version` (la version du CMS pour laquelle il a été bâti). **Admin → Thèmes & Addons
-→ Mises à jour** la compare à la version installée et **signale** une nouvelle version du cœur le cas échéant.
+**Admin → Thèmes & Addons → Mises à jour** **signale** une nouvelle version du cœur le cas échéant : celle
+qu'annonce le canal de mise à jour (le Monitoring le consulte), et à défaut le `base_version` du catalogue,
+la version du CMS pour laquelle il a été bâti.
 
 Deux chemins pour l'appliquer.
 

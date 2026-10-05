@@ -38,26 +38,15 @@ else
 	<?php endif ?>
 </div>
 <?php if (!$preview_active): ?>
+<?php /* Le menu de l'espace membre, le même partout (User::menu_espace(), chantier A) : ses entrées essentielles,
+         puis l'administration pour qui y a accès. */ ?>
 <ul class="list-group list-group-flush nf-user-menu">
+	<?php foreach (NeoFrag()->module('user')->menu_compact() as $e): if ($e['url'] === 'user/logout') continue; ?>
 	<li class="list-group-item">
-		<?php echo icon('fas fa-user') ?> <a href="<?php echo url('user') ?>"><?php echo $this->lang('Mon espace') ?></a>
+		<?php echo icon($e['icone']) ?> <a href="<?php echo url($e['url']) ?>"><?php echo nf_texte($e['titre']) ?></a>
+		<?php if (!empty($e['badge'])): ?><span class="badge text-bg-danger nf-user-menu-badge"><?php echo (int) $e['badge'] ?></span><?php endif ?>
 	</li>
-	<li class="list-group-item">
-		<?php echo icon('fas fa-cogs') ?> <a href="<?php echo url('user/account') ?>"><?php echo $this->lang('Gérer mon compte') ?></a>
-	</li>
-	<li class="list-group-item">
-		<?php echo icon('far fa-eye') ?> <a href="<?php echo url('user/'.$this->user->id.'/'.url_title($username)) ?>"><?php echo $this->lang('Voir mon profil') ?></a>
-	</li>
-	<li class="list-group-item">
-		<?php echo icon('far fa-envelope') ?> <a href="<?php echo url('talks?type=private') ?>"><?php echo $this->lang('Messagerie') ?></a>
-		<?php if ($messages = $this->module('talks')->model()->get_unread_count($this->user->id)): ?><span class="badge text-bg-danger nf-user-menu-badge"><?php echo $messages ?></span><?php endif ?>
-	</li>
-	<?php if ($this->access('moderation', 'view_reports')): ?>
-	<li class="list-group-item">
-		<?php echo icon('fas fa-shield-alt') ?> <a href="<?php echo url('moderation') ?>"><?php echo $this->lang('Modération') ?></a>
-		<?php $pending = (int)$this->db->select('COUNT(*)')->from('nf_reports')->where('status', 'pending')->row(); if ($pending > 0): ?><span class="badge text-bg-warning nf-user-menu-badge"><?php echo $pending ?></span><?php endif ?>
-	</li>
-	<?php endif ?>
+	<?php endforeach ?>
 	<?php if ($this->access->effective_admin()): ?>
 	<li class="list-group-item">
 		<?php echo icon('fas fa-tachometer-alt') ?> <a href="<?php echo url('admin') ?>"><?php echo $this->lang('Administration') ?></a>

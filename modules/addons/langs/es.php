@@ -94,4 +94,5 @@ return [
 	'd3fe1369' => 'Parrilla',
 	'45002a02' => 'Ninguna extensión coincide.',
 	'79e64a05' => '<b>NeoFrag %s</b> está disponible (usas %s): <a href="%s">Monitoring</a> lo actualiza con un clic, con una copia de seguridad antes de escribir nada.',
+	'62ad9179' => '%d addon(s) del marketplace requieren una versión más reciente de NeoFrag: actualiza primero tu sitio.',
 ];

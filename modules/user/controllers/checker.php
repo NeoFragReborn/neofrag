@@ -34,6 +34,13 @@ class Checker extends Module_Checker
 		return [];
 	}
 
+	public function privacy()
+	{
+		$this->error->unconnected();
+
+		return [];
+	}
+
 	public function sessions($page = '')
 	{
 		$this->error->unconnected();

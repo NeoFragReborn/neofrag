@@ -320,4 +320,15 @@ class Notifications extends Module
 			.'</div>'
 			.'</li>';
 	}
+
+	/**
+	 * Les notifications dans le menu de l'espace membre (User::menu_espace(), chantier A), avec le nombre de
+	 * non lues. La page n'était dans aucun menu : on n'y arrivait que par la cloche.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function espace_membre($user): array
+	{
+		return [['url' => 'notifications', 'titre' => (string) $this->lang('Notifications'), 'icone' => 'far fa-bell', 'badge' => (int) $this->unread_count((int) $user->id), 'ordre' => 20]];
+	}
 }

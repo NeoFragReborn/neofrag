@@ -676,4 +676,15 @@ class Forum extends Module
 
 		return $this->view('profile', $data = $profiles[$user_id]);
 	}
+
+	/**
+	 * Les sujets suivis dans le menu de l'espace membre (User::menu_espace(), chantier A) : la page
+	 * « Mes abonnements » n'avait aucun lien qui y mène.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function espace_membre($user): array
+	{
+		return [['url' => 'forum/subscriptions', 'titre' => (string) $this->lang('Mes abonnements'), 'icone' => 'far fa-bookmark', 'ordre' => 30]];
+	}
 }

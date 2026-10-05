@@ -135,4 +135,5 @@ return [
 	'584e9133' => 'Verdächtige Datei (ausführbarer Inhalt erkannt)',
 	'215a962f' => 'Gekürzter Link — Vorsicht',
 	'8fd9c7ef' => 'Speichern',
+	'5bb5f5dc' => 'Nachrichten',
 ];

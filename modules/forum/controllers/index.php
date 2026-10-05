@@ -487,7 +487,10 @@ class Index extends Controller_Module
 				->breadcrumb($this->lang('Mes abonnements'));
 
 		// Découpée par pages de 20 (le checker) : les liens des pages suivent la liste.
-		return $this->view('subscriptions', ['subscriptions' => $subscriptions]).$this->module->pagination->get_pagination();
+		// Dans le cadre de l'espace membre (chantier A, étape A1) : le même menu qu'à toutes ses pages.
+		$liste = $this->view('subscriptions', ['subscriptions' => $subscriptions]).$this->module->pagination->get_pagination();
+
+		return ($espace = $this->module('user')) instanceof \NF\Modules\User\User ? $espace->espace($liste, 'forum/subscriptions') : $liste;
 	}
 
 	private function _attach_to_last_message($topic_id, $post)

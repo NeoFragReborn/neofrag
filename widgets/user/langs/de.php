@@ -37,4 +37,5 @@ return [
 	'78aeb25c' => 'Moderation',
 	'1f88c31b' => 'Optionen',
 	'8a4c99cf' => 'Willkommen %s',
+	'b03d6bc5' => 'Mein Profil bearbeiten',
 ];

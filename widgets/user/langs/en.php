@@ -38,4 +38,5 @@ return [
 	'78aeb25c' => 'Moderation',
 	'1f88c31b' => 'Options',
 	'8a4c99cf' => 'Welcome %s',
+	'b03d6bc5' => 'Edit my profile',
 ];

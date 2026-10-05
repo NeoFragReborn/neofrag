@@ -96,4 +96,5 @@ return [
 	'd3fe1369' => 'Schedule',
 	'45002a02' => 'No extension matches.',
 	'79e64a05' => '<b>NeoFrag %s</b> is available (you are using %s): <a href="%s">Monitoring</a> updates it in one click, taking a backup before writing anything.',
+	'62ad9179' => '%d marketplace addon(s) require a newer version of NeoFrag: update your site first.',
 ];

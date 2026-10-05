@@ -32,7 +32,7 @@ $sans_secours = $sans_secours ?? FALSE;
 <?php endif ?>
 
 <?php if ($sans_secours && $lignes): ?>
-<div class="alert alert-warning"><?php echo icon('fas fa-exclamation-triangle').' '.$this->lang('Votre compte n’a pas de mot de passe : vous vous connectez par un compte lié. Créez-en un dans « Info de connexion » pour ne pas en dépendre.') ?></div>
+<div class="alert alert-warning"><?php echo icon('fas fa-exclamation-triangle').' '.$this->lang('Votre compte n’a pas de mot de passe : vous vous connectez par un compte lié. Créez-en un dans « Mon compte » pour ne pas en dépendre.') ?></div>
 <?php endif ?>
 
 <?php if ($a_lier): ?>

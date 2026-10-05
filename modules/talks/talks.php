@@ -278,4 +278,18 @@ class Talks extends Module
 			]
 		];
 	}
+
+	/**
+	 * La messagerie dans le menu de l'espace membre (User::menu_espace(), chantier A), avec le nombre de
+	 * messages non lus — comme le widget « Espace membre » le montrait déjà.
+	 *
+	 * @return list<array<string, mixed>>
+	 */
+	public function espace_membre($user): array
+	{
+		/** @var \NF\Modules\Talks\Models\Talks $talks */
+		$talks = $this->model('talks');
+
+		return [['url' => 'talks', 'titre' => (string) $this->lang('Messagerie'), 'icone' => 'far fa-envelope', 'badge' => (int) $talks->get_unread_count((int) $user->id), 'compact' => TRUE, 'ordre' => 10]];
+	}
 }

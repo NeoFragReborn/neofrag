@@ -12,6 +12,46 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.29] — 2026-10-05
+
+The member area, first step of its overhaul: a single frame, a single menu, settings where you look for them.
+And the marketplace no longer offers a site an addon made for a newer version of NeoFrag.
+
+### Added
+
+- **A new password has at least 10 characters**, and can be neither the username, nor two repeated
+  characters, nor one of the most common: at sign-up, at reset and when changing it. Existing passwords stay
+  valid.
+
+### Changed
+
+- **The member area has a single frame and a single menu.** It changed shape from one page to the next — a
+  menu on the left under the profile card, a folded "Menu" bar at the top, nothing at all — and one page had
+  three names. All its pages now have the same menu, in the same place: a column on the left on a computer, a
+  scrolling strip of tabs on a phone, the current page highlighted. Modules add their pages to it: messages
+  and notifications with their unread counts, forum subscriptions (which no link reached), moderation. The
+  themes' top bar, the "Member area" widget and the showcase site use this menu, with the same words.
+- **Settings are where you look for them.** "My account" gathers the username, email address, password,
+  language (which could only be chosen with the site's language switcher) and time zone (which sat in the
+  middle of the public profile); "Security" keeps two-factor authentication and the login history; a "Privacy
+  and data" page holds the export of your data and the deletion of your account, filed until now under
+  "Security (2FA)".
+- **"My space" opens on a compact header** — avatar, username, groups, "View my profile" and "Edit my profile"
+  — instead of the large profile card, which pushed the menu a whole screen down on a phone.
+
+### Fixed
+
+- **The marketplace no longer offers a site an addon made for a newer version of NeoFrag.** Only updating an
+  addon checked the core version it requires, not installing it: a site that had fallen behind could install
+  an addon calling functions its core did not have yet, and break. The official marketplace now serves each
+  site the catalogue of its own version; the marketplace window also leaves out an addon that is too recent
+  and says to update the site first; "Updates" announces the new core version from the update channel.
+- **The favicon chosen by the administrator appears in the site's manifest, and a deleted file really leaves
+  the disk.** Loaded from a module, the file model looked for a table that does not exist: the favicon was
+  missing from the icons a phone offers (with a warning in the log each time the manifest was read), and the
+  file of an attachment deleted from the forum or private messages stayed on the disk and in the database, as
+  did the avatar and cover of a member who erases their account.
+
 ## [1.2.28] — 2026-10-05
 
 A bug-fix release: the member area of an account created with Discord, GitHub or Google, the export and

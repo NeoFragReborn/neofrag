@@ -243,6 +243,7 @@ class Admin_Ajax extends Controller_Module
 		// Steam, Twitch… — n'étaient proposés nulle part ici : on ne pouvait les avoir que par « Ajouter »
 		// (trouvé par check-extensions, 2026-10-04).
 		$available = $widget_metas = $emmenes = [];
+		$trop_recents = 0;
 		foreach ($catalog['addons'] as $a)
 		{
 			if (($a['type'] ?? '') === 'module')
@@ -275,13 +276,24 @@ class Admin_Ajax extends Controller_Module
 			{
 				continue; // déjà installé
 			}
+			// Un addon fabriqué pour un cœur plus récent ne s'installe pas ici : il appellerait des fonctions que ce
+			// cœur n'a pas, et la première page tomberait en erreur. Jusqu'à la 1.2.28, seule la mise à jour lisait
+			// `requires.base`. Le serveur du marketplace sert désormais à chaque site le catalogue de SA version
+			// (2026-10-05) : ce contrôle est le filet, pour un catalogue qui ne serait pas celui de ce cœur.
+			if (!$this->_base_compatible($a['requires']['base'] ?? ''))
+			{
+				$trop_recents++;
+				continue;
+			}
 			$available[$type.':'.$name] = $a;
 		}
+
+		$alerte_recents = $trop_recents ? (string) $this->lang('%d addon(s) du marketplace demandent une version plus récente de NeoFrag : mets d\'abord ton site à jour.', $trop_recents) : '';
 
 		if (!$available)
 		{
 			return $this->modal('Marketplace', 'fas fa-store')
-						->body('<div class="alert alert-info" style="margin:0">'.$this->lang('Tous les addons du marketplace sont déjà installés.').'</div>')
+						->body('<div class="alert alert-'.($alerte_recents ? 'warning' : 'info').'" style="margin:0">'.($alerte_recents ?: $this->lang('Tous les addons du marketplace sont déjà installés.')).'</div>')
 						->close();
 		}
 
@@ -294,7 +306,7 @@ class Admin_Ajax extends Controller_Module
 		}
 
 		return $this->form2()
-					->info('<div class="alert alert-primary" style="margin-bottom:1rem">'.$this->lang('%d addon(s) disponible(s) sur le marketplace. Téléchargés et vérifiés (SHA-256) à l\'installation.', count($available)).'</div>')
+					->info(($alerte_recents ? '<div class="alert alert-warning" style="margin-bottom:1rem">'.$alerte_recents.'</div>' : '').'<div class="alert alert-primary" style="margin-bottom:1rem">'.$this->lang('%d addon(s) disponible(s) sur le marketplace. Téléchargés et vérifiés (SHA-256) à l\'installation.', count($available)).'</div>')
 					->rule($this->form_checkbox('addons')->data($options))
 					->success(function($data) use ($available, $widget_metas, $url){
 						require_once NEOFRAG_CMS . '/neofrag/installer.php';
@@ -397,15 +409,27 @@ class Admin_Ajax extends Controller_Module
 						->close();
 		}
 
-		// Version du CŒUR : le catalogue porte la version du CMS pour laquelle il a été bâti. Si elle est
-		// plus récente que l'installée, on le SIGNALE, et on renvoie au Monitoring, qui fait la mise à jour
-		// en un clic (sauvegarde avant d'écrire, retour arrière si une étape échoue). Rien ne s'écrit ici.
-		// Jusqu'au 2026-10-04, ce message demandait de remplacer les fichiers à la main.
+		// Version du CŒUR : si une plus récente que l'installée est publiée, on le SIGNALE, et on renvoie au
+		// Monitoring, qui fait la mise à jour en un clic (sauvegarde avant d'écrire, retour arrière si une étape
+		// échoue). Rien ne s'écrit ici. Jusqu'au 2026-10-04, ce message demandait de remplacer les fichiers à
+		// la main. La version publiée se lit dans le manifeste du canal de mise à jour, que le Monitoring garde en
+		// cache, et à défaut dans le catalogue : le serveur du marketplace sert désormais à chaque site le
+		// catalogue de SA version (2026-10-05), dont `base_version` ne dit donc plus qu'une version plus récente
+		// existe.
+		$publiee   = is_string($catalog['base_version'] ?? NULL) ? $catalog['base_version'] : '';
+		$manifeste = is_file($fichier = NEOFRAG_CMS.'/cache/monitoring/version.json') ? json_decode((string) @file_get_contents($fichier), TRUE) : NULL;
+		$annoncee  = is_array($manifeste) && is_string($manifeste['neofrag']['version'] ?? NULL) ? $manifeste['neofrag']['version'] : '';
+
+		if ($annoncee !== '' && ($publiee === '' || version_compare(version_format($annoncee), version_format($publiee), '>')))
+		{
+			$publiee = $annoncee;
+		}
+
 		$core_notice = '';
-		if (is_string($base = $catalog['base_version'] ?? '') && $base !== '' && version_compare(version_format($base), version_format(NEOFRAG_VERSION), '>'))
+		if ($publiee !== '' && version_compare(version_format($publiee), version_format(NEOFRAG_VERSION), '>'))
 		{
 			$core_notice = '<div class="alert alert-info" style="margin:0 0 1rem">'.icon('fas fa-cube fa-fw').' '
-				.$this->lang('<b>NeoFrag %s</b> est disponible (tu utilises %s) : <a href="%s">Monitoring</a> le met à jour en un clic, avec une sauvegarde avant d\'écrire.', $base, NEOFRAG_VERSION, url('admin/monitoring'))
+				.$this->lang('<b>NeoFrag %s</b> est disponible (tu utilises %s) : <a href="%s">Monitoring</a> le met à jour en un clic, avec une sauvegarde avant d\'écrire.', $publiee, NEOFRAG_VERSION, url('admin/monitoring'))
 				.'</div>';
 		}
 

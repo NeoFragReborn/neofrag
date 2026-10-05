@@ -133,4 +133,5 @@ return [
 	'584e9133' => 'Fichier suspect (contenu exécutable détecté)',
 	'215a962f' => 'Lien raccourci — prudence',
 	'8fd9c7ef' => 'Enregistrer',
+	'5bb5f5dc' => 'Messagerie',
 ];
