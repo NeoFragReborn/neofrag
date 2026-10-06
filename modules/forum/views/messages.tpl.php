@@ -11,7 +11,7 @@
 <div class="forum-thread" data-forum-view="messages">
 	<div class="forum-thread-header">
 		<div class="float-end">
-			<?php echo icon('fas fa-users').' '.$this->lang('%d participant|%d participants', $nb_users, $nb_users) ?>
+			<span class="forum-participants"><?php echo icon('fas fa-users').' '.$this->lang('%d participant|%d participants', $nb_users, $nb_users) ?></span>
 		</div>
 		<h5 class="m-0"><?php echo icon('far fa-comments').' '.$this->lang('%d réponse|%d réponses', $nb_messages, $nb_messages) ?></h5>
 	</div>

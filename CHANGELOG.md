@@ -10,6 +10,20 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.39] — 2026-10-06
+
+Pulse revu sur la démonstration publiée : le forum au téléphone ne colle plus ses boutons, dans tous les
+thèmes ; et le dernier billet du blog qui débordait de l'écran.
+
+### Corrigé
+
+- **Le forum au téléphone ne colle plus ses boutons** : la barre d'un sujet (Retour, Répondre et les outils de
+  modération) et celle d'un forum gardent un écart entre leurs boutons et entre leurs rangs ; les boutons d'un message
+  passent au-dessus de sa date, qui ne se coupe plus sur trois lignes ; le titre d'un sujet ne touche plus le bouton
+  « Suivre ». Dans tous les thèmes.
+- **Un billet du blog avec un tableau ne déborde plus au téléphone** : un chemin de fichier trop long se coupe, et un
+  tableau qui reste trop large défile dans sa colonne (le billet de la 1.2.0 dépassait de l'écran).
+
 ## [1.2.38] — 2026-10-06
 
 Un thème neuf : **Pulse**, la maison commune des associations, des clubs et des communautés, avec trois nouveautés qui

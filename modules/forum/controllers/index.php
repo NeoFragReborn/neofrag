@@ -82,25 +82,26 @@ class Index extends Controller_Module
 									'prefixes' => $prefixes
 								]), FALSE));
 
-		$content = '<a class="btn btn-light float-start" href="'.url(($this->url->back() ?: 'forum')).'">'.$this->lang('Retour').'</a>';
+		$gauche = '<a class="btn btn-light" href="'.url(($this->url->back() ?: 'forum')).'">'.$this->lang('Retour').'</a>';
+		$droite = '';
 
 		if ($pagination = $this->module->pagination->get_pagination())
 		{
-			$content .= '<div class="float-start ms-1">'.$pagination.'</div>';
+			$gauche .= '<div class="forum-outils-pagination">'.$pagination.'</div>';
 		}
 
 		if ($this->access('forum', 'category_write', $category_id))
 		{
-			$content .= '<a class="float-end btn btn-primary ms-1" href="'.url('forum/new/'.$forum_id.'/'.url_title($title)).'">'.$this->lang('Nouveau sujet').'</a>';
+			$droite .= '<a class="btn btn-primary" href="'.url('forum/new/'.$forum_id.'/'.url_title($title)).'">'.$this->lang('Nouveau sujet').'</a>';
 		}
 
 		if ($this->user())
 		{
-			$content .= '<a class="float-end btn btn-light" href="'.url('forum/mark-all-as-read/'.$forum_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Marquer tous les messages comme étant lus').'">'.icon('far fa-eye').'</a>';
+			$droite .= '<a class="btn btn-light" href="'.url('forum/mark-all-as-read/'.$forum_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Marquer tous les messages comme étant lus').'">'.icon('far fa-eye').'</a>';
 		}
 
 		$actions = $this	->panel()
-							->body($content)
+							->body($this->_outils($gauche, $droite))
 							->style('card-transparent');
 
 		$panels->prepend($actions)->append($actions);
@@ -260,11 +261,12 @@ class Index extends Controller_Module
 			}
 		}
 
-		$content = '<a class="btn btn-light float-start" href="'.url($this->url->back() ?: 'forum/'.$forum_id.'/'.url_title($forum_title)).'">'.$this->lang('Retour').'</a>';
+		$gauche = '<a class="btn btn-light" href="'.url($this->url->back() ?: 'forum/'.$forum_id.'/'.url_title($forum_title)).'">'.$this->lang('Retour').'</a>';
+		$droite = '';
 
 		if ($pagination = $this->module->pagination->get_pagination())
 		{
-			$content .= '<div class="float-start ms-1">'.$pagination.'</div>';
+			$gauche .= '<div class="forum-outils-pagination">'.$pagination.'</div>';
 		}
 
 		if (!$is_locked && $this->access('forum', 'category_write', $category_id))
@@ -276,23 +278,23 @@ class Index extends Controller_Module
 				$page = url('forum/topic/'.$topic_id.'/'.url_title($title).'/page/'.$last_page);
 			}
 
-			$content .= '<a class="float-end btn btn-primary ms-1" href="'.$page.'#reply">'.$this->lang('Répondre').'</a>';
+			$droite .= '<a class="btn btn-primary" href="'.$page.'#reply">'.$this->lang('Répondre').'</a>';
 		}
 
 		if (($this->user() && $topic['user_id'] == $this->user->id) || $this->access('forum', 'category_delete', $category_id))
 		{
-			$content .= '<a class="float-end btn btn-light delete ms-1" href="'.url('forum/message/delete/'.$topic['message_id'].'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Supprimer le sujet').'">'.icon('fas fa-times').'</a>';
+			$droite .= '<a class="btn btn-light delete" href="'.url('forum/message/delete/'.$topic['message_id'].'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Supprimer le sujet').'">'.icon('fas fa-times').'</a>';
 		}
 
 		if ($this->access('forum', 'category_lock', $category_id))
 		{
 			if ($is_locked)
 			{
-				$content .= '<a class="float-end btn btn-light ms-1" href="'.$this->csrf_url('forum/lock/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Déverrouiller le sujet').'">'.icon('fas fa-unlock').'</a>';
+				$droite .= '<a class="btn btn-light" href="'.$this->csrf_url('forum/lock/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Déverrouiller le sujet').'">'.icon('fas fa-unlock').'</a>';
 			}
 			else
 			{
-				$content .= '<a class="float-end btn btn-light ms-1" href="'.$this->csrf_url('forum/lock/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Verrouiller le sujet').'">'.icon('fas fa-lock').'</a>';
+				$droite .= '<a class="btn btn-light" href="'.$this->csrf_url('forum/lock/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Verrouiller le sujet').'">'.icon('fas fa-lock').'</a>';
 			}
 		}
 
@@ -300,24 +302,24 @@ class Index extends Controller_Module
 		{
 			if ($is_announce)
 			{
-				$content .= '<a class="float-end btn btn-light ms-1" href="'.url('forum/announce/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Retirer des annonces').'">'.icon('far fa-flag').'</a>';
+				$droite .= '<a class="btn btn-light" href="'.url('forum/announce/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Retirer des annonces').'">'.icon('far fa-flag').'</a>';
 			}
 			else
 			{
-				$content .= '<a class="float-end btn btn-light ms-1" href="'.url('forum/announce/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Mettre en annonce').'">'.icon('fas fa-flag').'</a>';
+				$droite .= '<a class="btn btn-light" href="'.url('forum/announce/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Mettre en annonce').'">'.icon('fas fa-flag').'</a>';
 			}
 		}
 
 		if ($this->access('forum', 'category_move', $category_id))
 		{
-			$content .= '<span class="float-end btn btn-light topic-move" data-bs-toggle="tooltip" data-modal-ajax="'.url('ajax/forum/topic/move/'.$topic_id.'/'.url_title($title)).'" title="'.$this->lang('Déplacer le sujet').'">'.icon('fas fa-reply fa-flip-horizontal').'</span>';
+			$droite .= '<span class="btn btn-light topic-move" data-bs-toggle="tooltip" data-modal-ajax="'.url('ajax/forum/topic/move/'.$topic_id.'/'.url_title($title)).'" title="'.$this->lang('Déplacer le sujet').'">'.icon('fas fa-reply fa-flip-horizontal').'</span>';
 		}
 
 		// Phase 7-bis : Split / Merge (mod avancée)
 		if ($this->access('forum', 'category_modify', $category_id))
 		{
-			$content .= '<a class="float-end btn btn-light ms-1" href="'.url('admin/forum/topic/split/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Scinder le sujet').'">'.icon('fas fa-cut').'</a>';
-			$content .= '<a class="float-end btn btn-light ms-1" href="'.url('admin/forum/topic/merge/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Fusionner avec un autre sujet').'">'.icon('fas fa-compress-arrows-alt').'</a>';
+			$droite .= '<a class="btn btn-light" href="'.url('admin/forum/topic/split/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Scinder le sujet').'">'.icon('fas fa-cut').'</a>';
+			$droite .= '<a class="btn btn-light" href="'.url('admin/forum/topic/merge/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Fusionner avec un autre sujet').'">'.icon('fas fa-compress-arrows-alt').'</a>';
 		}
 
 		$panels = $this->array;
@@ -342,7 +344,7 @@ class Index extends Controller_Module
 								])), FALSE));
 
 		$actions = $this->panel()
-						->body($content)
+						->body($this->_outils($gauche, $droite))
 						->style('card-transparent');
 
 		if (!empty($messages))
@@ -855,4 +857,17 @@ class Index extends Controller_Module
 
 		return $html.'</nav>';
 	}
+
+	/**
+	 * La barre d'un forum ou d'un sujet : Retour et la pagination à gauche ; à droite, Répondre (ou Nouveau sujet) et les
+	 * outils de modération, le PREMIER écrit au bout, comme les boutons flottants qu'elle remplace. Deux groupes souples
+	 * avec un écart dans les deux sens (css/forum.css) : les flottants passaient à la ligne sans écart, deux rangs collés
+	 * au téléphone (vu sur la démo, 2026-10-06).
+	 */
+	private function _outils(string $gauche, string $droite): string
+	{
+		return '<div class="forum-outils"><div class="forum-outils-gauche">'.$gauche.'</div>'
+			.($droite !== '' ? '<div class="forum-outils-droite">'.$droite.'</div>' : '').'</div>';
+	}
+
 }

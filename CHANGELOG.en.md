@@ -12,6 +12,20 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.39] — 2026-10-06
+
+Pulse reviewed on the published demo: the forum on a phone no longer sticks its buttons together, in every
+theme; and the last blog post that went past the screen edge.
+
+### Fixed
+
+- **The forum on a phone no longer sticks its buttons together**: the bar of a topic (Back, Reply and the moderation
+  tools) and the bar of a forum keep a gap between their buttons and between their rows; the buttons of a message move
+  above its date, which no longer breaks over three lines; a topic title no longer touches the "Follow" button. In
+  every theme.
+- **A blog post with a table no longer overflows on a phone**: a long file path breaks, and a table that stays too
+  wide scrolls within its column (the 1.2.0 post went past the screen edge).
+
 ## [1.2.38] — 2026-10-06
 
 A new theme: **Pulse**, the common home of associations, clubs and communities, with three additions that serve every

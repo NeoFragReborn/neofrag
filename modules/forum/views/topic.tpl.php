@@ -12,7 +12,7 @@
 					</a>
 				<?php endif ?>
 			<?php endif ?>
-			<?php echo icon('far fa-eye').' '.$this->lang('%d vue|%d vues', $views, $views) ?>
+			<span class="forum-vues"><?php echo icon('far fa-eye').' '.$this->lang('%d vue|%d vues', $views, $views) ?></span>
 		</div>
 		<h5 class="m-0"><?php echo icon('far fa-file-alt').' '.\NF\Modules\Forum\Models\Forum::pastille_prefixe($prefixe ?? NULL).' '.$title ?></h5>
 	</div>
