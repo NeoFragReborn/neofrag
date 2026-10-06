@@ -90,6 +90,15 @@ $sonde = <<<'JS'
         // Toute autre écriture (lab, oklch, color-mix non résolu…) : on ne devine pas.
         return null;
     }
+    // Un GRAIN n'est pas une image : un dégradé sans image dont toutes les couleurs sont presque transparentes
+    // (une trame, un grain de papier) ne change pas la couleur qu'on perçoit du fond. Granite 2.0 pose ainsi
+    // un grain sur toute la page : sans cette lecture, 1 110 textes passaient pour « posés sur une image », et
+    // la mesure ne voyait plus rien (2026-10-06).
+    function grain(img){
+        if (/url\(/.test(img)) { return false; }
+        var couleurs = img.match(/rgba?\([^)]*\)|color\([^)]*\)/g) || [];
+        return couleurs.length > 0 && couleurs.every(function(c){ var l = lire(c); return l && l[3] <= 0.1; });
+    }
     function rapport(a, b){
         var la = lum(a), lb = lum(b);
         return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
@@ -144,7 +153,7 @@ $sonde = <<<'JS'
                 if (fondPs && fondPs[3] >= 0.9) { fond = fondPs; break; }
             }
 
-            if (sn.backgroundImage && sn.backgroundImage !== 'none') { surImage = true; break; }
+            if (sn.backgroundImage && sn.backgroundImage !== 'none' && !grain(sn.backgroundImage)) { surImage = true; break; }
 
             var brut = (sn.backgroundColor || '').trim();
             var bg   = lire(brut);
@@ -165,7 +174,7 @@ $sonde = <<<'JS'
         if (illisible) { verdict.nonMesurables++; return; }
         if (!fond && !surImage) {
             var sr = getComputedStyle(document.documentElement);
-            if (sr.backgroundImage && sr.backgroundImage !== 'none') { surImage = true; }
+            if (sr.backgroundImage && sr.backgroundImage !== 'none' && !grain(sr.backgroundImage)) { surImage = true; }
             else { fond = lire(sr.backgroundColor) || [255, 255, 255, 1]; }
         }
 

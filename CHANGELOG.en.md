@@ -12,6 +12,41 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.35] — 2026-10-06
+
+The second theme rebuilt from the ground up: **Granite 2.0.0 “Gazette”**, the newspaper of associations and clubs.
+
+### Changed
+
+- **Granite 2.0.0 “Gazette”: a new layout, not a reskin.** The site becomes the club’s newspaper: today’s date and the
+  account on one line at the top, the site name printed very large (the logo above it, if there is one), a double rule,
+  then the sections in small capitals between two rules. On the home page, an “In brief” line scrolls the latest forum
+  topics; it stops on hover, with the keyboard and with its pause button, and stays still when the visitor asks for
+  reduced motion. The front page opens on the main story in large type, with its ornate capital, then the next ones in
+  columns separated by rules; the right-hand column carries the calendar, the poll and who is online. Blocks become
+  boxless panels, titled in small capitals over a rule; an article reads like newspaper body text; the forum takes the
+  look of a readers’ letters page; the member area, that of a membership card stamped with the member’s first group; the
+  footer becomes an imprint (the partners, then who publishes). A thin reading bar follows the page. Day is paper, night
+  is an “inked” page, at the visitor’s choice; Playfair Display headings, Source Serif text. On phones, the sections
+  scroll sideways and everything goes into one column.
+- **Granite’s zones are named after their place**: “Sections”, “In brief”, “Content”, “After the content”, “Footer”.
+- **Granite’s settings**: the banner image becomes the title image, and the title color, once changed, sets a band
+  behind the name, like a daily paper’s nameplate; the logo is finally used (above the name); a “Drop caps” setting
+  replaces the fixed top bar setting, which no longer has a purpose.
+
+### Fixed
+
+- **No more Bootstrap blue among a theme’s colors.** A poll’s bar, the checked box and the selected radio button (even in
+  the administration), the active page, a menu’s pressed entry, an accordion’s arrow, the keyboard focus glow and the
+  states of a primary button kept Bootstrap’s default blue. They take the theme’s accent color, in every theme; a new
+  check, `check-bleu-bootstrap`, looks for that blue in the served pages, at rest and on focus, by day and by night.
+- **The sections set by Forge and Granite are translated**: “Matchs”, “Nous rejoindre”, “À la une”, “Agenda” and
+  “Documents” stayed in French on a site in another language. The translation check now verifies every menu title a
+  theme sets.
+- **The live editor shows the site with its own fonts**: it imposed its own on the content of the zones it frames.
+- **The contrast check also measures text set on a grain** (paper, a screen pattern): it took it for an image and gave
+  up measuring it.
+
 ## [1.2.34] — 2026-10-06
 
 The first theme rebuilt from the ground up: **Forge 2.0.0 “Coulée”**, for competitive clans.

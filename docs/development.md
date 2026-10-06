@@ -114,6 +114,7 @@ bibliothèque commune des outils sont dans [tools/README.md](../tools/README.md)
 | Une erreur survenue APRÈS l'envoi des en-têtes | `check-journal`, le seul qui lise le journal PHP |
 | Un script qui plante au chargement, une violation CSP | `check-js-console`, dans un vrai navigateur |
 | Un lien mort, un débordement, un contraste insuffisant, un retour absent | `check-liens`, `check-responsive`, `check-contraste`, `check-admin-back` |
+| Un composant resté au bleu par défaut de Bootstrap (barre de progression, case cochée, page active, lueur de focus) dans un thème qui ne l'a pas choisi | `check-bleu-bootstrap`, dans un vrai navigateur, au repos et au focus |
 | Une page qui répond 200 mais écrit une alerte au journal pendant qu'elle se rend | `check-liens`, qui relit le journal après son parcours ; `check-journal --depuis=24h` sur une installation servie |
 | Une requête à une colonne dont on lit les valeurs comme des lignes | `check-db-colonne` |
 | Une heure affichée avec `date()`, donc à l'heure du serveur et non dans le fuseau de celui qui regarde ; une date montrée avec un format chiffré figé (`timetostr('d/m/Y H:i')`, `'Y-m-d H:i'`) qui ignore la langue | `check-heures` |

@@ -70,6 +70,7 @@ Ajoutés par `check-all --navigateur`. Ils servent le site, et la plupart ouvren
 | Outil | Ce qu'il fait | Usage |
 |---|---|---|
 | [`check-admin-back`](check-admin-back.php) | chaque sous-page d'administration offre un retour au module, fil d'Ariane ou bouton, dans le HTML servi. | `php tools/check-admin-back.php` |
+| [`check-bleu-bootstrap`](check-bleu-bootstrap.php) | le bleu de Bootstrap resté dans un thème qui ne l'a pas choisi, cherché dans les pages servies. | `php tools/check-bleu-bootstrap.php` |
 | [`check-contraste`](check-contraste.php) | le contraste WCAG du texte, thème par thème et mode par mode, mesuré dans un navigateur. | `php tools/check-contraste.php` |
 | [`check-demo-ecriture`](check-demo-ecriture.php) | éprouve, pour de vrai, ce qu'un visiteur peut et ne peut pas écrire en démo. | `php tools/check-demo-ecriture.php` |
 | [`check-journal`](check-journal.php) | sert des pages puis lit le journal PHP, ou relit une fenêtre de temps : rien ne doit s'y être écrit. | `php tools/check-journal.php` |

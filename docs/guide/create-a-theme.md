@@ -167,6 +167,9 @@ $dispositions->set('/', 'Avant-contenu', $this->array([
   `->style('panel-default' | 'panel-color' | 'panel-header')` stylent lignes et panneaux.
 - Ne pose dans les dispositions livrées que des widgets **du cœur** : le paquet s'installe à la carte,
   un widget optionnel peut ne pas être là.
+- Les **intitulés du menu** que tu poses (widget `navigation`, `$this->lang('Actualités')`) sont traduits à
+  l'affichage par le widget, sous sa propre clé : chacun doit exister dans `widgets/navigation/langs/*.php`,
+  sinon il reste en français sur un site dans une autre langue. `check-langs` le vérifie.
 
 Une installation existante ne rejoue jamais `install()` : pour corriger une disposition livrée chez ceux
 qui ont déjà le thème, écris une **migration de thème** (`install/migrations/AAAA_MM_JJ_nom.up.sql`,
@@ -288,7 +291,8 @@ exemptions motivées vivent dans `tools/lib/vignettes.php`. Modules et widgets s
    l'activation lance `install()` d'elle-même. Le bouton **Réinstaller par défaut** ré-exécute `install()`.
 4. Avant de livrer, fais passer : `check-addon-declarations`, `check-addon-contracts` (la clé `regions`),
    `check-css-variables`, `check-classes-bs4`, `check-js-sources`, puis `check-responsive`,
-   `check-contraste` et `check-js-console` sur une installation où le thème est actif. Regarde la page
+   `check-contraste`, `check-bleu-bootstrap` (le bleu par défaut de Bootstrap resté dans un composant que
+   ta palette n'a pas repris) et `check-js-console` sur une installation où le thème est actif. Regarde la page
    rendue : un bandeau vide, un copyright en double ou un commentaire illisible ne se voient pas dans le
    code.
 

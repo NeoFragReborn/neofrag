@@ -52,4 +52,11 @@ return [
 	'92df285e' => 'Link to a module',
 	'f2a3fffd' => 'Link to a page',
 	'dd3795ad' => 'Menu',
+	'6cb26577' => 'Matches',
+	'568086e0' => 'Join us',
+	'140fd0c2' => 'Featured',
+	'2b41cd41' => 'Calendar',
+	'2041f02b' => 'Documents',
+	'09cc3ec0' => 'Features',
+	'ac7ed76f' => 'Roadmap',
 ];

@@ -192,7 +192,7 @@ return [
 	'f8875151' => 'Continuar',
 	'f8c33614' => 'Criar uma conta',
 	'f96d2e60' => '%s às %s',
-	'5642008b' => 'l, j de F de Y',
+	'5642008b' => 'l, j \d\e F \d\e Y',
 	'fbb9b537' => 'A pasta temporária está em falta',
 
 	// === Chaves core modernizadas (EN-as-source, 2026-05-03) ===

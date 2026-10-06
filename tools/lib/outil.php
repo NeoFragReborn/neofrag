@@ -84,6 +84,7 @@ const NF_PORTS = [
     'check-reglages'        => 8115,
     'check-extensions'      => 8116,
     'check-prerequis-absents' => 8117,
+    'check-bleu-bootstrap'  => 8118,
 ];
 
 /** Le nom de l'outil qui s'exécute, tel qu'il apparaît dans ses verdicts : `check-liens`. */

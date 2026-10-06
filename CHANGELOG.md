@@ -10,6 +10,44 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.35] — 2026-10-06
+
+Le deuxième thème refait de fond en comble : **Granite 2.0.0 « Gazette »**, le journal des associations et des clubs.
+
+### Modifié
+
+- **Granite 2.0.0 « Gazette » : une nouvelle mise en page, pas un habillage.** Le site devient le journal du club : la date
+  du jour et le compte sur une ligne en tête, le nom du site imprimé en très grand (le logo au-dessus, s'il y en a un), un
+  double filet, puis les rubriques en petites capitales entre deux filets. Sur l'accueil, une ligne « En bref » fait
+  défiler les derniers sujets du forum ; elle s'arrête au survol, au clavier et sur son bouton pause, et reste immobile si
+  le visiteur a demandé moins d'animations. La une ouvre sur l'actualité principale en grand, avec sa capitale ornée, puis
+  les suivantes en colonnes séparées de filets ; la colonne de droite porte l'agenda, le sondage et qui est en ligne. Les
+  blocs deviennent des encadrés sans boîte, titrés en petites capitales sur un filet ; l'article se lit en corps de
+  journal ; le forum prend l'allure d'un courrier des lecteurs ; l'espace membre, celle d'une carte de membre frappée de
+  son premier groupe en tampon ; le pied devient un « ours » (les partenaires, puis qui publie). Une fine barre de lecture
+  suit la page. Le jour est un papier, la nuit une page « à l'encre », au choix du visiteur ; titres en Playfair Display,
+  texte en Source Serif. Au téléphone, les rubriques défilent de côté et tout passe en une colonne.
+- **Les zones de Granite se nomment d'après leur place** : « Rubriques », « En bref », « Contenu », « Après le contenu »,
+  « Pied de page ».
+- **Les réglages de Granite** : l'image de bannière devient l'image du titre, et la couleur du titre pose, si on la
+  change, un bandeau derrière le nom, comme la manchette d'un quotidien ; le logo sert enfin (au-dessus du nom) ; un
+  réglage « Lettrines » remplace celui de la barre du haut fixe, qui n'a plus d'objet.
+
+### Corrigé
+
+- **Plus de bleu Bootstrap au milieu des couleurs d'un thème.** La barre d'un sondage, la case cochée et le bouton radio
+  choisi (jusque dans l'administration), la page active, l'entrée pressée d'un menu, la flèche d'un accordéon, la lueur
+  du focus clavier et les états d'un bouton principal gardaient le bleu par défaut de Bootstrap. Ils prennent la couleur
+  d'accent du thème, dans tous les thèmes ; un nouveau contrôle, `check-bleu-bootstrap`, cherche ce bleu dans les pages
+  servies, au repos comme au focus, de jour comme de nuit.
+- **Les rubriques posées par Forge et Granite se traduisent** : « Matchs », « Nous rejoindre », « À la une », « Agenda »
+  et « Documents » restaient en français sur un site dans une autre langue. Le contrôle des traductions vérifie
+  désormais chaque intitulé de menu qu'un thème pose.
+- **L'éditeur en direct montre le site avec ses propres polices** : il imposait la sienne au contenu des zones qu'il
+  encadre.
+- **Le contrôle du contraste mesure aussi le texte posé sur un grain** (un papier, une trame) : il le prenait pour une
+  image et renonçait à le mesurer.
+
 ## [1.2.34] — 2026-10-06
 
 Le premier thème refait de fond en comble : **Forge 2.0.0 « Coulée »**, pour les clans compétitifs.

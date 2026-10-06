@@ -11,7 +11,7 @@ return [
 	'3f641885' => 'Ver todas nuestras estadísticas',
 	'459cfb21' => 'Edición del palmarés',
 	'514e6bc4' => 'Por favor elija un archivo de imagen',
-	'5642008b' => 'l j F Y',
+	'5642008b' => 'l, j \d\e F \d\e Y',
 	'5c3d97d6' => 'Aún sin premios',
 	'648572c3' => 'Añadir',
 	'6892ff8c' => 'Nuevo palmarés',

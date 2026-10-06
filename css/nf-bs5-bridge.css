@@ -44,6 +44,11 @@
 :root,
 [data-bs-theme] {
 	--nf-contexte-texte: var(--nf-text-strong, var(--nf-text));
+	/* Le lien de Bootstrap (`.btn-link`, `.page-link`…) et l'anneau de focus `.focus-ring` : bleus
+	   écrits en dur, ici à la couleur des liens du thème. */
+	--bs-link-color:       var(--nf-link, var(--nf-accent-text, var(--nf-accent)));
+	--bs-link-hover-color: var(--nf-link-hover, var(--nf-accent-text, var(--nf-accent)));
+	--bs-focus-ring-color: color-mix(in srgb, var(--nf-accent) 25%, transparent);
 	--bs-primary-bg-subtle:     color-mix(in srgb, var(--nf-accent) 14%, var(--nf-surface));
 	--bs-primary-border-subtle: color-mix(in srgb, var(--nf-accent) 35%, var(--nf-surface));
 	--bs-primary-text-emphasis: color-mix(in srgb, var(--nf-accent) 55%, var(--nf-contexte-texte));
@@ -239,6 +244,130 @@ select:autofill {
 	color: var(--nf-accent-text, var(--nf-accent, inherit));
 	font-weight: 600;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Les composants que Bootstrap colore en BLEU écrit en dur.
+
+   Bootstrap 5.3 compile sa couleur primaire en valeur littérale (#0d6efd, et ses
+   teintes #0a58ca, #86b7fe, #6ea8fe…) dans plusieurs composants, au lieu de la lire
+   dans une variable : la barre de progression, l'entrée pressée d'un menu déroulant,
+   la page active, l'entrée active d'une liste, la lueur de focus d'une case à cocher,
+   d'un accordéon ou d'un bouton de fermeture, la flèche d'un accordéon, et les
+   utilitaires `text-primary`, `border-primary`, `bg-primary`. Les barres des
+   sondages sortaient ainsi en bleu Bootstrap au milieu du rouge de Granite
+   (2026-10-06).
+
+   Même principe que pour `.nav` : on raccorde les variables de chaque composant aux
+   jetons du thème. Les utilitaires n'en ont pas qu'un jeton puisse fournir (ils lisent
+   `--bs-primary-rgb`, un triplet de nombres) : ils sont réécrits, avec `!important`
+   comme Bootstrap les écrit. `tools/check-bleu-bootstrap.php` cherche ce bleu dans les
+   pages servies, thème par thème.
+   ───────────────────────────────────────────────────────────────────────────── */
+.progress,
+.progress-stacked {
+	--bs-progress-bg:        var(--nf-surface-2, #e9ecef);
+	--bs-progress-bar-bg:    var(--nf-accent, #0d6efd);
+	--bs-progress-bar-color: var(--nf-on-accent, #fff);
+}
+
+.dropdown-menu {
+	--bs-dropdown-link-active-bg:    var(--nf-accent, #0d6efd);
+	--bs-dropdown-link-active-color: var(--nf-on-accent, #fff);
+}
+
+.pagination {
+	--bs-pagination-active-bg:           var(--nf-accent, #0d6efd);
+	--bs-pagination-active-border-color: var(--nf-accent, #0d6efd);
+	--bs-pagination-active-color:        var(--nf-on-accent, #fff);
+	--bs-pagination-focus-color:         var(--nf-accent-text, var(--nf-accent, #0a58ca));
+	--bs-pagination-focus-box-shadow:    0 0 0 .25rem color-mix(in srgb, var(--nf-accent, #0d6efd) 25%, transparent);
+}
+
+.list-group {
+	--bs-list-group-active-bg:           var(--nf-accent, #0d6efd);
+	--bs-list-group-active-border-color: var(--nf-accent, #0d6efd);
+	--bs-list-group-active-color:        var(--nf-on-accent, #fff);
+}
+
+.accordion {
+	--bs-accordion-btn-focus-box-shadow: 0 0 0 .25rem color-mix(in srgb, var(--nf-accent, #0d6efd) 25%, transparent);
+}
+
+/* La flèche d'un accordéon : Bootstrap la peint dans son image (bleue en mode sombre, et
+   quand la section est ouverte). Elle devient un masque taillé dans la même image, rempli
+   de la couleur du texte du bouton. */
+.accordion-button::after,
+.accordion-button:not(.collapsed)::after {
+	background-color: currentColor;
+	background-image: none;
+	-webkit-mask: var(--bs-accordion-btn-icon) center / var(--bs-accordion-btn-icon-width) no-repeat;
+	mask: var(--bs-accordion-btn-icon) center / var(--bs-accordion-btn-icon-width) no-repeat;
+}
+
+.btn-close {
+	--bs-btn-close-focus-shadow: 0 0 0 .25rem color-mix(in srgb, var(--nf-accent, #0d6efd) 25%, transparent);
+}
+
+/* La case cochée et le bouton radio choisi : l'administration les gardait bleus (les
+   thèmes du site, eux, le disaient chacun dans leur feuille). */
+.form-check-input:checked {
+	background-color: var(--nf-accent, #0d6efd);
+	border-color:     var(--nf-accent, #0d6efd);
+}
+
+.form-check-input:focus {
+	border-color: var(--nf-accent, #86b7fe);
+	box-shadow:   0 0 0 .25rem color-mix(in srgb, var(--nf-accent, #0d6efd) 25%, transparent);
+}
+
+/* Le lien qui a le focus clavier : Bootstrap l'entoure d'une lueur bleue écrite en dur. */
+.nav-link:focus-visible {
+	box-shadow: 0 0 0 .25rem color-mix(in srgb, var(--nf-accent, #0d6efd) 25%, transparent);
+}
+
+/* Les boutons « primary » : leurs états — survol, focus clavier, appui, désactivé — lisent des
+   variables que Bootstrap remplit de son bleu. Un thème qui ne peint que l'état de repos
+   (`background`) laissait le bouton passer au bleu au clavier (nebula et la vitrine). */
+.btn-primary {
+	--bs-btn-color:                 var(--nf-on-accent, #fff);
+	--bs-btn-bg:                    var(--nf-accent, #0d6efd);
+	--bs-btn-border-color:          var(--nf-accent, #0d6efd);
+	--bs-btn-hover-color:           var(--nf-on-accent, #fff);
+	--bs-btn-hover-bg:              var(--nf-accent-strong, var(--nf-accent, #0b5ed7));
+	--bs-btn-hover-border-color:    var(--nf-accent-strong, var(--nf-accent, #0a58ca));
+	--bs-btn-active-color:          var(--nf-on-accent, #fff);
+	--bs-btn-active-bg:             var(--nf-accent-strong, var(--nf-accent, #0a58ca));
+	--bs-btn-active-border-color:   var(--nf-accent-strong, var(--nf-accent, #0a53be));
+	--bs-btn-disabled-color:        var(--nf-on-accent, #fff);
+	--bs-btn-disabled-bg:           var(--nf-accent, #0d6efd);
+	--bs-btn-disabled-border-color: var(--nf-accent, #0d6efd);
+}
+
+.btn-outline-primary {
+	--bs-btn-color:                 var(--nf-accent-text, var(--nf-accent, #0d6efd));
+	--bs-btn-border-color:          var(--nf-accent, #0d6efd);
+	--bs-btn-hover-color:           var(--nf-on-accent, #fff);
+	--bs-btn-hover-bg:              var(--nf-accent, #0d6efd);
+	--bs-btn-hover-border-color:    var(--nf-accent, #0d6efd);
+	--bs-btn-active-color:          var(--nf-on-accent, #fff);
+	--bs-btn-active-bg:             var(--nf-accent, #0d6efd);
+	--bs-btn-active-border-color:   var(--nf-accent, #0d6efd);
+	--bs-btn-disabled-color:        var(--nf-accent-text, var(--nf-accent, #0d6efd));
+	--bs-btn-disabled-border-color: var(--nf-accent, #0d6efd);
+}
+
+/* Leur lueur de focus se calcule depuis un triplet de nombres (`--bs-btn-focus-shadow-rgb`)
+   qu'aucun jeton ne fournit : on la donne entière. */
+.btn-primary,
+.btn-outline-primary,
+.btn-link {
+	--bs-btn-focus-box-shadow: 0 0 0 .25rem color-mix(in srgb, var(--nf-accent, #0d6efd) 50%, transparent);
+}
+
+.text-primary    { color: var(--nf-accent-text, var(--nf-accent, #0d6efd)) !important; }
+.border-primary  { border-color: var(--nf-accent, #0d6efd) !important; }
+.bg-primary      { background-color: var(--nf-accent, #0d6efd) !important; }
+.text-bg-primary { color: var(--nf-on-accent, #fff) !important; background-color: var(--nf-accent, #0d6efd) !important; }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    .nf-card-grid : une grille de cartes qui remplit la largeur disponible.

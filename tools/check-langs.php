@@ -30,7 +30,10 @@ declare(strict_types=1);
  *      bonne écriture passe le compteur deux fois : `lang('%d part|%d parts', $n, $n)`.
  *
  *   4. lang() écrit dans du JSON (`json_encode`, `->json`) sans être converti en texte : il rend un
- *      objet, que le JSON écrit `{}` — la mention RGPD de l'export des membres (2026-10-03).
+ *      objet, que le JSON écrit `{}` — la mention RGPD de l'export des membres (2026-10-03) ;
+ *   5. les INTITULÉS DE MENU qu'un thème pose à son installation : le widget de navigation les traduit à
+ *      l'affichage, sous SA clé — « À la une » de Granite et « Matchs » de Forge restaient en français sur
+ *      un site anglais (2026-10-06).
  *
  * Et deux vérifications sur les TRADUCTIONS elles-mêmes : une traduction qui perd une forme du
  * pluriel, et une « traduction » restée identique au français dans un texte qui a l'air français
@@ -530,6 +533,59 @@ foreach ($langues as $langue)
 {
     $nombre = array_sum(array_map('count', $manquantes[$langue] ?? []));
     printf("  %s : %s\n", $langue, $nombre ? "{$nombre} clé(s) manquante(s)" : 'aucune clé manquante');
+}
+
+// ══ 5. Les intitulés de menu qu'un thème pose : le widget de navigation sait les traduire ══════════
+// Un thème pose son menu à l'installation (`install()`), intitulés en français ; le widget les traduit à
+// l'AFFICHAGE, `$this->lang($link['title'])`, donc sous SA clé (widgets/navigation/langs). Un intitulé que ses
+// fichiers ne connaissent pas reste en français sur un site anglais, sans un mot au journal qu'on lise : « À la
+// une » et « Agenda » de Granite, « Matchs » et « Nous rejoindre » de Forge (2026-10-06).
+$navigation = [];
+
+foreach ($langues as $langue)
+{
+    $fichier = $racine.'/widgets/navigation/langs/'.$langue.'.php';
+    $navigation[$langue] = is_file($fichier) ? (array) include $fichier : [];
+}
+
+foreach (glob($racine.'/themes/*/*.php') ?: [] as $fichier_theme)
+{
+    // Le fichier principal du thème seulement (themes/<nom>/<nom>.php), où vit install().
+    if (basename($fichier_theme, '.php') !== basename(dirname($fichier_theme)))
+    {
+        continue;
+    }
+
+    $source = (string) file_get_contents($fichier_theme);
+    $titres = [];
+
+    // Les deux écritures en usage : `'title' => utf8_htmlentities($this->lang('…'))` et la liste
+    // `[$this->lang('…'), 'adresse', …]` que les thèmes refondus parcourent.
+    foreach (['/\'title\'\s*=>\s*utf8_htmlentities\(\$this->lang\(\'((?:[^\'\\\\]|\\\\.)*)\'\)\)/',
+              '/\[\s*\$this->lang\(\'((?:[^\'\\\\]|\\\\.)*)\'\)\s*,\s*\'[^\']*\'/'] as $motif)
+    {
+        if (preg_match_all($motif, $source, $trouves))
+        {
+            foreach ($trouves[1] as $titre)
+            {
+                $titres[] = stripslashes($titre);
+            }
+        }
+    }
+
+    foreach (array_unique($titres) as $titre)
+    {
+        $cle = hash('crc32b', $titre);
+
+        foreach ($langues as $langue)
+        {
+            if (!array_key_exists($cle, $navigation[$langue]))
+            {
+                $erreurs[] = sprintf("intitulé de menu sans traduction : « %s » (%s) posé par %s, absent de widgets/navigation/langs/%s.php — le widget le traduit à l'affichage, sous sa clé",
+                    $titre, $cle, nf_relatif($fichier_theme), $langue);
+            }
+        }
+    }
 }
 
 // ── Écriture (--fix, français seulement) ─────────────────────────────────────

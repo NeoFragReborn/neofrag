@@ -51,4 +51,11 @@ return [
 	'92df285e' => 'Link zu einem Modul',
 	'f2a3fffd' => 'Link zu einer Seite',
 	'dd3795ad' => 'Menü',
+	'6cb26577' => 'Matches',
+	'568086e0' => 'Mitmachen',
+	'140fd0c2' => 'Im Fokus',
+	'2b41cd41' => 'Termine',
+	'2041f02b' => 'Dokumente',
+	'09cc3ec0' => 'Funktionen',
+	'ac7ed76f' => 'Roadmap',
 ];

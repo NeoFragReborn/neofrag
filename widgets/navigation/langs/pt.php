@@ -51,4 +51,11 @@ return [
 	'92df285e' => 'Ligação para um módulo',
 	'f2a3fffd' => 'Ligação para uma página',
 	'dd3795ad' => 'Menu',
+	'6cb26577' => 'Partidas',
+	'568086e0' => 'Junta-te a nós',
+	'140fd0c2' => 'Em destaque',
+	'2b41cd41' => 'Agenda',
+	'2041f02b' => 'Documentos',
+	'09cc3ec0' => 'Funcionalidades',
+	'ac7ed76f' => 'Roadmap',
 ];

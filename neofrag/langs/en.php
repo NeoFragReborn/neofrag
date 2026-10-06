@@ -191,7 +191,7 @@ return [
 	'f8875151' => 'Continue',
 	'f8c33614' => 'Create an account',
 	'f96d2e60' => '%s at %s',
-	'5642008b' => 'l j F Y',
+	'5642008b' => 'l, F j, Y',
 	'fbb9b537' => 'The temporary folder is missing',
 
 	// === Modernized core keys (EN-as-source, 2026-05-03) ===

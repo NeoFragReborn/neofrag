@@ -192,7 +192,7 @@ return [
 	'f8875151' => 'Continuar',
 	'f8c33614' => 'Crear una cuenta',
 	'f96d2e60' => '%s a las %s',
-	'5642008b' => 'l j F Y',
+	'5642008b' => 'l, j \d\e F \d\e Y',
 	'fbb9b537' => 'Falta la carpeta temporal',
 
 	// === Claves del core modernizadas (EN-as-source, 2026-05-03) ===

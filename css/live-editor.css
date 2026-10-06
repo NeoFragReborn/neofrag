@@ -704,7 +704,21 @@ body.nf-le-chrome [data-typer]:after {
 	--nf-le-ovl-radius:        6px;
 	--nf-le-ovl-radius-sm:     5px;
 	--nf-le-ovl-radius-xs:     4px;
-	font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+	--nf-le-ovl-font:          "Inter", "Segoe UI", system-ui, sans-serif;
+}
+
+/* La police de l'éditeur, pour ses bandeaux, ses boutons et ses cartes seulement. Posée sur la zone, la ligne
+   et la colonne, elle descendait dans le CONTENU : le site montré dans l'éditeur perdait les polices de son
+   thème (Granite s'y affichait en Inter, 2026-10-06). */
+.nf-le-zone-header,
+.nf-le-row-header,
+.nf-le-col-header,
+.nf-le-zone-title,
+.nf-le-row-title,
+.nf-le-col-title,
+.nf-le-toolbar,
+.nf-le-widget-hover-card {
+	font-family: var(--nf-le-ovl-font);
 }
 
 /* Zone --------------------------------------------------------------- */
