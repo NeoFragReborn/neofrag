@@ -12,6 +12,19 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.33] — 2026-10-06
+
+A fix release: the public CI of the `neofrag` repository, broken at 1.2.32 by a tooling issue, is repaired. Nothing
+changes for sites.
+
+### Fixed
+
+- **The public `neofrag` CI no longer fails on every release.** The step that looks for the matching `extensions`
+  version read the list of tags and stopped at the first match: since that list grew past 4,096 bytes (1.2.32), `git`
+  received a broken-pipe signal and the step failed. It now reads the whole list; same fix in the `extensions` CI.
+- **The documents' link check no longer reads those of bundled libraries** (the TinyMCE license): they cannot be fixed
+  on our side, and gnu.org was closing the connection to their old address.
+
 ## [1.2.32] — 2026-10-06
 
 The themes overhaul begins: Forge, Granite, Blockcraft and Extend now share a common base. Nothing changes on

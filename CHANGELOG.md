@@ -10,6 +10,20 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.33] — 2026-10-06
+
+Une version de correction : la CI publique du dépôt `neofrag`, tombée à la 1.2.32 pour une raison d'outillage, est
+réparée. Rien ne change pour les sites.
+
+### Corrigé
+
+- **La CI publique de `neofrag` ne tombe plus à chaque version.** L'étape qui cherche la version jumelle
+  d'`extensions` lisait la liste des étiquettes et s'arrêtait à la première trouvée : depuis que cette liste dépasse
+  4 096 octets (la 1.2.32), `git` recevait le signal d'un tuyau fermé, et l'étape échouait. Elle lit désormais la liste
+  entière ; même correction dans la CI d'`extensions`.
+- **La vérification des liens des documents ne lit plus ceux des bibliothèques embarquées** (la licence de TinyMCE) :
+  ils ne se corrigent pas chez nous, et gnu.org fermait la connexion à leur vieille adresse.
+
 ## [1.2.32] — 2026-10-06
 
 Le chantier des thèmes commence : Forge, Granite, Blockcraft et Extend partagent désormais un socle commun. Rien ne

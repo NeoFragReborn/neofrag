@@ -79,7 +79,8 @@ jobs:
           csrf_viol=0
           for f in $(grep -rlE "csrf_url\(|csrf_token\(" --include='*.php' modules/ neofrag/ | grep -v 'admin_helpers.php'); do
             grep -qE "check_csrf\(|csrf_valide\(" "$f" && continue
-            cible=$(grep -oE "csrf: vérifié par [A-Za-z0-9_./-]+\.php" "$f" | head -1 | sed 's/^csrf: vérifié par //')
+            # grep -m1 s'arrête seul : un `| head -1` fermerait le tuyau avant la fin (SIGPIPE sous pipefail, 1.2.32).
+            cible=$(grep -m1 -oE "csrf: vérifié par [A-Za-z0-9_./-]+\.php" "$f" | sed 's/^csrf: vérifié par //')
             if [ -n "$cible" ] && [ -f "$cible" ] && grep -qE "check_csrf\(|csrf_valide\(" "$cible"; then
               continue
             fi
