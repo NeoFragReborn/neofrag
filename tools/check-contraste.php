@@ -127,6 +127,23 @@ $sonde = <<<'JS'
         var n = el, fond = null, surImage = false, illisible = false;
         while (n && n !== document.documentElement) {
             var sn = getComputedStyle(n);
+
+            // Un bloc peut porter son fond sur son pseudo-élément ::before, posé dessous le contenu
+            // (Forge 2.0 : les coins coupés se dessinent ainsi, pour ne couper ni les menus déroulants
+            // ni le focus clavier). Sa couleur de fond est le fond du texte ; ses dégradés, des filets
+            // de coin, ne comptent pas. Sans cette lecture, le texte blanc d'un panneau coloré était
+            // mesuré contre le fond clair de la page : 1,12:1, un défaut inexistant (2026-10-06).
+            //
+            // Seulement s'il COUVRE le bloc : un pseudo-élément étroit est un ornement, pas un fond. Le liseré de
+            // lave de 3 px posé à gauche du lien actif du rail de Forge était pris pour le fond de son texte —
+            // « 2,86:1 », un défaut inexistant (2026-10-06).
+            var ps = getComputedStyle(n, '::before');
+            if (ps.content && ps.content !== 'none' && ps.content !== 'normal' && ps.position === 'absolute'
+                && parseFloat(ps.width) >= 0.9 * n.offsetWidth && parseFloat(ps.height) >= 0.9 * n.offsetHeight) {
+                var fondPs = lire((ps.backgroundColor || '').trim());
+                if (fondPs && fondPs[3] >= 0.9) { fond = fondPs; break; }
+            }
+
             if (sn.backgroundImage && sn.backgroundImage !== 'none') { surImage = true; break; }
 
             var brut = (sn.backgroundColor || '').trim();

@@ -21,4 +21,7 @@ return [
 	'd0e2fd31' => 'Nombre de palmarès',
 	'042e2c3d' => 'Afficher dans un panneau',
 	'e2a147a0' => 'Oui',
+	'7c69d947' => '1er',
+	'9171d359' => '2e',
+	'886ae218' => '3e',
 ];

@@ -22,4 +22,7 @@ return [
 	'd0e2fd31' => 'Anzahl der Auszeichnungen',
 	'042e2c3d' => 'In einem Panel anzeigen',
 	'e2a147a0' => 'Ja',
+	'7c69d947' => '1.',
+	'9171d359' => '2.',
+	'886ae218' => '3.',
 ];

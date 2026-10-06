@@ -22,4 +22,7 @@ return [
 	'd0e2fd31' => 'Número de palmarés',
 	'042e2c3d' => 'Apresentar num painel',
 	'e2a147a0' => 'Sim',
+	'7c69d947' => '1.º',
+	'9171d359' => '2.º',
+	'886ae218' => '3.º',
 ];

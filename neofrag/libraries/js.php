@@ -37,8 +37,8 @@ class Js extends Library
 		{
 			$path = path($this->_file.'.js', 'js', $this->__caller);
 
-			// ?v= = mtime du fichier (auto-invalidation à chaque modif/upload) ; repli sur nf_version_css.
-			if ($v = asset_version($this->_file.'.js', 'js', $this->__caller) ?: (int)$this->config->nf_version_css)
+			// ?v= = date du fichier ET compteur des réglages : un script de thème peut les lire (nf_version_asset()).
+			if (($v = nf_version_asset($this->_file.'.js', 'js', $this->__caller)) !== '')
 			{
 				$path .= '?v='.$v;
 			}

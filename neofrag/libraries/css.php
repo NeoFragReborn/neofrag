@@ -34,8 +34,8 @@ class Css extends Library
 		{
 			$path = path($this->_file.'.css', 'css', $this->__caller);
 
-			// ?v= = mtime du fichier (auto-invalidation à chaque modif/upload) ; repli sur nf_version_css.
-			if ($v = asset_version($this->_file.'.css', 'css', $this->__caller) ?: (int)$this->config->nf_version_css)
+			// ?v= = date du fichier ET compteur des réglages : une feuille de thème lit ses réglages (nf_version_asset()).
+			if (($v = nf_version_asset($this->_file.'.css', 'css', $this->__caller)) !== '')
 			{
 				$path .= '?v='.$v;
 			}

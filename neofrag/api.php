@@ -7,6 +7,10 @@ declare(strict_types=1);
 
 namespace NF\NeoFrag;
 
+// Instanciée par le chargeur de index.php, qui lui pose `__debug` en mode débogage : sans cet attribut, PHP 8.2
+// journalisait une dépréciation à chaque réinstallation d'un thème (l'appel `->api()->scss()` de Theme::install(),
+// vu le 2026-10-06 sur l'atelier).
+#[\AllowDynamicProperties]
 class Api
 {
 	protected $_controller;

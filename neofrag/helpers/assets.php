@@ -79,6 +79,27 @@ function asset_version($file, $file_type = '', $caller = NULL): int
 	return 0;
 }
 
+/**
+ * Le `?v=` d'une feuille de style ou d'un script : la date du fichier (asset_version()) ET le compteur des réglages
+ * (`nf_version_css`). Une feuille de thème est un gabarit PHP qui lit ses réglages — couleurs, images,
+ * braises… — : changer un réglage doit changer son adresse, sinon le navigateur garde l'ancienne feuille. Les pages
+ * de réglages des thèmes font avancer `nf_version_css` à chaque enregistrement ; depuis que le `?v=` suivait la
+ * seule date du fichier, ce compteur n'était plus lu (trouvé le 2026-10-06 en éprouvant un réglage de Forge :
+ * un réglage changé ne se voyait pas, pas plus qu'une nouvelle couleur d'accent sur un autre thème).
+ */
+function nf_version_asset(string $file, string $file_type, $caller = NULL): string
+{
+	$date     = asset_version($file, $file_type, $caller);
+	$reglages = (int) NeoFrag()->config->nf_version_css;
+
+	if ($date && $reglages)
+	{
+		return $date.'-'.$reglages;
+	}
+
+	return $date || $reglages ? (string) ($date ?: $reglages) : '';
+}
+
 function image($file, $caller = NULL): string
 {
 	return path($file, 'images', $caller);

@@ -12,6 +12,41 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.34] — 2026-10-06
+
+The first theme rebuilt from the ground up: **Forge 2.0.0 “Coulée”**, for competitive clans.
+
+### Changed
+
+- **Forge 2.0.0 “Coulée”: a new layout, not a reskin.** Navigation leaves the top of the page for a steel rail on the
+  side, with the site logo at the top and the account at the bottom (avatar, notifications, day mode, member area menu);
+  on phones, the logo and the account move to a top bar and the navigation to a tab bar at the bottom of the screen, and
+  beyond five entries the last ones go into “More”. The home page opens on a lava hearth where embers rise: the slider,
+  its title cast in metal, and the latest results plate. Below, a dashboard: the news (the first one featured) and,
+  beside it, the upcoming matches, the awards and who is online. Blocks are cut-corner plates whose edge glows on hover;
+  the forum puts each forum in a steel drawer with a heat gauge for its activity; the member area and the public profile
+  get the identity plate and bevelled tabs; the footer is riveted and carries the partners. Day mode lightens the
+  content, while the rail and the hearth stay steel and fire. All motion stops when the visitor asks for reduced motion.
+- **Forge’s zones are named after their place**: “Navigation rail”, “Top of page”, “Content”, “After the content”,
+  “Footer”.
+- **Forge’s settings**: the logo is finally used (the rail’s emblem; without a logo, the site’s initials); the banner
+  image becomes the hearth image; an “Embers in the hearth” setting (none, gentle, lively) replaces the fixed top bar
+  setting, which no longer has a purpose.
+- **The awards** widget spells out the podium place (“1st”, “2nd”, “3rd”) and the full competition name, with the
+  location and platform below; the line used to start with the platform and cut the name at twenty characters.
+- **The demo’s slider images no longer carry their title**: the slider already writes it on top, and it showed twice,
+  across the caption on phones.
+
+### Fixed
+
+- **A theme setting shows immediately** (accent colour, background and banner images…): the stylesheet address only followed the
+  file date, and the browser kept the old stylesheet after a change.
+- **The customisation page of the Forge, Granite, Blockcraft and Extend themes** shows the theme’s name instead of an
+  English “Dashboard”, the same on every tab.
+- **In English, the awards no longer say “2th” or “3th”**: podium places have their own words, other places read “#4”.
+- **Reinstalling a theme no longer writes a warning to the log** in debug mode (a property set on the API object,
+  which PHP 8.2 deprecates).
+
 ## [1.2.33] — 2026-10-06
 
 A fix release: the public CI of the `neofrag` repository, broken at 1.2.32 by a tooling issue, is repaired. Nothing

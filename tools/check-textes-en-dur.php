@@ -94,6 +94,7 @@ const EXEMPTIONS = [
     // l'affichage par neofrag/displayables/zone.php.
     'themes/extend/extend.php|Bannière'              => 'identifiant de zone, traduit à l’affichage',
     'themes/*/*.php|Contenu'                         => 'identifiant de zone, traduit à l’affichage',
+    'themes/forge/forge.php|Après le contenu'         => 'identifiant de zone, traduit à l’affichage',
     // Le nom de l'administration, identique en français et dans la langue de ses premiers auteurs.
     'themes/admin/admin.php|Administration'          => 'nom propre du thème',
     // La valeur PAR DÉFAUT du titre d'une action : `Action` la traduit à l'affichage.

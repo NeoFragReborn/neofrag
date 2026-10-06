@@ -197,9 +197,10 @@ const COUPLAGES_VISIBLES = ['disposition', 'reglage', 'donnee'];
  * Le cliquet des couplages visibles non explicites, compté par paire « addon → addon ». Fixé le
  * 2026-10-04, à la création de la règle : chaque paire listée « À TRANCHER » attend une décision.
  * Une paire tranchée fait baisser le compte — baisser alors ce plafond avec lui ; une paire NOUVELLE
- * au-delà fait échouer.
+ * au-delà fait échouer. 19 → 18 le 2026-10-06 : Forge 2.0.0 ne pose plus le widget `news`, et ses
+ * blocs des matchs, du palmarès et des partenaires ne se posent que si leur module est installé.
  */
-const A_TRANCHER_PLAFOND = 19;
+const A_TRANCHER_PLAFOND = 18;
 
 /**
  * Les réglages dont la VALEUR désigne un addon, et le type de cet addon.

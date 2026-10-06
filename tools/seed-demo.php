@@ -1209,7 +1209,10 @@ function seed_slider(mysqli $db): void
         ['Recrutement ouvert', 'Deux postes à pourvoir sur CS2 et Valorant.', 'recruits', [230, 126, 34]],
     ];
     foreach ($slides as $k => [$titre, $legende, $lien, $couleur]) {
-        $fid = fabrique_image($db, 'upload/demo', 'demo-slide-' . $k . '.jpg', $titre, 1600, 500, $couleur);
+        // L'image ne porte PAS le titre : le carrousel l'écrit déjà par-dessus, avec la légende. Gravé dans
+        // l'image, il s'affichait en double, et en travers de la légende au téléphone (vu le 2026-10-06 avec
+        // Forge 2.0 ; le défaut valait pour tous les thèmes).
+        $fid = fabrique_image($db, 'upload/demo', 'demo-slide-' . $k . '.jpg', '', 1600, 500, $couleur);
         $chemin = $db->query("SELECT path FROM nf_file WHERE id = {$fid}")->fetch_row()[0];
         ins($db, 'nf_slider_slides', [
             'image_url' => $chemin, 'title' => $titre, 'caption' => $legende, 'link' => $lien,

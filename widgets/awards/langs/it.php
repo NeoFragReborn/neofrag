@@ -22,4 +22,7 @@ return [
 	'd0e2fd31' => 'Numero di premi',
 	'042e2c3d' => 'Mostra in un pannello',
 	'e2a147a0' => 'Sì',
+	'7c69d947' => '1º',
+	'9171d359' => '2º',
+	'886ae218' => '3º',
 ];

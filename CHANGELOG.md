@@ -10,6 +10,44 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.34] — 2026-10-06
+
+Le premier thème refait de fond en comble : **Forge 2.0.0 « Coulée »**, pour les clans compétitifs.
+
+### Modifié
+
+- **Forge 2.0.0 « Coulée » : une nouvelle mise en page, pas un habillage.** La navigation quitte le haut de la page pour
+  un rail d'acier sur le côté, avec le logo du site en tête et le compte en bas (avatar, notifications, mode jour, menu de
+  l'espace membre) ; au téléphone, le logo et le compte passent en barre du haut, la navigation en barre d'onglets en bas
+  de l'écran, et au-delà de cinq entrées les dernières se rangent dans « Plus ». L'accueil s'ouvre sur un foyer de lave où
+  montent des braises : le diaporama, au titre coulé dans le métal, et la plaque des derniers résultats. Dessous, un
+  tableau de bord : les actualités (la première à la une) et, à côté, les prochains matchs, le palmarès et qui est en
+  ligne. Les blocs sont des plaques aux coins coupés dont le filet rougeoie au survol ; le forum range chaque forum dans
+  un tiroir d'acier avec une jauge de chaleur pour son activité ; l'espace membre et le profil public prennent la plaque
+  d'identité et les onglets en biseau ; le pied est riveté et porte les partenaires. Le mode jour éclaircit le contenu,
+  le rail et le foyer restent d'acier et de feu. Tout mouvement s'arrête si le visiteur a demandé moins d'animations.
+- **Les zones de Forge se nomment d'après leur place** : « Rail de navigation », « Haut de page », « Contenu », « Après
+  le contenu », « Pied de page ».
+- **Les réglages de Forge** : le logo sert enfin (le blason du rail ; sans logo, les initiales du site) ; l'image de
+  bannière devient l'image du foyer ; un réglage « Braises du foyer » (aucune, douces, vives) remplace celui de la barre
+  du haut fixe, qui n'a plus d'objet.
+- **Le palmarès** (widget) dit la place du podium en toutes lettres (« 1er », « 2e », « 3e ») et le nom entier de la
+  compétition, avec dessous le lieu et la plateforme ; la ligne commençait par la plateforme et coupait le nom à vingt
+  caractères.
+- **Les images du diaporama de la démo ne portent plus leur titre** : le diaporama l'écrit déjà par-dessus, et il
+  s'affichait en double, en travers de la légende au téléphone.
+
+### Corrigé
+
+- **Un réglage de thème se voit tout de suite** (couleur d'accent, images de fond et de bannière…) : l'adresse de la feuille de
+  style ne suivait plus que la date du fichier, et le navigateur gardait l'ancienne feuille après un changement.
+- **La page de personnalisation des thèmes** Forge, Granite, Blockcraft et Extend porte le nom du thème au lieu d'un
+  « Dashboard » en anglais, le même sur tous les onglets.
+- **En anglais, le palmarès n'écrit plus « 2th » ni « 3th »** : la place du podium a ses propres mots, les autres places
+  s'écrivent « #4 ».
+- **Réinstaller un thème n'écrit plus d'avertissement au journal** en mode débogage (une propriété posée sur l'objet de
+  l'API, que PHP 8.2 déprécie).
+
 ## [1.2.33] — 2026-10-06
 
 Une version de correction : la CI publique du dépôt `neofrag`, tombée à la 1.2.32 pour une raison d'outillage, est
