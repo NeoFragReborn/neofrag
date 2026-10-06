@@ -17,6 +17,11 @@ class Checker extends Controller
 		];
 	}
 
+	public function prochain($settings = [])
+	{
+		return $this->semaine($settings);
+	}
+
 	public function upcoming($settings = [])
 	{
 		return [

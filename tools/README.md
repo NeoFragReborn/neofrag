@@ -196,7 +196,7 @@ Engendrée elle aussi par `check-tools`, depuis la première ligne de chaque fic
 | Fichier | Ce qu'il donne | Ce qu'il définit |
 |---|---|---|
 | [`addons-manifest.php`](lib/addons-manifest.php) | les trois tiers d'addons (cœur, identité, à la carte), dérivés des déclarations. | — |
-| [`banc.php`](lib/banc.php) | poser un widget sur une page le temps d'une mesure, puis tout remettre. | `nf_banc_widget()` |
+| [`banc.php`](lib/banc.php) | poser un widget sur une page le temps d'une mesure, puis tout remettre. | `nf_banc_widget()`, `nf_banc_zone_contenu()` |
 | [`demo.php`](lib/demo.php) | ce que l'instantané de la démonstration ne porte jamais. | `NF_DEMO_REGLAGES_EXCLUS`, `NF_DEMO_MOTIF_SECRET`, `NF_DEMO_REGLAGES_PUBLICS`, `nf_demo_reglages_widget()` |
 | [`depot.php`](lib/depot.php) | parcourir les fichiers du dépôt, toujours avec les mêmes exclusions. | `NF_EXCLUS`, `NF_DOSSIERS_PRODUIT`, `NF_DOSSIERS_JS`, `nf_fichiers()`, `nf_parcourir()`, `nf_supprimer()`, `nf_relatif()`, `nf_addons()`, `nf_themes_publics()`, `nf_extensions_absentes()`, `nf_exiger_assemblage()` |
 | [`entetes.php`](lib/entetes.php) | ce que l'en-tête d'un outil déclare : sa famille, son usage, sa batterie, sa diffusion. | `NF_FAMILLES`, `NF_DIFFUSIONS`, `nf_diffusion()`, `nf_resume()`, `nf_entete_outil()` |
@@ -210,7 +210,7 @@ Engendrée elle aussi par `check-tools`, depuis la première ligne de chaque fic
 | [`profils.php`](lib/profils.php) | ce qu'un site installé selon un profil doit servir, et le vérifier en le frappant. | `NF_ROUTES_COEUR`, `NF_ROUTES_MODULES`, `nf_frapper_profil()`, `nf_tables_hors_profil()` |
 | [`routeur-outil.php`](lib/routeur-outil.php) | le routeur du serveur intégré quand c'est un OUTIL qui sert le site. | — |
 | [`serveur.php`](lib/serveur.php) | servir le site avec le serveur intégré de PHP, et lui parler en HTTP. | `NF_AGENT`, `nf_serveur()`, `nf_encoder_adresse()`, `nf_http()`, `nf_statut()`, `nf_formulaire()`, `nf_balisage()` |
-| [`site.php`](lib/site.php) | l'installation sur laquelle l'outil travaille : sa base, ses réglages, un administrateur. | `nf_config_db()`, `nf_connexion()`, `nf_connexion_admin()`, `nf_scalar()`, `nf_colonne()`, `nf_table_existe()`, `nf_type_id()`, `nf_reglage()`, `nf_reglage_poser()`, `nf_reglage_temporaire()`, `nf_themes_installes()`, `nf_premier_admin()`, `nf_session_admin()`, `nf_session_fermer()`, `nf_mode_demo()`, `nf_theme_temporaire()` |
+| [`site.php`](lib/site.php) | l'installation sur laquelle l'outil travaille : sa base, ses réglages, un administrateur. | `nf_config_db()`, `nf_connexion()`, `nf_connexion_admin()`, `nf_scalar()`, `nf_colonne()`, `nf_table_existe()`, `nf_type_id()`, `nf_reglage()`, `nf_reglage_poser()`, `nf_reglage_temporaire()`, `nf_themes_installes()`, `nf_premier_admin()`, `nf_session_admin()`, `nf_session_membre()`, `nf_session_ouvrir()`, `nf_session_fermer()`, `nf_mode_demo()`, `nf_theme_temporaire()` |
 | [`sql.php`](lib/sql.php) | produire et jouer du SQL depuis la base vive. | `nf_sql_entete()`, `nf_sql_tables()`, `nf_sql_show_create()`, `nf_sql_commentaires_de_colonnes()`, `nf_sql_reposer_commentaires()`, `nf_sql_collation_portable()`, `nf_sql_inserts()`, `nf_sql_upserts()`, `nf_sql_lignes()`, `nf_sql_jouer()`, `nf_sql_jouer_fichier()`, `nf_sql_tuples()`, `nf_sql_valeur()` |
 | [`table-map.php`](lib/table-map.php) | quelle table appartient à quel module, pour le SQL embarqué de chaque module. | — |
 | [`vierge.php`](lib/vierge.php) | une installation NEUVE, sans contenu, montée le temps d'un outil, puis détruite. | `nf_site_vierge()` |

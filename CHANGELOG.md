@@ -10,6 +10,54 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.38] — 2026-10-06
+
+Un thème neuf : **Pulse**, la maison commune des associations, des clubs et des communautés, avec trois nouveautés qui
+servent à tous les thèmes — le site en chiffres, le prochain rendez-vous et les dernières photos.
+
+### Ajouté
+
+- **Le thème Pulse.** Une barre claire qui reste en haut, avec les rubriques en pastilles, le compte et l'appel
+  « Adhérer » toujours en vue (un bouton « Menu » au téléphone) ; l'accueil est une mosaïque de dalles — le nom du site
+  et sa devise sur l'image d'accueil, le prochain rendez-vous, le site en chiffres, les actualités, l'agenda, le sondage,
+  les discussions, les documents, les photos, les partenaires —, que l'éditeur en direct recompose dalle par dalle
+  (claire, soleil ou ardoise). Le forum se lit en cartes, avec ses statistiques et son activité à côté ; le pied, sombre,
+  porte le plan du site et les réseaux. Jour clair, nuit « ardoise » au choix du visiteur ; titres Bricolage Grotesque,
+  texte Manrope. Réglages : couleurs, image d'accueil, logo, et l'adresse du bouton « Adhérer » (une page d'adhésion, un
+  formulaire d'une autre plateforme, ou l'inscription au site).
+- **Le widget « Le site en chiffres »** : jusqu'à quatre nombres, choisis parmi les membres, les discussions, les
+  messages du forum, les actualités, les rendez-vous à venir et les photos — en ne comptant que ce que le visiteur a le
+  droit de voir (les forums réservés, les albums d'un groupe restent hors du compte). Les nombres défilent jusqu'à leur
+  valeur quand la dalle paraît dans Pulse, sauf si le visiteur a demandé moins d'animations.
+- **Le calendrier affiche aussi « Le prochain rendez-vous »** : sa date en grand, son titre, dans combien de jours, à
+  quelle heure (ou « toute la journée ») et où, le début de sa description, et un bouton pour l'ouvrir.
+- **La galerie affiche aussi « Les dernières photos »**, en grille — des seuls albums que le visiteur peut voir.
+
+### Corrigé
+
+- **Le style « Titre coloré » de Chronique et Granite** : le titre du panneau était de la couleur de son fond (sarcelle
+  sur sarcelle, rouge sur rouge), donc invisible. Il est maintenant en couleur, sur le papier, comme ces thèmes le
+  prévoyaient — et l'aperçu du style, dans l'éditeur en direct, le montre ainsi.
+- **Le style « Widget coloré » de Granite** : le texte, les libellés d'un formulaire et le bouton d'un widget posé dans
+  cette petite annonce pouvaient devenir blancs sur le papier (ou encre sur encre, la nuit). Ils gardent les couleurs du
+  journal. Le contrôle de contraste sait maintenant mesurer un widget dans chaque thème et chaque style de panneau.
+- **Le fil d'Ariane au-dessus d'une actualité** : chaque thème le prévoyait, il n'y paraissait jamais — la page visée
+  portait un nom qu'aucune adresse n'a. Il s'affiche maintenant sur les articles et la liste des actualités, dans tous
+  les thèmes.
+- **Deux encarts côte à côte restent alignés** : sous une actualité, « Autres actualités de l'auteur » descendait de 14
+  à 22 px à côté de « À propos de l'auteur » (de même dans la fiche d'un événement et la messagerie).
+- **Chronique : un article garde ses marges** dans sa carte ; le titre et le texte touchaient la bordure.
+- **Des textes posés sur un dégradé se lisent** : le bouton « Rejoindre le serveur » du widget Discord, le sigle du
+  blason de Forge, le titre et la devise de la bannière de Blockcraft, le jour. Le contrôle de contraste mesure
+  maintenant le texte sur un dégradé, et en membre connecté (l'espace membre compris).
+
+- **Un billet du Blog à un seul intertitre ne s'affiche plus écrasé** : sans sommaire, la page lui gardait sa colonne,
+  le texte s'y tassait sur 200 px et l'encart (auteur, partage) prenait sa place — les notes des versions 1.2.32, 1.2.33
+  et 1.2.37 sur le site officiel. Merci à Blober de l'avoir signalé.
+- **`admin.php` et `ajax.php` répondent « page introuvable »** au lieu d'une erreur du serveur (et de deux lignes au
+  journal à chaque robot qui sonde ces adresses).
+- **La frise de la saison** : « Dans 5 jours » ne se coupe plus en deux lignes au téléphone.
+
 ## [1.2.37] — 2026-10-06
 
 Chronique revu sur la démonstration telle qu'on la voit — en visiteur et connecté, de jour, de nuit, au téléphone —, et une démonstration qui vit au présent.

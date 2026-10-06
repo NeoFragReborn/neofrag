@@ -309,7 +309,7 @@ INSERT INTO `nf_dispositions` (`disposition_id`, `theme`, `page`, `zone`, `dispo
 ('87', 'nebula', '/', '1', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":134,\"style\":null,\"size\":null}]}]}]'),
 ('88', 'nebula', 'forum/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":139,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":140,\"style\":null,\"size\":null}]}]}]'),
 ('89', 'nebula', 'forum/*', '3', '[{\"style\":\"row-default\",\"cols\":[{\"size\":\"col-md-4\",\"widgets\":[{\"id\":145,\"style\":\"panel-header\",\"size\":null}]},{\"size\":\"col-md-8\",\"widgets\":[{\"id\":146,\"style\":\"panel-header\",\"size\":null}]}]}]'),
-('90', 'nebula', 'news/_news/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":141,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":142,\"style\":null,\"size\":null}]}]}]'),
+('90', 'nebula', 'news/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":141,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":142,\"style\":null,\"size\":null}]}]}]'),
 ('91', 'nebula', 'user/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":143,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":144,\"style\":null,\"size\":null}]}]}]');
 
 INSERT INTO `nf_email_templates` (`template_id`, `key`, `title`, `description`, `placeholders`, `module`, `enabled`, `created_at`, `updated_at`) VALUES

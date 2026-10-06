@@ -402,6 +402,14 @@ select:autofill {
 	margin-top: 0;
 }
 
+/* Même règle, même défaut dans un `.card-group` de Bootstrap, où les cartes sont côte à côte dès 576 px : la seconde
+   descendait de la marge des cartes empilées (14 à 22 px selon le thème). Vu sur l'encart de l'auteur d'une actualité
+   (« À propos de l'auteur » / « Autres actualités de l'auteur »), dans Pulse, le 2026-10-06 ; la fiche d'un événement
+   et la messagerie emploient le même groupe. Au téléphone, Bootstrap empile le groupe avec sa propre marge du bas. */
+.card-group > .card + .card {
+	margin-top: 0;
+}
+
 @media (max-width: 575.98px) {
 	.nf-card-grid { grid-template-columns: 1fr; }
 }

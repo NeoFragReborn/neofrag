@@ -12,6 +12,52 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.38] — 2026-10-06
+
+A new theme: **Pulse**, the common home of associations, clubs and communities, with three additions that serve every
+theme — the site in figures, the next event and the latest photos.
+
+### Added
+
+- **The Pulse theme.** A light bar that stays on top, with the sections as pills, the account and the "Join" call always
+  in sight (a "Menu" button on a phone); the home page is a mosaic of tiles — the site name and motto on the home image,
+  the next event, the site in figures, the news, the agenda, the poll, the discussions, the documents, the photos, the
+  partners — that the live editor rearranges tile by tile (light, sun or slate). The forum reads as cards, with its
+  statistics and activity alongside; the dark footer carries the site map and the social networks. Light by day, "slate"
+  night at the visitor's choice; Bricolage Grotesque headings, Manrope text. Settings: colors, home image, logo, and the
+  address of the "Join" button (a membership page, a form on another platform, or the site's registration).
+- **The "The site in figures" widget**: up to four numbers, chosen among the members, the discussions, the forum
+  messages, the news, the upcoming events and the photos — counting only what the visitor is allowed to see (restricted
+  forums and group albums stay out of the count). In Pulse the numbers count up when the tile appears, unless the
+  visitor asked for less motion.
+- **The calendar also shows "The next event"**: its date in large type, its title, in how many days, at what time (or
+  "all day") and where, the start of its description, and a button to open it.
+- **The gallery also shows "The latest photos"**, as a grid — from the albums the visitor can see only.
+
+### Fixed
+
+- **The "Colored title" style of Chronique and Granite**: the panel title had the colour of its background (teal on
+  teal, red on red), so it was invisible. It is now colored, on the paper, as these themes intended — and the style's
+  preview in the live editor shows it that way.
+- **Granite's "Colored widget" style**: the text, the form labels and the button of a widget placed in this small ad
+  could turn white on the paper (or ink on ink, at night). They keep the newspaper's colours. The contrast check can now
+  measure a widget in every theme and every panel style.
+- **The breadcrumb above a news article**: every theme planned it, it never showed — the targeted page had a name no
+  address has. It now shows on articles and on the news list, in every theme.
+- **Two side-by-side boxes stay aligned**: under a news article, "Other news from this author" sat 14 to 22 px lower than
+  "About the author" (likewise on an event page and in the inbox).
+- **Chronique: an article keeps its margins** inside its card; the title and the text touched the border.
+- **Text on a gradient is readable**: the "Join the server" button of the Discord widget, the initials of Forge's
+  crest, the title and motto of Blockcraft's banner by day. The contrast check now measures text on a gradient, and as
+  a logged-in member (the member area included).
+
+- **A Blog post with a single heading no longer shows squeezed**: without a table of contents, the page kept its column,
+  the text was cramped into 200 px and the side box (author, sharing) took its place — the release notes of 1.2.32,
+  1.2.33 and 1.2.37 on the official site. Thanks to Blober for reporting it.
+- **`admin.php` and `ajax.php` answer "page not found"** instead of a server error (and two log lines every time a bot
+  probes these addresses).
+- **The season timeline**: "In 5 days" no longer breaks over two lines on a phone.
+
 ## [1.2.37] — 2026-10-06
 
 Chronique reviewed on the demo as people see it — as a visitor and logged in, by day, by night, on a phone —, and a demo that lives in the present.

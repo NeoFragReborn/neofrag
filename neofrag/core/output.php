@@ -185,6 +185,14 @@ class Output extends Core
 						array_shift($segments);
 					}
 
+					// `admin.php`, `ajax.php` : lus comme « admin » ou « ajax » à extension, il ne reste rien une fois le
+					// préfixe ôté — une adresse qui n'existe pas. La page plantait (erreur 500 et deux lignes au journal à
+					// chaque passage d'un robot qui sonde `admin.php`, vu sur la vitrine le 2026-10-06).
+					if (!$segments)
+					{
+						parent::error();
+					}
+
 					if (in_string('_', $segments[0]))
 					{
 						parent::error();

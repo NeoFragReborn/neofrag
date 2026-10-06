@@ -61,19 +61,10 @@ class Index extends Controller_Widget
 	{
 		$this->css('calendar');
 
-		$fuseau     = nf_fuseau();
 		$stockage   = nf_fuseau_stockage();
-		$maintenant = new \DateTimeImmutable('now', $fuseau);
+		$maintenant = new \DateTimeImmutable('now', nf_fuseau());
 		$lundi      = $maintenant->modify('monday this week')->setTime(0, 0);
 		$dimanche   = $lundi->modify('+7 days');
-
-		// Une journée entière est une date de calendrier, sans fuseau (Calendar::format_dt()) ; un instant se lit
-		// dans le fuseau d'enregistrement, puis se montre dans celui de celui qui regarde.
-		$local = static function (string $valeur, bool $journee) use ($fuseau, $stockage): \DateTimeImmutable {
-			return $journee
-				? new \DateTimeImmutable(substr($valeur, 0, 10), $fuseau)
-				: (new \DateTimeImmutable($valeur, $stockage))->setTimezone($fuseau);
-		};
 
 		// Un jour de marge de chaque côté : un fuseau lointain fait tomber un événement la veille ou le lendemain.
 		$evenements = NeoFrag()->db	->select('id', 'title', 'start_at', 'end_at', 'all_day')
@@ -88,8 +79,8 @@ class Index extends Controller_Widget
 
 		foreach ($evenements as $e)
 		{
-			$debut = $local((string) $e['start_at'], !empty($e['all_day']));
-			$fin   = $e['end_at'] ? $local((string) $e['end_at'], !empty($e['all_day'])) : $debut;
+			$debut = self::moment((string) $e['start_at'], !empty($e['all_day']));
+			$fin   = $e['end_at'] ? self::moment((string) $e['end_at'], !empty($e['all_day'])) : $debut;
 
 			for ($jour = $debut->setTime(0, 0); $jour <= $fin && $jour < $dimanche; $jour = $jour->modify('+1 day'))
 			{
@@ -125,7 +116,7 @@ class Index extends Controller_Widget
 		$body = $this->view('semaine', [
 			'jours'    => $jours,
 			'prochain' => $prochain ?: NULL,
-			'debut'    => $prochain ? $local((string) $prochain['start_at'], !empty($prochain['all_day'])) : NULL
+			'debut'    => $prochain ? self::moment((string) $prochain['start_at'], !empty($prochain['all_day'])) : NULL
 		]);
 
 		if (($config['display_panel'] ?? 'oui') === 'non')
@@ -137,5 +128,55 @@ class Index extends Controller_Widget
 					->heading($this->lang('La semaine'), 'far fa-calendar')
 					->body($body)
 					->footer('<a href="'.url('calendar').'">'.icon('far fa-arrow-alt-circle-right').' '.$this->lang('Voir le calendrier').'</a>', 'right');
+	}
+
+	/**
+	 * Le prochain rendez-vous, mis en avant : sa date en grand (le jour de la semaine, le quantième, le mois), son titre,
+	 * quand et où, le début de sa description, et le chemin vers lui — dans le fuseau de celui qui regarde (2026-10-06,
+	 * pour le thème Pulse ; il sert à tout thème).
+	 */
+	public function prochain($config = [])
+	{
+		$this->css('calendar');
+
+		$maintenant = new \DateTimeImmutable('now', nf_fuseau());
+		$evenement  = NeoFrag()->db	->select('id', 'title', 'description', 'location', 'start_at', 'end_at', 'all_day')
+									->from('nf_calendar_events')
+									->where('published', '1')
+									->where('start_at >=', $maintenant->setTime(0, 0)->setTimezone(nf_fuseau_stockage())->format('Y-m-d H:i:s'))
+									->order_by('start_at ASC')
+									->limit(1)
+									->row();
+
+		$debut = $evenement ? self::moment((string) $evenement['start_at'], !empty($evenement['all_day'])) : NULL;
+
+		$body = $this->view('prochain', [
+			'evenement' => $evenement ?: NULL,
+			'debut'     => $debut,
+			'fin'       => $evenement && $evenement['end_at'] ? self::moment((string) $evenement['end_at'], !empty($evenement['all_day'])) : NULL,
+			'jours'     => $debut ? (int) $maintenant->setTime(0, 0)->diff($debut->setTime(0, 0))->days : NULL
+		]);
+
+		if (($config['display_panel'] ?? 'oui') === 'non')
+		{
+			return $body;
+		}
+
+		return $this->panel()
+					->heading($this->lang('Le prochain rendez-vous'), 'far fa-calendar')
+					->body($body)
+					->footer('<a href="'.url('calendar').'">'.icon('far fa-arrow-alt-circle-right').' '.$this->lang('Voir le calendrier').'</a>', 'right');
+	}
+
+	/**
+	 * Un moment du calendrier, à montrer : une journée entière est une date de calendrier, sans fuseau
+	 * (Calendar::format_dt()) ; un instant se lit dans le fuseau d'enregistrement, puis se montre dans celui de celui qui
+	 * regarde.
+	 */
+	public static function moment(string $valeur, bool $journee): \DateTimeImmutable
+	{
+		return $journee
+			? new \DateTimeImmutable(substr($valeur, 0, 10), nf_fuseau())
+			: (new \DateTimeImmutable($valeur, nf_fuseau_stockage()))->setTimezone(nf_fuseau());
 	}
 }

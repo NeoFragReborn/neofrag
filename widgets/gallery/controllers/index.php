@@ -32,6 +32,23 @@ class Index extends Controller_Widget
 		}
 	}
 
+	/**
+	 * Les dernières photos en mosaïque : la plus récente en grand, les quatre suivantes à côté ; chacune mène à sa
+	 * page (2026-10-06, pour le thème Pulse ; il sert à tout thème).
+	 */
+	public function grille($settings = [])
+	{
+		$this->css('galerie');
+
+		$modele = $this->model('gallery');
+		$images = $modele instanceof \NF\Widgets\Gallery\Models\Gallery ? $modele->get_dernieres_images(5) : [];
+
+		return $this->panel()
+					->heading($this->lang('Les dernières photos'))
+					->body($images ? $this->view('grille', ['images' => $images]) : $this->lang('Aucune image pour le moment'))
+					->footer('<a href="'.url('gallery').'">'.icon('far fa-arrow-alt-circle-right').' '.$this->lang('Voir notre galerie').'</a>', 'right');
+	}
+
 	public function albums($settings = [])
 	{
 		return $this->panel()

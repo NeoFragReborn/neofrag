@@ -1,6 +1,6 @@
 # Composants — NeoFrag Reborn
 
-Inventaire des **62 modules · 41 widgets · 7 thèmes distribués**. L'architecture du framework est dans
+Inventaire des **62 modules · 42 widgets · 8 thèmes distribués**. L'architecture du framework est dans
 [architecture.md](architecture.md).
 La pile gamification/boutique/monétisation a sa doc dédiée : [gamification.md](gamification.md).
 
@@ -80,9 +80,10 @@ contenu/catégorie) · `reactions` (likes polymorphes : commentaires/articles/ne
 publicitaire, masquée pour les membres no_ads/VIP) · `payments` (Stripe : recharge de points + packs VIP,
 webhook signé). Détail : [gamification.md](gamification.md).
 
-## 41 widgets
+## 42 widgets
 
-- **Contenu** : `news`, `articles`, `awards`, `calendar`, `donations`, `downloads`, `events`, `forum`,
+- **Contenu** : `news`, `articles`, `awards`, `calendar`, `chiffres` (le site en chiffres : membres, discussions,
+  messages, actualités, rendez-vous à venir, photos — seulement ce que le visiteur a le droit de voir), `donations`, `downloads`, `events`, `forum`,
   `gallery`, `guestbook`, `links`, `members`, `newsletter`, `partners`, `recruits`, `slider`,
   `surveys`, `talks`, `teams`, `user`, `video` (player HTML5 + playlist depuis la médiathèque),
   `latest_comments` (derniers commentaires cross-module), `frise` (la saison mois par mois : rendez-vous du calendrier,
@@ -104,7 +105,7 @@ webhook signé). Détail : [gamification.md](gamification.md).
 - **Langues (6)** : `language_en`, `language_fr`, `language_de`, `language_es`, `language_it`,
   `language_pt`.
 
-## 7 thèmes distribués
+## 8 thèmes distribués
 
 - **admin** — back-office (dark mode complet, command palette).
 - **nebula** — thème communautaire en DA Reborn (chrome propre, clair/sombre). Core.
@@ -115,6 +116,9 @@ webhook signé). Détail : [gamification.md](gamification.md).
   bord, le forum en tiroirs ; nuit par défaut, mode jour au choix.
 - **chronique** — public, le carnet de la saison : un en-tête discret et un « Sommaire » plein écran, l'ouverture avec
   la semaine en cours, la frise de la saison, une colonne à côté ; papier le jour, nuit « à la lampe ».
+- **pulse** — public, la maison commune des associations et des clubs : une barre claire avec l'appel « Adhérer »
+  toujours en vue, un accueil en mosaïque de dalles (le prochain rendez-vous, le site en chiffres, les actualités,
+  l'agenda, le sondage, les photos…), le forum en cartes, un pied sombre ; nuit « ardoise » au choix du visiteur.
 - **extend** — port BS5 du thème « Extend » de Chewbaka (navy & bleu acier, titres Economica, jour/nuit, multi-zones). Distribuable via la marketplace.
 
 > Le thème `dungeon` a été retiré. CSS thème = template PHP à tokens (`--bc-*`/`--gz-*`/`--fg-*`/`--ch-*`), couleurs

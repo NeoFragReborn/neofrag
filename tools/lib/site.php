@@ -257,13 +257,35 @@ function nf_session_admin(mysqli $db): string
 {
     $admin = nf_premier_admin($db) ?? nf_refus('aucun administrateur en base : sans session, toutes les pages redirigeraient');
 
+    return nf_session_ouvrir($db, $admin, 'd\'administrateur');
+}
+
+/**
+ * Ouvre une session de MEMBRE ORDINAIRE — le premier membre actif qui n'est pas administrateur —, effacée quoi qu'il
+ * arrive à la fin de l'outil.
+ *
+ * Un administrateur passe outre les droits : ce qu'il voit n'est pas ce qu'un membre voit. Et les écrans réservés aux
+ * membres (l'espace membre, les notifications) ne se voient qu'avec une session : la date d'inscription de l'espace
+ * membre de Pulse, grise sur ardoise, n'apparaissait dans aucune mesure faite en visiteur (2026-10-06).
+ */
+function nf_session_membre(mysqli $db): string
+{
+    $membre = nf_scalar($db, "SELECT id FROM nf_user WHERE admin = '0' AND deleted = '0' ORDER BY id LIMIT 1")
+        ?? nf_refus('aucun membre ordinaire en base : les écrans des membres ne peuvent pas être vus');
+
+    return nf_session_ouvrir($db, (int) $membre, 'de membre');
+}
+
+/** Ouvre la session de `$utilisateur` et l'inscrit pour être effacée à la fin de l'outil. */
+function nf_session_ouvrir(mysqli $db, int $utilisateur, string $quoi): string
+{
     $session = bin2hex(random_bytes(16));
     $requete = $db->prepare("INSERT INTO nf_session (id, user_id, remember, data) VALUES (?, ?, '0', '')");
-    $requete->bind_param('si', $session, $admin);
+    $requete->bind_param('si', $session, $utilisateur);
 
     if (!$requete->execute())
     {
-        nf_refus('impossible d\'ouvrir une session d\'administrateur : '.$requete->error);
+        nf_refus('impossible d\'ouvrir une session '.$quoi.' : '.$requete->error);
     }
 
     $requete->close();

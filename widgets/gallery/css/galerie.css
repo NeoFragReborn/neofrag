@@ -1,0 +1,44 @@
+/*
+ * Galerie, affichage « Les dernières photos » : une mosaïque, la plus récente en grand sur deux rangs, les autres à
+ * côté. Écrite avec les jetons --nf-* que chaque thème définit.
+ */
+.nf-photos {
+	display: grid;
+	grid-template-columns: 2fr 1fr 1fr;
+	grid-auto-rows: 84px;
+	gap: 8px;
+}
+
+.nf-photo {
+	display: block;
+	overflow: hidden;
+	border-radius: var(--nf-radius-sm, 8px);
+	background: var(--nf-surface-2);
+}
+
+.nf-photo:first-child {
+	grid-row: span 2;
+}
+
+.nf-photo img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform .4s ease;
+}
+
+.nf-photo:hover img,
+.nf-photo:focus-visible img {
+	transform: scale(1.05);
+}
+
+/* Une seule photo : elle prend toute la place. */
+.nf-photo:only-child {
+	grid-column: 1 / -1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nf-photo img { transition: none; }
+	.nf-photo:hover img, .nf-photo:focus-visible img { transform: none; }
+}

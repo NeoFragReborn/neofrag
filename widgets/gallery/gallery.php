@@ -15,7 +15,7 @@ class Gallery extends Widget
 	{
 		return [
 			'title'       => $this->lang('Galeries'),
-			'description' => $this->lang('Quatre affichages de la galerie au choix : ses catégories, les albums d\'une catégorie, une image tirée au hasard ou le diaporama d\'un album.'),
+			'description' => $this->lang('Cinq affichages de la galerie au choix : ses catégories, les albums d\'une catégorie, une image tirée au hasard, le diaporama d\'un album ou les dernières photos en mosaïque.'),
 			'icon'        => 'far fa-image',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
@@ -24,7 +24,7 @@ class Gallery extends Widget
 			'core'        => FALSE,
 			'presets'     => ['communaute', 'association', 'gaming'],
 			'requires'    => [],
-			'version'     => '1.0',
+			'version'     => '1.1',
 			'depends'     => [
 				'neofrag' => '0.2.0'
 			],
@@ -32,7 +32,8 @@ class Gallery extends Widget
 				'index'  => $this->lang('Liste des catégories'),
 				'albums' => $this->lang('Albums d\'une catégorie'),
 				'image'  => $this->lang('Image aléatoire'),
-				'slider' => $this->lang('Slider d\'un album')
+				'slider' => $this->lang('Slider d\'un album'),
+				'grille' => $this->lang('Les dernières photos')
 			]
 		];
 	}

@@ -1,9 +1,9 @@
 {
     "schema": 1,
     "project": "NeoFrag Reborn",
-    "base_version": "1.2.37",
-    "generated_at": "2026-10-06T17:42:39+00:00",
-    "count": 65,
+    "base_version": "1.2.38",
+    "generated_at": "2026-10-06T19:54:06+00:00",
+    "count": 67,
     "addons": [
         {
             "type": "module",
@@ -42,7 +42,7 @@
             "size": 31139,
             "sha256": "01d174c979259d5978ed24e16acace61a6f05834c1d2f11cec7e895bf6f31228",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -87,7 +87,7 @@
             "size": 93897,
             "sha256": "4f1a431f0e46141b2025d8db82c86f7e11093c75188cd220c93386d5a64d06c1",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -127,10 +127,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/articles.zip",
             "preview": "modules/articles.jpg",
-            "size": 88353,
-            "sha256": "b0da47dac3818b9ac03b9a2c4604aad4e318dbd486f6231b045fec372851d436",
+            "size": 88565,
+            "sha256": "c54a90938fbae7154a59124bf35280b7740fd5cf6dbbfb72b333ca47e94a2e6b",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -175,7 +175,7 @@
             "size": 47663,
             "sha256": "ec8ac81318f14a3a1f2502c317f9239956e1867395ceb23d14b53a73ed1d9899",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": [
                     "teams",
                     "games"
@@ -223,7 +223,7 @@
             "size": 58966,
             "sha256": "6ed2ac1f0ced850f2ed55decf0fac598c6edcfe208150d1db9b6344bf6e27a74",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -266,7 +266,7 @@
             "size": 37990,
             "sha256": "e5cdde6863c52f306b598b2aac05d7a4f005d9a92169dd259fab128e05042f0f",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -311,7 +311,7 @@
             "size": 48061,
             "sha256": "ff72fcd952ffc26c6e3a5c0fc68af3bbc9c357633217fb95ed3f5d901746ef20",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -354,7 +354,7 @@
             "size": 148435,
             "sha256": "28d94c4fe94c52a7bff12375e5ad01ff4e1f7e14dbe13545c5b1c5f0829cfa02",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": [
                     "api"
                 ]
@@ -399,7 +399,7 @@
             "size": 61199,
             "sha256": "9fd095901b8fa1c836a3b829e3f028b2538e1dee41fe795dfd5c2508060bfe8b",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -444,7 +444,7 @@
             "size": 49505,
             "sha256": "f5759e010cd4e1f038c89a4442ab86d90b03dedef6cd5f9270a8c4ecdf781e11",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -489,7 +489,7 @@
             "size": 30507,
             "sha256": "d6e14c3e84176120f606e66ebdd7727d68676c621132418e793bb0183a09a22a",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -532,7 +532,7 @@
             "size": 193938,
             "sha256": "31478c28f3c77cd4f98227b5d9a3dc6eb6acb0dfa48dc5cacef4e2a44e600125",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": [
                     "games",
                     "teams"
@@ -580,7 +580,7 @@
             "size": 33094,
             "sha256": "89aadcbebf8ccb85ed69bb68b560fafda9d1e8feda79e50ec71074679fc3b8d0",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -623,7 +623,7 @@
             "size": 28828,
             "sha256": "05f24156b60d2999ac074790faa9432d62ecad67e0bcf0a50c27221e0d4620fe",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": [
                     "news",
                     "articles"
@@ -669,7 +669,7 @@
             "size": 154200,
             "sha256": "357a92d3db4edae751ee9c6aebc9ef07a80ce7477fbbf58384f9223ae8256b99",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -714,7 +714,7 @@
             "size": 93952,
             "sha256": "aba7ba674d77a2ade920d5e3a70092cc92116bc9ff0953f817ab72ae9c36e3d8",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -759,7 +759,7 @@
             "size": 62907,
             "sha256": "f5950705d040139b29019af2ae5e9c3be250ef1c27f11f2e19a15da25d018717",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -802,7 +802,7 @@
             "size": 41976,
             "sha256": "f8cee3c18b492d3d529deb78646732083ccd86829c553c1f742af4233862563c",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -845,7 +845,7 @@
             "size": 56130,
             "sha256": "2a417aaae5b8a53eb0a8feb49bda2a8dc4fdd935308f9e3887d6f0acfbde108a",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -888,7 +888,7 @@
             "size": 27328,
             "sha256": "47ca2d63bcb14f0e872160e34cc1a9a44ac9b7339d5f1a04411fc7861d5cdcf3",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -933,7 +933,7 @@
             "size": 38049,
             "sha256": "a2c4ed469a53719dfb3ab50b4324197665b89fa2ac3426b83cb6b08d8ef8a24e",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -978,7 +978,7 @@
             "size": 76635,
             "sha256": "0b4354404e151593328201a1f251c2727990fb21cc3508bf29070284fb3870f7",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -1023,7 +1023,7 @@
             "size": 61763,
             "sha256": "b279d75cb29264506954b49130a8f8862e8192c4616d9918cc6a5fc948ae6f37",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -1068,7 +1068,7 @@
             "size": 46653,
             "sha256": "174fda8c69c3b4ad10bd87791d9fc3550438f681c02d9913cb8a9ad3a8fb7913",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -1113,7 +1113,7 @@
             "size": 48303,
             "sha256": "0fc2705309518fa38e2dd94c95269fc88a23e3fd156aeaea216fdf07814baabb",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": [
                     "gamification"
                 ]
@@ -1158,7 +1158,7 @@
             "size": 178639,
             "sha256": "bbd38070fdf71b77a50aef667cb0217f567b7c5e32e3e01d85a808500d5ee778",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1201,7 +1201,7 @@
             "size": 60609,
             "sha256": "0fe5abd5d0852a8d5922172a76793bbb413edcb8b2577769f36c78ba8b739db7",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1244,7 +1244,7 @@
             "size": 53745,
             "sha256": "46b3ab3c328e11041823449336308ba40aefb0f6004dacfb7cc8f161eba7cec3",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1287,7 +1287,7 @@
             "size": 74977,
             "sha256": "f230313204a9075a7cfdc488b6dddcc2d4860b1d87e8207ac35e993e73bd2eb1",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": [
                     "teams",
                     "games"
@@ -1335,7 +1335,7 @@
             "size": 50343,
             "sha256": "80b680a3dab102a5d02ac7c7dcdb6141d3e10daf0c673f72ddf45bfd4e0b8f2f",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1378,7 +1378,7 @@
             "size": 46792,
             "sha256": "afa4d2ee8fa5f873f80f263519c664fbdadc06eca2a305f2c35145934c8737ca",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1421,7 +1421,7 @@
             "size": 49556,
             "sha256": "d317e79d492f233e95be71f8d30fdcbc1d8d236808b0400ecf08bb76ce5f7dec",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [
@@ -1466,7 +1466,7 @@
             "size": 57446,
             "sha256": "8c887f7968fc2170f2d41d54db24adcbaf1d7fca3e9584126526295b6e603bfd",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": [
                     "games"
                 ]
@@ -1513,7 +1513,7 @@
             "size": 62831,
             "sha256": "a9da5a3b06bcc154ae483120e056a55a0eb09340ceb5ee5822d825422db0356b",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1556,7 +1556,7 @@
             "size": 39213,
             "sha256": "97b23854dabd05b407eabf8b370fd58fbaab41d68f2dca238652881e573e1dd6",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1591,10 +1591,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/blockcraft.zip",
             "preview": "themes/blockcraft.jpg",
-            "size": 86015,
-            "sha256": "9abc0535094cf24f9a496d6d4b0f6c48e6e4e7f95c3ceb74d0075a2fb5b07717",
+            "size": 86128,
+            "sha256": "1e24260d19b21b596dde799297a9cc22640d85ef6bc72a85a2accceeb4495086",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1629,10 +1629,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/chronique.zip",
             "preview": "themes/chronique.jpg",
-            "size": 78792,
-            "sha256": "a6f1bc0d892caeb945194190ed94aaa77ab51b4e1d0e5411cbf4006356e34152",
+            "size": 78955,
+            "sha256": "1df8317d476594b82050057223509c33087474f79704f62af34e90dc71c9c7a9",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1667,10 +1667,10 @@
             "license": "Creative Commons CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>",
             "file": "themes/extend.zip",
             "preview": "themes/extend.jpg",
-            "size": 85524,
-            "sha256": "2bc238589619d09f0055f00b8257fcc25b08bdb97d1ff4bee9cd6ec427b0d6cf",
+            "size": 85522,
+            "sha256": "c8851499a08732ea5a4743cbfd592237c65709075d70bafa29e0e996d5785960",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1705,10 +1705,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/forge.zip",
             "preview": "themes/forge.jpg",
-            "size": 113980,
-            "sha256": "538db0c2c19345554dc066d7aa1343f7484e7fdb7f8827089a7cd4dce321d2ac",
+            "size": 114073,
+            "sha256": "5c29299783067d9270b8a5ec209c8bf4721711c8dc9bd30e61355ad0e59ce0ef",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1743,10 +1743,48 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/granite.zip",
             "preview": "themes/granite.jpg",
-            "size": 121409,
-            "sha256": "6d19a5b604d0556a608682295743fc74b886a9ac287b108fae1a97d3af948c7f",
+            "size": 121685,
+            "sha256": "cd3e18902d4453c4e56c1fee4358d54cfe0f0a87ef99a0b36eef354e6392c98a",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "theme",
+            "name": "pulse",
+            "tier": 2,
+            "category": "theme",
+            "title": "Pulse",
+            "description": "Thème « Pulse », la maison commune des associations, des clubs et des communautés : une barre claire et l’appel « Adhérer » toujours en vue, un accueil en mosaïque de dalles (le prochain rendez-vous, le site en chiffres, les actualités, l’agenda, le sondage, les photos…), le forum en cartes, un pied sombre où bat le point du plan ; titres Bricolage Grotesque, texte Manrope, nuit « ardoise » au choix du visiteur ; couleurs, image d’accueil, logo et appel à adhérer réglables.",
+            "i18n": {
+                "en": {
+                    "description": "“Pulse” theme, the shared home of associations, clubs and communities: a light bar with the “Join” call always in sight, a home page as a mosaic of tiles (the next event, the site in figures, news, calendar, poll, photos…), the forum as cards, a dark footer where the dot of the map beats; Bricolage Grotesque headings, Manrope text, “slate” night mode at the visitor’s choice; colours, home image, logo and join call adjustable."
+                },
+                "de": {
+                    "description": "Theme „Pulse“, das gemeinsame Haus von Vereinen, Clubs und Gemeinschaften: eine helle Leiste mit dem Aufruf „Beitreten“ stets im Blick, eine Startseite als Kachelmosaik (der nächste Termin, die Website in Zahlen, Neuigkeiten, Kalender, Umfrage, Fotos…), das Forum in Karten, eine dunkle Fußzeile, in der der Punkt der Karte pulsiert; Überschriften in Bricolage Grotesque, Text in Manrope, Nachtmodus „Schiefer“ nach Wahl des Besuchers; Farben, Startbild, Logo und Beitrittsaufruf einstellbar."
+                },
+                "es": {
+                    "description": "Tema «Pulse», la casa común de las asociaciones, los clubes y las comunidades: una barra clara con la llamada «Unirse» siempre a la vista, una portada en mosaico de losas (la próxima cita, el sitio en cifras, las noticias, la agenda, la encuesta, las fotos…), el foro en tarjetas, un pie oscuro donde late el punto del plano; títulos en Bricolage Grotesque, texto en Manrope, modo noche «pizarra» a elección del visitante; colores, imagen de inicio, logotipo y llamada a unirse ajustables."
+                },
+                "it": {
+                    "description": "Tema «Pulse», la casa comune di associazioni, club e comunità: una barra chiara con l’invito «Iscriviti» sempre in vista, una home a mosaico di lastre (il prossimo appuntamento, il sito in cifre, le notizie, l’agenda, il sondaggio, le foto…), il forum a schede, un piè di pagina scuro dove pulsa il punto della mappa; titoli in Bricolage Grotesque, testo in Manrope, modalità notte «ardesia» a scelta del visitatore; colori, immagine di benvenuto, logo e invito a iscriversi regolabili."
+                },
+                "pt": {
+                    "description": "Tema «Pulse», a casa comum das associações, dos clubes e das comunidades: uma barra clara com o apelo «Aderir» sempre à vista, uma página inicial em mosaico de lajes (o próximo encontro, o site em números, as notícias, a agenda, a sondagem, as fotos…), o fórum em cartões, um rodapé escuro onde pulsa o ponto do mapa; títulos em Bricolage Grotesque, texto em Manrope, modo noturno «ardósia» à escolha do visitante; cores, imagem de boas-vindas, logótipo e apelo a aderir ajustáveis."
+                }
+            },
+            "version": "1.0.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
+            "file": "themes/pulse.zip",
+            "preview": "themes/pulse.jpg",
+            "size": 92962,
+            "sha256": "3e11f5064a98e97c809d9828616be2869b9ecf3d604891a64db075d98d718d22",
+            "requires": {
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1789,7 +1827,7 @@
             "size": 32736,
             "sha256": "3bc627516db6d5a0bd4632bbcae585bb76a6dbbc144644a29e92eea2546ed407",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1832,7 +1870,7 @@
             "size": 22269,
             "sha256": "1eba2c93d997dcb4b6f95a1d88c878dce0ef3eabb38f52aedcd3e7e35c33e6cf",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1875,7 +1913,7 @@
             "size": 37391,
             "sha256": "9af44320673c5a1605d8d01c5e1e61b84612ca1da72080fb02baa693117b39dd",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1918,7 +1956,7 @@
             "size": 20319,
             "sha256": "78db19345042bd06a2205384f7dfacac9b9e1b870199663abdaa6324f670c6df",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1930,38 +1968,81 @@
             "tier": 1,
             "category": "identite",
             "title": "Calendrier",
-            "description": "Les prochains événements du calendrier, avec leur date et leur couleur, ou la semaine en cours, ses jours d'événement marqués et le prochain rendez-vous ; un lien mène au calendrier complet.",
+            "description": "Les prochains événements du calendrier, avec leur date et leur couleur ; la semaine en cours, ses jours d'événement marqués et le prochain rendez-vous ; ou le prochain rendez-vous mis en avant, sa date en grand ; un lien mène au calendrier complet.",
             "i18n": {
                 "en": {
                     "title": "Calendar",
-                    "description": "The calendar’s upcoming events, with their date and color, or the current week, its event days marked and the next event; a link leads to the full calendar."
+                    "description": "The calendar’s upcoming events, with their date and colour; the current week, its event days marked and the next event; or the next event highlighted, its date in large print; a link leads to the full calendar."
                 },
                 "de": {
                     "title": "Kalender",
-                    "description": "Die kommenden Termine des Kalenders mit Datum und Farbe, oder die aktuelle Woche mit markierten Termintagen und dem nächsten Termin; ein Link führt zum vollständigen Kalender."
+                    "description": "Die nächsten Termine des Kalenders mit Datum und Farbe; die laufende Woche mit markierten Termintagen und dem nächsten Termin; oder der nächste Termin hervorgehoben, sein Datum groß; ein Link führt zum vollständigen Kalender."
                 },
                 "es": {
                     "title": "Calendario",
-                    "description": "Los próximos eventos del calendario, con su fecha y su color, o la semana en curso, con sus días de evento marcados y la próxima cita; un enlace lleva al calendario completo."
+                    "description": "Los próximos eventos del calendario, con su fecha y su color; la semana en curso, sus días con eventos marcados y la próxima cita; o la próxima cita destacada, su fecha en grande; un enlace lleva al calendario completo."
                 },
                 "it": {
                     "title": "Calendario",
-                    "description": "I prossimi eventi del calendario, con data e colore, oppure la settimana in corso, con i giorni di evento segnati e il prossimo appuntamento; un link porta al calendario completo."
+                    "description": "I prossimi eventi del calendario, con data e colore; la settimana in corso, i giorni con eventi evidenziati e il prossimo appuntamento; oppure il prossimo appuntamento in evidenza, la data in grande; un link porta al calendario completo."
                 },
                 "pt": {
                     "title": "Calendário",
-                    "description": "Os próximos eventos do calendário, com a sua data e cor, ou a semana em curso, com os dias de evento marcados e o próximo encontro; uma ligação leva ao calendário completo."
+                    "description": "Os próximos eventos do calendário, com a sua data e cor; a semana em curso, os dias com eventos marcados e o próximo encontro; ou o próximo encontro em destaque, a sua data em grande; uma ligação leva ao calendário completo."
                 }
             },
-            "version": "1.1",
+            "version": "1.2",
             "author": "NeoFrag Reborn",
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/calendar.zip",
             "preview": "widgets/calendar.jpg",
-            "size": 32064,
-            "sha256": "3236f741290bc5c483a0073ea731196d8fafccb9c9e6fbe263d8f9d10e9d6876",
+            "size": 34473,
+            "sha256": "117bce2a6b9fa4897e0ad3bf925764385c726c244d26182cc48f069ba10866ac",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "widget",
+            "name": "chiffres",
+            "tier": 1,
+            "category": "identite",
+            "title": "Le site en chiffres",
+            "description": "Trois ou quatre nombres qui disent la vie du site, au choix : ses membres, les discussions et les messages du forum, les actualités, les rendez-vous à venir, les photos — chacun si son module est installé, et seulement ce que le visiteur peut voir.",
+            "i18n": {
+                "en": {
+                    "title": "The site in figures",
+                    "description": "Three or four figures that tell the life of the site, as you choose: its members, the forum’s discussions and messages, the news, the upcoming events, the photos — each if its module is installed, and only what the visitor may see."
+                },
+                "de": {
+                    "title": "Die Website in Zahlen",
+                    "description": "Drei oder vier Zahlen, die vom Leben der Website erzählen, nach Wahl: ihre Mitglieder, die Diskussionen und Beiträge des Forums, die Neuigkeiten, die kommenden Termine, die Fotos — jede, wenn ihr Modul installiert ist, und nur das, was der Besucher sehen darf."
+                },
+                "es": {
+                    "title": "El sitio en cifras",
+                    "description": "Tres o cuatro cifras que cuentan la vida del sitio, a elegir: sus miembros, los debates y los mensajes del foro, las noticias, las próximas citas, las fotos — cada una si su módulo está instalado, y solo lo que el visitante puede ver."
+                },
+                "it": {
+                    "title": "Il sito in cifre",
+                    "description": "Tre o quattro numeri che raccontano la vita del sito, a scelta: i suoi membri, le discussioni e i messaggi del forum, le notizie, i prossimi appuntamenti, le foto — ognuno se il suo modulo è installato, e solo ciò che il visitatore può vedere."
+                },
+                "pt": {
+                    "title": "O site em números",
+                    "description": "Três ou quatro números que contam a vida do site, à escolha: os seus membros, as discussões e as mensagens do fórum, as notícias, os próximos encontros, as fotos — cada um se o seu módulo estiver instalado, e apenas o que o visitante pode ver."
+                }
+            },
+            "version": "1.0.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
+            "file": "widgets/chiffres.zip",
+            "preview": "widgets/chiffres.jpg",
+            "size": 28739,
+            "sha256": "30d99fa37b1a9eaada965a8638339160458229829a987bb9de3da33553a7a260",
+            "requires": {
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2004,7 +2085,7 @@
             "size": 29757,
             "sha256": "d6dc251979d5a2261e689e05c85a88c80c6fdc204b5716efe13d71eb6127c38a",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2047,7 +2128,7 @@
             "size": 33378,
             "sha256": "467cb65aed9be1057e1fbbf5ca360fb0d1383c59a53a59e42083f9cfeb8a839d",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2090,7 +2171,7 @@
             "size": 34848,
             "sha256": "dc3681a95329ed39976a3aac32d85cdd5c7dc4bfe71a9f3ef43f176381ec9bc3",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2133,7 +2214,7 @@
             "size": 43822,
             "sha256": "2ee9c1674b20476b4164d0528af8c316a4dc4922e84a59258052c8d5bf99a2fb",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2173,10 +2254,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/frise.zip",
             "preview": "widgets/frise.jpg",
-            "size": 50565,
-            "sha256": "bab81b040281b87f63d4493a9abda495f7492d230fdbe02c41de8e1ab1843265",
+            "size": 50665,
+            "sha256": "e94796a63d7a640ee94a8aa53adfc1f8454b824ea9401162983add4103263841",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2188,38 +2269,38 @@
             "tier": 1,
             "category": "identite",
             "title": "Galeries",
-            "description": "Quatre affichages de la galerie au choix : ses catégories, les albums d'une catégorie, une image tirée au hasard ou le diaporama d'un album.",
+            "description": "Cinq affichages de la galerie au choix : ses catégories, les albums d'une catégorie, une image tirée au hasard, le diaporama d'un album ou les dernières photos en mosaïque.",
             "i18n": {
                 "en": {
                     "title": "Galleries",
-                    "description": "Four views of the gallery to choose from: its categories, the albums of a category, a random image or the slideshow of an album."
+                    "description": "Five gallery displays to choose from: its categories, the albums of a category, a random image, an album’s slideshow or the latest photos as a mosaic."
                 },
                 "de": {
                     "title": "Galerien",
-                    "description": "Vier Ansichten der Galerie zur Auswahl: ihre Kategorien, die Alben einer Kategorie, ein zufälliges Bild oder die Diashow eines Albums."
+                    "description": "Fünf Galerieanzeigen zur Auswahl: ihre Kategorien, die Alben einer Kategorie, ein zufälliges Bild, die Diashow eines Albums oder die neuesten Fotos als Mosaik."
                 },
                 "es": {
                     "title": "Galerías",
-                    "description": "Cuatro vistas de la galería a elegir: sus categorías, los álbumes de una categoría, una imagen al azar o el carrusel de un álbum."
+                    "description": "Cinco vistas de la galería a elegir: sus categorías, los álbumes de una categoría, una imagen al azar, el carrusel de un álbum o las últimas fotos en mosaico."
                 },
                 "it": {
                     "title": "Gallerie",
-                    "description": "Quattro visualizzazioni della galleria a scelta: le sue categorie, gli album di una categoria, un'immagine casuale o lo slideshow di un album."
+                    "description": "Cinque visualizzazioni della galleria a scelta: le sue categorie, gli album di una categoria, un’immagine casuale, la presentazione di un album o le ultime foto a mosaico."
                 },
                 "pt": {
                     "title": "Galerias",
-                    "description": "Quatro vistas da galeria à escolha: as suas categorias, os álbuns de uma categoria, uma imagem aleatória ou o carrossel de um álbum."
+                    "description": "Cinco apresentações da galeria à escolha: as suas categorias, os álbuns de uma categoria, uma imagem ao acaso, a apresentação de um álbum ou as últimas fotos em mosaico."
                 }
             },
-            "version": "1.0",
+            "version": "1.1",
             "author": "Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>",
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/gallery.zip",
             "preview": "widgets/gallery.jpg",
-            "size": 29727,
-            "sha256": "61e724947dd156fc8c90ec6cc882636889376bab26087d77d2cce16a4fd1ffc8",
+            "size": 31590,
+            "sha256": "cf5156d9c28e1af1b90adea7f52a7612bb9672721cbbe1a8d8731e2b3a42ce7f",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2262,7 +2343,7 @@
             "size": 44609,
             "sha256": "3111d23f0edb876e28ea9622044e196c212c055245a917de9ae4915c9992deab",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2305,7 +2386,7 @@
             "size": 29066,
             "sha256": "53caac18d7bf65031e455d563412d223439f543d52cdbfaa4dfcffb4e136ef81",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2348,7 +2429,7 @@
             "size": 23773,
             "sha256": "366b083d5a47aef0d39506d68b7de6db73b955ed01dfabd2895602d5b5929879",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2391,7 +2472,7 @@
             "size": 26647,
             "sha256": "6fa81bccba63e9bfa5ee10354807f0cef4bc61ca2e2d9c1c32a7accdc9bc67cc",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2434,7 +2515,7 @@
             "size": 28436,
             "sha256": "c8561662eadf447d3f06ec966330175e3bcaad5c44b2b06a579c8dc1db38a103",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2477,7 +2558,7 @@
             "size": 24221,
             "sha256": "5fd0a46b76026825bb4ac772a86c215c007d8f297111799a25a6e9b3cf4bccde",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2520,7 +2601,7 @@
             "size": 36080,
             "sha256": "caac7f8d05353c44d547f55d950a9cf68f347992bcc58ee4ef8cc7a7fcc027e6",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": [
                     "teams"
                 ]
@@ -2565,7 +2646,7 @@
             "size": 56545,
             "sha256": "d1adf41aa41439c086283d425cafcf1fc02ada7cdf2a798a44a2d4e8a32a2aa8",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2608,7 +2689,7 @@
             "size": 46386,
             "sha256": "2212a2e67d6262d4fcd48911e96e9d32d7910e0d01b0678248dc5d6e1fadbe55",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2651,7 +2732,7 @@
             "size": 39754,
             "sha256": "a6aa99752c525e315952cb8082d87f77f4e8804fd172aeb2fa4d9ea9e42ec0e2",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2694,7 +2775,7 @@
             "size": 27356,
             "sha256": "fc6a615bf2ed39476e8ad650d5e8dd6adfc12a1c9eb7805c0efe100db0437444",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2737,7 +2818,7 @@
             "size": 26550,
             "sha256": "a9570f0e3ee101d52006f00fad4172565e604c964055e00bc187c6eacc17b16f",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2780,7 +2861,7 @@
             "size": 44444,
             "sha256": "45437d4449c47cd81bae76a00a60cf0750c1c798362f73d31be150bb6623b6b9",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2823,7 +2904,7 @@
             "size": 52653,
             "sha256": "807b94f53fa8a0810f04620db06bc9286200c34b3feb8c254e54752e58ad778a",
             "requires": {
-                "base": ">=1.2.37",
+                "base": ">=1.2.38",
                 "addons": []
             },
             "provides_widgets": [],

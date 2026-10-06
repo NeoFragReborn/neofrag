@@ -1,0 +1,41 @@
+/*
+ * Le site en chiffres : les nombres côte à côte, en grand, leur nom dessous. Écrit avec les jetons --nf-* que chaque
+ * thème définit : il prend l'allure du thème, qui peut tout redessiner.
+ */
+.nf-chiffres {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	text-align: center;
+}
+
+.nf-chiffre-valeur {
+	display: block;
+	color: var(--nf-accent-text, var(--nf-accent));
+	font-size: 34px;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.05;
+}
+
+.nf-chiffre-libelle {
+	display: block;
+	margin-top: 2px;
+	color: var(--nf-text-muted);
+	font-size: 13px;
+}
+
+.nf-chiffres-vide {
+	margin: 0;
+	color: var(--nf-text-muted);
+}
+
+/* Dans un panneau coloré, les nombres et leur nom suivent la couleur du panneau : l'accent et le gris atténué, faits pour
+   les surfaces claires, y tombaient entre 1,06:1 et 1,96:1 selon le thème (check-contraste --widget, 2026-10-06). */
+.card.panel-color .nf-chiffre-valeur,
+.card.panel-color .nf-chiffre-libelle,
+.card.panel-color .nf-chiffres-vide {
+	color: inherit;
+}

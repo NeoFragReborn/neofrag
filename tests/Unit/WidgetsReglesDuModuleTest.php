@@ -65,7 +65,7 @@ final class WidgetsReglesDuModuleTest extends TestCase
 		}
 
 		// Et chaque lecture du widget passe par elle.
-		foreach (['get_gallery', 'get_random_image', 'get_images', 'get_categories'] as $methode)
+		foreach (['get_gallery', 'get_random_image', 'get_images', 'get_categories', 'get_dernieres_images'] as $methode)
 		{
 			self::assertSame(1, preg_match('/public function '.$methode.'\(.*?\n\t\}/s', $modele, $corps), $methode);
 			self::assertStringContainsString('albums_visibles()', $corps[0], $methode);
@@ -110,8 +110,28 @@ final class WidgetsReglesDuModuleTest extends TestCase
 
 	public function test_le_widget_calendrier_ne_montre_que_les_rendez_vous_publies(): void
 	{
-		// « Prochains événements », puis « La semaine » : ses jours et son prochain rendez-vous.
-		self::assertSame(3, substr_count((string) file_get_contents(self::RACINE.'/widgets/calendar/controllers/index.php'), "->where('published', '1')"));
+		// « Prochains événements », « La semaine » (ses jours et son prochain rendez-vous), « Le prochain rendez-vous ».
+		self::assertSame(4, substr_count((string) file_get_contents(self::RACINE.'/widgets/calendar/controllers/index.php'), "->where('published', '1')"));
+	}
+
+	/**
+	 * Le site en chiffres (2026-10-06) compte quatre modules : chaque nombre suit les règles de son module — forums
+	 * lisibles et messages non supprimés, actualités parues, rendez-vous publiés, photos des albums visibles.
+	 */
+	public function test_le_site_en_chiffres_ne_compte_que_ce_que_le_visiteur_voit(): void
+	{
+		$chiffres = (string) file_get_contents(self::RACINE.'/widgets/chiffres/controllers/index.php');
+
+		foreach ([
+			'->forums_lisibles()', "->where('m.deleted_at', NULL)",
+			"->where('n.deleted_at', NULL)", "->where('n.published', TRUE)", "->where('n.date <=',",
+			"->where('published', '1')",
+			"->where('g.deleted_at', NULL)", "->where('g.published', TRUE)", "->where('g.date <=',", "'gallery_see'",
+			"->where('deleted', '0')"
+		] as $condition)
+		{
+			self::assertStringContainsString($condition, $chiffres);
+		}
 	}
 
 	/** @return array<string, array{string, int}> fichier, nombre de requêtes publiques attendues */

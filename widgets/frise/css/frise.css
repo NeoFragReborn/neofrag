@@ -80,11 +80,13 @@
 	font-size: 13px;
 }
 
+/* « Dans 5 jours » d'un seul tenant : au téléphone, il se coupait en « Dans 5 » / « jours » (vu sur la démo, 2026-10-06). */
 .nf-frise-bientot {
 	margin-left: 6px;
 	color: var(--nf-accent-text, var(--nf-accent));
 	font-style: normal;
 	font-weight: 600;
+	white-space: nowrap;
 }
 
 .nf-frise-genre {

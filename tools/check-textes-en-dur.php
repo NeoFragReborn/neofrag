@@ -97,6 +97,8 @@ const EXEMPTIONS = [
     'themes/forge/forge.php|Après le contenu'         => 'identifiant de zone, traduit à l’affichage',
     'themes/granite/granite.php|Après le contenu'     => 'identifiant de zone, traduit à l’affichage',
     'themes/chronique/chronique.php|À côté'          => 'identifiant de zone, traduit à l’affichage',
+    'themes/pulse/pulse.php|À côté'                  => 'identifiant de zone, traduit à l’affichage',
+    'themes/pulse/pulse.php|Mosaïque'                => 'identifiant de zone, traduit à l’affichage',
     // Le nom de l'administration, identique en français et dans la langue de ses premiers auteurs.
     'themes/admin/admin.php|Administration'          => 'nom propre du thème',
     // La valeur PAR DÉFAUT du titre d'une action : `Action` la traduit à l'affichage.

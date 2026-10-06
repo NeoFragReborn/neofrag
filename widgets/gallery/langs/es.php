@@ -22,7 +22,8 @@ return [
 	'e27e3273' => 'No hay categorías por el momento',
 	'e3202498' => 'Todas',
 	'ebcb0841' => 'Siguiente',
-	'f36a1e9e' => 'Cuatro vistas de la galería a elegir: sus categorías, los álbumes de una categoría, una imagen al azar o el carrusel de un álbum.',
 	'51c02c0c' => 'Galería',
 	'f8594147' => 'Álbum',
+	'ffab555e' => 'Las últimas fotos',
+	'4364aa21' => 'Cinco vistas de la galería a elegir: sus categorías, los álbumes de una categoría, una imagen al azar, el carrusel de un álbum o las últimas fotos en mosaico.',
 ];

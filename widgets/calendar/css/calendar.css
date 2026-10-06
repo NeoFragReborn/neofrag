@@ -81,3 +81,72 @@
 	display: block;
 	color: var(--nf-text-muted);
 }
+
+/*
+ * Calendrier, affichage « Le prochain rendez-vous » : la date en grand dans une case, puis le titre, quand et où, le
+ * début de la description et le chemin. Les mêmes jetons --nf-* : le thème Pulse en fait une dalle ardoise.
+ */
+.nf-prochain {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: 16px;
+	align-items: start;
+}
+
+.nf-prochain-date {
+	display: grid;
+	place-items: center;
+	align-content: center;
+	width: 78px;
+	min-height: 84px;
+	padding: 6px 4px;
+	border-radius: var(--nf-radius, 12px);
+	background: var(--nf-surface-2);
+	color: var(--nf-text);
+	line-height: 1.1;
+}
+
+.nf-prochain-jour {
+	color: var(--nf-accent-text, var(--nf-accent));
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+}
+
+.nf-prochain-quantieme {
+	font-size: 34px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.nf-prochain-titre {
+	margin: 0 0 4px;
+	font-size: 19px;
+	line-height: 1.25;
+}
+
+.nf-prochain-quand,
+.nf-prochain-texte {
+	margin: 0 0 8px;
+	color: var(--nf-text-muted);
+	font-size: 14px;
+}
+
+.nf-prochain-vide {
+	margin: 0;
+	color: var(--nf-text-muted);
+}
+
+/* Dans un panneau coloré, le texte secondaire suit la couleur du panneau : le gris atténué, fait pour les surfaces
+   claires, y tombait entre 1,03:1 et 1,79:1 selon le thème (check-contraste --widget, 2026-10-06). */
+.card.panel-color .nf-prochain-quand,
+.card.panel-color .nf-prochain-texte,
+.card.panel-color .nf-prochain-vide {
+	color: inherit;
+}
+
+/* La case de la date est à gauche : le texte la suit, même dans un panneau qui centre tout. */
+.nf-prochain {
+	text-align: start;
+}

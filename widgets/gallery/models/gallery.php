@@ -89,6 +89,25 @@ class Gallery extends Model
 						->get();
 	}
 
+	/**
+	 * Les dernières photos parues, prises dans les albums que le visiteur peut voir (« Les dernières photos »,
+	 * 2026-10-06, pour le thème Pulse ; il sert à tout thème).
+	 */
+	public function get_dernieres_images(int $nombre = 5)
+	{
+		if (!($visibles = $this->albums_visibles()))
+		{
+			return [];
+		}
+
+		return $this->db->select('gi.image_id', 'gi.file_id', 'gi.thumbnail_file_id', 'gi.title', 'gi.gallery_id')
+						->from('nf_gallery_images gi')
+						->where('gi.gallery_id', $visibles)
+						->order_by('gi.date DESC', 'gi.image_id DESC')
+						->limit($nombre)
+						->get();
+	}
+
 	public function get_categories()
 	{
 		$visibles = $this->albums_visibles();

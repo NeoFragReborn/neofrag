@@ -9,7 +9,7 @@ return [
 	'a4377818' => 'News',
 	'8fe4fadf' => 'Discussion',
 	'c19a293f' => 'By %s',
-	'a47f60e2' => '%d reply| %d replies',
+	'a47f60e2' => '%d reply|%d replies',
 	'0fdae5ef' => 'Photos',
 	'bbf5f5d6' => '%d photo|%d photos',
 	'7c410921' => 'The season',

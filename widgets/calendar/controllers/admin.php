@@ -19,6 +19,12 @@ class Admin extends Controller
 		], $settings));
 	}
 
+	public function prochain($settings = [])
+	{
+		// Un seul rendez-vous, le prochain : seul le panneau se règle.
+		return $this->semaine($settings);
+	}
+
 	public function upcoming($settings = [])
 	{
 		return $this->view('admin', array_merge([

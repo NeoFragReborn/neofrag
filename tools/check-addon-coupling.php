@@ -261,7 +261,7 @@ function coupling_litteral(string $jeton): string
     return $jeton;
 }
 
-/** Le module qu'une adresse ou une page de disposition désigne (`news/_news/*` → `news`), ou NULL. */
+/** Le module qu'une adresse ou une page de disposition désigne (`news/*` → `news`), ou NULL. */
 function coupling_module_de_route(string $chemin, array $addons): ?string
 {
     $premier = str_replace('-', '_', strtolower(explode('/', ltrim(trim($chemin), '/'))[0]));
