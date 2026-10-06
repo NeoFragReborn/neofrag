@@ -12,6 +12,39 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.36] — 2026-10-06
+
+A new theme: **Chronique**, the season’s notebook for associations and clubs, with two new features that serve every
+theme — the season timeline and the calendar week.
+
+### Added
+
+- **The Chronique theme.** The site as the season’s notebook: a discreet header that stays at the top, with a thin line
+  that follows your reading, a “Contents” button that opens the whole site full screen (each section numbered) and the
+  “Join” call for visitors; the home page opens on a large sentence — the season, the site name, its tagline — and the
+  current week; then the timeline tells the season month by month, beside a column that stays in place (the member area,
+  the documents, the partners). The forum reads as numbered chapters, the member area as a notebook, and the footer
+  closes the book. “Paper” by day, “lamplight” by night; Fraunces headings, Work Sans text, IBM Plex Mono dates.
+  Settings: colors, opening image, logo, and the address of the “Join” button (a membership page, a form on another
+  platform, or the site’s registration).
+- **The “Season timeline” widget**: what the site lives through, month by month, on a timeline — upcoming calendar
+  events (their dot pulses), news, forum discussions and photo albums, each if its module is installed, and only what
+  the visitor may read (restricted forums and group albums stay hidden). The number of entries and the past months can
+  be set.
+- **The calendar also shows “This week”**: the seven days of the current week, the ones with an event marked, today
+  circled, and the next event — in the viewer’s time zone.
+
+### Fixed
+
+- **In day mode, Bootstrap components take the theme’s colors**: a FAQ accordion, a checkbox, a table or a dropdown
+  stayed white, with dark gray text, on Granite’s paper. Checked element by element on Forge, Granite, Blockcraft and
+  Extend: only their colors change, and night mode does not move.
+- **“Day mode” and “Night mode” are translated**: the tooltip and the name, read by screen readers, of the toggle button
+  stayed in French on a site in another language (Forge, Granite, Blockcraft, Extend). The hard-coded text check now
+  knows the words “jour” and “nuit”.
+- **A theme’s customization page no longer logs a warning** when its settings do not exist yet (a theme registered
+  without its installation): an image position falls back to its default.
+
 ## [1.2.35] — 2026-10-06
 
 The second theme rebuilt from the ground up: **Granite 2.0.0 “Gazette”**, the newspaper of associations and clubs.

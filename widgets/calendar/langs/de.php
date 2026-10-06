@@ -14,4 +14,8 @@ return [
 	'e7c90f18' => 'Anzahl der Veranstaltungen',
 	'042e2c3d' => 'In einem Panel anzeigen',
 	'e2a147a0' => 'Ja',
+	'f7d36bc6' => 'Die kommenden Termine des Kalenders mit Datum und Farbe, oder die aktuelle Woche mit markierten Termintagen und dem nächsten Termin; ein Link führt zum vollständigen Kalender.',
+	'33432c7d' => 'Diese Woche',
+	'151f0e3e' => 'Nächster Termin',
+	'75a94c9e' => 'l, j. F',
 ];

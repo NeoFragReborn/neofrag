@@ -76,9 +76,42 @@ final class WidgetsReglesDuModuleTest extends TestCase
 	{
 		$modele = (string) file_get_contents(self::RACINE.'/widgets/forum/models/forum.php');
 
-		self::assertStringContainsString('->reservee_vip(', $modele);
+		// Les forums lisibles viennent du module (2026-10-06 : la règle vivait dans le widget)…
+		self::assertStringContainsString('->forums_lisibles()', $modele);
 		self::assertStringContainsString("->where('m.deleted_at', NULL)", $modele);
-		self::assertStringContainsString('public function reservee_vip(int $category_id): bool', (string) file_get_contents(self::RACINE.'/modules/forum/models/forum.php'));
+
+		// … où elle tient le droit de lecture de la catégorie ET la réserve du VIP.
+		$module = (string) file_get_contents(self::RACINE.'/modules/forum/models/forum.php');
+		self::assertSame(1, preg_match('/public function forums_lisibles\(\): array.*?\n\t\}/s', $module, $corps));
+		self::assertStringContainsString("'category_read'", $corps[0]);
+		self::assertStringContainsString('->_vip_locked(', $corps[0]);
+	}
+
+	/**
+	 * La frise de la saison (2026-10-06) montre quatre modules à la fois : chaque source suit les règles de son
+	 * module — rendez-vous publiés, actualités et albums parus ni à la corbeille, albums que l'on a le droit de
+	 * voir, discussions des forums lisibles sans les messages supprimés.
+	 */
+	public function test_la_frise_suit_les_regles_des_modules(): void
+	{
+		$frise = (string) file_get_contents(self::RACINE.'/widgets/frise/controllers/index.php');
+
+		self::assertSame(2, substr_count($frise, "->where('published', '1')"), 'rendez-vous à venir et passés');
+
+		foreach ([
+			"->where('n.deleted_at', NULL)", "->where('n.published', TRUE)", "->where('n.date <=',",
+			'->forums_lisibles()', "->where('m.deleted_at', NULL)",
+			"->where('g.deleted_at', NULL)", "->where('g.published', TRUE)", "->where('g.date <=',", "'gallery_see'"
+		] as $condition)
+		{
+			self::assertStringContainsString($condition, $frise);
+		}
+	}
+
+	public function test_le_widget_calendrier_ne_montre_que_les_rendez_vous_publies(): void
+	{
+		// « Prochains événements », puis « La semaine » : ses jours et son prochain rendez-vous.
+		self::assertSame(3, substr_count((string) file_get_contents(self::RACINE.'/widgets/calendar/controllers/index.php'), "->where('published', '1')"));
 	}
 
 	/** @return array<string, array{string, int}> fichier, nombre de requêtes publiques attendues */

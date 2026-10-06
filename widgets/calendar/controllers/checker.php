@@ -10,6 +10,13 @@ use NF\NeoFrag\Loadables\Controller;
 
 class Checker extends Controller
 {
+	public function semaine($settings = [])
+	{
+		return [
+			'display_panel' => in_array($settings['display_panel'] ?? 'oui', ['oui', 'non'], TRUE) ? ($settings['display_panel'] ?? 'oui') : 'oui'
+		];
+	}
+
 	public function upcoming($settings = [])
 	{
 		return [

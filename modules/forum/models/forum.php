@@ -783,12 +783,35 @@ class Forum extends Model
 	}
 
 	/**
-	 * La même règle, pour qui affiche le forum ailleurs : le widget « Forum » montrait les derniers
-	 * messages des catégories réservées au VIP à tous les visiteurs (2026-10-04).
+	 * Les forums que celui qui regarde peut lire : ceux des catégories qu'il a le droit de lire et qui ne lui sont
+	 * pas réservées au VIP, sous-forums compris. Pour qui montre le forum ailleurs que dans ses pages — le widget
+	 * « Forum », la frise de la saison — sans en recopier la règle (2026-10-06 ; elle vivait dans le widget).
+	 *
+	 * @return list<int>
 	 */
-	public function reservee_vip(int $category_id): bool
+	public function forums_lisibles(): array
 	{
-		return $this->_vip_locked($category_id);
+		$categories = [];
+
+		// Une requête à UNE colonne rend des scalaires, pas des lignes (`Db::get()`).
+		foreach ($this->db->select('category_id')->from('nf_forum_categories')->get() as $category_id)
+		{
+			if ($this->access('forum', 'category_read', $category_id) && !$this->_vip_locked((int) $category_id))
+			{
+				$categories[] = $category_id;
+			}
+		}
+
+		if (!$categories)
+		{
+			return [];
+		}
+
+		return array_map('intval', $this->db	->select('f.forum_id')
+												->from('nf_forum f')
+												->join('nf_forum f2', 'f2.forum_id = f.parent_id AND f.is_subforum = "1"')
+												->where('IFNULL(f2.parent_id, f.parent_id)', $categories)
+												->get());
 	}
 
 	public function check_forum($forum_id, &$title)

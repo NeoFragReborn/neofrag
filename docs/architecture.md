@@ -12,7 +12,7 @@ La version courante est `NEOFRAG_VERSION`, dans [index.php](../index.php).
 - **MariaDB 11**, driver **mysqli** (seul driver implémenté : `neofrag/drivers/mysqli.php`)
 - **Composer** (deps dans `vendor/` ; plus de dossier `lib/`)
 - **Bootstrap 5.3.8** (jQuery entièrement retiré — JS vanilla + helper `window.NF`), **SCSS** compilé serveur (scssphp)
-- **62 modules · 40 widgets · 63 addons distribuables · 6 thèmes distribués** (admin, nebula, blockcraft, granite, forge, extend)
+- **62 modules · 41 widgets · 65 addons distribuables · 7 thèmes distribués** (admin, nebula, blockcraft, granite, forge, extend, chronique)
 
 ## 2. Cycle de requête
 
@@ -177,8 +177,8 @@ corbeille (`Trash::TYPES`), recherche et flux RSS par module.
 ## 11. Dette technique notable
 
 - **Service locator + méthodes magiques** partout → testabilité et IDE freinés (cf. §3).
-- **`strict_types`** : 1437 fichiers sur 1672 dans `neofrag`, `modules`, `widgets`, `addons` (2026-10-05) — tout le
-  périmètre utile ; les 228 restants sont les gabarits `views/**.tpl.php`, où un `declare` ne protégerait rien.
+- **`strict_types`** : 1447 fichiers sur 1685 dans `neofrag`, `modules`, `widgets`, `addons` (2026-10-06) — tout le
+  périmètre utile ; les 238 restants sont les gabarits `views/**.tpl.php`, où un `declare` ne protégerait rien.
   Le cliquet
   `tools/check-strict-types.php` interdit de reculer, la conversion se fait par petits lots éprouvés, la machinerie
   magique `__get` / `__call` pouvant révéler des coercitions à l'exécution.

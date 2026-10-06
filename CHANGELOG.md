@@ -10,6 +10,39 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.36] — 2026-10-06
+
+Un thème neuf : **Chronique**, le carnet de la saison des associations et des clubs, avec deux nouveautés qui servent à
+tous les thèmes — la frise de la saison et la semaine du calendrier.
+
+### Ajouté
+
+- **Le thème Chronique.** Le site comme le carnet de la saison : un en-tête discret qui reste en haut, avec un fin trait
+  qui suit la lecture, un bouton « Sommaire » qui ouvre tout le site en plein écran (chaque rubrique numérotée) et
+  l'appel « Adhérer » pour le visiteur ; l'accueil s'ouvre sur une grande phrase — la saison, le nom du site, sa devise —
+  et la semaine en cours ; puis la frise raconte la saison mois par mois, à côté d'une colonne qui reste en place
+  (l'espace membre, les documents, les partenaires). Le forum se lit en chapitres numérotés, l'espace membre comme un
+  carnet, et le pied ferme le livre. Jour « papier », nuit « à la lampe » ; titres Fraunces, texte Work Sans, dates IBM
+  Plex Mono. Réglages : couleurs, image d'ouverture, logo, et l'adresse du bouton « Adhérer » (une page d'adhésion, un
+  formulaire d'une autre plateforme, ou l'inscription au site).
+- **Le widget « Frise de la saison »** : ce que le site vit, mois par mois, sur une ligne de temps — les rendez-vous à
+  venir du calendrier (leur point bat), les actualités, les discussions du forum et les albums photo, chacun si son
+  module est installé, et seulement ce que le visiteur a le droit de lire (les forums réservés, les albums d'un groupe
+  restent cachés). Le nombre d'entrées et les mois passés se règlent.
+- **Le calendrier affiche aussi « La semaine »** : les sept jours de la semaine en cours, ceux qui portent un événement
+  marqués, aujourd'hui entouré, et le prochain rendez-vous — dans le fuseau horaire de celui qui regarde.
+
+### Corrigé
+
+- **En mode jour, les composants de Bootstrap prennent les couleurs du thème** : un accordéon de la FAQ, une case à
+  cocher, un tableau ou un menu déroulant restaient blancs, et leur texte gris foncé, sur le papier de Granite. Vérifié
+  élément par élément sur Forge, Granite, Blockcraft et Extend : seules leurs couleurs changent, et la nuit ne bouge pas.
+- **« Mode jour » et « Mode nuit » se traduisent** : l'infobulle et le nom, lu par les lecteurs d'écran, du bouton de
+  bascule restaient en français sur un site dans une autre langue (Forge, Granite, Blockcraft, Extend). Le contrôle des
+  textes écrits en dur connaît maintenant les mots « jour » et « nuit ».
+- **La page de personnalisation d'un thème ne journalise plus d'avertissement** quand ses réglages n'existent pas encore
+  (un thème inscrit sans son installation) : la position d'une image prend sa valeur par défaut.
+
 ## [1.2.35] — 2026-10-06
 
 Le deuxième thème refait de fond en comble : **Granite 2.0.0 « Gazette »**, le journal des associations et des clubs.

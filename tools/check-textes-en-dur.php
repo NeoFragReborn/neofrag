@@ -96,6 +96,7 @@ const EXEMPTIONS = [
     'themes/*/*.php|Contenu'                         => 'identifiant de zone, traduit à l’affichage',
     'themes/forge/forge.php|Après le contenu'         => 'identifiant de zone, traduit à l’affichage',
     'themes/granite/granite.php|Après le contenu'     => 'identifiant de zone, traduit à l’affichage',
+    'themes/chronique/chronique.php|À côté'          => 'identifiant de zone, traduit à l’affichage',
     // Le nom de l'administration, identique en français et dans la langue de ses premiers auteurs.
     'themes/admin/admin.php|Administration'          => 'nom propre du thème',
     // La valeur PAR DÉFAUT du titre d'une action : `Action` la traduit à l'affichage.
@@ -150,7 +151,7 @@ function exempte(string $relatif, string $texte): bool
 /** Les noms de langues, écrits dans leur langue : un sélecteur de langue les montre ainsi, exprès. */
 const NOMS_DE_LANGUES = ['Français', 'English', 'Deutsch', 'Español', 'Italiano', 'Português'];
 
-const MOTS_FORTS  = 'aucun|aucune|votre|vos|veuillez|cette|avec|pour|dans|sont|être|été|merci|supprimer|modifier|ajouter|enregistrer|annuler|fermer|valider|rechercher|retour|suivant|précédent|connexion|déconnexion|inscription|envoyer|membres|accueil|voir|lire|fichier|dossier|nouveau|nouvelle|catégorie|élément|erreur|oui|mot de passe|réglages|paramètres|télécharger|afficher|masquer|désactiver|activer|ici|déjà|encore|toujours|jamais|mettre|choisir|sélectionner|glisser';
+const MOTS_FORTS  = 'aucun|aucune|votre|vos|veuillez|jour|nuit|cette|avec|pour|dans|sont|être|été|merci|supprimer|modifier|ajouter|enregistrer|annuler|fermer|valider|rechercher|retour|suivant|précédent|connexion|déconnexion|inscription|envoyer|membres|accueil|voir|lire|fichier|dossier|nouveau|nouvelle|catégorie|élément|erreur|oui|mot de passe|réglages|paramètres|télécharger|afficher|masquer|désactiver|activer|ici|déjà|encore|toujours|jamais|mettre|choisir|sélectionner|glisser';
 /** Des libellés d'un seul mot, sans accent, que seul le français écrit ainsi — ou qu'une autre langue que l'anglais traduit. */
 const MOTS_SEULS  = 'continuer|utilisateur|utilisateurs|pseudo|titre|contenu|publier|brouillon|actif|inactif|non|tous|toutes|partager|imprimer|copier|importer|exporter|trier|filtrer|jour|jours|semaine|mois|heure|heures|auteur|sujet|sujets|commentaire|commentaires|lien|liens|profil|compte|groupe|groupes|nom|adresse|ville|pays|langue|confirmation|administration|terminer|installer|tester|chercher|options|statut|actions|aucune|aide|accueil|forum|message|messages|image|images|description|position|couleur|taille|ordre|type|date|version|valeur|visible|public|site|page|pages|lire|joueurs|joueur|partenaires|offres|offre|candidature|candidatures|votes|vote|sondage|sondages|dons|boutique|objets|panier|paiement|paiements|tickets|ticket|annonces|annonce|lieux|lieu|recettes|recette|citations|citation|pseudo';
 const MOTS_FAIBLES = 'les|des|une|est|sur|par|pas|du|au|aux|le|la|et|un|de|en|qui|que|ne|se|il|nous|vous|ou|sa|son|ses|leur|tous|tout|toutes';

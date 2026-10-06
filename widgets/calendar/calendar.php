@@ -9,7 +9,7 @@ class Calendar extends Widget
 	{
 		return [
 			'title'   => $this->lang('Calendrier'),
-			'description' => $this->lang('Les prochains événements du calendrier, avec leur date et leur couleur, et un lien vers le calendrier complet ; le nombre d\'événements affichés se règle.'),
+			'description' => $this->lang('Les prochains événements du calendrier, avec leur date et leur couleur, ou la semaine en cours, ses jours d\'événement marqués et le prochain rendez-vous ; un lien mène au calendrier complet.'),
 			'icon'        => 'far fa-calendar',
 			'author'  => 'NeoFrag Reborn',
 			'license' => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
@@ -17,10 +17,13 @@ class Calendar extends Widget
 			'core'        => FALSE,
 			'presets'     => ['association', 'gaming'],
 			'requires'    => [],
-			'version' => '1.0',
+			'version' => '1.1',
 			'link'        => 'https://neofrag-reborn.xyz',
 			'depends' => ['neofrag' => '0.2.0'],
-			'types'   => ['upcoming' => $this->lang('Prochains événements')]
+			'types'   => [
+				'upcoming' => $this->lang('Prochains événements'),
+				'semaine'  => $this->lang('La semaine')
+			]
 		];
 	}
 }

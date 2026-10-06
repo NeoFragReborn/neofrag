@@ -16,7 +16,7 @@ Le détail version par version est dans le [CHANGELOG](CHANGELOG.md) ; la façon
 
 **Version 1.2** — le numéro exact est en tête du [CHANGELOG](CHANGELOG.md) —, bien au-delà de l'alpha
 0.2.4 dont NeoFrag Reborn est la continuité. Le catalogue
-propose **35 modules, 24 widgets et 4 thèmes**, ajoutables en un clic depuis l'administration.
+propose **35 modules, 25 widgets et 5 thèmes**, ajoutables en un clic depuis l'administration.
 
 Le code est complet et éprouvé à chaque modification — tests automatisés, analyse statique, contrôles
 qui ouvrent un vrai navigateur. **Il est publié** depuis le 4 octobre 2026 sur

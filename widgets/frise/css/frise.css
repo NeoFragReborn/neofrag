@@ -1,0 +1,137 @@
+/*
+ * La frise de la saison : une ligne verticale, une borne par mois, un point par entrée — celui d'un rendez-vous à
+ * venir bat. Écrite avec les jetons --nf-* que chaque thème définit : elle prend l'allure du thème, qui peut tout
+ * redessiner (Chronique en fait des bornes de pierre). Le battement s'arrête si l'on a demandé moins d'animations.
+ */
+.nf-frise {
+	position: relative;
+	margin: 0;
+	padding: 0 0 0 34px;
+	list-style: none;
+}
+
+/* La ligne du temps */
+.nf-frise::before {
+	content: "";
+	position: absolute;
+	left: 10px;
+	top: 6px;
+	bottom: 6px;
+	width: 2px;
+	background: var(--nf-border);
+}
+
+.nf-frise-borne {
+	position: relative;
+	margin: 4px 0 14px -34px;
+	padding-left: 34px;
+	color: var(--nf-text-muted);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: .14em;
+	text-transform: uppercase;
+}
+
+.nf-frise-borne::before {
+	content: "";
+	position: absolute;
+	left: 3px;
+	top: 50%;
+	width: 16px;
+	height: 16px;
+	transform: translateY(-50%) rotate(45deg);
+	border-radius: 3px;
+	background: var(--nf-text-muted);
+	box-shadow: 0 0 0 4px var(--nf-surface);
+}
+
+.nf-frise-entree {
+	position: relative;
+	margin-bottom: 22px;
+}
+
+.nf-frise-entree::before {
+	content: "";
+	position: absolute;
+	left: -29px;
+	top: 6px;
+	width: 12px;
+	height: 12px;
+	border: 2px solid var(--nf-text-muted);
+	border-radius: 50%;
+	background: var(--nf-surface);
+}
+
+.nf-frise-entree.is-a-venir::before {
+	border-color: var(--nf-accent);
+	background: var(--nf-accent);
+	animation: nf-frise-pouls 2.2s ease-out infinite;
+}
+
+@keyframes nf-frise-pouls {
+	0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--nf-accent) 55%, transparent); }
+	80%  { box-shadow: 0 0 0 12px color-mix(in srgb, var(--nf-accent) 0%, transparent); }
+	100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--nf-accent) 0%, transparent); }
+}
+
+.nf-frise-entree time {
+	display: block;
+	color: var(--nf-text-muted);
+	font-size: 13px;
+}
+
+.nf-frise-bientot {
+	margin-left: 6px;
+	color: var(--nf-accent-text, var(--nf-accent));
+	font-style: normal;
+	font-weight: 600;
+}
+
+.nf-frise-genre {
+	display: inline-block;
+	margin-top: 4px;
+	padding: 1px 8px;
+	border-radius: 999px;
+	background: var(--nf-surface-2);
+	color: var(--nf-text-muted);
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.nf-frise-titre {
+	margin: 4px 0;
+	font-size: 19px;
+	line-height: 1.25;
+}
+
+.nf-frise-titre a {
+	color: var(--nf-text);
+}
+
+.nf-frise-titre a:hover {
+	color: var(--nf-accent-text, var(--nf-accent));
+}
+
+.nf-frise-image img {
+	display: block;
+	width: 100%;
+	max-height: 220px;
+	margin: 8px 0;
+	border-radius: var(--nf-radius-sm, 8px);
+	object-fit: cover;
+}
+
+.nf-frise-texte {
+	margin: 0;
+	color: var(--nf-text-muted);
+	font-size: 15px;
+}
+
+.nf-frise-vide {
+	margin: 0;
+	color: var(--nf-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.nf-frise-entree.is-a-venir::before { animation: none; }
+}

@@ -14,4 +14,8 @@ return [
 	'e7c90f18' => 'Number of events',
 	'042e2c3d' => 'Display in a panel',
 	'e2a147a0' => 'Yes',
+	'f7d36bc6' => 'The calendar’s upcoming events, with their date and color, or the current week, its event days marked and the next event; a link leads to the full calendar.',
+	'33432c7d' => 'This week',
+	'151f0e3e' => 'Next event',
+	'75a94c9e' => 'l, F j',
 ];

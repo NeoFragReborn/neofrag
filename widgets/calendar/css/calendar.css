@@ -1,0 +1,83 @@
+/*
+ * Calendrier, affichage « La semaine » : sept cases, du lundi au dimanche. Écrit avec les jetons --nf-* que chaque
+ * thème définit (docs/guide/create-a-theme.md) : il prend l'allure du thème, qui peut tout redessiner.
+ */
+.nf-semaine-jours {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	text-align: center;
+}
+
+.nf-semaine-jour > a,
+.nf-semaine-jour {
+	display: block;
+	border-radius: var(--nf-radius-sm, 8px);
+	color: var(--nf-text-muted);
+	text-decoration: none;
+}
+
+.nf-semaine-jour {
+	padding: 8px 0;
+}
+
+.nf-semaine-jour > a {
+	margin: -8px 0;
+	padding: 8px 0;
+}
+
+.nf-semaine-nom {
+	display: block;
+	font-size: 12px;
+	text-transform: capitalize;
+}
+
+.nf-semaine-numero {
+	display: block;
+	color: var(--nf-text);
+	font-size: 19px;
+	line-height: 1.15;
+}
+
+/* Un jour qui porte un événement : rempli de la couleur d'accent. */
+.nf-semaine-jour.is-evenement {
+	background: var(--nf-accent);
+	color: var(--nf-on-accent);
+}
+
+.nf-semaine-jour.is-evenement .nf-semaine-nom,
+.nf-semaine-jour.is-evenement .nf-semaine-numero,
+.nf-semaine-jour.is-evenement > a {
+	color: var(--nf-on-accent);
+}
+
+.nf-semaine-jour.is-evenement > a:hover,
+.nf-semaine-jour.is-evenement > a:focus-visible {
+	background: var(--nf-accent-strong, var(--nf-accent));
+}
+
+/* Aujourd'hui : un filet, que l'on soit ou non un jour d'événement. */
+.nf-semaine-jour.is-aujourdhui {
+	box-shadow: inset 0 0 0 2px var(--nf-text);
+}
+
+.nf-semaine-prochain {
+	margin: 12px 0 0;
+	font-size: 14px;
+}
+
+.nf-semaine-libelle {
+	display: block;
+	color: var(--nf-text-muted);
+	font-size: 12px;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+}
+
+.nf-semaine-prochain time {
+	display: block;
+	color: var(--nf-text-muted);
+}

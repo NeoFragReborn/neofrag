@@ -102,29 +102,12 @@ class Forum extends Model
 
 	public function _get_forum()
 	{
-		$categories = [];
-
-		// Une requête à UNE colonne rend des scalaires, pas des lignes (`Db::get()`). La version
-		// précédente lisait `$category['category_id']` sur un entier : aucune catégorie n'était
-		// retenue, et le widget n'affichait jamais aucun sujet.
-		// La règle VIP du module : une catégorie réservée au VIP ne montre rien à qui ne l'est pas. Le
-		// widget ne lisait que le droit de lecture, et affichait l'extrait de ses messages à tous.
+		// Les forums que le visiteur peut lire : la règle — le droit de lecture de la catégorie, et la réserve du
+		// VIP, que le widget ignorait jusqu'au 2026-10-04 — vit dans le module, Forum::forums_lisibles(), que la
+		// frise de la saison emploie aussi (2026-10-06).
 		$forum  = \NeoFrag()->module('forum');
 		$modele = $forum ? $forum->model('forum') : NULL;
 
-		foreach ($this->db->select('category_id')->from('nf_forum_categories')->get() as $category_id)
-		{
-			if ($this->access('forum', 'category_read', $category_id)
-				&& !($modele instanceof \NF\Modules\Forum\Models\Forum && $modele->reservee_vip((int) $category_id)))
-			{
-				$categories[] = $category_id;
-			}
-		}
-
-		return $this->db->select('f.forum_id')
-						->from('nf_forum f')
-						->join('nf_forum f2', 'f2.forum_id = f.parent_id AND f.is_subforum = "1"')
-						->where('IFNULL(f2.parent_id, f.parent_id)', $categories)
-						->get();
+		return $modele instanceof \NF\Modules\Forum\Models\Forum ? $modele->forums_lisibles() : [];
 	}
 }

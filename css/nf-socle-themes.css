@@ -19,6 +19,22 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
+/* Les composants de Bootstrap en mode JOUR : leur fond et leur texte suivent la palette du thème, comme le pont
+   (nf-bs5-bridge.css) le fait pour la nuit. Sans cela, Bootstrap gardait son blanc et son gris #212529 : un
+   accordéon de la FAQ, une case à cocher ou un tableau restaient blancs sur le papier de Granite (2026-10-06).
+   Sur la racine seulement : un îlot `[data-bs-theme="light"]` dans une page de nuit garde ses propres couleurs. */
+:root[data-bs-theme="light"],
+:root:not([data-bs-theme]) {
+	--bs-body-bg:         var(--nf-surface);
+	--bs-body-color:      var(--nf-text);
+	--bs-emphasis-color:  var(--nf-text-strong);
+	--bs-border-color:    var(--nf-border);
+	--bs-secondary-bg:    var(--nf-surface-2);
+	--bs-tertiary-bg:     var(--nf-surface-3);
+	--bs-secondary-color: color-mix(in srgb, var(--nf-text) 75%, transparent);
+	--bs-tertiary-color:  color-mix(in srgb, var(--nf-text) 50%, transparent);
+}
+
 a {
 	color:           var(--nf-link);
 	text-decoration: none;

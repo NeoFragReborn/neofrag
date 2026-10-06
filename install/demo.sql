@@ -937,7 +937,19 @@ INSERT INTO `nf_dispositions` (`disposition_id`, `theme`, `page`, `zone`, `dispo
 ('130', 'granite', 'forum/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9094,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9095,\"style\":null,\"size\":null}]}]}]'),
 ('131', 'granite', 'forum/*', '3', '[{\"style\":\"row-default\",\"cols\":[{\"size\":\"col-md-4\",\"widgets\":[{\"id\":9100,\"style\":\"panel-default\",\"size\":null}]},{\"size\":\"col-md-8\",\"widgets\":[{\"id\":9101,\"style\":\"panel-default\",\"size\":null}]}]}]'),
 ('132', 'granite', 'news/_news/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9096,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9097,\"style\":null,\"size\":null}]}]}]'),
-('133', 'granite', 'user/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9098,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9099,\"style\":null,\"size\":null}]}]}]');
+('133', 'granite', 'user/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9098,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9099,\"style\":null,\"size\":null}]}]}]'),
+('135', 'chronique', '*', '0', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9103,\"style\":null,\"size\":null}]}]}]'),
+('136', 'chronique', '*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9105,\"style\":null,\"size\":null}]}]}]'),
+('137', 'chronique', '*', '3', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9113,\"style\":\"panel-color\",\"size\":null},{\"id\":9114,\"style\":\"panel-default\",\"size\":null},{\"id\":9115,\"style\":\"panel-default\",\"size\":null}]}]}]'),
+('138', 'chronique', '*', '4', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9118,\"style\":null,\"size\":null}]}]}]'),
+('139', 'chronique', '*', '1', '[]'),
+('140', 'chronique', '/', '1', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9104,\"style\":\"panel-default\",\"size\":null}]}]}]'),
+('141', 'chronique', '/', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9106,\"style\":null,\"size\":null}]}]}]'),
+('142', 'chronique', 'forum/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9107,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9108,\"style\":null,\"size\":null}]}]}]'),
+('143', 'chronique', 'forum/*', '3', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9116,\"style\":\"panel-default\",\"size\":null},{\"id\":9117,\"style\":\"panel-default\",\"size\":null}]}]}]'),
+('144', 'chronique', 'news/_news/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9109,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9110,\"style\":null,\"size\":null}]}]}]'),
+('145', 'chronique', 'user/*', '2', '[{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9111,\"style\":null,\"size\":null}]}]},{\"style\":\"row-default\",\"cols\":[{\"size\":null,\"widgets\":[{\"id\":9112,\"style\":null,\"size\":null}]}]}]'),
+('146', 'chronique', 'user/*', '3', '[]');
 DELETE FROM `nf_widgets`;
 INSERT INTO `nf_widgets` (`widget_id`, `widget`, `type`, `title`, `settings`) VALUES
 ('133', 'navigation', 'index', NULL, '{\"links\":[{\"title\":\"Accueil\",\"url\":\"\"},{\"title\":\"Actualit&eacute;s\",\"url\":\"news\"},{\"title\":\"Forum\",\"url\":\"forum\"},{\"title\":\"Galerie\",\"url\":\"gallery\"},{\"title\":\"Membres\",\"url\":\"members\"},{\"title\":\"Contact\",\"url\":\"contact\"}]}'),
@@ -1022,7 +1034,23 @@ INSERT INTO `nf_widgets` (`widget_id`, `widget`, `type`, `title`, `settings`) VA
 ('9099', 'module', 'index', NULL, NULL),
 ('9100', 'forum', 'statistics', NULL, NULL),
 ('9101', 'forum', 'activity', NULL, NULL),
-('9102', 'partners', 'column', NULL, NULL);
+('9102', 'partners', 'column', NULL, NULL),
+('9103', 'navigation', 'vertical', NULL, '{\"links\":[{\"title\":\"Accueil\",\"url\":\"\"},{\"title\":\"Actualit&eacute;s\",\"url\":\"news\"},{\"title\":\"Agenda\",\"url\":\"calendar\"},{\"title\":\"Forum\",\"url\":\"forum\"},{\"title\":\"Galerie\",\"url\":\"gallery\"},{\"title\":\"Documents\",\"url\":\"downloads\"},{\"title\":\"Membres\",\"url\":\"members\"},{\"title\":\"Contact\",\"url\":\"contact\"}],\"panel\":0}'),
+('9104', 'calendar', 'semaine', NULL, NULL),
+('9105', 'module', 'index', NULL, NULL),
+('9106', 'frise', 'index', NULL, NULL),
+('9107', 'breadcrumb', 'index', NULL, NULL),
+('9108', 'module', 'index', NULL, NULL),
+('9109', 'breadcrumb', 'index', NULL, NULL),
+('9110', 'module', 'index', NULL, NULL),
+('9111', 'breadcrumb', 'index', NULL, NULL),
+('9112', 'module', 'index', NULL, NULL),
+('9113', 'user', 'index', NULL, NULL),
+('9114', 'downloads', 'popular', NULL, NULL),
+('9115', 'partners', 'column', NULL, NULL),
+('9116', 'forum', 'statistics', NULL, NULL),
+('9117', 'forum', 'activity', NULL, NULL),
+('9118', 'navigation', 'index', NULL, '{\"links\":[{\"title\":\"Agenda\",\"url\":\"calendar\"},{\"title\":\"Documents\",\"url\":\"downloads\"},{\"title\":\"Contact\",\"url\":\"contact\"}],\"panel\":0}');
 
 COMMIT;
 SET FOREIGN_KEY_CHECKS = 1;

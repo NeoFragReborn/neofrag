@@ -1,9 +1,9 @@
 {
     "schema": 1,
     "project": "NeoFrag Reborn",
-    "base_version": "1.2.22",
-    "generated_at": "2026-10-04T00:45:49+00:00",
-    "count": 63,
+    "base_version": "1.2.36",
+    "generated_at": "2026-10-06T14:47:20+00:00",
+    "count": 65,
     "addons": [
         {
             "type": "module",
@@ -39,10 +39,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/ads.zip",
             "preview": "modules/ads.jpg",
-            "size": 31179,
-            "sha256": "5b2f5f06924af056e4ea4b2cb9d56476db12f39cc058e935dc996a522c10f31b",
+            "size": 31139,
+            "sha256": "01d174c979259d5978ed24e16acace61a6f05834c1d2f11cec7e895bf6f31228",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -83,11 +83,11 @@
             "author": "NeoFrag Reborn",
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/api.zip",
-            "preview": "",
-            "size": 37312,
-            "sha256": "4e178878d56a1f1d4066f7993787184d35b64f56bfe2a7f94c626389830acd7d",
+            "preview": "modules/api.jpg",
+            "size": 93897,
+            "sha256": "4f1a431f0e46141b2025d8db82c86f7e11093c75188cd220c93386d5a64d06c1",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -127,10 +127,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/articles.zip",
             "preview": "modules/articles.jpg",
-            "size": 87342,
-            "sha256": "13b2d0c04b615d87f133b11694898dcf442c1fecc4d9b527f980bfaf93a8e0e1",
+            "size": 88353,
+            "sha256": "b0da47dac3818b9ac03b9a2c4604aad4e318dbd486f6231b045fec372851d436",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -144,27 +144,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Palmarès",
-            "description": "Récompenses (palmarès) attribuables aux membres ou équipes — module gaming.",
+            "description": "Le palmarès des équipes : rang obtenu, nombre d'équipes, date, lieu, jeu et plateforme de chaque compétition, et les podiums comptés par équipe et par jeu.",
             "i18n": {
                 "en": {
                     "title": "Awards",
-                    "description": "Awards (palmares) assignable to members or teams — gaming module."
+                    "description": "The teams' track record: rank achieved, number of teams, date, location, game and platform of each competition, with podiums counted per team and per game."
                 },
                 "de": {
                     "title": "Auszeichnungen",
-                    "description": "Auszeichnungen (Palmarès), zuweisbar an Mitglieder oder Teams — Gaming-Modul."
+                    "description": "Die Erfolge der Teams: erreichte Platzierung, Anzahl der Teams, Datum, Ort, Spiel und Plattform jedes Wettbewerbs, mit Podestplätzen pro Team und pro Spiel."
                 },
                 "es": {
                     "title": "Palmarés",
-                    "description": "Premios (palmarés) asignables a miembros o equipos — módulo gaming."
+                    "description": "El palmarés de los equipos: puesto obtenido, número de equipos, fecha, lugar, juego y plataforma de cada competición, con los podios contados por equipo y por juego."
                 },
                 "it": {
                     "title": "Palmares",
-                    "description": "Premi (palmares) assegnabili a membri o squadre — modulo gaming."
+                    "description": "Il palmares delle squadre: posizione ottenuta, numero di squadre, data, luogo, gioco e piattaforma di ogni competizione, con i podi contati per squadra e per gioco."
                 },
                 "pt": {
                     "title": "Palmarés",
-                    "description": "Prêmios (palmares) atribuíveis a membros ou equipes — módulo gaming."
+                    "description": "O palmarés das equipas: classificação obtida, número de equipas, data, local, jogo e plataforma de cada competição, com os pódios contados por equipa e por jogo."
                 }
             },
             "version": "1.0",
@@ -172,10 +172,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/awards.zip",
             "preview": "modules/awards.jpg",
-            "size": 47456,
-            "sha256": "5deaecb5a48e41e1787a3ca2ba59330f89e45ff390577862c1b3a78ca95422a3",
+            "size": 47663,
+            "sha256": "ec8ac81318f14a3a1f2502c317f9239956e1867395ceb23d14b53a73ed1d9899",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": [
                     "teams",
                     "games"
@@ -220,10 +220,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/bugtracker.zip",
             "preview": "modules/bugtracker.jpg",
-            "size": 59084,
-            "sha256": "ff5593f799dbffe5b2fc484b0dced1690cb3123ed0541d9004bce39a6df08285",
+            "size": 58966,
+            "sha256": "6ed2ac1f0ced850f2ed55decf0fac598c6edcfe208150d1db9b6344bf6e27a74",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -235,27 +235,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Calendrier",
-            "description": "Calendrier d'événements avec export iCal RFC 5545.",
+            "description": "Calendrier des activités avec lieu et description, export iCal vers un agenda et rappel aux membres qui suivent un événement. Pour une association ou un club.",
             "i18n": {
                 "en": {
                     "title": "Calendar",
-                    "description": "Event calendar with iCal RFC 5545 export."
+                    "description": "A calendar of activities with location and description, iCal export to a calendar app and a reminder to members who follow an event. For a nonprofit or a club."
                 },
                 "de": {
                     "title": "Kalender",
-                    "description": "Event-Kalender mit iCal-Export RFC 5545."
+                    "description": "Kalender der Aktivitäten mit Ort und Beschreibung, iCal-Export in einen Kalender und Erinnerung an Mitglieder, die einem Termin folgen. Für einen Verein oder Club."
                 },
                 "es": {
                     "title": "Calendario",
-                    "description": "Calendario de eventos con exportación iCal RFC 5545."
+                    "description": "Calendario de actividades con lugar y descripción, exportación iCal a una agenda y recordatorio a los miembros que siguen un evento. Para una asociación o un club."
                 },
                 "it": {
                     "title": "Calendario",
-                    "description": "Calendario eventi con esportazione iCal RFC 5545."
+                    "description": "Calendario delle attività con luogo e descrizione, esportazione iCal verso un'agenda e promemoria ai membri che seguono un evento. Per un'associazione o un club."
                 },
                 "pt": {
                     "title": "Calendário",
-                    "description": "Calendário de eventos com exportação iCal RFC 5545."
+                    "description": "Calendário das atividades com local e descrição, exportação iCal para uma agenda e lembrete aos membros que seguem um evento. Para uma associação ou um clube."
                 }
             },
             "version": "1.0",
@@ -263,10 +263,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/calendar.zip",
             "preview": "modules/calendar.jpg",
-            "size": 37402,
-            "sha256": "105fa34c873d3b882f6477d8e7f8994db7a2a7b2a446342e03f690dd7d175457",
+            "size": 37990,
+            "sha256": "e5cdde6863c52f306b598b2aac05d7a4f005d9a92169dd259fab128e05042f0f",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -308,10 +308,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/classifieds.zip",
             "preview": "modules/classifieds.jpg",
-            "size": 46668,
-            "sha256": "85c01984d58decc507a423ee597d796ce785e47cc083cffd1460a53286bd4a84",
+            "size": 48061,
+            "sha256": "ff72fcd952ffc26c6e3a5c0fc68af3bbc9c357633217fb95ed3f5d901746ef20",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -350,11 +350,11 @@
             "author": "NeoFrag Reborn",
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/discord.zip",
-            "preview": "",
-            "size": 92879,
-            "sha256": "fa0131f8c924c9216c0a74b74c3224ea42c33be9236923cfa1d45dfb4a8e4017",
+            "preview": "modules/discord.jpg",
+            "size": 148435,
+            "sha256": "28d94c4fe94c52a7bff12375e5ad01ff4e1f7e14dbe13545c5b1c5f0829cfa02",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": [
                     "api"
                 ]
@@ -396,10 +396,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/donations.zip",
             "preview": "modules/donations.jpg",
-            "size": 61249,
-            "sha256": "2ad82a1ef12570089c94471f69c8b0b6f707f635714f27946612897a044bed9d",
+            "size": 61199,
+            "sha256": "9fd095901b8fa1c836a3b829e3f028b2538e1dee41fe795dfd5c2508060bfe8b",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -441,10 +441,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/downloads.zip",
             "preview": "modules/downloads.jpg",
-            "size": 49562,
-            "sha256": "6d37159d6c3b84e09f76e878a32de1bd5bac64815269a482d9a626fdfb0410a6",
+            "size": 49505,
+            "sha256": "f5759e010cd4e1f038c89a4442ab86d90b03dedef6cd5f9270a8c4ecdf781e11",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -486,10 +486,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/emojis.zip",
             "preview": "modules/emojis.jpg",
-            "size": 30534,
-            "sha256": "7ddb229dce565147f05d571a9842fb6f8c6c876f4187efdff5a6862d63cd6e33",
+            "size": 30507,
+            "sha256": "d6e14c3e84176120f606e66ebdd7727d68676c621132418e793bb0183a09a22a",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -500,28 +500,28 @@
             "name": "events",
             "tier": 1,
             "category": "identite",
-            "title": "Événements gaming",
-            "description": "Événements et tournois — planning, participants, types — module gaming.",
+            "title": "Événements",
+            "description": "Événements et matchs d'une guilde ou d'une équipe eSport : invitations avec réponse présent, absent ou peut-être, scores par manche, récurrence, rappels.",
             "i18n": {
                 "en": {
-                    "title": "Gaming events",
-                    "description": "Events and tournaments — schedule, participants, types — gaming module."
+                    "title": "Events",
+                    "description": "Events and matches for a guild or an esports team: invitations answered present, absent or maybe, scores per round, recurrence, reminders."
                 },
                 "de": {
-                    "title": "Gaming-Events",
-                    "description": "Events und Turniere — Zeitplan, Teilnehmer, Typen — Gaming-Modul."
+                    "title": "Events",
+                    "description": "Termine und Matches einer Gilde oder eines E-Sport-Teams: Einladungen mit Antwort anwesend, abwesend oder vielleicht, Ergebnisse pro Runde, Wiederholung, Erinnerungen."
                 },
                 "es": {
-                    "title": "Eventos de gaming",
-                    "description": "Eventos y torneos — planificación, participantes, tipos — módulo de gaming."
+                    "title": "Eventos",
+                    "description": "Eventos y partidos de un clan o de un equipo de eSports: invitaciones con respuesta presente, ausente o quizás, marcadores por manga, recurrencia, recordatorios."
                 },
                 "it": {
-                    "title": "Eventi gaming",
-                    "description": "Eventi e tornei — programma, partecipanti, tipi — modulo gaming."
+                    "title": "Eventi",
+                    "description": "Eventi e partite di una gilda o di un team eSport: inviti con risposta presente, assente o forse, punteggi per round, ricorrenza, promemoria."
                 },
                 "pt": {
-                    "title": "Eventos de gaming",
-                    "description": "Eventos e torneios — programação, participantes, tipos — módulo de gaming."
+                    "title": "Eventos",
+                    "description": "Eventos e jogos de uma guilda ou de uma equipa de eSports: convites com resposta presente, ausente ou talvez, resultados por manga, recorrência, lembretes."
                 }
             },
             "version": "1.0",
@@ -529,10 +529,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/events.zip",
             "preview": "modules/events.jpg",
-            "size": 193143,
-            "sha256": "3ccbaa96df88c82012a8ffdd0bc99cc56123aa242f0102eac4a003f078c0ce20",
+            "size": 193938,
+            "sha256": "31478c28f3c77cd4f98227b5d9a3dc6eb6acb0dfa48dc5cacef4e2a44e600125",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": [
                     "games",
                     "teams"
@@ -577,10 +577,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/faq.zip",
             "preview": "modules/faq.jpg",
-            "size": 33134,
-            "sha256": "a50d5a96dac178706c8a9d0f97b7cc40b18a9c6d4854f3a5d90f21103ad3247b",
+            "size": 33094,
+            "sha256": "89aadcbebf8ccb85ed69bb68b560fafda9d1e8feda79e50ec71074679fc3b8d0",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -592,27 +592,27 @@
             "tier": 2,
             "category": "contenu",
             "title": "Flux RSS",
-            "description": "Flux RSS 2.0 des actualités et articles.",
+            "description": "Flux RSS 2.0 des actualités et des billets du Blog, dans la langue du site : titre, résumé et date, pour suivre les parutions depuis un lecteur de flux.",
             "i18n": {
                 "en": {
                     "title": "RSS feed",
-                    "description": "RSS 2.0 feed of news and articles."
+                    "description": "RSS 2.0 feeds of the news and the Blog posts, in the site's language: title, summary and date, to follow new posts from a feed reader."
                 },
                 "de": {
                     "title": "RSS-Feed",
-                    "description": "RSS-2.0-Feed der News und Artikel."
+                    "description": "RSS-2.0-Feeds der News und der Blog-Beiträge, in der Sprache der Website: Titel, Zusammenfassung und Datum, um Neues in einem Feedreader zu verfolgen."
                 },
                 "es": {
                     "title": "Fuente RSS",
-                    "description": "Fuente RSS 2.0 de noticias y artículos."
+                    "description": "Fuentes RSS 2.0 de las noticias y de las entradas del Blog, en el idioma del sitio: título, resumen y fecha, para seguir las publicaciones desde un lector de fuentes."
                 },
                 "it": {
                     "title": "Feed RSS",
-                    "description": "Feed RSS 2.0 di notizie e articoli."
+                    "description": "Feed RSS 2.0 delle notizie e degli articoli del Blog, nella lingua del sito: titolo, riassunto e data, per seguire le pubblicazioni da un lettore di feed."
                 },
                 "pt": {
                     "title": "Feed RSS",
-                    "description": "Feed RSS 2.0 de notícias e artigos."
+                    "description": "Feeds RSS 2.0 das notícias e das publicações do Blog, no idioma do site: título, resumo e data, para acompanhar as publicações num leitor de feeds."
                 }
             },
             "version": "1.0",
@@ -620,10 +620,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/feeds.zip",
             "preview": "modules/feeds.jpg",
-            "size": 28401,
-            "sha256": "3deb2236b6cb7a8650cb88e9c14ebf4e014a442406375c529629a10a2fb70164",
+            "size": 28828,
+            "sha256": "05f24156b60d2999ac074790faa9432d62ecad67e0bcf0a50c27221e0d4620fe",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": [
                     "news",
                     "articles"
@@ -666,10 +666,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/forum.zip",
             "preview": "modules/forum.jpg",
-            "size": 151157,
-            "sha256": "05a1d374c33568231d471aef27fc79e91a2f327db31405c36379805b39f8b258",
+            "size": 154200,
+            "sha256": "357a92d3db4edae751ee9c6aebc9ef07a80ce7477fbbf58384f9223ae8256b99",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -683,27 +683,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Galeries",
-            "description": "Galerie photos avec albums, thumbnails et descriptions.",
+            "description": "Galerie photos en catégories et albums ; chaque album a ses droits de consultation et de publication. Images avec titre, description et commentaires.",
             "i18n": {
                 "en": {
                     "title": "Galleries",
-                    "description": "Photo gallery with albums, thumbnails and descriptions."
+                    "description": "A photo gallery in categories and albums; each album has its own viewing and posting permissions. Images with title, description and comments."
                 },
                 "de": {
                     "title": "Galerien",
-                    "description": "Fotogalerie mit Alben, Vorschaubildern und Beschreibungen."
+                    "description": "Fotogalerie in Kategorien und Alben; jedes Album hat eigene Rechte zum Ansehen und Hochladen. Bilder mit Titel, Beschreibung und Kommentaren."
                 },
                 "es": {
                     "title": "Galerías",
-                    "description": "Galería de fotos con álbumes, miniaturas y descripciones."
+                    "description": "Galería de fotos en categorías y álbumes; cada álbum tiene sus propios permisos de consulta y de publicación. Imágenes con título, descripción y comentarios."
                 },
                 "it": {
                     "title": "Gallerie",
-                    "description": "Galleria fotografica con album, miniature e descrizioni."
+                    "description": "Galleria fotografica in categorie e album; ogni album ha i propri permessi di consultazione e di pubblicazione. Immagini con titolo, descrizione e commenti."
                 },
                 "pt": {
                     "title": "Galerias",
-                    "description": "Galeria de fotos com álbuns, miniaturas e descrições."
+                    "description": "Galeria de fotos em categorias e álbuns; cada álbum tem as suas próprias permissões de consulta e de publicação. Imagens com título, descrição e comentários."
                 }
             },
             "version": "1.0",
@@ -711,10 +711,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/gallery.zip",
             "preview": "modules/gallery.jpg",
-            "size": 93641,
-            "sha256": "1321d41932425a79c03dbc38d4f1750779a9923e03d77ff31556b4af350b92f5",
+            "size": 93952,
+            "sha256": "aba7ba674d77a2ade920d5e3a70092cc92116bc9ff0953f817ab72ae9c36e3d8",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -728,27 +728,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Jeux / Cartes",
-            "description": "Catalogue de jeux pratiqués — module gaming.",
+            "description": "La liste des jeux pratiqués, avec bannière, icône, cartes et modes de jeu ; elle sert de base aux équipes, aux matchs, au palmarès et au recrutement.",
             "i18n": {
                 "en": {
                     "title": "Games / maps",
-                    "description": "Catalog of games played — gaming module."
+                    "description": "The list of games played, with banner, icon, maps and game modes; it is the basis for teams, matches, awards and recruitment."
                 },
                 "de": {
                     "title": "Spiele / Karten",
-                    "description": "Katalog gespielter Spiele — Gaming-Modul."
+                    "description": "Die Liste der gespielten Spiele, mit Banner, Symbol, Karten und Spielmodi; sie bildet die Grundlage für Teams, Matches, Auszeichnungen und Rekrutierung."
                 },
                 "es": {
                     "title": "Juegos / mapas",
-                    "description": "Catálogo de juegos practicados — módulo de gaming."
+                    "description": "La lista de los juegos practicados, con banner, icono, mapas y modos de juego; sirve de base a los equipos, los partidos, el palmarés y el reclutamiento."
                 },
                 "it": {
                     "title": "Giochi / mappe",
-                    "description": "Catalogo dei giochi praticati — modulo gaming."
+                    "description": "L'elenco dei giochi praticati, con banner, icona, mappe e modalità di gioco; fa da base a squadre, partite, palmares e reclutamento."
                 },
                 "pt": {
                     "title": "Jogos / mapas",
-                    "description": "Catálogo de jogos jogados — módulo de gaming."
+                    "description": "A lista dos jogos praticados, com banner, ícone, mapas e modos de jogo; serve de base às equipas, aos jogos, ao palmarés e ao recrutamento."
                 }
             },
             "version": "1.0",
@@ -756,10 +756,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/games.zip",
             "preview": "modules/games.jpg",
-            "size": 62576,
-            "sha256": "f46871e2973541daabc112a62af4aaf3bafdce4e54ce82e6ec23fb5d210ec604",
+            "size": 62907,
+            "sha256": "f5950705d040139b29019af2ae5e9c3be250ef1c27f11f2e19a15da25d018717",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -799,10 +799,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/gamification.zip",
             "preview": "modules/gamification.jpg",
-            "size": 40738,
-            "sha256": "4541411d6b9f4d8b318f16c470ba33d6678a93f6a6e9dc85a942c02435090600",
+            "size": 41976,
+            "sha256": "f8cee3c18b492d3d529deb78646732083ccd86829c553c1f742af4233862563c",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -842,10 +842,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/glossary.zip",
             "preview": "modules/glossary.jpg",
-            "size": 56194,
-            "sha256": "2f3ff140285f97b7b432d829948e0c08bfd795e2eb127f93035d00197449f9b3",
+            "size": 56130,
+            "sha256": "2a417aaae5b8a53eb0a8feb49bda2a8dc4fdd935308f9e3887d6f0acfbde108a",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -857,27 +857,27 @@
             "tier": 2,
             "category": "contenu",
             "title": "Livre d'or",
-            "description": "Livre d'or avec modération admin et rate-limit anti-spam.",
+            "description": "Livre d'or ouvert aux visiteurs comme aux membres : chaque message attend l'accord d'un modérateur ; les envois répétés depuis une même adresse IP sont limités.",
             "i18n": {
                 "en": {
                     "title": "Guestbook",
-                    "description": "Guestbook with admin moderation and anti-spam rate-limit."
+                    "description": "A guestbook open to visitors and members alike: each message waits for a moderator's approval; repeated posts from the same IP address are limited."
                 },
                 "de": {
                     "title": "Gästebuch",
-                    "description": "Gästebuch mit Admin-Moderation und Anti-Spam-Rate-Limit."
+                    "description": "Gästebuch für Besucher wie für Mitglieder: Jede Nachricht wartet auf die Freigabe durch einen Moderator; wiederholte Einträge von derselben IP-Adresse werden begrenzt."
                 },
                 "es": {
                     "title": "Libro de visitas",
-                    "description": "Libro de visitas con moderación admin y rate-limit antispam."
+                    "description": "Libro de visitas abierto a visitantes y miembros: cada mensaje espera la aprobación de un moderador; los envíos repetidos desde una misma dirección IP se limitan."
                 },
                 "it": {
                     "title": "Libro degli ospiti",
-                    "description": "Guestbook con moderazione admin e rate-limit anti-spam."
+                    "description": "Libro degli ospiti aperto a visitatori e membri: ogni messaggio attende l'approvazione di un moderatore; gli invii ripetuti dallo stesso indirizzo IP vengono limitati."
                 },
                 "pt": {
                     "title": "Livro de visitas",
-                    "description": "Livro de visitas com moderação admin e rate-limit anti-spam."
+                    "description": "Livro de visitas aberto a visitantes e membros: cada mensagem aguarda a aprovação de um moderador; os envios repetidos a partir do mesmo endereço IP são limitados."
                 }
             },
             "version": "1.0",
@@ -885,10 +885,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/guestbook.zip",
             "preview": "modules/guestbook.jpg",
-            "size": 26968,
-            "sha256": "d7ea052513d8e534f4e12d3bc868a96272f379d02d4227519cdbce855c812e65",
+            "size": 27328,
+            "sha256": "47ca2d63bcb14f0e872160e34cc1a9a44ac9b7339d5f1a04411fc7861d5cdcf3",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -930,10 +930,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/links.zip",
             "preview": "modules/links.jpg",
-            "size": 38091,
-            "sha256": "5f7721403e79d3d52343b7f257da72d5613b62a6089ff233a10f4b3b68c24fe0",
+            "size": 38049,
+            "sha256": "a2c4ed469a53719dfb3ab50b4324197665b89fa2ac3426b83cb6b08d8ef8a24e",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -947,27 +947,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Actualités",
-            "description": "Actualités du site avec catégories et commentaires.",
+            "description": "Actualités classées par catégories et tags : publication programmée, commentaires, réactions, abonnement par catégorie et historique des modifications.",
             "i18n": {
                 "en": {
                     "title": "News",
-                    "description": "Site news with categories and comments."
+                    "description": "News sorted by categories and tags: scheduled publishing, comments, reactions, subscription by category and edit history."
                 },
                 "de": {
                     "title": "News",
-                    "description": "Site-News mit Kategorien und Kommentaren."
+                    "description": "News nach Kategorien und Tags geordnet: geplante Veröffentlichung, Kommentare, Reaktionen, Abonnement pro Kategorie und Änderungsverlauf."
                 },
                 "es": {
                     "title": "Noticias",
-                    "description": "Noticias del sitio con categorías y comentarios."
+                    "description": "Noticias clasificadas por categorías y etiquetas: publicación programada, comentarios, reacciones, suscripción por categoría e historial de cambios."
                 },
                 "it": {
                     "title": "Notizie",
-                    "description": "Notizie del sito con categorie e commenti."
+                    "description": "Notizie classificate per categorie e tag: pubblicazione programmata, commenti, reazioni, iscrizione per categoria e cronologia delle modifiche."
                 },
                 "pt": {
                     "title": "Notícias",
-                    "description": "Notícias do site com categorias e comentários."
+                    "description": "Notícias classificadas por categorias e etiquetas: publicação agendada, comentários, reações, subscrição por categoria e histórico de alterações."
                 }
             },
             "version": "1.0",
@@ -975,10 +975,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/news.zip",
             "preview": "modules/news.jpg",
-            "size": 76091,
-            "sha256": "dd9ed1b66c4ba312604a6c0577af6280ecb5e37909015179ab53be58b3819813",
+            "size": 76635,
+            "sha256": "0b4354404e151593328201a1f251c2727990fb21cc3508bf29070284fb3870f7",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -1020,10 +1020,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/newsletter.zip",
             "preview": "modules/newsletter.jpg",
-            "size": 58595,
-            "sha256": "27fcc00bfc23e2b80802aa153cb94d70fb6b548e0e43f5ec0e03161ee1c6317d",
+            "size": 61763,
+            "sha256": "b279d75cb29264506954b49130a8f8862e8192c4616d9918cc6a5fc948ae6f37",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -1037,27 +1037,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Partenaires",
-            "description": "Partenaires et sponsors — module gaming.",
+            "description": "Page des partenaires et sponsors : logo clair ou foncé, site, réseaux sociaux, code promo et présentation. Pour un club, une association ou une équipe.",
             "i18n": {
                 "en": {
                     "title": "Partners",
-                    "description": "Partners and sponsors — gaming module."
+                    "description": "A page for partners and sponsors: light or dark logo, website, social networks, promo code and description. For a club, a nonprofit or a team."
                 },
                 "de": {
                     "title": "Partner",
-                    "description": "Partner und Sponsoren — Gaming-Modul."
+                    "description": "Seite der Partner und Sponsoren: helles oder dunkles Logo, Website, soziale Netzwerke, Gutscheincode und Vorstellung. Für einen Club, einen Verein oder ein Team."
                 },
                 "es": {
                     "title": "Socios",
-                    "description": "Socios y patrocinadores — módulo de gaming."
+                    "description": "Página de socios y patrocinadores: logo claro u oscuro, sitio web, redes sociales, código promocional y presentación. Para un club, una asociación o un equipo."
                 },
                 "it": {
                     "title": "Partner",
-                    "description": "Partner e sponsor — modulo gaming."
+                    "description": "Pagina dei partner e degli sponsor: logo chiaro o scuro, sito, social network, codice promozionale e presentazione. Per un club, un'associazione o una squadra."
                 },
                 "pt": {
                     "title": "Parceiros",
-                    "description": "Parceiros e patrocinadores — módulo de gaming."
+                    "description": "Página dos parceiros e patrocinadores: logótipo claro ou escuro, site, redes sociais, código promocional e apresentação. Para um clube, uma associação ou uma equipa."
                 }
             },
             "version": "1.0",
@@ -1065,10 +1065,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/partners.zip",
             "preview": "modules/partners.jpg",
-            "size": 45675,
-            "sha256": "9036abe9fd1283626a2fe97592fc1cf8d89d02db486fc2c9e26bb1f0861cd7af",
+            "size": 46653,
+            "sha256": "174fda8c69c3b4ad10bd87791d9fc3550438f681c02d9913cb8a9ad3a8fb7913",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -1082,27 +1082,27 @@
             "tier": 2,
             "category": "monetisation",
             "title": "Paiements",
-            "description": "Recharge de points et packs VIP via Stripe (argent réel).",
+            "description": "Packs de points ou de jours VIP (module Gamification) payés via Stripe Checkout, crédités après confirmation signée de Stripe, une seule fois par paiement.",
             "i18n": {
                 "en": {
                     "title": "Payments",
-                    "description": "Top-up of points and VIP packs via Stripe (real money)."
+                    "description": "Packs of points or VIP days (Gamification module) paid through Stripe Checkout, credited after Stripe's signed confirmation, only once per payment."
                 },
                 "de": {
                     "title": "Zahlungen",
-                    "description": "Aufladung von Punkten und VIP-Paketen über Stripe (echtes Geld)."
+                    "description": "Pakete mit Punkten oder VIP-Tagen (Modul Gamification), bezahlt über Stripe Checkout, gutgeschrieben nach signierter Bestätigung durch Stripe, nur einmal pro Zahlung."
                 },
                 "es": {
                     "title": "Pagos",
-                    "description": "Recarga de puntos y paquetes VIP vía Stripe (dinero real)."
+                    "description": "Packs de puntos o de días VIP (módulo Gamificación) pagados con Stripe Checkout, acreditados tras la confirmación firmada de Stripe, una sola vez por pago."
                 },
                 "it": {
                     "title": "Pagamenti",
-                    "description": "Ricarica di punti e pacchetti VIP tramite Stripe (denaro reale)."
+                    "description": "Pacchetti di punti o di giorni VIP (modulo Gamification) pagati tramite Stripe Checkout, accreditati dopo la conferma firmata di Stripe, una sola volta per pagamento."
                 },
                 "pt": {
                     "title": "Pagamentos",
-                    "description": "Recarga de pontos e pacotes VIP via Stripe (dinheiro real)."
+                    "description": "Pacotes de pontos ou de dias VIP (módulo Gamificação) pagos através do Stripe Checkout, creditados após a confirmação assinada do Stripe, uma única vez por pagamento."
                 }
             },
             "version": "1.0",
@@ -1110,11 +1110,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/payments.zip",
             "preview": "modules/payments.jpg",
-            "size": 45729,
-            "sha256": "13215bdb7547679707cbf4cda942dc5ec327e9faa035237fa763b77d16c0ddaf",
+            "size": 48303,
+            "sha256": "0fc2705309518fa38e2dd94c95269fc88a23e3fd156aeaea216fdf07814baabb",
             "requires": {
-                "base": ">=1.2.22",
-                "addons": []
+                "base": ">=1.2.36",
+                "addons": [
+                    "gamification"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -1153,10 +1155,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/places.zip",
             "preview": "modules/places.jpg",
-            "size": 178709,
-            "sha256": "68fb99b0fc6b432ede1e31176fb0117cf0b7d7e0e32fcdfd216a147ecd51750d",
+            "size": 178639,
+            "sha256": "bbd38070fdf71b77a50aef667cb0217f567b7c5e32e3e01d85a808500d5ee778",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1196,10 +1198,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/quotes.zip",
             "preview": "modules/quotes.jpg",
-            "size": 60667,
-            "sha256": "5e6fe45ec361e6bb5f2c256a045bec24e3efd6d3f358ade4b853e399a1ebc694",
+            "size": 60609,
+            "sha256": "0fe5abd5d0852a8d5922172a76793bbb413edcb8b2577769f36c78ba8b739db7",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1239,10 +1241,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/recipes.zip",
             "preview": "modules/recipes.jpg",
-            "size": 53803,
-            "sha256": "9d1dee72b990905012f2db9b44ca9ad6479778f0ee611e587ba19c8a4c6d88b2",
+            "size": 53745,
+            "sha256": "46b3ab3c328e11041823449336308ba40aefb0f6004dacfb7cc8f161eba7cec3",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1254,27 +1256,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Recrutements",
-            "description": "Recrutement de joueurs avec candidatures et système de votes — module gaming.",
+            "description": "Offres de recrutement par équipe et par poste, avec leurs propres questions ; les recruteurs donnent leur avis, puis acceptent ou refusent la candidature.",
             "i18n": {
                 "en": {
                     "title": "Recruitments",
-                    "description": "Player recruitment with applications and voting system — gaming module."
+                    "description": "Recruitment offers by team and by position, each with its own questions; recruiters give their opinion, then accept or reject the application."
                 },
                 "de": {
                     "title": "Rekrutierungen",
-                    "description": "Spielerrekrutierung mit Bewerbungen und Abstimmungssystem — Gaming-Modul."
+                    "description": "Rekrutierungsangebote nach Team und Position, jeweils mit eigenen Fragen; die Recruiter geben ihre Meinung ab und nehmen die Bewerbung dann an oder lehnen sie ab."
                 },
                 "es": {
                     "title": "Reclutamientos",
-                    "description": "Reclutamiento de jugadores con solicitudes y sistema de votación — módulo de gaming."
+                    "description": "Ofertas de reclutamiento por equipo y por puesto, cada una con sus propias preguntas; los reclutadores dan su opinión y luego aceptan o rechazan la candidatura."
                 },
                 "it": {
                     "title": "Reclutamenti",
-                    "description": "Reclutamento di giocatori con candidature e sistema di voto — modulo gaming."
+                    "description": "Offerte di reclutamento per squadra e per ruolo, ognuna con le proprie domande; i reclutatori danno il loro parere, poi accettano o rifiutano la candidatura."
                 },
                 "pt": {
                     "title": "Recrutamentos",
-                    "description": "Recrutamento de jogadores com candidaturas e sistema de votação — módulo de gaming."
+                    "description": "Ofertas de recrutamento por equipa e por posição, cada uma com as suas próprias perguntas; os recrutadores dão a sua opinião e depois aceitam ou recusam a candidatura."
                 }
             },
             "version": "1.0",
@@ -1282,10 +1284,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/recruits.zip",
             "preview": "modules/recruits.jpg",
-            "size": 74839,
-            "sha256": "1344351891bb4a9da9b6f240e6e31f47071f2ab36df07eb64296b0d90bfc488d",
+            "size": 74977,
+            "sha256": "f230313204a9075a7cfdc488b6dddcc2d4860b1d87e8207ac35e993e73bd2eb1",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": [
                     "teams",
                     "games"
@@ -1330,10 +1332,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/sandbox.zip",
             "preview": "modules/sandbox.jpg",
-            "size": 50355,
-            "sha256": "24aa05b39429998c1b9e11bed7f942afe635278553d86012d24b9aa61e11d5e7",
+            "size": 50343,
+            "sha256": "80b680a3dab102a5d02ac7c7dcdb6141d3e10daf0c673f72ddf45bfd4e0b8f2f",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1373,10 +1375,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/shop.zip",
             "preview": "modules/shop.jpg",
-            "size": 45389,
-            "sha256": "312c10ec67cb545cbeed934aff06f710910d3baeb7f0e5fdae28ef576bfee837",
+            "size": 46792,
+            "sha256": "afa4d2ee8fa5f873f80f263519c664fbdadc06eca2a305f2c35145934c8737ca",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1416,10 +1418,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/surveys.zip",
             "preview": "modules/surveys.jpg",
-            "size": 47475,
-            "sha256": "7bd2566ddf875ddcc0914cf0e674d5c5d2ef28da8fb6da2bfae295b6f0ed91b5",
+            "size": 49556,
+            "sha256": "d317e79d492f233e95be71f8d30fdcbc1d8d236808b0400ecf08bb76ce5f7dec",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [
@@ -1433,27 +1435,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Équipes",
-            "description": "Équipes et clans — module gaming.",
+            "description": "Une page par équipe : jeu, présentation, joueurs et rôles, résultats et recrutement selon les modules installés. Pour une guilde ou une équipe eSport.",
             "i18n": {
                 "en": {
                     "title": "Teams",
-                    "description": "Teams and clans — gaming module."
+                    "description": "One page per team: game, description, players and roles, results and recruitment depending on the modules installed. For a guild or an esports team."
                 },
                 "de": {
                     "title": "Teams",
-                    "description": "Teams und Clans — Gaming-Modul."
+                    "description": "Eine Seite pro Team: Spiel, Vorstellung, Spieler und Rollen, Ergebnisse und Rekrutierung je nach installierten Modulen. Für eine Gilde oder ein E-Sport-Team."
                 },
                 "es": {
                     "title": "Equipos",
-                    "description": "Equipos y clanes — módulo gaming."
+                    "description": "Una página por equipo: juego, presentación, jugadores y roles, resultados y reclutamiento según los módulos instalados. Para un clan o un equipo de eSports."
                 },
                 "it": {
                     "title": "Squadre",
-                    "description": "Squadre e clan — modulo gaming."
+                    "description": "Una pagina per squadra: gioco, presentazione, giocatori e ruoli, risultati e reclutamento in base ai moduli installati. Per una gilda o un team eSport."
                 },
                 "pt": {
                     "title": "Equipas",
-                    "description": "Equipas e clãs — módulo gaming."
+                    "description": "Uma página por equipa: jogo, apresentação, jogadores e funções, resultados e recrutamento consoante os módulos instalados. Para uma guilda ou uma equipa de eSports."
                 }
             },
             "version": "1.0",
@@ -1461,10 +1463,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/teams.zip",
             "preview": "modules/teams.jpg",
-            "size": 55691,
-            "sha256": "f64c01bdd3a606f2f9d295b221bae82d8476cb2bcf6af104404fb195e8333c19",
+            "size": 57446,
+            "sha256": "8c887f7968fc2170f2d41d54db24adcbaf1d7fca3e9584126526295b6e603bfd",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": [
                     "games"
                 ]
@@ -1508,10 +1510,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/webradio.zip",
             "preview": "modules/webradio.jpg",
-            "size": 62906,
-            "sha256": "ef74a3a6aef3274e2d756e409516f84cd33e3fa512d14e3dd420c94e497e4175",
+            "size": 62831,
+            "sha256": "a9da5a3b06bcc154ae483120e056a55a0eb09340ceb5ee5822d825422db0356b",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1551,10 +1553,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/wiki.zip",
             "preview": "modules/wiki.jpg",
-            "size": 39261,
-            "sha256": "2a7d953f05b02233683afbaee35755dba03bf284bae27c397389d864eb7f3997",
+            "size": 39213,
+            "sha256": "97b23854dabd05b407eabf8b370fd58fbaab41d68f2dca238652881e573e1dd6",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1566,33 +1568,71 @@
             "tier": 2,
             "category": "theme",
             "title": "Blockcraft",
-            "description": "Thème gaming inspiré des univers cubiques. Mode jour « biome » et mode nuit « grotte », accent vert herbe, entièrement personnalisable.",
+            "description": "Thème inspiré des jeux de blocs : jour « biome » clair, accent vert herbe, nuit « grotte » au choix du visiteur ; couleurs, images et logo réglables.",
             "i18n": {
                 "en": {
-                    "description": "Gaming theme inspired by cube-based worlds. Day \"biome\" mode and night \"cave\" mode, grass-green accent, fully customizable."
+                    "description": "A theme inspired by block-building games: light \"biome\" day, grass-green accent, \"cave\" night at the visitor's choice; adjustable colors, images and logo."
                 },
                 "de": {
-                    "description": "Gaming-Theme inspiriert von würfelbasierten Welten. Tagmodus „Biom\" und Nachtmodus „Höhle\", grasgrüner Akzent, vollständig anpassbar."
+                    "description": "Ein von Blockspielen inspiriertes Theme: heller Tag „Biom“, grasgrüner Akzent, Nacht „Höhle“ nach Wahl des Besuchers; Farben, Bilder und Logo einstellbar."
                 },
                 "es": {
-                    "description": "Tema gaming inspirado en mundos de cubos. Modo día «bioma» y modo noche «cueva», acento verde hierba, totalmente personalizable."
+                    "description": "Tema inspirado en los juegos de bloques: día «bioma» claro, acento verde hierba, noche «cueva» a elección del visitante; colores, imágenes y logo ajustables."
                 },
                 "it": {
-                    "description": "Tema gaming ispirato ai mondi a cubi. Modalità giorno «bioma» e notte «caverna», accento verde erba, completamente personalizzabile."
+                    "description": "Tema ispirato ai giochi a blocchi: giorno «bioma» chiaro, accento verde erba, notte «caverna» a scelta del visitatore; colori, immagini e logo regolabili."
                 },
                 "pt": {
-                    "description": "Tema gaming inspirado em mundos de cubos. Modo dia «bioma» e modo noite «caverna», acento verde-relva, totalmente personalizável."
+                    "description": "Tema inspirado nos jogos de blocos: dia «bioma» claro, destaque verde relva, noite «caverna» à escolha do visitante; cores, imagens e logótipo ajustáveis."
+                }
+            },
+            "version": "1.1.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
+            "file": "themes/blockcraft.zip",
+            "preview": "themes/blockcraft.jpg",
+            "size": 86015,
+            "sha256": "9abc0535094cf24f9a496d6d4b0f6c48e6e4e7f95c3ceb74d0075a2fb5b07717",
+            "requires": {
+                "base": ">=1.2.36",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "theme",
+            "name": "chronique",
+            "tier": 2,
+            "category": "theme",
+            "title": "Chronique",
+            "description": "Thème « Chronique », le carnet de la saison des associations et des clubs : un en-tête discret et un « Sommaire » qui ouvre tout le site, une ouverture avec la semaine en cours, une frise qui raconte la saison mois par mois, une colonne à côté, un pied comme la fin d’un livre ; titres Fraunces, texte Work Sans, nuit « à la lampe » au choix du visiteur ; couleurs, image d’ouverture, logo et appel à adhérer réglables.",
+            "i18n": {
+                "en": {
+                    "description": "“Chronique” theme, the season’s notebook for associations and clubs: a discreet header and a “Contents” button that opens the whole site, an opening with the current week, a timeline that tells the season month by month, a column alongside, a footer like the end of a book; Fraunces headings, Work Sans text, “lamplight” night mode at the visitor’s choice; adjustable colors, opening image, logo and call to join."
+                },
+                "de": {
+                    "description": "Theme „Chronique“, das Notizbuch der Saison für Vereine und Clubs: ein dezenter Kopfbereich und ein Knopf „Inhalt“, der die ganze Website öffnet, ein Auftakt mit der aktuellen Woche, eine Zeitleiste, die die Saison Monat für Monat erzählt, eine Spalte daneben, eine Fußzeile wie das Ende eines Buches; Überschriften in Fraunces, Text in Work Sans, Nachtmodus „bei Lampenlicht“ nach Wahl des Besuchers; Farben, Auftaktbild, Logo und Beitrittsaufruf einstellbar."
+                },
+                "es": {
+                    "description": "Tema «Chronique», el cuaderno de la temporada de las asociaciones y los clubes: una cabecera discreta y un botón «Índice» que abre todo el sitio, una apertura con la semana en curso, una cronología que cuenta la temporada mes a mes, una columna al lado, un pie como el final de un libro; títulos en Fraunces, texto en Work Sans, modo noche «a la luz de la lámpara» a elección del visitante; colores, imagen de apertura, logotipo y llamada a afiliarse ajustables."
+                },
+                "it": {
+                    "description": "Tema «Chronique», il taccuino della stagione delle associazioni e dei club: un’intestazione discreta e un pulsante «Sommario» che apre tutto il sito, un’apertura con la settimana in corso, una cronologia che racconta la stagione mese per mese, una colonna a lato, un piè di pagina come la fine di un libro; titoli in Fraunces, testo in Work Sans, modalità notte «alla luce della lampada» a scelta del visitatore; colori, immagine di apertura, logo e invito ad aderire regolabili."
+                },
+                "pt": {
+                    "description": "Tema «Chronique», o caderno da temporada das associações e dos clubes: um cabeçalho discreto e um botão «Sumário» que abre todo o site, uma abertura com a semana em curso, uma cronologia que conta a temporada mês a mês, uma coluna ao lado, um rodapé como o fim de um livro; títulos em Fraunces, texto em Work Sans, modo noturno «à luz do candeeiro» à escolha do visitante; cores, imagem de abertura, logótipo e apelo à adesão ajustáveis."
                 }
             },
             "version": "1.0.0",
             "author": "NeoFrag Reborn",
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
-            "file": "themes/blockcraft.zip",
-            "preview": "themes/blockcraft.jpg",
-            "size": 45039,
-            "sha256": "7bf3d63e877abdf82c61e02bf0c5fbf6d660b83d89c1985c75c5770caa5d2847",
+            "file": "themes/chronique.zip",
+            "preview": "themes/chronique.jpg",
+            "size": 78186,
+            "sha256": "a22f7d6febccc5852769000cf12178a3b64291c211fd1e8fbb99837ef2a2a83c",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1622,15 +1662,15 @@
                     "description": "Tema Extend: azul-marinho e azul-aço, títulos condensados Economica, modo noite/dia, layout rico (navegação, banner, multi-zona). Totalmente personalizável."
                 }
             },
-            "version": "1.0.0",
+            "version": "1.1.0",
             "author": "Chewbaka — portage NeoFrag Reborn",
             "license": "Creative Commons CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>",
             "file": "themes/extend.zip",
             "preview": "themes/extend.jpg",
-            "size": 42899,
-            "sha256": "d168f00b12f3eee189819bd89b090e1570e4a4252d899903cb400419fa7219f5",
+            "size": 85395,
+            "sha256": "bf4b6e6e3a823bf8086bbb1b26db1fc5229b554d634470b2c299c31df6066d4d",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1642,33 +1682,33 @@
             "tier": 2,
             "category": "theme",
             "title": "Forge",
-            "description": "Thème gaming « fonte en fusion » : rouge lave sur charbon, nuit par défaut et mode jour, lueur de braise, titres Rajdhani. Entièrement personnalisable.",
+            "description": "Thème « Coulée », pour les clans compétitifs : la navigation dans un rail d’acier sur le côté (une barre d’onglets en bas au téléphone), un foyer de lave où montent des braises en haut de l’accueil, des plaques aux coins coupés qui rougeoient au survol ; titres Rajdhani, mode jour au choix du visiteur ; couleurs, images, logo et braises réglables.",
             "i18n": {
                 "en": {
-                    "description": "Molten-metal gaming theme: lava red on charcoal, night by default plus a day mode, ember glow, Rajdhani headings. Fully customizable."
+                    "description": "“Coulée” theme, for competitive clans: navigation in a steel rail on the side (a tab bar at the bottom on phones), a lava hearth where embers rise at the top of the home page, cut-corner plates that glow on hover; Rajdhani headings, day mode at the visitor’s choice; adjustable colours, images, logo and embers."
                 },
                 "de": {
-                    "description": "Gaming-Theme „geschmolzenes Metall\": Lavarot auf Anthrazit, Nacht als Standard plus Tagmodus, Glut-Schein, Rajdhani-Überschriften. Vollständig anpassbar."
+                    "description": "Theme „Coulée“ für kompetitive Clans: die Navigation in einer Stahlleiste an der Seite (eine Registerleiste unten auf dem Handy), eine Lava-Feuerstelle oben auf der Startseite, in der Glut aufsteigt, Platten mit abgeschrägten Ecken, die beim Überfahren glühen; Rajdhani-Überschriften, Tagmodus nach Wahl des Besuchers; Farben, Bilder, Logo und Glut einstellbar."
                 },
                 "es": {
-                    "description": "Tema gaming «metal fundido»: rojo lava sobre carbón, noche por defecto y modo día, brillo de brasas, títulos Rajdhani. Totalmente personalizable."
+                    "description": "Tema «Coulée», para clanes competitivos: la navegación en una barra de acero lateral (una barra de pestañas abajo en el móvil), un hogar de lava donde suben brasas en lo alto de la portada, placas de esquinas cortadas que se encienden al pasar el ratón; títulos en Rajdhani, modo día a elección del visitante; colores, imágenes, logotipo y brasas ajustables."
                 },
                 "it": {
-                    "description": "Tema gaming «metallo fuso»: rosso lava su antracite, notte di default più modalità giorno, bagliore di brace, titoli Rajdhani. Completamente personalizzabile."
+                    "description": "Tema «Coulée», per i clan competitivi: la navigazione in una barra d’acciaio laterale (una barra di schede in basso sul telefono), un focolare di lava dove salgono le braci in cima alla home, piastre ad angoli tagliati che si arroventano al passaggio del mouse; titoli Rajdhani, modalità giorno a scelta del visitatore; colori, immagini, logo e braci regolabili."
                 },
                 "pt": {
-                    "description": "Tema gaming «metal fundido»: vermelho lava sobre carvão, noite por defeito e modo dia, brilho de brasa, títulos Rajdhani. Totalmente personalizável."
+                    "description": "Tema «Coulée», para clãs competitivos: a navegação numa barra de aço lateral (uma barra de separadores em baixo no telemóvel), uma lareira de lava onde sobem brasas no topo da página inicial, placas de cantos cortados que incandescem ao passar o rato; títulos em Rajdhani, modo dia à escolha do visitante; cores, imagens, logótipo e brasas ajustáveis."
                 }
             },
-            "version": "1.0.0",
+            "version": "2.0.0",
             "author": "NeoFrag Reborn",
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/forge.zip",
             "preview": "themes/forge.jpg",
-            "size": 41932,
-            "sha256": "cf2d3c105939000bf54eb9147184f29dc8a62d0f765966d347f1d2cf81e9cf3c",
+            "size": 113980,
+            "sha256": "538db0c2c19345554dc066d7aa1343f7484e7fdb7f8827089a7cd4dce321d2ac",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1680,33 +1720,33 @@
             "tier": 2,
             "category": "theme",
             "title": "Granite",
-            "description": "Thème gaming épuré « roche & sommet », accent teal sur ardoise. Mode jour et mode nuit, titres condensés, entièrement personnalisable.",
+            "description": "Thème « Gazette », le journal de pierre des associations et des clubs : la date et le titre imprimés en tête, les rubriques entre deux filets, une ligne « En bref » qui défile, une une à colonnes avec ses capitales ornées, un pied en « ours » ; titres Playfair Display, texte Source Serif, nuit « à l’encre » au choix du visiteur ; couleurs, image du titre, logo et lettrines réglables.",
             "i18n": {
                 "en": {
-                    "description": "Clean \"rock & summit\" gaming theme, teal accent on slate. Day and night modes, condensed headings, fully customizable."
+                    "description": "“Gazette” theme, the stone newspaper of associations and clubs: the date and title printed at the top, sections between two rules, a scrolling “In brief” line, a front page in columns with ornate capitals, a footer styled as the imprint; Playfair Display headings, Source Serif text, “inked” night mode at the visitor’s choice; adjustable colors, title image, logo and drop caps."
                 },
                 "de": {
-                    "description": "Cleanes Gaming-Theme „Fels & Gipfel\", Teal-Akzent auf Schiefer. Tag- und Nachtmodus, schmale Überschriften, vollständig anpassbar."
+                    "description": "Theme „Gazette“, die steinerne Zeitung der Vereine und Clubs: Datum und Titel oben gedruckt, die Rubriken zwischen zwei Linien, eine laufende Zeile „Kurz notiert“, eine Titelseite in Spalten mit verzierten Initialen, eine Fußzeile als Impressum; Überschriften in Playfair Display, Text in Source Serif, Nachtmodus „in Tinte“ nach Wahl des Besuchers; Farben, Titelbild, Logo und Initialen einstellbar."
                 },
                 "es": {
-                    "description": "Tema gaming depurado «roca y cima», acento teal sobre pizarra. Modo día y noche, títulos condensados, totalmente personalizable."
+                    "description": "Tema «Gazette», el periódico de piedra de las asociaciones y los clubes: la fecha y el título impresos arriba, las secciones entre dos filetes, una línea «Breves» que se desplaza, una portada a columnas con capitulares adornadas, un pie con los créditos de la publicación; títulos en Playfair Display, texto en Source Serif, modo noche «en tinta» a elección del visitante; colores, imagen del título, logotipo y capitulares ajustables."
                 },
                 "it": {
-                    "description": "Tema gaming essenziale «roccia e vetta», accento teal su ardesia. Modalità giorno e notte, titoli condensati, completamente personalizzabile."
+                    "description": "Tema «Gazette», il giornale di pietra delle associazioni e dei club: la data e il titolo stampati in alto, le rubriche tra due filetti, una riga «In breve» che scorre, una prima pagina a colonne con capilettera ornati, un piè di pagina come gerenza; titoli in Playfair Display, testo in Source Serif, modalità notte «a inchiostro» a scelta del visitatore; colori, immagine della testata, logo e capilettera regolabili."
                 },
                 "pt": {
-                    "description": "Tema gaming depurado «rocha e cume», acento teal sobre ardósia. Modo dia e noite, títulos condensados, totalmente personalizável."
+                    "description": "Tema «Gazette», o jornal de pedra das associações e dos clubes: a data e o título impressos no topo, as secções entre dois filetes, uma linha «Breves» que desliza, uma primeira página em colunas com capitulares ornamentadas, um rodapé como ficha técnica; títulos em Playfair Display, texto em Source Serif, modo noturno «a tinta» à escolha do visitante; cores, imagem do título, logótipo e capitulares ajustáveis."
                 }
             },
-            "version": "1.0.0",
+            "version": "2.0.0",
             "author": "NeoFrag Reborn",
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/granite.zip",
             "preview": "themes/granite.jpg",
-            "size": 43599,
-            "sha256": "0ee2ca7cb40cf5e68c7496763a95477f9ac8d041be2ed768e078c022f2b68603",
+            "size": 121409,
+            "sha256": "6d19a5b604d0556a608682295743fc74b886a9ac287b108fae1a97d3af948c7f",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1718,27 +1758,27 @@
             "tier": 1,
             "category": "identite",
             "title": "À propos",
-            "description": "Bloc de présentation libre éditable en HTML.",
+            "description": "Présente la structure saisie dans « Notre structure » : nom, type, date de création, logo et biographie, chacun affiché ou masqué, aligné et coloré au choix.",
             "i18n": {
                 "en": {
                     "title": "About",
-                    "description": "Free-form presentation block, editable in HTML."
+                    "description": "Presents the organization entered in \"Our structure\": name, type, founding date, logo and biography, each shown or hidden, aligned and colored as you choose."
                 },
                 "de": {
                     "title": "Über",
-                    "description": "Frei gestaltbarer Vorstellungsblock, in HTML bearbeitbar."
+                    "description": "Stellt die unter „Unsere Struktur“ erfasste Organisation vor: Name, Art, Gründungsdatum, Logo und Biografie, jeweils ein- oder ausblendbar, ausrichtbar und einfärbbar."
                 },
                 "es": {
                     "title": "Acerca de",
-                    "description": "Bloque de presentación libre, editable en HTML."
+                    "description": "Presenta la estructura indicada en «Nuestra estructura»: nombre, tipo, fecha de creación, logo y biografía, cada uno visible u oculto, alineado y coloreado a elección."
                 },
                 "it": {
                     "title": "Informazioni",
-                    "description": "Blocco di presentazione libero, modificabile in HTML."
+                    "description": "Presenta la struttura indicata in «La nostra struttura»: nome, tipo, data di creazione, logo e biografia, ciascuno mostrato o nascosto, allineato e colorato a scelta."
                 },
                 "pt": {
                     "title": "Sobre",
-                    "description": "Bloco de apresentação livre, editável em HTML."
+                    "description": "Apresenta a estrutura indicada em «Nossa estrutura»: nome, tipo, data de criação, logótipo e biografia, cada um visível ou oculto, alinhado e colorido à escolha."
                 }
             },
             "version": "1.0",
@@ -1746,10 +1786,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/about.zip",
             "preview": "widgets/about.jpg",
-            "size": 32294,
-            "sha256": "5a9cef22ec93488473b88ced25762fc395e445d933f687ade3152351d9bb6b91",
+            "size": 32736,
+            "sha256": "3bc627516db6d5a0bd4632bbcae585bb76a6dbbc144644a29e92eea2546ed407",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1789,10 +1829,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/ads.zip",
             "preview": "widgets/ads.jpg",
-            "size": 22274,
-            "sha256": "5ef39b09a00a58744011b453503ea86a642b838f56c1c7cba96ef1b2a033d964",
+            "size": 22269,
+            "sha256": "1eba2c93d997dcb4b6f95a1d88c878dce0ef3eabb38f52aedcd3e7e35c33e6cf",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1832,10 +1872,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/articles.zip",
             "preview": "widgets/articles.jpg",
-            "size": 37423,
-            "sha256": "073f3da6943e22e4b94160083347913ec22b60742ce26a1d24b6663b98f71400",
+            "size": 37391,
+            "sha256": "9af44320673c5a1605d8d01c5e1e61b84612ca1da72080fb02baa693117b39dd",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1847,27 +1887,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Palmarès",
-            "description": "Affiche les dernières récompenses attribuées — module gaming.",
+            "description": "Le palmarès en bref, au choix : les derniers résultats des équipes, l'équipe la plus récompensée ou le jeu le plus récompensé.",
             "i18n": {
                 "en": {
                     "title": "Awards",
-                    "description": "Displays the latest awards earned — gaming module."
+                    "description": "Awards at a glance, as you choose: the teams' latest results, the most awarded team or the most awarded game."
                 },
                 "de": {
                     "title": "Auszeichnungen",
-                    "description": "Zeigt die zuletzt vergebenen Auszeichnungen an — Gaming-Modul."
+                    "description": "Die Erfolge auf einen Blick, nach Wahl: die neuesten Ergebnisse der Teams, das meistausgezeichnete Team oder das meistausgezeichnete Spiel."
                 },
                 "es": {
                     "title": "Palmarés",
-                    "description": "Muestra los últimos premios otorgados — módulo gaming."
+                    "description": "El palmarés en resumen, a elección: los últimos resultados de los equipos, el equipo más premiado o el juego más premiado."
                 },
                 "it": {
                     "title": "Albo d'oro",
-                    "description": "Mostra gli ultimi premi assegnati — modulo gaming."
+                    "description": "Il palmares in breve, a scelta: gli ultimi risultati delle squadre, la squadra più premiata o il gioco più premiato."
                 },
                 "pt": {
                     "title": "Palmarés",
-                    "description": "Mostra os últimos prémios atribuídos — módulo gaming."
+                    "description": "O palmarés em resumo, à escolha: os últimos resultados das equipas, a equipa mais premiada ou o jogo mais premiado."
                 }
             },
             "version": "1.0",
@@ -1875,10 +1915,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/awards.zip",
             "preview": "widgets/awards.jpg",
-            "size": 19474,
-            "sha256": "68355bb5def4aa8b09dde511da60b13060d91c7ef3069b6f40f15fdeadd946f7",
+            "size": 20319,
+            "sha256": "78db19345042bd06a2205384f7dfacac9b9e1b870199663abdaa6324f670c6df",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1890,38 +1930,38 @@
             "tier": 1,
             "category": "identite",
             "title": "Calendrier",
-            "description": "Prochains événements du calendrier.",
+            "description": "Les prochains événements du calendrier, avec leur date et leur couleur, ou la semaine en cours, ses jours d'événement marqués et le prochain rendez-vous ; un lien mène au calendrier complet.",
             "i18n": {
                 "en": {
                     "title": "Calendar",
-                    "description": "Upcoming events from the calendar."
+                    "description": "The calendar’s upcoming events, with their date and color, or the current week, its event days marked and the next event; a link leads to the full calendar."
                 },
                 "de": {
                     "title": "Kalender",
-                    "description": "Bevorstehende Termine aus dem Kalender."
+                    "description": "Die kommenden Termine des Kalenders mit Datum und Farbe, oder die aktuelle Woche mit markierten Termintagen und dem nächsten Termin; ein Link führt zum vollständigen Kalender."
                 },
                 "es": {
                     "title": "Calendario",
-                    "description": "Próximos eventos del calendario."
+                    "description": "Los próximos eventos del calendario, con su fecha y su color, o la semana en curso, con sus días de evento marcados y la próxima cita; un enlace lleva al calendario completo."
                 },
                 "it": {
                     "title": "Calendario",
-                    "description": "Prossimi eventi del calendario."
+                    "description": "I prossimi eventi del calendario, con data e colore, oppure la settimana in corso, con i giorni di evento segnati e il prossimo appuntamento; un link porta al calendario completo."
                 },
                 "pt": {
                     "title": "Calendário",
-                    "description": "Próximos eventos do calendário."
+                    "description": "Os próximos eventos do calendário, com a sua data e cor, ou a semana em curso, com os dias de evento marcados e o próximo encontro; uma ligação leva ao calendário completo."
                 }
             },
-            "version": "1.0",
+            "version": "1.1",
             "author": "NeoFrag Reborn",
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/calendar.zip",
             "preview": "widgets/calendar.jpg",
-            "size": 28046,
-            "sha256": "b124e3fce1f93da9b2d58d1b1deb775548e3a9a5a0f3a3464134a25531f0e4aa",
+            "size": 32064,
+            "sha256": "3236f741290bc5c483a0073ea731196d8fafccb9c9e6fbe263d8f9d10e9d6876",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1961,10 +2001,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/donations.zip",
             "preview": "widgets/donations.jpg",
-            "size": 29777,
-            "sha256": "d19c309d3cdd9af76f857c5ae9bae13ee99fdbc1b4b2fceadaba0ea67d094cc7",
+            "size": 29757,
+            "sha256": "d6dc251979d5a2261e689e05c85a88c80c6fdc204b5716efe13d71eb6127c38a",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1976,27 +2016,27 @@
             "tier": 2,
             "category": "contenu",
             "title": "Téléchargements",
-            "description": "Liste des derniers fichiers à télécharger.",
+            "description": "Les fichiers les plus téléchargés de la bibliothèque, avec leur taille et leur nombre de téléchargements, et un lien vers tous les fichiers.",
             "i18n": {
                 "en": {
                     "title": "Downloads",
-                    "description": "List of the latest files to download."
+                    "description": "The most downloaded files of the library, with their size and number of downloads, and a link to all files."
                 },
                 "de": {
                     "title": "Downloads",
-                    "description": "Liste der zuletzt zum Download bereitgestellten Dateien."
+                    "description": "Die am häufigsten heruntergeladenen Dateien der Bibliothek, mit Größe und Anzahl der Downloads, und ein Link zu allen Dateien."
                 },
                 "es": {
                     "title": "Descargas",
-                    "description": "Lista de los últimos archivos para descargar."
+                    "description": "Los archivos más descargados de la biblioteca, con su tamaño y su número de descargas, y un enlace a todos los archivos."
                 },
                 "it": {
                     "title": "Download",
-                    "description": "Elenco degli ultimi file da scaricare."
+                    "description": "I file più scaricati della libreria, con la loro dimensione e il numero di download, e un link a tutti i file."
                 },
                 "pt": {
                     "title": "Downloads",
-                    "description": "Lista dos últimos ficheiros para download."
+                    "description": "Os ficheiros mais transferidos da biblioteca, com o seu tamanho e o seu número de transferências, e uma ligação para todos os ficheiros."
                 }
             },
             "version": "1.0",
@@ -2004,10 +2044,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/downloads.zip",
             "preview": "widgets/downloads.jpg",
-            "size": 33076,
-            "sha256": "699fbf862cd2b2b856b3a1582d94c25bdd97dab825aaff85c39b67de277e8fc0",
+            "size": 33378,
+            "sha256": "467cb65aed9be1057e1fbbf5ca360fb0d1383c59a53a59e42083f9cfeb8a839d",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2019,27 +2059,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Événements",
-            "description": "Calendrier ou liste des événements à venir — module gaming.",
+            "description": "Six affichages des événements au choix : calendrier, liste par type, un événement en détail, types d'événements, derniers résultats ou prochains matchs.",
             "i18n": {
                 "en": {
                     "title": "Events",
-                    "description": "Calendar or list of upcoming events — gaming module."
+                    "description": "Six views of the events to choose from: calendar, list by type, one event in detail, event types, latest results or upcoming matches."
                 },
                 "de": {
                     "title": "Termine",
-                    "description": "Kalender oder Liste der bevorstehenden Termine — Gaming-Modul."
+                    "description": "Sechs Ansichten der Termine zur Auswahl: Kalender, Liste nach Typ, ein Termin im Detail, Termintypen, neueste Ergebnisse oder bevorstehende Matches."
                 },
                 "es": {
                     "title": "Eventos",
-                    "description": "Calendario o lista de eventos próximos — módulo gaming."
+                    "description": "Seis vistas de los eventos a elegir: calendario, lista por tipo, un evento en detalle, tipos de eventos, últimos resultados o próximos partidos."
                 },
                 "it": {
                     "title": "Eventi",
-                    "description": "Calendario o elenco degli eventi in arrivo — modulo gaming."
+                    "description": "Sei visualizzazioni degli eventi a scelta: calendario, elenco per tipo, un evento in dettaglio, tipi di eventi, ultimi risultati o prossime partite."
                 },
                 "pt": {
                     "title": "Eventos",
-                    "description": "Calendário ou lista dos próximos eventos — módulo gaming."
+                    "description": "Seis vistas dos eventos à escolha: calendário, lista por tipo, um evento em detalhe, tipos de eventos, últimos resultados ou próximos jogos."
                 }
             },
             "version": "1.0",
@@ -2047,10 +2087,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/events.zip",
             "preview": "widgets/events.jpg",
-            "size": 34550,
-            "sha256": "a9b77217820e424b7fc50dd7db03ff4c4229c8f9bf7cac931cfe0b02e6a345a6",
+            "size": 34848,
+            "sha256": "dc3681a95329ed39976a3aac32d85cdd5c7dc4bfe71a9f3ef43f176381ec9bc3",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2062,27 +2102,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Forum",
-            "description": "Derniers sujets ou messages du forum.",
+            "description": "Derniers messages, derniers sujets, chiffres du forum ou membres en ligne, au choix ; seules les catégories que le visiteur a le droit de lire y apparaissent.",
             "i18n": {
                 "en": {
                     "title": "Forum",
-                    "description": "Latest topics or posts from the forum."
+                    "description": "Latest messages, latest topics, forum figures or members online, as you choose; only the categories the visitor is allowed to read appear."
                 },
                 "de": {
                     "title": "Forum",
-                    "description": "Neueste Themen oder Beiträge des Forums."
+                    "description": "Neueste Beiträge, neueste Themen, Forumszahlen oder Mitglieder online, nach Wahl; nur die Kategorien, die der Besucher lesen darf, erscheinen darin."
                 },
                 "es": {
                     "title": "Foro",
-                    "description": "Últimos temas o publicaciones del foro."
+                    "description": "Últimos mensajes, últimos temas, cifras del foro o miembros conectados, a elegir; solo aparecen las categorías que el visitante tiene derecho a leer."
                 },
                 "it": {
                     "title": "Forum",
-                    "description": "Ultimi argomenti o messaggi del forum."
+                    "description": "Ultimi messaggi, ultime discussioni, numeri del forum o membri online, a scelta; compaiono solo le categorie che il visitatore ha il diritto di leggere."
                 },
                 "pt": {
                     "title": "Fórum",
-                    "description": "Tópicos ou mensagens recentes do fórum."
+                    "description": "Últimas mensagens, últimos tópicos, números do fórum ou membros online, à escolha; só aparecem as categorias que o visitante tem o direito de ler."
                 }
             },
             "version": "1.0",
@@ -2090,10 +2130,53 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/forum.zip",
             "preview": "widgets/forum.jpg",
-            "size": 32884,
-            "sha256": "1b431fc554a64945a6fa6c60bbd6a72b9ac7556980cc087af7d4acb4b2572ca3",
+            "size": 43822,
+            "sha256": "2ee9c1674b20476b4164d0528af8c316a4dc4922e84a59258052c8d5bf99a2fb",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "widget",
+            "name": "frise",
+            "tier": 1,
+            "category": "identite",
+            "title": "Frise de la saison",
+            "description": "La saison du site sur une frise, mois par mois : les rendez-vous à venir du calendrier, les actualités, les discussions du forum et les albums photo, chacun si son module est installé ; seul ce que le visiteur peut lire y paraît.",
+            "i18n": {
+                "en": {
+                    "title": "Season timeline",
+                    "description": "The site’s season on a timeline, month by month: upcoming calendar events, news, forum discussions and photo albums, each if its module is installed; only what the visitor may read appears."
+                },
+                "de": {
+                    "title": "Zeitleiste der Saison",
+                    "description": "Die Saison der Website als Zeitleiste, Monat für Monat: kommende Termine aus dem Kalender, Neuigkeiten, Forumsdiskussionen und Fotoalben, jeweils wenn das Modul installiert ist; es erscheint nur, was der Besucher lesen darf."
+                },
+                "es": {
+                    "title": "Cronología de la temporada",
+                    "description": "La temporada del sitio en una cronología, mes a mes: las próximas citas del calendario, las noticias, las discusiones del foro y los álbumes de fotos, cada uno si su módulo está instalado; solo aparece lo que el visitante puede leer."
+                },
+                "it": {
+                    "title": "Cronologia della stagione",
+                    "description": "La stagione del sito su una cronologia, mese per mese: i prossimi appuntamenti del calendario, le notizie, le discussioni del forum e gli album fotografici, ciascuno se il suo modulo è installato; appare solo ciò che il visitatore può leggere."
+                },
+                "pt": {
+                    "title": "Cronologia da temporada",
+                    "description": "A temporada do site numa cronologia, mês a mês: os próximos encontros do calendário, as notícias, as discussões do fórum e os álbuns de fotos, cada um se o seu módulo estiver instalado; só aparece o que o visitante pode ler."
+                }
+            },
+            "version": "1.0.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
+            "file": "widgets/frise.zip",
+            "preview": "widgets/frise.jpg",
+            "size": 50565,
+            "sha256": "bab81b040281b87f63d4493a9abda495f7492d230fdbe02c41de8e1ab1843265",
+            "requires": {
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2105,27 +2188,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Galeries",
-            "description": "Aperçu de la galerie photos avec dernières images.",
+            "description": "Quatre affichages de la galerie au choix : ses catégories, les albums d'une catégorie, une image tirée au hasard ou le diaporama d'un album.",
             "i18n": {
                 "en": {
                     "title": "Galleries",
-                    "description": "Overview of the photo gallery with the latest images."
+                    "description": "Four views of the gallery to choose from: its categories, the albums of a category, a random image or the slideshow of an album."
                 },
                 "de": {
                     "title": "Galerien",
-                    "description": "Übersicht der Fotogalerie mit den neuesten Bildern."
+                    "description": "Vier Ansichten der Galerie zur Auswahl: ihre Kategorien, die Alben einer Kategorie, ein zufälliges Bild oder die Diashow eines Albums."
                 },
                 "es": {
                     "title": "Galerías",
-                    "description": "Vista general de la galería de fotos con las últimas imágenes."
+                    "description": "Cuatro vistas de la galería a elegir: sus categorías, los álbumes de una categoría, una imagen al azar o el carrusel de un álbum."
                 },
                 "it": {
                     "title": "Gallerie",
-                    "description": "Anteprima della galleria fotografica con le ultime immagini."
+                    "description": "Quattro visualizzazioni della galleria a scelta: le sue categorie, gli album di una categoria, un'immagine casuale o lo slideshow di un album."
                 },
                 "pt": {
                     "title": "Galerias",
-                    "description": "Vista geral da galeria de fotos com as últimas imagens."
+                    "description": "Quatro vistas da galeria à escolha: as suas categorias, os álbuns de uma categoria, uma imagem aleatória ou o carrossel de um álbum."
                 }
             },
             "version": "1.0",
@@ -2133,10 +2216,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/gallery.zip",
             "preview": "widgets/gallery.jpg",
-            "size": 28887,
-            "sha256": "6ee160d75471d1d59b78c9d211afaa98e6a3b4b29f9965adf768d7164d74964a",
+            "size": 29727,
+            "sha256": "61e724947dd156fc8c90ec6cc882636889376bab26087d77d2cce16a4fd1ffc8",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2176,10 +2259,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/gameserver.zip",
             "preview": "widgets/gameserver.jpg",
-            "size": 44623,
-            "sha256": "9a33e7630f5c5af731f5c700da4dc8f59c11f905d3e40eeaabead4ac35db7437",
+            "size": 44609,
+            "sha256": "3111d23f0edb876e28ea9622044e196c212c055245a917de9ae4915c9992deab",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2191,27 +2274,27 @@
             "tier": 2,
             "category": "contenu",
             "title": "Livre d'or",
-            "description": "Derniers messages du livre d'or.",
+            "description": "Les derniers messages validés du livre d'or, avec leur auteur et leur date, et un lien vers le livre complet ; le nombre de messages affichés se règle.",
             "i18n": {
                 "en": {
                     "title": "Guestbook",
-                    "description": "Latest messages from the guestbook."
+                    "description": "The latest approved messages of the guestbook, with their author and date, and a link to the full guestbook; the number of messages shown is adjustable."
                 },
                 "de": {
                     "title": "Gästebuch",
-                    "description": "Neueste Nachrichten aus dem Gästebuch."
+                    "description": "Die neuesten freigegebenen Einträge des Gästebuchs, mit Autor und Datum, und ein Link zum vollständigen Gästebuch; die Anzahl der Einträge ist einstellbar."
                 },
                 "es": {
                     "title": "Libro de visitas",
-                    "description": "Últimos mensajes del libro de visitas."
+                    "description": "Los últimos mensajes aprobados del libro de visitas, con su autor y su fecha, y un enlace al libro completo; el número de mensajes mostrados es ajustable."
                 },
                 "it": {
                     "title": "Libro degli ospiti",
-                    "description": "Ultimi messaggi dal libro degli ospiti."
+                    "description": "Gli ultimi messaggi approvati del libro degli ospiti, con autore e data, e un link al libro completo; il numero di messaggi mostrati è regolabile."
                 },
                 "pt": {
                     "title": "Livro de visitas",
-                    "description": "Últimas mensagens do livro de visitas."
+                    "description": "As últimas mensagens aprovadas do livro de visitas, com o seu autor e a sua data, e uma ligação para o livro completo; o número de mensagens mostradas é ajustável."
                 }
             },
             "version": "1.0",
@@ -2219,10 +2302,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/guestbook.zip",
             "preview": "widgets/guestbook.jpg",
-            "size": 28613,
-            "sha256": "56d46663f90543bef11b91569119dda6ae39ce5f085cd06eef067fab14af1f14",
+            "size": 29066,
+            "sha256": "53caac18d7bf65031e455d563412d223439f543d52cdbfaa4dfcffb4e136ef81",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2234,27 +2317,27 @@
             "tier": 2,
             "category": "contenu",
             "title": "Liens",
-            "description": "Liens populaires de l'annuaire.",
+            "description": "Les liens les plus cliqués de l'annuaire, avec leur nombre de clics, et un lien vers l'annuaire complet ; le nombre de liens affichés se règle.",
             "i18n": {
                 "en": {
                     "title": "Links",
-                    "description": "Popular links from the directory."
+                    "description": "The most clicked links of the directory, with their number of clicks, and a link to the full directory; the number of links shown is adjustable."
                 },
                 "de": {
                     "title": "Links",
-                    "description": "Beliebte Links aus dem Verzeichnis."
+                    "description": "Die meistgeklickten Links des Verzeichnisses, mit ihrer Klickzahl, und ein Link zum vollständigen Verzeichnis; die Anzahl der angezeigten Links ist einstellbar."
                 },
                 "es": {
                     "title": "Enlaces",
-                    "description": "Enlaces populares del directorio."
+                    "description": "Los enlaces más pulsados del directorio, con su número de clics, y un enlace al directorio completo; el número de enlaces mostrados es ajustable."
                 },
                 "it": {
                     "title": "Link",
-                    "description": "Link popolari dalla directory."
+                    "description": "I link più cliccati dell'elenco, con il loro numero di clic, e un link all'elenco completo; il numero di link mostrati è regolabile."
                 },
                 "pt": {
                     "title": "Ligações",
-                    "description": "Ligações populares do diretório."
+                    "description": "As ligações mais clicadas do diretório, com o seu número de cliques, e uma ligação para o diretório completo; o número de ligações mostradas é ajustável."
                 }
             },
             "version": "1.0",
@@ -2262,10 +2345,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/links.zip",
             "preview": "widgets/links.jpg",
-            "size": 23328,
-            "sha256": "1fc96c49f2d0702ff11098d5f2f2ffa5ed79c1d143f1625fd5fc794574707eef",
+            "size": 23773,
+            "sha256": "366b083d5a47aef0d39506d68b7de6db73b955ed01dfabd2895602d5b5929879",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2277,27 +2360,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Actualités",
-            "description": "Liste des dernières actualités publiées.",
+            "description": "Trois affichages des actualités au choix : les plus récentes, la liste des catégories, ou un nuage de tags dont la taille suit la fréquence.",
             "i18n": {
                 "en": {
                     "title": "News",
-                    "description": "List of the latest published news."
+                    "description": "Three views of the news to choose from: the most recent ones, the list of categories, or a tag cloud sized by frequency."
                 },
                 "de": {
                     "title": "News",
-                    "description": "Liste der zuletzt veröffentlichten News."
+                    "description": "Drei Ansichten der News zur Auswahl: die neuesten, die Liste der Kategorien oder eine Tag-Wolke, deren Größe der Häufigkeit folgt."
                 },
                 "es": {
                     "title": "Noticias",
-                    "description": "Lista de las últimas noticias publicadas."
+                    "description": "Tres vistas de las noticias a elegir: las más recientes, la lista de categorías o una nube de etiquetas cuyo tamaño sigue la frecuencia."
                 },
                 "it": {
                     "title": "Notizie",
-                    "description": "Elenco delle ultime notizie pubblicate."
+                    "description": "Tre visualizzazioni delle notizie a scelta: le più recenti, l'elenco delle categorie o una nuvola di tag la cui dimensione segue la frequenza."
                 },
                 "pt": {
                     "title": "Notícias",
-                    "description": "Lista das últimas notícias publicadas."
+                    "description": "Três vistas das notícias à escolha: as mais recentes, a lista de categorias ou uma nuvem de etiquetas cujo tamanho segue a frequência."
                 }
             },
             "version": "1.0",
@@ -2305,10 +2388,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/news.zip",
             "preview": "widgets/news.jpg",
-            "size": 26290,
-            "sha256": "78064d46668ca32ab3f22995c41ca5e955eb214cc165f68af0b28029a1c1e8a7",
+            "size": 26647,
+            "sha256": "6fa81bccba63e9bfa5ee10354807f0cef4bc61ca2e2d9c1c32a7accdc9bc67cc",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2320,27 +2403,27 @@
             "tier": 1,
             "category": "monetisation",
             "title": "Newsletter",
-            "description": "Formulaire d'inscription à la newsletter.",
+            "description": "Invite à s'abonner à la newsletter depuis n'importe quelle page et affiche le nombre d'abonnés ; l'inscription se valide par un e-mail de confirmation.",
             "i18n": {
                 "en": {
                     "title": "Newsletter",
-                    "description": "Newsletter subscription form."
+                    "description": "Invites visitors to subscribe to the newsletter from any page and shows the number of subscribers; sign-up is validated by a confirmation email."
                 },
                 "de": {
                     "title": "Newsletter",
-                    "description": "Newsletter-Anmeldeformular."
+                    "description": "Lädt auf jeder Seite zum Abonnieren des Newsletters ein und zeigt die Zahl der Abonnenten; die Anmeldung wird per E-Mail bestätigt."
                 },
                 "es": {
                     "title": "Boletín",
-                    "description": "Formulario de suscripción al boletín."
+                    "description": "Invita a suscribirse al boletín desde cualquier página y muestra el número de suscriptores; la inscripción se valida con un correo de confirmación."
                 },
                 "it": {
                     "title": "Newsletter",
-                    "description": "Modulo di iscrizione alla newsletter."
+                    "description": "Invita a iscriversi alla newsletter da qualsiasi pagina e mostra il numero di iscritti; l'iscrizione va confermata tramite e-mail."
                 },
                 "pt": {
                     "title": "Newsletter",
-                    "description": "Formulário de subscrição da newsletter."
+                    "description": "Convida a subscrever a newsletter a partir de qualquer página e mostra o número de subscritores; a inscrição é validada por um e-mail de confirmação."
                 }
             },
             "version": "1.0",
@@ -2348,10 +2431,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/newsletter.zip",
             "preview": "widgets/newsletter.jpg",
-            "size": 27536,
-            "sha256": "b8889329c45555eace458491218a3ae21f958a672e1163278b7f9e7ebb537eeb",
+            "size": 28436,
+            "sha256": "c8561662eadf447d3f06ec966330175e3bcaad5c44b2b06a579c8dc1db38a103",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2363,27 +2446,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Partenaires",
-            "description": "Partenaires et sponsors avec logos — widget gaming.",
+            "description": "Les logos des partenaires et sponsors, en bandeau défilant ou en colonne, version claire ou foncée selon le fond. Pour un club, une association ou une équipe.",
             "i18n": {
                 "en": {
                     "title": "Partners",
-                    "description": "Partners and sponsors with logos — gaming widget."
+                    "description": "The logos of partners and sponsors, in a scrolling banner or a column, light or dark version depending on the background. For a club, a nonprofit or a team."
                 },
                 "de": {
                     "title": "Partner",
-                    "description": "Partner und Sponsoren mit Logos — Gaming-Widget."
+                    "description": "Die Logos der Partner und Sponsoren, als laufendes Band oder in einer Spalte, helle oder dunkle Version je nach Hintergrund. Für einen Club, einen Verein oder ein Team."
                 },
                 "es": {
                     "title": "Socios",
-                    "description": "Socios y patrocinadores con logos — widget gaming."
+                    "description": "Los logos de socios y patrocinadores, en banda deslizante o en columna, versión clara u oscura según el fondo. Para un club, una asociación o un equipo."
                 },
                 "it": {
                     "title": "Partner",
-                    "description": "Partner e sponsor con loghi — widget gaming."
+                    "description": "I loghi dei partner e degli sponsor, in una banda scorrevole o in colonna, versione chiara o scura secondo lo sfondo. Per un club, un'associazione o una squadra."
                 },
                 "pt": {
                     "title": "Parceiros",
-                    "description": "Parceiros e patrocinadores com logotipos — widget gaming."
+                    "description": "Os logótipos dos parceiros e patrocinadores, numa faixa deslizante ou em coluna, versão clara ou escura conforme o fundo. Para um clube, uma associação ou uma equipa."
                 }
             },
             "version": "1.0",
@@ -2391,10 +2474,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/partners.zip",
             "preview": "widgets/partners.jpg",
-            "size": 23819,
-            "sha256": "2603d86998a8c43ec5b666c92016722a99f84995f73ddc254843761435fe7136",
+            "size": 24221,
+            "sha256": "5fd0a46b76026825bb4ac772a86c215c007d8f297111799a25a6e9b3cf4bccde",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2406,27 +2489,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Recrutement",
-            "description": "Postes actuellement ouverts au recrutement — widget gaming.",
+            "description": "Les dernières offres de recrutement, avec leur équipe et les postes restant à pourvoir, ou une offre en détail : rôle proposé, places libres, date limite.",
             "i18n": {
                 "en": {
                     "title": "Recruitment",
-                    "description": "Positions currently open for recruitment — gaming widget."
+                    "description": "The latest recruitment offers, with their team and the positions still open, or one offer in detail: proposed role, places left, deadline."
                 },
                 "de": {
                     "title": "Rekrutierung",
-                    "description": "Derzeit offene Stellen für die Rekrutierung — Gaming-Widget."
+                    "description": "Die neuesten Rekrutierungsangebote, mit ihrem Team und den noch offenen Positionen, oder ein Angebot im Detail: angebotene Rolle, freie Plätze, Frist."
                 },
                 "es": {
                     "title": "Reclutamiento",
-                    "description": "Puestos abiertos actualmente para reclutamiento — widget de gaming."
+                    "description": "Las últimas ofertas de reclutamiento, con su equipo y los puestos aún por cubrir, o una oferta en detalle: rol propuesto, plazas libres, fecha límite."
                 },
                 "it": {
                     "title": "Reclutamento",
-                    "description": "Posizioni attualmente aperte per il reclutamento — widget gaming."
+                    "description": "Le ultime offerte di reclutamento, con la loro squadra e i posti ancora da coprire, o un'offerta in dettaglio: ruolo proposto, posti liberi, scadenza."
                 },
                 "pt": {
                     "title": "Recrutamento",
-                    "description": "Vagas atualmente abertas para recrutamento — widget de gaming."
+                    "description": "As últimas ofertas de recrutamento, com a sua equipa e as vagas ainda por preencher, ou uma oferta em detalhe: função proposta, vagas livres, data limite."
                 }
             },
             "version": "1.0",
@@ -2434,10 +2517,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/recruits.zip",
             "preview": "widgets/recruits.jpg",
-            "size": 35399,
-            "sha256": "ed4951600c5bd984d23d40b298e437490b4bcc059e4d42e461a19b8902130dd7",
+            "size": 36080,
+            "sha256": "caac7f8d05353c44d547f55d950a9cf68f347992bcc58ee4ef8cc7a7fcc027e6",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": [
                     "teams"
                 ]
@@ -2479,10 +2562,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/rss.zip",
             "preview": "widgets/rss.jpg",
-            "size": 56577,
-            "sha256": "787ec3ab709c1658d1f3d794d06e20ebfada1f6b8b324a2c20997f3cf52800a4",
+            "size": 56545,
+            "sha256": "d1adf41aa41439c086283d425cafcf1fc02ada7cdf2a798a44a2d4e8a32a2aa8",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2522,10 +2605,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/seasonal.zip",
             "preview": "widgets/seasonal.jpg",
-            "size": 46424,
-            "sha256": "22817854653532e2a0d288efe1dd509aea7b9930606e6ea64f148cb9ae86549e",
+            "size": 46386,
+            "sha256": "2212a2e67d6262d4fcd48911e96e9d32d7910e0d01b0678248dc5d6e1fadbe55",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2565,10 +2648,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/steam.zip",
             "preview": "widgets/steam.jpg",
-            "size": 39777,
-            "sha256": "ff4b5342e12cfb3ecedc4e31582d64e8f9ae4df8c4f2de077f837303ae522f9c",
+            "size": 39754,
+            "sha256": "a6aa99752c525e315952cb8082d87f77f4e8804fd172aeb2fa4d9ea9e42ec0e2",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2580,27 +2663,27 @@
             "tier": 2,
             "category": "contenu",
             "title": "Sondages",
-            "description": "Sondage en cours sur le site.",
+            "description": "Met en avant le sondage ouvert le plus récent : sa question, ses réponses et la part des votes de chacune, avec un lien pour participer.",
             "i18n": {
                 "en": {
                     "title": "Surveys",
-                    "description": "Active survey on the site."
+                    "description": "Highlights the most recent open survey: its question, its answers and each one's share of the votes, with a link to take part."
                 },
                 "de": {
                     "title": "Umfragen",
-                    "description": "Aktive Umfrage auf der Website."
+                    "description": "Hebt die neueste offene Umfrage hervor: ihre Frage, ihre Antworten und den Stimmenanteil jeder Antwort, mit einem Link zum Mitmachen."
                 },
                 "es": {
                     "title": "Encuestas",
-                    "description": "Encuesta activa en el sitio."
+                    "description": "Destaca la encuesta abierta más reciente: su pregunta, sus respuestas y el porcentaje de votos de cada una, con un enlace para participar."
                 },
                 "it": {
                     "title": "Sondaggi",
-                    "description": "Sondaggio attivo sul sito."
+                    "description": "Mette in evidenza il sondaggio aperto più recente: la domanda, le risposte e la percentuale di voti di ciascuna, con un link per partecipare."
                 },
                 "pt": {
                     "title": "Enquetes",
-                    "description": "Enquete ativa no site."
+                    "description": "Destaca a sondagem aberta mais recente: a sua pergunta, as suas respostas e a percentagem de votos de cada uma, com uma ligação para participar."
                 }
             },
             "version": "1.0",
@@ -2608,10 +2691,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/surveys.zip",
             "preview": "widgets/surveys.jpg",
-            "size": 26504,
-            "sha256": "947a7ed5eb0093942620e4334b640547c0e810ec1f64ff6cbfc350a79daf8375",
+            "size": 27356,
+            "sha256": "fc6a615bf2ed39476e8ad650d5e8dd6adfc12a1c9eb7805c0efe100db0437444",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2623,27 +2706,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Équipes",
-            "description": "Équipes du clan avec leurs membres — widget gaming.",
+            "description": "Les équipes du site en bannières cliquables, chacune menant à sa page : jeu, présentation, joueurs. Seules les équipes qui ont une bannière y figurent.",
             "i18n": {
                 "en": {
                     "title": "Teams",
-                    "description": "Clan teams with their members — gaming widget."
+                    "description": "The site's teams as clickable banners, each leading to its page: game, description, players. Only teams that have a banner are shown."
                 },
                 "de": {
                     "title": "Teams",
-                    "description": "Clan-Teams mit ihren Mitgliedern — Gaming-Widget."
+                    "description": "Die Teams der Website als anklickbare Banner, jedes führt zu seiner Seite: Spiel, Vorstellung, Spieler. Nur Teams mit einem Banner erscheinen."
                 },
                 "es": {
                     "title": "Equipos",
-                    "description": "Equipos del clan con sus miembros — widget gaming."
+                    "description": "Los equipos del sitio en banners clicables, cada uno lleva a su página: juego, presentación, jugadores. Solo aparecen los equipos que tienen un banner."
                 },
                 "it": {
                     "title": "Squadre",
-                    "description": "Squadre del clan con i loro membri — widget gaming."
+                    "description": "Le squadre del sito come banner cliccabili, ognuno porta alla sua pagina: gioco, presentazione, giocatori. Compaiono solo le squadre che hanno un banner."
                 },
                 "pt": {
                     "title": "Equipas",
-                    "description": "Equipes do clã com seus membros — widget gaming."
+                    "description": "As equipas do site em banners clicáveis, cada um leva à sua página: jogo, apresentação, jogadores. Só aparecem as equipas que têm um banner."
                 }
             },
             "version": "1.0",
@@ -2651,10 +2734,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/teams.zip",
             "preview": "widgets/teams.jpg",
-            "size": 26159,
-            "sha256": "aeea18ecc2447b3e4b61c1bc18c39b9b989b237084f84f3ae3e9765114cdecdc",
+            "size": 26550,
+            "sha256": "a9570f0e3ee101d52006f00fad4172565e604c964055e00bc187c6eacc17b16f",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2694,10 +2777,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/teamspeak.zip",
             "preview": "widgets/teamspeak.jpg",
-            "size": 44467,
-            "sha256": "08ad0e1d49f27519b11ddf1dfa0a2d0c77829332ecd7ecd73ac7c93172910e30",
+            "size": 44444,
+            "sha256": "45437d4449c47cd81bae76a00a60cf0750c1c798362f73d31be150bb6623b6b9",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2737,10 +2820,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/twitch.zip",
             "preview": "widgets/twitch.jpg",
-            "size": 52668,
-            "sha256": "2e48bd69164200b488fc28a7d0ce8baf19d96b607aebf01a1d634adddca035b0",
+            "size": 52653,
+            "sha256": "807b94f53fa8a0810f04620db06bc9286200c34b3feb8c254e54752e58ad778a",
             "requires": {
-                "base": ">=1.2.22",
+                "base": ">=1.2.36",
                 "addons": []
             },
             "provides_widgets": [],

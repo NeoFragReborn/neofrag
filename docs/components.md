@@ -1,6 +1,6 @@
 # Composants — NeoFrag Reborn
 
-Inventaire des **62 modules · 40 widgets · 6 thèmes distribués**. L'architecture du framework est dans
+Inventaire des **62 modules · 41 widgets · 7 thèmes distribués**. L'architecture du framework est dans
 [architecture.md](architecture.md).
 La pile gamification/boutique/monétisation a sa doc dédiée : [gamification.md](gamification.md).
 
@@ -80,12 +80,13 @@ contenu/catégorie) · `reactions` (likes polymorphes : commentaires/articles/ne
 publicitaire, masquée pour les membres no_ads/VIP) · `payments` (Stripe : recharge de points + packs VIP,
 webhook signé). Détail : [gamification.md](gamification.md).
 
-## 40 widgets
+## 41 widgets
 
 - **Contenu** : `news`, `articles`, `awards`, `calendar`, `donations`, `downloads`, `events`, `forum`,
   `gallery`, `guestbook`, `links`, `members`, `newsletter`, `partners`, `recruits`, `slider`,
   `surveys`, `talks`, `teams`, `user`, `video` (player HTML5 + playlist depuis la médiathèque),
-  `latest_comments` (derniers commentaires cross-module) — présentateurs sur leur module.
+  `latest_comments` (derniers commentaires cross-module), `frise` (la saison mois par mois : rendez-vous du calendrier,
+  actualités, discussions du forum et albums photo, chacun si son module est installé) — présentateurs sur leur module.
 - **Services externes** : `discord`, `steam`, `twitch`, `teamspeak`, `gameserver` (utilisent les libs
   vendor planetteamspeak/ts3 + xpaw/php-source-query), `socials`.
 - **Structure / divers** : `navigation`, `breadcrumb`, `header`, `about`, `clock`, `copyright`,
@@ -103,16 +104,20 @@ webhook signé). Détail : [gamification.md](gamification.md).
 - **Langues (6)** : `language_en`, `language_fr`, `language_de`, `language_es`, `language_it`,
   `language_pt`.
 
-## 6 thèmes distribués
+## 7 thèmes distribués
 
 - **admin** — back-office (dark mode complet, command palette).
 - **nebula** — thème communautaire en DA Reborn (chrome propre, clair/sombre). Core.
 - **blockcraft** — public, identité « blocs » (vert herbe, coins carrés, ombres-blocs), jour/nuit.
-- **granite** — public, « pierre taillée » (teal/ardoise, titres Oswald, plat hairline), jour/nuit.
-- **forge** — public, « fonte en fusion » (rouge lave, Rajdhani, lueur de braise), nuit par défaut.
+- **granite** — public, « Gazette » (2.0.0) : le journal du club — la date et le titre imprimés, les rubriques entre deux
+  filets, la ligne « En bref » qui défile, la une à colonnes et ses lettrines ; papier le jour, encre la nuit.
+- **forge** — public, « Coulée » (2.0.0) : le rail d'acier sur le côté, le foyer de lave et ses braises, le tableau de
+  bord, le forum en tiroirs ; nuit par défaut, mode jour au choix.
+- **chronique** — public, le carnet de la saison : un en-tête discret et un « Sommaire » plein écran, l'ouverture avec
+  la semaine en cours, la frise de la saison, une colonne à côté ; papier le jour, nuit « à la lampe ».
 - **extend** — port BS5 du thème « Extend » de Chewbaka (navy & bleu acier, titres Economica, jour/nuit, multi-zones). Distribuable via la marketplace.
 
-> Le thème `dungeon` a été retiré. CSS thème = template PHP à tokens (`--bc-*`/`--gr-*`/`--fg-*`), couleurs
+> Le thème `dungeon` a été retiré. CSS thème = template PHP à tokens (`--bc-*`/`--gz-*`/`--fg-*`/`--ch-*`), couleurs
 > d'accent/fond/images **configurables en admin**. Installation d'un thème déposé sur disque : admin →
 > Addons → **« Scanner le disque »** ; suppression via l'action **« Supprimer »**. Réseaux sociaux du
 > footer = **globaux** (`nf_social_*`, partagés par tous les thèmes).

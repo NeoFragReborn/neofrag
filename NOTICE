@@ -37,10 +37,10 @@ Addons écrits par NeoFrag Reborn (LGPL-3.0)
   module menu, module moderation, module newsletter, module notifications, module payments, module
   places, module quotes, module reactions, module recipes, module revisions, module sandbox, module
   shop, module slider, module surveys, module trash, module webhooks, module webradio, module wiki,
-  widget ads, widget articles, widget calendar, widget discord, widget downloads, widget gameserver,
-  widget guestbook, widget latest_comments, widget links, widget newsletter, widget rss, widget
-  seasonal, widget surveys, widget teamspeak, widget twitch, widget video, theme blockcraft, theme
-  forge, theme granite, theme nebula
+  widget ads, widget articles, widget calendar, widget discord, widget downloads, widget frise,
+  widget gameserver, widget guestbook, widget latest_comments, widget links, widget newsletter,
+  widget rss, widget seasonal, widget surveys, widget teamspeak, widget twitch, widget video, theme
+  blockcraft, theme chronique, theme forge, theme granite, theme nebula
 
 Remerciements — idées reprises, sans leur code
 ----------------------------------------------

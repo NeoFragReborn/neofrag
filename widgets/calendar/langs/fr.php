@@ -13,4 +13,8 @@ return [
 	'042e2c3d' => 'Afficher dans un panneau',
 	'fd283f69' => 'Calendrier',
 	'e2a147a0' => 'Oui',
+	'f7d36bc6' => 'Les prochains événements du calendrier, avec leur date et leur couleur, ou la semaine en cours, ses jours d\'événement marqués et le prochain rendez-vous ; un lien mène au calendrier complet.',
+	'33432c7d' => 'La semaine',
+	'151f0e3e' => 'Prochain rendez-vous',
+	'75a94c9e' => 'l j F',
 ];

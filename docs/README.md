@@ -1,6 +1,6 @@
-# Documentation — NeoFrag Reborn 1.2.35
+# Documentation — NeoFrag Reborn 1.2.36
 
-Documentation **vérifiée contre le code réel** (62 modules · 40 widgets · 6 thèmes distribués · 10 addons).
+Documentation **vérifiée contre le code réel** (62 modules · 41 widgets · 7 thèmes distribués · 10 addons).
 Ses chiffres, ses renvois et sa structure sont contrôlés en intégration continue par
 `tools/check-docs.php` : un chiffre faux, un lien mort, un document orphelin ou une phrase recopiée
 d'un document à l'autre fait échouer la CI.

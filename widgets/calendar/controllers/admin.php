@@ -10,6 +10,15 @@ use NF\NeoFrag\Loadables\Controller;
 
 class Admin extends Controller
 {
+	public function semaine($settings = [])
+	{
+		// Ni nombre ni liste : sept jours, toujours. Seul le panneau se règle.
+		return $this->view('admin', array_merge([
+			'count'         => NULL,
+			'display_panel' => 'oui'
+		], $settings));
+	}
+
 	public function upcoming($settings = [])
 	{
 		return $this->view('admin', array_merge([
