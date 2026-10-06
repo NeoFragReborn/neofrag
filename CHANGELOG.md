@@ -10,6 +10,19 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.32] — 2026-10-06
+
+Le chantier des thèmes commence : Forge, Granite, Blockcraft et Extend partagent désormais un socle commun. Rien ne
+change à l'écran ; c'est la base sur laquelle chacun recevra son identité.
+
+### Modifié
+
+- **Les thèmes Forge, Granite, Blockcraft et Extend partagent un socle commun** (`css/nf-socle-themes.css`) : les
+  153 règles qu'ils avaient d'identiques n'y sont plus écrites qu'une fois, dans le cœur, et chacun ne garde que
+  son identité. Rien ne change à l'écran — vérifié élément par élément et pixel par pixel, sur les quatre thèmes, de
+  jour et de nuit, à l'ordinateur et au téléphone. C'est la première étape de leur refonte : chacun aura bientôt son
+  allure propre. Les quatre thèmes passent en 1.1.0 et demandent le cœur 1.2.32.
+
 ## [1.2.31] — 2026-10-06
 
 L'espace membre, dernières étapes : la sécurité du compte — les appareils connectés se déconnectent, les sanctions

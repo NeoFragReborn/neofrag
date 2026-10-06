@@ -222,6 +222,39 @@ Deux pièges mesurés sur les thèmes livrés :
   `ms-2`, `bg-danger-subtle text-danger-emphasis`. Pour teinter ces couleurs à ta charte, redéfinis
   les variables de Bootstrap (`--bs-danger-text-emphasis`…) plutôt que les classes.
 
+### Le socle commun des thèmes — `css/nf-socle-themes.css` (facultatif)
+
+Blockcraft, Extend, Forge et Granite s'appuient sur un **socle commun** : ce que leurs feuilles avaient
+d'identique (le reset, les liens, les cartes, les formulaires, les listes, la barre du membre, les
+pastilles de présence…), écrit une seule fois dans le cœur, avec le seul vocabulaire `--nf-*`. Un thème
+l'adopte en le chargeant **avant** sa propre feuille, qui garde son identité et peut tout redéfinir :
+
+```php
+$this->css('bootstrap.min')->css('nf-bs5-bridge')
+     ->css('icons/fontawesome.min')
+     ->css('nf-socle-themes')   // le socle commun des thèmes
+     ->css('style')
+     ->css('nf-apres-theme');
+```
+
+Il emploie, en plus des jetons ci-dessus, ceux-ci, que le thème qui le charge définit (les quatre thèmes
+livrés les font pointer vers leur palette privée) — `tools/check-css-variables.php` refuse un thème qui
+charge le socle sans définir chacun des jetons qu'il emploie :
+
+```css
+:root {
+    --nf-radius-xs: 2px;
+    --nf-shadow-sm: 0 1px 3px rgba(0,0,0,.4);  --nf-shadow: 0 6px 20px -8px rgba(0,0,0,.6);  --nf-shadow-md: 0 12px 32px -12px rgba(0,0,0,.7);
+    --nf-success-soft: rgba(34,197,94,.12);  --nf-warning-soft: rgba(245,158,11,.12);  --nf-info-soft: rgba(56,189,248,.12);
+    --nf-link: var(--nf-accent-text);  --nf-link-hover: var(--nf-accent);
+    --nf-font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+```
+
+Un thème qui ne le charge pas — Nebula, ou un thème resté à une version d'avant — n'a rien à changer.
+Le socle est arrivé avec la version 1.2.32 du cœur : un thème qui le charge ne s'installe que sur un cœur
+qui le porte (le marketplace sert à chaque site le catalogue de sa propre version).
+
 Le CSS peut être un **gabarit PHP** ; le `?v=` est basé sur la date du fichier, toute édition invalide
 le cache. Un dossier `css/sass/` est compilé côté serveur (scssphp) à l'installation et depuis
 Administration → Outils.

@@ -12,6 +12,19 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.32] — 2026-10-06
+
+The themes overhaul begins: Forge, Granite, Blockcraft and Extend now share a common base. Nothing changes on
+screen; it is the foundation on which each will receive its own identity.
+
+### Changed
+
+- **The Forge, Granite, Blockcraft and Extend themes share a common base** (`css/nf-socle-themes.css`): the 153
+  rules they had in common are now written only once, in the core, and each theme keeps only its identity. Nothing
+  changes on screen — checked element by element and pixel by pixel, on the four themes, by day and by night, on
+  desktop and on phone. It is the first step of their overhaul: each will soon have its own look. The four themes
+  move to 1.1.0 and require core 1.2.32.
+
 ## [1.2.31] — 2026-10-06
 
 The member area, final steps: account security — signed-in devices can be logged out, moderation sanctions

@@ -170,9 +170,52 @@ if ($partielles)
     echo "\n";
 }
 
-if ($orphelines || $partielles)
+// ── Le socle commun des thèmes (css/nf-socle-themes.css, chantier B) ─────────
+// Il n'emploie que le vocabulaire partagé, sans repli : un thème qui le charge définit CHACUN des jetons qu'il
+// emploie, sinon la règle tombe en silence (une couleur de lien, une ombre, un rayon). Un thème qui ne le charge
+// pas n'a rien à définir pour lui.
+$socle_manquants = [];
+$socle = $racine.'/css/nf-socle-themes.css';
+
+if (is_file($socle))
 {
-    nf_echec(sprintf('%d variable(s) sans définition sûre', count($orphelines) + count($partielles)));
+    preg_match_all('/var\(\s*(--[A-Za-z0-9_-]+)/', (string) file_get_contents($socle), $trouves);
+    $jetons_socle = array_unique($trouves[1]);
+
+    foreach (glob($racine.'/themes/*', GLOB_ONLYDIR) as $dossier)
+    {
+        $classe = $dossier.'/'.basename($dossier).'.php';
+
+        if (!is_file($classe) || !preg_match("/->css\(\s*'nf-socle-themes'\s*\)/", (string) file_get_contents($classe)))
+        {
+            continue;
+        }
+
+        foreach ($jetons_socle as $nom)
+        {
+            if (!isset($themes[basename($dossier)][$nom]) && !isset($communes[$nom]))
+            {
+                $socle_manquants[basename($dossier)][] = $nom;
+            }
+        }
+    }
 }
 
-nf_ok('chaque variable employée est définie par tous les thèmes');
+if ($socle_manquants)
+{
+    echo "Des thèmes chargent le socle commun sans définir tous ses jetons :\n\n";
+
+    foreach ($socle_manquants as $theme => $noms)
+    {
+        printf("  ✗ %s : %s\n", $theme, implode(', ', $noms));
+    }
+
+    echo "\n";
+}
+
+if ($orphelines || $partielles || $socle_manquants)
+{
+    nf_echec(sprintf('%d variable(s) sans définition sûre', count($orphelines) + count($partielles) + array_sum(array_map('count', $socle_manquants))));
+}
+
+nf_ok('chaque variable employée est définie par tous les thèmes, et chaque thème qui charge le socle commun en définit les jetons');

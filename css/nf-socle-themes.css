@@ -1,0 +1,396 @@
+/*
+ * LE SOCLE COMMUN DES THÈMES (chantier B, étape B1, 2026-10-06).
+ *
+ * Blockcraft, Extend, Forge et Granite étaient quatre copies d'un même thème, repeintes : deux cents de leurs règles
+ * étaient identiques, une fois leurs jetons de couleur ramenés au même nom. Les 153 qui pouvaient changer de place
+ * sans rien changer à l'écran vivent ici, une seule fois — un correctif ne se fait plus quatre fois. Les autres
+ * restent dans chaque thème : leur rang dans la feuille compte, une règle propre au thème, plus haut, les aurait
+ * emportées si elles étaient passées avant elle. Un nouveau thème part de ce socle plutôt que d'un clone.
+ *
+ * Elle n'est chargée que par les thèmes qui l'adoptent, entre le socle du produit (nf-bs5-bridge.css) et leur propre
+ * feuille, qui peut donc tout redéfinir : `->css('nf-socle-themes')` avant `->css('style')`. Un thème resté à une
+ * version d'avant ne la charge pas, et rien ne change pour lui.
+ *
+ * Elle n'emploie QUE le vocabulaire partagé --nf-* (cf. docs/guide/create-a-theme.md) : un thème qui la charge
+ * définit chacun des jetons qu'elle emploie — tools/check-css-variables.php le vérifie. Écrite au départ par
+ * extraction des quatre feuilles, sans rien changer à ce qu'elles affichaient (photos avant et après, pixel par
+ * pixel, sur les quatre thèmes, de jour et de nuit, à l'ordinateur et au téléphone).
+ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+a {
+	color:           var(--nf-link);
+	text-decoration: none;
+	transition:      color 140ms ease;
+}
+
+a:hover, a:focus { color: var(--nf-link-hover); text-decoration: none; }
+
+.card a:hover, .card a:focus,
+.btn:hover, .btn:focus,
+.dropdown-item:hover, .dropdown-item:focus,
+.nav-link:hover, .nav-link:focus,
+.list-group-item:hover, .list-group-item:focus { text-decoration: none !important; }
+
+code, pre, kbd, samp, .text-mono { font-family: var(--nf-font-mono); font-size: 0.92em; }
+
+code, pre {
+	background:    var(--nf-surface-2);
+	border:        1px solid var(--nf-border);
+	border-radius: var(--nf-radius-xs);
+	padding:       2px 6px;
+	color:         var(--nf-accent-text);
+}
+
+pre { padding: 12px 14px; overflow-x: auto; font-size: 13px; }
+
+pre code { background: transparent; border: none; padding: 0; }
+
+::selection { background: var(--nf-accent-soft); color: var(--nf-text-strong); }
+
+hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+
+::-webkit-scrollbar-track { background: transparent; }
+
+::-webkit-scrollbar-thumb { background: var(--nf-border-strong); border-radius: 4px; }
+
+* { scrollbar-width: thin; scrollbar-color: var(--nf-border-strong) transparent; }
+
+.no-transitions * { transition: none !important; }
+
+i.icon:first-child:not(:only-child),
+i.fa:first-child:not(:only-child),
+i.fas:first-child:not(:only-child),
+i.far:first-child:not(:only-child),
+i.fab:first-child:not(:only-child) { margin-right: 6px; }
+
+i.icon:last-child:not(:only-child),
+i.fa:last-child:not(:only-child),
+i.fas:last-child:not(:only-child),
+i.far:last-child:not(:only-child),
+i.fab:last-child:not(:only-child) { margin-left: 6px; }
+
+i.icon:only-child { margin: 0; }
+
+.module h1, .module h2, .module h3, .module h4 { color: var(--nf-text-strong); }
+
+.widget { color: var(--nf-text); }
+
+.navbar-user { background: var(--nf-surface); border-bottom: 1px solid var(--nf-border); padding: 6px 0; min-height: 48px; }
+
+.navbar-user .container-fluid { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
+
+.navbar-user .navbar-brand {
+	color: var(--nf-muted); font-size: 18px; padding: 6px 14px; margin-right: 10px;
+	border-right: 1px solid var(--nf-border); line-height: 1; display: inline-flex; align-items: center;
+	transition: color 140ms ease;
+}
+
+.navbar-user .navbar-brand:hover { color: var(--nf-accent-text); }
+
+.navbar-user .navbar-text { color: var(--nf-muted); font-weight: 500; font-size: 13px; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.navbar-user .navbar-collapse { display: flex !important; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; flex-basis: auto; }
+
+@media (max-width: 991.98px) {
+	.navbar-user .navbar-toggler { display: none; }
+	.navbar-user .navbar-account { flex-direction: row; align-items: center; }
+}
+
+@media (max-width: 767.98px) {
+	.navbar-user .navbar-text { display: none; }
+}
+
+.navbar-user .navbar-account { display: flex !important; flex-wrap: nowrap; align-items: center; gap: 4px; margin: 0 0 0 auto; padding: 0; list-style: none; flex: 0 0 auto; }
+
+.navbar-user .nav-link {
+	display: inline-flex; align-items: center; gap: 6px;
+	color: var(--nf-text); font-weight: 500; font-size: 13px;
+	padding: 6px 10px; border-radius: var(--nf-radius-sm); white-space: nowrap;
+	transition: background-color 140ms ease, color 140ms ease;
+}
+
+.navbar-user .nav-link:hover { background: var(--nf-accent-soft); color: var(--nf-accent-text); }
+
+.navbar-user .dropdown-toggle::after { margin-left: 6px; vertical-align: middle; border-top-color: currentColor; border-bottom-color: transparent; border-left-color: transparent; border-right-color: transparent; font-size: 9px; }
+
+.navbar-user .dropdown-menu { min-width: 200px; background: var(--nf-surface); border: 1px solid var(--nf-border); border-radius: var(--nf-radius-sm); padding: 4px; margin-top: 6px; box-shadow: var(--nf-shadow-md); font-size: 13px; }
+
+.navbar-user .dropdown-item { color: var(--nf-text); border-radius: var(--nf-radius-xs); padding: 7px 10px; font-size: 13px; font-weight: 500; transition: background-color 120ms ease, color 120ms ease; }
+
+.navbar-user .dropdown-item:hover, .navbar-user .dropdown-item:focus { background: var(--nf-accent-soft); color: var(--nf-accent-text); }
+
+.navbar-user .dropdown-item i.icon, .navbar-user .dropdown-item i.fas { color: var(--nf-muted); font-size: 12px; transition: color 120ms ease; }
+
+.navbar-user .dropdown-item:hover i.icon, .navbar-user .dropdown-item:hover i.fas { color: var(--nf-accent); }
+
+.navbar-user .dropdown-divider { border-color: var(--nf-border); margin: 3px 0; }
+
+.card { background: var(--nf-surface); border: 1px solid var(--nf-border); border-radius: var(--nf-radius); box-shadow: var(--nf-shadow-sm); color: var(--nf-text); }
+
+.card + .card, .widget + .widget { margin-top: 14px; }
+
+.card.card-transparent { background: transparent; border: none; box-shadow: none; }
+
+.card.card-transparent > .card-header { border-bottom: none; padding-left: 0; padding-right: 0; }
+
+/* l'en-tête direct : un cadre imbriqué (les commentaires d'un billet) garde le sien */
+.card.panel-header > .card-header {
+	background: var(--nf-accent); border-bottom: 1px solid var(--nf-accent-strong);
+	color: var(--nf-on-accent); font-weight: 700;
+	border-top-left-radius: calc(var(--nf-radius) - 1px); border-top-right-radius: calc(var(--nf-radius) - 1px);
+}
+
+.card.panel-color { background: var(--nf-accent); border-color: var(--nf-accent-strong); color: var(--nf-on-accent); }
+
+.card.panel-color > .card-body, .card.panel-color > .card-footer { background: transparent; color: var(--nf-on-accent); }
+
+/* Les LIBELLES de formulaire manquaient a cette liste : ils gardaient
+   `--nf-text-strong`, la couleur prevue pour une surface normale, alors que le panneau est
+   peint avec l'accent. « Se souvenir de moi » tombait ainsi entre 1,72:1 et 3,61:1 selon le
+   theme — mesure par tools/check-contraste.php le 2026-09-16. */
+.card.panel-color label,
+.card.panel-color .form-label,
+.card.panel-color .col-form-label,
+.card.panel-color .form-check,
+.card.panel-color .form-check-label { color: var(--nf-on-accent); }
+
+/* Fond = `on-accent`, texte = accent. Ecrire `#fff` en dur donnait l'accent sur du blanc : 1,86:1
+   sur un turquoise, 3,88:1 sur un rouge lave. Le jeton, lui, est calcule pour rester lisible quel
+   que soit l'accent choisi par l'administrateur. Mesure : tools/check-contraste.php, 2026-09-16. */
+.card.panel-color .btn-primary { background: var(--nf-on-accent); border-color: var(--nf-on-accent); color: var(--nf-accent); }
+
+.row.row-default { margin-top: 14px; margin-bottom: 14px; }
+
+.row.row-space { margin-top: 24px; }
+
+.row > [class*="col-"] > .card, .row > .col > .card, .row > [class*="col-"] > .widget, .row > .col > .widget { margin-bottom: 16px; }
+
+.card .row { margin-right: 0; margin-left: 0; }
+
+.btn:focus, .btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--nf-accent-soft); }
+
+.btn:active:not(:disabled) { transform: translateY(1px); transition: transform 60ms ease; }
+
+.btn:disabled, .btn.disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-secondary:hover { background: var(--nf-surface-3); border-color: var(--nf-border-strong); color: var(--nf-text-strong); }
+
+.btn-link:hover { color: var(--nf-link-hover); }
+
+.form-control::placeholder { color: var(--nf-muted); }
+
+.form-control:focus, .form-control:focus-visible, .form-select:focus {
+	outline: none; border-color: var(--nf-accent); background-color: var(--nf-surface);
+	color: var(--nf-text-strong); box-shadow: 0 0 0 3px var(--nf-accent-soft);
+}
+
+.form-control.is-valid { border-color: var(--nf-success); }
+
+.form-control.is-valid:focus { box-shadow: 0 0 0 3px var(--nf-success-soft); }
+
+.form-control.is-invalid { border-color: var(--nf-danger); }
+
+.form-control:disabled, .form-control[readonly] { background: var(--nf-surface-3); opacity: 0.6; cursor: not-allowed; }
+
+.input-group-text { background: var(--nf-surface-2); border: 1px solid var(--nf-border); color: var(--nf-muted); }
+
+.input-group > .form-control:not(:first-child) { border-top-left-radius: 0;  border-bottom-left-radius: 0; }
+
+.input-group > .form-control:not(:last-child)  { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+
+/* BS4 fixe une height sur .form-control → empêche le stretch et le champ reste
+   plus court que l'addon. height:auto le laisse s'étirer à la hauteur du groupe. */
+.input-group > .form-control { height: auto; }
+
+.form-check-input:checked { background-color: var(--nf-accent); border-color: var(--nf-accent); }
+
+.nav-tabs { border-bottom: 1px solid var(--nf-border); }
+
+.nav-tabs .nav-link:hover { color: var(--nf-text); background: var(--nf-surface-2); border: none; }
+
+.nav-pills .nav-link.active i.icon, .nav-pills .nav-link.active i.fas { color: var(--nf-accent); }
+
+.widget-navigation .nav, .widget-navigation ul.nav { flex-wrap: wrap; gap: 4px; }
+
+.row-dark .widget-navigation .nav-link:hover, .row-dark .widget-navigation .nav-link.active { background: var(--nf-accent); color: var(--nf-on-accent); }
+
+.list-group { border-radius: var(--nf-radius-sm); overflow: hidden; }
+
+.list-group-item-action:hover, .list-group-item-action:focus { background: var(--nf-accent-soft); color: var(--nf-accent-text); }
+
+.list-group-item.active { background: var(--nf-accent); border-color: var(--nf-accent); color: var(--nf-on-accent); }
+
+.table { color: var(--nf-text); margin-bottom: 0; }
+
+.table thead th {
+	background: var(--nf-surface-2); border-bottom: 1px solid var(--nf-border); color: var(--nf-muted);
+	font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 14px;
+}
+
+.table tbody td { border-top: 1px solid var(--nf-border); padding: 12px 14px; vertical-align: middle; font-size: 13px; }
+
+.table tbody tr:first-child td { border-top: none; }
+
+.table-hover tbody tr:hover { background: var(--nf-accent-soft); }
+
+.badge { font-family: var(--nf-font); font-size: 11.5px; font-weight: 700; padding: 3px 7px; border-radius: 999px; display: inline-flex; align-items: center; vertical-align: middle; line-height: 1; }
+
+.dropdown-item { color: var(--nf-text); border-radius: var(--nf-radius-xs); padding: 7px 10px; font-weight: 500; transition: background-color 120ms ease, color 120ms ease; }
+
+.dropdown-item:hover, .dropdown-item:focus { background: var(--nf-accent-soft); color: var(--nf-accent-text); }
+
+.dropdown-item.active { background: var(--nf-accent); color: var(--nf-on-accent); }
+
+.dropdown-divider { border-color: var(--nf-border); }
+
+.modal-content { background: var(--nf-surface); border: 1px solid var(--nf-border); border-radius: var(--nf-radius); box-shadow: var(--nf-shadow-md); color: var(--nf-text); }
+
+.modal-header { border-bottom: 1px solid var(--nf-border); padding: 14px 18px; }
+
+.modal-body { padding: 18px; }
+
+.modal-footer { background: var(--nf-surface-2); border-top: 1px solid var(--nf-border); padding: 12px 18px; gap: 6px; }
+
+.modal-header .btn-close {
+	width: 36px; height: 36px; margin: -8px -8px -8px auto; border-radius: var(--nf-radius-xs);
+	transition: background-color 120ms ease;
+}
+
+.modal-header .btn-close:hover { background-color: var(--nf-surface-2); }
+
+.page-link { background: var(--nf-surface); border: 1px solid var(--nf-border); color: var(--nf-text); border-radius: var(--nf-radius-xs); margin: 0 2px; padding: 6px 12px; font-size: 13px; font-weight: 600; transition: background-color 140ms ease, color 140ms ease; }
+
+.page-link:hover { background: var(--nf-accent-soft); color: var(--nf-accent-text); }
+
+.page-item.active .page-link { background: var(--nf-accent); border-color: var(--nf-accent); color: var(--nf-on-accent); }
+
+.page-item.disabled .page-link { opacity: 0.4; }
+
+.breadcrumb { background: var(--nf-surface); border: 1px solid var(--nf-border); border-radius: var(--nf-radius-sm); padding: 10px 14px; font-size: 13px; box-shadow: var(--nf-shadow-sm); }
+
+.breadcrumb-item.active { color: var(--nf-text-strong); font-weight: 600; }
+
+.avatar figure { margin: 0; padding: 0; width: 100%; height: 100%; border-radius: 999px; overflow: hidden; }
+
+.avatar figure a { display: block; width: 100%; height: 100%; line-height: 0; }
+
+.avatar img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 999px; }
+
+.avatar .inner-ring { display: none; }
+
+.avatar.online::after, .avatar.offline::after, .avatar.away::after {
+	content: ""; position: absolute; right: 4%; bottom: 4%; width: 26%; height: 26%;
+	min-width: 9px; min-height: 9px; border-radius: 999px;
+	border: 2px solid var(--nf-surface); box-sizing: border-box; z-index: 2;
+}
+
+.avatar.online::after  { background: var(--nf-success); }
+
+.avatar.offline::after { background: var(--nf-muted); }
+
+.avatar.away::after    { background: var(--nf-warning); }
+
+.navbar-user .avatar, .navbar-user .nav-link > .avatar { width: 28px; height: 28px; }
+
+.module-forum .avatar { width: 28px; height: 28px; }
+
+.widget-user { text-align: center; }
+
+.widget-user .user-handle, .widget-user .user-role { font-size: 12px; color: var(--nf-muted); margin-bottom: 0; }
+
+.widget-user .list-group { text-align: left; margin-top: 4px; }
+
+.widget-user .card-footer a i.icon { color: inherit; }
+
+.widget-slider { border-radius: var(--nf-radius); overflow: hidden; box-shadow: var(--nf-shadow); }
+
+.widget-slider .carousel-caption p { color: rgba(255,255,255,0.85); font-size: 13px; margin-bottom: 0; }
+
+.widget-search .form-control { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+
+.widget-shoutbox .shoutbox-message:last-child { border-bottom: none; }
+
+.widget-shoutbox .shoutbox-author { font-weight: 700; color: var(--nf-accent-text); flex: 0 0 auto; font-size: 12px; }
+
+.widget-shoutbox .shoutbox-form .form-control { flex: 1; }
+
+.text-muted     { color: var(--nf-muted) !important; }
+
+.text-accent    { color: var(--nf-accent-text) !important; }
+
+.bg-accent      { background: var(--nf-accent) !important; color: var(--nf-on-accent) !important; }
+
+.bg-accent-soft { background: var(--nf-accent-soft) !important; }
+
+.border-primary   { border-color: var(--nf-accent) !important; }
+
+.border-secondary { border-color: var(--nf-border) !important; }
+
+.border-info      { border-color: color-mix(in srgb, var(--nf-info) 45%, var(--nf-border)) !important; }
+
+.border-success   { border-color: color-mix(in srgb, var(--nf-success) 45%, var(--nf-border)) !important; }
+
+.border-danger    { border-color: color-mix(in srgb, var(--nf-danger) 45%, var(--nf-border)) !important; }
+
+.border-warning   { border-color: color-mix(in srgb, var(--nf-warning) 45%, var(--nf-border)) !important; }
+
+.text-primary { color: var(--nf-accent-text) !important; }
+
+.text-info    { color: var(--bs-info-text-emphasis) !important; }
+
+.text-success { color: var(--bs-success-text-emphasis) !important; }
+
+.text-danger  { color: var(--bs-danger-text-emphasis) !important; }
+
+.text-warning { color: var(--bs-warning-text-emphasis) !important; }
+
+.bg-info    { background-color: var(--nf-info) !important; }
+
+.bg-success { background-color: var(--nf-success) !important; }
+
+.bg-danger  { background-color: var(--nf-danger) !important; }
+
+.bg-warning { background-color: var(--nf-warning) !important; }
+
+@media (max-width: 767.98px) {
+	.nav-tabs { flex-wrap: nowrap; overflow-x: auto; }
+}
+
+[data-theme="dark"] .navbar-user .navbar-toggler-icon { filter: invert(1) brightness(1.8); }
+
+/* "Se déconnecter" / liens du footer du widget login : bouton plein inversé, toujours lisible sur panneau coloré. */
+.widget-user .card.panel-color .card-footer a { background: var(--nf-on-accent); color: var(--nf-accent); border-color: var(--nf-on-accent); font-weight: 700; }
+
+.widget-user .card.panel-color .card-footer a:hover { background: color-mix(in srgb, var(--nf-on-accent) 88%, #000); color: var(--nf-accent-strong); border-color: color-mix(in srgb, var(--nf-on-accent) 88%, #000); }
+
+.widget-user .card.panel-color .card-footer a i.icon { color: inherit; }
+
+/* Espacement entre "Mot de passe oublié" et "Se connecter". */
+.widget-user .card-footer .btn + .btn { margin-left: 8px; }
+
+.btn-info, .btn-success, .btn-danger { color: #fff; }
+
+/* Navbar : recentrage vertical de l'icône de marque (tachymètre admin) qui dépassait. */
+.navbar-user .navbar-brand { display: inline-flex; align-items: center; }
+
+.navbar-user .navbar-brand i { line-height: 1; display: block; }
+
+/* Footer collé en bas (sticky) même quand le contenu est court. */
+body { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* Carte profil (.user-profile) : centrage + organisation (était tout aligné à gauche). */
+.user-profile { text-align: center; }
+
+.user-profile > .avatar, .user-profile img.avatar { margin-left: auto; margin-right: auto; }
+
+.user-profile-karma, .user-profile-groups, .user-profile-status, .user-profile-actions, .user-profile .socials { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; }
+
+.user-profile-meta { display: inline-grid; grid-template-columns: auto auto; gap: 3px 12px; text-align: left; margin-top: 10px; }
+
+.user-profile-meta dt { margin: 0; font-weight: 600; color: var(--nf-text-strong); }
+
+.user-profile-meta dd { margin: 0; color: var(--nf-muted); }
