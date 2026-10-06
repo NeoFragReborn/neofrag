@@ -3,6 +3,7 @@
 -- Régénérer : php tools/dump-demo.php
 
 -- Ne touche pas le compte admin ni les secrets (verrouillés en mode démo).
+-- nf-demo-present: 2026-09-16
 
 SET FOREIGN_KEY_CHECKS = 0;
 SET NAMES utf8mb4;

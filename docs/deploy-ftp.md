@@ -57,7 +57,10 @@ contient `NEOFRAG_DEMO=TRUE`) et les **données de démo**.
    automatiquement `install/demo.sql`** à la fin : le site démarre **directement** sur le thème **nebula**,
    peuplé (membres + contenu de tous les modules), bandeau démo + compte `demo`/`demo` actifs. Ton compte admin (créé à l'install) est préservé. **Aucune étape manuelle.**
 4. **Cron de reset** (recommandé : toutes les heures) — restaure l'état de démo, nettoie ce que les
-   visiteurs ont posté. **Clé + URL exacte dans Admin → Monitoring** ; `-L` suit la redirection de
+   visiteurs ont posté, et **ramène le contenu au présent** : `install/demo.sql` porte en tête le jour où il a
+   été écrit (`-- nf-demo-present: AAAA-MM-JJ`), et chaque remise à zéro fait avancer les dates du contenu du
+   temps écoulé depuis — les prochains rendez-vous et matchs restent à venir, l'agenda et la frise de la saison
+   ne se vident pas (les membres, eux, gardent leurs dates). **Clé + URL exacte dans Admin → Monitoring** ; `-L` suit la redirection de
    langue (le préfixe `/fr/` ci-dessous dépend de la langue par défaut du site) :
    ```
    0 * * * * curl -fsSL "https://demo.<domaine>/fr/monitoring/cron?key=<nf_cron_key>&demo=1" >/dev/null 2>&1

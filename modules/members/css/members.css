@@ -4,16 +4,21 @@
  * Les cinq boutons de réseaux sociaux d'une carte passaient sur deux lignes à 1024 px, où une carte
  * ne fait que 200 px — le cinquième seul sous les quatre autres (check-mise-en-page, 2026-09-23).
  * Serrés d'un cran, ils tiennent sur une ligne.
+ *
+ * Un réseau que le membre n'a pas renseigné reste une icône grisée, sans fond (`btn-link`) : en bouton clair
+ * désactivé, il devenait de nuit une pastille grise, et cinq pastilles à 2 px l'une de l'autre se touchaient
+ * (Chronique, sur la démo, 2026-10-06). Cinq pixels entre deux boutons pleins, quatre dans chaque bouton : 150 px pour
+ * les cinq, sur une ligne dans les 165 px d'une carte à 1024 px (Forge, avec son rail, n'en a que 136).
  */
 .card-member .socials {
 	display: flex;
 	justify-content: center;
 	flex-wrap: wrap;
-	gap: 2px;
+	gap: 5px;
 	padding: 0 6px;
 }
 
 .card-member .socials .btn {
 	margin: 0;
-	padding: 4px 6px;
+	padding: 4px;
 }

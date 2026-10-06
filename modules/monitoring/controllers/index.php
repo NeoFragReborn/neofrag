@@ -58,6 +58,10 @@ class Index extends Controller_Module
 				$this->db->import('ROLLBACK;');
 				error_log('[demo.reset] ÉCHEC — install/demo.sql refusé : '.$result);
 			}
+			else
+			{
+				$this->_demo_au_present($sql);
+			}
 
 			$this->_respond($result === TRUE ? 200 : 500, $result === TRUE ? "OK demo reset\n" : "ERREUR demo reset: ".$result."\n");
 		}
@@ -126,7 +130,67 @@ class Index extends Controller_Module
 		$this->_respond(200, "OK\n".implode("\n", $report)."\n");
 	}
 
-	private function _respond($status, $body)
+	/**
+	 * La démo vit au présent. `install/demo.sql` est écrit un jour donné, qu'il porte en tête
+	 * (`-- nf-demo-present: AAAA-MM-JJ`, posé par tools/dump-demo.php) ; rejoué tel quel des semaines plus tard, ses
+	 * « prochains » rendez-vous et matchs étaient passés, et la frise de la saison se vidait (Chronique, 2026-10-06).
+	 * Après chaque remise à zéro, les dates des tables que l'instantané vide et remplit EN ENTIER avancent du nombre de
+	 * jours écoulés depuis ce jour-là : les écarts entre elles ne bougent pas. Les tables qu'il ne vide qu'en partie (les
+	 * membres, que le compte réel partage) ne bougent pas : décalées, elles glisseraient un peu plus à chaque remise.
+	 *
+	 * @param array<string, list<string>> $colonnes table → ses colonnes de date, dans l'ordre de la table
+	 */
+	public static function demo_au_present(string $sql, array $colonnes, int $jours): string
+	{
+		if ($jours <= 0 || !preg_match_all('/^DELETE FROM `(nf_[a-z0-9_]+)`;$/m', $sql, $videes))
+		{
+			return '';
+		}
+
+		$requetes = [];
+
+		foreach (array_unique($videes[1]) as $table)
+		{
+			if (empty($colonnes[$table]))
+			{
+				continue;
+			}
+
+			// Une date nulle ou « zéro » reste telle quelle ; le reste avance. Les lignes les plus récentes d'abord : une
+			// clé unique sur la date ne voit jamais deux lignes à la même place pendant le décalage.
+			$avance = array_map(static fn (string $c): string => "`{$c}` = IF(`{$c}` < '1000-01-02', `{$c}`, `{$c}` + INTERVAL {$jours} DAY)", $colonnes[$table]);
+			$requetes[] = "UPDATE `{$table}` SET ".implode(', ', $avance)." ORDER BY `{$colonnes[$table][0]}` DESC;";
+		}
+
+		return $requetes ? "START TRANSACTION;\n".implode("\n", $requetes)."\nCOMMIT;" : '';
+	}
+
+	private function _demo_au_present(string $sql): void
+	{
+		if (!preg_match('/^-- nf-demo-present: (\d{4}-\d{2}-\d{2})$/m', $sql, $present))
+		{
+			return;
+		}
+
+		$utc   = new \DateTimeZone('UTC');
+		$jours = (int) (new \DateTimeImmutable($present[1], $utc))->diff(new \DateTimeImmutable('today', $utc))->format('%r%a');
+
+		preg_match_all('/^DELETE FROM `(nf_[a-z0-9_]+)`;$/m', $sql, $videes);
+		$colonnes = [];
+
+		foreach (array_unique($videes[1]) as $table)
+		{
+			$colonnes[$table] = array_keys(array_filter((array) $this->db->table_columns($table), static fn ($type): bool => (bool) preg_match('/^(date|datetime|timestamp)\b/i', (string) $type)));
+		}
+
+		if (($decalage = self::demo_au_present($sql, $colonnes, $jours)) !== '' && ($erreur = $this->db->import($decalage)) !== TRUE)
+		{
+			$this->db->import('ROLLBACK;');
+			error_log('[demo.reset] les dates n\'ont pas avancé de '.$jours.' jour(s) : '.$erreur);
+		}
+	}
+
+	private function _respond($status, $body): never
 	{
 		if (!headers_sent())
 		{

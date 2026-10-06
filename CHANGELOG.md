@@ -10,6 +10,29 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.37] — 2026-10-06
+
+Chronique revu sur la démonstration telle qu'on la voit — en visiteur et connecté, de jour, de nuit, au téléphone —, et une démonstration qui vit au présent.
+
+### Corrigé
+
+- **L'espace membre de Chronique.** Sur la pierre de son panneau, « Mot de passe oublié ? » se posait sur « Se connecter »
+  dès que la colonne les mettait l'un sous l'autre ; connecté, les icônes du menu restaient gris foncé sur l'ardoise et
+  « Se déconnecter » tombait dans un rectangle blanc (noir la nuit). Ce sont maintenant des liens blancs, un seul bouton
+  plein, et un écart dans les deux sens — avec « Créer un compte » aussi, quand les inscriptions sont ouvertes.
+- **Chronique au téléphone garde la connexion dans l'en-tête**, en icône : le mot « Connexion » disparaissait, et il
+  fallait descendre au bas de la page pour se connecter.
+- **Les boutons du panneau de connexion gardent leur écart quand ils passent à la ligne**, dans tous les thèmes refaits.
+- **Extend : les icônes des champs du panneau coloré se voient** (le pseudo et le mot de passe : blanches sur une case
+  claire).
+- **La liste des membres, de nuit** : un réseau social qu'un membre n'a pas renseigné devenait une pastille grise collée à
+  la suivante. C'est une icône grisée, sans fond, et les boutons des réseaux renseignés ont un vrai écart — sur une ligne
+  dans une carte étroite.
+- **La démonstration vit au présent.** Remise à zéro tous les quarts d'heure, elle remontrait le contenu du jour où son
+  instantané a été écrit : des « prochains » rendez-vous et matchs passés depuis des semaines, un agenda vide, une frise de
+  la saison qui se serait vidée d'elle-même. Chaque remise à zéro fait maintenant avancer les dates du contenu du temps
+  écoulé (les écarts entre elles ne changent pas) ; les membres gardent les leurs.
+
 ## [1.2.36] — 2026-10-06
 
 Un thème neuf : **Chronique**, le carnet de la saison des associations et des clubs, avec deux nouveautés qui servent à

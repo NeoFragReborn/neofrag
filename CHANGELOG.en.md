@@ -12,6 +12,28 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.37] — 2026-10-06
+
+Chronique reviewed on the demo as people see it — as a visitor and logged in, by day, by night, on a phone —, and a demo that lives in the present.
+
+### Fixed
+
+- **Chronique's member area.** On the stone of its panel, "Forgot your password?" sat on top of "Log in" as soon as the
+  column put them one under the other; once logged in, the menu icons stayed dark grey on the slate and "Log out" fell
+  into a white rectangle (black at night). They are now white links, a single filled button, and a gap both ways — with
+  "Create an account" too, when registrations are open.
+- **Chronique on a phone keeps the login in the header**, as an icon: the word "Log in" disappeared, and you had to scroll
+  to the bottom of the page to log in.
+- **The login panel's buttons keep their gap when they wrap**, in every redesigned theme.
+- **Extend: the field icons of the coloured panel show** (username and password: white on a light box).
+- **The members list, at night**: a social network a member had not filled in became a grey dot stuck to the next one. It
+  is a greyed icon without background, and the buttons of the networks that are filled in have a real gap — on one line
+  in a narrow card.
+- **The demo lives in the present.** Reset every quarter of an hour, it showed again the content of the day its snapshot
+  was written: "upcoming" events and matches that had passed weeks ago, an empty calendar, a season timeline that would
+  have emptied itself. Each reset now moves the content's dates forward by the time elapsed (the gaps between them do not
+  change); members keep theirs.
+
 ## [1.2.36] — 2026-10-06
 
 A new theme: **Chronique**, the season’s notebook for associations and clubs, with two new features that serve every

@@ -21,7 +21,7 @@
 										}
 										else
 										{
-											return '<a href="#" class="btn btn-light btn-sm '.$a[0].' text-muted disabled">'.icon($a[1]).'</a>';
+											return '<a href="#" class="btn btn-link btn-sm '.$a[0].' text-muted disabled" aria-hidden="true" tabindex="-1">'.icon($a[1]).'</a>';
 										}
 									});
 					?>

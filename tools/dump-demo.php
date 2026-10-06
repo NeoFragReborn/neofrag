@@ -101,7 +101,10 @@ $theme_t  = nf_type_id($db, 'theme');
 $widget_t = nf_type_id($db, 'widget');
 
 $out  = nf_sql_entete('dump-demo', 'instantané du site de DÉMO (config affichage + membres + contenu), rechargé par l\'auto-reset');
-$out .= "-- Ne touche pas le compte admin ni les secrets (verrouillés en mode démo).\n\n";
+$out .= "-- Ne touche pas le compte admin ni les secrets (verrouillés en mode démo).\n";
+// Le jour où ce contenu est « aujourd'hui » : à chaque remise à zéro, la démo fait avancer ses dates du temps écoulé
+// depuis (Monitoring::demo_au_present(), 2026-10-06) — sans quoi ses prochains rendez-vous finissent tous passés.
+$out .= "-- nf-demo-present: ".gmdate('Y-m-d')."\n\n";
 $out .= "SET FOREIGN_KEY_CHECKS = 0;\n";
 $out .= "SET NAMES utf8mb4;\n";
 // La remise à zéro est ATOMIQUE : un visiteur ne doit jamais voir l'état intermédiaire.

@@ -385,8 +385,9 @@ i.icon:only-child { margin: 0; }
 
 .widget-user .card.panel-color .card-footer a i.icon { color: inherit; }
 
-/* Espacement entre "Mot de passe oublié" et "Se connecter". */
-.widget-user .card-footer .btn + .btn { margin-left: 8px; }
+/* Espacement entre "Créer un compte", "Mot de passe oublié" et "Se connecter" — dans les deux sens : dans une colonne
+   étroite, les boutons passent l'un sous l'autre, et une marge à gauche les laissait collés (Chronique, 2026-10-06). */
+.widget-user .card-footer.text-end { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; }
 
 .btn-info, .btn-success, .btn-danger { color: #fff; }
 
