@@ -24,4 +24,9 @@ return [
 	'96f7da00' => 'Mitglieder',
 	'1ea90f79' => 'Schließen',
 	'1f88c31b' => 'Optionen',
+	'49a80df0' => 'Online',
+	'b2bcb844' => 'Zuletzt registrierte oder angemeldete Mitglieder: ihre Anzahl oder ihre Liste mit Avatar.',
+	'effc965c' => 'Wer ist online? (Liste)',
+	'27d75801' => 'und %d weiteres|und %d weitere',
+	'8038e900' => 'Derzeit ist kein Mitglied angemeldet.',
 ];

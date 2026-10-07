@@ -25,4 +25,9 @@ return [
 	'96f7da00' => 'Members',
 	'1ea90f79' => 'Close',
 	'1f88c31b' => 'Options',
+	'49a80df0' => 'Online',
+	'b2bcb844' => 'Latest registered members or members online: their number, or their list with their avatar.',
+	'effc965c' => 'Who is online? (list)',
+	'27d75801' => 'and %d other|and %d others',
+	'8038e900' => 'No member online at the moment.',
 ];

@@ -18,4 +18,22 @@ class Admin extends Controller
 			'settings' => $settings
 		]);
 	}
+
+	/**
+	 * Le salon dont on montre les derniers messages : un salon public, ouvert à tous les membres (ni conversation
+	 * privée, ni salon du staff).
+	 */
+	public function salon($settings = [])
+	{
+		return $this->view('admin', [
+			'talks'    => $this->db	->select('talk_id', 'name')
+									->from('nf_talks')
+									->where('type', 'public')
+									->where('audience', 'all')
+									->where('deleted_at', NULL)
+									->order_by('name')
+									->get(),
+			'settings' => $settings
+		]);
+	}
 }

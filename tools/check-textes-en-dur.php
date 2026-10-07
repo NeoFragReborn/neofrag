@@ -92,7 +92,7 @@ const EXEMPTIONS = [
     'addons/language_es/language_es.php|miércoles'   => 'lecture des dates saisies en espagnol',
     // Les noms de zones sont aussi leurs IDENTIFIANTS (dispositions, `Output::region()`) : traduits à
     // l'affichage par neofrag/displayables/zone.php.
-    'themes/extend/extend.php|Bannière'              => 'identifiant de zone, traduit à l’affichage',
+    'themes/extend/extend.php|Barre d’état'          => 'identifiant de zone, traduit à l’affichage',
     'themes/*/*.php|Contenu'                         => 'identifiant de zone, traduit à l’affichage',
     'themes/forge/forge.php|Après le contenu'         => 'identifiant de zone, traduit à l’affichage',
     'themes/granite/granite.php|Après le contenu'     => 'identifiant de zone, traduit à l’affichage',

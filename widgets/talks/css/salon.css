@@ -1,0 +1,14 @@
+/* Un salon public, ses derniers messages — une allure neutre, écrite avec le vocabulaire partagé des thèmes
+   (--nf-*), que chaque thème reprend à son goût. */
+.nf-salon { display: grid; gap: 10px; }
+.nf-salon-messages { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.nf-salon-messages li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 8px; align-items: start; font-size: 13.5px; line-height: 1.4; }
+.nf-salon-avatar .avatar { width: 28px; height: 28px; }
+.nf-salon-texte { display: grid; min-width: 0; }
+.nf-salon-auteur > a { color: var(--nf-text-strong, inherit); font-weight: 600; }
+.nf-salon-auteur time { margin-left: 4px; color: var(--nf-text-muted, inherit); font-size: 11.5px; }
+.nf-salon-message { overflow-wrap: anywhere; }
+.nf-salon-rejoindre { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: var(--nf-radius-sm, 6px); background: var(--nf-surface-2, rgba(127, 127, 127, 0.1)); color: var(--nf-text-muted, inherit); font-size: 14px; }
+.nf-salon-rejoindre:hover { color: var(--nf-text-strong, inherit); }
+.nf-salon-invitation, .nf-salon-vide { margin: 0; color: var(--nf-text-muted, inherit); font-size: 13.5px; }
+.nf-salon .btn { justify-self: start; }

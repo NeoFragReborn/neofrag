@@ -18,4 +18,10 @@ return [
 	'f42a966e' => '%d öffentlicher Raum zu entdecken|%d öffentliche Räume zu entdecken',
 	'58a22494' => 'Neue Unterhaltung',
 	'1f88c31b' => 'Optionen',
+	'5034847e' => 'Derzeit kein öffentlicher Raum.',
+	'f8c4f78d' => 'Die Nachrichten der Mitglieder: ihre ungelesenen Nachrichten und Unterhaltungen, oder die letzten Nachrichten eines öffentlichen Kanals, für angemeldete Mitglieder.',
+	'c9d0fb76' => 'Ein öffentlicher Kanal: seine letzten Nachrichten',
+	'865fb4b4' => 'Melde dich an, um den Kanal zu lesen und zu antworten.',
+	'09e8998d' => 'In diesem Kanal hat noch niemand geschrieben.',
+	'10975e86' => 'Im Kanal schreiben',
 ];

@@ -24,4 +24,9 @@ return [
 	'96f7da00' => 'Miembros',
 	'1ea90f79' => 'Cerrar',
 	'1f88c31b' => 'Opciones',
+	'49a80df0' => 'En línea',
+	'b2bcb844' => 'Últimos miembros registrados o miembros conectados: su número, o su lista con su avatar.',
+	'effc965c' => '¿Quién está conectado? (lista)',
+	'27d75801' => 'y %d más|y %d más',
+	'8038e900' => 'Ningún miembro conectado por ahora.',
 ];

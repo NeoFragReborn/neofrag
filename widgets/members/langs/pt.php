@@ -24,4 +24,9 @@ return [
 	'96f7da00' => 'Membros',
 	'1ea90f79' => 'Fechar',
 	'1f88c31b' => 'Opções',
+	'49a80df0' => 'Online',
+	'b2bcb844' => 'Últimos membros registados ou membros online: o seu número, ou a sua lista com o avatar.',
+	'effc965c' => 'Quem está online? (lista)',
+	'27d75801' => 'e mais %d|e mais %d',
+	'8038e900' => 'Nenhum membro online de momento.',
 ];

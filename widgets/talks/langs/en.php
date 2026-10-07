@@ -19,4 +19,10 @@ return [
 	'f42a966e' => '%d public room to discover|%d public rooms to discover',
 	'58a22494' => 'New conversation',
 	'1f88c31b' => 'Options',
+	'5034847e' => 'No public room for now.',
+	'f8c4f78d' => 'The members’ messaging: their unread messages and conversations, or the latest messages of a public channel, for logged-in members.',
+	'c9d0fb76' => 'A public channel: its latest messages',
+	'865fb4b4' => 'Log in to read the channel and reply.',
+	'09e8998d' => 'Nobody has written in this channel yet.',
+	'10975e86' => 'Write in the channel',
 ];

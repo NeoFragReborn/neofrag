@@ -15,7 +15,7 @@ class Members extends Widget
 	{
 		return [
 			'title'       => $this->lang('Membres'),
-			'description' => $this->lang('Derniers membres inscrits ou membres connectés.'),
+			'description' => $this->lang('Derniers membres inscrits ou membres connectés : leur nombre, ou leur liste avec leur avatar.'),
 			'icon'        => 'fas fa-users',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
@@ -31,7 +31,8 @@ class Members extends Widget
 			'types'       => [
 				'index'       => $this->lang('Derniers membres'),
 				'online'      => $this->lang('Qui est en ligne ?'),
-				'online_mini' => $this->lang('Qui est en ligne ? (mini)')
+				'online_mini' => $this->lang('Qui est en ligne ? (mini)'),
+				'en_ligne'    => $this->lang('Qui est en ligne ? (liste)')
 			]
 		];
 	}

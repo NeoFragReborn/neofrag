@@ -18,4 +18,10 @@ return [
 	'f42a966e' => '%d sala pública por descubrir|%d salas públicas por descubrir',
 	'58a22494' => 'Nueva conversación',
 	'1f88c31b' => 'Opciones',
+	'5034847e' => 'Ninguna sala pública por el momento.',
+	'f8c4f78d' => 'La mensajería de los miembros: sus mensajes no leídos y sus conversaciones, o los últimos mensajes de un canal público, para los miembros conectados.',
+	'c9d0fb76' => 'Un canal público: sus últimos mensajes',
+	'865fb4b4' => 'Inicia sesión para leer el canal y responder.',
+	'09e8998d' => 'Nadie ha escrito todavía en este canal.',
+	'10975e86' => 'Escribir en el canal',
 ];

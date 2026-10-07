@@ -22,4 +22,9 @@ return [
 	'e17afcad' => 'Alignement',
 	'eaf3aad0' => 'Qui est en ligne ?',
 	'1f88c31b' => 'Options',
+	'49a80df0' => 'En ligne',
+	'b2bcb844' => 'Derniers membres inscrits ou membres connectés : leur nombre, ou leur liste avec leur avatar.',
+	'effc965c' => 'Qui est en ligne ? (liste)',
+	'27d75801' => 'et %d autre|et %d autres',
+	'8038e900' => 'Aucun membre connecté pour le moment.',
 ];

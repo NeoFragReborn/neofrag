@@ -1,0 +1,16 @@
+/* « Qui est en ligne ? (liste) » — une allure neutre, écrite avec le vocabulaire partagé des thèmes (--nf-*) :
+   chaque thème la reprend à son goût (Extend 2.0.0 en fait son panneau de droite). */
+.nf-en-ligne { display: grid; gap: 10px; }
+.nf-en-ligne-chiffres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.nf-en-ligne-chiffres span { display: grid; justify-items: center; padding: 8px 4px; border-radius: var(--nf-radius-sm, 6px); background: var(--nf-surface-2, rgba(127, 127, 127, 0.1)); color: var(--nf-text-muted, inherit); font-size: 12px; line-height: 1.2; text-align: center; }
+.nf-en-ligne-chiffres b { color: var(--nf-text-strong, inherit); font-size: 18px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.nf-en-ligne-groupe { margin: 4px 0 0; color: var(--nf-text-muted, inherit); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.nf-en-ligne-liste { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.nf-en-ligne-liste li { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 5px 0; }
+.nf-en-ligne-avatar { position: relative; flex: none; display: inline-flex; }
+.nf-en-ligne-avatar .avatar { width: 34px; height: 34px; }
+.nf-en-ligne-avatar::after { content: ""; position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px; border-radius: 50%; background: #2fa968; box-shadow: 0 0 0 2px var(--nf-surface, #fff); }
+.nf-en-ligne-qui { display: grid; min-width: 0; line-height: 1.25; }
+.nf-en-ligne-qui > a { overflow: hidden; color: var(--nf-text-strong, inherit); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.nf-en-ligne-qui small { color: var(--nf-text-muted, inherit); font-size: 12px; }
+.nf-en-ligne-autres, .nf-en-ligne-vide { margin: 0; color: var(--nf-text-muted, inherit); font-size: 13px; }

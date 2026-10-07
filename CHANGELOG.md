@@ -10,6 +10,38 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.42] — 2026-10-07
+
+Un thème refait : **Extend**, le site comme le lanceur d'un jeu en ligne.
+
+### Ajouté
+
+- **Extend 2.0.0 « Lanceur »** — une mise en page neuve, choisie sur une planche de trois directions. Une barre
+  d'onglets en haut, en capitales serrées, l'onglet ouvert allumé d'un trait bleu ; sur l'accueil, une **grande
+  vitrine** (le diaporama, son titre en grand et son bouton « Découvrir » ; sans diaporama, le nom du site sur l'image
+  du thème), puis les prochains rendez-vous en cartes, les actualités en vignettes, les derniers résultats ; ailleurs,
+  le titre de la page sur cette image. À droite, sur toutes les pages, un **panneau toujours ouvert** : qui est en
+  ligne, avec les avatars, puis le salon de discussion (à côté du forum, ses chiffres). En bas, une **barre d'état** :
+  la place des widgets « Serveur de jeu », « TeamSpeak » et « Discord », la langue, la mention du site. Le forum en
+  bibliothèque, l'espace membre en fiche de joueur (bannière, avatar cerclé, palier de la gamification dans la barre).
+  Au téléphone, les onglets passent en bas de l'écran, avec « En ligne », qui ouvre le panneau en tiroir, et « Plus »
+  au-delà de quatre rubriques. Bleu acier sur fond marine, nuit par défaut, le jour au choix ; titres Saira Condensed,
+  texte Albert Sans. Le logo, l'image de la vitrine, le fond et les couleurs se règlent. D'après le thème de
+  Chewbaka, dont il garde le nom et la licence.
+- **« Qui est en ligne ? (liste) »**, un nouvel affichage du widget Membres : les trois nombres (administrateurs,
+  membres, visiteurs), puis les présents eux-mêmes avec leur avatar et leur dernière activité.
+- **« Un salon public : ses derniers messages »**, un nouvel affichage du widget Discussions : les quatre derniers
+  messages d'un salon ouvert à tous les membres, et le lien pour y écrire. Un visiteur ne lit pas les messages : il est
+  invité à se connecter, comme dans la messagerie elle-même ; le salon du staff ne s'affiche jamais.
+
+### Corrigé
+
+- **Les billets liés d'un article du blog ne débordent plus au téléphone** : la case d'un billet sans image prenait sa
+  largeur de la hauteur de sa rangée, et dépassait de l'écran de quelques pixels (à 414 px, dans tous les thèmes).
+- **Blockcraft, revu sur la démonstration publiée** : au téléphone, le bandeau des pages montre le paysage entier
+  (recadré, il n'en montrait que des troncs), sans l'astre, sur lequel passait un long titre ; la démonstration règle
+  une adresse de serveur d'exemple (`play.example.org`), pour qu'on voie le bouton « Copier l'adresse ».
+
 ## [1.2.41] — 2026-10-07
 
 Un thème refait : **Blockcraft**, le site d'un serveur de jeu de blocs.

@@ -15,7 +15,7 @@ class Talks extends Widget
 	{
 		return [
 			'title'       => $this->lang('Discussions'),
-			'description' => $this->lang('Talkbox temps réel pour le chat entre membres connectés.'),
+			'description' => $this->lang('La messagerie des membres : leurs messages non lus et leurs conversations, ou les derniers messages d’un salon public, pour les membres connectés.'),
 			'icon'        => 'far fa-comment',
 			'link'        => 'https://neofr.ag',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
@@ -27,6 +27,10 @@ class Talks extends Widget
 			'version'     => '1.0',
 			'depends'     => [
 				'neofrag' => '0.2.0'
+			],
+			'types'       => [
+				'index' => $this->lang('Mes discussions'),
+				'salon' => $this->lang('Un salon public : ses derniers messages')
 			]
 		];
 	}

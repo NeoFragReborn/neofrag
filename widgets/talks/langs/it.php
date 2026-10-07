@@ -18,4 +18,10 @@ return [
 	'f42a966e' => '%d stanza pubblica da scoprire|%d stanze pubbliche da scoprire',
 	'58a22494' => 'Nuova conversazione',
 	'1f88c31b' => 'Opzioni',
+	'5034847e' => 'Nessuna stanza pubblica per il momento.',
+	'f8c4f78d' => 'La messaggistica dei membri: i loro messaggi non letti e le conversazioni, o gli ultimi messaggi di un canale pubblico, per i membri connessi.',
+	'c9d0fb76' => 'Un canale pubblico: i suoi ultimi messaggi',
+	'865fb4b4' => 'Accedi per leggere il canale e rispondere.',
+	'09e8998d' => 'Nessuno ha ancora scritto in questo canale.',
+	'10975e86' => 'Scrivi nel canale',
 ];

@@ -12,6 +12,37 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.42] — 2026-10-07
+
+A theme redone: **Extend**, the website as an online game launcher.
+
+### Added
+
+- **Extend 2.0.0 "Launcher"** — a brand-new layout, chosen from a board of three directions. A tab bar at the top, in
+  tight capitals, the open tab lit by a blue line; on the home page, a **large showcase** (the slideshow, its title in
+  big letters and its "Discover" button; without a slideshow, the site name on the theme image), then the upcoming
+  events as cards, the news as thumbnails, the latest results; elsewhere, the page title on that image. On the right,
+  on every page, an **always-open panel**: who is online, with avatars, then the chat channel (next to the forum, its
+  statistics). At the bottom, a **status bar**: the place for the "Game server", "TeamSpeak" and "Discord" widgets,
+  the language, the site notice. The forum as a library, the member area as a player card (banner, ringed avatar,
+  gamification tier in the bar). On phones, the tabs move to the bottom of the screen, with "Online", which opens the
+  panel as a drawer, and "More" beyond four sections. Steel blue on navy, night by default, day on demand; Saira
+  Condensed headings, Albert Sans text. The logo, showcase image, background and colours are adjustable. Based on
+  Chewbaka's theme, whose name and licence it keeps.
+- **"Who is online? (list)"**, a new display of the Members widget: the three counts (administrators, members,
+  visitors), then the people themselves with their avatar and last activity.
+- **"A public channel: its latest messages"**, a new display of the Discussions widget: the last four messages of a channel
+  open to all members, and the link to write in it. A visitor does not read the messages: they are invited to log in,
+  as in the messaging itself; the staff channel is never shown.
+
+### Fixed
+
+- **A blog article's related posts no longer overflow on phones**: the box of a post without an image took its width from
+  its row height and stuck out of the screen by a few pixels (at 414 px, in every theme).
+- **Blockcraft, reviewed on the published demo**: on a phone, the page banner shows the whole landscape (cropped, it
+  only showed tree trunks), without the sun or moon, which a long title ran over; the demo sets an example server
+  address (`play.example.org`), so the "Copy the address" button can be seen.
+
 ## [1.2.41] — 2026-10-07
 
 A redesigned theme: **Blockcraft**, the website of a block-game server.

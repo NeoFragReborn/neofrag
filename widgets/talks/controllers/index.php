@@ -94,4 +94,53 @@ class Index extends Controller_Widget
 						->heading($this->lang('Discussions'), 'far fa-comments')
 						->body($body);
 	}
+
+	/**
+	 * Un salon public : ses quatre derniers messages, et le lien pour le rejoindre (écrit pour le panneau de droite
+	 * d'Extend 2.0.0, utilisable partout). Les messages d'un salon ne se lisent que connecté, comme dans la
+	 * messagerie elle-même (Talks::user_can_access()) : un visiteur reçoit l'invitation à se connecter, jamais le
+	 * texte. Seul un salon ouvert à tous les membres s'affiche (celui du staff, jamais).
+	 */
+	public function salon($settings = [])
+	{
+		$this->css('salon');
+
+		$salon = $this->db	->select('talk_id', 'name')
+							->from('nf_talks')
+							->where('talk_id', (int) ($settings['talk_id'] ?? 0))
+							->where('type', 'public')
+							->where('audience', 'all')
+							->where('deleted_at', NULL)
+							->row();
+
+		if (!$salon)
+		{
+			return $this	->panel()
+							->heading($this->lang('Discussion'), 'far fa-comments')
+							->body('<p class="nf-salon-vide">'.$this->lang('Aucun salon public pour le moment.').'</p>');
+		}
+
+		$lien  = url('talks/'.(int) $salon['talk_id'].'/'.url_title($salon['name']));
+		$titre = nf_texte(html_entity_decode((string) $salon['name'], ENT_QUOTES, 'UTF-8'));
+
+		if (!$this->user())
+		{
+			return $this	->panel()
+							->heading($titre, 'far fa-comments')
+							->body($this->view('salon', ['messages' => NULL, 'lien' => $lien]));
+		}
+
+		$messages = array_reverse($this->db	->select('m.message_id', 'm.user_id', 'm.message', 'm.date', 'u.username')
+											->from('nf_talks_messages m')
+											->join('nf_user u', 'u.id = m.user_id AND u.deleted = "0"', 'INNER')
+											->where('m.talk_id', (int) $salon['talk_id'])
+											->where('m.deleted_at', NULL)
+											->order_by('m.message_id DESC')
+											->limit(4)
+											->get());
+
+		return $this	->panel()
+						->heading($titre, 'far fa-comments')
+						->body($this->view('salon', ['messages' => $messages, 'lien' => $lien]));
+	}
 }

@@ -16,4 +16,10 @@ return [
 	'58a22494' => 'Nouvelle discussion',
 	'bbd64903' => 'Talkbox temps réel pour le chat entre membres connectés.',
 	'1f88c31b' => 'Options',
+	'5034847e' => 'Aucun salon public pour le moment.',
+	'f8c4f78d' => 'La messagerie des membres : leurs messages non lus et leurs conversations, ou les derniers messages d’un salon public, pour les membres connectés.',
+	'c9d0fb76' => 'Un salon public : ses derniers messages',
+	'865fb4b4' => 'Connecte-toi pour lire le salon et y répondre.',
+	'09e8998d' => 'Personne n’a encore écrit dans ce salon.',
+	'10975e86' => 'Écrire dans le salon',
 ];

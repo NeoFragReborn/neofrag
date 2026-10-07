@@ -23,4 +23,22 @@ class Checker extends Controller
 			'talk_id' => in_array($settings['talk_id'], $talks) ? $settings['talk_id'] : current($talks)
 		];
 	}
+
+	public function salon($settings = [])
+	{
+		$settings = (array) $settings + ['talk_id' => ''];
+
+		// Un salon public ouvert à tous les membres ; à défaut de celui qu'on a choisi, le premier par son nom.
+		$salons = $this->db	->select('talk_id')
+							->from('nf_talks')
+							->where('type', 'public')
+							->where('audience', 'all')
+							->where('deleted_at', NULL)
+							->order_by('name')
+							->get();
+
+		return [
+			'talk_id' => in_array($settings['talk_id'], $salons) ? $settings['talk_id'] : (current($salons) ?: '')
+		];
+	}
 }

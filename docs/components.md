@@ -119,7 +119,9 @@ webhook signé). Détail : [gamification.md](gamification.md).
 - **pulse** — public, la maison commune des associations et des clubs : une barre claire avec l'appel « Adhérer »
   toujours en vue, un accueil en mosaïque de dalles (le prochain rendez-vous, le site en chiffres, les actualités,
   l'agenda, le sondage, les photos…), le forum en cartes, un pied sombre ; nuit « ardoise » au choix du visiteur.
-- **extend** — port BS5 du thème « Extend » de Chewbaka (navy & bleu acier, titres Economica, jour/nuit, multi-zones). Distribuable via la marketplace.
+- **extend** — public, « Lanceur » (2.0.0), d'après le thème de Chewbaka : le site comme le lanceur d'un jeu en ligne —
+  une barre d'onglets, la vitrine de l'accueil, le panneau des membres en ligne et du salon toujours ouvert à droite,
+  une barre d'état en bas ; au téléphone, les onglets en bas de l'écran. Nuit par défaut, jour au choix.
 
 > Le thème `dungeon` a été retiré. CSS thème = template PHP à tokens (`--bc-*`/`--gz-*`/`--fg-*`/`--ch-*`), couleurs
 > d'accent/fond/images **configurables en admin**. Installation d'un thème déposé sur disque : admin →
