@@ -10,6 +10,58 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.41] — 2026-10-07
+
+Un thème refait : **Blockcraft**, le site d'un serveur de jeu de blocs.
+
+### Ajouté
+
+- **Blockcraft 2.0.0 « Spawn + Inventaire »** — une mise en page neuve, choisie sur une planche de quatre directions.
+  En tête, un ciel au-dessus d'un paysage en blocs (collines, arbres, roche), le soleil et des nuages qui passent, la
+  lune et les étoiles la nuit ; sur l'accueil, le nom du serveur en grand et **son adresse, à copier d'un
+  clic** (réglage « Adresse du serveur »), et le Discord s'il est renseigné. La navigation est une **barre d'objets** :
+  chaque rubrique dans sa case, avec l'objet qui la représente (le livre pour les nouvelles, la carte pour le forum…) ;
+  au téléphone, elle se colle en bas de l'écran, à portée de pouce. Des blocs à coins carrés et ombres franches, le
+  **forum en coffres** (un couvercle en planches par catégorie, chaque forum dans sa case, une case enchantée qui
+  scintille quand il y a du neuf), l'**espace membre en écran du personnage**, un pied en roche. Titres Jersey 10,
+  texte Rubik, chiffres VT323 ; jour « prairie », nuit « ciel étoilé ». Tous les pixels sont dessinés pour le thème.
+  De jour, les textes du ciel sont sombres : blancs, ils ne se seraient lus que par leur ombre.
+
+### Corrigé
+
+- **La colonne de Pulse, de Chronique et de Blockcraft ne déforme plus les widgets qu'on y pose** : sa mise en page
+  atteignait aussi les rangées internes d'un widget, et « Qui est en ligne » y écartait ses nombres de leurs noms — sauf
+  dans la colonne où le nombre est un lien.
+- **L'onglet choisi du profil d'un membre se lit dans Pulse, Chronique et Granite** : ces thèmes en changeaient le
+  texte sans en changer le fond, que le module peint de la couleur d'accent — texte sombre sur l'accent.
+- **L'icône d'un groupe ne touche plus son nom** (« Équipe principale », dans le profil et l'espace membre) : le socle
+  commun mettait les pastilles en ligne souple sans écart, et l'espace entre l'icône et le nom disparaissait — dans les
+  six thèmes qui chargent le socle.
+- **Les commentaires d'un événement gardent leur icône** dans Pulse, Chronique et Granite : ces thèmes ôtaient l'icône de
+  tout lien posé au pied d'une carte, et le lien ne disait plus que « 0 → ». Seul le pied des widgets (« Voir le
+  calendrier → ») est concerné.
+- **La pastille choisie de la messagerie se lit** (« Toutes », « Archives »…) dans Pulse et Chronique : le socle commun
+  donnait à son texte la couleur des liens et à son icône celle de l'accent, sur un fond d'accent (1,1:1).
+- **Granite** : les boutons posés au pied d'une carte (« Poster une image », « Voir ma candidature », la pagination des
+  sessions) prenaient le rouge des liens sur l'encre (2:1) ; « Lever cette sanction » n'avait que 3,7:1 ; la lettrine
+  de la une descendait, au téléphone, sur la ligne « Par … le … » qui la suit ; les petits boutons font 24 px de haut.
+- **Pulse, de nuit** : le compteur du menu de l'espace membre se lit (3,9:1 sur la brique de nuit).
+- **Le menu de l'espace membre, au téléphone, se cale sur le début d'un onglet** : centré au pixel près, il laissait
+  l'onglet précédent amputé du début de son nom (« …fications »).
+- **Allumer le débogage depuis le Monitoring ne fait plus planter sa page** : le Monitoring relisait son cache en objet,
+  et la réponse plantait dès qu'une notification attendait (« Cannot use object of type stdClass as array »). Le cache
+  se relit en tableau, et la réponse JSON accepte aussi un objet.
+- **Les guides comptent les thèmes du paquet** : « Concepts » en annonçait quatre (Chronique et Pulse manquaient),
+  « Créer un thème » nommait quatre thèmes sur le socle commun au lieu de six.
+
+### Modifié
+
+- **`check-mise-en-page` ne crie plus à tort** : un texte de la bannière des cookies ou d'une barre collée en bas de
+  l'écran passe au-dessus d'un graphique à dessein (seul un même calque fait conflit) ; la part CACHÉE d'un texte — le
+  code d'un bloc qui défile, une description tronquée — ne « chevauche » plus la colonne voisine ; l'onglet d'une bande
+  qui défile n'est plus « perdu au bord gauche ». Une centaine de faux défauts en moins, et les vrais sortent toujours
+  (éprouvé sur une page piégée, avec l'ancienne sonde et la nouvelle).
+
 ## [1.2.40] — 2026-10-07
 
 Le référencement revu après les alertes de la Search Console de la vitrine : Google n'indexait pas les sujets du forum ni

@@ -73,7 +73,7 @@ class Monitoring extends Module
 		{
 			foreach (array_merge(array_fill_keys(['danger', 'warning', 'info'], 0), array_count_values(array_map(function($a){
 				return $a[1];
-			}, json_decode(file_get_contents('cache/monitoring/monitoring.json'))->notifications))) as $class => $count)
+			}, (array) ((json_decode((string) @file_get_contents('cache/monitoring/monitoring.json'), TRUE) ?: [])['notifications'] ?? [])))) as $class => $count)
 			{
 				if ($count)
 				{

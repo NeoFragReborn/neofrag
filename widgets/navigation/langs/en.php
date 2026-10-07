@@ -59,4 +59,6 @@ return [
 	'2041f02b' => 'Documents',
 	'09cc3ec0' => 'Features',
 	'ac7ed76f' => 'Roadmap',
+	'2ad052da' => 'News',
+	'b6a189c8' => 'My space',
 ];

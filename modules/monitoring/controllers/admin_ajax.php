@@ -307,7 +307,10 @@ class Admin_Ajax extends Controller_Module
 		}
 		else
 		{
-			$result = json_decode(file_get_contents('cache/monitoring/monitoring.json'));
+			// En tableau : relu en objet, le cache faisait planter la réponse dès qu'une notification attendait
+			// (le débogage allumé) — et un cache abîmé ne doit pas la faire planter non plus.
+			$result = json_decode((string) @file_get_contents('cache/monitoring/monitoring.json'), TRUE);
+			$result = is_array($result) ? $result : [];
 		}
 
 		// Sur la démonstration, l'onglet Fichiers montre un arbre d'exemple : l'arborescence réelle du
@@ -321,14 +324,7 @@ class Admin_Ajax extends Controller_Module
 				$fichier('index.php'),
 			];
 
-			if (is_array($result))
-			{
-				$result['files'] = $exemple;
-			}
-			else if (is_object($result))
-			{
-				$result->files = $exemple;
-			}
+			$result['files'] = $exemple;
 		}
 
 		return $this->json($result);

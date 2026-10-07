@@ -52,4 +52,6 @@ return [
 	'92df285e' => 'Lien vers un module',
 	'f2a3fffd' => 'Lien vers une page',
 	'dd3795ad' => 'Menu',
+	'2ad052da' => 'Nouvelles',
+	'b6a189c8' => 'Mon espace',
 ];

@@ -34,8 +34,8 @@ pied de page, et le **mode clair ou sombre**. Il déclare des **zones**, leur do
 régions** stables (`header`, `content`, `footer`…), et pose ses **dispositions** par défaut.
 
 Le paquet livre **Nebula**, un thème communautaire généraliste (navy et turquoise, glassmorphism),
-pensé pour une équipe, une guilde, un club ou une association. Quatre autres thèmes — **Granite**, **Forge**,
-**Blockcraft**, **Extend** — sont dans le paquet et s'installent depuis **Administration → Thèmes &
+pensé pour une équipe, une guilde, un club ou une association. Six autres thèmes — **Granite**, **Forge**,
+**Blockcraft**, **Extend**, **Chronique**, **Pulse** — sont dans le paquet et s'installent depuis **Administration → Thèmes &
 Addons** ; une installation qui ne les a pas les trouve dans le [marketplace](marketplace.md). Le thème actif se
 choisit dans **Administration → Thèmes & Addons** ; si plusieurs thèmes publics sont installés, les
 visiteurs peuvent en changer via le sélecteur en pied de page.

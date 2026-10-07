@@ -58,4 +58,6 @@ return [
 	'2041f02b' => 'Dokumente',
 	'09cc3ec0' => 'Funktionen',
 	'ac7ed76f' => 'Roadmap',
+	'2ad052da' => 'Neuigkeiten',
+	'b6a189c8' => 'Mein Bereich',
 ];

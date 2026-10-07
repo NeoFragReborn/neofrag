@@ -58,4 +58,6 @@ return [
 	'2041f02b' => 'Documentos',
 	'09cc3ec0' => 'Funcionalidades',
 	'ac7ed76f' => 'Hoja de ruta',
+	'2ad052da' => 'Noticias',
+	'b6a189c8' => 'Mi espacio',
 ];

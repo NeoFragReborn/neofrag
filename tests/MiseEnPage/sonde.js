@@ -373,6 +373,51 @@
         return null;
     }
 
+    /*
+     * La part VISIBLE d'un texte : ce qui dépasse d'un ancêtre qui défile ou rogne (overflow autre que visible), ou de
+     * l'élément lui-même (une description tronquée à trois lignes), ne se voit pas. Compter cette part cachée faisait
+     * « chevaucher » la colonne voisine : le code d'un <pre> défilant du wiki dans Granite, les descriptions tronquées
+     * des cartes d'extensions de l'administration — une centaine de faux défauts (2026-10-07). Les textes coupés (mesure
+     * 2) gardent, eux, leur boîte entière : c'est la part cachée qu'ils jugent.
+     */
+    function cadreVisible(el) {
+        var r = { left: -Infinity, top: -Infinity, right: Infinity, bottom: Infinity };
+
+        for (var a = el; a && a !== document.body; a = a.parentElement) {
+            var s = style(a);
+
+            if (s.overflowX !== 'visible' || s.overflowY !== 'visible') {
+                var b = a.getBoundingClientRect();
+
+                if (s.overflowX !== 'visible') {
+                    r.left  = Math.max(r.left, b.left);
+                    r.right = Math.min(r.right, b.right);
+                }
+
+                if (s.overflowY !== 'visible') {
+                    r.top    = Math.max(r.top, b.top);
+                    r.bottom = Math.min(r.bottom, b.bottom);
+                }
+            }
+        }
+
+        return r;
+    }
+
+    function lignesVisibles(f) {
+        if (!f.visibles) {
+            var c = cadreVisible(f.el);
+
+            f.visibles = f.boite.lignes.map(function (x) {
+                return { left: Math.max(x.left, c.left), top: Math.max(x.top, c.top), right: Math.min(x.right, c.right), bottom: Math.min(x.bottom, c.bottom) };
+            }).filter(function (x) {
+                return x.right - x.left > 0.5 && x.bottom - x.top > 0.5;
+            });
+        }
+
+        return f.visibles;
+    }
+
     /* a. Un texte posé sur le TRAIT d'un dessin SVG : on éprouve 15 points de la boîte des glyphes. */
     var traces = document.querySelectorAll('svg path, svg circle, svg ellipse, svg line, svg polyline, svg polygon');
 
@@ -394,7 +439,10 @@
         var point   = (t.ownerSVGElement || t).createSVGPoint();
 
         feuilles.forEach(function (f) {
-            if (!croise(f.boite, cadre)) {
+            // Un texte d'un AUTRE calque (la bannière des cookies, une barre d'objets collée en bas de l'écran) passe
+            // au-dessus d'un graphique à dessein : comme pour deux textes (b), seul un même calque fait conflit. Sans
+            // cela, la barre fixe de Blockcraft « chevauchait » le graphique des distinctions (2026-10-07).
+            if (!croise(f.boite, cadre) || calque(f.el) !== calque(t) || !lignesVisibles(f).length) {
                 return;
             }
 
@@ -450,8 +498,8 @@
                     continue;
                 }
 
-                var conflit = A.boite.lignes.some(function (x) {
-                    return B.boite.lignes.some(function (y) {
+                var conflit = lignesVisibles(A).some(function (x) {
+                    return lignesVisibles(B).some(function (y) {
                         var l = Math.min(x.right, y.right) - Math.max(x.left, y.left);
                         var h = Math.min(x.bottom, y.bottom) - Math.max(x.top, y.top);
                         var petite = Math.min((x.right - x.left) * (x.bottom - x.top), (y.right - y.left) * (y.bottom - y.top));
@@ -651,9 +699,23 @@
     });
 
     // ── 9. Le texte coupé par le bord gauche ────────────────────────────────────────────
-    /* Rien ne défile vers la gauche : un texte qui passe sous le bord gauche est perdu. */
+    /*
+     * Rien ne défile vers la gauche : un texte qui passe sous le bord gauche est perdu. Sauf dans un ancêtre qui défile
+     * ou rogne de côté : l'onglet d'une bande qui défile (le menu de l'espace membre au téléphone) s'y retrouve en
+     * faisant défiler la bande — il était compté perdu dans tous les thèmes (2026-10-07).
+     */
+    function dansUneBande(el) {
+        for (var a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+            if (style(a).overflowX !== 'visible') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     feuilles.forEach(function (f) {
-        if (f.boite.left < -2 && f.boite.right > 0) {
+        if (f.boite.left < -2 && f.boite.right > 0 && !dansUneBande(f.el)) {
             pousser(verdict.horsEcran, { el: nom(f.el), texte: extrait(f.noeuds), depasse: Math.round(-f.boite.left) });
         }
     });

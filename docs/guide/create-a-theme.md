@@ -227,7 +227,7 @@ Deux pièges mesurés sur les thèmes livrés :
 
 ### Le socle commun des thèmes — `css/nf-socle-themes.css` (facultatif)
 
-Blockcraft, Extend, Forge et Granite s'appuient sur un **socle commun** : ce que leurs feuilles avaient
+Blockcraft, Chronique, Extend, Forge, Granite et Pulse s'appuient sur un **socle commun** : ce que leurs feuilles avaient
 d'identique (le reset, les liens, les cartes, les formulaires, les listes, la barre du membre, les
 pastilles de présence…), écrit une seule fois dans le cœur, avec le seul vocabulaire `--nf-*`. Un thème
 l'adopte en le chargeant **avant** sa propre feuille, qui garde son identité et peut tout redéfinir :
@@ -240,8 +240,8 @@ $this->css('bootstrap.min')->css('nf-bs5-bridge')
      ->css('nf-apres-theme');
 ```
 
-Il emploie, en plus des jetons ci-dessus, ceux-ci, que le thème qui le charge définit (les quatre thèmes
-livrés les font pointer vers leur palette privée) — `tools/check-css-variables.php` refuse un thème qui
+Il emploie, en plus des jetons ci-dessus, ceux-ci, que le thème qui le charge définit (les six thèmes
+qui le chargent les font pointer vers leur palette privée) — `tools/check-css-variables.php` refuse un thème qui
 charge le socle sans définir chacun des jetons qu'il emploie :
 
 ```css

@@ -12,6 +12,56 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.41] — 2026-10-07
+
+A redesigned theme: **Blockcraft**, the website of a block-game server.
+
+### Added
+
+- **Blockcraft 2.0.0 “Spawn + Inventory”** — a new layout, chosen from a board of four directions. On top,
+  a sky above a block landscape (hills, trees, stone), the sun and drifting clouds, the moon and stars at night; on the
+  home page, the server name in large letters and **its address, copied in one click** ("Server address" setting), and
+  the Discord when it is set. Navigation is an **item hotbar**: each section in its slot, with the item that stands for
+  it (the book for news, the map for the forum…); on a phone, it sticks to the bottom of the screen, within thumb's
+  reach. Square-cornered blocks with hard shadows, the **forum as chests** (a plank lid per category, each forum in its
+  slot, an enchanted slot that shimmers when there is something new), the **member area as the character screen**, a
+  stone footer. Jersey 10 headings, Rubik text, VT323 figures; "meadow" day, "starry sky" night. Every pixel is drawn
+  for the theme. By day, the sky texts are dark: white, they would only have been readable through their shadow.
+
+### Fixed
+
+- **The side column of Pulse, Chronique and Blockcraft no longer distorts the widgets placed in it**: its layout also
+  reached a widget's inner rows, and "Who is online" pushed its figures away from their names there — except in the
+  column where the figure is a link.
+- **The selected tab of a member's profile is readable in Pulse, Chronique and Granite**: these themes changed its text
+  without changing its background, which the module paints in the accent colour — dark text on the accent.
+- **A group's icon no longer touches its name** ("Main team", in the profile and the member area): the shared base made
+  badges flexible without a gap, and the space between the icon and the name disappeared — in the six themes that load
+  the shared base.
+- **An event's comments keep their icon** in Pulse, Chronique and Granite: these themes removed the icon from every link
+  in a card footer, and the link only said "0 →". Only widget footers ("See the calendar →") are concerned now.
+- **The selected pill of the messaging module is readable** ("All", "Archives"…) in Pulse and Chronique: the shared base
+  gave its text the link colour and its icon the accent colour, on an accent background (1.1:1).
+- **Granite**: buttons in a card footer ("Post an image", "See my application", the sessions pagination) took the red
+  of links on the ink (2:1); "Lift this sanction" only had 3.7:1; on a phone, the front-page drop cap slid over the "By …
+  on …" line below it; small buttons are 24 px high.
+- **Pulse, at night**: the counter in the member area menu is readable (3.9:1 on the night brick).
+- **The member area menu, on a phone, snaps to the start of a tab**: centred to the pixel, it left the previous tab cut
+  off at the start of its name ("…fications").
+- **Turning on debugging from Monitoring no longer crashes its page**: Monitoring read its cache back as an object, and
+  the response crashed whenever a notification was waiting ("Cannot use object of type stdClass as array"). The cache is
+  read back as an array, and the JSON response also accepts an object.
+- **The guides count the themes in the package**: "Concepts" announced four (Chronique and Pulse were missing), and
+  "Create a theme" named four themes on the shared base instead of six.
+
+### Changed
+
+- **`check-mise-en-page` no longer cries wolf**: text in the cookie banner or in a bar stuck to the bottom of the screen
+  passes over a chart on purpose (only the same layer makes a conflict); the HIDDEN part of a text — the code of a
+  scrolling block, a clamped description — no longer "overlaps" the next column; a tab in a scrolling strip is no
+  longer "lost past the left edge". About a hundred false defects fewer, and the real ones still come out (tested on a
+  trapped page, with the old probe and the new one).
+
 ## [1.2.40] — 2026-10-07
 
 Search engine indexing reviewed after the Search Console alerts on the showcase site: Google did not index forum

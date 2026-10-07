@@ -28,6 +28,14 @@ class Json extends Library
 
 		$output = $this->_output;
 
+		// Un OBJET (un cache relu par json_decode() sans son second argument) se traite comme un tableau : y poser les
+		// notifications en attente plantait (« Cannot use object of type stdClass as array » — le Monitoring, à
+		// l'allumage du débogage, 2026-10-07).
+		if (is_object($output) && !method_exists($output, '__toString'))
+		{
+			$output = json_decode((string) json_encode($output), TRUE) ?? [];
+		}
+
 		if ($this->_notifications && ($notifications = $this->session('notifications')))
 		{
 			$output['notify'] = $notifications;
