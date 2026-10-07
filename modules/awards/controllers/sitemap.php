@@ -20,7 +20,7 @@ class Sitemap extends Controller_Module
 
 		foreach ($this->db->select('award_id', 'name')->from('nf_awards')->order_by('date DESC')->get() as $distinction)
 		{
-			$adresses[] = ['adresse' => 'awards/'.$distinction['award_id'].'/'.url_title($distinction['name'])];
+			$adresses[] = ['adresse' => 'awards/'.$distinction['award_id'].'/'.url_title($distinction['name']), 'sans_langue' => TRUE];
 		}
 
 		// Une rubrique vide n'est pas annoncée aux moteurs : sa page ne dirait que « rien pour l'instant ».

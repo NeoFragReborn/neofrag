@@ -125,24 +125,31 @@ function file_upload_max_size()
  * plus récentes, et parmi les autres, celles qui ont plus de `$jours` jours — la règle du bouton « Purger »
  * du Monitoring, appliquée d'elle-même. Chaque mise à jour par le bouton prend une sauvegarde complète
  * (16 Mo pour un site neuf) et rien ne les retirait : la vitrine en portait 23, 358 Mo (2026-10-03).
+ * Au-delà des `$plafond` plus récentes, l'âge ne compte plus : des mises à jour rapprochées en laissaient
+ * passer autant qu'il y en avait eu en trente jours, et la vitrine en portait 40, 663 Mo (2026-10-07).
  * Seuls les noms que fabrique la sauvegarde sont considérés.
  *
  * @param array<string, int> $sauvegardes nom du fichier => date de modification
  * @return list<string>
  */
-function nf_sauvegardes_a_retirer(array $sauvegardes, int $maintenant, int $garder = 5, int $jours = 30): array
+function nf_sauvegardes_a_retirer(array $sauvegardes, int $maintenant, int $garder = 5, int $jours = 30, int $plafond = 10): array
 {
 	$sauvegardes = array_filter($sauvegardes, static fn ($date, $nom): bool => (bool) preg_match('/^\d{14}(-[a-f0-9]{16})?\.zip$/', (string) $nom), ARRAY_FILTER_USE_BOTH);
 	arsort($sauvegardes);
 
+	$garder  = max(0, $garder);
+	$plafond = max($garder, $plafond);
 	$retirer = [];
+	$rang    = 0;
 
-	foreach (array_slice($sauvegardes, max(0, $garder), NULL, TRUE) as $nom => $date)
+	foreach ($sauvegardes as $nom => $date)
 	{
-		if ($date < $maintenant - $jours * 86400)
+		if ($rang >= $plafond || ($rang >= $garder && $date < $maintenant - $jours * 86400))
 		{
 			$retirer[] = (string) $nom;
 		}
+
+		$rang++;
 	}
 
 	return $retirer;

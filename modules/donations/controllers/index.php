@@ -25,6 +25,12 @@ class Index extends Controller_Module
 			redirect('donations/'.url_title($campaigns[0]['name']));
 		}
 
+		// Aucune campagne : une page vide, que les moteurs n'indexent pas (et que le plan du site tait).
+		if (!$campaigns)
+		{
+			$this->output->data->set('module', 'robots', 'noindex, follow');
+		}
+
 		return $this->view('index', [
 			'campaigns' => array_map([$this, '_enrich'], $campaigns)
 		]);
@@ -41,6 +47,9 @@ class Index extends Controller_Module
 			$this->error(404);
 			return;
 		}
+
+		// Une campagne n'a pas de langue à elle : sa canonique est dans la langue première du site.
+		nf_seo_sans_langue();
 
 		$this	->title($campaign['title'])
 				->icon('fas fa-hand-holding-heart')

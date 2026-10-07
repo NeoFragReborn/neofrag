@@ -54,7 +54,9 @@ if ($nf_police = police_du_site()):
  *     jamais sur l'en-tête `Host` de la requête, que n'importe qui peut forger ;
  *   - l'accueil est la racine de sa langue (`/fr`), jamais `/fr/index` : les deux répondent ;
  *   - `canonical` désigne la langue réellement SERVIE : un contenu rédigé dans une seule langue, servi
- *     dans les cinq autres avec un bandeau, rendrait sinon six pages identiques ;
+ *     dans les cinq autres avec un bandeau, rendrait sinon six pages identiques ; un contenu qui n'a pas
+ *     de langue à lui (un sujet du forum, une page du wiki) la place dans la langue première du site
+ *     (nf_seo_sans_langue()) ;
  *   - `hreflang` n'annonce que des adresses qui répondent : quand le module a dit dans quelles langues
  *     son contenu existe (`Model::langue_du_contenu()`), on s'y tient. `x-default` — l'adresse sans
  *     langue, que le site redirige vers celle du visiteur — n'accompagne que les pages présentes partout.
@@ -62,7 +64,7 @@ if ($nf_police = police_du_site()):
 $nf_origin       = site_origin();
 $nf_chemin       = nf_chemin_public();
 $nf_langues_page = (array) ($this->output->data->get('module', 'langues_du_contenu') ?: []);
-$nf_langue_page  = (string) ($this->output->data->get('module', 'langue_servie') ?: $this->config->lang->info()->name);
+$nf_langue_page  = (string) ($this->output->data->get('module', 'langue_servie') ?: $this->output->data->get('module', 'langue_canonique') ?: $this->config->lang->info()->name);
 $nf_canonical    = nf_seo_adresse($nf_origin, $this->url->base, $nf_langue_page, $nf_chemin);
 $nf_accueil      = $nf_chemin === '';
 ?>

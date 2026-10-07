@@ -57,6 +57,9 @@ class Index extends Controller_Module
 
 	public function _event($e)
 	{
+		// Un rendez-vous n'a pas de langue à lui : sa canonique est dans la langue première du site.
+		nf_seo_sans_langue();
+
 		$this->title($e['title'])->icon('far fa-calendar')->breadcrumb();
 
 		$body = '<div class="mb-3"><h2>'.nf_texte($e['title']).'</h2>';

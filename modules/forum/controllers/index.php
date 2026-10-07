@@ -189,6 +189,10 @@ class Index extends Controller_Module
 
 	public function _topic($topic_id, $title, $forum_id, $forum_title, $category_id, $views, $nb_users, $nb_messages, $is_announce, $is_locked, $topic, $messages, $prefix_id = 0, $solution_id = 0, $topic_user_id = 0)
 	{
+		// Un sujet n'a pas de langue à lui (seuls les forums ont des titres traduits) : sa canonique est dans
+		// la langue première du site.
+		nf_seo_sans_langue();
+
 		$prefixes      = $this->_modele_forum()->prefixes();
 		$peut_resoudre = ($this->user() && (int) $topic_user_id === (int) $this->user->id) || $this->access('forum', 'category_modify', $category_id);
 		$solution      = NULL;

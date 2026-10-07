@@ -23,6 +23,6 @@ class Sitemap extends Controller_Module
 			return [];
 		}
 
-		return [['adresse' => 'faq', 'date' => $this->db->select('MAX(updated_at)')->from('nf_faq_questions')->where('published', '1')->row()]];
+		return [['adresse' => 'faq', 'date' => $this->db->select('MAX(updated_at)')->from('nf_faq_questions')->where('published', '1')->row(), 'sans_langue' => TRUE]];
 	}
 }

@@ -73,6 +73,9 @@ class Index extends Controller_Module
 
 	public function _recruit($recruit_id, $title, $introduction, $description, $requierments, $date, $user_id, $size, $role, $icon, $date_end, $closed, $team_id, $image_id, $username, $avatar, $sex, $candidacies, $candidacies_pending, $candidacies_accepted, $candidacies_declined, $team_name)
 	{
+		// Une offre n'a pas de langue à elle : sa canonique est dans la langue première du site.
+		nf_seo_sans_langue();
+
 		$this->title($title);
 
 		if (($this->access('recruits', 'recruit_postulate', $recruit_id)) && (!$date_end || strtotime($date_end) > time()))

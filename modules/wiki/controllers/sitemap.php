@@ -23,7 +23,7 @@ class Sitemap extends Controller_Module
 
 		foreach ($this->db->select('slug', 'updated_at')->from('nf_wiki_pages')->where('published', '1')->order_by('sort_order', 'id')->get() as $page)
 		{
-			$adresses[] = ['adresse' => 'wiki/'.$page['slug'], 'date' => $page['updated_at']];
+			$adresses[] = ['adresse' => 'wiki/'.$page['slug'], 'date' => $page['updated_at'], 'sans_langue' => TRUE];
 			$derniere   = max($derniere, (string) $page['updated_at']);
 		}
 

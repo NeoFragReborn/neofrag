@@ -23,7 +23,9 @@ declare(strict_types=1);
  *      chaque plan ne porte que des adresses complètes, sur l'origine du site, chacune une fois, et
  *      aucune page qui n'a rien à faire dans un moteur (recherche, profils, administration) ;
  *   3. un échantillon des adresses de chaque plan (`--max`) RÉPOND 200 sans redirection, n'est pas en
- *      `noindex`, et se déclare canonique sur l'adresse même du plan ;
+ *      `noindex`, et se déclare canonique sur l'adresse même du plan ; le même chemin, échantillonné dans
+ *      chaque langue, n'y porte pas le même texte (un sujet du forum annoncé dans six plans, six fois
+ *      canonique : Google en retenait une autre — Search Console de la vitrine, 2026-10-07) ;
  *   4. l'accueil de chaque langue : un titre sans répétition, une description de 50 à 160 caractères
  *      qui ne répète pas le nom, un canonique sur la racine de la langue, un `hreflang` complet par
  *      langue plus `x-default`, Open Graph (titre, description, adresse = canonique, locale), et les
@@ -184,7 +186,57 @@ else
     $plans[] = $origine.'/sitemap.xml';
 }
 
-$accueils = [];
+/**
+ * Les mots propres à une page : ceux de ses textes qui ne figurent pas déjà sur l'accueil de sa langue — menus, pied,
+ * widgets. Deux langues d'un même contenu non traduit partagent alors presque tous leurs mots.
+ *
+ * @param array<string, int> $chrome les textes de l'accueil
+ * @return array<string, int> mot => 1
+ */
+$propres = static function (string $html, array $chrome): array {
+    $dom = new DOMDocument();
+    @$dom->loadHTML('<?xml encoding="UTF-8">'.$html, LIBXML_NOERROR | LIBXML_NOWARNING);
+    $mots = [];
+
+    foreach ((new DOMXPath($dom))->query('//body//text()[not(ancestor::script) and not(ancestor::style) and not(ancestor::noscript) and not(ancestor::template)]') ?: [] as $noeud)
+    {
+        $texte = trim((string) preg_replace('/\s+/u', ' ', (string) $noeud->nodeValue));
+
+        if ($texte !== '' && !isset($chrome[$texte]))
+        {
+            foreach (preg_split('/[^\p{L}\p{N}]+/u', mb_strtolower($texte), -1, PREG_SPLIT_NO_EMPTY) ?: [] as $mot)
+            {
+                $mots[$mot] = 1;
+            }
+        }
+    }
+
+    return $mots;
+};
+
+/** @return array<string, int> les textes d'une page, chacun une fois */
+$textes = static function (string $html): array {
+    $dom = new DOMDocument();
+    @$dom->loadHTML('<?xml encoding="UTF-8">'.$html, LIBXML_NOERROR | LIBXML_NOWARNING);
+    $vus = [];
+
+    foreach ((new DOMXPath($dom))->query('//body//text()') ?: [] as $noeud)
+    {
+        if (($texte = trim((string) preg_replace('/\s+/u', ' ', (string) $noeud->nodeValue))) !== '')
+        {
+            $vus[$texte] = 1;
+        }
+    }
+
+    return $vus;
+};
+
+/** Le chemin d'une adresse du site, sans son préfixe de langue : `/fr/forum/topic/3/x` → `/forum/topic/3/x`. */
+$chemin = static fn (string $adresse): string => (string) preg_replace('#^/[a-z]{2}(?=/|$)#', '', substr($adresse, strlen($origine)));
+
+$accueils   = [];
+$listes     = [];
+$empreintes = [];
 
 foreach ($plans as $plan)
 {
@@ -229,20 +281,32 @@ foreach ($plans as $plan)
         $adresses[$adresse] = TRUE;
     }
 
-    // L'accueil de la langue est la première adresse ; les autres, un échantillon réparti.
-    $liste   = array_keys($adresses);
-    $accueil = $liste[0] ?? NULL;
+    // L'accueil de la langue est la première adresse.
+    $listes[$plan] = array_keys($adresses);
 
-    if ($accueil !== NULL)
+    if (($accueil = $listes[$plan][0] ?? NULL) !== NULL)
     {
         $accueils[] = $accueil;
     }
+}
 
-    $pas = max(1, (int) ceil(count($liste) / max(1, (int) $o['max'])));
+/*
+ * Un échantillon de chaque plan, le MÊME chemin dans toutes les langues : choisi par le chemin, et non par le rang,
+ * il permet de comparer `/fr/forum/topic/3/x` à `/de/forum/topic/3/x`. Le 2026-10-07, la Search Console de la vitrine
+ * signalait « Page en double : Google n'a pas choisi la même URL canonique que l'utilisateur » : chaque sujet du forum,
+ * chaque page du wiki, rédigés une fois, étaient annoncés dans les six plans, chacun canonique — et ce contrôle
+ * disait tout juste, faute de comparer les langues entre elles.
+ */
+$pas = max(1, (int) ceil(max(array_map('count', $listes ?: [[]])) / max(1, (int) $o['max'])));
 
-    printf("  %-42s %4d adresse(s), %d ouverte(s)\n", $plan, count($liste), (int) ceil(count($liste) / $pas));
+foreach ($listes as $plan => $liste)
+{
+    $choisies = array_values(array_filter($liste, static fn (string $adresse): bool => crc32($chemin($adresse)) % $pas === 0));
+    $chrome   = isset($liste[0]) ? $textes(nf_http($locale($liste[0]), ['suivre' => 0])['corps']) : [];
 
-    foreach (array_values(array_filter($liste, static fn ($i) => $i % $pas === 0, ARRAY_FILTER_USE_KEY)) as $adresse)
+    printf("  %-42s %4d adresse(s), %d ouverte(s)\n", $plan, count($liste), count($choisies));
+
+    foreach ($choisies as $adresse)
     {
         $page = nf_http($locale($adresse), ['suivre' => 0]);
         $ouvertes++;
@@ -270,7 +334,36 @@ foreach ($plans as $plan)
         {
             $ecarts[] = sprintf('%s : titre absent, multiple ou répété (« %s »)', $adresse, implode(' / ', $e['titres']));
         }
+
+        if ($e['canonique'] === $adresse && $chemin($adresse) !== '')
+        {
+            $empreintes[$chemin($adresse)][$adresse] = $propres($page['corps'], $chrome);
+        }
     }
+}
+
+// Un même texte sous plusieurs langues, chacune canonique : Google en retient une autre, et n'indexe pas les pages.
+$doublons = [];
+$pareil   = static fn (array $a, array $b): bool => min(count($a), count($b)) >= 25 && count(array_intersect_key($a, $b)) / count($a + $b) >= 0.7;
+
+foreach ($empreintes as $pages)
+{
+    $premiere = array_key_first($pages);
+
+    foreach (array_slice($pages, 1, NULL, TRUE) as $adresse => $mots)
+    {
+        if ($pareil($pages[$premiere], $mots))
+        {
+            $doublons[] = $premiere.' = '.$adresse;
+            break;
+        }
+    }
+}
+
+if ($doublons)
+{
+    $ecarts[] = sprintf('%d page(s) au même texte sous plusieurs langues, chacune canonique — un contenu qui n\'a pas de langue à lui se déclare canonique dans une seule (nf_seo_sans_langue()) et ne figure qu\'à son plan : %s%s',
+        count($doublons), implode(' ; ', array_slice($doublons, 0, 10)), count($doublons) > 10 ? ' ; …' : '');
 }
 
 // ── 3. L'accueil de chaque langue ───────────────────────────────────────────────────────────

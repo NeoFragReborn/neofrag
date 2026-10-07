@@ -20,7 +20,7 @@ class Sitemap extends Controller_Module
 
 		foreach ($this->db->select('recruit_id', 'title', 'date')->from('nf_recruits')->where('closed', '0')->order_by('date DESC')->get() as $offre)
 		{
-			$adresses[] = ['adresse' => 'recruits/'.$offre['recruit_id'].'/'.url_title($offre['title']), 'date' => $offre['date']];
+			$adresses[] = ['adresse' => 'recruits/'.$offre['recruit_id'].'/'.url_title($offre['title']), 'date' => $offre['date'], 'sans_langue' => TRUE];
 		}
 
 		// Une rubrique vide n'est pas annoncée aux moteurs : sa page ne dirait que « rien pour l'instant ».

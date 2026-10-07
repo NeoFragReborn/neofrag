@@ -235,7 +235,10 @@ class NeoFrag
 		}
 		else if (is_a($class = 'NF\NeoFrag\Addons\\'.$name, 'NF\NeoFrag\Loadable', TRUE))
 		{
-			return forward_static_call_array($class.'::__load', [NeoFrag(), $args]);
+			// Un appel direct, pas forward_static_call_array() : celui-ci transmet la classe appelante, et
+			// `$this->module('talks')` écrit dans un module faisait chercher au chargeur un type d'addon du
+			// nom de ce module — NULL, le message de bienvenue ne partait pas (2026-10-07).
+			return $class::__load(NeoFrag(), $args);
 		}
 		else if (is_a($class = 'NF\NeoFrag\Loadables\\'.$name, 'NF\NeoFrag\Loadable', TRUE))
 		{

@@ -477,6 +477,39 @@ function nf_seo_contenu(string $type, int $id): void
 }
 
 /**
+ * La langue première du site : la première dans l'ordre d'affichage des langues (Admin → Langues), la même
+ * sur toutes les pages. `config->langs` met la langue de la PAGE en tête (cf. Config) : lu tel quel, il
+ * rendait l'allemand sur une page allemande.
+ */
+function nf_langue_premiere(): string
+{
+	$config  = NeoFrag()->config;
+	$langues = array_values(array_filter((array) ($config->langs ?: [$config->lang]), 'is_object'));
+
+	usort($langues, static fn ($a, $b): int => strnatcmp((string) $a->settings()->order, (string) $b->settings()->order) ?: strcmp((string) $a->info()->name, (string) $b->info()->name));
+
+	return $langues ? (string) $langues[0]->info()->name : '';
+}
+
+/**
+ * La page sert un contenu qui n'a pas de langue à lui — un sujet du forum, une page du wiki, un ticket, une
+ * annonce : rédigé une fois, il répond sous chaque préfixe de langue, seuls les menus traduits. Six adresses,
+ * un même texte, et chacune se disait canonique : Google en retenait une autre, et n'indexait pas les pages
+ * (« Page en double : Google n'a pas choisi la même URL canonique que l'utilisateur », Search Console de la
+ * vitrine, 2026-10-07 : 59 contenus annoncés six fois, 354 de ses 580 adresses). Sa canonique est désormais
+ * dans la langue première du site, la seule qu'annonce `hreflang` ; le plan du site ne la donne que dans cette
+ * langue (`sans_langue`). Rien n'est servi en repli : pas de bandeau. Une ligne dans la page publique du contenu.
+ */
+function nf_seo_sans_langue(): void
+{
+	if (($langue = nf_langue_premiere()) !== '')
+	{
+		NeoFrag()->output->data->set('module', 'langue_canonique', $langue);
+		NeoFrag()->output->data->set('module', 'langues_du_contenu', [$langue]);
+	}
+}
+
+/**
  * Le bouton « Référencement » d'une carte d'édition : il mène à la page qui règle le titre et la
  * description de ce contenu, dans toutes les langues du site. Une ligne dans l'administration d'un module.
  */
@@ -495,6 +528,9 @@ function nf_seo_bouton(string $type, int $id): string
  * Servi par `/sitemap.xml` (Settings\Controllers\Ajax::sitemap()) et compté par le bilan du
  * référencement (Paramètres → Référencement) : les deux voient exactement les mêmes pages.
  *
+ * Une entrée marquée `sans_langue` — un contenu qui n'a pas de langue à lui, cf. nf_seo_sans_langue() —
+ * ne figure qu'au plan de la langue première du site, celle de sa canonique.
+ *
  * @return array{adresses: list<array{loc: string, lastmod: ?string}>, modules: array<string, int>}
  */
 function nf_seo_plan(): array
@@ -502,6 +538,8 @@ function nf_seo_plan(): array
 	$origine  = site_origin();
 	$entrees  = [['adresse' => '', 'module' => '']];
 	$modules  = [];
+	$courante = is_object($langue = NeoFrag()->config->lang) ? (string) $langue->info()->name : '';
+	$premiere = $courante === '' || $courante === nf_langue_premiere();
 
 	foreach (NeoFrag()->model2('addon')->get('module') as $module)
 	{
@@ -516,7 +554,10 @@ function nf_seo_plan(): array
 		{
 			foreach ((array) $controleur->sitemap() as $entree)
 			{
-				$entrees[] = ['module' => $nom] + (array) $entree;
+				if ($premiere || empty($entree['sans_langue']))
+				{
+					$entrees[] = ['module' => $nom] + (array) $entree;
+				}
 			}
 		}
 		catch (\Throwable $erreur)

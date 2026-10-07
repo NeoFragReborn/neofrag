@@ -10,6 +10,40 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.40] — 2026-10-07
+
+Le référencement revu après les alertes de la Search Console de la vitrine : Google n'indexait pas les sujets du forum ni
+les pages du wiki, et se voyait proposer des pages vides. Et le message de bienvenue, qui ne partait plus.
+
+### Corrigé
+
+- **Google n'écarte plus les contenus sans langue comme des doublons** : un sujet du forum, une page du wiki, un ticket,
+  un événement, une annonce, une recette, un sondage, une offre de recrutement, une distinction, une campagne de dons —
+  rédigés une fois — répondaient sous chacune des six langues du site, seuls les menus traduits, et chaque adresse se
+  disait canonique. Google en retenait une autre et ne les indexait pas (« Page en double : Google n'a pas choisi la
+  même URL canonique que l'utilisateur » : 59 contenus annoncés six fois, 354 des 580 adresses du plan de la vitrine).
+  Leur canonique est désormais dans la langue première du site, la seule annoncée en `hreflang` et au plan du site. De
+  même pour les pages faites de ces contenus : la FAQ, le glossaire, les citations, les liens, les téléchargements, la
+  boutique et la liste des événements.
+- **Les pages vides ne sont plus proposées aux moteurs** : la webradio sans flux ni émission, le livre d'or sans
+  message et la page des dons sans campagne figuraient au plan du site, dans chaque langue — des « soft 404 » pour
+  Google. Elles n'y sont plus tant qu'elles sont vides, et se déclarent `noindex`.
+- **`/fr/forum/` redirige pour de bon vers `/fr/forum`** : la redirection d'une adresse finie par une barre oblique,
+  ou qui en doublait une, était temporaire (302) et perdait ce qui suivait le `?` ; elle est permanente (301).
+- **Le message de bienvenue part de nouveau** : le module Membres ne trouvait pas la messagerie, et le nouvel inscrit ne
+  recevait rien. Un module qui en chargeait un autre (`$this->module(…)`) obtenait toujours « rien » — le même défaut
+  privait les webhooks d'un commentaire du titre et de l'adresse du contenu commenté.
+- **Les sauvegardes de mise à jour ne s'entassent plus** : le site garde toujours les cinq plus récentes et retire les
+  autres passé trente jours, mais des mises à jour rapprochées les laissaient toutes passer — la vitrine en portait
+  quarante, 663 Mo. Jamais plus de dix ne restent désormais, quel que soit leur âge.
+
+### Modifié
+
+- **`check-seo` compare les langues entre elles** : il échantillonne le même chemin dans chaque plan du site et signale
+  un même texte servi sous plusieurs langues, chacune canonique. Il déclarait la vitrine juste ; il y trouve désormais
+  ces doublons. Les modules le peuvent aussi : une entrée du plan marquée `'sans_langue' => TRUE` ne figure qu'au plan
+  de la langue première, et `nf_seo_sans_langue()` place la canonique de la page (guide « Créer un module »).
+
 ## [1.2.39] — 2026-10-06
 
 Pulse revu sur la démonstration publiée : le forum au téléphone ne colle plus ses boutons, dans tous les

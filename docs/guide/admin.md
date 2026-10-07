@@ -62,7 +62,7 @@ revient sur l'onglet où l'on était ; une adresse comme `admin/monitoring#diagn
 
 Chaque mise à jour par le bouton prend d'abord une **sauvegarde** complète du site, base comprise. Le
 site garde toujours les **cinq plus récentes** ; les autres se retirent d'elles-mêmes passé **trente
-jours**. Téléchargez celle que vous voulez conserver plus longtemps.
+jours**, et jamais plus de **dix** ne restent. Téléchargez celle que vous voulez conserver plus longtemps.
 
 ### Le journal des erreurs
 

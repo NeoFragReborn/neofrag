@@ -50,9 +50,10 @@ class Url extends Core
 
 	public function __construct($config = [])
 	{
+		// Une normalisation d'adresse est PERMANENTE : un 302 laisse les moteurs garder les deux adresses.
 		if (preg_match('_/{2,}_', $_SERVER['REQUEST_URI']))
 		{
-			header('Location: '.preg_replace('_/+_', '/', $_SERVER['REQUEST_URI']));
+			header('Location: '.preg_replace('_/+_', '/', $_SERVER['REQUEST_URI']), TRUE, 301);
 			exit;
 		}
 
@@ -96,9 +97,10 @@ class Url extends Core
 			$this->_const['base'] .= '/';
 		}
 
+		// `/fr/forum/` est `/fr/forum` : redirection permanente (elle était temporaire, et perdait la requête).
 		if (substr($request = substr($url['path'], strlen($this->base)), -1) == '/')
 		{
-			header('Location: '.$this->base.substr($request, 0, -1));
+			header('Location: '.$this->base.substr($request, 0, -1).$this->query, TRUE, 301);
 			exit;
 		}
 

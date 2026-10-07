@@ -12,6 +12,39 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.40] — 2026-10-07
+
+Search engine indexing reviewed after the Search Console alerts on the showcase site: Google did not index forum
+topics or wiki pages, and was offered empty pages. And the welcome message, which was no longer sent.
+
+### Fixed
+
+- **Google no longer discards language-less content as duplicates**: a forum topic, a wiki page, a ticket, an event, a
+  classified ad, a recipe, a survey, a job offer, an award, a donation campaign — written once — answered under each of
+  the site's six languages, only the menus translated, and every address declared itself canonical. Google picked
+  another one and indexed none of them ("Duplicate, Google chose different canonical than user": 59 pieces of content
+  listed six times, 354 of the 580 addresses in the showcase site's sitemap). Their canonical is now in the site's
+  first language, the only one announced in `hreflang` and in the sitemap. The same goes for the pages made of such
+  content: the FAQ, the glossary, quotes, links, downloads, the shop and the event list.
+- **Empty pages are no longer offered to search engines**: the web radio with no stream or show, the guestbook with no
+  message and the donations page with no campaign were in the sitemap, in every language — "soft 404s" for Google.
+  They are left out while empty, and declare `noindex`.
+- **`/fr/forum/` now redirects permanently to `/fr/forum`**: the redirect of an address ending with a slash, or with a
+  doubled one, was temporary (302) and dropped everything after the `?`; it is permanent (301).
+- **The welcome message is sent again**: the Members module could not find the messaging module, and a new member
+  received nothing. A module loading another one (`$this->module(…)`) always got "nothing" — the same defect deprived
+  comment webhooks of the title and address of the commented content.
+- **Update backups no longer pile up**: the site always keeps the five most recent ones and removes the others after
+  thirty days, but closely spaced updates let them all through — the showcase site carried forty, 663 MB. No more than
+  ten ever remain now, whatever their age.
+
+### Changed
+
+- **`check-seo` compares languages with each other**: it samples the same path in each sitemap and reports the same
+  text served under several languages, each one canonical. It declared the showcase site sound; it now finds these
+  duplicates there. Modules can do the same: a sitemap entry marked `'sans_langue' => TRUE` is only listed in the
+  first language's sitemap, and `nf_seo_sans_langue()` sets the page's canonical ("Create a module" guide).
+
 ## [1.2.39] — 2026-10-06
 
 Pulse reviewed on the published demo: the forum on a phone no longer sticks its buttons together, in every

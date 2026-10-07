@@ -6,7 +6,9 @@ declare(strict_types=1);
  * peut lire (`forum.category_read`, jugé pour le groupe des visiteurs, pas pour qui demande le plan), hors
  * catégories réservées aux VIP, et hors forums de redirection, qui ne sont qu'un lien vers ailleurs.
  *
- * Le forum n'a pas de repli de langue : un forum se lit partout, sous son titre traduit quand il l'est.
+ * Le forum n'a pas de repli de langue : un forum se lit partout, sous son titre traduit quand il l'est. Un
+ * sujet, lui, n'a pas de langue à lui : il ne figure qu'au plan de la langue première du site, celle de sa
+ * canonique (nf_seo_sans_langue()).
  * Appelé par Settings\Controllers\Ajax::sitemap() dans la langue du plan.
  */
 
@@ -85,7 +87,7 @@ class Sitemap extends Controller_Module
 								->order_by('date DESC')
 								->get() as $sujet)
 			{
-				$adresses[] = ['adresse' => 'forum/topic/'.$sujet['topic_id'].'/'.url_title($sujet['title']), 'date' => $sujet['date']];
+				$adresses[] = ['adresse' => 'forum/topic/'.$sujet['topic_id'].'/'.url_title($sujet['title']), 'date' => $sujet['date'], 'sans_langue' => TRUE];
 			}
 		}
 

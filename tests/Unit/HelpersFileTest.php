@@ -113,4 +113,26 @@ final class HelpersFileTest extends TestCase
         $this->assertSame([], nf_sauvegardes_a_retirer($recentes, $maintenant), 'moins de cinq : rien ne part');
         $this->assertSame([], nf_sauvegardes_a_retirer(array_map(static fn () => $maintenant - $jour, $sauvegardes), $maintenant), 'toutes récentes : rien ne part');
     }
+
+    public function test_jamais_plus_de_dix_sauvegardes_meme_recentes(): void
+    {
+        $maintenant = strtotime('2026-11-01 12:00:00');
+        $sauvegardes = [];
+
+        // Quarante mises à jour en deux semaines : toutes ont moins de trente jours.
+        for ($i = 0; $i < 40; $i++)
+        {
+            $date = $maintenant - 3600 - $i * 8 * 3600;
+            $sauvegardes[date('YmdHis', $date).'.zip'] = $date;
+        }
+
+        $sauvegardes['mon-export.zip'] = $maintenant - 3600;
+
+        $retirer = nf_sauvegardes_a_retirer($sauvegardes, $maintenant);
+
+        $this->assertCount(30, $retirer, 'dix restent, les trente plus anciennes partent malgré leur âge');
+        $this->assertNotContains(array_key_first($sauvegardes), $retirer, 'la plus récente reste');
+        $this->assertNotContains('mon-export.zip', $retirer, 'un fichier que la sauvegarde n\'a pas fait n\'est jamais compté ni retiré');
+        $this->assertSame([], nf_sauvegardes_a_retirer(array_slice($sauvegardes, 0, 10, TRUE), $maintenant), 'dix récentes : rien ne part');
+    }
 }

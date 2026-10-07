@@ -21,10 +21,12 @@ class Sitemap extends Controller_Module
 
 		foreach ($this->db->select('name', 'updated_at')->from('nf_donations_campaigns')->where('status', 'active')->get() as $campagne)
 		{
-			$adresses[] = ['adresse' => 'donations/'.$campagne['name'], 'date' => $campagne['updated_at']];
+			$adresses[] = ['adresse' => 'donations/'.$campagne['name'], 'date' => $campagne['updated_at'], 'sans_langue' => TRUE];
 		}
 
-		if (count($adresses) !== 1)
+		// Une campagne seule : la page des dons y redirige. Aucune : elle ne dirait que « rien pour
+		// l'instant », une page vide (« soft 404 ») pour Google — la vitrine en annonçait six (2026-10-07).
+		if (count($adresses) > 1)
 		{
 			array_unshift($adresses, ['adresse' => 'donations']);
 		}

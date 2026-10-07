@@ -58,8 +58,10 @@ class Index extends Controller_Module
 
 	public function _page($page)
 	{
-		// Le titre et la description que la page donne aux moteurs, si elle en donne.
+		// Le titre et la description que la page donne aux moteurs, si elle en donne. Une page du wiki n'a
+		// pas de langue à elle : sa canonique est dans la langue première du site.
 		nf_seo_contenu('wiki', (int) $page['id']);
+		nf_seo_sans_langue();
 
 		$this->title($page['title'])->icon('fas fa-book')->breadcrumb();
 

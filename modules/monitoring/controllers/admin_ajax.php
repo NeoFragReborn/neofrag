@@ -695,7 +695,8 @@ class Admin_Ajax extends Controller_Module
 		unlink($dump);
 
 		// La nouvelle archive écrite, les anciennes se retirent : les cinq plus récentes restent
-		// toujours, les autres partent passé trente jours (nf_sauvegardes_a_retirer()).
+		// toujours, les autres partent passé trente jours, et jamais plus de dix ne restent
+		// (nf_sauvegardes_a_retirer()).
 		$dates = [];
 
 		foreach (glob('backups/*.zip') ?: [] as $chemin)

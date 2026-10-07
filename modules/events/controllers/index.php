@@ -13,6 +13,10 @@ class Index extends Controller_Module
 {
 	public function index($events)
 	{
+		// La liste est faite des événements, qui n'ont pas de langue à eux : sa canonique est dans la langue
+		// première du site (et celle de ses filtres, qui passent tous par ici).
+		nf_seo_sans_langue();
+
 		$panels = $this->_filters();
 
 		$types = $this->model('types')->get_types();
@@ -116,6 +120,9 @@ class Index extends Controller_Module
 
 	public function _event($event_id, $title, $type_id, $date, $date_end, $description, $private_description, $location, $image_id, $published, $type, $mode_id, $webtv, $website, $mode_title)
 	{
+		// Un événement n'a pas de langue à lui : sa canonique est dans la langue première du site.
+		nf_seo_sans_langue();
+
 		$this	->title($title)
 				->breadcrumb($title)
 				->table()
