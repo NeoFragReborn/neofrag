@@ -63,7 +63,7 @@
 				][$r['status']] ?? 'text-bg-secondary';
 			?>
 				<tr>
-					<td><small class="text-muted" title="<?php echo nf_texte($r['created_at']) ?>"><?php echo time_span(strtotime($r['created_at'])) ?></small></td>
+					<td><small class="text-muted" title="<?php echo nf_texte(nf_date_heure($r['created_at'])) ?>"><?php echo time_span(strtotime($r['created_at'])) ?></small></td>
 					<td><span class="badge <?php echo $status_class ?>"><?php echo nf_texte($this->module('moderation')->libelle('statut', $r['status'])) ?></span></td>
 					<td><span class="badge text-bg-light"><?php echo nf_texte($this->module('moderation')->libelle('cible', $r['target_type'])) ?></span><br><small class="text-muted"><?php echo nf_texte($r['target_id']) ?></small></td>
 					<td>

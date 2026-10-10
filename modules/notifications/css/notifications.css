@@ -1,16 +1,44 @@
-.nf-notif .nf-notif-badge {
+/*
+ * La cloche des notifications (Notifications::bell()), dans la barre du compte de chaque thème.
+ *
+ * Les règles de position ont une priorité BASSE (:where) : cette feuille arrive après celle du thème, et à priorité
+ * égale elle l'emportait — la pastille que chaque thème pose dans le coin de la cloche retombait en ligne, décalée,
+ * au milieu du bouton (Extend, Blockcraft, Chronique, Forge, Granite, Pulse ; signalé sur la démo, 2026-10-08).
+ * Un thème qui ne dit rien garde ces valeurs ; un thème qui place la pastille n'a plus à se battre contre elles.
+ */
+:where(.nf-notif) > .nav-link {
 	position: relative;
-	top: -8px;
-	left: -4px;
+}
+
+/* Par défaut, la pastille est POSÉE sur le coin du bouton, hors du flux : à côté de la cloche, elle la décentrait. */
+:where(.nf-notif) .nf-notif-badge {
+	position: absolute;
+	top: -6px;
+	right: -8px;
 	font-size: 10px;
 	padding: 2px 5px;
 }
 
-.nf-notif-menu {
+/* La cloche au centre de son bouton, qu'il y ait une pastille ou non. Le pont (nf-bs5-bridge) donne une marge droite à
+   toute icône qui n'est pas seule dans son lien (`i.icon:only-child` l'en dispense) : avec la pastille, la cloche
+   n'était plus seule, prenait 0,4 em de marge et glissait de 3 px vers la gauche (signalé sur la démo, 2026-10-08). */
+.nf-notif > .nav-link > i.icon {
+	margin-right: 0;
+}
+
+/* Plus étroite que le thème ne le veut pour ses autres menus (Extend : 240 px), « Notifications » et « Tout marquer comme
+   lu » se touchaient : la liste garde sa largeur, et l'en-tête un écart, quitte à passer à la ligne. */
+.dropdown-menu.nf-notif-menu {
 	min-width: 300px;
-	max-width: 360px;
+	max-width: min(360px, calc(100vw - 24px));
 	max-height: 420px;
 	overflow-y: auto;
+}
+
+.nf-notif-menu .dropdown-header {
+	flex-wrap: wrap;
+	gap: 4px 16px;
+	white-space: normal;
 }
 
 .nf-notif-item {

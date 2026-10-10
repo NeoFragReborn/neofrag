@@ -104,6 +104,11 @@ var modal = new function(){
 								modalEl.addEventListener('hidden.bs.modal', function(){
 									modalEl.remove();
 									delete _modals[url];
+									// La suite dans une autre fenêtre, que le serveur nomme : le code de la double authentification
+									// après le mot de passe. Chargée APRÈS la fermeture, et à neuf (l'adresse peut être la même).
+									if (typeof data.ouvrir === 'string' && data.ouvrir !== ''){
+										modal.load(data.ouvrir);
+									}
 								});
 								bootstrap.Modal.getOrCreateInstance(modalEl).hide();
 							}

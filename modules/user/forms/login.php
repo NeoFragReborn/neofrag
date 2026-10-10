@@ -83,6 +83,17 @@ $this	->compact()
 					$this->session->set('totp', 'pending_remember', in_array('on', $data['remember']) ? 1 : 0);
 					$this->session->set('totp', 'pending_expires', time() + 300);
 					$auditLog->log('login.password_ok_totp_pending', ['user_id' => $user->id, 'username' => $user->username]);
+
+					// Le code se demande aussitôt : la fenêtre du mot de passe se ferme et celle du code s'ouvre à sa place
+					// (js/modal.js, `ouvrir`). La page se rechargeait sans rien rouvrir, et il fallait recliquer sur
+					// « Se connecter » pour voir apparaître le code (signalé sur la démo, 2026-10-08). Sans JavaScript, la
+					// fenêtre du code s'ouvre au rechargement, comme après une connexion par un compte externe.
+					if ($this->url->ajax())
+					{
+						$this->output->json(['modal' => 'dispose', 'ouvrir' => url('ajax/user/login')]);
+					}
+
+					$this->session->append('modals', 'ajax/user/login');
 					refresh();
 				}
 				else

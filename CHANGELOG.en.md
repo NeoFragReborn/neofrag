@@ -12,6 +12,24 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.45] — 2026-10-08
+
+The notification bell, reviewed in every theme, and two-factor login in one go.
+
+### Fixed
+
+- **With two-factor authentication, the code is asked for right after the password**: the login window gives way to
+  the code window, without reloading the page. It used to close, and you had to click “Log in” again to see the code;
+  from the member area form, the code window opens on reload.
+- **The bell badge sits in its corner** in every theme: the module's stylesheet, loaded after the theme's, put it
+  back inline, and in Extend and Forge it landed in the middle of the button, on the bell.
+- **The bell stays in the middle of its button** when a badge sits on it: an icon that was no longer alone in its
+  link took a right margin, and slid three pixels.
+- **“Notifications” and “Mark all as read” no longer touch** at the top of the list: it keeps its width when the theme
+  narrows its menus, and the two texts keep a gap, wrapping if needed.
+- **Dates are shown in the visitor's language format and time zone** in the bell list, the revision history and a
+  report's tooltip, which showed the raw database timestamp.
+
 ## [1.2.44] — 2026-10-08
 
 A fix for 1.2.43.

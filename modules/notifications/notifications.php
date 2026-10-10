@@ -366,7 +366,9 @@ class Notifications extends Module
 			{
 				$list .= '<a class="dropdown-item nf-notif-item'.(empty($n['is_read']) ? ' unread' : '').'" href="'.url($n['url'] ?: 'user/notifications').'" data-notif-id="'.(int)$n['id'].'">'
 					.'<span class="nf-notif-title">'.nf_texte($n['title']).'</span>'
-					.'<small class="text-muted d-block">'.nf_texte($n['created_at']).'</small>'
+					// Dans le fuseau du visiteur et le format de sa langue, comme la page « Mes notifications » : la liste
+					// montrait l'horodatage brut de la base (« 2026-10-08 14:57:19 », signalé sur la démo le 2026-10-08).
+					.'<small class="text-muted d-block">'.nf_date_heure($n['created_at']).'</small>'
 					.'</a>';
 			}
 		}

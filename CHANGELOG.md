@@ -10,6 +10,24 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.45] — 2026-10-08
+
+La cloche des notifications, revue dans tous les thèmes, et la connexion à double authentification d'un seul geste.
+
+### Corrigé
+
+- **Avec la double authentification, le code se demande aussitôt après le mot de passe** : la fenêtre de connexion
+  laisse place à celle du code, sans recharger la page. Elle se fermait, et il fallait recliquer sur « Se connecter »
+  pour voir apparaître le code ; depuis le formulaire de l'espace membre, la fenêtre du code s'ouvre au rechargement.
+- **La pastille de la cloche se pose dans son coin**, dans tous les thèmes : la feuille du module, chargée après
+  celle du thème, la replaçait en ligne, et dans Extend et Forge elle tombait au milieu du bouton, sur la cloche.
+- **La cloche reste au centre de son bouton** quand une pastille s'y pose : une icône qui n'était plus seule dans son
+  lien prenait une marge à droite, et glissait de trois pixels.
+- **« Notifications » et « Tout marquer comme lu » ne se touchent plus** en tête de la liste : elle garde sa largeur
+  quand le thème rétrécit ses menus, et les deux textes gardent un écart, quitte à passer à la ligne.
+- **Les dates s'affichent dans le format de la langue et le fuseau du visiteur** dans la liste de la cloche,
+  l'historique des révisions et l'infobulle d'un signalement, qui montraient l'horodatage brut de la base.
+
 ## [1.2.44] — 2026-10-08
 
 Un correctif de la 1.2.43.

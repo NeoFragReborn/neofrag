@@ -173,7 +173,7 @@ class Revisions extends Module
 
 			$out .= '<tr>'
 				.'<td>'.(int)$row['id'].'</td>'
-				.'<td><small>'.nf_texte($row['created_at']).'</small></td>'
+				.'<td><small>'.nf_date_heure($row['created_at']).'</small></td>'
 				.'<td>'.$author.'</td>'
 				.'<td><small>'.nf_texte($row['summary']).($row['lang'] ? ' ('.nf_texte($row['lang']).')' : '').'</small></td>'
 				.'<td>'.$preview.'</td>'
