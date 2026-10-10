@@ -269,23 +269,21 @@ if (is_file($catalogue))
     }
 }
 
-if (array_sum($offert) > 0 && is_file($landing = $root.'/themes/vitrine/views/landing.tpl.php'))
+// L'accueil de la vitrine les COMPTE dans le catalogue publié (m25, 2026-10-10) : il ne doit plus porter de chiffre
+// écrit à la main, ni dans le haut de page, ni dans la feuille de route.
+if (is_file($landing = $root.'/themes/vitrine/views/landing.tpl.php'))
 {
     $html = (string) file_get_contents($landing);
+    $verifie++;
 
-    foreach (['module' => 'Modules', 'widget' => 'Widgets', 'theme' => 'Thèmes'] as $type => $libelle)
+    if (!str_contains($html, "NEOFRAG_CMS.'/marketplace/catalog.json'"))
     {
-        $verifie++;
+        $erreurs[] = 'themes/vitrine/views/landing.tpl.php — ne lit plus le catalogue publié (marketplace/catalog.json) : d’où viennent ses chiffres ?';
+    }
 
-        // Le libellé passe par lang() depuis que la vitrine est traduite : `echo $this->lang('Modules')`.
-        if (!preg_match('#<div class="n">(\d+)</div><div class="l">(?:<\?php echo \$this->lang\(\')?'.preg_quote($libelle, '#').'(?:\'\) \?>)?</div>#u', $html, $m))
-        {
-            $erreurs[] = "themes/vitrine/views/landing.tpl.php — chiffre « {$libelle} » introuvable dans le hero.";
-        }
-        elseif ((int) $m[1] !== $offert[$type])
-        {
-            $erreurs[] = sprintf('themes/vitrine/views/landing.tpl.php — le hero annonce %d %s, le catalogue marketplace en offre %d', (int) $m[1], $libelle, $offert[$type]);
-        }
+    if (preg_match('#<div class="n">\d+</div>#', $html) || preg_match("#lang\('%d modules & %d widgets', \d#", $html))
+    {
+        $erreurs[] = 'themes/vitrine/views/landing.tpl.php — un nombre de modules, de widgets ou de thèmes écrit à la main : le compter dans le catalogue ($vt_offert).';
     }
 }
 

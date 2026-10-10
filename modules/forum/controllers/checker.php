@@ -13,10 +13,25 @@ class Checker extends Module_Checker
 {
 	public function _forum($forum_id, $title, $page = '')
 	{
+		// Vérifié par son titre par défaut, que la vérification accepte toujours ; elle rend celui de la langue servie,
+		// que portent ses liens. Une adresse au mauvais titre — un titre changé, une autre langue — mène à la bonne au
+		// lieu de répondre 404 (m06).
+		$demande = (string) $title;
+		$defaut  = nf_titre_lu($this->db->select('title')->from('nf_forum')->where('forum_id', (int) $forum_id)->row());
+
+		if ($defaut === '')
+		{
+			return;
+		}
+
+		$title = url_title($defaut);
+
 		if (($forum = $this->model()->check_forum($forum_id, $title)) !== FALSE)
 		{
 			if ($this->access('forum', 'category_read', $forum['category_id']))
 			{
+				nf_bon_titre($demande, (string) $title, 'forum/'.(int) $forum_id, (string) $page);
+
 				// Forum « lien de redirection » : seulement si une URL réelle est définie. Une chaîne
 				// VIDE (cas par défaut, nf_forum_url.url = '') n'est PAS une redirection — sinon
 				// header('Location: ') recharge la même URL → boucle infinie. (Le modèle teste déjà
@@ -106,10 +121,24 @@ class Checker extends Module_Checker
 
 	public function _topic($topic_id, $title, $page = '')
 	{
+		// Vérifié avec son VRAI titre ; l'adresse au mauvais titre — le titre changé depuis — mène à la bonne au lieu de
+		// répondre 404 (m06).
+		$demande = (string) $title;
+		$vrai    = nf_titre_lu($this->db->select('title')->from('nf_forum_topics')->where('topic_id', (int) $topic_id)->row());
+
+		if ($vrai === '')
+		{
+			return;
+		}
+
+		$title = url_title($vrai);
+
 		if ($topic = $this->model()->check_topic($topic_id, $title))
 		{
 			if ($this->access('forum', 'category_read', $topic['category_id']))
 			{
+				nf_bon_titre($demande, $vrai, 'forum/topic/'.(int) $topic_id, (string) $page);
+
 				return [
 					$topic_id,
 					$title,

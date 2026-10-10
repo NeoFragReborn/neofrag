@@ -557,6 +557,8 @@ class Admin extends Controller_Module
 					'source' => [
 						'label'       => $this->lang('Ancienne adresse'),
 						'description' => $this->lang('Le chemin qui ne répond plus : « ancienne-page », « /fr/ancienne-page », ou l’adresse d’un ancien site (« page.php »). La langue et les paramètres sont ignorés.'),
+						// Déjà remplie quand on vient du relevé des pages introuvables (Monitoring) : « Rediriger ».
+						'value'       => mb_substr(trim((string) ($_GET['source'] ?? '')), 0, 255),
 						'rules'       => 'required',
 						'check'       => function($saisie) use ($langues){
 							if (nf_redirection_source(nf_seo_saisie($saisie), $langues) === '')
@@ -607,7 +609,9 @@ class Admin extends Controller_Module
 			: '<p class="text-muted mb-0">'.$this->lang('Aucune redirection : une adresse inconnue répond « Page introuvable ».').'</p>';
 
 		return '<div class="settings-section-back"><a href="'.url('admin/settings/seo').'" class="btn btn-secondary btn-sm"><i class="fas fa-arrow-left"></i> '.$this->lang('Référencement').'</a></div>'
-			.$this->admin_card('fas fa-route', $this->lang('Redirections'), $tableau, $this->lang('Une ancienne adresse mène à la nouvelle : le classement acquis ne se perd pas.'))
+			.$this->admin_card('fas fa-route', $this->lang('Redirections'), $tableau
+				.'<p class="small text-body-secondary mt-3 mb-0"><i class="fas fa-unlink"></i> '.$this->lang('Les adresses à rediriger : le relevé des %s, dans le Monitoring.', '<a href="'.url('admin/monitoring/introuvables').'">'.$this->lang('pages introuvables').'</a>').'</p>',
+				$this->lang('Une ancienne adresse mène à la nouvelle : le classement acquis ne se perd pas.'))
 			.$this->admin_card('fas fa-plus', $this->lang('Ajouter une redirection'), $this->form()->display());
 	}
 

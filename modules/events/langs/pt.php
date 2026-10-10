@@ -63,8 +63,6 @@ return [
 	'f32268d3' => 'Tipos de evento configurados',
 	'f48cb465' => 'Novo evento',
 	'fd283f69' => 'Calendário',
-	'f950d55c' => 'Eventos e jogos de uma guilda ou de uma equipa de eSports: convites com resposta presente, ausente ou talvez, resultados por manga, recorrência, lembretes.',
-	'e80c902d' => 'Número de eventos por página',
 	'46d72986' => 'Ser notificado por mensagem privada dos convites',
 	'b1a096a2' => 'Eventos',
 	'52c9bbab' => 'Modificar',
@@ -163,4 +161,8 @@ return [
 	'49a80df0' => 'Online',
 	'48b614a4' => 'Offline',
 	'ff8f2a30' => 'Administrador',
+	'0432964b' => 'Os eventos de uma comunidade: convites com resposta presente, ausente ou talvez, recorrência, lembretes; e, com os módulos Jogos e Equipas, as partidas e as suas pontuações por ronda.',
+	'e981b5d1' => 'Padrão',
+	'bb9aea01' => 'Partida',
+	'cbf0a999' => 'Número de eventos por página',
 ];

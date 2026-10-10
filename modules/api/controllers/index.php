@@ -443,6 +443,9 @@ class Index extends Controller_Module
 			'api_token_id'  => Api::$cle_courante,
 			// Les fonctionnalités : allumées ou non, et leurs réglages.
 			'features'      => (object) $modele->config_fonctionnalites(),
+			// Le texte d'un ticket montre les images que le site garde (nf_texte_et_images(), m10) : le bot y range celles
+			// qu'on joint sur Discord. Absent avant la 1.2.49, et le bot garde alors des liens vers Discord.
+			'tickets_images' => TRUE,
 			// Les textes que le bot poste sur Discord, dans les six langues : il répond à chacun dans la
 			// sienne, et écrit dans les salons dans celle du site (`lang`).
 			'lang'          => $this->_langue_du_site(),
@@ -1609,7 +1612,7 @@ class Index extends Controller_Module
 			$this->_erreur($images::statut($controle), $controle, $images::message($controle));
 		}
 
-		$relatif = $images::chemin($controle['type'], time(), (string) hash_file('sha256', $temporaire));
+		$relatif = $images::chemin($controle['type'], time(), (string) hash_file('sha256', $temporaire), $temporaire);
 		$absolu  = NEOFRAG_CMS.'/'.$relatif;
 
 		if (!is_file($absolu))

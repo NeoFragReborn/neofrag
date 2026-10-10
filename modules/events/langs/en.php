@@ -63,8 +63,6 @@ return [
 	'f32268d3' => 'Configured event types',
 	'f48cb465' => 'New event',
 	'fd283f69' => 'Calendar',
-	'f950d55c' => 'Events and matches for a guild or an esports team: invitations answered present, absent or maybe, scores per round, recurrence, reminders.',
-	'e80c902d' => 'Number of events per page',
 	'46d72986' => 'Be notified by private message of invitations',
 	'b1a096a2' => 'Events',
 	'52c9bbab' => 'Edit',
@@ -163,4 +161,8 @@ return [
 	'49a80df0' => 'Online',
 	'48b614a4' => 'Offline',
 	'ff8f2a30' => 'Administrator',
+	'0432964b' => 'A community\'s events: invitations answered present, absent or maybe, recurrence, reminders; and, with the Games and Teams modules, matches and their scores per round.',
+	'e981b5d1' => 'Standard',
+	'bb9aea01' => 'Match',
+	'cbf0a999' => 'Number of events per page',
 ];

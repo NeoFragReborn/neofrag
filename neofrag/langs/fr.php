@@ -531,4 +531,6 @@ return [
 	'01a2ffb8' => 'Cette sanction se lève par un modérateur plus haut placé.',
 	'5a853422' => 'Médiation proposée',
 	'62d0da54' => 'Médiation refusée par celui qui a signalé',
+	'63c9a7e9' => 'Relevé des pages introuvables vidé',
+	'f372520b' => 'Images abandonnées de l’éditeur effacées',
 ];

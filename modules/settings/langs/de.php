@@ -267,4 +267,6 @@ return [
 	'b5cf4695' => 'Inaktive Konten',
 	'd35683b8' => 'Ein Konto ohne Besuch seit dieser Anzahl von Jahren wird gelöscht; eine E-Mail warnt das Mitglied einen Monat vorher, und ein Besuch hebt alles auf. Administratoren werden nie gelöscht. 0, um nie zu löschen.',
 	'68b7ca29' => 'Gib eine Anzahl von Jahren zwischen 0 und 20 an.',
+	'bfeaf8bc' => 'Umzuleitende Adressen: die Liste der %s, im Monitoring.',
+	'9339febd' => 'nicht gefundenen Seiten',
 ];

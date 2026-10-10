@@ -28,6 +28,7 @@
 		<?php echo icon('fas fa-exclamation-triangle').' '.$this->lang('Aucune permission effective. Cet utilisateur n\'a aucun rôle assigné directement ni via ses groupes.') ?>
 	</div>
 <?php else: ?>
+	<div class="table-responsive">
 	<table class="table table-sm table-hover">
 		<thead>
 			<tr>
@@ -64,4 +65,5 @@
 			<?php endforeach ?>
 		</tbody>
 	</table>
+	</div>
 <?php endif ?>

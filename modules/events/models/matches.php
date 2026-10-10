@@ -9,11 +9,30 @@ namespace NF\Modules\Events\Models;
 
 use NF\NeoFrag\Loadables\Model;
 
+// couplage(games): les matchs lisent jeux, modes et cartes — seulement quand possibles() dit Jeux et Équipes installés (m17)
+// couplage(teams): l'équipe d'un match — même garde, get_match_info() ne lit rien sans elle
 class Matches extends Model
 {
+	/**
+	 * Les matchs — une équipe du site contre un adversaire, sur un jeu, en manches — demandent les modules Jeux et
+	 * Équipes, installés et actifs (m17, 2026-10-10). Sans eux, le module Événements sert une association, un club :
+	 * un événement de type « match » s'affiche comme un événement, et rien ne touche aux tables des jeux.
+	 */
+	public static function possibles(): bool
+	{
+		static $possibles = NULL;
+
+		return $possibles ??= ($jeux = NeoFrag()->module('games')) && $jeux->is_enabled() && ($equipes = NeoFrag()->module('teams')) && $equipes->is_enabled();
+	}
+
 	public function get_match_info($event_id)
 	{
 		static $result = [];
+
+		if (!self::possibles())
+		{
+			return FALSE;
+		}
 
 		if (!isset($result[$event_id]))
 		{

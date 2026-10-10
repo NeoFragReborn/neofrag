@@ -91,7 +91,7 @@ return [
 	'e2c8f589' => 'Stato',
 	'8088964a' => 'Visualizzazione',
 	'3d3305f0' => 'Elenco',
-	'd3fe1369' => 'Palinsesto',
+	'd3fe1369' => 'Griglia',
 	'45002a02' => 'Nessuna estensione corrisponde.',
 	'79e64a05' => '<b>NeoFrag %s</b> è disponibile (stai usando %s): <a href="%s">Monitoring</a> lo aggiorna con un clic, con un backup prima di scrivere.',
 	'62ad9179' => '%d addon del marketplace richiedono una versione più recente di NeoFrag: aggiorna prima il tuo sito.',

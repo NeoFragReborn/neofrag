@@ -86,7 +86,7 @@ return [
 	'58c235d5' => 'No report with these criteria.',
 	'9da25729' => 'Target (user)',
 	'e16ce76b' => 'Comment',
-	'c6dac5c5' => 'Anonymised',
+	'c6dac5c5' => 'Anonymized',
 	'09fe6554' => 'View the content in context',
 	'ea57d678' => 'No context URL provided. See the reporter\'s comment to locate the content.',
 	'9a46882a' => 'No context URL',

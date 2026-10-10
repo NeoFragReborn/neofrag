@@ -470,6 +470,13 @@ const CONCATENATIONS = "/'(?:float|text|pull|ml|mr|pl|pr|input-group)-'\\s*\\./"
  */
 const PASTILLES_FABRIQUEES = "/badge-['\"]\\s*(?:\\.|\\+)|badge-<\\?(?:php|=)/";
 
+/*
+ * La colonne de Bootstrap 3 FABRIQUÉE : `col-xs-<?php echo … ?>` dans une vue, `'col-xs-'.$n` en PHP. Le nombre n'existe
+ * qu'à l'exécution, et la liste des classes mortes ne voyait rien : la fiche d'un match a gardé une colonne `col-xs-`,
+ * qui n'existe plus en Bootstrap 5 — l'adversaire passait sous l'équipe (2026-10-10).
+ */
+const GRILLE_BS3_FABRIQUEE = "/\\bcol-xs-(?:<\\?(?:php|=)|['\"]\\s*(?:\\.|\\+))/";
+
 /** Les fichiers où une classe peut être employée — sous la racine donnée, qui peut être un faux produit. */
 function fichiers_produit(string $racine, array $extensions, array $dossiers): array
 {
@@ -603,14 +610,17 @@ function analyser(string $racine): array
             }
         }
 
-        // ── 3 bis. La pastille fabriquée ─────────────────────────────────────────
-        if (preg_match_all(PASTILLES_FABRIQUEES, str_ends_with($fichier, '.php') ? nf_sans_commentaires($contenu) : $contenu, $m, PREG_OFFSET_CAPTURE))
+        // ── 3 bis. La pastille et la colonne de Bootstrap 3 fabriquées ───────────
+        foreach ([PASTILLES_FABRIQUEES, GRILLE_BS3_FABRIQUEE] as $fabrique)
         {
-            foreach ($m[0] as $trouve)
+            if (preg_match_all($fabrique, str_ends_with($fichier, '.php') ? nf_sans_commentaires($contenu) : $contenu, $m, PREG_OFFSET_CAPTURE))
             {
-                $ligne     = substr_count(substr($contenu, 0, $trouve[1]), "\n") + 1;
-                $lignes    = explode("\n", $contenu);
-                $concats[] = [$relatif, $ligne, trim($lignes[$ligne - 1] ?? '')];
+                foreach ($m[0] as $trouve)
+                {
+                    $ligne     = substr_count(substr($contenu, 0, $trouve[1]), "\n") + 1;
+                    $lignes    = explode("\n", $contenu);
+                    $concats[] = [$relatif, $ligne, trim($lignes[$ligne - 1] ?? '')];
+                }
             }
         }
 

@@ -671,4 +671,6 @@ return [
 	'01a2ffb8' => 'Diese Sanktion muss ein höhergestellter Moderator aufheben.',
 	'5a853422' => 'Schlichtung vorgeschlagen',
 	'62d0da54' => 'Schlichtung von der meldenden Person abgelehnt',
+	'63c9a7e9' => 'Liste der nicht gefundenen Seiten geleert',
+	'f372520b' => 'Verwaiste Bilder des Editors gelöscht',
 ];

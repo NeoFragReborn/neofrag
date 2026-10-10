@@ -18,7 +18,7 @@ return [
 	'75a94c9e' => 'l, F j',
 	'd7321b72' => 'In %d day|In %d days',
 	'82915664' => 'All day',
-	'a719492a' => 'The calendar’s upcoming events, with their date and colour; the current week, its event days marked and the next event; or the next event highlighted, its date in large print; a link leads to the full calendar.',
+	'a719492a' => 'The calendar’s upcoming events, with their date and color; the current week, its event days marked and the next event; or the next event highlighted, its date in large print; a link leads to the full calendar.',
 	'e9297965' => 'The next event',
 	'eac206a9' => 'See the event',
 ];

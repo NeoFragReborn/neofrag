@@ -90,7 +90,7 @@ class Ajax extends Controller_Module
 			$this->_editeur_reponse(Editeur_Images::statut($controle), ['error' => Editeur_Images::message($controle)]);
 		}
 
-		$relatif = Editeur_Images::chemin($controle['type'], time());
+		$relatif = Editeur_Images::chemin($controle['type'], time(), '', $temporaire);
 		$absolu  = NEOFRAG_CMS.'/'.$relatif;
 
 		dir_create(dirname($absolu));
@@ -459,7 +459,9 @@ class Ajax extends Controller_Module
 
 	public function _lost_password($token)
 	{
-		return $this->form2('password_required')
+		// Le pseudo, que la règle du mot de passe compare aussi à la réinitialisation : ce formulaire n'a pas de
+		// champ pseudo, et un mot de passe égal au pseudo passait (relecture du journal des versions, 2026-10-10).
+		return $this->form2('password_required', ['username' => (string) $token->user->username])
 					->compact()
 					->success(function($data) use ($token){
 						$user = $token->delete()->user;

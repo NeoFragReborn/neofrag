@@ -2,7 +2,7 @@
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title">Sauvegarde</h5>
+				<h5 class="modal-title"><?php echo $this->lang('Sauvegarde') ?></h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<?php echo $this->lang('Fermer') ?>"></button>
 			</div>
 			<div class="modal-body">
@@ -63,10 +63,10 @@
 <div class="row">
 	<div class="col-12 col-lg-6 text-center">
 		<h5 id="storage-free" class="monitoring-storage-title"><?php echo icon('fas fa-spinner fa-spin') ?></h5>
-		Libre
+		<?php echo $this->lang('Libre') ?>
 	</div>
 	<div class="col-12 col-lg-6 text-center">
 		<h5 id="storage-total" class="monitoring-storage-title"><?php echo icon('fas fa-spinner fa-spin') ?></h5>
-		Total
+		<?php echo $this->lang('Total') ?>
 	</div>
 </div>

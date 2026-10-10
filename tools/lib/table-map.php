@@ -90,6 +90,6 @@ return [
         'nf_log_db', 'nf_log_i18n', 'nf_migrations', 'nf_addon_migrations',
         // Le référencement de chaque site : du cœur, comme Paramètres → Référencement —
         // les titres par contenu de tous les modules, les redirections, les adresses suivies pour IndexNow.
-        'nf_seo_meta', 'nf_redirects', 'nf_indexnow',
+        'nf_seo_meta', 'nf_redirects', 'nf_pages_introuvables', 'nf_indexnow',
     ],
 ];

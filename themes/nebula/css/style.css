@@ -953,6 +953,9 @@ body::before {
 
 /* Cartes & panneaux : touche nebula */
 .nb-main .card { border-radius: 16px; border-color: var(--fg-border); background: rgba(255, 255, 255, 0.025); }
+/* Une carte « transparente » le reste dans la zone principale : le voile ci-dessus lui donnait un fond, et la pagination
+   ou le bouton « Suivre », posés sans marge, en touchaient le bord (check-mise-en-page, 2026-10-10). */
+.nb-main .card.card-transparent { background: transparent; border: 0; box-shadow: none; }
 .nb-main .card.panel-default > .card-header, .nb-main .card.panel-header > .card-header, .nb-main .card.panel-color > .card-header { font-family: "Space Grotesk", sans-serif; letter-spacing: .03em; }
 .nb-main .card.panel-default:hover, .nb-main .card.panel-header:hover { border-color: rgba(45, 212, 191, 0.28); transition: border-color .2s; }
 

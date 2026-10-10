@@ -671,4 +671,6 @@ return [
 	'01a2ffb8' => 'Questa sanzione va revocata da un moderatore di grado superiore.',
 	'5a853422' => 'Mediazione proposta',
 	'62d0da54' => 'Mediazione rifiutata da chi ha segnalato',
+	'63c9a7e9' => 'Elenco delle pagine non trovate svuotato',
+	'f372520b' => 'Immagini abbandonate dell’editor eliminate',
 ];

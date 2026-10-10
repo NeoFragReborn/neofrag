@@ -63,8 +63,6 @@ return [
 	'f32268d3' => 'Tipi di evento configurati',
 	'f48cb465' => 'Nuovo evento',
 	'fd283f69' => 'Calendario',
-	'f950d55c' => 'Eventi e partite di una gilda o di un team eSport: inviti con risposta presente, assente o forse, punteggi per round, ricorrenza, promemoria.',
-	'e80c902d' => 'Numero di eventi per pagina',
 	'46d72986' => 'Essere avvisato tramite messaggio privato delle inviti',
 	'b1a096a2' => 'Eventi',
 	'52c9bbab' => 'Modifica',
@@ -163,4 +161,8 @@ return [
 	'49a80df0' => 'Online',
 	'48b614a4' => 'Offline',
 	'ff8f2a30' => 'Amministratore',
+	'0432964b' => 'Gli eventi di una comunità: inviti con risposta presente, assente o forse, ricorrenza, promemoria; e, con i moduli Giochi e Squadre, le partite e i loro punteggi per round.',
+	'e981b5d1' => 'Standard',
+	'bb9aea01' => 'Partita',
+	'cbf0a999' => 'Numero di eventi per pagina',
 ];

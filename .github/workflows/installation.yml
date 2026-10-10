@@ -6,8 +6,7 @@ name: Installation
 # avec le mot de passe saisi, le journal PHP muet — sous la plus ancienne et la plus récente version
 # de PHP prise en charge.
 #
-# Sur un dépôt public, les minutes sont gratuites : il joue chaque semaine. Sur un dépôt privé, à la
-# main seulement.
+# Chaque semaine, dans le dépôt public, où les minutes sont gratuites ; et à la main.
 on:
   schedule:
     - cron: '41 4 * * 1'
@@ -23,7 +22,6 @@ concurrency:
 jobs:
   assistant:
     name: Assistant · PHP ${{ matrix.php }} · paquet ${{ matrix.variante }}
-    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     strategy:
@@ -60,9 +58,6 @@ jobs:
           coverage: none
       # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       # Le vendor d'un paquet : sans les dépendances de développement.
       - name: composer install (production)
         run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
@@ -75,7 +70,6 @@ jobs:
   # réécriture et les en-têtes (`check-serveur-web`) et les flux critiques (`check-smoke`).
   serveur-web:
     name: ${{ matrix.serveur }} · PHP ${{ matrix.php }}
-    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     strategy:
@@ -99,9 +93,6 @@ jobs:
           extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: composer install (production)
         run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
       # Le serveur (www-data) écrit dans l'arbre : cache, journaux, configuration, envois.
@@ -149,7 +140,6 @@ jobs:
 
   reglages:
     name: Réglages des addons · PHP ${{ matrix.php }}
-    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
@@ -183,9 +173,6 @@ jobs:
           extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: composer install (production)
         run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
       - name: Installation complète (tous les addons, un administrateur)
@@ -198,7 +185,6 @@ jobs:
   # marketplace, puis par « Ajouter » pour ce qu'elle ne propose pas.
   extensions:
     name: Les addons du marketplace sur un site « Cœur seul »
-    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     services:
@@ -226,9 +212,6 @@ jobs:
           extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: composer install (production)
         run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
       - name: Chaque addon du catalogue s'installe
@@ -237,7 +220,6 @@ jobs:
   # À un PHP auquel manque une extension exigée, l'assistant et l'installeur disent laquelle.
   prerequis:
     name: Prérequis à l'envers · PHP ${{ matrix.php }}
-    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
@@ -252,9 +234,6 @@ jobs:
           extensions: mbstring, intl, mysqli, gd, zip, curl
           coverage: none
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: composer install (production)
         run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
       - name: Chaque extension exigée, retirée tour à tour
@@ -264,7 +243,6 @@ jobs:
   # fonction qui lance un programme, open_basedir, 128 Mo. L'assistant y est joué de bout en bout.
   mutualise:
     name: Hébergement mutualisé simulé (le paquet publié)
-    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
@@ -274,18 +252,10 @@ jobs:
       OUTILS: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v7
-      - name: Jeton de l'application (dépôts encore privés)
-        if: github.event.repository.private
-        id: app
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          private-key: ${{ secrets.NF_APP_CLE }}
-          owner: ${{ github.repository_owner }}
       # Le paquet que téléchargent les gens : la dernière version publiée du dépôt neofrag.
       - name: Le paquet publié, déposé comme par FTP
         env:
-          GH_TOKEN: ${{ steps.app.outputs.token || github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh release download --repo "${{ github.repository_owner }}/neofrag" --pattern 'neofrag-reborn-public-*.zip' --dir "$RUNNER_TEMP"
           unzip -q "$RUNNER_TEMP"/neofrag-reborn-public-*.zip -d "$RUNNER_TEMP/site"
@@ -309,25 +279,16 @@ jobs:
   # Les liens de tous les documents, ceux qui sortent du dépôt compris.
   liens:
     name: Les liens des documents
-    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
-      - name: Jeton de l'application (dépôts encore privés)
-        if: github.event.repository.private
-        id: app
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          private-key: ${{ secrets.NF_APP_CLE }}
-          owner: ${{ github.repository_owner }}
       # Un 429 dit que le site existe et nous freine, pas que le lien est mort (gnu.org l'a fait).
       # Les documents des bibliothèques EMBARQUÉES (js/tinymce/license.md…) ne sont pas les nôtres : leurs liens ne se
       # corrigent pas ici, et gnu.org fermait la connexion à leur vieille adresse en http (1.2.33, 2026-10-06).
       - uses: lycheeverse/lychee-action@v2
         with:
-          token: ${{ steps.app.outputs.token || github.token }}
+          token: ${{ github.token }}
           fail: true
           args: >-
             --no-progress --max-retries 3 --timeout 30

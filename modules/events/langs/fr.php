@@ -63,8 +63,6 @@ return [
 	'f32268d3' => 'Types d\'événement configurés',
 	'f48cb465' => 'Nouvel événement',
 	'fd283f69' => 'Calendrier',
-	'f950d55c' => 'Événements et matchs d\'une guilde ou d\'une équipe eSport : invitations avec réponse présent, absent ou peut-être, scores par manche, récurrence, rappels.',
-	'e80c902d' => 'Nombre d\'événement par page',
 	'46d72986' => 'Être averti par message privé des invitations',
 	'b1a096a2' => 'Événements',
 	'52c9bbab' => 'Modifier',
@@ -160,4 +158,8 @@ return [
 	'49a80df0' => 'En ligne',
 	'48b614a4' => 'Hors ligne',
 	'ff8f2a30' => 'Administrateur',
+	'0432964b' => 'Les événements d\'une communauté : invitations avec réponse présent, absent ou peut-être, récurrence, rappels ; et, avec les modules Jeux et Équipes, les matchs et leurs scores par manche.',
+	'e981b5d1' => 'Standard',
+	'bb9aea01' => 'Match',
+	'cbf0a999' => 'Nombre d\'événements par page',
 ];

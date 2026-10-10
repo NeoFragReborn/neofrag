@@ -48,7 +48,7 @@ return [
 	'36c61dab' => 'Mitgliedsgruppen aktualisiert',
 	'38012b05' => 'Antworten',
 	'39d3168a' => 'Im öffentlichen Profil des Mitglieds anzeigen',
-	'3b5fa87a' => 'Kontakt',
+	'3b5fa87a' => 'Kontaktieren',
 	'3c1747c6' => 'Gruppe hinzugefügt',
 	'3c182b2b' => 'Öffentlich',
 	'3d3c9410' => 'Zahl',

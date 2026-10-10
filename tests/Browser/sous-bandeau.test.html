@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>La sonde « sous le bandeau » de check-mise-en-page</title>
+
+<!--
+  `tests/MiseEnPage/sous-bandeau.js` juge, page défilée, ce qui passe sous un bandeau du haut de page — le bandeau de
+  la démo cachait l'en-tête collé de plusieurs thèmes (2026-10-08). Ici, un faux bandeau de démo de 40 px ; un en-tête
+  collé à 0, qui passe dessous (il doit sortir) ; un en-tête collé sous le bandeau, à 40 px (il se tait) ; une colonne
+  collée plus bas, à l'écart (elle se tait) ; une barre fixée en bas (elle se tait). La sonde est le VRAI fichier.
+-->
+
+<style>
+body { margin: 0; font: 16px/1.4 sans-serif; }
+#nf-demo-bar { position: fixed; top: 0; left: 0; right: 0; height: 40px; background: #2a2; z-index: 1000; }
+.mauvais { position: sticky; top: 0; height: 60px; background: #ccc; z-index: 10; }
+.bon { position: sticky; top: 40px; height: 50px; background: #eee; z-index: 20; }
+.colonne { position: sticky; top: 140px; width: 200px; height: 100px; margin-left: 50%; background: #ddd; }
+.bas { position: fixed; bottom: 0; left: 0; right: 0; height: 30px; background: #999; }
+.long { height: 3000px; }
+#nf-verdict { position: static; }
+</style>
+
+<script src="/harness.js"></script>
+
+<body>
+<div id="nf-demo-bar" data-nf-bandeau></div>
+<header class="mauvais">En-tête collé à 0</header>
+<header class="bon">En-tête collé sous le bandeau</header>
+<aside class="colonne">Colonne collée</aside>
+<div class="long">Contenu</div>
+<div class="bas">Barre du bas</div>
+
+<script>
+fetch('/src/tests/MiseEnPage/sous-bandeau.js')
+	.then(function (r) { return r.text(); })
+	.then(function (source) {
+		window.scrollTo(0, 700);
+
+		setTimeout(function () {
+			var vus = (0, eval)(source).map(function (x) { return x.el + ' sous ' + x.bande; });
+
+			NFTest.verifie('l’en-tête collé à 0 passe sous le bandeau de la démo', true, vus.indexOf('header.mauvais sous div#nf-demo-bar') !== -1);
+			NFTest.verifie('l’en-tête collé sous le bandeau se tait', false, vus.join(' | ').indexOf('header.bon sous') !== -1);
+			NFTest.verifie('la colonne collée à l’écart se tait', false, vus.join(' | ').indexOf('aside.colonne') !== -1);
+			NFTest.verifie('la barre fixée en bas se tait', false, vus.join(' | ').indexOf('div.bas') !== -1);
+			NFTest.verifie('rien d’autre', 1, vus.length);
+
+			window.scrollTo(0, 0);
+			NFTest.fini();
+		}, 200);
+	})
+	.catch(function (e) { NFTest.echec('la sonde n’a pas pu être lue : ' + e); NFTest.fini(); });
+</script>
+</body>
+</html>

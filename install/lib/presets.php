@@ -47,16 +47,16 @@ return [
 
 	'communaute' => [
 		'title'   => lang('Communauté'),
-		'tagline' => lang('Actualités, forum de discussion et galeries. De quoi faire vivre une communauté, sans l’attirail esport.'),
+		'tagline' => lang('Actualités, forum de discussion, galeries et événements. De quoi faire vivre une communauté, sans l’attirail esport.'),
 		'icon'    => '💬',
 		'tag'     => 'communaute',
 	],
 
-	// Choisi le 2026-10-03 (« du gaming aux associations »). Le Calendrier, et
-	// non les Événements : ceux-ci exigent les Jeux et les Équipes, à cause des matchs.
+	// Choisi le 2026-10-03 (« du gaming aux associations »). Les Événements y entrent depuis qu'ils ne
+	// demandent plus les Jeux ni les Équipes (2026-10-10) : sans eux, ils n'ont simplement pas de matchs.
 	'association' => [
 		'title'   => lang('Association / club'),
-		'tagline' => lang('Actualités, forum, galeries, calendrier, dons, newsletter, wiki et FAQ. De quoi faire vivre une association ou un club, sans l’attirail esport.'),
+		'tagline' => lang('Actualités, forum, galeries, calendrier, événements, dons, newsletter, wiki et FAQ. De quoi faire vivre une association ou un club, sans l’attirail esport.'),
 		'icon'    => '🤝',
 		'tag'     => 'association',
 	],

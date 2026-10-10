@@ -24,7 +24,7 @@ return [
 	'5ba5fc51' => 'API address: %s — every request carries the header %s.',
 	'fe916ce8' => 'Access keys',
 	'05263085' => 'New key',
-	'e1410c8a' => 'To recognise the key: “Discord bot”, “Team integration”…',
+	'e1410c8a' => 'To recognize the key: “Discord bot”, “Team integration”…',
 	'2a5c2d55' => 'Only give the permissions the program needs.',
 	'e2d08a3c' => 'Create the key',
 	'f789c08b' => 'Key created',

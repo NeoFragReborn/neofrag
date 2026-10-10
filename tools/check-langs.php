@@ -381,8 +381,9 @@ foreach ($domaines as $nom => $dossier)
 
     // La bibliothèque d'installation vit dans le cœur (`neofrag/installer.php`), mais ses textes
     // passent par la `lang()` de l'assistant et se traduisent dans `install/langs/` : elle appartient
-    // au domaine `install`, pas au cœur.
-    $fichiers = nf_fichiers($lus, ['php', 'js'], array_merge(NF_EXCLUS, ['/langs/'], $nom === 'neofrag' ? ['/neofrag/installer.php'] : []));
+    // au domaine `install`, pas au cœur. Les feuilles de style aussi : celle d'Extend écrit deux textes par
+    // `lang()` (« À la une », « Découvrir »), qu'aucune langue n'a traduits jusqu'au 2026-10-10.
+    $fichiers = nf_fichiers($lus, ['php', 'js', 'css'], array_merge(NF_EXCLUS, ['/langs/'], $nom === 'neofrag' ? ['/neofrag/installer.php'] : []));
 
     if ($nom === 'install')
     {

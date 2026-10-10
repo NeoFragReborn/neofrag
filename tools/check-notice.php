@@ -88,6 +88,13 @@ const TIERS = [
      'chemins' => ['js/altcha'], 'temoin' => ['js/altcha/LICENSE.txt', 'Daniel Regeci']],
     ['nom' => 'TinyMCE 7.6.1', 'auteur' => 'Ephox Corporation DBA Tiny Technologies, Inc.', 'licences' => ['GPL-2.0-or-later'],
      'chemins' => ['js/tinymce'], 'temoin' => ['js/tinymce/tinymce.min.js', 'TinyMCE version 7.6.1']],
+    // L'interface de l'éditeur dans les langues du site (m08, 2026-10-10) : les fichiers `langs7` du paquet
+    // tinymce-i18n, de simples paires « texte » : « traduction ». Corrigés ici : en français l'aide de la barre d'état,
+    // trop longue pour elle ; en espagnol « Undo » / « Redo » (inversés, l'un resté en anglais) ; en italien « Redo » et
+    // cinq libellés « … {0} » restés en anglais.
+    ['nom' => 'TinyMCE, traductions de l\'interface (paquet tinymce-i18n 26.9.21, langs7)', 'auteur' => 'les traducteurs de la communauté TinyMCE, Tiny Technologies, Inc.', 'licences' => ['GPL-2.0-or-later'],
+     'precision' => 'GPL-2.0-or-later, comme TinyMCE ; quelques libellés corrigés en français, espagnol et italien',
+     'chemins' => ['js/tinymce/langs'], 'temoin' => ['js/tinymce/langs/fr_FR.js', 'tinymce.addI18n("fr_FR"']],
     ['nom' => 'Font Awesome Free 6.7.2', 'auteur' => 'Fonticons, Inc.', 'licences' => ['OFL-1.1', 'CC-BY-4.0', 'MIT'],
      'precision' => 'polices sous OFL-1.1, icônes sous CC-BY-4.0, code sous MIT',
      'chemins' => ['fonts/fontawesome', 'css/icons/fontawesome.min.css'], 'temoin' => ['css/icons/fontawesome.min.css', 'Font Awesome Free 6.7.2']],

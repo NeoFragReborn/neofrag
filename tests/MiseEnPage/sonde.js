@@ -23,6 +23,10 @@
  *   horsEcran       un texte coupé par le bord GAUCHE de la fenêtre, qui ne défile pas ;
  *   cibles          sur un téléphone, un bouton ou un champ de moins de 24 px de côté (WCAG 2.2) ;
  *   francais        sur une page ANGLAISE, un texte resté en français (écrit hors des traductions) ;
+ *   colles          deux boutons voisins dont l'encre se touche ou se chevauche — « Connexion » collé à
+ *                   « Inscription » (la revue de la démo, 2026-10-06) ;
+ *   bords           un texte, un bouton ou un champ collé au bord gauche ou droit d'une carte qui a un cadre
+ *                   visible — « Ajouter une IP » contre le bord de sa carte (2026-10-10) ;
  *
  * Chaque mesure a ses exclusions, et chacune est justifiée : une sonde qui crie à tort finit
  * ignorée. Les points de suspension VOULUS ne sont pas une troncature ; une barre d'outils de
@@ -35,7 +39,7 @@
     var MAX     = 25;
     var verdict = {
         largeur: LARGEUR, deborde: 0, tronques: [], escaliers: [], chevauchements: [],
-        images: [], icones: [], techniques: [], contrastes: [], horsEcran: [], cibles: [],
+        images: [], icones: [], techniques: [], contrastes: [], horsEcran: [], cibles: [], colles: [], bords: [],
     };
 
     /*
@@ -811,6 +815,209 @@
             }
         });
     }
+
+    // ── 12. Les boutons collés ─────────────────────────────────────────────────────────────
+    /*
+     * Deux contrôles voisins — boutons, liens en bouton, boutons d'envoi — sans un pixel d'écart, ou qui se
+     * chevauchent : « Connexion » collé à « Inscription » dans Chronique (2026-10-06), que seule la revue de la démo
+     * voyait. Mesurés sur leur ENCRE — le fond, le bord ou l'ombre d'un bouton ; à défaut, ses textes et ses icônes,
+     * hors de ce qui est masqué pour l'œil — et non sur leur boîte : un bouton transparent a une boîte plus large que ce
+     * qu'on voit (« Mode nuit » / « demo », fausse alerte du 2026-10-06). Hors des groupes faits pour être accolés
+     * (groupe de boutons — `role="group"` compris —, champ avec bouton, pagination, onglets, barre d'outils, celle de
+     * l'éditeur, celle du calendrier), et d'un calque fixé ou collé à un autre : une barre fixée passe par-dessus la page
+     * tant qu'on n'a pas défilé, la page lui réserve sa place. L'encre se mesure dans ce qui se VOIT : la part d'un
+     * bouton défilée hors d'un cadre qui rogne (la barre latérale de l'administration) ne touche rien (2026-10-10).
+     */
+    (function () {
+        // La part visible d'un rectangle : rognée par chaque ancêtre qui ne laisse pas déborder son contenu.
+        function rogne(r, e) {
+            var q = { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+
+            for (var x = e.parentElement; x && x !== document.documentElement; x = x.parentElement) {
+                var sx = style(x);
+
+                if (sx.overflowX !== 'visible' || sx.overflowY !== 'visible') {
+                    var b = x.getBoundingClientRect();
+                    q = { left: Math.max(q.left, b.left), top: Math.max(q.top, b.top), right: Math.min(q.right, b.right), bottom: Math.min(q.bottom, b.bottom) };
+                }
+            }
+
+            return q.right - q.left < 1 || q.bottom - q.top < 1 ? { width: 0 } : { left: q.left, top: q.top, right: q.right, bottom: q.bottom, width: q.right - q.left };
+        }
+
+        function encre(e) {
+            var r = encreBrute(e);
+
+            return r.width ? rogne(r, e) : r;
+        }
+
+        function encreBrute(e) {
+            var s = style(e);
+            var fond = s.backgroundColor !== 'rgba(0, 0, 0, 0)' && s.backgroundColor !== 'transparent';
+            var bord = parseFloat(s.borderTopWidth) + parseFloat(s.borderLeftWidth) > 0 && s.borderTopColor !== 'rgba(0, 0, 0, 0)';
+
+            if (fond || bord || (s.boxShadow && s.boxShadow !== 'none')) {
+                return e.getBoundingClientRect();
+            }
+
+            var r = null;
+            var masque = function (n) {
+                for (var x = n.nodeType === 1 ? n : n.parentElement; x && x !== e.parentElement; x = x.parentElement) {
+                    var b = x.getBoundingClientRect();
+
+                    if (b.width <= 1 || b.height <= 1) {
+                        return true;
+                    }
+                }
+
+                return false;
+            };
+            var ajouter = function (q) {
+                if (!q || q.width < 1 || q.height < 1) {
+                    return;
+                }
+
+                r = r ? { left: Math.min(r.left, q.left), top: Math.min(r.top, q.top), right: Math.max(r.right, q.right), bottom: Math.max(r.bottom, q.bottom) }
+                      : { left: q.left, top: q.top, right: q.right, bottom: q.bottom };
+            };
+            var w = document.createTreeWalker(e, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+
+            for (var n = w.currentNode; n; n = w.nextNode()) {
+                if (masque(n)) {
+                    continue;
+                }
+
+                if (n.nodeType === 3 && n.textContent.trim()) {
+                    var g = document.createRange();
+                    g.selectNodeContents(n);
+                    ajouter(g.getBoundingClientRect());
+                } else if (n.nodeType === 1 && /^(i|svg|img)$/i.test(n.tagName)) {
+                    ajouter(n.getBoundingClientRect());
+                }
+            }
+
+            return r ? { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.right - r.left } : { width: 0 };
+        }
+
+        function calque(e) {
+            for (var x = e; x && x !== document.documentElement; x = x.parentElement) {
+                if (style(x).position === 'fixed' || style(x).position === 'sticky') {
+                    return x;
+                }
+            }
+
+            return null;
+        }
+
+        function libelle(e) {
+            return (e.innerText || e.value || e.getAttribute('aria-label') || e.title || '').trim().replace(/\s+/g, ' ').slice(0, 30);
+        }
+
+        var controles = Array.prototype.filter.call(document.querySelectorAll('a.btn, button, .btn, input[type="submit"], input[type="button"]'), function (e) {
+            var r = e.getBoundingClientRect();
+
+            return r.width > 4 && r.height > 4 && visible(e)
+                && !e.closest('.btn-group, [role="group"], .input-group, .pagination, .nav-tabs, .btn-toolbar, .tox, .fc-button-group, .accordion, [hidden], .dropdown-menu:not(.show)');
+        }).slice(0, 400);
+
+        var encres = controles.map(encre);
+
+        for (var i = 0; i < controles.length; i++) {
+            for (var j = i + 1; j < controles.length; j++) {
+                var a = encres[i], b = encres[j];
+
+                if (!a.width || !b.width || controles[i].contains(controles[j]) || controles[j].contains(controles[i]) || calque(controles[i]) !== calque(controles[j])) {
+                    continue;
+                }
+
+                var ex = Math.max(b.left - a.right, a.left - b.right);
+                var ey = Math.max(b.top - a.bottom, a.top - b.bottom);
+
+                if ((ex < 4 && ey < 0) || (ey < 4 && ex < 0)) {
+                    pousser(verdict.colles, { el: nom(controles[i]) + ' / ' + nom(controles[j]), texte: '« ' + libelle(controles[i]) + ' » / « ' + libelle(controles[j]) + ' »', ecart: Math.round(Math.max(ex, ey)) });
+                }
+            }
+        }
+    })();
+
+    // ── 13. Le contenu collé au bord de sa carte ────────────────────────────────────────────
+    /*
+     * Un texte, un bouton ou un champ dont l'encre arrive à moins de 3 px du bord intérieur, gauche ou droit, d'une
+     * carte qui a un CADRE visible (bordure, fond ou ombre) : la phrase d'aide et le bouton « Ajouter une IP » de la
+     * liste des IP bannies touchaient les bords — le corps de la carte était déclaré sans marge, comme pour un tableau
+     * bord à bord (signalé le 2026-10-10). Une carte sans cadre n'a pas de bord à toucher ; ce qui défile
+     * dans un cadre plus étroit qu'elle (un tableau large) se coupe au bord à bon droit ; une carte dans une carte est
+     * jugée pour elle-même. Un défaut par carte : le premier élément collé.
+     */
+    (function () {
+        var vide = function (c) { return c === 'rgba(0, 0, 0, 0)' || c === 'transparent'; };
+        var cartes = Array.prototype.slice.call(document.querySelectorAll('.card, .settings-section-card'), 0, 80);
+
+        cartes.forEach(function (carte) {
+            var s = style(carte);
+
+            if (!visible(carte) || !(parseFloat(s.borderLeftWidth) > 0 || !vide(s.backgroundColor) || (s.boxShadow && s.boxShadow !== 'none'))) {
+                return;
+            }
+
+            var rc = carte.getBoundingClientRect();
+            var gauche = rc.left + parseFloat(s.borderLeftWidth);
+            var droite = rc.right - parseFloat(s.borderRightWidth);
+
+            // L'élément se juge avec CETTE carte : ni dans une carte plus intérieure, ni dans un cadre qui défile ou rogne.
+            var a_juger = function (el) {
+                for (var x = el; x && x !== carte; x = x.parentElement) {
+                    if (x !== el && x.matches('.card, .settings-section-card')) {
+                        return false;
+                    }
+
+                    if (x !== el && style(x).overflowX !== 'visible') {
+                        return false;
+                    }
+                }
+
+                return visible(el);
+            };
+
+            var juger = function (r, el, texte) {
+                if (r.width < 1 || r.height < 1 || r.right < 0 || r.left > LARGEUR) {
+                    return false;
+                }
+
+                var g = r.left - gauche, d = droite - r.right;
+
+                if ((g > -1 && g < 3) || (d > -1 && d < 3)) {
+                    pousser(verdict.bords, { el: nom(el), carte: nom(carte), texte: texte.slice(0, 40), cote: g < 3 && g > -1 ? 'gauche' : 'droit', ecart: Math.round(g < 3 && g > -1 ? g : d) });
+                    return true;
+                }
+
+                return false;
+            };
+
+            var controles = carte.querySelectorAll('button, .btn, input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea');
+
+            for (var i = 0; i < controles.length; i++) {
+                if (a_juger(controles[i]) && juger(controles[i].getBoundingClientRect(), controles[i], (controles[i].innerText || controles[i].value || controles[i].getAttribute('aria-label') || '').trim())) {
+                    return;
+                }
+            }
+
+            var w = document.createTreeWalker(carte, NodeFilter.SHOW_TEXT);
+
+            for (var n = w.nextNode(), lus = 0; n && lus < 400; n = w.nextNode(), lus++) {
+                if (!n.nodeValue.trim() || !n.parentElement || !a_juger(n.parentElement)) {
+                    continue;
+                }
+
+                var g = document.createRange();
+                g.selectNodeContents(n);
+
+                if (juger(g.getBoundingClientRect(), n.parentElement, n.nodeValue.trim())) {
+                    return;
+                }
+            }
+        });
+    })();
 
     return verdict;
 })();

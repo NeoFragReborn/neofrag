@@ -267,4 +267,6 @@ return [
 	'b5cf4695' => 'Account inattivi',
 	'd35683b8' => 'Un account senza visite da questo numero di anni viene eliminato; un’e-mail avvisa il membro un mese prima, e una visita annulla tutto. Gli amministratori non vengono mai eliminati. 0 per non eliminare mai.',
 	'68b7ca29' => 'Indica un numero di anni tra 0 e 20.',
+	'bfeaf8bc' => 'Gli indirizzi da reindirizzare: l’elenco delle %s, nel Monitoring.',
+	'9339febd' => 'pagine non trovate',
 ];

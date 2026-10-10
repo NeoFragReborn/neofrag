@@ -174,10 +174,12 @@ class Admin extends Controller_Module
 
 		// Cibles : tous / membres / un groupe (les groupes alimentent les options group_<id>).
 		$target_values = ['all' => $this->lang('Tous les abonnés confirmés'), 'members' => $this->lang('Membres uniquement')];
-		foreach (NeoFrag()->db	->select('g.group_id', 'IFNULL(MAX(gl.title), g.name) AS title')
+		// Le nom de chaque groupe dans la langue de l'administration, sinon en français, sinon dans une autre : MAX() prenait
+		// le dernier dans l'ordre alphabétique, d'une langue au hasard (« Criador de addons », « Mitwirkender »,
+		// « Moderatore » côte à côte, relevé sur la vitrine le 2026-10-10).
+		foreach (NeoFrag()->db	->select('g.group_id', 'IFNULL(gl.title, g.name) AS title')
 								->from('nf_groups g')
-								->join('nf_groups_lang gl', 'gl.group_id = g.group_id', 'LEFT')
-								->group_by('g.group_id', 'g.name')
+								->join_lang('nf_groups_lang gl', 'group_id', 'g.group_id', NULL, 'LEFT')
 								->order_by('title ASC')
 								->get(FALSE) as $g)
 		{

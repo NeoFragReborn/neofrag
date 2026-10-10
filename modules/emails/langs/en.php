@@ -58,7 +58,7 @@ return [
 	'71dab6fe' => 'Question about the latest update',
 	'9c04ee3c' => 'Private conversation',
 	'3f6ef4d3' => 'Warning',
-	'acde5e09' => 'Behaviour contrary to the code of conduct',
+	'acde5e09' => 'Behavior contrary to the code of conduct',
 	'7ef479b0' => '%d day|%d days',
 	'5ae71306' => 'Template enabled',
 	'c37d56da' => 'Template disabled',

@@ -9,6 +9,7 @@ namespace NF\Modules\Events\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 
+// couplage(games): les cartes des manches, lues seulement quand l'événement a un match (Matches::possibles(), m17)
 class Index extends Controller_Module
 {
 	public function index($events)
@@ -164,12 +165,14 @@ class Index extends Controller_Module
 
 		$match = $type == 1 ? $this->model('matches')->get_match_info($event_id) : NULL;
 
-		$rounds = $this->db	->select('r.round_id', 'm.image_id', 'm.title', 'r.score1', 'r.score2')
-							->from('nf_events_matches_rounds r')
-							->join('nf_games_maps m', 'm.map_id = r.map_id')
-							->where('r.event_id', $event_id)
-							->order_by('r.round_id')
-							->get();
+		// Les manches d'un match, et leurs cartes : seulement quand il y a un match (m17 — sans le module Jeux, la table
+		// des cartes est absente).
+		$rounds = $match ? $this->db	->select('r.round_id', 'm.image_id', 'm.title', 'r.score1', 'r.score2')
+										->from('nf_events_matches_rounds r')
+										->join('nf_games_maps m', 'm.map_id = r.map_id')
+										->where('r.event_id', $event_id)
+										->order_by('r.round_id')
+										->get() : [];
 
 		if ($this->access->effective_admin())
 		{
@@ -223,7 +226,7 @@ class Index extends Controller_Module
 
 		return $this->_filters()
 					->append($this	->panel()
-									->heading('<a href="'.url('events/'.$event_id.'/'.url_title($title)).'">'.$title.'</a>'.(!empty($match) ? '<div class="float-end">'.($match['game']['icon_id'] ? '<img src="'.NeoFrag()->model2('file', $match['game']['icon_id'])->path().'" class="img-icon" alt="" />' : icon('fas fa-gamepad')).' '.$match['game']['title'].'</div>' : ''), $type == 1 ? 'fas fa-crosshairs' : 'far fa-calendar')
+									->heading('<a href="'.url('events/'.$event_id.'/'.url_title($title)).'">'.$title.'</a>'.(!empty($match) ? '<div class="float-end ms-auto ps-3">'.($match['game']['icon_id'] ? '<img src="'.NeoFrag()->model2('file', $match['game']['icon_id'])->path().'" class="img-icon" alt="" />' : icon('fas fa-gamepad')).' '.$match['game']['title'].'</div>' : ''), $type == 1 ? 'fas fa-crosshairs' : 'far fa-calendar')
 									->body($this->view('event', [
 										'event_id'             => $event_id,
 										'title'                => $title,
@@ -245,7 +248,7 @@ class Index extends Controller_Module
 									]), FALSE)
 					)
 					->append_if($this->user(), $this	->panel()
-														->heading('<a name="participants"></a>Participants'.(isset($modal) ? '<div class="float-end">'.$this->button()->title('Invitations')->icon('fas fa-user-plus')->modal($modal).'</div>' : ''), 'fas fa-users')
+														->heading('<a name="participants"></a>'.$this->lang('Participants').(isset($modal) ? '<div class="float-end ms-auto ps-3">'.$this->button()->title('Invitations')->icon('fas fa-user-plus')->modal($modal).'</div>' : ''), 'fas fa-users')
 														->body($this->table()->display())
 					)
 					->append_if(($comments = $this->module('comments')) && $comments->is_enabled(), function() use (&$comments, $event_id){

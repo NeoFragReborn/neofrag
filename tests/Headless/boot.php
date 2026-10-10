@@ -180,6 +180,24 @@ if (!defined('NEOFRAG_HEADLESS'))
 	// fatalisé (2026-09-17, en écrivant EventsTest). On s'arrête là : PAS de output/session/groups
 	// (rendu/routing/HTTP), et PAS le tail HTTP de index.php (CSP ob_start + output()/exit).
 	// Permet d'exercer les modèles « données » + le contrôle d'accès (Access::can), pas le rendu.
+	// La base, essayée AVANT le câblage : injoignable, le site affiche sa page « momentanément indisponible »
+	// et QUITTE (Core\Db) — PHPUnit partait avec lui, sans résumé et avec un code de sortie nul, 83 tests
+	// n'ayant pas tourné (vu sur le poste le 2026-10-05). Une exception, elle, devient des tests sautés
+	// (HeadlessTestCase), que `--fail-on-skipped` sait refuser.
+	$db = [];
+	require 'config/db.php';
+	$base = (array) ($db[0] ?? []);
+	mysqli_report(MYSQLI_REPORT_OFF);
+	$essai = @new \mysqli((string) ($base['hostname'] ?? ''), (string) ($base['username'] ?? ''), (string) ($base['password'] ?? ''), (string) ($base['database'] ?? ''), (int) ($base['port'] ?? 3306));
+
+	if ($essai->connect_errno)
+	{
+		throw new \RuntimeException('base de données injoignable ('.$essai->connect_error.')');
+	}
+
+	$essai->close();
+	unset($db, $base, $essai);
+
 	foreach (['input', 'debug', 'url', 'db', 'access', 'config', 'events'] as $core)
 	{
 		NeoFrag()->{'core_'.$core};

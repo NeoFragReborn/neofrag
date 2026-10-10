@@ -15,6 +15,9 @@ class Checker extends Module_Checker
 	{
 		if ($award = $this->model()->check_awards($award_id, $name))
 		{
+			// Le titre de l'adresse n'est pas le bon : 301 vers la bonne (elle répondait 200 à n'importe lequel).
+			nf_bon_titre((string) $name, (string) $award['name'], 'awards/'.(int) $award['award_id']);
+
 			return [
 				$award['award_id'],
 				$award['team_id'],

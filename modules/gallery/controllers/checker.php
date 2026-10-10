@@ -13,13 +13,25 @@ class Checker extends Module_Checker
 {
 	public function _gallery($gallery_id, $name, $page = '')
 	{
-		if ($this->access('gallery', 'gallery_see', $gallery_id) && ($gallery = $this->model()->check_gallery($gallery_id, $name)))
+		// L'adresse porte le nom court de l'album, refait quand son titre change : vérifié avec le VRAI, une ancienne
+		// adresse mène à la nouvelle (m06). Un album qui n'existe pas est introuvable (il répondait 403, comme un
+		// album interdit).
+		$vrai = nf_titre_lu($this->db->select('name')->from('nf_gallery')->where('gallery_id', (int) $gallery_id)->row());
+
+		if ($vrai === '')
 		{
+			return;
+		}
+
+		if ($this->access('gallery', 'gallery_see', $gallery_id) && ($gallery = $this->model()->check_gallery($gallery_id, $vrai)))
+		{
+			nf_bon_titre((string) $name, $vrai, 'gallery/album/'.(int) $gallery_id, (string) $page);
+
 			return [
 				$gallery_id,
 				$gallery['category_id'],
 				$gallery['image_id'],
-				$name,
+				$vrai,
 				$gallery['published'],
 				$gallery['title'],
 				$gallery['description'],
@@ -36,16 +48,26 @@ class Checker extends Module_Checker
 
 	public function _category($category_id, $name)
 	{
-		if ($category = $this->model()->check_category($category_id, $name))
+		// Le nom court de la catégorie, refait quand son titre change : une ancienne adresse mène à la nouvelle (m06).
+		$vrai = nf_titre_lu($this->db->select('name')->from('nf_gallery_categories')->where('category_id', (int) $category_id)->row());
+
+		if ($vrai !== '' && ($category = $this->model()->check_category($category_id, $vrai)))
 		{
+			nf_bon_titre((string) $name, $vrai, 'gallery/'.(int) $category_id);
+
 			return [$category['category_id'], $category['name'], $category['title']];
 		}
 	}
 
 	public function _image($image_id, $name)
 	{
-		if ($image = $this->model()->check_image($image_id, $name))
+		// Vérifiée avec son VRAI titre ; l'adresse au mauvais titre mène à la bonne au lieu de répondre 404 (m06).
+		$titre = nf_titre_lu($this->db->select('title')->from('nf_gallery_images')->where('image_id', (int) $image_id)->row());
+
+		if ($titre !== '' && ($image = $this->model()->check_image($image_id, url_title($titre))))
 		{
+			nf_bon_titre((string) $name, $titre, 'gallery/image/'.(int) $image_id);
+
 			if (!$this->access('gallery', 'gallery_see', $image['gallery_id']))
 			{
 				$this->error->unauthorized();

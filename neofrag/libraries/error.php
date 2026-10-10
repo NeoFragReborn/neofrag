@@ -21,6 +21,9 @@ class Error extends Library
 			exit;
 		}
 
+		// Aucune : l'adresse rejoint le relevé des pages introuvables (Monitoring), d'où l'on en pose une.
+		nf_noter_introuvable();
+
 		throw NeoFrag()->___load('', 'exception', [function(){
 			header('HTTP/1.0 404 Not Found');
 			// Le titre de l'onglet le dit aussi, plutôt que le nom du module qui n'a rien trouvé.

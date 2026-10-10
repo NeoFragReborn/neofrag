@@ -345,54 +345,46 @@ class Admin extends Controller_Module
 
 	public function _banlist($bans, $page)
 	{
-		$this->title($this->lang('Banlist IPs'));
+		$this->title($this->lang('Banlist IPs'))->icon('fas fa-ban');
 
-		$body  = '<div class="d-flex justify-content-between align-items-center mb-3">';
-		$body .= '<p class="text-muted mb-0">'.$this->lang('Liste des IPs bloquées (rejet immédiat avant routing). Utiliser avec parcimonie : préférer la modération par compte quand possible.').'</p>';
-		$body .= '<a class="btn btn-primary" href="'.url('admin/moderation/banlist/add').'">'.icon('fas fa-plus').' '.$this->lang('Ajouter une IP').'</a>';
-		$body .= '</div>';
-
-		$body .= '<table class="table table-hover table-sm"><thead><tr>'
-				.'<th>'.$this->lang('IP').'</th>'
-				.'<th>'.$this->lang('Raison').'</th>'
-				.'<th>'.$this->lang('Banni par').'</th>'
-				.'<th>'.$this->lang('Expire').'</th>'
-				.'<th>'.$this->lang('Créé le').'</th>'
-				.'<th class="text-end" style="width:100px;"></th>'
-				.'</tr></thead><tbody>';
+		// Une carte d'administration ordinaire : l'aide et le tableau dans un corps qui a ses marges, le bouton dans
+		// l'en-tête. Le corps était déclaré sans marge, comme pour un tableau seul : la phrase et le bouton touchaient
+		// les bords de la carte (signalé le 2026-10-10).
+		$aide    = '<p class="small text-body-secondary mb-3">'.$this->lang('Liste des IPs bloquées (rejet immédiat avant routing). Utiliser avec parcimonie : préférer la modération par compte quand possible.').'</p>';
+		$ajouter = '<a class="btn btn-primary btn-sm" href="'.url('admin/moderation/banlist/add').'">'.icon('fas fa-plus').' '.$this->lang('Ajouter une IP').'</a>';
 
 		if (empty($bans))
 		{
-			$body .= '<tr><td colspan="6" class="text-center text-muted">'.$this->lang('Aucune IP bannie').'</td></tr>';
+			return $this->admin_card('fas fa-ban', $this->lang('Banlist IPs'), $aide.$this->admin_empty('fas fa-ban', (string) $this->lang('Aucune IP bannie')), '', $ajouter);
 		}
-		else
+
+		$lignes = '';
+
+		foreach ($bans as $b)
 		{
-			foreach ($bans as $b)
-			{
-				$expires = empty($b['expires_at']) ? '<span class="badge text-bg-danger">'.$this->lang('Permanent').'</span>' : nf_date_heure($b['expires_at']);
-				$by      = !empty($b['banned_by_username']) ? nf_texte($b['banned_by_username']) : '<em class="text-muted">'.$this->lang('Système').'</em>';
+			$expires = empty($b['expires_at']) ? '<span class="badge text-bg-danger">'.$this->lang('Permanent').'</span>' : nf_date_heure($b['expires_at']);
+			$by      = !empty($b['banned_by_username']) ? nf_texte($b['banned_by_username']) : '<em class="text-muted">'.$this->lang('Système').'</em>';
 
-				$body .= '<tr>';
-				$body .= '<td><code>'.nf_texte($b['ip']).'</code></td>';
-				$body .= '<td>'.nf_texte($b['reason'] ?? '').'</td>';
-				$body .= '<td>'.$by.'</td>';
-				$body .= '<td>'.$expires.'</td>';
-				$body .= '<td>'.nf_date_heure($b['created_at']).'</td>';
-				$body .= '<td class="text-end">';
-				$body .= '<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/moderation/banlist/delete/'.(int)$b['ban_id']).'" data-confirm="'.$this->lang('Supprimer le ban de cette IP ?').'" title="'.$this->lang('Supprimer le ban').'">'.icon('far fa-trash-alt').'</a>';
-				$body .= '</td>';
-				$body .= '</tr>';
-			}
+			$lignes .= '<tr>'
+				.'<td><code>'.nf_texte($b['ip']).'</code></td>'
+				.'<td>'.nf_texte($b['reason'] ?? '').'</td>'
+				.'<td>'.$by.'</td>'
+				.'<td>'.$expires.'</td>'
+				.'<td>'.nf_date_heure($b['created_at']).'</td>'
+				.'<td class="text-end"><a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/moderation/banlist/delete/'.(int)$b['ban_id']).'" data-confirm="'.$this->lang('Supprimer le ban de cette IP ?').'" title="'.$this->lang('Supprimer le ban').'">'.icon('far fa-trash-alt').'</a></td>'
+				.'</tr>';
 		}
-		$body .= '</tbody></table>';
 
-		return $this	->row(
-							$this->col(
-								$this->panel()
-									->heading($this->lang('Banlist IPs'), 'fas fa-ban')
-									->body($body, FALSE)
-							)
-						);
+		$tableau = '<div class="table-responsive"><table class="table table-hover table-sm align-middle mb-0"><thead><tr>'
+			.'<th>'.$this->lang('IP').'</th>'
+			.'<th>'.$this->lang('Raison').'</th>'
+			.'<th>'.$this->lang('Banni par').'</th>'
+			.'<th>'.$this->lang('Expire').'</th>'
+			.'<th>'.$this->lang('Créé le').'</th>'
+			.'<th class="text-end" style="width:100px;"></th>'
+			.'</tr></thead><tbody>'.$lignes.'</tbody></table></div>';
+
+		return $this->admin_card('fas fa-ban', $this->lang('Banlist IPs'), $aide.$tableau, '', $ajouter);
 	}
 
 	public function _banlist_add()
@@ -469,13 +461,8 @@ class Admin extends Controller_Module
 			})
 			->submit($this->lang('Bannir'));
 
-		return $this	->row(
-							$this->col(
-								$this->panel()
-									->heading($this->lang('Ajouter une IP à la banlist'), 'fas fa-plus')
-									->body($form->display(), FALSE)
-							)
-						);
+		return $this->admin_back('admin/moderation/banlist')
+			.$this->admin_card('fas fa-plus', $this->lang('Ajouter une IP à la banlist'), $form->display());
 	}
 
 	public function _banlist_delete($ban)

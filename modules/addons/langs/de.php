@@ -91,7 +91,7 @@ return [
 	'e2c8f589' => 'Status',
 	'8088964a' => 'Anzeige',
 	'3d3305f0' => 'Liste',
-	'd3fe1369' => 'Programm',
+	'd3fe1369' => 'Raster',
 	'45002a02' => 'Keine Erweiterung entspricht.',
 	'79e64a05' => '<b>NeoFrag %s</b> ist verfügbar (du verwendest %s): <a href="%s">Monitoring</a> aktualisiert es mit einem Klick und legt vorher eine Sicherung an.',
 	'62ad9179' => '%d Marketplace-Addon(s) benötigen eine neuere Version von NeoFrag: Aktualisiere zuerst deine Website.',

@@ -19,7 +19,7 @@ final class EventsTest extends HeadlessTestCase
 	protected function tearDown(): void
 	{
 		// tearDown() tourne même quand setUp() a sauté le test (framework non amorcé) : rien à désabonner alors.
-		if (\function_exists('NeoFrag') && \NeoFrag() !== NULL)
+		if (self::amorce())
 		{
 			$this->events()->off('test.evenement')->off('test.autre');
 		}

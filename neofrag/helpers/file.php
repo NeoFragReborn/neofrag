@@ -186,7 +186,8 @@ function human_size($bytes, $decimals = 2, ?string $langue = NULL): string
 	$factor = min(5, (int) floor((strlen((string) $bytes) - 1) / 3));
 	$unites = $langue === 'fr' ? ['o', 'Ko', 'Mo', 'Go', 'To', 'Po'] : ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
-	return number_format($bytes / pow(1024, $factor), (int) $decimals, $langue === 'en' ? '.' : ',', '').' '.$unites[$factor];
+	// Des octets se comptent sans décimales : « 685 o », et non « 685,00 o » (relevé le 2026-10-10).
+	return number_format($bytes / pow(1024, $factor), $factor ? (int) $decimals : 0, $langue === 'en' ? '.' : ',', '').' '.$unites[$factor];
 }
 
 function image_resize($filename, $width, $height = NULL)
@@ -509,6 +510,160 @@ function nf_effacer_orphelins(string $dossier, string $table, array $chemins): i
 			@unlink(NEOFRAG_CMS.'/'.$orphelin['path']);
 		}
 
+		$effaces++;
+	}
+
+	return $effaces;
+}
+
+/**
+ * Les images de l'éditeur riche que cite le contenu du site : chaque colonne de texte de chaque table, hors le registre
+ * des fichiers lui-même. Une image de `upload/editeur/` n'est la pièce jointe de rien — seul le texte qui l'affiche la
+ * tient. Les révisions, la corbeille, les réglages et les widgets sont lus comme le reste : une image que cite un texte
+ * qu'on peut encore rendre est gardée. NULL quand une table n'a pas pu être lue : rien n'est alors déclaré abandonné.
+ *
+ * @return array<string, true>|null
+ */
+function nf_images_editeur_citees(): ?array
+{
+	$db     = NeoFrag()->db;
+	$citees = [];
+	$panne  = NULL;
+
+	// Une requête en échec n'interrompt rien : le pilote le dit par un avertissement et rend une liste vide, qui ferait
+	// passer pour abandonnées toutes les images de la table. L'avertissement est donc relevé, et la recherche annulée.
+	set_error_handler(static function (int $niveau, string $message) use (&$panne): bool
+	{
+		$panne ??= $message;
+
+		return TRUE;
+	}, E_WARNING | E_USER_WARNING);
+
+	try
+	{
+		foreach ((array) $db->tables() as $table)
+		{
+			if ($table === 'nf_file' || !preg_match('/^nf_[A-Za-z0-9_]+$/', (string) $table))
+			{
+				continue;
+			}
+
+			foreach ((array) $db->table_columns($table) as $colonne => $type)
+			{
+				if (!preg_match('/^[A-Za-z0-9_]+$/', (string) $colonne) || !preg_match('/^(?:(?:var)?char|(?:tiny|medium|long)?text|json|(?:tiny|medium|long)?blob)\b/i', (string) $type))
+				{
+					continue;
+				}
+
+				foreach ((array) $db->select('`'.$colonne.'`')->from('`'.$table.'`')->where('`'.$colonne.'` LIKE', '%editeur%')->get(FALSE) as $ligne)
+				{
+					foreach (\NF\NeoFrag\Libraries\Editeur_Images::chemins_cites((string) current($ligne)) as $chemin)
+					{
+						$citees[$chemin] = TRUE;
+					}
+				}
+			}
+		}
+	}
+	catch (\Throwable $e)
+	{
+		$panne ??= $e->getMessage();
+	}
+	finally
+	{
+		restore_error_handler();
+	}
+
+	if ($panne !== NULL)
+	{
+		nf_journaliser_erreur('editeur', 'recherche des images de l\'éditeur interrompue : '.$panne, nf_chemin_relatif(__FILE__).':'.__LINE__);
+
+		return NULL;
+	}
+
+	return $citees;
+}
+
+/**
+ * Les images de l'éditeur riche abandonnées (ligne 0.17 du reste-à-faire, 2026-10-10) : envoyées pendant qu'on écrivait,
+ * puis retirées du texte, ou dont le texte n'a jamais été enregistré — elles restaient sur le disque et dans `nf_file`.
+ * Est abandonnée celle qu'aucun texte du site ne cite (nf_images_editeur_citees()) et qui a plus de `$jours` jours : un
+ * brouillon peut attendre. Les plus anciennes d'abord ; NULL quand la base n'a pas pu être lue en entier.
+ *
+ * @return list<array{path: string, name: string, size: int, date: int}>|null
+ */
+function nf_images_editeur_abandonnees(int $jours = 30): ?array
+{
+	$racine = NEOFRAG_CMS.'/'.\NF\NeoFrag\Libraries\Editeur_Images::DOSSIER;
+
+	if (!is_dir($racine))
+	{
+		return [];
+	}
+
+	if (($citees = nf_images_editeur_citees()) === NULL)
+	{
+		return NULL;
+	}
+
+	$avant       = time() - $jours * 86400;
+	$noms        = array_column((array) NeoFrag()->db->select('path', 'name')->from('nf_file')->where('path LIKE', \NF\NeoFrag\Libraries\Editeur_Images::DOSSIER.'/%')->get(FALSE), 'name', 'path');
+	$abandonnees = [];
+
+	foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($racine, \FilesystemIterator::SKIP_DOTS)) as $fichier)
+	{
+		$chemin = \NF\NeoFrag\Libraries\Editeur_Images::DOSSIER.'/'.str_replace('\\', '/', substr($fichier->getPathname(), strlen($racine) + 1));
+
+		if (!$fichier->isFile() || $fichier->isLink() || in_array($fichier->getFilename(), ['.htaccess', 'index.html'], TRUE) || isset($citees[$chemin]) || $fichier->getMTime() >= $avant)
+		{
+			continue;
+		}
+
+		$abandonnees[] = ['path' => $chemin, 'name' => (string) ($noms[$chemin] ?? ''), 'size' => (int) $fichier->getSize(), 'date' => (int) $fichier->getMTime()];
+	}
+
+	usort($abandonnees, static fn (array $a, array $b): int => $a['date'] <=> $b['date']);
+
+	return $abandonnees;
+}
+
+/**
+ * Efface, parmi `$chemins`, les images de l'éditeur TOUJOURS abandonnées — relues au moment d'effacer : un texte enregistré
+ * depuis que la liste s'est affichée garde la sienne. Le fichier, sa ligne de `nf_file`, et le dossier du mois s'il s'est
+ * vidé. Rien sur une démonstration. Rend leur nombre.
+ *
+ * @param list<string> $chemins
+ */
+function nf_effacer_images_editeur(array $chemins, int $jours = 30): int
+{
+	if (nf_demo())
+	{
+		return 0;
+	}
+
+	$voulus  = array_flip(array_map('strval', $chemins));
+	$effaces = 0;
+
+	foreach (nf_images_editeur_abandonnees($jours) ?? [] as $image)
+	{
+		if (!isset($voulus[$image['path']]))
+		{
+			continue;
+		}
+
+		foreach ((array) NeoFrag()->db->select('id')->from('nf_file')->where('path', $image['path'])->get() as $file_id)
+		{
+			NeoFrag()->model2('file', (int) $file_id)->delete();
+		}
+
+		$fichier = NEOFRAG_CMS.'/'.$image['path'];
+
+		if (is_file($fichier))
+		{
+			@unlink($fichier);
+		}
+
+		@rmdir(dirname($fichier));
 		$effaces++;
 	}
 

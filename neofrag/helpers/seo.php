@@ -766,6 +766,138 @@ function nf_redirection_ajouter(string $source, string $cible): void
 	$db->insert('nf_redirects', ['source' => $source, 'target' => $cible]);
 }
 
+/**
+ * L'adresse d'un contenu porte son titre (`recipes/12/tarte-aux-pommes`). Quand celui de l'adresse demandée n'est pas
+ * le bon — le contenu a changé de titre, le lien vient d'une autre langue, une faute —, la page répond 301 vers la
+ * bonne adresse, celle que fabriquent les liens du site (ligne 0.40, m06, 2026-10-10). Sept types de contenu
+ * répondaient 200 à n'importe quel titre — des doublons à volonté, canoniques sur l'adresse fautive —, les autres 404 :
+ * l'ancienne adresse d'un titre changé mourait chez les moteurs.
+ *
+ * `$prefixe` est l'adresse sans le titre (`recipes/12`), `$titre` celui que portent les liens du site (déjà réduit
+ * par url_title() s'il vient d'une colonne `name`) ; `$suite` ce qui suit le titre dans l'adresse (`/page/2`). Une
+ * page lue seulement (GET, HEAD), hors administration et ajax : un formulaire envoyé garde son adresse.
+ */
+/**
+ * Le titre ou le nom court d'un contenu, lu par son numéro (`->select('title')->…->row()`), en texte ; '' quand rien ne
+ * correspond — row() rend alors un tableau vide, qu'une conversion en texte changeait en « Array », avec un
+ * avertissement au journal (épreuve de m06, 2026-10-10).
+ */
+function nf_titre_lu($valeur): string
+{
+	return is_scalar($valeur) ? (string) $valeur : '';
+}
+
+function nf_bon_titre(string $demande, string $titre, string $prefixe, string $suite = ''): void
+{
+	$attendu = url_title($titre);
+
+	// Pas de titre : rien vers quoi mener (une ligne vide prise pour un contenu, épreuve de m06).
+	if ($demande === $attendu || $attendu === '')
+	{
+		return;
+	}
+
+	// La pagination arrive sans sa barre (`page/2`).
+	if ($suite !== '' && $suite[0] !== '/')
+	{
+		$suite = '/'.$suite;
+	}
+
+	$url = NeoFrag()->url;
+
+	if ($url->admin || $url->ajax() || $url->cli || !in_array(strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')), ['GET', 'HEAD'], TRUE))
+	{
+		return;
+	}
+
+	$parametres = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_QUERY);
+
+	$url->redirect_http(url($prefixe.'/'.$attendu.$suite).($parametres !== '' ? '?'.$parametres : ''), 301);
+}
+
+/**
+ * Note l'adresse que le site n'a pas trouvée (Libraries\Error, quand aucune redirection ne la prévoit) : le relevé des
+ * pages introuvables du Monitoring, d'où l'on pose une redirection (ligne 0.41 du reste-à-faire). Les moteurs
+ * signalaient des « Introuvable (404) » que rien ne permettait de retrouver : Caddy ne tient pas de journal des
+ * requêtes, et le site ne notait rien.
+ *
+ * Le chemin est celui d'une redirection (nf_redirection_source() : sans la langue ni les paramètres) ; la page d'où
+ * l'on venait, sans ses paramètres ; robots et visiteurs comptés à part. Ni adresse IP, ni navigateur : rien qui
+ * désigne une personne. Une page qui ne se note pas répond quand même 404.
+ */
+function nf_noter_introuvable(): void
+{
+	$nf  = NeoFrag();
+	$url = $nf->url;
+
+	if ($url->admin || $url->ajax() || $url->cli || !in_array(strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')), ['GET', 'HEAD'], TRUE))
+	{
+		return;
+	}
+
+	try
+	{
+		$db = $nf->db;
+
+		if (!$db->table_exists('nf_pages_introuvables'))
+		{
+			return;
+		}
+
+		$chemin = nf_redirection_source(substr((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), strlen(rtrim((string) $url->base, '/'))), nf_langues_du_site());
+
+		if ($chemin === '')
+		{
+			return;
+		}
+
+		$robot = is_crawler();
+		$q     = static fn (string $texte): string => "'".$db->escape_string(mb_substr($texte, 0, 255))."'";
+
+		$db->execute('INSERT INTO `nf_pages_introuvables` (`chemin`, `visites`, `robots`, `provenance`) VALUES ('
+			.$q($chemin).', '.($robot ? 0 : 1).', '.($robot ? 1 : 0).', '.$q(nf_provenance_introuvable((string) ($_SERVER['HTTP_REFERER'] ?? ''))).')'
+			.' ON DUPLICATE KEY UPDATE `visites` = `visites` + VALUES(`visites`), `robots` = `robots` + VALUES(`robots`),'
+			.' `derniere_fois` = CURRENT_TIMESTAMP, `provenance` = IF(VALUES(`provenance`) <> \'\', VALUES(`provenance`), `provenance`)');
+	}
+	catch (\Throwable $e)
+	{
+		error_log('[pages introuvables] '.$e->getMessage());
+	}
+}
+
+/**
+ * La page d'où venait le visiteur d'une adresse introuvable, pour le relevé : une page du site par son chemin
+ * (« /fr/forum »), une page d'ailleurs par son hôte et son chemin (« exemple.fr/liens ») ; jamais les paramètres, qui
+ * peuvent porter un jeton ou une recherche. Rien si l'en-tête est absent ou n'est pas une adresse web.
+ */
+function nf_provenance_introuvable(string $referent, ?string $hote_du_site = NULL): string
+{
+	$parties = parse_url(trim($referent));
+
+	if (!is_array($parties) || !in_array(strtolower((string) ($parties['scheme'] ?? '')), ['http', 'https'], TRUE) || empty($parties['host']))
+	{
+		return '';
+	}
+
+	$hote   = strtolower((string) $parties['host']);
+	$chemin = (string) ($parties['path'] ?? '/');
+
+	// Le site, par l'adresse qu'il se connaît ET par celle sous laquelle on l'appelle (un atelier, une adresse de secours).
+	$siens = $hote_du_site !== NULL ? [$hote_du_site] : [(string) parse_url(site_origin(), PHP_URL_HOST), (string) preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? ''))];
+
+	return in_array($hote, array_map('strtolower', array_filter($siens)), TRUE) ? $chemin : $hote.$chemin;
+}
+
+/**
+ * Une adresse que demandent les robots qui cherchent une faille (`wp-login.php`, `.env`, `phpmyadmin/`, une copie de la
+ * base) : le relevé les range à part. Pas toute adresse en `.php` : celle d'un ancien site (« page.php ») est
+ * justement à rediriger.
+ */
+function nf_sonde_introuvable(string $chemin): bool
+{
+	return (bool) preg_match('#(^|/)(wp-|wordpress|xmlrpc\.php|phpmyadmin|myadmin|pma/|cgi-bin|\.env|\.git|\.svn|\.aws|\.ds_store|vendor/phpunit|phpinfo|eval-stdin|boaform|actuator)|\.(sql|bak|old|ini|log|ya?ml|sh|tar|gz|tgz|zip|rar|7z)$#i', $chemin);
+}
+
 /*
  * IndexNow — prévenir les moteurs dès qu'une page paraît, change ou disparaît.
  *

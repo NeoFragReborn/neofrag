@@ -48,6 +48,10 @@ class Monitoring extends Module
 				'admin/trace/vider'                    => '_trace_vider',
 				'admin/traductions'                    => '_traductions',
 				'admin/traductions/vider'              => '_traductions_vider',
+				'admin/introuvables'                   => '_introuvables',
+				'admin/introuvables/oublier/{id}'      => '_introuvables_oublier',
+				'admin/introuvables/vider'             => '_introuvables_vider',
+				'admin/images-editeur'                 => '_images_editeur',
 				'admin/adresse'                        => '_adresse',
 				'cron'                                 => 'cron'
 			]

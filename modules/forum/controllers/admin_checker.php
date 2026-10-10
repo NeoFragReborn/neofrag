@@ -15,7 +15,22 @@ class Admin_Checker extends Module_Checker
 	{
 		if ($forum = $this->model()->check_forum($forum_id, $title))
 		{
-			return $forum;
+			// Dans l'ordre de la signature d'Admin::_edit(), colonne par colonne : la ligne entière, passée telle quelle,
+			// décalait tout depuis l'ajout de `titre_par_defaut` à la requête — le formulaire montrait le titre dans la
+			// description, et l'enregistrement rangeait le forum sous une mauvaise catégorie et touchait à sa
+			// redirection (trouvé le 2026-10-10 en passant en revue tous les checkers).
+			// Le titre et la description de la langue par défaut : les traductions ont leurs propres champs, et
+			// check_forum() rend ceux de la langue affichée.
+			$defaut = $this->db->select('title', 'description')->from('nf_forum')->where('forum_id', (int) $forum_id)->row();
+
+			return [
+				$forum['forum_id'],
+				$defaut['title'],
+				$defaut['description'],
+				$forum['parent_id'],
+				$forum['is_subforum'],
+				$forum['url'],
+			];
 		}
 	}
 
@@ -33,7 +48,8 @@ class Admin_Checker extends Module_Checker
 	{
 		if ($category = $this->model()->check_category($category_id, $name))
 		{
-			return $category;
+			// Le titre de la langue par défaut : les traductions ont leurs propres champs.
+			return [$category['category_id'], $category['titre_par_defaut']];
 		}
 	}
 
@@ -43,7 +59,7 @@ class Admin_Checker extends Module_Checker
 
 		if ($category = $this->model()->check_category($category_id, $name))
 		{
-			return $category;
+			return [$category['category_id'], $category['title']];
 		}
 	}
 

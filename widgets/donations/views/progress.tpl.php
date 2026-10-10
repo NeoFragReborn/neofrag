@@ -33,7 +33,9 @@
 			$display = $r['is_anonymous'] ? $this->lang('Anonyme') : $r['donor_name'];
 		?>
 		<div class="widget-donation-recent-item">
-			<span class="widget-donation-recent-avatar"><?php echo mb_strtoupper(mb_substr($display, 0, 1)) ?></span>
+			<?php /* L'initiale du nom ENREGISTRÉ codé (« &Eacute;lodie ») était « & » : on la prend sur le texte décodé,
+			   comme la page d'une campagne (relecture du journal des versions, 2026-10-10). */ ?>
+			<span class="widget-donation-recent-avatar"><?php echo nf_texte(mb_strtoupper(mb_substr(nf_texte_brut($display), 0, 1))) ?></span>
 			<span class="widget-donation-recent-name"><?php echo nf_texte($display) ?></span>
 			<span class="widget-donation-recent-amount"><?php echo number_format($r['amount'], 0, ',', ' ') ?>&nbsp;<?php echo nf_texte($r['currency']) ?></span>
 		</div>

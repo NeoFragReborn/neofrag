@@ -94,8 +94,10 @@ final class HelpersFileTest extends TestCase
 
     public function test_human_size_formats_with_unit(): void
     {
-        $this->assertSame('0.00 B', human_size(0, 2, 'en'));
-        $this->assertSame('500.00 B', human_size(500, 2, 'en'));
+        // Des octets n'ont pas de décimales.
+        $this->assertSame('0 B', human_size(0, 2, 'en'));
+        $this->assertSame('500 B', human_size(500, 2, 'en'));
+        $this->assertSame('685 o', human_size(685, 2, 'fr'));
         $this->assertSame('1.00 MB', human_size(1048576, 2, 'en'));
     }
 

@@ -306,10 +306,16 @@ class Checker extends Module_Checker
 
 	public function _member($id, $username, $onglet = '')
 	{
-		if (($user = $this->model2('user', $id)->check($username)) && !$user->deleted && (int) $user->id !== nf_compte_masque()
+		// Vérifié avec son VRAI pseudo ; l'adresse au mauvais pseudo — le membre l'a changé depuis — mène à la bonne au
+		// lieu de répondre 404 (m06).
+		$vrai = nf_titre_lu($this->db->select('username')->from('nf_user')->where('id', (int) $id)->row());
+
+		if ($vrai !== '' && ($user = $this->model2('user', $id)->check(url_title($vrai))) && !$user->deleted && (int) $user->id !== nf_compte_masque()
 			// Un onglet que ce profil n'a pas (module absent, rien à montrer) : page introuvable.
 			&& in_array((string) $onglet, array_column($this->module->onglets_profil($user), 'onglet'), TRUE))
 		{
+			nf_bon_titre((string) $username, $vrai, 'user/'.(int) $id, (string) $onglet !== '' ? '/'.$onglet : '');
+
 			return [$user, (string) $onglet];
 		}
 	}

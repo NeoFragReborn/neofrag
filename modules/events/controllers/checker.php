@@ -9,6 +9,7 @@ namespace NF\Modules\Events\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module_Checker;
 
+// couplage(teams): la page d'une équipe n'existe que si Matches::possibles() (m17)
 class Checker extends Module_Checker
 {
 	public function index($page = '')
@@ -29,29 +30,95 @@ class Checker extends Module_Checker
 
 	public function matches($page = '')
 	{
+		// Les matchs et les équipes demandent les modules Jeux et Équipes (m17) : sans eux, ces pages n'existent pas.
+		if (!\NF\Modules\Events\Models\Matches::possibles())
+		{
+			return;
+		}
+
 		return [$this->module->pagination->fix_items_per_page($this->config->events_per_page)->get_data($this->model()->get_events('filter', 'matches'), $page)];
 	}
 
 	public function upcoming($page = '')
 	{
+		// Les matchs et les équipes demandent les modules Jeux et Équipes (m17) : sans eux, ces pages n'existent pas.
+		if (!\NF\Modules\Events\Models\Matches::possibles())
+		{
+			return;
+		}
+
 		return [$this->module->pagination->fix_items_per_page($this->config->events_per_page)->get_data($this->model()->get_events('filter', 'upcoming'), $page)];
 	}
 
 	public function _type($type_id, $title, $page = '')
 	{
+		// Un type qui n'existe pas, ou qu'on n'a pas le droit de voir, n'a pas de page (elle répondait 200, vide) ; un
+		// titre qui n'est pas le bon mène au bon (m06).
+		$type = nf_titre_lu($this->db->select('title')->from('nf_events_types')->where('type_id', (int) $type_id)->row());
+
+		if ($type === '' || !$this->access('events', 'access_events_type', (int) $type_id))
+		{
+			return;
+		}
+
+		nf_bon_titre((string) $title, $type, 'events/type/'.(int) $type_id, (string) $page);
+
 		return [$this->module->pagination->fix_items_per_page($this->config->events_per_page)->get_data($this->model()->get_events('type', $type_id), $page)];
 	}
 
 	public function _team($team_id, $title, $page = '')
 	{
+		// Les matchs et les équipes demandent les modules Jeux et Équipes (m17) : sans eux, ces pages n'existent pas.
+		if (!\NF\Modules\Events\Models\Matches::possibles())
+		{
+			return;
+		}
+
+		// Une équipe qui n'existe pas n'a pas de page (elle répondait 200, vide) ; l'adresse porte le nom court de
+		// l'équipe, celui des liens (event.tpl.php).
+		$equipe = nf_titre_lu($this->db->select('name')->from('nf_teams')->where('team_id', (int) $team_id)->row());
+
+		if ($equipe === '')
+		{
+			return;
+		}
+
+		nf_bon_titre((string) $title, $equipe, 'events/team/'.(int) $team_id, (string) $page);
+
 		return [$this->module->pagination->fix_items_per_page($this->config->events_per_page)->get_data($this->model()->get_events('team', $team_id), $page)];
 	}
 
 	public function _event($event_id, $title)
 	{
-		if ($event = $this->model()->check_event($event_id, $title))
+		// Vérifié avec son VRAI titre (publication, droit de voir son type) ; l'adresse au mauvais titre mène à la bonne
+		// au lieu de répondre 404 (m06).
+		$titre = nf_titre_lu($this->db->select('title')->from('nf_events')->where('event_id', (int) $event_id)->row());
+
+		if ($titre !== '' && ($event = $this->model()->check_event($event_id, url_title($titre))))
 		{
-			return $event;
+			nf_bon_titre((string) $title, $titre, 'events/'.(int) $event_id);
+
+			// Dans l'ordre de la signature d'Index::_event(), colonne par colonne, comme le fait l'administration : la
+			// ligne entière, passée telle quelle, décalait tout depuis l'ajout de `publish_date` et `series_id` à la
+			// requête — `$type` recevait la date de publication, et la fiche d'un match n'en montrait plus rien
+			// (adversaire, score, jeu ; trouvé le 2026-10-10 en éprouvant m17).
+			return [
+				$event['event_id'],
+				$event['title'],
+				$event['type_id'],
+				$event['date'],
+				$event['date_end'],
+				$event['description'],
+				$event['private_description'],
+				$event['location'],
+				$event['image_id'],
+				$event['published'],
+				$event['type'],
+				$event['mode_id'],
+				$event['webtv'],
+				$event['website'],
+				$event['mode_title'],
+			];
 		}
 	}
 

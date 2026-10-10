@@ -15,15 +15,16 @@ class Events extends Module
 	{
 		return [
 			'title'       => $this->lang('Événements'),
-			'description' => $this->lang('Événements et matchs d\'une guilde ou d\'une équipe eSport : invitations avec réponse présent, absent ou peut-être, scores par manche, récurrence, rappels.'),
+			'description' => $this->lang('Les événements d\'une communauté : invitations avec réponse présent, absent ou peut-être, récurrence, rappels ; et, avec les modules Jeux et Équipes, les matchs et leurs scores par manche.'),
 			'icon'        => 'fas fa-trophy',
 			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
-			'presets'     => ['gaming'],
-			'requires'    => ['games', 'teams'],
+			// Une association, un club s'en servent sans jeux ni équipes (m17, 2026-10-10) : les matchs viennent avec eux.
+			'presets'     => ['communaute', 'association', 'gaming'],
+			'requires'    => [],
 			'admin'       => TRUE,
 			'version'     => '1.0',
 			'depends'     => [
@@ -77,7 +78,7 @@ class Events extends Module
 			'settings'    => function(){
 				return $this->form2()
 							->rule($this->form_number('events_per_page')
-										->title($this->lang('Nombre d\'événement par page'))
+										->title($this->lang('Nombre d\'événements par page'))
 										->value($this->config->events_per_page ?: '10')
 							)
 							->rule($this->form_checkbox('events_alert_mp')

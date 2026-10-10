@@ -153,7 +153,6 @@ return [
 	'720335b6' => 'Gaming / eSport',
 	'5ffcd177' => 'La base comunitaria più l’armamentario competitivo: squadre, partite, eventi, reclutamento, palmarès, partner e gamification.',
 	'8a3b82de' => 'Community',
-	'53a6ac20' => 'Notizie, forum di discussione e gallerie. Quanto serve per far vivere una community, senza l’armamentario eSport.',
 	'ddf9fbfb' => 'Solo nucleo',
 	'c0418d17' => 'Solo l’essenziale: pagine, commenti, menu, contatti, membri e messaggistica. Aggiungerai il resto dal marketplace quando ti servirà.',
 	'c1d8f9a3' => 'Indirizzo email',
@@ -196,7 +195,6 @@ return [
 	'df383219' => 'Correggi i punti in rosso — estensioni PHP mancanti, o permessi di scrittura sulla cartella <code>config/</code> — poi verifica di nuovo.',
 	'f43a187f' => 'Verifica di nuovo',
 	'6b41f3af' => 'Associazione / club',
-	'efd057dc' => 'Notizie, forum, gallerie, calendario, donazioni, newsletter, wiki e FAQ. Quanto serve per far vivere un’associazione o un club, senza l’armamentario eSport.',
 	'd716c0be' => 'Contenuti dimostrativi…',
 	'0a0551e7' => 'È richiesto PHP %s o successivo (questo PHP: %s).',
 	'7338e32d' => 'Questo PHP non sa calcolare l\'hash delle password con %s: serve un PHP compilato con Argon2.',
@@ -204,4 +202,6 @@ return [
 	'23bcdfc3' => 'disponibile',
 	'c2f31600' => 'assente in questo PHP',
 	'3e30f3e2' => 'Questo sito ha già un amministratore: l\'installazione è completata.',
+	'5c71bd6a' => 'Notizie, forum di discussione, gallerie ed eventi. Quanto serve per far vivere una community, senza l’armamentario eSport.',
+	'29d4b6b2' => 'Notizie, forum, gallerie, calendario, eventi, donazioni, newsletter, wiki e FAQ. Quanto serve per far vivere un’associazione o un club, senza l’armamentario eSport.',
 ];

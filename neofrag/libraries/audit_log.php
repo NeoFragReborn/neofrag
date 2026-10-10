@@ -93,6 +93,8 @@ class Audit_Log extends Library
 			'monitoring.journal.vide'                => NeoFrag()->lang('Journal des erreurs vidé'),
 			'monitoring.trace.vide'                  => NeoFrag()->lang('Trace des pages vidée'),
 			'monitoring.traductions.vide'            => NeoFrag()->lang('Liste des traductions manquantes vidée'),
+			'monitoring.introuvables.vide'           => NeoFrag()->lang('Relevé des pages introuvables vidé'),
+			'monitoring.images_editeur.effacees'    => NeoFrag()->lang('Images abandonnées de l’éditeur effacées'),
 			'monitoring.debogage.allume'             => NeoFrag()->lang('Mode débogage allumé'),
 			'monitoring.debogage.eteint'             => NeoFrag()->lang('Mode débogage éteint'),
 			'monitoring.trace.allume'                => NeoFrag()->lang('Trace des pages allumée'),

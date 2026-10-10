@@ -69,6 +69,26 @@ function looks_like_markdown($content): bool
 }
 
 /**
+ * Un texte simple — un ticket du Bugtracker, son commentaire — avec les images que le site garde : échappé, ses retours
+ * à la ligne rendus, et une seule marque reconnue, `![nom](chemin)`, pour une image de l'éditeur du site
+ * (`upload/editeur/…`, où le bot range une image jointe sur Discord par `POST forum/images`). Rien d'autre ne devient du
+ * HTML : une adresse d'ailleurs reste du texte (m10, 2026-10-10 — l'image d'un bogue envoyée sur Discord n'était
+ * qu'un lien, qui expire).
+ */
+function nf_texte_et_images(string $texte, ?string $base = NULL): string
+{
+	$base = preg_quote($base ?? (string) NeoFrag()->url->base, '#');
+
+	return (string) preg_replace_callback(
+		// Des segments simples, sans « .. » : la marque ne peut viser qu'une image du dossier de l'éditeur.
+		'#!\[([^\]\r\n]{0,200})\]\(('.$base.'upload/editeur/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-]+\.(?:png|jpe?g|gif|webp))\)#',
+		// Le nom est déjà échappé (nf_texte) ; le chemin n'a que des caractères sûrs.
+		static fn (array $m): string => '<img src="'.$m[2].'" alt="'.$m[1].'" class="img-fluid rounded d-block my-2" loading="lazy">',
+		nl2br(nf_texte($texte))
+	);
+}
+
+/**
  * Rendu universel : si content ressemble à du Markdown, convertit. Sinon retourne tel quel.
  */
 function render_content($content): string

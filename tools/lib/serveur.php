@@ -45,7 +45,7 @@ final class NfServeur
     /** @var resource|null */
     private $processus;
 
-    public function __construct(public readonly string $base, public readonly int $port, public readonly string $journal, $processus)
+    public function __construct(public readonly string $base, public readonly int $port, public readonly string $journal, $processus, private readonly string $racine = '')
     {
         $this->processus = $processus;
     }
@@ -76,6 +76,11 @@ final class NfServeur
         @proc_terminate($this->processus);
         @proc_close($this->processus);
         $this->processus = NULL;
+
+        if ($this->racine !== '')
+        {
+            nf_rendre_au_proprietaire($this->racine);
+        }
 
         // Rendre la main quand le port est VRAIMENT libre, pas quand on a demandé l'arrêt.
         for ($i = 0; $i < 30; $i++)
@@ -152,6 +157,72 @@ final class NfBocal
 }
 
 /**
+ * Le préfixe qui fait tourner le serveur sous le compte propriétaire de `$racine`, quand l'outil tourne en root et que le
+ * site appartient à un autre compte ; une chaîne vide sinon — on sert sous le compte de l'outil. `setpriv` REMPLACE le
+ * processus au lieu d'en lancer un fils (comme le ferait `runuser`) : le serveur garde le numéro que proc_open connaît,
+ * et arreter() tue toujours ses ouvriers.
+ */
+function nf_sous_le_compte_du_site(string $racine): string
+{
+    if (stripos(PHP_OS, 'WIN') === 0 || !function_exists('posix_geteuid') || posix_geteuid() !== 0)
+    {
+        return '';
+    }
+
+    $uid = @fileowner($racine);
+    $gid = @filegroup($racine);
+
+    if ($uid === FALSE || $gid === FALSE || $uid === 0 || trim((string) @shell_exec('command -v setpriv 2>/dev/null')) === '')
+    {
+        return '';
+    }
+
+    return sprintf('setpriv --reuid=%d --regid=%d --clear-groups -- ', $uid, $gid);
+}
+
+/**
+ * Lancé en root, le serveur intégré écrit au nom de root ce que le site écrit — son journal (`logs/neofrag.log`),
+ * son cache, ses envois — et le site, qui tourne sous un autre compte, ne peut plus y écrire : sur l'atelier, un
+ * avertissement par page tracée après un `check-mise-en-page` lancé en root (2026-10-08, ligne 0.43). À l'arrêt du
+ * serveur, tout fichier de root sous `logs/`, `cache/` et `upload/` revient au propriétaire de la racine du site.
+ * Rien à faire hors de root, ni pour un site qui appartient lui-même à root (le banc).
+ */
+function nf_rendre_au_proprietaire(string $racine): void
+{
+    if (!function_exists('posix_geteuid') || posix_geteuid() !== 0)
+    {
+        return;
+    }
+
+    $uid = @fileowner($racine);
+    $gid = @filegroup($racine);
+
+    if ($uid === FALSE || $gid === FALSE || $uid === 0)
+    {
+        return;
+    }
+
+    foreach (['logs', 'cache', 'upload'] as $dossier)
+    {
+        if (!is_dir($chemin = $racine.'/'.$dossier) || is_link($chemin))
+        {
+            continue;
+        }
+
+        $tous = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($chemin, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::SELF_FIRST);
+
+        foreach ([new SplFileInfo($chemin), ...$tous] as $fichier)
+        {
+            if (!$fichier->isLink() && @fileowner($fichier->getPathname()) === 0)
+            {
+                @chown($fichier->getPathname(), $uid);
+                @chgrp($fichier->getPathname(), $gid);
+            }
+        }
+    }
+}
+
+/**
  * Lance le serveur intégré sur la racine du dépôt, avec le routeur des outils.
  *
  * Refuse de juger si le port est déjà occupé, attend que le serveur réponde, et l'arrête à la fin
@@ -196,8 +267,14 @@ function nf_serveur(int $port, array $env = [], ?string $racine = NULL, ?string 
         $variables .= $nom.'='.escapeshellarg((string) $valeur).' ';
     }
 
-    $commande = sprintf('%s%s%s%s -S 127.0.0.1:%d -t %s%s',
-        $prefixe, $variables === '' ? '' : 'env '.$variables, escapeshellarg(PHP_BINARY), $options_php,
+    // Lancé en root sur un site qui appartient à un autre compte (l'atelier, à www-data) : le serveur tourne sous ce
+    // compte, comme le site en vrai — ce qu'il écrit (journal, cache, envois) ne devient pas la propriété de root, et le
+    // site, lui, peut encore y écrire pendant que l'outil tourne (deux avertissements dans le journal de l'atelier
+    // pendant un `check-mise-en-page`, 2026-10-10). nf_rendre_au_proprietaire() reste le filet de l'arrêt.
+    $sous_le_compte = nf_sous_le_compte_du_site($racine);
+
+    $commande = sprintf('%s%s%s%s%s -S 127.0.0.1:%d -t %s%s',
+        $prefixe, $sous_le_compte, $variables === '' ? '' : 'env '.$variables, escapeshellarg(PHP_BINARY), $options_php,
         $port, escapeshellarg($racine), $routeur);
 
     // Sous Windows, `env` n'existe pas : les variables passent par putenv() avant proc_open.
@@ -219,7 +296,7 @@ function nf_serveur(int $port, array $env = [], ?string $racine = NULL, ?string 
         nf_refus('impossible de lancer le serveur intégré : '.$commande);
     }
 
-    $serveur = new NfServeur(sprintf('http://127.0.0.1:%d', $port), $port, $journal, $processus);
+    $serveur = new NfServeur(sprintf('http://127.0.0.1:%d', $port), $port, $journal, $processus, $racine);
 
     register_shutdown_function(static function () use ($serveur): void {
         $serveur->arreter();

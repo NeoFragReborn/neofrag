@@ -2,11 +2,10 @@
 <ul class="list-group list-group-flush">
 	<?php foreach ($events as $event): ?>
 	<li class="list-group-item">
-		<?php if ($event['type'] == 1): ?>
+		<?php // Un événement de type « match » sans match (pas encore renseigné, ou sans les modules Jeux et Équipes) s'affiche comme un événement. ?>
+		<?php if ($event['type'] == 1 && ($match = $this->module('events')->model('matches')->get_match_info($event['event_id']))): ?>
 			<?php
 			echo icon('fas fa-crosshairs');
-
-			$match = $this->module('events')->model('matches')->get_match_info($event['event_id']);
 
 			$opponent = '&nbsp;'.$match['opponent']['title'];
 

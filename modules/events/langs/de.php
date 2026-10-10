@@ -63,8 +63,6 @@ return [
 	'f32268d3' => 'Konfigurierte Event-Typen',
 	'f48cb465' => 'Neues Event',
 	'fd283f69' => 'Kalender',
-	'f950d55c' => 'Termine und Matches einer Gilde oder eines E-Sport-Teams: Einladungen mit Antwort anwesend, abwesend oder vielleicht, Ergebnisse pro Runde, Wiederholung, Erinnerungen.',
-	'e80c902d' => 'Anzahl der Events pro Seite',
 	'46d72986' => 'Per privater Nachricht über Einladungen benachrichtigt werden',
 	'b1a096a2' => 'Events',
 	'52c9bbab' => 'Bearbeiten',
@@ -163,4 +161,8 @@ return [
 	'49a80df0' => 'Online',
 	'48b614a4' => 'Offline',
 	'ff8f2a30' => 'Administrator',
+	'0432964b' => 'Die Veranstaltungen einer Community: Einladungen mit der Antwort anwesend, abwesend oder vielleicht, Wiederholung, Erinnerungen; und mit den Modulen Spiele und Teams die Matches und ihre Ergebnisse pro Runde.',
+	'e981b5d1' => 'Standard',
+	'bb9aea01' => 'Match',
+	'cbf0a999' => 'Anzahl der Events pro Seite',
 ];

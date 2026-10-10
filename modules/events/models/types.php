@@ -45,7 +45,8 @@ class Types extends Model
 
 	public function get_types_list()
 	{
-		return ['Standard', 'Match'];
+		// Sans les modules Jeux et Équipes, pas de match à créer (m17).
+		return \NF\Modules\Events\Models\Matches::possibles() ? [$this->lang('Standard'), $this->lang('Match')] : [$this->lang('Standard')];
 	}
 
 	public function add($type, $title, $color, $icon)

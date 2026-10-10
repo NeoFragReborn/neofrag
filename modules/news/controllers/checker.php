@@ -23,8 +23,14 @@ class Checker extends Module_Checker
 
 	public function _category($category_id, $name, $page = '')
 	{
-		if ($category = $this->model('categories')->check_category($category_id, $name))
+		// L'adresse porte le nom court de la catégorie, refait à chaque changement de titre : vérifiée avec le VRAI, une
+		// ancienne adresse mène à la nouvelle au lieu de répondre 404 (m06).
+		$vrai = nf_titre_lu($this->db->select('name')->from('nf_news_categories')->where('category_id', (int) $category_id)->row());
+
+		if ($vrai !== '' && ($category = $this->model('categories')->check_category($category_id, $vrai)))
 		{
+			nf_bon_titre((string) $name, $vrai, 'news/category/'.(int) $category_id, (string) $page);
+
 			return [$category['title'], $this->module->pagination->fix_items_per_page($this->config->news_per_page)->get_data($this->model()->get_news('category', $category_id), $page), (int)$category_id];
 		}
 	}

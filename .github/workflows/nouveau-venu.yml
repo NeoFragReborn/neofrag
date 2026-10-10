@@ -5,9 +5,7 @@ name: Nouveau venu
 # que le guide demande : PHP et ses extensions, Composer, MySQL. Aucun `actions/checkout` du projet
 # dans le dossier joué : le code vient du `git clone` écrit dans le README.
 #
-# Sur un dépôt public, chaque semaine ; ailleurs, à la main. Un dépôt encore privé se clone avec le
-# jeton de l'application de l'organisation, posé dans la configuration de git : les commandes jouées,
-# elles, ne changent pas.
+# Chaque semaine, dans le dépôt public, où les minutes sont gratuites ; et à la main.
 on:
   schedule:
     - cron: '53 4 * * 1'
@@ -23,7 +21,6 @@ concurrency:
 jobs:
   nouveau-venu:
     name: Le README et le guide du contributeur, à la lettre
-    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     env:
@@ -48,20 +45,5 @@ jobs:
           sudo systemctl start mysql.service
           mysql -uroot -proot -e "CREATE USER '$NF_NV_DB_USER'@'localhost' IDENTIFIED BY '$NF_NV_DB_PASS';
             GRANT ALL PRIVILEGES ON *.* TO '$NF_NV_DB_USER'@'localhost' WITH GRANT OPTION;"
-      - name: Jeton de l'application (dépôts encore privés)
-        if: github.event.repository.private
-        id: app
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          private-key: ${{ secrets.NF_APP_CLE }}
-          owner: ${{ github.repository_owner }}
-      - name: Accès en lecture aux dépôts de l'organisation
-        if: github.event.repository.private
-        run: git config --global url."https://x-access-token:${{ steps.app.outputs.token }}@github.com/".insteadOf "https://github.com/"
-      # Hors du dépôt neofrag — dans un dépôt où l'on éprouve une version candidate —, le README clone la
-      # candidate : ses branches `neofrag` et `extensions`, poussées à côté du produit assemblé.
       - name: Le parcours, joué à la lettre
-        run: >-
-          php outil/tools/check-nouveau-venu.php --dossier="$RUNNER_TEMP/nouveau-venu"
-          ${{ github.repository != 'NeoFragReborn/neofrag' && format('--depot-neofrag=https://github.com/{0}.git#neofrag --depot-extensions=https://github.com/{0}.git#extensions', github.repository) || '' }}
+        run: php outil/tools/check-nouveau-venu.php --dossier="$RUNNER_TEMP/nouveau-venu"

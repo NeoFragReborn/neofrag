@@ -56,6 +56,11 @@ declare(strict_types=1);
  * FRANÇAIS — écrit en dur, hors des traductions. « Tout le CMS doit être multilingue »
  * (2026-09-23) ; `check-langs` ne voit que ce qui passe par `lang()`.
  *   php tools/check-mise-en-page.php --par-modele=2 --max=1000 --parallele=3 --detail
+ *   php tools/check-mise-en-page.php --bandeau=0            sans la passe du bandeau
+ *
+ * `--bandeau=40` (par défaut) pose ensuite sur chaque page un faux bandeau de démo de 40 px, et `sous-bandeau.js` juge,
+ * page en haut puis défilée, ce qui passe dessous : un en-tête ou un panneau collé caché par le bandeau de la démo ne
+ * se voit qu'une fois la page défilée (2026-10-08). Au plus petit écran demandé et au plus grand jusqu'à 1 440 px.
  */
 
 require __DIR__.'/lib/outil.php';
@@ -65,6 +70,7 @@ require __DIR__.'/lib/serveur.php';
 require __DIR__.'/lib/journal.php';
 require __DIR__.'/lib/parcours.php';
 require __DIR__.'/lib/vierge.php';
+require __DIR__.'/lib/mise-en-page.php';
 
 [$o] = nf_options([
     'themes'     => '',
@@ -77,6 +83,7 @@ require __DIR__.'/lib/vierge.php';
     'modes'      => 'clair,sombre',
     'profils'    => 'admin,visiteur',
     'langue'     => 'fr',
+    'bandeau'    => 40,
     'detail'     => FALSE,
     'port'       => 0,
 ]);
@@ -115,114 +122,7 @@ if (!$largeurs)
     nf_refus('--largeurs= : aucune largeur exploitable');
 }
 
-if (!is_dir($racine.'/node_modules/@playwright/test'))
-{
-    nf_refus('Playwright absent (node_modules/@playwright/test) — `npm install` à la racine du dépôt');
-}
-
-$node = trim((string) @shell_exec(stripos(PHP_OS, 'WIN') === 0 ? 'where node 2>NUL' : 'command -v node 2>/dev/null'));
-$node = $node === '' ? '' : explode("\n", $node)[0];
-
-if ($node === '' || !is_file($node))
-{
-    nf_refus('node introuvable — installer Node.js');
-}
-
-/** Le modèle d'une adresse : ses identifiants et le segment qui suit un identifiant sont effacés. */
-function modele(string $chemin): string
-{
-    $segments = explode('/', trim($chemin, '/'));
-    $apres_id = FALSE;
-
-    foreach ($segments as $i => $s)
-    {
-        if (ctype_digit($s))
-        {
-            $segments[$i] = '{n}';
-            $apres_id     = TRUE;
-        }
-        else if ($apres_id)
-        {
-            $segments[$i] = '{s}';
-            $apres_id     = FALSE;
-        }
-    }
-
-    return '/'.implode('/', $segments);
-}
-
-/**
- * Les pages à rendre : `--par-modele` représentantes par modèle d'adresse, séparées en deux familles.
- *
- * @param  list<string> $chemins
- * @return array{admin: list<string>, public: list<string>, modeles: int}
- */
-function representantes(array $chemins, int $par_modele): array
-{
-    $par = [];
-
-    foreach ($chemins as $c)
-    {
-        $m = modele($c);
-
-        if (count($par[$m] ?? []) < $par_modele)
-        {
-            $par[$m][] = $c;
-        }
-    }
-
-    $admin = $public = [];
-
-    foreach ($par as $m => $liste)
-    {
-        foreach ($liste as $c)
-        {
-            preg_match('#^/[a-z]{2}/admin(/|$)#', $c) ? $admin[] = $c : $public[] = $c;
-        }
-    }
-
-    return ['admin' => $admin, 'public' => $public, 'modeles' => count($par)];
-}
-
-/**
- * Rend des pages à toutes les largeurs par le pilote Playwright, et rend ses résultats.
- *
- * @param  list<string> $pages
- * @param  list<int>    $largeurs
- * @return list<array{chemin: string, code: int, erreur: string, mesures: list<array<string, mixed>>}>
- */
-function piloter(string $node, string $base, array $pages, array $largeurs, int $parallele): array
-{
-    if (!$pages)
-    {
-        return [];
-    }
-
-    $travail  = nf_temp('mise-en-page-travail.json');
-    $resultat = nf_temp('mise-en-page-resultat.json');
-    @unlink($resultat);
-
-    file_put_contents($travail, (string) json_encode([
-        'base' => rtrim($base, '/'), 'pages' => $pages, 'largeurs' => $largeurs,
-        'hauteur' => 900, 'parallele' => $parallele, 'delai' => 120,
-    ]));
-
-    $sortie = nf_temp('mise-en-page-pilote.log');
-    $code   = 0;
-    $cmd    = sprintf('cd %s && %s tests/MiseEnPage/pilote.js %s %s > %s 2>&1',
-        escapeshellarg(nf_racine()), escapeshellarg($node), escapeshellarg($travail), escapeshellarg($resultat), escapeshellarg($sortie));
-
-    exec($cmd, $rien, $code);
-
-    $json = is_file($resultat) ? json_decode((string) file_get_contents($resultat), TRUE) : NULL;
-
-    if (!is_array($json))
-    {
-        nf_refus('le pilote n\'a rien rendu (code '.$code.') : '.trim((string) @file_get_contents($sortie)));
-    }
-
-    return $json;
-}
+$node = nf_mep_node();
 
 /**
  * Mesure UN site : parcours, puis rendu des pages d'administration et des pages publiques dans
@@ -273,7 +173,7 @@ function mesurer_site(string $nom, string $site, mysqli $db, int $port, string $
         $serveur->arreter();
     }
 
-    $choix = representantes($chemins, max(1, (int) $o['par-modele']));
+    $choix = nf_mep_representantes($chemins, max(1, (int) $o['par-modele']));
 
     printf("[%s] %d page(s), %d modèle(s) : %d d'administration, %d publique(s) × %d thème(s) (%s) × %d mode(s) × %d profil(s) × %d largeur(s)\n",
         $nom, count($chemins), $choix['modeles'], count($choix['admin']), count($choix['public']), count($publics), implode(', ', $publics), count($modes), count(explode(',', (string) $o['profils'])), count($largeurs));
@@ -328,7 +228,7 @@ function mesurer_site(string $nom, string $site, mysqli $db, int $port, string $
                 $etiquette = $theme_nom.' '.$mode.($profil === 'visiteur' ? ' visiteur' : '');
                 $debut     = microtime(TRUE);
                 $avant     = nf_journal_taille($journal);
-                $sortie    = piloter($node, $serveur->base, $pages, $largeurs, max(1, (int) $o['parallele']));
+                $sortie    = nf_mep_piloter($node, $serveur->base, $pages, $largeurs, max(1, (int) $o['parallele']), ['bandeau' => max(0, (int) $o['bandeau'])]);
 
                 if ($avec_journal)
                 {
@@ -352,7 +252,7 @@ function mesurer_site(string $nom, string $site, mysqli $db, int $port, string $
                         continue;
                     }
 
-                    $lieu_page = ['site' => $nom, 'theme' => $etiquette, 'largeur' => 0, 'modele' => modele($r['chemin']), 'chemin' => $r['chemin']];
+                    $lieu_page = ['site' => $nom, 'theme' => $etiquette, 'largeur' => 0, 'modele' => nf_mep_modele($r['chemin']), 'chemin' => $r['chemin']];
 
                     // Ce que le PILOTE a vu, une fois par page : erreurs JavaScript et de console,
                     // fichiers du site introuvables.
@@ -371,10 +271,17 @@ function mesurer_site(string $nom, string $site, mysqli $db, int $port, string $
                         $rendus++;
                         $lieu = ['largeur' => $largeurs[$i]] + $lieu_page;
 
-                        foreach (constats_de_la_sonde($m) as $c)
+                        foreach (nf_mep_constats($m) as $c)
                         {
                             $constats[] = $lieu + $c;
                         }
+                    }
+
+                    // Ce qui passe sous un bandeau du haut de page, la page défilée (sous-bandeau.js).
+                    foreach ($r['bandeau'] ?? [] as $x)
+                    {
+                        $constats[] = ['largeur' => (int) $x['largeur']] + $lieu_page
+                            + ['type' => 'sous le bandeau', 'cle' => $x['el'].($x['bande'] !== '' ? ' sous '.$x['bande'] : ''), 'detail' => $x['detail']];
                     }
                 }
 
@@ -392,77 +299,6 @@ function mesurer_site(string $nom, string $site, mysqli $db, int $port, string $
 
     return ['constats' => $constats, 'muettes' => $muettes, 'reservees' => array_keys($reservees), 'journal' => $journaux, 'pages' => count($chemins),
             'modeles' => $choix['modeles'], 'rendus' => $rendus, 'themes' => $publics, 'absents' => $absents];
-}
-
-/**
- * Le verdict d'une sonde, traduit en constats : un type, une CLÉ (ce qui identifie le défaut d'une
- * page à l'autre) et un détail lisible.
- *
- * @param  array<string, mixed> $m
- * @return list<array{type: string, cle: string, detail: string}>
- */
-function constats_de_la_sonde(array $m): array
-{
-    $c = [];
-
-    if (!empty($m['deborde']))
-    {
-        $coupables = implode(', ', array_map(fn (array $x): string => $x['el'].' (+'.$x['depasse'].' px)', $m['coupables'] ?? []));
-        $c[] = ['type' => 'débordement', 'cle' => $coupables !== '' ? $coupables : 'la page', 'detail' => $m['deborde'].' px trop large'];
-    }
-
-    foreach ($m['tronques'] ?? [] as $t)
-    {
-        $c[] = ['type' => 'texte tronqué', 'cle' => $t['el'], 'detail' => '« '.$t['texte'].' » dépasse de '.$t['depasse'].' px'];
-    }
-
-    foreach ($m['escaliers'] ?? [] as $e)
-    {
-        $c[] = ['type' => 'boutons en escalier', 'cle' => $e['el'], 'detail' => $e['boutons'].' boutons sur '.$e['lignes'].' lignes'];
-    }
-
-    foreach ($m['chevauchements'] ?? [] as $x)
-    {
-        $c[] = ['type' => 'chevauchement', 'cle' => $x['el'].' sur '.$x['sur'], 'detail' => '« '.$x['texte'].' »'];
-    }
-
-    foreach ($m['images'] ?? [] as $x)
-    {
-        $c[] = ['type' => 'image '.explode(' ', $x['defaut'])[0], 'cle' => $x['el'].' '.$x['src'], 'detail' => $x['src'].' — '.$x['defaut']];
-    }
-
-    foreach ($m['icones'] ?? [] as $x)
-    {
-        $c[] = ['type' => 'icône inconnue', 'cle' => $x['classes'], 'detail' => $x['el'].' — classes « '.$x['classes'].' »'];
-    }
-
-    foreach ($m['techniques'] ?? [] as $x)
-    {
-        $c[] = ['type' => 'texte technique', 'cle' => $x['defaut'].' : '.$x['el'], 'detail' => $x['defaut'].' — « '.$x['texte'].' »'];
-    }
-
-    foreach ($m['contrastes'] ?? [] as $x)
-    {
-        $c[] = ['type' => 'contraste', 'cle' => $x['el'].' '.$x['couleur'].' / '.$x['fond'], 'detail' => sprintf('« %s » %s:1 (exigé %s:1) — %s sur %s', $x['texte'], $x['ratio'], $x['exige'], $x['couleur'], $x['fond'])];
-    }
-
-    foreach ($m['horsEcran'] ?? [] as $x)
-    {
-        $c[] = ['type' => 'texte hors écran', 'cle' => $x['el'], 'detail' => '« '.$x['texte'].' » coupé de '.$x['depasse'].' px par le bord gauche'];
-    }
-
-    foreach ($m['cibles'] ?? [] as $x)
-    {
-        $c[] = ['type' => 'cible trop petite', 'cle' => $x['el'], 'detail' => '« '.($x['texte'] ?? '').' » '.$x['taille'].' — 24×24 px au moins sur un téléphone'];
-    }
-
-    // La clé est le TEXTE : le même libellé oublié se retrouve sur cent pages, c'est un seul oubli.
-    foreach ($m['francais'] ?? [] as $x)
-    {
-        $c[] = ['type' => 'texte en français', 'cle' => '« '.$x['texte'].' »'.($x['ou'] !== 'texte' ? ' ('.$x['ou'].')' : ''), 'detail' => $x['el'], 'texte' => $x['texte']];
-    }
-
-    return $c;
 }
 
 // ── Les sites mesurés ───────────────────────────────────────────────────────────────────
@@ -541,44 +377,27 @@ function origine_du_texte(string $texte): array
 }
 
 // ── Le rapport : un défaut, ses lieux ───────────────────────────────────────────────────
-$defauts = [];
+// Un texte resté en français se rattache à son origine ; du CONTENU saisi en base est écarté.
 $contenus = 0;
-
-foreach ($bilans as $b)
-{
-    foreach ($b['constats'] as $c)
+$defauts  = nf_mep_regrouper(array_merge(...array_values(array_column($bilans, 'constats'))), static function (array $c) use (&$contenus): ?array {
+    if ($c['type'] !== 'texte en français')
     {
-        $cle = $c['type'].'|'.$c['cle'];
-
-        if ($c['type'] === 'texte en français' && !isset($defauts[$cle]))
-        {
-            $origine = origine_du_texte((string) ($c['texte'] ?? ''));
-
-            if ($origine['genre'] === 'contenu')
-            {
-                $contenus++;
-                continue;
-            }
-
-            $c['detail'] = ['code' => 'écrit en dur : ', 'donnee' => 'donnée livrée : ', 'traduction' => 'traduction manquante (clé française) : '][$origine['genre']].$origine['lieu'].' — '.$c['detail'];
-        }
-
-        $d   = &$defauts[$cle];
-        $d['type']  = $c['type'];
-        $d['cle']   = $c['cle'];
-        $d['detail'] ??= $c['detail'];
-        $d['sites'][$c['site']] = TRUE;
-        $d['themes'][$c['theme']] = TRUE;
-        if ($c['largeur'])
-        {
-            $d['largeurs'][$c['largeur']] = TRUE;
-        }
-        $d['modeles'][$c['modele']] = $c['chemin'];
-        unset($d);
+        return $c;
     }
-}
 
-uasort($defauts, fn (array $a, array $b): int => [$a['type'], -count($b['modeles'])] <=> [$b['type'], -count($a['modeles'])]);
+    $origine = origine_du_texte((string) ($c['texte'] ?? ''));
+
+    if ($origine['genre'] === 'contenu')
+    {
+        $contenus++;
+
+        return NULL;
+    }
+
+    $c['detail'] = ['code' => 'écrit en dur : ', 'donnee' => 'donnée livrée : ', 'traduction' => 'traduction manquante (clé française) : '][$origine['genre']].$origine['lieu'].' — '.$c['detail'];
+
+    return $c;
+});
 
 $rendus  = array_sum(array_column($bilans, 'rendus'));
 $muettes = array_merge(...array_values(array_map(fn (array $b): array => $b['muettes'], $bilans)));
@@ -596,17 +415,7 @@ if ($contenus)
 
 echo "\n";
 
-foreach ($defauts as $d)
-{
-    $d['largeurs'] ??= [];
-    ksort($d['largeurs']);
-    printf("  ✗ %-20s %s\n", $d['type'], mb_substr($d['cle'], 0, 120));
-    printf("      %s\n", mb_substr($d['detail'], 0, 160));
-    printf("      %s · %s%s\n", implode(' + ', array_keys($d['sites'])), implode(', ', array_keys($d['themes'])), $d['largeurs'] ? ' · '.implode(', ', array_keys($d['largeurs'])).' px' : '');
-
-    $modeles = array_values($d['modeles']);
-    printf("      %d page(s) : %s%s\n", count($modeles), implode(', ', array_slice($modeles, 0, $o['detail'] ? 50 : 4)), count($modeles) > 4 && !$o['detail'] ? ' …' : '');
-}
+nf_mep_montrer($defauts, (bool) $o['detail']);
 
 // Le journal, thème par thème.
 $fautes_journal = 0;

@@ -9,6 +9,8 @@ namespace NF\Modules\Events\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 
+// couplage(games): les modes et les cartes d'un match — formulaires et manches ne s'ouvrent que si Matches::possibles() (m17)
+// couplage(teams): les équipes d'un match — même garde
 class Admin extends Controller_Module
 {
 	public function index($events)
@@ -32,7 +34,7 @@ class Admin extends Controller_Module
 			$this->add_action($this->button($this->lang('Nouvel événement'), 'fas fa-plus', 'primary')->url('admin/events/add'));
 		}
 
-		if ($this->is_authorized('modify_event'))
+		if ($this->is_authorized('modify_event') && \NF\Modules\Events\Models\Matches::possibles())
 		{
 			$this->add_action($this->button($this->lang('Adversaires'), 'fas fa-shield-alt', 'secondary')->url('admin/events/opponents'));
 		}
@@ -278,7 +280,8 @@ class Admin extends Controller_Module
 
 	public function _filters()
 	{
-		return $this->view('filters', ['type' => '']);
+		// Sans matchs possibles (m17), les filtres « Standards / Résultats / Matchs à jouer » n'ont rien à trier.
+		return \NF\Modules\Events\Models\Matches::possibles() ? $this->view('filters', ['type' => '']) : '';
 	}
 
 	public function add()
@@ -392,7 +395,7 @@ class Admin extends Controller_Module
 									->add_back('admin/events')
 									->save();
 
-		if ($type == 1)//Matches
+		if ($type == 1 && \NF\Modules\Events\Models\Matches::possibles())//Matches (m17 : avec les modules Jeux et Équipes)
 		{
 			$match = $this->db->from('nf_events_matches')->where('event_id', $event_id)->row();
 
@@ -575,7 +578,7 @@ class Admin extends Controller_Module
 							->heading('Éditer l\'événement', 'fas fa-align-left')
 							->body($form_default->display());
 
-		if ($type == 1)//Matches
+		if ($type == 1 && \NF\Modules\Events\Models\Matches::possibles())//Matches (m17 : avec les modules Jeux et Équipes)
 		{
 			$this	->table()
 					->add_columns([

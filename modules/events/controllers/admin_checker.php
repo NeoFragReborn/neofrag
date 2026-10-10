@@ -23,20 +23,24 @@ class Admin_Checker extends Module_Checker
 
 	public function _matches($page = '')
 	{
+		// Les matchs demandent les modules Jeux et Équipes (m17).
+		if (!\NF\Modules\Events\Models\Matches::possibles())
+		{
+			return;
+		}
+
 		return [$this->module->pagination->get_data($this->model()->get_events('filter', 'matches'), $page)];
 	}
 
 	public function upcoming($page = '')
 	{
-		return [$this->module->pagination->get_data($this->model()->get_events('filter', 'upcoming'), $page)];
-	}
-
-	public function _event($event_id, $title)
-	{
-		if ($event = $this->model()->check_event($event_id, $title))
+		// Les matchs demandent les modules Jeux et Équipes (m17).
+		if (!\NF\Modules\Events\Models\Matches::possibles())
 		{
-			return $event;
+			return;
 		}
+
+		return [$this->module->pagination->get_data($this->model()->get_events('filter', 'upcoming'), $page)];
 	}
 
 	public function add()
@@ -177,6 +181,11 @@ class Admin_Checker extends Module_Checker
 
 	public function _opponents()
 	{
+		if (!\NF\Modules\Events\Models\Matches::possibles())
+		{
+			return;
+		}
+
 		if (!$this->is_authorized('modify_event'))
 		{
 			$this->error->unauthorized();
@@ -187,6 +196,11 @@ class Admin_Checker extends Module_Checker
 
 	public function _opponents_add()
 	{
+		if (!\NF\Modules\Events\Models\Matches::possibles())
+		{
+			return;
+		}
+
 		if (!$this->is_authorized('modify_event'))
 		{
 			$this->error->unauthorized();
@@ -197,6 +211,11 @@ class Admin_Checker extends Module_Checker
 
 	public function _opponents_edit($opponent_id, $name)
 	{
+		if (!\NF\Modules\Events\Models\Matches::possibles())
+		{
+			return;
+		}
+
 		if (!$this->is_authorized('modify_event'))
 		{
 			$this->error->unauthorized();
@@ -210,6 +229,11 @@ class Admin_Checker extends Module_Checker
 
 	public function _opponents_delete($opponent_id, $name)
 	{
+		if (!\NF\Modules\Events\Models\Matches::possibles())
+		{
+			return;
+		}
+
 		if (!$this->is_authorized('delete_event'))
 		{
 			$this->error->unauthorized();

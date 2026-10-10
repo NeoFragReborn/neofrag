@@ -6,8 +6,7 @@ name: Compatibilité
 # pour de vrai (`ci-install`), joue toute la suite de tests (intégration et amorçage du framework
 # compris) et installe chacun des cinq profils d'installation (`check-install-profiles`).
 #
-# Sur un dépôt public, les minutes sont gratuites : la matrice joue chaque semaine. Sur un dépôt privé,
-# elle coûte une heure et demie de minutes : à la main seulement.
+# Chaque semaine, dans le dépôt public, où les minutes sont gratuites ; et à la main.
 on:
   schedule:
     - cron: '17 4 * * 1'
@@ -23,7 +22,6 @@ concurrency:
 jobs:
   case:
     name: PHP ${{ matrix.php }} · ${{ matrix.base.nom }}
-    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     strategy:
@@ -73,9 +71,6 @@ jobs:
           coverage: none
       # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: La version de la base
         run: mysql -h127.0.0.1 -P3306 -uroot -proot -e 'SELECT VERSION()'
       - name: composer install

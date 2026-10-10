@@ -64,8 +64,7 @@ CREATE TABLE IF NOT EXISTS `nf_events_matches` (
   KEY `mode_id` (`mode_id`),
   KEY `team_id` (`team_id`),
   CONSTRAINT `nf_events_matches_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `nf_events` (`event_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `nf_events_matches_ibfk_2` FOREIGN KEY (`opponent_id`) REFERENCES `nf_events_matches_opponents` (`opponent_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `nf_events_matches_ibfk_3` FOREIGN KEY (`mode_id`) REFERENCES `nf_games_modes` (`mode_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `nf_events_matches_ibfk_2` FOREIGN KEY (`opponent_id`) REFERENCES `nf_events_matches_opponents` (`opponent_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_events_matches_opponents` (
@@ -88,7 +87,6 @@ CREATE TABLE IF NOT EXISTS `nf_events_matches_rounds` (
   PRIMARY KEY (`round_id`),
   KEY `event_id` (`event_id`),
   KEY `map_id` (`map_id`),
-  CONSTRAINT `nf_events_matches_rounds_ibfk_1` FOREIGN KEY (`map_id`) REFERENCES `nf_games_maps` (`map_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_events_matches_rounds_ibfk_2` FOREIGN KEY (`event_id`) REFERENCES `nf_events` (`event_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

@@ -28,8 +28,14 @@ class Checker extends Module_Checker
 
 	public function _recruit($recruit_id, $title)
 	{
-		if ($recruit = $this->model()->check_recruit($recruit_id, $title))
+		// Vérifiée avec son VRAI titre (une offre fermée reste introuvable) ; l'adresse au mauvais titre mène à la bonne
+		// au lieu de répondre 404 (m06).
+		$titre = nf_titre_lu($this->db->select('title')->from('nf_recruits')->where('recruit_id', (int) $recruit_id)->row());
+
+		if ($titre !== '' && ($recruit = $this->model()->check_recruit($recruit_id, url_title($titre))))
 		{
+			nf_bon_titre((string) $title, $titre, 'recruits/'.(int) $recruit_id);
+
 			return [
 				'recruit_id'           => $recruit['recruit_id'],
 				'title'                => $recruit['title'],
@@ -101,7 +107,32 @@ class Checker extends Module_Checker
 		{
 			if ($this->user->id == $candidacy['user_id'])
 			{
-				return $candidacy;
+				// Dans l'ordre de la signature d'Index::_candidacy(), colonne par colonne, comme le fait l'administration :
+				// la ligne entière, passée telle quelle, décalait tout depuis l'ajout de la colonne `custom` — l'intitulé
+				// de l'annonce recevait les réponses aux champs personnalisés, l'icône l'intitulé, et ainsi de suite
+				// (trouvé le 2026-10-10 en passant en revue tous les checkers).
+				return [
+					$candidacy['candidacy_id'],
+					$candidacy['recruit_id'],
+					$candidacy['date'],
+					$candidacy['user_id'],
+					$candidacy['pseudo'],
+					$candidacy['email'],
+					$candidacy['date_of_birth'],
+					$candidacy['presentation'],
+					$candidacy['motivations'],
+					$candidacy['experiences'],
+					$candidacy['status'],
+					$candidacy['reply'],
+					$candidacy['title'],
+					$candidacy['icon'],
+					$candidacy['role'],
+					$candidacy['team_id'],
+					$candidacy['team_name'],
+					$candidacy['username'],
+					$candidacy['avatar'],
+					$candidacy['sex'],
+				];
 			}
 
 			$this->error->unauthorized();

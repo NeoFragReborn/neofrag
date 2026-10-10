@@ -5,16 +5,6 @@ description: >-
   NeoFragReborn/extensions et les pose dans l'arbre (tools/assembler.php). Là où ils sont déjà — le
   dépôt de développement —, elle ne fait rien.
 
-inputs:
-  app-id:
-    description: "L'application de l'organisation, tant qu'extensions est privé (vide une fois public)."
-    required: false
-    default: ''
-  app-cle:
-    description: "Sa clé privée."
-    required: false
-    default: ''
-
 runs:
   using: composite
   steps:
@@ -28,16 +18,6 @@ runs:
           echo "poser=non" >> "$GITHUB_OUTPUT"
         fi
 
-    - name: Jeton de lecture d'extensions (dépôt encore privé)
-      id: jeton
-      if: ${{ steps.besoin.outputs.poser == 'oui' && inputs.app-id != '' }}
-      uses: actions/create-github-app-token@v2
-      with:
-        app-id: ${{ inputs.app-id }}
-        private-key: ${{ inputs.app-cle }}
-        owner: NeoFragReborn
-        repositories: extensions
-
     # Une VERSION publiée (une étiquette vX.Y.Z sur ce commit) se juge avec les addons de la même version.
     # Les deux dépôts partent l'un après l'autre : le 2026-10-04, neofrag 1.2.26 a été testé avec les
     # addons de la 1.2.25, encore sur main, et sa CI est restée rouge. On attend donc l'étiquette jumelle,
@@ -46,11 +26,8 @@ runs:
       id: partenaire
       if: ${{ steps.besoin.outputs.poser == 'oui' }}
       shell: bash
-      env:
-        JETON: ${{ steps.jeton.outputs.token }}
       run: |
         acces="https://github.com"
-        [ -n "$JETON" ] && acces="https://x-access-token:${JETON}@github.com"
         # awk lit TOUTE la liste et ne garde que la première correspondance : un `exit` fermait le tuyau avant la
         # fin, git recevait SIGPIPE (code 141), et `pipefail` faisait échouer l'étape — au hasard du débit,
         # selon que la liste tenait ou non dans le tampon (CI publique rouge à la 1.2.32, 2026-10-06).
@@ -78,7 +55,6 @@ runs:
         repository: NeoFragReborn/extensions
         ref: ${{ steps.partenaire.outputs.ref }}
         path: _extensions
-        token: ${{ steps.jeton.outputs.token || github.token }}
 
     # Les addons posés sont inscrits dans .git/info/exclude ; le clone, lui, n'a plus rien à faire là.
     - name: Assembler

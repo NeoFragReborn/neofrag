@@ -158,6 +158,18 @@ span.monitoring-icon-status {
 	padding: 8px 15px;
 }
 
+/* Le texte d'une notification se replie au téléphone — un chemin de fichier en `code` compris, que le thème garde sur
+   une ligne — au lieu d'élargir le tableau au-delà de la carte ; l'étiquette, elle, reste entière (2026-10-10). */
+.panel-notifications .table-notifications td.align-middle,
+.panel-notifications .table-notifications td.align-middle code {
+	white-space: normal;
+	overflow-wrap: anywhere;
+}
+
+.panel-notifications .table-notifications .badge {
+	white-space: nowrap;
+}
+
 .panel-notifications .table-notifications span.label {
 	padding: 3px 6px;
 	display: inline-block;

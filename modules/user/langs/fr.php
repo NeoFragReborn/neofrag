@@ -39,7 +39,7 @@ return [
 	'33fbabac' => 'Profil du membre',
 	'36c61dab' => 'Groupes du membre édités',
 	'38012b05' => 'Répondre',
-	'3b5fa87a' => 'Contact',
+	'3b5fa87a' => 'Contacter',
 	'3c1747c6' => 'Groupe ajouté',
 	'3dcd8730' => 'Aucune session active',
 	'3dd30c0f' => 'Adresse e-mail introuvable',

@@ -2363,6 +2363,8 @@ i.icon:only-child { margin: 0; }
 
 .events-list-card { /* uses .card baseline */ }
 .events-list-body { padding: 0; }
+/* Le champ de recherche du tableau touchait le bord de la carte : le corps n'a pas de marge, pour le tableau (2026-10-10). */
+.events-list-body .table-search { padding: 12px 16px 0; }
 
 .events-list-filters {
 	display: flex;

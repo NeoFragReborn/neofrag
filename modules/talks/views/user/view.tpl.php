@@ -1,7 +1,7 @@
 <div class="row">
 	<div class="col-md-9">
 		<div class="card talks-conversation">
-			<div class="card-header d-flex justify-content-between align-items-center">
+			<div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
 				<div>
 					<?php
 						$icon = $talk['type'] === 'public' ? 'fas fa-hashtag' : ($talk['type'] === 'group' ? 'fas fa-users' : 'fas fa-user');
@@ -11,7 +11,8 @@
 						<small class="text-muted"><?php echo nf_texte($talk['description']) ?></small>
 					<?php endif ?>
 				</div>
-				<div class="actions">
+				<?php /* Au téléphone, les boutons passent à la ligne : sans écart, « Inviter » touchait « Quitter » (2026-10-10). */ ?>
+				<div class="actions d-flex flex-wrap gap-1">
 					<?php echo implode(' ', $actions) ?>
 				</div>
 			</div>

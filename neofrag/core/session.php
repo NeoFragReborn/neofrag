@@ -280,6 +280,8 @@ class Session extends Core
 	 *   - nouvelle adresse e-mail jamais confirmée : deux jours, la vie de son lien (User::ADRESSE_DUREE) ;
 	 *   - signalement traité depuis un an : l'adresse IP de qui l'a fait, la copie du contenu et des
 	 *     pièces jointes s'en vont ; le signalement, lui, reste (qui a décidé quoi).
+	 *   - lien Discord d'un élément supprimé : sept jours après la suppression.
+	 *   - sanction de modération : trois ans après sa fin (échue, levée ; un avertissement, après avoir été donné).
 	 *
 	 * Une table absente (son module n'est pas installé) est passée en silence.
 	 */
@@ -300,6 +302,48 @@ class Session extends Core
 								->where('created_at <', $this->date()->sub('30 days')->sql())
 								->delete('nf_newsletter_subscribers'),
 			fn() => $this->db->where('created_at <', $this->date()->sub('2 days')->sql())->delete('nf_user_email_change'),
+			// Le relevé des pages introuvables (nf_noter_introuvable()) : une adresse qu'on ne demande plus depuis 90 jours
+			// s'oublie, et pas plus de 2 000 en tout — un robot qui en essaie des milliers ne remplit pas la base.
+			fn() => $this->db->where('derniere_fois <', $this->date()->sub('90 days')->sql())->delete('nf_pages_introuvables'),
+			function() {
+				$limite = $this->db->select('derniere_fois')->from('nf_pages_introuvables')->order_by('derniere_fois DESC')->limit(1999, 1)->get();
+
+				if ($limite)
+				{
+					$this->db->where('derniere_fois <', (string) current($limite))->delete('nf_pages_introuvables');
+				}
+			},
+			// Les sanctions de modération (ligne 0.51, 2026-10-10) : effacées trois ans après leur fin — échue, levée, donnée
+			// pour un avertissement, jamais approuvée pour une sanction qui attendait l'accord d'un supérieur. Une sanction
+			// permanente qui court reste. Trois ans suffisent à juger une récidive : l'escalade ne regarde que trente jours.
+			function() {
+				$avant = $this->db->escape_string($this->date()->sub('3 years')->sql());
+
+				$this->db->execute("DELETE FROM nf_sanctions WHERE (revoked_at IS NOT NULL AND revoked_at < '{$avant}')"
+					." OR (revoked_at IS NULL AND expires_at IS NOT NULL AND expires_at < '{$avant}')"
+					." OR (type = 'warning' AND expires_at IS NULL AND created_at < '{$avant}')"
+					." OR (requires_approval = 1 AND approved_at IS NULL AND revoked_at IS NULL AND created_at < '{$avant}')");
+			},
+			// Les liens Discord d'un élément supprimé (m21, 2026-10-10) : un ticket, un sujet, un message ou un commentaire
+			// effacé laissait son lien. Le lien qui a perdu son élément est noté ; il part sept jours plus tard — le bot, qui le
+			// lit pour effacer le fil sur Discord, a eu le temps de le faire. Un élément restauré entre-temps garde le sien.
+			function() {
+				// La colonne vient avec la migration du module (2026_10_10_liens_orphelins) : rien avant elle.
+				if (!$this->db->table_exists('nf_discord_links') || !array_key_exists('orphelin_depuis', (array) $this->db->table_columns('nf_discord_links')))
+				{
+					return;
+				}
+
+				foreach (['ticket' => ['nf_bug_tickets', 'id'], 'comment' => ['nf_bug_comments', 'id'], 'topic' => ['nf_forum_topics', 'topic_id'], 'message' => ['nf_forum_messages', 'message_id']] as $type => [$table, $cle])
+				{
+					if ($this->db->table_exists($table))
+					{
+						$this->db->execute("UPDATE nf_discord_links l LEFT JOIN `{$table}` e ON e.`{$cle}` = l.site_id SET l.orphelin_depuis = IF(e.`{$cle}` IS NULL, COALESCE(l.orphelin_depuis, NOW()), NULL) WHERE l.type = '{$type}'");
+					}
+				}
+
+				$this->db->where('orphelin_depuis <', $this->date()->sub('7 days')->sql())->delete('nf_discord_links');
+			},
 			// Les comptes restés sans visite : prévenus un mois avant, puis effacés (User::menage_des_comptes_inactifs()). En FIN
 			// de requête : les e-mails se rédigent dans la langue du membre, et la langue du site n'est pas encore chargée ici.
 			// Sous PHP-FPM, la réponse part d'abord : le visiteur n'attend pas les envois.

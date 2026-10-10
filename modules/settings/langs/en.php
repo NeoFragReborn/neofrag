@@ -269,4 +269,6 @@ return [
 	'b5cf4695' => 'Inactive accounts',
 	'd35683b8' => 'An account with no visit for this number of years is deleted; an email warns its member a month before, and a visit cancels everything. Administrators are never deleted. 0 to never delete.',
 	'68b7ca29' => 'Enter a number of years between 0 and 20.',
+	'bfeaf8bc' => 'Addresses to redirect: the list of %s, in Monitoring.',
+	'9339febd' => 'pages not found',
 ];

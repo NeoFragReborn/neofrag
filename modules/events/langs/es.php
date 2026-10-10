@@ -63,8 +63,6 @@ return [
 	'f32268d3' => 'Tipos de evento configurados',
 	'f48cb465' => 'Nuevo evento',
 	'fd283f69' => 'Calendario',
-	'f950d55c' => 'Eventos y partidos de un clan o de un equipo de eSports: invitaciones con respuesta presente, ausente o quizás, marcadores por manga, recurrencia, recordatorios.',
-	'e80c902d' => 'Número de eventos por página',
 	'46d72986' => 'Recibir notificaciones por mensaje privado de las invitaciones',
 	'b1a096a2' => 'Eventos',
 	'52c9bbab' => 'Modificar',
@@ -163,4 +161,8 @@ return [
 	'49a80df0' => 'En línea',
 	'48b614a4' => 'Desconectado',
 	'ff8f2a30' => 'Administrador',
+	'0432964b' => 'Los eventos de una comunidad: invitaciones con respuesta presente, ausente o quizás, repetición, recordatorios; y, con los módulos Juegos y Equipos, los partidos y sus marcadores por ronda.',
+	'e981b5d1' => 'Estándar',
+	'bb9aea01' => 'Partido',
+	'cbf0a999' => 'Número de eventos por página',
 ];

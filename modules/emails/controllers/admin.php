@@ -86,7 +86,8 @@ class Admin extends Controller_Module
 						.'<code class="small">'.nf_texte($t['key']).'</code>'
 						.(!empty($t['description']) ? '<div class="small text-body-secondary">'.nf_texte($this->lang($t['description'])).'</div>' : '')
 					.'</td>'
-					.'<td class="small">'.($subject !== '' ? nf_texte($subject) : '<span class="text-body-secondary">—</span>').'</td>'
+					// Les variables du sujet (`{{date}}`) se montrent comme des variables, et non comme un gabarit resté tel quel.
+					.'<td class="small">'.($subject !== '' ? preg_replace('/\{\{\s*[a-z0-9_]+\s*\}\}/i', '<code>$0</code>', nf_texte($subject)) : '<span class="text-body-secondary">—</span>').'</td>'
 					.'<td class="text-center"><span class="badge text-bg-light" title="'.$this->lang('Langues').'">'.icon('fas fa-language').' '.(int)$t['lang_count'].'</span></td>'
 					.'<td class="text-center">'.($enabled ? '<span class="badge text-bg-success">'.$this->lang('Actif').'</span>' : '<span class="badge text-bg-secondary">'.$this->lang('Désactivé').'</span>').'</td>'
 					.'<td class="text-end">'

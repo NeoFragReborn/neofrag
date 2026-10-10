@@ -257,6 +257,40 @@ class Groups extends Core
 		return FALSE;
 	}
 
+	/**
+	 * L'adresse d'un groupe d'après les arguments de sa route, sans la page : son préfixe (`members/group/3`), son nom,
+	 * et s'il est caché — pour mener une adresse au mauvais nom à la bonne (m06) ; NULL si le groupe n'existe pas ou n'a
+	 * pas de nom dans son adresse.
+	 *
+	 * @param  list<string> $args
+	 * @return array{0: string, 1: string, 2: bool}|null
+	 */
+	public function adresse_du_groupe(array $args): ?array
+	{
+		$n = count($args);
+
+		if ($n == 3)
+		{
+			$group_id = $args[0].'-'.$args[1];
+		}
+		else if ($n == 2)
+		{
+			$group_id = $args[0];
+		}
+		else
+		{
+			return NULL;
+		}
+
+		// Un groupe sans membre n'a pas de page (Members::_group) : rien vers quoi mener.
+		if (!isset($this->_groups[$group_id]) || ($this->_groups[$group_id]['auto'] ?? '') == 'neofrag' || empty($this->_groups[$group_id]['users']))
+		{
+			return NULL;
+		}
+
+		return ['members/group/'.url_title((string) $group_id), (string) $this->_groups[$group_id]['name'], !empty($this->_groups[$group_id]['hidden'])];
+	}
+
 	public function delete($module, $id)
 	{
 		$group_id = url_title($module.'_'.$id);

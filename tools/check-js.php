@@ -85,10 +85,10 @@ foreach (glob($dossier.'/*.html') ?: [] as $f)
 copy($dossier.'/harness.js', $salle.'/harness.js');
 file_put_contents($salle.'/nf.js', $module);
 
-// Toutes les sources JS du projet sont servies sous /src/<chemin>, avec les blocs PHP remplacés par
+// Toutes les sources JS du projet — et la sonde de check-mise-en-page — sont servies sous /src/<chemin>, avec les blocs PHP remplacés par
 // un identifiant nu. Une épreuve vise ainsi le VRAI fichier plutôt qu'une copie qui dériverait, sans
 // avoir à monter l'application. Même substitution que check-js-sources.
-foreach (nf_fichiers(['js', 'neofrag', 'modules', 'widgets', 'themes', 'addons'], ['js']) as $rel => $chemin)
+foreach (nf_fichiers(['js', 'neofrag', 'modules', 'widgets', 'themes', 'addons', 'tests/MiseEnPage'], ['js']) as $rel => $chemin)
 {
     $cible = $salle.'/src/'.$rel;
 

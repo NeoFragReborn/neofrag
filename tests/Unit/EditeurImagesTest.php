@@ -281,6 +281,86 @@ final class EditeurImagesTest extends TestCase
 		self::assertSame(0, imagecolorsforindex($relue, imagecolorat($relue, 1, 5))['alpha']);
 	}
 
+	/**
+	 * Un GIF ANIMÉ de $images images de $cote pixels, fait des images d'un GIF écrit par GD, avec la boucle NETSCAPE,
+	 * un commentaire qui porte le marqueur, et $suite après la fin du fichier.
+	 */
+	private function gif_anime(int $images = 2, string $suite = '', int $cote = 4): string
+	{
+		$this->gd();
+
+		$im = imagecreate($cote, $cote);
+		imagecolorallocate($im, 255, 0, 0);
+		imagecolorallocate($im, 0, 0, 255);
+		ob_start();
+		imagegif($im);
+		$gd = (string) ob_get_clean();
+
+		$drapeaux = ord($gd[10]);
+		$tete     = 13 + ($drapeaux & 0x80 ? 3 * (2 << ($drapeaux & 7)) : 0);
+		$debut    = (int) strpos($gd, "\x2C", $tete);
+		$image    = substr($gd, $debut, strlen($gd) - 1 - $debut);
+		$controle = "\x21\xF9\x04\x04\x0A\x00\x00\x00";
+
+		return 'GIF89a'.substr($gd, 6, $tete - 6)
+			."\x21\xFF\x0BNETSCAPE2.0\x03\x01\x00\x00\x00"
+			."\x21\xFE".chr(strlen(self::MARQUEUR)).self::MARQUEUR."\x00"
+			.str_repeat($controle.$image, $images)."\x3B".$suite;
+	}
+
+	public function test_un_gif_anime_reste_anime_et_ne_garde_que_ses_images(): void
+	{
+		$octets = $this->gif_anime(3, '<?php echo "'.self::MARQUEUR.'"; ?>');
+		$propre = Editeur_Images::gif_anime($octets);
+
+		self::assertNotNull($propre);
+		self::assertStringStartsWith('GIF89a', $propre);
+		self::assertStringContainsString('NETSCAPE2.0', $propre, 'la boucle de l’animation est gardée');
+		self::assertStringNotContainsString(self::MARQUEUR, $propre, 'ni le commentaire, ni ce qui suit la fin du fichier');
+		self::assertStringEndsWith("\x3B", $propre);
+		self::assertSame(3, substr_count($propre, "\x21\xF9\x04"), 'les trois images et leurs délais');
+
+		// Le chemin le garde en GIF, et le réencodage l'écrit tel quel, nettoyé.
+		$source = $this->fichier($octets, 'gif');
+		$relatif = Editeur_Images::chemin('image/gif', (int) mktime(12, 0, 0, 10, 10, 2026), '', $source);
+		self::assertStringEndsWith('.gif', $relatif);
+
+		$sortie = $this->chemin('gif');
+		self::assertTrue(Editeur_Images::reencoder($source, 'image/gif', $sortie));
+		self::assertSame('image/gif', getimagesize($sortie)['mime']);
+		self::assertSame($propre, file_get_contents($sortie));
+	}
+
+	public function test_un_gif_d_une_seule_image_devient_toujours_un_png(): void
+	{
+		$octets = $this->gif_anime(1);
+
+		self::assertNull(Editeur_Images::gif_anime($octets));
+		self::assertStringEndsWith('.png', Editeur_Images::chemin('image/gif', time(), '', $this->fichier($octets, 'gif')));
+	}
+
+	public function test_un_gif_anime_trop_grand_ou_tronque_n_est_pas_garde_anime(): void
+	{
+		$octets = $this->gif_anime(2);
+
+		self::assertNull(Editeur_Images::gif_anime($octets, 3), 'plus grand que le côté permis : pas de réduction sans décoder');
+		self::assertNull(Editeur_Images::gif_anime(substr($octets, 0, -40)), 'tronqué');
+		self::assertNull(Editeur_Images::gif_anime('GIF89a'), 'vide');
+		self::assertNull(Editeur_Images::gif_anime("\x89PNG\r\n\x1A\n".substr($octets, 6)), 'pas un GIF');
+	}
+
+	public function test_l_editeur_parle_la_langue_de_la_page(): void
+	{
+		self::assertSame('language: "fr_FR", ', Editeur_Images::langue_tinymce('fr'));
+		self::assertSame('language: "pt_PT", ', Editeur_Images::langue_tinymce('pt'));
+		self::assertSame('', Editeur_Images::langue_tinymce('en'), 'l’anglais est la langue de TinyMCE');
+
+		foreach (Editeur_Images::LANGUES_TINYMCE as $fichier)
+		{
+			self::assertFileExists(dirname(__DIR__, 2).'/js/tinymce/langs/'.$fichier.'.js', 'la traduction livrée');
+		}
+	}
+
 	public function test_rien_n_est_ecrit_quand_l_image_ne_se_decode_pas(): void
 	{
 		$sortie = $this->chemin('png');
@@ -305,6 +385,27 @@ final class EditeurImagesTest extends TestCase
 		self::assertSame(Editeur_Images::chemin('image/jpeg', $instant, $empreinte), Editeur_Images::chemin('image/jpeg', $instant, $empreinte));
 		// Une empreinte qui n'en est pas une ne choisit rien : le nom redevient aléatoire.
 		self::assertNotSame(Editeur_Images::chemin('image/png', $instant, '../x'), Editeur_Images::chemin('image/png', $instant, '../x'));
+	}
+
+	public function test_les_images_citees_se_retrouvent_sous_toutes_leurs_formes(): void
+	{
+		$a = 'upload/editeur/2026/10/0123456789abcdef0123456789abcdef.png';
+		$b = 'upload/editeur/2026/09/fedcba9876543210fedcba9876543210.gif';
+
+		$texte = '<p><img src="/'.$a.'" alt="" /><img src="https://exemple.fr/site/'.$a.'" /></p>'
+			.'<img src="../../'.$b.'">';
+
+		// Une même image citée deux fois ne compte qu'une fois ; l'adresse relative d'avant le 2026-10-05 aussi.
+		self::assertSame([$a, $b], Editeur_Images::chemins_cites($texte));
+
+		// Le Markdown des tickets, le JSON d'un réglage ou d'une révision, une adresse encodée.
+		self::assertSame([$a], Editeur_Images::chemins_cites('![capture](/'.$a.')'));
+		self::assertSame([$a], Editeur_Images::chemins_cites(json_encode(['contenu' => '<img src="/'.$a.'">'])));
+		self::assertSame([$a], Editeur_Images::chemins_cites(json_encode(json_encode(['x' => '/'.$a]))));
+		self::assertSame([$a], Editeur_Images::chemins_cites('?image=upload%2Fediteur%2F2026%2F10%2F0123456789abcdef0123456789abcdef.png'));
+
+		// Ni un autre dossier, ni un texte qui parle de l'éditeur sans citer d'image.
+		self::assertSame([], Editeur_Images::chemins_cites('<img src="/upload/forum/a.png"> l’éditeur upload/editeur/'));
 	}
 
 	public function test_le_nom_d_origine_est_nettoye(): void

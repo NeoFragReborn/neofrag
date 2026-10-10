@@ -48,7 +48,7 @@ return [
 	'36c61dab' => 'Gruppi del membro aggiornati',
 	'38012b05' => 'Rispondi',
 	'39d3168a' => 'Mostrare sulla scheda pubblica del membro',
-	'3b5fa87a' => 'Contatto',
+	'3b5fa87a' => 'Contatta',
 	'3c1747c6' => 'Gruppo aggiunto',
 	'3c182b2b' => 'Pubblico',
 	'3d3c9410' => 'Numero',

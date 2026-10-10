@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 return [
 	'b3b427cb' => 'Menus',
-	'5820071d' => 'No menu. Create one to organise your navigation.',
+	'5820071d' => 'No menu. Create one to organize your navigation.',
 	'20dfc649' => 'Items',
 	'1897f337' => 'Delete this menu and all its items?',
 	'81d78b8b' => 'New menu',

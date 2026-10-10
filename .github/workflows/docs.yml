@@ -1,9 +1,8 @@
 name: Documentation
 
-# Un envoi qui ne touche que de la documentation n'exécute pas la CI (environ 11 minutes facturées,
-# cf. ci.yml) : ce workflow vérifie en une minute ce que la documentation doit tenir — chiffres
-# d'inventaire, renvois, conventions des outils et catalogue de tools/README.md. Il obéit au même
-# interrupteur que la CI : la variable de dépôt `CI_ENVOI` à `pause` le suspend (cf. ci.yml).
+# Un envoi qui ne touche que de la documentation n'exécute pas la CI (une vingtaine de minutes, cf.
+# ci.yml) : ce workflow vérifie en une minute ce que la documentation doit tenir — chiffres
+# d'inventaire, renvois, conventions des outils et catalogue de tools/README.md.
 on:
   push:
     branches: [main]
@@ -23,7 +22,6 @@ permissions:
 jobs:
   docs:
     name: Documentation ↔ code
-    if: vars.CI_ENVOI != 'pause'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -34,9 +32,6 @@ jobs:
           coverage: none
       # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: Garde documentation ↔ code
         run: php tools/check-docs.php
       - name: Garde des conventions des outils (catalogue de tools/README.md)

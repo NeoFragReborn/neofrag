@@ -153,7 +153,6 @@ return [
 	'720335b6' => 'Gaming / E-Sport',
 	'5ffcd177' => 'Die Community-Basis plus das Wettkampf-Rüstzeug: Teams, Matches, Events, Rekrutierung, Erfolge, Partner und Gamification.',
 	'8a3b82de' => 'Community',
-	'53a6ac20' => 'News, Diskussionsforum und Galerien. Alles, um eine Community zu beleben, ohne das E-Sport-Rüstzeug.',
 	'ddf9fbfb' => 'Nur Kern',
 	'c0418d17' => 'Nur das Wesentliche: Seiten, Kommentare, Menü, Kontakt, Mitglieder und Nachrichten. Den Rest fügen Sie bei Bedarf über den Marketplace hinzu.',
 	'c1d8f9a3' => 'E-Mail-Adresse',
@@ -196,7 +195,6 @@ return [
 	'df383219' => 'Beheben Sie die rot markierten Punkte — fehlende PHP-Erweiterungen oder Schreibrechte für den Ordner <code>config/</code> — und prüfen Sie dann erneut.',
 	'f43a187f' => 'Erneut prüfen',
 	'6b41f3af' => 'Verein / Club',
-	'efd057dc' => 'News, Forum, Galerien, Kalender, Spenden, Newsletter, Wiki und FAQ. Alles, um einen Verein oder Club zu beleben, ohne das E-Sport-Rüstzeug.',
 	'd716c0be' => 'Demo-Inhalte…',
 	'0a0551e7' => 'PHP %s oder neuer ist erforderlich (dieses PHP: %s).',
 	'7338e32d' => 'Dieses PHP kann Passwörter nicht mit %s hashen: Es wird ein mit Argon2 kompiliertes PHP benötigt.',
@@ -204,4 +202,6 @@ return [
 	'23bcdfc3' => 'verfügbar',
 	'c2f31600' => 'fehlt in diesem PHP',
 	'3e30f3e2' => 'Diese Website hat bereits einen Administrator: Die Installation ist abgeschlossen.',
+	'5c71bd6a' => 'News, Diskussionsforum, Galerien und Events. Alles, um eine Community zu beleben, ohne das E-Sport-Rüstzeug.',
+	'29d4b6b2' => 'News, Forum, Galerien, Kalender, Events, Spenden, Newsletter, Wiki und FAQ. Alles, um einen Verein oder Club zu beleben, ohne das E-Sport-Rüstzeug.',
 ];

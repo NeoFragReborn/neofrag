@@ -1,28 +1,16 @@
 name: CI
 
-# Un seul fichier pour deux mondes. Sur un dépôt PUBLIC, les minutes de GitHub Actions sont gratuites :
-# la batterie ENTIÈRE joue à chaque envoi. Sur un dépôt PRIVÉ, chaque exécution consomme un quota —
-# 2 000 minutes par mois, et GitHub arrondit CHAQUE JOB à la minute supérieure ; septembre 2026 l'a
-# épuisé le 23, octobre en avait brûlé 1 900 le 2 au soir (192 exécutions). D'où, sur un dépôt privé :
-#   - `push` sur main seulement : une branche de travail (Dependabot) passe par sa demande de fusion.
-#     Avant, elle déclenchait DEUX exécutions — `push` et `pull_request` ne portent pas la même
-#     référence, et la règle de concurrence ci-dessous ne les fusionnait pas ;
-#   - un envoi qui ne touche QUE de la documentation n'exécute pas ce workflow : docs.yml la vérifie
-#     en une minute ;
-#   - Dependabot regroupe ses mises à jour ;
-#   - un envoi joue la batterie RAPIDE — `statique`, PHPUnit sur PHP 8.2, `db-smoke`, `e2e-smoke`,
-#     environ 11 minutes facturées. La batterie ENTIÈRE (Interface, et PHPUnit sur 8.2 à 8.5) se
-#     lance à la main avant chaque version : `gh workflow run CI` (`github.event.repository.private`
-#     départage les deux mondes) ;
-#   - les petits contrôles vivent dans UN job, `statique` : en jobs séparés, chacun payait sa minute
-#     arrondie et sa préparation (9,5 minutes de travail facturées 14 le 2026-10-02) ;
-#   - l'INTERRUPTEUR : la variable de dépôt `CI_ENVOI` à `pause` suspend la batterie des envois (et
-#     docs.yml) sans rien consommer ; la batterie manuelle joue toujours.
-# Les étapes du bot Discord ne jouent que là où il est (`bot/package.json`). Une étape marquée
-# « # interne » appartient au seul dépôt de développement : la copie publique ne la porte pas.
-#   - le système est FIXÉ (`ubuntu-24.04`, et non `ubuntu-latest`) : GitHub passe `ubuntu-latest` à
-#     Ubuntu 26.04 le 19 octobre 2026, au milieu d'un mois sans minutes pour l'éprouver. La bascule se
-#     fera à la main, la batterie entière jouée d'abord sur `ubuntu-26.04` (MariaDB, Chrome, PHP).
+# La batterie du produit, à chaque envoi et à chaque demande de fusion, dans les dépôts publics, où les minutes de
+# GitHub Actions sont gratuites. Le dépôt de développement, privé, ne joue plus rien chez GitHub depuis le
+# 2026-10-10 : ses minutes, payantes au-delà du quota, s'épuisaient en quelques jours ; le banc de chaque version se
+# joue sur notre serveur, avant qu'elle parte.
+#   - un envoi qui ne touche QUE de la documentation n'exécute pas ce workflow : docs.yml la vérifie en une minute ;
+#   - les petits contrôles vivent dans UN job, `statique` : chacun dans le sien payait sa préparation ;
+#   - les étapes du bot Discord ne jouent que là où il est (`bot/package.json`). Une étape marquée « # interne »
+#     appartient au seul dépôt de développement : la copie publique ne la porte pas ;
+#   - le système est FIXÉ (`ubuntu-24.04`, et non `ubuntu-latest`) : GitHub passe `ubuntu-latest` à Ubuntu 26.04 le
+#     19 octobre 2026. La bascule se fera à la main, la batterie entière jouée d'abord sur `ubuntu-26.04` (MariaDB,
+#     Chrome, PHP).
 on:
   push:
     branches: [main]
@@ -32,7 +20,7 @@ on:
   workflow_dispatch:
 
 # Une nouvelle exécution sur la même référence annule la précédente, devenue inutile — mais un envoi
-# n'annule jamais la batterie entière lancée à la main : d'où l'événement dans le groupe.
+# n'annule jamais une batterie lancée à la main : d'où l'événement dans le groupe.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: true
@@ -45,7 +33,6 @@ permissions:
 jobs:
   statique:
     name: Contrôles statiques (syntaxe, gardes, PHPStan, audits, épreuves JS, bot)
-    if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -57,9 +44,6 @@ jobs:
           coverage: none
       # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: php -l sur tout le code (hors vendor)
         run: |
           find . -path ./vendor -prune -o -name '*.php' -print0 \
@@ -332,7 +316,6 @@ jobs:
 
   test:
     name: PHPUnit (PHP ${{ matrix.php }})
-    if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     # Sans base de données, les 56 tests d'INTÉGRATION se sautent eux-mêmes en silence : la suite
@@ -369,13 +352,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # NeoFrag Reborn supporte toutes les versions PHP >= 8.2 (cf. composer.json). La batterie
-        # entière les teste toutes (régressions propres à une version, ex. unserialize) ; un envoi
-        # ordinaire, la borne basse seulement — le quota (cf. en-tête). Aucun poste ne joue 8.2 :
-        # la CI est seule à voir une fonction de 8.3 ou plus. La borne haute, 8.5, est celle des
+        # NeoFrag Reborn supporte toutes les versions PHP >= 8.2 (cf. composer.json) : la CI les teste toutes
+        # (régressions propres à une version, ex. unserialize). Aucun poste ne joue 8.2 : la CI et le banc
+        # de la version sont seuls à voir une fonction de 8.3 ou plus. La borne haute, 8.5, est celle des
         # installations d'essai et de production, où la suite passe avant chaque envoi ; `e2e-smoke` la joue
         # aussi sous PHP 8.3 (Dockerfile).
-        php: ${{ (github.event_name == 'workflow_dispatch' || !github.event.repository.private) && fromJSON('["8.2", "8.3", "8.4", "8.5"]') || fromJSON('["8.2"]') }}
+        php: ['8.2', '8.3', '8.4', '8.5']
     steps:
       - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
@@ -387,9 +369,6 @@ jobs:
           tools: phpunit:11
       # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       # Les tests touchent du code qui dépend du vendor (sanitize_html → HTMLPurifier, etc.). Sans
       # composer install, phpunit fatalise sur « Class HTMLPurifier_Config not found ». Le verrou
       # s'installe sur les quatre versions sans option : composer.json fixe la plateforme à PHP 8.2.0.
@@ -408,7 +387,6 @@ jobs:
 
   db-smoke:
     name: Schema + migration runner (smoke)
-    if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     services:
@@ -439,9 +417,6 @@ jobs:
           coverage: none
       # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: Import schema.sql cœur lean (valide le DDL + collations)
         run: mysql -h127.0.0.1 -P3306 -uroot -proot neofrag < install/schema.sql
       - name: Baseline des migrations déjà présentes dans le schéma (05-04)
@@ -464,8 +439,7 @@ jobs:
 
   interface:
     name: Interface (responsive mesuré + navigation admin)
-    # Le job le plus long (7 à 8 minutes) : batterie entière seulement (cf. en-tête).
-    if: github.event_name == 'workflow_dispatch' || !github.event.repository.private
+    # Le job le plus long : 7 à 8 minutes.
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     # Le responsive ne reposait que sur des captures regardées à la main. Une entrée du suivi
@@ -501,9 +475,6 @@ jobs:
           coverage: none
       # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       - name: composer install
         run: composer install --no-dev --no-interaction --no-progress --optimize-autoloader
       # Une vraie installation : sans dispositions ni contenu, les pages rendraient du vide et la
@@ -584,7 +555,6 @@ jobs:
 
   e2e-smoke:
     name: Smoke E2E (install complète + flux critiques)
-    if: github.event_name == 'workflow_dispatch' || vars.CI_ENVOI != 'pause'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -596,9 +566,6 @@ jobs:
           coverage: none
       # Le produit entier : dans le dépôt neofrag, les addons à la carte viennent d'extensions.
       - uses: ./.github/actions/extensions
-        with:
-          app-id: ${{ vars.NF_APP_ID }}
-          app-cle: ${{ secrets.NF_APP_CLE }}
       # vendor/ est gitignored ET monté dans le conteneur web (docker-compose: ./:/var/www/html), et le
       # Dockerfile ne fait PAS composer install. Sans cette étape, le conteneur n'a aucun vendor/ → fatal
       # runtime dès qu'une classe vendored est instanciée (ex. PHPMailer pour l'email de lost-password → 500).

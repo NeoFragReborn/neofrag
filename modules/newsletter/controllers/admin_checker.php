@@ -17,11 +17,11 @@ class Admin_Checker extends Module_Checker
 
 	public function _campaigns()
 	{
-		$campaigns = NeoFrag()->db	->select('c.*', 'u.username', 'MAX(gl.title) AS segment_group_title')
+		// Le nom du groupe visé dans la langue de l'administration (join_lang) : MAX() en prenait un d'une langue au hasard.
+		$campaigns = NeoFrag()->db	->select('c.*', 'u.username', 'gl.title AS segment_group_title')
 									->from('nf_newsletter_campaigns c')
 									->join('nf_user u', 'c.user_id = u.id', 'LEFT')
-									->join('nf_groups_lang gl', 'gl.group_id = c.segment_group_id', 'LEFT')
-									->group_by('c.id')
+									->join_lang('nf_groups_lang gl', 'group_id', 'c.segment_group_id', NULL, 'LEFT')
 									->order_by('c.id DESC')
 									->get();
 		return [$campaigns];

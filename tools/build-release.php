@@ -35,7 +35,7 @@ declare(strict_types=1);
  * Usage
  * -----
  *   php tools/build-release.php
- *   php tools/build-release.php --racine-autorisee   la liste blanche, une entrée par ligne (inventaire de release.yml)
+ *   php tools/build-release.php --racine-autorisee   la liste blanche, une entrée par ligne (inventaire des paquets fabriqués)
  */
 
 require __DIR__.'/lib/outil.php';
@@ -101,8 +101,8 @@ function has_composer(): bool
 {
     // Cross-plateforme : `command -v` n'existe pas sous Windows (cmd.exe) → utiliser `where`.
     // Sans ça, has_composer() renvoyait toujours FALSE sous Windows et build-release.php embarquait
-    // les dépendances DEV (phpunit, phpstan…) dans les zips « production ». Le build de release
-    // reste conseillé sous Linux/Docker (cf. .github/workflows/release.yml).
+    // les dépendances DEV (phpunit, phpstan…) dans les zips « production ». Les paquets publiés se
+    // fabriquent sous Linux.
     $probe = (stripos(PHP_OS, 'WIN') === 0) ? 'where composer 2>NUL' : 'command -v composer 2>/dev/null';
     return trim((string) @shell_exec($probe)) !== '';
 }

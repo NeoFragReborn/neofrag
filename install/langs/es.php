@@ -153,7 +153,6 @@ return [
 	'720335b6' => 'Gaming / eSports',
 	'5ffcd177' => 'La base comunitaria más el equipamiento competitivo: equipos, partidas, eventos, reclutamiento, palmarés, socios y gamificación.',
 	'8a3b82de' => 'Comunidad',
-	'53a6ac20' => 'Noticias, foro de discusión y galerías. Lo necesario para dar vida a una comunidad, sin el equipamiento de eSports.',
 	'ddf9fbfb' => 'Solo el núcleo',
 	'c0418d17' => 'Solo lo esencial: páginas, comentarios, menú, contacto, miembros y mensajería. Añadirás el resto desde el marketplace cuando lo necesites.',
 	'c1d8f9a3' => 'Dirección de correo electrónico',
@@ -196,7 +195,6 @@ return [
 	'df383219' => 'Corrige los puntos en rojo — extensiones PHP que faltan, o permisos de escritura en la carpeta <code>config/</code> — y vuelve a comprobar.',
 	'f43a187f' => 'Volver a comprobar',
 	'6b41f3af' => 'Asociación / club',
-	'efd057dc' => 'Noticias, foro, galerías, calendario, donaciones, boletín, wiki y FAQ. Lo necesario para dar vida a una asociación o un club, sin el equipamiento de eSports.',
 	'd716c0be' => 'Contenido de demostración…',
 	'0a0551e7' => 'Se requiere PHP %s o posterior (este PHP: %s).',
 	'7338e32d' => 'Este PHP no puede cifrar las contraseñas con %s: se necesita un PHP compilado con Argon2.',
@@ -204,4 +202,6 @@ return [
 	'23bcdfc3' => 'disponible',
 	'c2f31600' => 'ausente en este PHP',
 	'3e30f3e2' => 'Este sitio ya tiene un administrador: la instalación ha finalizado.',
+	'5c71bd6a' => 'Noticias, foro de discusión, galerías y eventos. Lo necesario para dar vida a una comunidad, sin el equipamiento de eSports.',
+	'29d4b6b2' => 'Noticias, foro, galerías, calendario, eventos, donaciones, boletín, wiki y FAQ. Lo necesario para dar vida a una asociación o un club, sin el equipamiento de eSports.',
 ];

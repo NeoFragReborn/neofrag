@@ -14,7 +14,7 @@ require_once __DIR__.'/outil.php';
  * 1.2.18 restait téléchargeable le 2026-10-04 (audit des releases). Une entrée nouvelle à la racine
  * n'entre désormais dans un paquet que si on l'ajoute ici, en connaissance de cause.
  *
- * Lu par `build-release`, qui fabrique, et par l'inventaire de `release.yml`, qui vérifie le produit
+ * Lu par `build-release`, qui fabrique, et par l'inventaire de la fabrique des paquets, qui vérifie le produit
  * fini (`php tools/build-release.php --racine-autorisee`).
  */
 

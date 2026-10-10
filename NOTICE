@@ -61,6 +61,7 @@ Ce que le produit embarque d'autrui
   Tom Select 2.6.1 — les contributeurs de Tom Select — Apache-2.0 — js/tom-select.complete.min.js
   ALTCHA — Daniel Regeci, BAU Software s.r.o. — MIT — js/altcha
   TinyMCE 7.6.1 — Ephox Corporation DBA Tiny Technologies, Inc. — GPL-2.0-or-later — js/tinymce
+  TinyMCE, traductions de l'interface (paquet tinymce-i18n 26.9.21, langs7) — les traducteurs de la communauté TinyMCE, Tiny Technologies, Inc. — GPL-2.0-or-later, comme TinyMCE ; quelques libellés corrigés en français, espagnol et italien — js/tinymce/langs
   Font Awesome Free 6.7.2 — Fonticons, Inc. — polices sous OFL-1.1, icônes sous CC-BY-4.0, code sous MIT — fonts/fontawesome, css/icons/fontawesome.min.css
   Open Sans — Steve Matteson — OFL-1.1 — fonts/open-sans
   Titillium Web — Accademia di Belle Arti di Urbino — OFL-1.1 — fonts/titillium-web

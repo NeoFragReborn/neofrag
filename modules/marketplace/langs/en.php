@@ -29,7 +29,7 @@ return [
 	'71fc8e0e' => 'Size',
 	'445a0d6e' => 'Download',
 	'c399f4a5' => 'Details',
-	'27ddca37' => 'Public catalogue of downloadable modules, widgets and themes.',
+	'27ddca37' => 'Public catalog of downloadable modules, widgets and themes.',
 	'161e537a' => '%s MB',
 	'4044f4fc' => '%s KB',
 ];

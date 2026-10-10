@@ -123,11 +123,13 @@ class News extends Model
 
 		$news = $this->db->row();
 
-		if ($news && url_title($news['title']) != $title && !$this->url->admin
-			&& $this->titre_d_une_autre_langue('nf_news_lang', 'news_id', $news_id, (string) $title))
+		// MAX() sans GROUP BY : une actualité qui n'existe pas rend une ligne de NULL, pas rien.
+		if ($news && !empty($news['news_id']) && !$this->url->admin)
 		{
-			// Arrivé par le sélecteur de langue, avec le titre d'une autre version : l'adresse de celle-ci.
-			NeoFrag()->url->redirect_http(url('news/'.(int) $news_id.'/'.url_title($news['title'])), 301);
+			// Le titre de l'adresse n'est pas celui de la langue servie — arrivé par le sélecteur de langue avec le titre
+			// d'une autre version, un titre changé depuis, une faute — : l'adresse de celle-ci. Seul le premier cas
+			// redirigeait ; les autres répondaient 404 (m06, 2026-10-10).
+			nf_bon_titre((string) $title, (string) $news['title'], 'news/'.(int) $news_id);
 		}
 
 		if ($news && url_title($news['title']) == $title)

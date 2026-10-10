@@ -38,6 +38,13 @@ class Checker extends Module_Checker
 							->where('e.id', $event_id)
 							->where('e.published', '1')
 							->row();
+
+		if ($e)
+		{
+			// Le titre de l'adresse n'est pas le bon : 301 vers la bonne (elle répondait 200 à n'importe lequel).
+			nf_bon_titre((string) $title, (string) $e['title'], 'calendar/'.(int) $event_id);
+		}
+
 		return $e ? [$e] : NULL;
 	}
 

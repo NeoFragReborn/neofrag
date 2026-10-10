@@ -69,42 +69,14 @@ abstract class Model extends NeoFrag implements \NF\NeoFrag\Loadable
 	 * est vide, pas la version française : c'est précisément ce qu'il vient remplir. Le repli est
 	 * une politesse faite au visiteur, pas une vérité sur les données.
 	 *
+	 * Le titre d'une AUTRE version dans l'adresse (le sélecteur de langue la garde telle quelle) : nf_bon_titre() mène à
+	 * l'adresse de la langue servie, comme tout titre qui n'est pas le bon (m06, 2026-10-10).
+	 *
 	 * @param  string $table   la table par langue (`nf_news_lang`, `nf_teams_lang`…)
 	 * @param  string $colonne la colonne qui porte l'identifiant du contenu (`news_id`…)
 	 * @param  mixed  $id      l'identifiant du contenu
 	 * @return string le nom de la langue à employer dans le `WHERE`
 	 */
-	/**
-	 * Le titre porté par l'adresse est-il celui d'une AUTRE version linguistique de ce contenu ?
-	 *
-	 * Le sélecteur de langue garde l'adresse telle quelle : sur une actualité traduite, il mène à
-	 * `/en/news/6/concours-de-montage-video` — le titre FRANÇAIS dans une adresse anglaise. La
-	 * vérification du titre, faite dans la langue servie, rendait alors 404 : relevé par la CI le
-	 * 2026-09-23, dès que la démonstration a eu une version anglaise. L'appelant renvoie plutôt vers
-	 * l'adresse de la langue servie.
-	 */
-	protected function titre_d_une_autre_langue(string $table, string $colonne, $id, string $titre_url): bool
-	{
-		if (!$this->db->table_exists($table))
-		{
-			return FALSE;
-		}
-
-		$titres = $this->db->standalone(static function($db) use ($table, $colonne, $id){
-			return $db->select('title')->from($table)->where($colonne, $id)->get();
-		});
-
-		foreach ((array) $titres as $titre)
-		{
-			if (url_title((string) $titre) === $titre_url)
-			{
-				return TRUE;
-			}
-		}
-
-		return FALSE;
-	}
-
 	protected function langue_du_contenu(string $table, string $colonne, $id): string
 	{
 		/*

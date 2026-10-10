@@ -102,6 +102,12 @@ class Index extends Controller_Widget
 
 	public function matches($settings = [])
 	{
+		// Sans les modules Jeux et Équipes, pas de match : le widget se tait (m17).
+		if (!\NF\Modules\Events\Models\Matches::possibles())
+		{
+			return;
+		}
+
 		$this->css('events');
 
 		if ($matches = $this->model()->get_events('filter', 'matches'))
@@ -127,6 +133,11 @@ class Index extends Controller_Widget
 
 	public function upcoming($settings = [])
 	{
+		if (!\NF\Modules\Events\Models\Matches::possibles())
+		{
+			return;
+		}
+
 		$this->css('events');
 
 		if ($matches = $this->model()->get_events('filter', 'upcoming'))

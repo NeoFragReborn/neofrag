@@ -9,6 +9,7 @@
 	<?php echo $vide ?>
 <?php else: ?>
 	<form action="<?php echo url('admin/slider/move') ?>" method="post" id="slider-reorder-form">
+		<div class="table-responsive">
 		<table class="table table-hover">
 			<thead>
 				<tr>
@@ -76,6 +77,7 @@
 				<?php endforeach ?>
 			</tbody>
 		</table>
+		</div>
 		<div class="d-flex justify-content-between mt-3">
 			<small class="text-muted"><?php echo icon('fas fa-info-circle').' '.$this->lang('Glisse les lignes pour réordonner, puis clique "Sauvegarder l\'ordre".') ?></small>
 			<button type="submit" class="btn btn-secondary"><?php echo icon('fas fa-save').' '.$this->lang('Sauvegarder l\'ordre') ?></button>

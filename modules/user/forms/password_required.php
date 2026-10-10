@@ -12,7 +12,9 @@ $this	->rule($this->form_password('password')
 					// Un NOUVEAU mot de passe se mesure (ligne 0.33) : « a » passait, à l'inscription comme à la
 					// réinitialisation. La règle vit dans User::mot_de_passe_refuse().
 					->check(function($data){
-						$refus = \NF\Modules\User\User::mot_de_passe_refuse((string) $data['password'], (string) ($data['username'] ?? ''));
+						// Le pseudo : celui que l'on saisit à l'inscription, celui du compte à la réinitialisation.
+						$pseudo = $data['username'] ?? (is_array($this->_values) ? ($this->_values['username'] ?? '') : '');
+						$refus  = \NF\Modules\User\User::mot_de_passe_refuse((string) $data['password'], (string) $pseudo);
 
 						if ($refus === 'court')
 						{

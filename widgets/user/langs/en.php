@@ -11,7 +11,7 @@ return [
 	'7042d5b1' => 'Write',
 	'7741ccea' => 'Lost password?',
 	'8a431149' => 'Inbox',
-	'bd0fa24a' => 'Logout',
+	'bd0fa24a' => 'Log out',
 	'c983be27' => 'Welcome <a href="'.url('user').'">'.$this->user->username.'</a>',
 	'b6a189c8' => 'My space',
 	'da5ba9ce' => 'Manage my account',

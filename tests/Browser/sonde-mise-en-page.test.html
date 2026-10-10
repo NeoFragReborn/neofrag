@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+<meta charset="utf-8">
+<title>La sonde de check-mise-en-page sur une page piégée</title>
+
+<!--
+  `tests/MiseEnPage/sonde.js` juge chaque page que rend check-mise-en-page. Le 2026-10-07, en éprouvant Blockcraft,
+  elle a crié à tort sur quatre cas qu'un œil juge sains — le texte d'une bande qui défile, la part cachée de la
+  longue ligne d'un <pre>, une description tronquée exprès, un calque fixé au-dessus d'un dessin — et elle en a été
+  exemptée. Cette page piégée garde les deux sens : les VRAIS défauts sortent (un texte passé sous le bord gauche,
+  deux textes l'un sur l'autre, deux boutons collés, un texte collé au bord de sa carte), les cas exemptés se taisent
+  (deux boutons d'un même groupe, deux boutons transparents dont seules les boîtes se touchent — leur texte est loin ;
+  le texte d'une carte qui a ses marges, d'une carte sans cadre, d'un tableau large qui défile dans sa carte). La sonde est le VRAI fichier
+  (/src/tests/MiseEnPage/sonde.js), évaluée comme le pilote l'évalue.
+-->
+
+<style>
+body { margin: 0; font: 16px/1.4 sans-serif; }
+.perdu { position: relative; left: -60px; }
+.superpose { position: relative; }
+.superpose span { position: absolute; left: 0; top: 0; }
+.bande { display: flex; gap: 8px; width: 300px; overflow-x: auto; margin-top: 40px; }
+.bande a { flex: 0 0 auto; padding: 4px; white-space: nowrap; }
+.grille { display: grid; grid-template-columns: 300px 200px; gap: 10px; margin-top: 20px; }
+.grille p, .pile p { margin: 0; }
+.pile { width: 200px; margin-top: 20px; }
+pre { overflow-x: auto; margin: 0; }
+.tronque { width: 200px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.fixe { position: fixed; left: 0; top: 300px; background: #eee; }
+.boutons { position: absolute; top: 470px; left: 0; display: flex; gap: 40px; }
+.btn { display: inline-block; margin: 0; padding: 4px 10px; border: 0; background: #ccd; font: inherit; }
+.btn-group { display: inline-flex; }
+.transparent .btn { background: none; padding: 4px 30px; }
+.cartes { position: absolute; top: 540px; left: 20px; display: flex; gap: 20px; }
+.card { width: 160px; border: 1px solid #889; background: #fff; }
+.card.sans-cadre { border: 0; background: none; }
+.marge { padding: 12px; }
+.defile { overflow-x: auto; }
+.defile table { width: 400px; border-collapse: collapse; }
+#nf-verdict { position: absolute; top: 420px; left: 0; }
+</style>
+
+<script src="/harness.js"></script>
+
+<body>
+<p class="perdu">VRAI-PERDU : un texte qui passe sous le bord gauche</p>
+<div class="superpose"><span>VRAI-SUPERPOSE premier texte</span><span>VRAI-SUPERPOSE second texte</span></div>
+<div class="bande" id="bande"><a>Onglet un</a><a>Onglet deux</a><a>Onglet trois</a><a>Onglet quatre</a><a>Onglet cinq</a><a>Onglet six</a></div>
+<div class="grille"><pre><code>EXEMPT-PRE une très longue ligne de code qui défile dans son bloc et ne doit jamais compter</code></pre><p>Colonne voisine</p></div>
+<div class="pile"><p class="tronque">EXEMPT-TRONQUE Une description très longue qui passe sur plusieurs lignes et que l'on tronque</p><p>Voisin du bas qui suit la description</p></div>
+<svg width="300" height="80" style="position:absolute; top:290px; left:0"><line x1="0" y1="20" x2="300" y2="20" stroke="black" stroke-width="6"/></svg>
+<div class="fixe">EXEMPT-FIXE un calque fixé au-dessus du dessin</div>
+<div class="boutons">
+	<span><button class="btn" type="button">VRAI-COLLE-UN</button><button class="btn" type="button">VRAI-COLLE-DEUX</button></span>
+	<span class="btn-group"><button class="btn" type="button">EXEMPT-GROUPE-UN</button><button class="btn" type="button">EXEMPT-GROUPE-DEUX</button></span>
+	<span class="transparent"><button class="btn" type="button">EXEMPT-ENCRE-UN</button><button class="btn" type="button">EXEMPT-ENCRE-DEUX</button></span>
+</div>
+<div class="cartes">
+	<div class="card"><p style="margin:0">VRAI-BORD texte sans marge</p></div>
+	<div class="card"><div class="marge"><p style="margin:0">EXEMPT-BORD-MARGE texte</p></div></div>
+	<div class="card sans-cadre"><p style="margin:0">EXEMPT-BORD-SANS-CADRE texte</p></div>
+	<div class="card"><div class="defile"><table><tr><td style="padding:0">EXEMPT-BORD-DEFILE une cellule large qui défile</td></tr></table></div></div>
+</div>
+
+<script>
+document.getElementById('bande').scrollLeft = 140;
+
+fetch('/src/tests/MiseEnPage/sonde.js')
+	.then(function (r) { return r.text(); })
+	.then(function (source) {
+		setTimeout(function () {
+			var verdict = (0, eval)(source);
+			var textes  = [].concat(verdict.horsEcran || [], verdict.chevauchements || [], verdict.colles || [], verdict.bords || []).map(function (x) {
+				return (x.texte || '') + ' ' + (x.sur || '');
+			}).join(' | ');
+
+			[['VRAI-PERDU', true], ['VRAI-SUPERPOSE', true], ['Onglet', false], ['EXEMPT-PRE', false], ['EXEMPT-TRONQUE', false], ['EXEMPT-FIXE', false], ['VRAI-COLLE', true], ['EXEMPT-GROUPE', false], ['EXEMPT-ENCRE', false], ['VRAI-BORD', true], ['EXEMPT-BORD-MARGE', false], ['EXEMPT-BORD-SANS-CADRE', false], ['EXEMPT-BORD-DEFILE', false]].forEach(function (cas) {
+				NFTest.verifie(cas[0] + (cas[1] ? ' sort' : ' se tait'), cas[1], textes.indexOf(cas[0]) !== -1);
+			});
+
+			NFTest.fini();
+		}, 300);
+	})
+	.catch(function (e) { NFTest.echec('la sonde n’a pas pu être lue : ' + e); NFTest.fini(); });
+</script>
+</body>
+</html>

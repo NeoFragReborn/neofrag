@@ -28,9 +28,19 @@ abstract class HeadlessTestCase extends TestCase
 	 */
 	private static ?string $indisponible = null;
 
+	/** La raison d'un démarrage manqué, gardée pour les classes suivantes : boot.php ne se rejoue pas. */
+	private static ?string $echec_du_boot = null;
+
 	public static function setUpBeforeClass(): void
 	{
 		self::$indisponible = null;
+
+		if (self::$echec_du_boot !== null)
+		{
+			self::$indisponible = self::$echec_du_boot;
+
+			return;
+		}
 
 		if (!self::$booted)
 		{
@@ -40,7 +50,7 @@ abstract class HeadlessTestCase extends TestCase
 			}
 			catch (\Throwable $e)
 			{
-				self::$indisponible = 'Boot headless impossible (DB injoignable ?) : '.$e->getMessage();
+				self::$indisponible = self::$echec_du_boot = 'Boot headless impossible (DB injoignable ?) : '.$e->getMessage();
 
 				return;
 			}
@@ -52,7 +62,7 @@ abstract class HeadlessTestCase extends TestCase
 			// config/ est absent, ce qui est justement l'état du job `test` en CI.
 			if (!function_exists('NeoFrag') || NeoFrag() === NULL)
 			{
-				self::$indisponible = 'Boot headless incomplet (config/ ou DB indisponible).';
+				self::$indisponible = self::$echec_du_boot = 'Boot headless incomplet (config/ ou DB indisponible).';
 
 				return;
 			}
@@ -77,6 +87,12 @@ abstract class HeadlessTestCase extends TestCase
 		{
 			\NeoFrag()->db->rollback();
 		}
+	}
+
+	/** Le framework a démarré pour cette classe : un tearDown() qui le touche le demande d'abord (setUp() a pu sauter). */
+	protected static function amorce(): bool
+	{
+		return self::$indisponible === null;
 	}
 
 	/** Connexion DB du framework (celle des modèles sous test). */

@@ -52,10 +52,10 @@
 					</div>
 					<?php endif ?>
 					<?php if (!empty($forum_id)): ?>
-					<a href="<?php echo url($this->url->back() ?: 'forum/'.$forum_id.'/'.url_title($title)) ?>" class="btn btn-secondary"><?php echo $this->lang('Retour') ?></a>
+					<a href="<?php echo url($this->url->back() ?: 'forum/'.$forum_id.'/'.url_title($title)) ?>" class="btn btn-secondary me-2"><?php echo $this->lang('Retour') ?></a>
 					<button type="submit" class="btn btn-primary"><?php echo $this->lang('Poster le sujet') ?></button>
 					<?php elseif (!empty($topic_id)): ?>
-					<a href="<?php echo url($this->url->back() ?: 'forum/topic/'.$topic_id.'/'.url_title($title)) ?>" class="btn btn-secondary"><?php echo $this->lang('Retour') ?></a>
+					<a href="<?php echo url($this->url->back() ?: 'forum/topic/'.$topic_id.'/'.url_title($title)) ?>" class="btn btn-secondary me-2"><?php echo $this->lang('Retour') ?></a>
 					<button type="submit" class="btn btn-primary"><?php echo $this->lang($is_topic ? 'Modifier le sujet' : 'Modifier le message') ?></button>
 					<?php else: ?>
 					<button type="submit" class="btn btn-primary"><?php echo $this->lang('Répondre au sujet') ?></button>

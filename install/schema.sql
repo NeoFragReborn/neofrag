@@ -841,6 +841,20 @@ CREATE TABLE `nf_redirects` (
   UNIQUE KEY `uk_source` (`source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS `nf_pages_introuvables`;
+CREATE TABLE `nf_pages_introuvables` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `chemin` varchar(255) NOT NULL,
+  `visites` int(11) unsigned NOT NULL DEFAULT 0,
+  `robots` int(11) unsigned NOT NULL DEFAULT 0,
+  `provenance` varchar(255) NOT NULL DEFAULT '',
+  `premiere_fois` timestamp NOT NULL DEFAULT current_timestamp(),
+  `derniere_fois` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_chemin` (`chemin`),
+  KEY `idx_derniere_fois` (`derniere_fois`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 DROP TABLE IF EXISTS `nf_indexnow`;
 CREATE TABLE `nf_indexnow` (
   `url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
@@ -1010,7 +1024,11 @@ INSERT INTO `nf_migrations` (`id`, `name`, `batch`, `applied_at`) VALUES
 
 -- La médiation attend l'accord de celui qui a signalé : les colonnes mediation_* de nf_reports ci-dessus.
 -- Cf. migrations/2026_10_09_mediation_accord.
-('65', '2026_10_09_mediation_accord', '53', '2026-10-09 00:00:00');
+('65', '2026_10_09_mediation_accord', '53', '2026-10-09 00:00:00'),
+
+-- Le relevé des pages introuvables : nf_pages_introuvables ci-dessus.
+-- Cf. migrations/2026_10_10_pages_introuvables.
+('66', '2026_10_10_pages_introuvables', '54', '2026-10-10 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

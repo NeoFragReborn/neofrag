@@ -3,36 +3,133 @@
 Tous les changements notables de **NeoFrag Reborn** sont consignés ici.
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) ;
-le projet suit le [versionnage sémantique](https://semver.org/lang/fr/).
+les numéros de version s'inspirent du [versionnage sémantique](https://semver.org/lang/fr/) ; une version qui ne change
+que le dernier chiffre (1.2.x) peut toutefois apporter des nouveautés et des retraits.
 
 NeoFrag Reborn est la continuité communautaire de **NeoFrag** (base Alpha 0.2.4), créé à l'origine par
-Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
+Michaël BILCOT et Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.49] — 2026-10-10
+
+Un gros lot : une adresse au mauvais titre mène à la bonne, le relevé des pages introuvables, l'éditeur de texte dans
+la langue de la page, le module Événements utilisable sans les jeux — pour une association ou un club —, les images
+des tickets venues de Discord, et une longue liste de corrections trouvées en relisant tout le journal des versions,
+dont la fiche d'un match qui n'affichait plus son match. Le bot Discord passe en **version 0.2.7** (voir son propre
+journal des versions).
+
+### Ajouté
+
+- **Les images d'un ticket du Bugtracker** : une capture jointe sur Discord à un ticket ou à une idée, à son
+  ouverture ou dans une réponse, s'affiche dans le ticket du site — avec le bot 0.2.7, qui la confie au site comme il
+  le fait déjà pour le forum. Le texte des tickets reste du texte brut : seules les images gardées par le site s'y
+  affichent ; l'adresse d'une image hébergée ailleurs reste du texte.
+- **Le relevé des pages introuvables**, dans *Monitoring → Diagnostic* : chaque adresse que le site n'a pas
+  trouvée — sans la langue ni les paramètres —, combien de visiteurs et de robots l'ont demandée, la dernière fois
+  qu'on l'a demandée et la dernière page d'où l'on venait. Un bouton « Rediriger » ouvre le formulaire des
+  redirections, l'adresse déjà remplie ; les sondes des robots qui cherchent une faille sont rangées à part. Ni
+  adresse IP, ni navigateur ; une adresse qu'on ne demande plus depuis 90 jours s'oublie.
+- **Les images abandonnées de l'éditeur**, dans *Monitoring → Diagnostic* : une image envoyée dans un texte puis
+  retirée, ou celle d'un brouillon jamais enregistré, restait sur le disque. La page les retrouve — aucun texte du
+  site ne les affiche plus, ni contenu, ni message, ni réglage, ni révision, ni corbeille, et elles ont plus de
+  30 jours —, les montre, et efface celles qu'on coche.
+- **L'éditeur de texte parle la langue de la page** : ses menus, boutons et fenêtres étaient en anglais partout ; ils
+  sont désormais en français, allemand, espagnol, italien ou portugais selon la langue de la page.
+- **Un GIF animé reste animé** dans l'éditeur : il devenait une image fixe. Il est réécrit sans rien garder d'autre
+  que ses images, leur minutage et sa boucle. Un GIF de plus de 2 000 px de côté ou de plus de 1 000 images devient,
+  comme avant, une image fixe.
+- **Les événements sans les jeux** : le module Événements ne demande plus les modules Jeux et Équipes. Une
+  association, un club l'installent seul — invitations, réponses, récurrence, rappels ; les matchs, leurs adversaires
+  et leurs scores viennent avec les modules Jeux et Équipes. Il entre dans les profils « Communauté » et
+  « Association / club » de l'installation.
+
+### Corrigé
+
+- **Une adresse au mauvais titre redirige vers la bonne** (redirection permanente, 301) : le titre d'un contenu a
+  changé, le lien vient d'une autre langue ou porte une faute. Les billets, catégories, auteurs et séries du Blog, le
+  Palmarès, les tickets du Bugtracker, les événements du Calendrier, les petites annonces, les sondages et les
+  recettes répondaient à n'importe quel titre — des doublons pour les moteurs de recherche ; les actualités, les
+  événements, les offres de recrutement, les équipes, les albums et images de la Galerie, les forums et sujets, les
+  profils, les groupes et les partenaires répondaient « introuvable » à l'ancienne adresse d'un titre changé. La page
+  d'une catégorie du blog porte son titre, et non plus le texte de l'adresse ; la page d'un type ou d'une équipe
+  d'événements qui n'existe pas répond « introuvable ».
+- **Une image envoyée dans l'éditeur ne déborde plus** de la page sur les pages qui ne la bornaient pas (onglet
+  « À propos » d'un profil, événements, partenaires, albums, offres de recrutement, équipes) ni sur un téléphone :
+  elle prend au plus la largeur de la colonne.
+- Une taille de moins de 1 000 octets s'écrit « 685 o », et non plus « 685,00 o ».
+- **Forge**, de jour : les textes discrets (dates, auteurs, lieux, « Inscrit le… ») sont un peu plus foncés — ils
+  restaient juste sous le seuil de lisibilité.
+- **Forge et Extend** : les fins traits qui choisissent l'image du diaporama se touchent facilement du doigt au
+  téléphone (ils ne faisaient que 3 px de haut) ; rien ne change à l'œil.
+- **Chronique** : le nombre de notifications non lues, sur l'icône du compte, se lit nettement mieux, de jour comme
+  de nuit.
+- **Discord** : quand un sujet ou un message du forum, un ticket ou un commentaire de ticket est supprimé, la
+  trace qui le reliait à son fil Discord s'efface d'elle-même une semaine plus tard ; elle restait en base pour
+  toujours.
+- **Plus rien de collé au bord** : la liste des IP bannies et son formulaire d'ajout (la phrase d'aide et le bouton
+  touchaient les bords de leur carte), le champ de recherche de la liste des événements, la pagination d'un tableau
+  dans Granite, la pagination et le bouton « Suivre » dans Nebula, un pseudo long dans la liste des membres. Au
+  téléphone, les tableaux du diaporama et des permissions défilent dans leur carte au lieu d'en déborder.
+- **Plus de boutons collés** : « Inviter », « Quitter »… dans une conversation, au téléphone ; « Retour » et « Poster
+  le sujet » sur le forum ; les deux boutons de la recherche du forum dans l'administration.
+- **Forge** : au téléphone, le menu de l'espace membre réapparaît — il passait sous la carte de la page ; sur
+  ordinateur, il reste en vue quand on fait défiler. Le bouton vert « Voir ma candidature » redevient lisible.
+- **La fiche d'un match** montre de nouveau son match — l'équipe, l'adversaire, le score, le jeu et les manches,
+  qu'elle n'affichait plus. L'équipe, le score et l'adversaire tiennent sur une ligne, comme chaque manche, au
+  téléphone comme à l'ordinateur.
+- **Recrutement** : la page « Ma candidature » annonce de nouveau le bon poste et la bonne équipe — elle affichait
+  le nom de l'icône à la place du poste. **Forum** : l'édition d'un forum, dans l'administration, montre de nouveau sa
+  description et sa catégorie — elle montrait le titre à la place, et l'enregistrer pouvait ranger le forum ailleurs.
+- **Modération** : une sanction s'efface d'elle-même trois ans après sa fin (échue ou levée ; un avertissement, trois
+  ans après avoir été donné) ; une sanction sans fin (un ban définitif, par exemple) reste tant qu'elle court. Elles
+  se gardaient sans limite.
+- Le bouton de signalement (le drapeau « Signaler ce contenu ») se touche facilement du doigt au téléphone ; dans la
+  liste *Templates emails* de l'administration, les variables du sujet d'un e-mail (`{{date}}`) se distinguent du
+  texte.
+- **Newsletter** : la cible « Groupe » et la liste des campagnes nomment chaque groupe dans la langue de
+  l'administration ; elles le prenaient dans une langue au hasard (« Criador de addons », « Mitwirkender »).
+- **Des libellés justes** : sur le profil d'un membre, le bouton « Contacter » s'affichait « Contact » ; le thème
+  Extend écrit « À la une » et « Découvrir » dans la langue de la page (ils restaient en français) ; le bouton
+  « Grille » du Blog et de la page des extensions ne se traduit plus « programme » en anglais, allemand, espagnol et
+  italien ; le type de ticket « Demande de feature » devient « Demande de fonctionnalité ». En anglais, le bouton de
+  connexion dit « Log in », le menu « Log out », et « Voir mon profil » se dit partout « View my profile ». Dans
+  le Monitoring, la carte « Stockage » écrivait « Sauvegarde », « Libre » et « Total » en français dans toutes les
+  langues ; le réglage des événements dit « Nombre d'événements par page ».
+- **Pulse, de nuit** : le nombre de notifications non lues, sur l'icône du compte, se lit — un chiffre sombre sur la
+  brique claire ; blanc, il n'avait que 3,9:1.
+- **Le widget Dons** montre l'initiale d'un donateur dont le nom commence par une lettre accentuée ; il affichait
+  « & ».
+- **Réinitialiser son mot de passe** refuse, comme l'inscription et le changement, un mot de passe identique au
+  pseudo : la réinitialisation ne le comparait pas.
+- Le bot Discord passe en **version 0.2.7** (0.2.6 puis 0.2.7) : il confie au site les images jointes aux tickets
+  (voir plus haut), et son journal ne note plus les reconnexions ordinaires à Discord, seulement une coupure qui dure
+  plus d'une minute (voir son propre journal des versions).
+
 ## [1.2.48] — 2026-10-09
 
-Un gros lot : un audit de sécurité complet, la modération qui fonctionne enfin — ses sanctions s'appliquent à
-toutes les écritures des membres —, une nouvelle adresse e-mail confirmée avant de compter, l'effacement des comptes
-inactifs, et la connexion par Discord, GitHub ou Google réparée. Le bot Discord passe en **version 0.2.5** (voir son
-propre journal des versions). **Après la mise à jour, chacun se reconnecte une fois** : le cookie de session change
-de nom.
+Un gros lot : un audit de sécurité (accès, injections, comptes, fichiers), la modération qui fonctionne enfin — ses
+sanctions s'appliquent à toutes les écritures des membres —, une nouvelle adresse e-mail confirmée avant de compter,
+l'effacement des comptes inactifs, et la connexion par Discord, GitHub ou Google réparée. Le bot Discord passe en
+**version 0.2.5** (voir son propre journal des versions). **Sur un site en HTTPS, chacun se reconnecte une fois après
+la mise à jour** : le cookie de session change de nom.
 
 ### Sécurité
 
 - **La recherche du forum, ouverte aux visiteurs, laissait injecter du SQL** par un mot écrit entre guillemets ; la
-  recherche de la messagerie portait la même copie. Le mot est nettoyé comme les autres, et l'échappement est celui de
-  la base.
+  recherche de la messagerie avait le même défaut. Ce mot est maintenant nettoyé comme les autres, et échappé par la
+  base de données elle-même.
 - **Un envoi venu d'un autre site est refusé** (POST, PUT, DELETE…), d'après ce que dit le navigateur
   (`Sec-Fetch-Site`, à défaut `Origin`) : une page piégée ne peut plus faire agir un membre connecté à son insu. Un
   client sans navigateur — le bot, un service de paiement — n'est pas concerné.
 - **Vingt actions qui modifiaient quelque chose par un simple lien** demandent désormais le jeton de la session, ou
-  n'acceptent plus que POST : suivre un sujet, l'épingler, tout marquer comme lu, quitter, archiver, supprimer ou
-  restaurer une conversation, réagir, marquer ses notifications comme lues, donner sa disponibilité à un événement,
-  ouvrir ou fermer le site et les inscriptions, lancer une sauvegarde ou une mise à jour, supprimer un champ de
-  recrutement… Une déconnexion par un lien sans jeton se confirme par un bouton.
-- **En HTTPS, le cookie de session porte le préfixe `__Host-`** : un sous-domaine (une démonstration, un webmail) ne
-  le reçoit plus et ne peut plus en imposer un.
+  n'acceptent plus que POST : suivre un sujet, le mettre en annonce, tout marquer comme lu, quitter, archiver,
+  supprimer ou restaurer une conversation, réagir, marquer ses notifications comme lues, donner sa disponibilité à
+  un événement, ouvrir ou fermer le site et les inscriptions, lancer une sauvegarde ou une mise à jour, supprimer un
+  champ de recrutement… Une déconnexion par un lien sans jeton se confirme par un bouton.
+- **En HTTPS, pour un site installé à la racine de son domaine, le cookie de session porte le préfixe `__Host-`** :
+  un sous-domaine (une démonstration, un webmail) ne le reçoit plus et ne peut plus en imposer un. Un site installé
+  dans un sous-dossier garde un cookie sans ce préfixe, qui change seulement de nom.
 - **Les comptes** :
   - le lien « mot de passe oublié » ouvrait aussi la validation d'une inscription, qui connecte sans rien demander
     pendant deux jours : chaque lien ne vaut plus que pour son usage ;
@@ -42,8 +139,9 @@ de nom.
   - activer la double authentification ou lier un compte Discord, GitHub ou Google redemande le mot de passe ; cinq
     erreurs bloquent cette confirmation un quart d'heure ;
   - « mot de passe oublié » répond la même chose qu'une adresse soit inscrite ou non, et l'inscription ne dit plus
-    sans limite qu'une adresse est déjà prise ;
-  - l'historique des connexions note l'adresse de la connexion, plus un en-tête que le navigateur choisit.
+    qu'une adresse est déjà prise que cinq fois par heure et par réseau ;
+  - l'historique des connexions note l'adresse réelle de la connexion, et non plus un en-tête que le navigateur peut
+    choisir.
 - **Douze fuites d'accès fermées** : l'historique et les révisions d'une page du wiki en brouillon ; les catégories
   du forum réservées au VIP, par la recherche et les profils ; les groupes cachés ; l'image d'un album fermé ; les
   matchs d'un type réservé ; la présence que des participants avaient cachée ; les commentaires et réactions d'un
@@ -53,7 +151,9 @@ de nom.
   droit de voir l'album.
 - **Les pièces jointes du forum et des conversations sont servies par le site**, à qui peut lire le sujet ou la
   conversation, et plus par le serveur web à quiconque avait leur adresse. Une image ou un PDF s'affichent, le reste
-  se télécharge ; une pièce jointe qu'un navigateur exécuterait est refusée à l'envoi.
+  se télécharge ; une pièce jointe qu'un navigateur exécuterait est refusée à l'envoi. Sur Apache, le fichier
+  `upload/.htaccess` livré s'en charge ; sur nginx ou Caddy, reportez dans la configuration du serveur la règle qui
+  refuse `upload/forum/` et `upload/talks/` (voir `nginx.conf` et `Caddyfile` livrés).
 - **Ce que le serveur va chercher lui-même** (relais d'images, flux RSS, webhooks) se limite aux adresses publiques au
   sens strict, sur les ports 80 et 443.
 - **Les clés Stripe ne se relisent plus en clair** dans l'administration : enregistrées chiffrées, jamais
@@ -61,8 +161,9 @@ de nom.
 - **Démonstration** : les adresses IP, noms d'hôte et sites de provenance des visiteurs ne s'y montrent plus ; une
   publicité, un lien, un partenaire qui mène hors du site s'affiche sur une page qui dit où il mène, au lieu d'y
   rediriger.
-- Une adresse saisie par un membre ne sort plus en lien `javascript:` (pages d'où arrivent les sessions, liens d'un
-  match), et l'adresse de contexte d'un signalement ne peut viser qu'une page du site.
+- **Un lien `javascript:` ne peut plus s'afficher** à la place d'une adresse : la page d'où arrive une session
+  (administration), les liens d'un match (site de l'adversaire, retransmission, article). Le lien qu'un signalement
+  donne vers le contenu signalé ne peut mener qu'à une page du site.
 
 ### Ajouté
 
@@ -73,8 +174,8 @@ de nom.
   un e-mail prévient le membre un mois avant, une visite annule tout. Jamais un administrateur.
 - **Sanctionner un membre sans attendre un signalement**, depuis son historique de modération, que sa fiche
   d'administration propose.
-- **Un bouton « Signaler »** sur le livre d'or, les images de la galerie, les petites annonces, les tickets et leurs
-  commentaires.
+- **Le bouton de signalement** (le drapeau « Signaler ce contenu ») sur le livre d'or, les images de la galerie, les
+  petites annonces, les tickets et leurs commentaires.
 - **« Mes sanctions »** dans l'espace membre, pour qui en a eu une dans l'année : sa nature, son motif, sa période.
 - **La médiation** : depuis un signalement, le modérateur propose une conversation privée entre lui, le membre signalé
   et celui qui l'a signalé. Le membre signalé y verra qui l'a signalé : elle ne s'ouvre donc qu'avec l'accord de ce
@@ -83,15 +184,16 @@ de nom.
 ### Corrigé
 
 - **Les sanctions de modération s'appliquent à toutes les écritures des membres** : forum, messagerie,
-  commentaires, livre d'or, Bugtracker, recrutement, petites annonces, galerie, profil, éditeur d'images. Seuls le
-  muet du forum et de la messagerie étaient vérifiés, et après l'envoi. Le formulaire laisse place à un avis qui dit
-  ce que la sanction interdit, jusqu'à quand, et pourquoi ; la restriction « Liens externes » refuse un texte qui en
-  porte un, sans le perdre.
-- **Aucune sanction ne se prononçait depuis l'écran de modération** (une table supprimée en mai : erreur interne),
-  et l'escalade ne s'est donc jamais déclenchée. Revus avec : les réglages (cases qui ne se décochaient pas, seuil du
-  signaleur suspect), les portées, les durées (un bannissement temporaire sans durée devenait définitif), la
-  validation par un modérateur plus haut placé, le panneau des modérateurs, les signalements en double, les pages 2
-  et suivantes, la liste d'IP ; la levée d'une sanction refuse la sienne et celle d'un rang supérieur.
+  commentaires, livre d'or, Bugtracker, recrutement, petites annonces, galerie, profil, images envoyées dans
+  l'éditeur de texte. Seuls le muet du forum et de la messagerie étaient vérifiés, et après l'envoi. Le formulaire
+  laisse place à un avis qui dit ce que la sanction interdit, jusqu'à quand, et pourquoi ; la restriction des liens
+  (« Restriction : liens ») refuse un texte qui en porte un, sans le perdre.
+- **Aucune sanction ne se prononçait depuis l'écran de modération** : une erreur interne l'empêchait, si bien que
+  l'escalade automatique ne s'est jamais déclenchée. Revus dans la foulée : les réglages (cases qui ne se décochaient
+  pas, seuil du signaleur suspect), les portées, les durées (un bannissement temporaire sans durée devenait
+  définitif), la validation par un modérateur plus haut placé, le panneau des modérateurs, les signalements en
+  double, les pages 2 et suivantes, la liste d'IP. Un modérateur ne peut plus lever une sanction qui le vise, ni
+  celle d'un membre de rang égal ou supérieur au sien, ni celle prononcée par un modérateur plus haut placé.
 - **Le shadow ban fonctionne** : ce qu'écrit un membre qui en fait l'objet ne se montre qu'à lui et aux
   modérateurs, et rien ne se diffuse — ni notification, ni Discord, ni abonnés.
 - **Un rôle donné en plus — Modérateur — retirait les droits d'un membre** : un modérateur perdait le forum et la
@@ -104,28 +206,30 @@ de nom.
 - **Livre d'or, administration** : approuver, rejeter ou supprimer un message menait à une page introuvable.
 - **L'erreur d'un champ de formulaire s'écrit sous le champ**, au téléphone comme à l'ordinateur : elle ne se lisait
   que dans une bulle au survol.
-- **La barre du haut de l'administration reste en haut** au défilement ; au téléphone, seul le menu et le fil
+- **La barre du haut de l'administration reste en haut** au défilement ; au téléphone, seuls le menu et le fil
   d'Ariane restent collés.
-- **Quarante fautes de traduction** dans treize fichiers de langue (« There are 1 user », des confirmations de
+- **Trente-quatre fautes de traduction** dans douze fichiers de langue (« There are 1 user », des confirmations de
   suppression qui affichaient `< br / >`, des pluriels anglais…).
-- Les liens « site de l'extension » de 48 addons du cœur mènent au site du projet. La page *Courriels* de
-  l'administration ne liste plus les modèles d'un module absent. Une erreur d'un formulaire classique ne mène plus à
-  une page introuvable.
+- L'adresse de site que déclarent 48 addons du cœur est celle du projet, et non plus celle du NeoFrag d'origine. La
+  page *Templates emails* de l'administration ne liste plus les modèles d'un module non installé. Une erreur dans
+  certains formulaires (livre d'or trop sollicité, suppression du compte, double authentification, mot de passe,
+  création d'un membre dans l'administration) ne mène plus à une page introuvable.
 - **Démonstration** : un membre ordinaire n'ouvrait aucun sujet, ne répondait nulle part, ne postulait à rien.
 - **L'export « Mes données » contient les signalements faits par le membre** : ils manquaient à l'archive.
 
 ### Modifié
 
-- **Un widget qui montre ce que fait un module le déclare** (21 widgets) : sans ce module, ou s'il est désactivé, le
-  widget ne s'affiche plus et l'éditeur en direct ne le propose plus ; « Ajouter » refuse une archive de widget sans
-  son module.
+- **Un widget lié à un module en dépend désormais** (21 widgets) : sans ce module, ou s'il est désactivé, le widget
+  ne s'affiche plus et l'éditeur en direct ne le propose plus ; « Ajouter » refuse une archive de widget sans son
+  module.
 - **La documentation du produit ne se livre plus** dans le wiki d'un site neuf, qui arrive vide ; elle vit sur le site
   du projet. Une installation neuve ne reçoit plus les réglages de thèmes qu'elle n'a pas.
 
 ### Retiré
 
-- Les anciennes adresses `ajax/talks` et l'ancien signalement d'un message de la messagerie (journal d'audit seul),
-  avec sa page d'administration : un message se signale par la modération.
+- Les anciennes adresses `ajax/talks` de la messagerie, et son ancien signalement d'un message, qui ne faisait
+  qu'écrire au journal d'audit, avec sa page d'administration « Signalements de messages » : un message se signale
+  désormais par la modération.
 
 ## [1.2.47] — 2026-10-09
 
@@ -135,13 +239,13 @@ La barre d'objets de Blockcraft, au téléphone.
 
 - **La barre d'objets de Blockcraft occupe toute la largeur du téléphone** : ses cases se partagent l'écran à parts
   égales et chaque nom tient dans la sienne — sur deux lignes pour « Mon espace », coupé au trait d'union pour un mot
-  allemand ou portugais trop long (« Neuig-keiten »). Elle s'arrêtait à 326 px quelle que soit la largeur de
-  l'écran : un vide à droite, des cases étroites et « Nouvelles » qui débordait de la sienne. Le cadre blanc de la
+  allemand ou portugais trop long (« Neuig-keiten »). Elle gardait la même largeur quel que soit l'écran (sept cases
+  de 47 px) : un vide à droite, des cases étroites et « Nouvelles » qui débordait de la sienne. Le cadre blanc de la
   case choisie ne touche plus son nom.
 
 ## [1.2.46] — 2026-10-08
 
-Les bandeaux du haut de page ne recouvrent plus rien, la cloche arrive dans Nebula, et le panneau des extensions
+Les bandeaux du haut de page ne recouvrent plus rien, la cloche arrive dans Nebula, et la page *Thèmes & Addons*
 réinstalle de nouveau un thème.
 
 ### Corrigé
@@ -158,16 +262,17 @@ réinstalle de nouveau un thème.
   jusqu'au bout de la page — le menu de l'espace membre d'Extend, sur un écran de portable.
 - **Un lien vers une ancre s'arrête sous l'en-tête collé** — un message du forum, une section du wiki ou d'un article —
   au lieu de poser son titre dessous : chaque thème fixait ce décalage à la main, sans compter les bandeaux.
-- **« Réinstaller par défaut » et « Supprimer » un thème aboutissent depuis le panneau des extensions**, et l'ordre des
-  langues et des authentificateurs s'enregistre : la confirmation était refusée, « jeton de sécurité invalide ».
+- **« Réinstaller par défaut » et « Supprimer » un thème aboutissent depuis la page « Thèmes & Addons »**, et l'ordre
+  des langues et des authentificateurs s'enregistre : la confirmation était refusée, « jeton de sécurité invalide ».
 - **Le bandeau de la démonstration se lit** : son texte, blanc sur vert (2,4:1 de contraste), passe en sombre.
 - **Au téléphone, les boutons d'un en-tête de l'administration passent sous le titre** : sur la page des articles,
   « Catégories », « Séries » et « Nouvel article » recouvraient « 4 publiés », et le dernier sortait de l'écran.
-- **Un site joint sous un autre nom que celui qu'il déclare relaie aussi les images de ce nom** (avec ou sans `www.`) :
-  la politique de sécurité juge l'hôte que voit le navigateur, et refusait ces images, laissées en adresse directe.
-- **`check-mise-en-page` ne crie plus à tort** sur le contenu d'une entrée refermée (`<details>`), que Chrome garde en
-  page sans l'afficher — 48 faux chevauchements dans le journal des erreurs —, ni sur les messages que ce journal
-  montre à dessein.
+- **Un site ouvert sous un autre nom que celui de sa configuration** (avec ou sans `www.`, par exemple) affiche les
+  images écrites avec l'adresse configurée : la politique de sécurité du navigateur les bloquait, car elles venaient
+  pour lui d'un autre site ; elles passent maintenant par le relais d'images du site.
+- **Pour les contributeurs** : l'outil `check-mise-en-page` ne signale plus de faux chevauchements dans le contenu
+  d'un bloc replié (`<details>`), que Chrome garde dans la page sans l'afficher — 48 fausses alertes sur la page
+  *Journal des erreurs* du Monitoring —, ni dans les messages d'erreur que cette page affiche volontairement.
 
 ### Ajouté
 
@@ -175,24 +280,26 @@ réinstalle de nouveau un thème.
   chaque page », et Nebula n'en avait pas.
 - **Pour les auteurs de thèmes** : l'en-tête collé d'un thème porte `data-nf-entete`, et tout ce qui colle en haut de
   l'écran se cale sur `--nf-haut` (et une colonne sur `--nf-entete`) ; un nouveau contrôle, `check-colles`, le vérifie
-  — sur la 1.2.45, il relevait vingt règles (*Créer un thème*).
+  — lancé sur la 1.2.45, il y relevait vingt règles CSS fautives (*Créer un thème*).
 
 ### Retiré
 
-- **Les règles de la vitrine restées dans la feuille de Nebula** (sa barre, ses boutons, son pied) : aucun gabarit de
-  Nebula ne les employait.
+- **Des règles de style inutilisées dans la feuille de Nebula** (une barre, des boutons et un pied hérités d'un autre
+  thème) : aucun gabarit de Nebula ne les employait.
 
 ## [1.2.45] — 2026-10-08
 
-La cloche des notifications, revue dans tous les thèmes, et la connexion à double authentification d'un seul geste.
+La cloche des notifications, revue dans tous les thèmes qui l'affichent, et la connexion à double authentification
+d'un seul geste.
 
 ### Corrigé
 
 - **Avec la double authentification, le code se demande aussitôt après le mot de passe** : la fenêtre de connexion
   laisse place à celle du code, sans recharger la page. Elle se fermait, et il fallait recliquer sur « Se connecter »
   pour voir apparaître le code ; depuis le formulaire de l'espace membre, la fenêtre du code s'ouvre au rechargement.
-- **La pastille de la cloche se pose dans son coin**, dans tous les thèmes : la feuille du module, chargée après
-  celle du thème, la replaçait en ligne, et dans Extend et Forge elle tombait au milieu du bouton, sur la cloche.
+- **La pastille de la cloche se pose dans son coin**, dans tous les thèmes qui affichent la cloche : la feuille du
+  module, chargée après celle du thème, la replaçait en ligne, et dans Extend et Forge elle tombait au milieu du
+  bouton, sur la cloche.
 - **La cloche reste au centre de son bouton** quand une pastille s'y pose : une icône qui n'était plus seule dans son
   lien prenait une marge à droite, et glissait de trois pixels.
 - **« Notifications » et « Tout marquer comme lu » ne se touchent plus** en tête de la liste : elle garde sa largeur
@@ -209,10 +316,10 @@ Un correctif de la 1.2.43.
 - **Le filtre des services tiers fonctionne sous PHP-FPM et sous Apache.** Il tourne à la fin de la requête, quand le
   dossier courant n'est plus celui du site : il ne trouvait plus la clé du relais des images, et la page partait sans
   être filtrée. Les images d'autres sites, que la politique de sécurité refuse désormais, ne s'affichaient pas (les
-  avatars du widget Discord), et une vidéo intégrée se serait chargée sans son avis. Le serveur intégré de PHP, qui
-  garde le dossier, ne le montrait pas.
+  avatars du widget Discord), et une vidéo intégrée se serait chargée sans son avis. Le défaut ne se voyait pas avec
+  le serveur intégré de PHP, qui ne change pas de dossier en fin de requête.
 - **Le journal des erreurs PHP garde aussi celles de la fin de la requête**, erreurs fatales comprises : son chemin
-  était relatif, et se résolvait alors contre la racine du serveur.
+  était relatif, et se résolvait alors depuis la racine du disque (`/`).
 
 ## [1.2.43] — 2026-10-08
 
@@ -236,35 +343,40 @@ La confidentialité : plus aucun visiteur envoyé chez un tiers sans son accord.
 - **Les polices sont servies par le site** : les thèmes et le réglage « Police du site » les prenaient chez Google
   Fonts, et le navigateur de chaque visiteur envoyait son adresse IP à Google, sur chaque page.
 - **Les images d'autres sites sont servies par le site** — un avatar Discord, Steam ou Twitch, un GIF de la messagerie,
-  une image collée dans un article, le forum ou une annonce, une bannière : le site les récupère lui-même et les garde
-  sept jours, et le navigateur ne contacte plus leur hébergeur. Les tuiles de la carte des lieux aussi.
-- **La politique de sécurité ne laisse plus passer que le site** pour les images et les connexions (Analytics excepté,
-  s'il est réglé), et les lecteurs des services connus pour les cadres, qu'elle refusait : la vidéo d'un article ne
-  s'affichait pas. Un script d'un autre site collé dans un widget « Code HTML » ou une publicité ne s'exécute plus que
-  si son origine est autorisée.
-- **Un captcha confié à un tiers et refusé par le visiteur laisse place à ALTCHA**, servi par le site : personne n'a à
-  céder ses données à Google, à hCaptcha ou à Cloudflare pour écrire au site ou s'inscrire.
+  une image collée dans un article, le forum ou une annonce, une bannière de publicité : le site les récupère lui-même
+  et les garde sept jours, et le navigateur ne contacte plus leur hébergeur. Les tuiles de la carte des lieux aussi.
+- **La politique de sécurité n'accepte plus que le site lui-même** pour les images et les échanges des scripts (Google
+  Analytics excepté, s'il est réglé). Elle laisse en revanche s'afficher les lecteurs des services connus (YouTube,
+  Twitch, Vimeo, Dailymotion, Spotify, SoundCloud, Discord), qu'elle bloquait : la vidéo d'un article ne s'affichait
+  pas. Un script d'un autre site collé dans un widget « Code HTML » ou une publicité ne s'exécute plus : seuls passent
+  ceux de Google Analytics et du captcha choisi.
+- **Tant que le visiteur n'a pas accepté un captcha confié à un tiers, ALTCHA le remplace**, servi par le site :
+  personne n'a à céder ses données à Google, à hCaptcha ou à Cloudflare pour écrire au site ou s'inscrire.
 - **Plus de pixel de suivi dans la lettre d'information**, ni de taux d'ouverture : un traceur que l'inscription ne
   demandait pas (recommandation de la CNIL du 12 mars 2026 sur les pixels de suivi dans les courriels).
 - **Des durées de conservation** : le journal d'audit un an, les compteurs anti-abus un jour, les inscriptions à la
   lettre jamais confirmées trente jours, sa file d'envoi quatre-vingt-dix jours ; pour un signalement traité depuis un
   an, l'adresse IP de son auteur et la copie du contenu s'en vont. Le cookie de connexion s'arrête à la fermeture du
   navigateur, sauf avec « Se souvenir de moi » (un an), qui n'est plus coché d'avance.
-- **Plus de cartes Google** dans l'éditeur de texte : la carte du produit est celle d'OpenStreetMap.
+- **Plus de cartes Google dans les textes** : une carte Google Maps intégrée à un texte n'est plus acceptée. La carte du
+  produit est celle du module « Carte des lieux », sur OpenStreetMap.
 - Le lien « Propulsé par NeoFrag Reborn » des thèmes, le mot magique `{neofrag}` du copyright et les liens du pied de
   l'administration mènent au site du projet ; ils menaient au site du NeoFrag d'origine.
 
 ### Corrigé
 
-- **Plus aucune adresse IP envoyée à neofr.ag** : pour poser un drapeau devant les adresses des sessions, le navigateur
-  de l'administrateur les y envoyait toutes.
+- **Plus aucune adresse IP envoyée à neofr.ag** : le drapeau du pays posé devant les adresses des sessions est retiré ;
+  pour l'obtenir, le navigateur de l'administrateur envoyait toutes ces adresses au site du NeoFrag d'origine.
 - **La suppression d'un compte par l'administrateur efface vraiment** le profil, les comptes liés, l'historique des
   connexions et les notifications, comme celle que le membre demande lui-même ; elle ne faisait que fermer le compte.
-- **L'archive « Mes données » se télécharge de nouveau** : trois de ses listes (sujets du forum, commentaires, messages
-  des discussions) lisaient des colonnes qui n'existent pas.
-- Les infobulles des sessions et de la galerie étaient vides (un attribut de Bootstrap 4).
-- L'avatar du widget Steam n'était pas échappé.
-- Les deux libellés du lecteur du widget Twitch, restés en français, se traduisent.
+- **L'archive « Mes données » se télécharge enfin** : trois de ses listes (sujets du forum, commentaires, messages des
+  discussions) lisaient des colonnes qui n'existent pas, et l'archive échouait.
+- Les infobulles de la liste des sessions et de la galerie s'affichent : elles portaient un attribut de Bootstrap 4, que
+  Bootstrap 5 ignore, et restaient vides.
+- L'adresse de l'avatar du widget Steam était écrite telle quelle dans la page ; elle est désormais échappée, comme le
+  reste du widget.
+- L'infobulle « Ouvrir la chaîne » et le bouton « Fermer » du lecteur du widget Twitch, restés en français, se
+  traduisent.
 
 ## [1.2.42] — 2026-10-07
 
@@ -272,14 +384,15 @@ Un thème refait : **Extend**, le site comme le lanceur d'un jeu en ligne.
 
 ### Ajouté
 
-- **Extend 2.0.0 « Lanceur »** — une mise en page neuve, choisie sur une planche de trois directions. Une barre
+- **Extend 2.0.0 « Lanceur »** — une mise en page neuve, choisie parmi trois maquettes. Une barre
   d'onglets en haut, en capitales serrées, l'onglet ouvert allumé d'un trait bleu ; sur l'accueil, une **grande
   vitrine** (le diaporama, son titre en grand et son bouton « Découvrir » ; sans diaporama, le nom du site sur l'image
   du thème), puis les prochains rendez-vous en cartes, les actualités en vignettes, les derniers résultats ; ailleurs,
   le titre de la page sur cette image. À droite, sur toutes les pages, un **panneau toujours ouvert** : qui est en
-  ligne, avec les avatars, puis le salon de discussion (à côté du forum, ses chiffres). En bas, une **barre d'état** :
-  la place des widgets « Serveur de jeu », « TeamSpeak » et « Discord », la langue, la mention du site. Le forum en
-  bibliothèque, l'espace membre en fiche de joueur (bannière, avatar cerclé, palier de la gamification dans la barre).
+  ligne, avec les avatars, puis le salon de discussion (et, sur les pages du forum, ses chiffres). En bas, une **barre
+  d'état** : la place des widgets « Serveur de jeu », « Serveur TeamSpeak 3 » et « Serveur Discord », la langue, puis
+  « Propulsé par NeoFrag Reborn », le copyright et les liens légaux. Le forum en bibliothèque, l'espace membre en fiche
+  de joueur (bannière, avatar cerclé, palier de la gamification dans la barre).
   Au téléphone, les onglets passent en bas de l'écran, avec « En ligne », qui ouvre le panneau en tiroir, et « Plus »
   au-delà de quatre rubriques. Bleu acier sur fond marine, nuit par défaut, le jour au choix ; titres Saira Condensed,
   texte Albert Sans. Le logo, l'image de la vitrine, le fond et les couleurs se règlent. D'après le thème de
@@ -304,7 +417,7 @@ Un thème refait : **Blockcraft**, le site d'un serveur de jeu de blocs.
 
 ### Ajouté
 
-- **Blockcraft 2.0.0 « Spawn + Inventaire »** — une mise en page neuve, choisie sur une planche de quatre directions.
+- **Blockcraft 2.0.0 « Spawn + Inventaire »** — une mise en page neuve, choisie parmi quatre maquettes.
   En tête, un ciel au-dessus d'un paysage en blocs (collines, arbres, roche), le soleil et des nuages qui passent, la
   lune et les étoiles la nuit ; sur l'accueil, le nom du serveur en grand et **son adresse, à copier d'un
   clic** (réglage « Adresse du serveur »), et le Discord s'il est renseigné. La navigation est une **barre d'objets** :
@@ -318,50 +431,50 @@ Un thème refait : **Blockcraft**, le site d'un serveur de jeu de blocs.
 ### Corrigé
 
 - **La colonne de Pulse, de Chronique et de Blockcraft ne déforme plus les widgets qu'on y pose** : sa mise en page
-  atteignait aussi les rangées internes d'un widget, et « Qui est en ligne » y écartait ses nombres de leurs noms — sauf
-  dans la colonne où le nombre est un lien.
+  atteignait aussi l'intérieur des widgets, et « Qui est en ligne » y écartait ses nombres de leurs libellés.
 - **L'onglet choisi du profil d'un membre se lit dans Pulse, Chronique et Granite** : ces thèmes en changeaient le
   texte sans en changer le fond, que le module peint de la couleur d'accent — texte sombre sur l'accent.
-- **L'icône d'un groupe ne touche plus son nom** (« Équipe principale », dans le profil et l'espace membre) : le socle
-  commun mettait les pastilles en ligne souple sans écart, et l'espace entre l'icône et le nom disparaissait — dans les
-  six thèmes qui chargent le socle.
+- **L'icône d'un groupe ne touche plus son nom** (par exemple « Équipe principale », dans le profil et l'espace
+  membre) : le socle commun des thèmes ne laissait aucun espace entre l'icône et le nom — dans les six thèmes qui le
+  chargent.
 - **Les commentaires d'un événement gardent leur icône** dans Pulse, Chronique et Granite : ces thèmes ôtaient l'icône de
   tout lien posé au pied d'une carte, et le lien ne disait plus que « 0 → ». Seul le pied des widgets (« Voir le
-  calendrier → ») est concerné.
+  calendrier → ») perd désormais son icône.
 - **La pastille choisie de la messagerie se lit** (« Toutes », « Archives »…) dans Pulse et Chronique : le socle commun
   donnait à son texte la couleur des liens et à son icône celle de l'accent, sur un fond d'accent (1,1:1).
 - **Granite** : les boutons posés au pied d'une carte (« Poster une image », « Voir ma candidature », la pagination des
   sessions) prenaient le rouge des liens sur l'encre (2:1) ; « Lever cette sanction » n'avait que 3,7:1 ; la lettrine
   de la une descendait, au téléphone, sur la ligne « Par … le … » qui la suit ; les petits boutons font 24 px de haut.
-- **Pulse, de nuit** : le compteur du menu de l'espace membre se lit (3,9:1 sur la brique de nuit).
+- **Pulse, de nuit** : le compteur du menu de l'espace membre se lit : blanc sur la brique de nuit, plus claire, il
+  n'avait que 3,9:1 ; il garde la brique du jour.
 - **Le menu de l'espace membre, au téléphone, se cale sur le début d'un onglet** : centré au pixel près, il laissait
   l'onglet précédent amputé du début de son nom (« …fications »).
-- **Allumer le débogage depuis le Monitoring ne fait plus planter sa page** : le Monitoring relisait son cache en objet,
-  et la réponse plantait dès qu'une notification attendait (« Cannot use object of type stdClass as array »). Le cache
-  se relit en tableau, et la réponse JSON accepte aussi un objet.
+- **Allumer le « Mode débogage » depuis le Monitoring ne fait plus planter sa page** : la réponse plantait dès qu'une
+  notification attendait (« Cannot use object of type stdClass as array »).
 - **Les guides comptent les thèmes du paquet** : « Concepts » en annonçait quatre (Chronique et Pulse manquaient),
   « Créer un thème » nommait quatre thèmes sur le socle commun au lieu de six.
 
 ### Modifié
 
 - **`check-mise-en-page` ne crie plus à tort** : un texte de la bannière des cookies ou d'une barre collée en bas de
-  l'écran passe au-dessus d'un graphique à dessein (seul un même calque fait conflit) ; la part CACHÉE d'un texte — le
-  code d'un bloc qui défile, une description tronquée — ne « chevauche » plus la colonne voisine ; l'onglet d'une bande
-  qui défile n'est plus « perdu au bord gauche ». Une centaine de faux défauts en moins, et les vrais sortent toujours
+  l'écran passe au-dessus d'un graphique à dessein (seul un même calque fait conflit) ; la partie cachée d'un texte —
+  le code d'un bloc qui défile, une description tronquée — ne « chevauche » plus la colonne voisine ; l'onglet d'une
+  bande qui défile n'est plus « perdu au bord gauche ». Des faux défauts en moins, et les vrais sortent toujours
   (éprouvé sur une page piégée, avec l'ancienne sonde et la nouvelle).
 
 ## [1.2.40] — 2026-10-07
 
-Le référencement revu après les alertes de la Search Console de la vitrine : Google n'indexait pas les sujets du forum ni
-les pages du wiki, et se voyait proposer des pages vides. Et le message de bienvenue, qui ne partait plus.
+Le référencement revu après les alertes de la Search Console du site officiel : Google n'indexait pas les sujets du
+forum ni les pages du wiki, et se voyait proposer des pages vides. Et le message de bienvenue, qui ne partait plus.
 
 ### Corrigé
 
-- **Google n'écarte plus les contenus sans langue comme des doublons** : un sujet du forum, une page du wiki, un ticket,
-  un événement, une annonce, une recette, un sondage, une offre de recrutement, une distinction, une campagne de dons —
-  rédigés une fois — répondaient sous chacune des six langues du site, seuls les menus traduits, et chaque adresse se
+- **Les contenus sans langue ne se présentent plus comme des doublons** : un sujet du forum, une page du wiki, un
+  ticket, un événement, une annonce, une recette, un sondage, une offre de recrutement, une distinction, une campagne de
+  dons — rédigés une fois — répondaient sous chacune des langues du site, seuls les menus traduits, et chaque adresse se
   disait canonique. Google en retenait une autre et ne les indexait pas (« Page en double : Google n'a pas choisi la
-  même URL canonique que l'utilisateur » : 59 contenus annoncés six fois, 354 des 580 adresses du plan de la vitrine).
+  même URL canonique que l'utilisateur » : sur le site officiel, en six langues, 59 contenus annoncés six fois, 354 des
+  580 adresses du plan du site).
   Leur canonique est désormais dans la langue première du site, la seule annoncée en `hreflang` et au plan du site. De
   même pour les pages faites de ces contenus : la FAQ, le glossaire, les citations, les liens, les téléchargements, la
   boutique et la liste des événements.
@@ -369,25 +482,27 @@ les pages du wiki, et se voyait proposer des pages vides. Et le message de bienv
   message et la page des dons sans campagne figuraient au plan du site, dans chaque langue — des « soft 404 » pour
   Google. Elles n'y sont plus tant qu'elles sont vides, et se déclarent `noindex`.
 - **`/fr/forum/` redirige pour de bon vers `/fr/forum`** : la redirection d'une adresse finie par une barre oblique,
-  ou qui en doublait une, était temporaire (302) et perdait ce qui suivait le `?` ; elle est permanente (301).
+  ou qui en doublait une, était temporaire (302) — et la première perdait ce qui suivait le `?` ; elle est permanente
+  (301), et garde la fin de l'adresse.
 - **Le message de bienvenue part de nouveau** : le module Membres ne trouvait pas la messagerie, et le nouvel inscrit ne
   recevait rien. Un module qui en chargeait un autre (`$this->module(…)`) obtenait toujours « rien » — le même défaut
   privait les webhooks d'un commentaire du titre et de l'adresse du contenu commenté.
 - **Les sauvegardes de mise à jour ne s'entassent plus** : le site garde toujours les cinq plus récentes et retire les
-  autres passé trente jours, mais des mises à jour rapprochées les laissaient toutes passer — la vitrine en portait
-  quarante, 663 Mo. Jamais plus de dix ne restent désormais, quel que soit leur âge.
+  autres passé trente jours, mais des mises à jour rapprochées les laissaient toutes passer — le site officiel en
+  portait quarante, 663 Mo. Jamais plus de dix ne restent désormais, quel que soit leur âge.
 
 ### Modifié
 
 - **`check-seo` compare les langues entre elles** : il échantillonne le même chemin dans chaque plan du site et signale
-  un même texte servi sous plusieurs langues, chacune canonique. Il déclarait la vitrine juste ; il y trouve désormais
-  ces doublons. Les modules le peuvent aussi : une entrée du plan marquée `'sans_langue' => TRUE` ne figure qu'au plan
-  de la langue première, et `nf_seo_sans_langue()` place la canonique de la page (guide « Créer un module »).
+  un même texte servi sous plusieurs langues, chacune canonique. Il déclarait le site officiel juste ; il y trouve
+  désormais ces doublons. Un module peut déclarer ses contenus sans langue : une entrée de son plan du site marquée
+  `'sans_langue' => TRUE` ne figure qu'au plan de la langue première, et `nf_seo_sans_langue()` place la canonique de
+  la page (guide « Créer un module »).
 
 ## [1.2.39] — 2026-10-06
 
 Pulse revu sur la démonstration publiée : le forum au téléphone ne colle plus ses boutons, dans tous les
-thèmes ; et le dernier billet du blog qui débordait de l'écran.
+thèmes ; et un billet du blog qui débordait encore de l'écran au téléphone.
 
 ### Corrigé
 
@@ -395,8 +510,8 @@ thèmes ; et le dernier billet du blog qui débordait de l'écran.
   modération) et celle d'un forum gardent un écart entre leurs boutons et entre leurs rangs ; les boutons d'un message
   passent au-dessus de sa date, qui ne se coupe plus sur trois lignes ; le titre d'un sujet ne touche plus le bouton
   « Suivre ». Dans tous les thèmes.
-- **Un billet du blog avec un tableau ne déborde plus au téléphone** : un chemin de fichier trop long se coupe, et un
-  tableau qui reste trop large défile dans sa colonne (le billet de la 1.2.0 dépassait de l'écran).
+- **Un billet du blog ne déborde plus au téléphone** : un bout de code trop long (un chemin de fichier, par exemple) se
+  coupe, et un tableau qui reste trop large défile dans sa colonne (le billet de la 1.2.0 dépassait de l'écran).
 
 ## [1.2.38] — 2026-10-06
 
@@ -427,18 +542,17 @@ servent à tous les thèmes — le site en chiffres, le prochain rendez-vous et 
   sur sarcelle, rouge sur rouge), donc invisible. Il est maintenant en couleur, sur le papier, comme ces thèmes le
   prévoyaient — et l'aperçu du style, dans l'éditeur en direct, le montre ainsi.
 - **Le style « Widget coloré » de Granite** : le texte, les libellés d'un formulaire et le bouton d'un widget posé dans
-  cette petite annonce pouvaient devenir blancs sur le papier (ou encre sur encre, la nuit). Ils gardent les couleurs du
+  ce style pouvaient devenir blancs sur le papier (ou encre sur encre, la nuit). Ils gardent les couleurs du
   journal. Le contrôle de contraste sait maintenant mesurer un widget dans chaque thème et chaque style de panneau.
-- **Le fil d'Ariane au-dessus d'une actualité** : chaque thème le prévoyait, il n'y paraissait jamais — la page visée
-  portait un nom qu'aucune adresse n'a. Il s'affiche maintenant sur les articles et la liste des actualités, dans tous
-  les thèmes.
+- **Le fil d'Ariane au-dessus d'une actualité** : chaque thème le prévoyait, il n'y paraissait jamais — la règle qui
+  le place visait une adresse qui n'existe pas. Il s'affiche maintenant sur les articles et la liste des actualités,
+  dans tous les thèmes.
 - **Deux encarts côte à côte restent alignés** : sous une actualité, « Autres actualités de l'auteur » descendait de 14
   à 22 px à côté de « À propos de l'auteur » (de même dans la fiche d'un événement et la messagerie).
 - **Chronique : un article garde ses marges** dans sa carte ; le titre et le texte touchaient la bordure.
 - **Des textes posés sur un dégradé se lisent** : le bouton « Rejoindre le serveur » du widget Discord, le sigle du
   blason de Forge, le titre et la devise de la bannière de Blockcraft, le jour. Le contrôle de contraste mesure
   maintenant le texte sur un dégradé, et en membre connecté (l'espace membre compris).
-
 - **Un billet du Blog à un seul intertitre ne s'affiche plus écrasé** : sans sommaire, la page lui gardait sa colonne,
   le texte s'y tassait sur 200 px et l'encart (auteur, partage) prenait sa place — les notes des versions 1.2.32, 1.2.33
   et 1.2.37 sur le site officiel. Merci à Blober de l'avoir signalé.
@@ -452,15 +566,16 @@ Chronique revu sur la démonstration telle qu'on la voit — en visiteur et conn
 
 ### Corrigé
 
-- **L'espace membre de Chronique.** Sur la pierre de son panneau, « Mot de passe oublié ? » se posait sur « Se connecter »
+- **L'espace membre de Chronique.** Dans son panneau, « Mot de passe oublié ? » se posait sur « Se connecter »
   dès que la colonne les mettait l'un sous l'autre ; connecté, les icônes du menu restaient gris foncé sur l'ardoise et
   « Se déconnecter » tombait dans un rectangle blanc (noir la nuit). Ce sont maintenant des liens blancs, un seul bouton
   plein, et un écart dans les deux sens — avec « Créer un compte » aussi, quand les inscriptions sont ouvertes.
 - **Chronique au téléphone garde la connexion dans l'en-tête**, en icône : le mot « Connexion » disparaissait, et il
   fallait descendre au bas de la page pour se connecter.
-- **Les boutons du panneau de connexion gardent leur écart quand ils passent à la ligne**, dans tous les thèmes refaits.
-- **Extend : les icônes des champs du panneau coloré se voient** (le pseudo et le mot de passe : blanches sur une case
-  claire).
+- **Les boutons du panneau de connexion gardent leur écart quand ils passent à la ligne**, dans les cinq thèmes qui
+  partagent le socle commun (Blockcraft, Chronique, Extend, Forge, Granite).
+- **Extend : les icônes des champs du panneau coloré se voient** (le pseudo et le mot de passe) : elles étaient blanches
+  sur une case claire.
 - **La liste des membres, de nuit** : un réseau social qu'un membre n'a pas renseigné devenait une pastille grise collée à
   la suivante. C'est une icône grisée, sans fond, et les boutons des réseaux renseignés ont un vrai écart — sur une ligne
   dans une carte étroite.
@@ -495,12 +610,14 @@ tous les thèmes — la frise de la saison et la semaine du calendrier.
 
 - **En mode jour, les composants de Bootstrap prennent les couleurs du thème** : un accordéon de la FAQ, une case à
   cocher, un tableau ou un menu déroulant restaient blancs, et leur texte gris foncé, sur le papier de Granite. Vérifié
-  élément par élément sur Forge, Granite, Blockcraft et Extend : seules leurs couleurs changent, et la nuit ne bouge pas.
+  élément par élément sur Forge, Granite, Blockcraft et Extend : seules leurs couleurs changent, et le mode nuit reste
+  tel quel.
 - **« Mode jour » et « Mode nuit » se traduisent** : l'infobulle et le nom, lu par les lecteurs d'écran, du bouton de
   bascule restaient en français sur un site dans une autre langue (Forge, Granite, Blockcraft, Extend). Le contrôle des
   textes écrits en dur connaît maintenant les mots « jour » et « nuit ».
 - **La page de personnalisation d'un thème ne journalise plus d'avertissement** quand ses réglages n'existent pas encore
-  (un thème inscrit sans son installation) : la position d'une image prend sa valeur par défaut.
+  (un thème enregistré sans que son installation ait créé ses réglages) : la position d'une image prend sa valeur par
+  défaut.
 
 ## [1.2.35] — 2026-10-06
 
@@ -556,14 +673,15 @@ Le premier thème refait de fond en comble : **Forge 2.0.0 « Coulée »**, pour
   un tiroir d'acier avec une jauge de chaleur pour son activité ; l'espace membre et le profil public prennent la plaque
   d'identité et les onglets en biseau ; le pied est riveté et porte les partenaires. Le mode jour éclaircit le contenu,
   le rail et le foyer restent d'acier et de feu. Tout mouvement s'arrête si le visiteur a demandé moins d'animations.
+  Les blocs des matchs, du palmarès et des partenaires ne se posent que si leurs modules sont installés.
 - **Les zones de Forge se nomment d'après leur place** : « Rail de navigation », « Haut de page », « Contenu », « Après
   le contenu », « Pied de page ».
 - **Les réglages de Forge** : le logo sert enfin (le blason du rail ; sans logo, les initiales du site) ; l'image de
   bannière devient l'image du foyer ; un réglage « Braises du foyer » (aucune, douces, vives) remplace celui de la barre
   du haut fixe, qui n'a plus d'objet.
-- **Le palmarès** (widget) dit la place du podium en toutes lettres (« 1er », « 2e », « 3e ») et le nom entier de la
-  compétition, avec dessous le lieu et la plateforme ; la ligne commençait par la plateforme et coupait le nom à vingt
-  caractères.
+- **Le palmarès** (widget) affiche la place du podium (« 1er », « 2e », « 3e ») et le nom de la compétition sur toute la
+  largeur disponible, avec dessous le lieu et la plateforme ; la ligne commençait par la plateforme et coupait le nom à
+  vingt caractères.
 - **Les images du diaporama de la démo ne portent plus leur titre** : le diaporama l'écrit déjà par-dessus, et il
   s'affichait en double, en travers de la légende au téléphone.
 
@@ -571,12 +689,12 @@ Le premier thème refait de fond en comble : **Forge 2.0.0 « Coulée »**, pour
 
 - **Un réglage de thème se voit tout de suite** (couleur d'accent, images de fond et de bannière…) : l'adresse de la feuille de
   style ne suivait plus que la date du fichier, et le navigateur gardait l'ancienne feuille après un changement.
-- **La page de personnalisation des thèmes** Forge, Granite, Blockcraft et Extend porte le nom du thème au lieu d'un
-  « Dashboard » en anglais, le même sur tous les onglets.
+- **La page de personnalisation des thèmes** Forge, Granite, Blockcraft et Extend a pour titre le nom du thème, au lieu
+  de « Dashboard », un mot anglais affiché sur tous ses onglets.
 - **En anglais, le palmarès n'écrit plus « 2th » ni « 3th »** : la place du podium a ses propres mots, les autres places
   s'écrivent « #4 ».
-- **Réinstaller un thème n'écrit plus d'avertissement au journal** en mode débogage (une propriété posée sur l'objet de
-  l'API, que PHP 8.2 déprécie).
+- **Réinstaller un thème n'écrit plus d'avertissement au journal** en mode débogage (un avertissement « Deprecated » de
+  PHP 8.2).
 
 ## [1.2.33] — 2026-10-06
 
@@ -585,10 +703,10 @@ réparée. Rien ne change pour les sites.
 
 ### Corrigé
 
-- **La CI publique de `neofrag` ne tombe plus à chaque version.** L'étape qui cherche la version jumelle
-  d'`extensions` lisait la liste des étiquettes et s'arrêtait à la première trouvée : depuis que cette liste dépasse
-  4 096 octets (la 1.2.32), `git` recevait le signal d'un tuyau fermé, et l'étape échouait. Elle lit désormais la liste
-  entière ; même correction dans la CI d'`extensions`.
+- **La vérification automatique (CI) du dépôt `neofrag` passe de nouveau.** Depuis la 1.2.32, l'étape qui cherche la
+  version correspondante du dépôt `extensions` pouvait échouer : elle cessait de lire la liste des versions dès qu'elle
+  avait trouvé la bonne, et `git`, interrompu en pleine écriture, tombait en erreur maintenant que la liste est longue.
+  Elle lit désormais la liste entière ; même correction dans la CI d'`extensions`.
 - **La vérification des liens des documents ne lit plus ceux des bibliothèques embarquées** (la licence de TinyMCE) :
   ils ne se corrigent pas chez nous, et gnu.org fermait la connexion à leur vieille adresse.
 
@@ -599,43 +717,49 @@ change à l'écran ; c'est la base sur laquelle chacun recevra son identité.
 
 ### Modifié
 
-- **Les thèmes Forge, Granite, Blockcraft et Extend partagent un socle commun** (`css/nf-socle-themes.css`) : les
-  153 règles qu'ils avaient d'identiques n'y sont plus écrites qu'une fois, dans le cœur, et chacun ne garde que
-  son identité. Rien ne change à l'écran — vérifié élément par élément et pixel par pixel, sur les quatre thèmes, de
-  jour et de nuit, à l'ordinateur et au téléphone. C'est la première étape de leur refonte : chacun aura bientôt son
-  allure propre. Les quatre thèmes passent en 1.1.0 et demandent le cœur 1.2.32.
+- **Les thèmes Forge, Granite, Blockcraft et Extend partagent un socle commun** (`css/nf-socle-themes.css`) : 153
+  des règles qu'ils avaient en commun n'y sont plus écrites qu'une fois, dans le cœur ; une cinquantaine d'autres
+  restent dans chaque thème, parce que leur place dans la feuille compte. Rien ne change à l'écran — vérifié élément
+  par élément et pixel par pixel, sur les quatre thèmes, de jour et de nuit, à l'ordinateur et au téléphone. C'est la
+  première étape de leur refonte : chacun aura bientôt son allure propre. Les quatre thèmes passent en 1.1.0 et
+  demandent le cœur 1.2.32.
 
 ## [1.2.31] — 2026-10-06
 
 L'espace membre, dernières étapes : la sécurité du compte — les appareils connectés se déconnectent, les sanctions
-de modération s'appliquent enfin — et les notifications, rangées dans l'espace membre avec le choix de ce que
-chacun reçoit. Le chantier de l'espace membre est terminé.
+d'avatar et de signature s'appliquent enfin — et les notifications, rangées dans l'espace membre avec le choix de ce
+que chacun reçoit. Le chantier de l'espace membre est terminé.
 
 ### Ajouté
 
-- **« Sécurité » montre les appareils où le compte est ouvert**, et ils se déconnectent : chaque session avec
-  son navigateur, son système, son adresse et sa dernière activité, « Cet appareil » pour celle d'où l'on
-  regarde ; « Déconnecter » pour un autre, ou « Déconnecter tous les autres appareils ». « Gérer mes sessions »
-  ne montrait qu'un historique, et une session ouverte ailleurs ne se fermait pas. Sur une démonstration, dont le
-  compte est partagé, rien ne s'y ferme.
-- **Chaque membre choisit les notifications qu'il reçoit**, sur le site et par e-mail : une case par sorte de
-  notification (un message privé, une réponse dans un sujet suivi, une mention, un commentaire, une réaction, un
-  rappel d'événement…), dans « Préférences de notifications ». Sans réglage, il reçoit tout, comme avant. Un
-  module déclare les siennes par `types_de_notification()`.
-- **« Mes notifications » rejoint l'espace membre**, avec son menu, vingt par page : la page vivait à part, sous
-  `notifications`, et n'en montrait que les cinquante dernières. L'ancienne adresse mène à la nouvelle.
+- **« Sécurité » montre les appareils où le compte est ouvert, et permet de les déconnecter** : chaque session
+  avec son navigateur, son système, son adresse IP et sa dernière activité, « Cet appareil » pour celle d'où l'on
+  regarde ; « Déconnecter » pour un autre, ou « Déconnecter tous les autres appareils ». « Sécurité » ne montrait
+  jusqu'ici que l'historique des connexions, et une session ouverte ailleurs ne se fermait pas. Sur un site de
+  démonstration, dont le compte est partagé, aucune session ne peut être fermée.
+- **Chaque membre choisit les notifications qu'il reçoit**, dans « Préférences de notifications » : une case par
+  sorte de notification (un message privé, une réponse dans un sujet suivi, une mention, un commentaire, une
+  réaction, un rappel d'événement…) pour la recevoir sur le site, et une case « Par e-mail » pour celles que le site
+  envoie aussi par e-mail (messages privés, réponses et mentions du forum). Sans réglage, il reçoit tout, comme
+  avant. Pour les auteurs de modules : un module déclare les siennes par `types_de_notification()` (voir le guide
+  « Créer un module »).
+- **« Mes notifications » rejoint l'espace membre**, à l'entrée « Notifications » de son menu, vingt par page : la
+  page vivait à part, à l'adresse `/notifications`, et n'en montrait que les cinquante dernières (désormais jusqu'aux
+  cinq cents dernières). L'ancienne adresse mène à la nouvelle.
 
 ### Corrigé
 
 - **Les sanctions d'avatar et de signature s'appliquent.** Un modérateur pouvait les prononcer, mais le profil ne
   les consultait pas : le membre sanctionné changeait son avatar et sa signature comme avant. Il voit maintenant
   ce que la sanction lui interdit, son motif et jusqu'à quand.
-- **Les modèles du cœur lisent leur table, d'où qu'on les charge** : chargé depuis un module, un modèle comme
-  celui des sessions visait une table préfixée du nom du module, qui n'existe pas — la même famille que le favicon
-  manquant au manifeste.
-- **Une mention au forum ne fait plus perdre la réponse** : un membre mentionné dans un sujet qu'il suit ne
-  recevait que la mention — et rien du tout si les mentions étaient coupées, par le site ou par lui. La réponse
-  lui arrive désormais.
+- **Huit modèles de données du cœur lisent toujours leur propre table** (sessions, historique des connexions,
+  addons, traductions, journaux…) : chargés depuis un module, ils cherchaient une table qui n'existe pas. Rien ne
+  le montrait encore à l'écran ; la nouvelle liste des appareils l'aurait montré. C'est le même défaut que celui du
+  favicon et des fichiers supprimés, corrigé en 1.2.29.
+- **Une mention coupée au forum ne fait plus perdre la réponse.** Un membre mentionné dans un sujet qu'il suit ne
+  recevait rien quand la mention lui était coupée — l'e-mail de mention coupé par le site (« Notifier les mentions
+  @user par email ») ou la mention coupée dans ses préférences. Il reçoit désormais la réponse. Quand la mention lui
+  parvient, elle tient lieu de réponse, pour ne pas l'avertir deux fois.
 
 ## [1.2.30] — 2026-10-05
 
@@ -645,36 +769,39 @@ compte : un membre connecté lit et écrit de nouveau dans le forum.
 ### Ajouté
 
 - **Le profil public d'un membre devient une vraie page.** Sa couverture en bannière (téléversée, elle ne
-  s'affichait nulle part), son avatar qui la chevauche, son pseudo, son rang, ses groupes et sa présence ;
-  « Contacter » et « Signaler », ou « Modifier mon profil » sur le sien ; puis des onglets, chacun à son
-  adresse : À propos (citation, identité, liens, champs publics du site, et ses chiffres), Activité, et ceux
-  que les modules installés apportent — Forum, Blog, Équipes, Petites annonces. Un module sans rien à montrer de
-  ce membre n'ajoute pas d'onglet vide.
+  s'affichait nulle part), son avatar qui la chevauche, son pseudo, son rang, ses groupes et sa présence ; pour un
+  membre connecté, « Contacter » (si la messagerie est installée) et le drapeau « Signaler ce contenu », ou
+  « Modifier mon profil » sur le sien ; puis des onglets, chacun à son adresse : À propos (citation, identité, liens,
+  champs publics du site, et ses chiffres), Activité, et ceux que les modules installés apportent — Forum, Blog,
+  Équipes, Petites annonces. Un module sans rien à montrer de ce membre n'ajoute pas d'onglet vide.
 - **Chaque membre choisit ce que son profil montre**, dans « Confidentialité et données » : ses points, son
   karma et ses jours de VIP lui sont réservés tant qu'il ne les montre pas (ils étaient visibles de tous,
   visiteurs compris) ; son âge et sa présence en ligne restent montrés tant qu'il ne les cache pas. Son rang reste
   public. Le choix vaut partout : la fiche qui s'ouvre au survol d'un pseudo, la pastille de l'avatar, l'effectif
-  des équipes, les widgets « Qui est en ligne » et « Activité du forum », la recherche de membres, les
+  des équipes, les widgets « Qui est en ligne ? » et « Activité du forum », la recherche de membres, les
   anniversaires de l'horloge. Sur son propre profil, le membre voit tout, un cadenas sur ce qu'il est seul à voir.
 
 ### Corrigé
 
 - **Un membre connecté lit et écrit de nouveau dans le forum**, et voit les galeries, les pages, les types
-  d'événements et les dossiers ouverts aux visiteurs. Depuis la refonte des droits, le rôle « membre » n'avait
+  d'événements et les dossiers ouverts aux visiteurs. Depuis la refonte des droits, le rôle « Membre » n'avait
   que ce qu'on lui donnait expressément : un membre voyait « Aucun forum » là où un visiteur lisait tout, et
-  n'écrivait nulle part — seuls les administrateurs, qui passent outre les droits, ne voyaient rien. Les règles
-  d'origine reviennent : ce qu'un visiteur peut, un membre le peut ; ce qui n'est refusé qu'aux visiteurs reste
-  permis aux membres. Une migration les rétablit sur chaque site, sans toucher une règle déjà posée pour les
+  n'écrivait nulle part — seuls les administrateurs, qui passent outre les droits, ne voyaient rien d'anormal. Les
+  règles d'origine reviennent : ce qu'un visiteur peut, un membre le peut ; ce qui n'est refusé qu'aux visiteurs
+  reste permis aux membres. Une migration les rétablit sur chaque site, sans toucher une règle déjà posée pour les
   membres.
 - **Les rangs de réputation (Novice, Bronze, Argent…) se traduisent** : ils s'affichaient en français dans
   toutes les langues. Et la bulle d'un rang ne dit plus le score de karma.
-- **Le widget « Activité du forum » ne montre plus le compte masqué d'une démonstration** parmi ceux en ligne ;
-  « Qui est en ligne » l'écartait déjà.
-- **Un site web saisi sans « https:// » dans un profil** devenait un lien vers une page du site lui-même.
-- **Une mise à jour ne remplace plus le catalogue du marketplace d'un site.** Le paquet de mise à jour portait
-  un catalogue fabriqué des versions plus tôt : sur le site qui sert le marketplace, il ne correspondait plus aux
-  archives, et chaque installation d'un addon était refusée jusqu'à ce que le catalogue soit refait.
-- **Dans « Mon espace », le groupe du membre s'affiche sous son pseudo** : il flottait au milieu de l'en-tête.
+- **Sur un site de démonstration, le widget « Activité du forum » ne montre plus le compte administrateur créé à
+  l'installation** parmi les membres en ligne ; « Qui est en ligne ? » l'écartait déjà.
+- **Un site web saisi sans « https:// » dans un profil mène bien à ce site** : il devenait un lien vers une page du
+  site lui-même.
+- **Une mise à jour n'écrase plus le catalogue du site qui sert le marketplace.** Le paquet de mise à jour emportait
+  un vieux catalogue, fait à la 1.2.22 : posé sur ce site, il ne correspondait plus aux archives, et chaque
+  installation d'un addon était refusée jusqu'à ce que le catalogue soit refait. Un site ordinaire lit le catalogue
+  en ligne et n'en était pas gêné.
+- **Dans « Mon espace », le groupe du membre s'aligne à gauche sous son pseudo** : il était centré au milieu de
+  l'en-tête.
 
 ## [1.2.29] — 2026-10-05
 
@@ -683,19 +810,20 @@ cherche. Et le marketplace ne propose plus à un site un addon fait pour une ver
 
 ### Ajouté
 
-- **Un nouveau mot de passe compte au moins 10 caractères**, et ne peut être ni le pseudo, ni fait de deux
-  caractères répétés, ni l'un des plus courants : à l'inscription, à la réinitialisation et au changement.
-  Les mots de passe existants restent valables.
+- **Un nouveau mot de passe compte au moins 10 caractères.** Il est refusé s'il reprend le pseudo, s'il n'emploie
+  qu'un ou deux caractères différents (« aaaaaaaaaa », « ababababab ») ou s'il figure parmi les plus courants
+  (« azertyuiop », « 1234567890 »…). La règle vaut à l'inscription, au changement et à la réinitialisation (à la
+  réinitialisation, le pseudo n'est pas comparé). Les mots de passe existants restent valables.
 
 ### Modifié
 
 - **L'espace membre a un seul cadre et un seul menu.** Il changeait de forme d'une page à l'autre — un menu à
   gauche sous la carte du profil, une barre « Menu » repliée en haut, rien du tout — et une même page portait
-  trois noms. Toutes ses pages ont désormais le même menu, au même endroit : une colonne à gauche sur
-  ordinateur, une bande d'onglets qui défile au téléphone, la page courante marquée. Les modules y ajoutent
-  leurs pages : la messagerie et les notifications avec leurs non-lus, les abonnements du forum (qu'aucun lien
-  n'atteignait), la modération. La barre du haut des thèmes, le widget « Espace membre » et la vitrine
-  reprennent ce menu, avec les mêmes mots.
+  trois noms. Les pages du compte ont désormais le même menu, au même endroit : une colonne à gauche sur
+  ordinateur, une bande d'onglets qui défile au téléphone, la page courante marquée. Le menu mène aussi aux pages
+  des modules : la messagerie et les notifications avec leurs non-lus, les abonnements du forum (qu'aucun lien
+  n'atteignait), la modération. La barre du haut des thèmes Blockcraft, Extend, Forge et Granite et le widget
+  « Espace membre » reprennent ce menu, avec les mêmes mots.
 - **Les réglages sont rangés là où on les cherche.** « Mon compte » réunit l'identifiant, l'adresse, le mot de
   passe, la langue (qui ne se choisissait que par le sélecteur du site) et le fuseau horaire (qui était au
   milieu du profil public) ; « Sécurité » garde la double authentification et l'historique des connexions ;
@@ -708,21 +836,22 @@ cherche. Et le marketplace ne propose plus à un site un addon fait pour une ver
 ### Corrigé
 
 - **Le marketplace ne propose plus à un site un addon fait pour une version plus récente de NeoFrag.** Seule
-  la mise à jour d'un addon vérifiait la version du cœur qu'il exige, pas son installation : un site resté en
-  arrière pouvait installer un addon qui appelait des fonctions absentes de son cœur, et tomber en erreur. Le
-  marketplace officiel sert désormais à chaque site le catalogue de sa version ; la fenêtre du marketplace
-  écarte en plus un addon trop récent et dit de mettre le site à jour d'abord ; « Mises à jour » annonce la
-  nouvelle version du cœur d'après le canal de mise à jour.
-- **Le favicon choisi par l'administrateur entre dans le manifeste du site, et un fichier supprimé quitte
-  vraiment le disque.** Chargé depuis un module, le modèle des fichiers cherchait une table qui n'existe pas :
-  le favicon manquait aux icônes que propose un téléphone (avec un avertissement au journal à chaque lecture
-  du manifeste), le fichier d'une pièce jointe supprimée du forum ou de la messagerie restait sur le disque et
-  dans la base, comme l'avatar et la couverture d'un membre qui efface son compte.
+  la mise à jour d'un addon vérifiait la version de NeoFrag qu'il demande, pas son installation : un site resté en
+  arrière pouvait installer un addon qui appelait des fonctions absentes de sa version, et tomber en erreur. Le
+  marketplace officiel envoie désormais à chaque site le catalogue fait pour sa version (un site plus ancien que
+  tous les catalogues gardés reçoit le plus ancien). La fenêtre du marketplace écarte en plus un addon trop récent
+  et dit de mettre le site à jour d'abord. Le bouton « Mises à jour » annonce une nouvelle version de NeoFrag
+  d'après la vérification des mises à jour du Monitoring, et plus seulement d'après le catalogue.
+- **Le favicon choisi par l'administrateur sert aussi d'icône au site sur un téléphone, et un fichier supprimé
+  quitte vraiment le disque.** Une erreur interne empêchait le site de retrouver ces fichiers : le favicon manquait
+  quand on ajoute le site à l'écran d'accueil d'un téléphone (avec un avertissement au journal à chaque fois), et le
+  fichier d'une pièce jointe supprimée du forum ou de la messagerie restait sur le disque et dans la base, comme
+  l'avatar et la couverture d'un membre qui efface son compte.
 
 ## [1.2.28] — 2026-10-05
 
 Une version de correction : l'espace membre d'un compte inscrit par Discord, GitHub ou Google, l'export et la
-suppression des données personnelles, et la démonstration.
+suppression des données personnelles, et le site de démonstration.
 
 ### Corrigé
 
@@ -731,16 +860,16 @@ suppression des données personnelles, et la démonstration.
   authentification, ni supprimer son compte : chaque formulaire demandait le mot de passe actuel. Il
   confirme désormais son identité en repassant par le service relié ; la confirmation vaut dix minutes, et
   se connecter par ce service en est une.
-- **L'export « Mes données » fonctionne, et il est complet.** Il tombait en erreur : le membre téléchargeait
+- **L'export « Mes données » fonctionne, et il contient plus.** Il tombait en erreur : le membre téléchargeait
   une page d'erreur au lieu de ses données. L'archive contient aussi, désormais, le profil (nom, date de
-  naissance, lieu, signature, liens), les comptes liés, l'historique des connexions, les notifications et
-  tout ce que les autres tables gardent à son nom, en clair et sans aucun secret, pas même le numéro de ses
-  sessions.
+  naissance, lieu, signature, liens), les comptes liés, l'historique des connexions, les notifications et ce que
+  les modules du site gardent à son nom, en clair et sans aucun secret, pas même l'identifiant de ses sessions.
+  Les sujets du forum, les commentaires et les messages des discussions n'y sont entrés qu'avec la 1.2.43.
 - **Supprimer son compte efface ce que la page promettait.** Le pseudo est anonymisé sur les messages, le
   profil vidé ; les comptes liés, l'historique des connexions et les notifications sont effacés, et un
-  compte Discord lié redevient libre pour une nouvelle inscription. Le message « Ton compte a été
-  supprimé » s'affiche enfin.
-- **Sur une démonstration, le compte partagé ne se modifie plus** : un visiteur pouvait changer son mot de
+  compte Discord, GitHub ou Google lié redevient libre pour une nouvelle inscription. Le message « Ton compte
+  a été supprimé » s'affiche enfin.
+- **Sur un site de démonstration, le compte partagé ne se modifie plus** : un visiteur pouvait changer son mot de
   passe, activer sa double authentification ou le supprimer, et le fermer aux autres jusqu'à la remise à
   zéro.
 - **« Connexion » se traduit au sens « se connecter »** (Log in, Anmelden, Iniciar sesión, Accedi, Entrar) :
@@ -757,45 +886,45 @@ Le bot Discord passe en **version 0.2.4** : les images passent entre le forum et
 - **Une image envoyée sur Discord s'affiche dans le forum** (avec le bot Discord 0.2.4) : le bot la garde
   sur le site, contrôlée comme une image collée dans l'éditeur, au lieu d'un simple lien vers Discord.
   L'API gagne pour cela l'adresse `POST /api/v1/forum/images`.
-- **La validation de l'inscription par e-mail** (*Paramètres → Inscription*, éteinte par défaut) : le
-  nouveau membre reçoit un lien, valable deux jours, et ne peut pas se connecter avant de l'avoir ouvert ;
-  une tentative de connexion lui en renvoie un. Cette fonction, héritée de NeoFrag, était à moitié
-  écrite : allumée, elle envoyait un lien vers une page absente et laissait le membre sans pouvoir se
-  connecter, sans un mot.
+- **La validation de l'inscription par e-mail** (*Paramètres → Gestion des inscriptions*, encart
+  « Validation par e-mail », éteinte par défaut) : le nouveau membre reçoit un lien, valable deux jours. Il ne peut
+  pas se connecter avant de l'avoir ouvert ; s'il essaie, un nouveau lien lui est envoyé. Cette fonction, héritée de
+  NeoFrag, était restée inachevée et n'avait aucun réglage dans l'administration.
 
 ### Corrigé
 
 - **Les textes accentués ne s'affichent plus codés.** Un titre, un pseudo, un libellé ou le nom du site qui
   contenait « é » ou « — » pouvait apparaître sous la forme `&eacute;` ou `&mdash;` : dans les
-  conversations, la Boutique, les Dons, le sommaire d'un billet, les flux RSS, l'administration… Tous les
-  affichages passent désormais par une même règle, et deux contrôles empêchent la faute de revenir : l'un
-  lit le code, l'autre les pages servies. Les suggestions de mention et de recherche, l'objet des courriels,
-  les données lues par les moteurs de recherche (nom du site, titre et auteur d'un billet) et les webhooks
-  reçoivent aussi le texte en clair.
+  conversations, la Boutique, les Dons, le sommaire d'un billet, les flux RSS, l'administration… Ces textes
+  s'affichent désormais tous de la même façon, et deux vérifications automatiques empêchent la faute de revenir
+  (l'une relit le code, l'autre les pages du site). Les suggestions de mention et de recherche, l'objet des
+  courriels, les données lues par les moteurs de recherche (nom du site, titre et auteur d'un billet) et les
+  webhooks reçoivent aussi le texte en clair.
 - **L'initiale d'un avatar** montrait « & » pour un nom commençant par une lettre accentuée
-  (administration, page d'une collecte de dons, widget Discord).
+  (administration, page d'une campagne de dons).
 - **Une inscription par Discord, GitHub ou Google fait accepter le règlement**, quand le site en a un :
   un écran le montre, et le compte n'est créé qu'une fois la case cochée — comme par le formulaire
   d'inscription, que ces comptes contournaient.
-- **Le menu ne mène plus vers un module absent** : un site installé sans le Forum, la Galerie ou les
-  Actualités, ou qui en éteint un, gardait leurs liens dans le menu — un clic, une page introuvable.
-  Ils disparaissent, et reviennent quand le module est rallumé ; une page personnalisée reste.
-- **La liste des équipes sans le module Événements** n'écrit plus d'avertissement au journal.
+- **Le menu ne mène plus vers un module absent** : le lien d'un module non installé ou éteint (Forum, Galerie,
+  Actualités…) restait dans le menu — un clic, une page introuvable. Il disparaît, et revient quand le module est
+  rallumé. Le lien d'une page personnalisée publiée reste ; celui d'une page non publiée disparaît aussi.
+- **Sur un site sans le module Événements, la page des équipes** n'écrit plus d'avertissement au journal des
+  erreurs.
 - **Le bouton ☰ de l'administration fonctionne sur grand écran** : il y était affiché sans rien faire ; il
   replie maintenant le menu latéral, et le rouvre, en gardant le choix. Sur un téléphone, il ouvre le menu
   comme avant.
-- **L'avatar de l'auteur d'un message du forum** est plus grand (80 px, 36 px sur téléphone) : il avait la
-  taille d'une liste dans tous les thèmes.
-- **Une image dans une signature, ou dans la description d'un album de la galerie, s'affiche** : ce que
-  l'éditeur riche y écrivait était rangé codé, et la page montrait le code (`<p><img …></p>`). Les
-  signatures déjà enregistrées s'affichent sans être ressaisies.
+- **L'avatar de l'auteur d'un message du forum est plus grand** : 80 px (36 px sur téléphone), au lieu des 40 px
+  que tous les thèmes lui donnaient.
+- **Une image dans une signature, ou dans la description d'un album de la galerie, s'affiche** : la page
+  montrait le code HTML (`<p><img …></p>`) au lieu de l'image. Les signatures et descriptions déjà enregistrées
+  s'affichent sans être ressaisies.
 - **La version texte des courriels est lisible** : les paragraphes y étaient collés, les accents codés, et
   un lien se retrouvait suivi du mot d'après — inutilisable dans une messagerie qui n'affiche que le texte.
-- **Une case à cocher reçue sous une forme inattendue** ne fait plus tomber la page en erreur : la
-  demande est simplement refusée.
-- **Sur une démonstration, le compte de secours reste caché au survol et en modération**, comme sur sa
-  page : la fiche d'un membre au survol montrait son nom et ses dates de passage, l'historique de
-  modération son nom.
+- **Un formulaire trafiqué ne fait plus tomber la page en erreur** : une case à cocher envoyée sous une forme
+  qu'aucun navigateur n'envoie est ignorée, comme une case non cochée.
+- **Sur un site de démonstration, le compte administrateur créé à l'installation reste caché au survol et dans
+  l'historique de modération**, comme sur sa page : la fiche affichée au survol montrait son nom, ses groupes et
+  ses dates de passage, et l'historique de modération son nom.
 
 ## [1.2.26] — 2026-10-04
 
@@ -804,38 +933,38 @@ privée (voir son propre journal des versions). La 0.2.2 continue de fonctionner
 
 ### Ajouté
 
-- **Le règlement et le message de bienvenue se traduisent langue par langue** : *Paramètres → Inscription*
-  a un onglet par langue du site, et chaque visiteur lit le règlement — et reçoit le message — dans la
-  langue de la page. Une langue qui n'a pas encore son texte montre le texte commun : un site qui n'en
-  avait qu'un le garde pour toutes ses langues, rien ne change tant qu'on ne traduit pas.
+- **Le règlement et le message de bienvenue se traduisent langue par langue** :
+  *Paramètres → Gestion des inscriptions* a un onglet par langue du site, et chaque visiteur lit le règlement — et
+  reçoit le message — dans la langue de la page. Une langue qui n'a pas encore son texte montre le texte commun :
+  un site qui n'en avait qu'un le garde pour toutes ses langues, rien ne change tant qu'on ne traduit pas.
 - **Le journal des versions existe en anglais** (`CHANGELOG.en.md`, le français reste la référence).
-- **Chaque addon du marketplace a une vraie vignette**, au même format (960 × 600) : les modules API et
-  Discord n'en avaient pas, les quatre thèmes du catalogue gardaient une ancienne image plus petite, et
-  plusieurs widgets du cœur n'en avaient aucune dans *Thèmes & addons*. Un nouvel addon ne peut plus être
-  publié sans la sienne.
+- **Chaque addon a maintenant sa vignette, au même format (960 × 600)** : les modules API et Discord n'en avaient
+  pas, les quatre thèmes du catalogue gardaient une ancienne image plus petite, et trois widgets du cœur n'en avaient
+  aucune dans *Thèmes & addons*. Quelques-unes montrent encore un addon vide ou non configuré. Un nouvel addon ne
+  peut plus être publié sans la sienne.
 
 ### Modifié
 
 - **Les descriptions du catalogue disent ce que fait chaque addon** : trente d'entre elles tenaient en
-  quelques mots ou disaient seulement « module gaming ». Elles décrivent maintenant ce que l'addon fait
+  quelques mots ou se présentaient seulement comme « gaming ». Elles décrivent maintenant ce que l'addon fait
   vraiment, et à qui il sert, dans les six langues ; cinq disaient même une chose fausse (le widget
   Équipes n'affiche pas les membres, le widget Téléchargements montre les plus téléchargés…).
-- **Le module Événements s'appelle « Événements »**, et non plus « Événements gaming » : il sert aussi bien
-  à un club ou à une association.
+- **Le module Événements s'appelle « Événements »**, et non plus « Événements gaming » : aucun titre du
+  catalogue ne porte plus le mot « gaming ».
 - **Le module Paiements demande le module Gamification**, qui crédite les points et les jours VIP achetés :
-  sans lui, un paiement était encaissé sans rien créditer. L'installer l'ajoute ; s'il manque ou se
-  désactive ensuite, la vente se ferme, l'administration le signale, et un paiement reçu n'est plus marqué
-  traité (Stripe le représentera).
+  sans lui, un paiement était encaissé sans rien créditer. À l'installation du site, choisir Paiements ajoute
+  Gamification ; depuis le marketplace, il faut l'installer d'abord. S'il manque ou se désactive ensuite, la vente
+  se ferme et l'administration le signale ; un paiement reçu n'est pas marqué traité, et Stripe le renverra.
 
 ### Corrigé
 
 - **Une image collée (Ctrl+V) ou glissée dans l'éditeur de texte est enregistrée** — réponse du forum,
-  commentaire, page de l'administration, messagerie : elle s'affichait cassée, puis disparaissait quand on
-  publiait. Elle est maintenant envoyée au site et reste dans le message. C'est réservé aux membres
-  connectés : une image JPEG, PNG, GIF ou WebP de 5 Mo au plus. Le site l'enregistre à neuf, ce qui retire
-  les informations cachées d'une photo (le lieu où elle a été prise, par exemple) ; une très grande image
-  est réduite, et un GIF animé devient une image fixe. Sur le site de démonstration, l'envoi d'images reste
-  fermé.
+  commentaire, page de l'administration, salon staff de la messagerie : elle s'affichait cassée, puis
+  disparaissait quand on publiait. Elle est maintenant envoyée au site et reste dans le message. C'est réservé aux
+  membres connectés : une image JPEG, PNG, GIF ou WebP de 5 Mo au plus. Le site l'enregistre à neuf, ce qui retire
+  les informations cachées d'une photo (le lieu où elle a été prise, par exemple). Au-delà de 2 000 pixels de
+  côté, l'image est réduite ; au-delà de 8 192 pixels de côté ou d'environ 12,6 millions de pixels, elle est
+  refusée. Un GIF animé devient une image fixe. Sur le site de démonstration, l'envoi d'images reste fermé.
 - **Le message de bienvenue s'affiche proprement** : écrit dans l'éditeur riche, il arrivait dans la
   messagerie avec ses balises visibles (`<h3>`, `<p>`…). Il y est mis en texte — titres, listes à puces ou
   numérotées, adresses devenues des liens —, et son titre ne montre plus `&eacute;` à la place d'un accent.
@@ -845,7 +974,7 @@ privée (voir son propre journal des versions). La 0.2.2 continue de fonctionner
   Activer le 2FA*) montrait le code de l'image dans une case de saisie au lieu de l'image à scanner — les
   formulaires ne connaissaient pas ce genre de champ et le prenaient pour un texte.
 - **Les logos du widget Partenaires mènent au site du partenaire** et comptent la visite : ils menaient à
-  une page introuvable depuis la 1.1.0, et le compteur « Visites » ne bougeait plus. La page Partenaires
+  une page introuvable depuis la 1.0.0, et le compteur « Visites » ne bougeait plus. La page Partenaires
   passe aussi par la visite comptée.
 - **Les boutons « Payer » (Paiements) et « Acheter » (Boutique) fonctionnent** : ils appelaient une adresse
   introuvable.
@@ -858,31 +987,32 @@ privée (voir son propre journal des versions). La 0.2.2 continue de fonctionner
 - **Les sondages respectent le réglage « Afficher les résultats »** (après le vote, à la clôture, jamais) —
   sur leur page comme dans leur widget, qui les montrait toujours. Les gestionnaires les voient toujours,
   avec une mention.
-- **Les widgets suivent les règles de leur module** : le widget Galerie ne montre plus les albums brouillons,
-  programmés, à la corbeille ou réservés à un groupe ; le widget Forum, plus l'extrait des catégories
-  réservées ni de lignes vides pour les messages supprimés ; le widget et le calendrier des Événements,
+- **Les widgets suivent les règles de leur module** : le widget Galeries ne montre plus les albums brouillons,
+  programmés, à la corbeille ou réservés à un groupe ; le widget Forum, plus l'extrait des catégories réservées
+  aux membres VIP ni de lignes vides pour les messages supprimés ; le widget et le calendrier des Événements,
   plus un événement programmé avant son heure ; le widget Recrutement suit « Masquer les offres
   indisponibles ».
-- **Un lien vers une page du site inséré dans l'éditeur garde son adresse complète** : l'éditeur la
-  réécrivait en chemin relatif (`../../…`) à la page d'édition, qui ne menait plus nulle part ailleurs.
-- La feuille de route (`ROADMAP.md`) dit que le code est publié, depuis le 4 octobre 2026.
+- **Un lien vers une page du site, inséré dans l'éditeur, garde son adresse complète** : l'éditeur le
+  raccourcissait en un chemin (`../../…`) qui ne marchait que depuis la page d'édition — affiché ailleurs, il ne
+  menait nulle part.
+- **La feuille de route** (`ROADMAP.md`) dit que le code est publié depuis le 4 octobre 2026.
 
 ### Sécurité
 
-- **Deux anciennes adresses de la messagerie affichaient les messages sans les échapper** (la liste des
-  messages d'une conversation demandée en `ajax/talks`). Plus rien ne les appelait, et elles exigeaient un
-  accès à la conversation ; elles passent désormais par le même rendu sûr que la conversation.
-- **La page Partenaires ne suit plus un lien `javascript:`** saisi comme site ou réseau social d'un partenaire :
-  ces adresses sont filtrées et échappées.
-- **Un achat dans la Boutique, comme un paiement, exige le jeton de la session** : une page piégée ne peut
-  plus faire acheter un objet à un membre connecté sans qu'il le sache.
+- **Deux anciennes adresses techniques de la messagerie affichaient les messages sans les protéger** : un message
+  contenant du code aurait pu s'y exécuter dans le navigateur. Plus aucune page ne les utilisait, et il fallait déjà
+  avoir accès à la conversation ; elles affichent désormais les messages comme la conversation elle-même.
+- **Les boutons Facebook et Twitter de la page Partenaires ne suivent plus un lien `javascript:`** saisi dans
+  l'administration : ces adresses sont filtrées et échappées, comme l'était déjà le site du partenaire.
+- **Le bouton « Acheter » de la Boutique et le bouton « Payer » vérifient désormais que la demande vient bien du
+  site** : une page piégée ne peut plus faire acheter un objet à un membre connecté sans qu'il le sache.
 - **Un achat ne peut plus être compté deux fois** : le débit des points, le stock et la possession se
   vérifient et s'écrivent dans une seule transaction — deux achats simultanés ne vendent plus deux fois le
   dernier objet, ni ne débitent deux fois un solde. Les gains de points et les jours VIP s'ajoutent eux aussi
   d'un seul coup : deux gains au même instant ne s'écrasent plus. Un objet à 0 point s'obtient désormais
   sans débit (il était refusé, « points insuffisants »).
-- **L'inscription à la newsletter est freinée** (par adresse IP et par adresse e-mail) : on ne peut plus
-  faire envoyer des e-mails de confirmation en masse à des adresses choisies.
+- **L'inscription à la newsletter est freinée** : 5 demandes par heure et par adresse IP, 3 par jour et par adresse
+  e-mail — de quoi empêcher l'envoi en masse d'e-mails de confirmation à des adresses choisies.
 - **Un sondage dont les résultats sont cachés ne montre plus son total de votes** dans la liste.
 
 ## [1.2.25] — 2026-10-04
@@ -896,15 +1026,15 @@ HTML, même imbriquées (voir son propre journal des versions). La 0.2.1 continu
   de flux, Effet saisonnier, Groupe Steam, Serveur TeamSpeak 3, Statut live) : elle ne montrait que les
   modules et les thèmes, et ces sept widgets ne s'installaient que par « Ajouter », archive en main. Un
   widget déjà apporté par un module (celui du Forum, par exemple) n'y figure pas en double.
-- Le guide d'administration nomme le bouton qui enregistre une nouvelle adresse du site par son libellé,
+- **Le guide d'administration nomme le bouton qui enregistre une nouvelle adresse du site** par son libellé,
   *Utiliser*, suivi de l'adresse — et non plus par une fausse adresse `https://…` qu'un lecteur prenait
   pour un lien.
 
 ### Sécurité
 
 - **Les workflows de vérification du dépôt ne reçoivent qu'un jeton en lecture** (`permissions: contents:
-  read`) : ils n'ont rien à écrire, un pas compromis n'aurait rien pu modifier. Relevé par l'analyse de
-  code de GitHub à l'ouverture des dépôts.
+  read`) : ils n'ont rien à écrire, et une étape compromise ne pourrait ainsi rien modifier. Relevé par
+  l'analyse de code de GitHub à l'ouverture des dépôts.
 - **Le widget Vidéo n'accepte, pour un élément de sa liste de lecture, qu'une adresse `http(s)` ou un
   chemin du site** : une adresse `javascript:` ou `data:` est ignorée au clic. Le lecteur n'exécutait
   rien, mais une telle adresse n'avait rien à y faire. Relevé par la même analyse.
@@ -912,9 +1042,9 @@ HTML, même imbriquées (voir son propre journal des versions). La 0.2.1 continu
 ### Ajouté
 
 - **Trois épreuves de plus dans le workflow `installation.yml`** : `check-extensions` installe chacun des
-  addons du marketplace publié sur un site qui n'a que le cœur, par la fenêtre du marketplace puis par
-  « Ajouter » ; `check-prerequis-absents` retire tour à tour chaque extension PHP exigée, et vérifie que
-  l'assistant et l'installeur en ligne de commande disent laquelle manque ; le paquet publié est installé
+  addons du marketplace publié sur un site qui n'a que le cœur, par la fenêtre du marketplace, et par « Ajouter »
+  ce qu'elle ne propose pas ; `check-prerequis-absents` retire tour à tour chaque extension PHP exigée, et vérifie
+  que l'assistant et l'installeur en ligne de commande disent laquelle manque ; le paquet publié est installé
   par l'assistant chez un hébergeur mutualisé simulé (Apache sans fonctions qui lancent un programme,
   `open_basedir`, 128 Mo). Et les liens de tous les documents sont vérifiés (lychee).
 
@@ -922,8 +1052,9 @@ HTML, même imbriquées (voir son propre journal des versions). La 0.2.1 continu
 
 **NeoFrag Reborn s'ouvre sur GitHub.** Le code du CMS ([NeoFragReborn/neofrag](https://github.com/NeoFragReborn/neofrag)), les addons
 à la carte ([NeoFragReborn/extensions](https://github.com/NeoFragReborn/extensions)) et le bot Discord
-([NeoFragReborn/bot-discord](https://github.com/NeoFragReborn/bot-discord)) y sont publiés, chacun avec l'historique de ses versions
-depuis la 1.0.0 — le code de chaque version, ses notes, et les paquets à partir de la 1.2.23.
+([NeoFragReborn/bot-discord](https://github.com/NeoFragReborn/bot-discord)) y sont publiés avec l'historique de leurs
+versions — depuis la 1.0.0 pour le CMS et les addons, depuis la 0.1.0 pour le bot : le code de chaque version, ses
+notes, et les paquets à partir de la 1.2.23.
 
 ### Modifié
 
@@ -988,9 +1119,9 @@ depuis la 1.0.0 — le code de chaque version, ses notes, et les paquets à part
   des sondes (dossiers et fichiers interdits, scripts qui ne doivent pas s'exécuter, réécriture, en-têtes
   de sécurité) ; `check-nouveau-venu` joue tels quels le README et le guide du contributeur sur une
   machine vierge. Les workflows `installation.yml` et `nouveau-venu.yml` les rejouent chaque semaine.
-- **Le README dit ce qu'il permet** : son bloc « Développer » s'arrêtait sur une suite de tests qui
-  échouait faute de base de test ; il renvoie maintenant au guide du contributeur, qui crée cette base
-  (`php tools/prepare-test-db.php`).
+- **Les commandes du README fonctionnent sur une machine neuve** : son bloc « Développer » s'arrêtait sur une
+  suite de tests qui échouait faute de base de test ; il renvoie maintenant au guide du contributeur, qui crée
+  cette base (`php tools/prepare-test-db.php`).
 
 ## [1.2.23] — 2026-10-04
 
@@ -1014,7 +1145,8 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
   authentification), ni le hachage des mots de passe en Argon2, faute duquel la création du compte
   administrateur échouait. Il les vérifie désormais et refuse de continuer s'il en manque un ;
   `install/cli.php` exige exactement la même liste, version de PHP comprise, au lieu de deux extensions.
-  *Monitoring* et le tableau de bord de l'administration montrent la même liste. PHP 8.2 à 8.5.
+  *Monitoring* et le tableau de bord de l'administration montrent la même liste. Il faut PHP 8.2 ou plus
+  récent ; le produit est éprouvé jusqu'à PHP 8.5.
 - **nginx et Caddy** : le paquet livre enfin les exemples de configuration que les guides promettaient
   (`nginx.conf`, `Caddyfile`), génériques, et qui refusent les mêmes dossiers et fichiers sensibles que
   le `.htaccess` d'Apache — l'ancien exemple nginx laissait `install/`, `tools/`, `tests/` et `docs/`
@@ -1025,11 +1157,11 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
   Les portages créditent leur auteur : l'Horloge (ArkaNiX), le thème Extend (Chewbaka), le gestionnaire
   de fichiers (HiddenBlob, HiddenCMS) et les Dons (HiddenBlob, d'après majiid). Le reste est signé
   « NeoFrag Reborn ». Les thèmes Nebula, Blockcraft, Forge et Granite passent sous LGPL, comme le
-  produit ; Extend garde la licence de son auteur (CC BY-NC-SA). La licence de chaque addon renvoie au
-  texte officiel de la LGPL.
-- **HSTS** : l'en-tête que pose le `.htaccess` ne s'étend plus aux sous-domaines et n'inscrit plus le
-  site à la liste de préchargement des navigateurs (`includeSubDomains` et `preload` retirés) : posés
-  d'office, ils engageaient pour un an tous les sous-domaines de qui installait le CMS.
+  produit ; Extend garde la licence de son auteur (CC BY-NC-SA). La licence de chaque addon sous LGPL
+  renvoie à son texte officiel.
+- **HSTS** : l'en-tête que pose le `.htaccess` ne s'étend plus aux sous-domaines et ne déclare plus le
+  site candidat à la liste de préchargement des navigateurs (`includeSubDomains` et `preload` retirés) :
+  posés d'office, ils engageaient pour un an tous les sous-domaines de qui installait le CMS.
 
 ### Corrigé
 
@@ -1047,10 +1179,11 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
   caractères, et une description portugaise de 139 caractères dépassait la limite de 160. Le code de
   vérification de Google ou de Bing collé en balise entière était refusé de même. Les redirections
   et le référencement d'un contenu suivent la même règle.
-- **Le bilan du référencement** reconnaît une Google Search Console vérifiée par le DNS du domaine (au
-  lieu de la dire « non déclarée »), et conseille d'y soumettre le plan qui réunit toutes les langues,
-  `/sitemap.xml`, et non celui de la seule langue affichée. Quand Google est vérifié, il ne dit plus Bing
-  « non déclaré » : un site importé depuis Google Search Console n'y laisse aucune trace lisible.
+- **Le bilan du référencement** reconnaît une propriété Google Search Console vérifiée par le DNS du
+  domaine (au lieu de la dire « non déclarée »), et conseille d'y soumettre le plan qui réunit toutes les
+  langues, `/sitemap.xml`, et non celui de la seule langue affichée. Quand Google est vérifié, il ne dit
+  plus Bing « non déclaré » : Bing Webmaster Tools peut importer un site depuis Google Search Console
+  sans rien poser sur le site, et le bilan ne peut pas le voir.
 - **`humans.txt`, `robots.txt` et la clé IndexNow** : une adresse absente — un `humans.txt` vide, une
   clé inconnue — répond un simple « introuvable », sans écrire une erreur au journal du site à chaque
   robot qui la demande.
@@ -1063,27 +1196,29 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
 
 - **Le référencement d'un contenu** : un bouton « Référencement » dans la carte d'édition d'une
   actualité, d'un billet du Blog, d'une page ou d'une page du wiki donne, pour chaque langue, le titre et
-  la description que montrent les moteurs et les aperçus de partage. Vides, tout reste automatique.
-- **Paramètres → Référencement → Bilan** : ce que voit un moteur de recherche, mesuré sur le site — les
-  pages du plan par module, les textes de chaque langue, l'image de partage, Google et Bing, `robots.txt`,
-  la maintenance —, avec pour chaque point le lien vers ce qui le corrige.
+  la description que montrent les moteurs et les aperçus de partage. Laissés vides, ils restent
+  automatiques.
+- **Paramètres → Référencement → Bilan du référencement** : ce que voit un moteur de recherche, mesuré
+  sur le site — les pages du plan par module, les textes de chaque langue, l'image de partage, Google et
+  Bing, `robots.txt`, la maintenance —, avec pour chaque point le lien vers ce qui le corrige.
 - **Les redirections** : une ancienne adresse mène à la nouvelle (301) au lieu de répondre « Page
   introuvable », avec le nombre de visites qu'elle reçoit encore. Une page ou une page du wiki renommée
   laisse la sienne d'elle-même ; on en ajoute à la main, pour l'adresse d'un ancien site par exemple.
 - **Prévenir les moteurs (IndexNow)** : allumé dans Paramètres → Référencement, le site signale dans les
   minutes qui suivent chaque page qui paraît, change ou disparaît, à Bing, Yandex, Seznam, Naver, Yep et
-  Amazon. Google n'y participe pas : pour lui, le plan du site reste la voie. Tout module qui annonce ses
-  pages au plan du site est prévenu, sans rien de plus ; la tâche planifiée du site est nécessaire.
+  Amazon. Google n'y participe pas : pour lui, le plan du site reste la voie. Les pages de tout module
+  présent dans le plan du site sont signalées, sans rien à ajouter ; la tâche planifiée du site est
+  nécessaire.
 
 ### Corrigé
 
 - **Modération** : dans l'administration, un modérateur sans le droit « conversations privées » pouvait
   ouvrir le signalement d'un message privé, et cet accès n'était pas inscrit au journal d'audit. Celui
-  qui signale un message privé voit de nouveau l'avertissement qui lui est destiné.
+  qui signale un message privé voit enfin l'avertissement qui lui est destiné.
 - **Messagerie** : le message envoyé au salon du staff depuis l'administration répondait toujours
   « Aucun salon staff configuré ».
-- Des avertissements PHP au journal quand un signalement, un message ou un membre visés ont été
-  supprimés.
+- Plus d'avertissement PHP au journal quand le signalement, le message ou le membre concerné a été
+  supprimé.
 
 ---
 
@@ -1109,15 +1244,16 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
 
 - **Le plan du site** ne portait que des adresses relatives — ignorées des moteurs —, dans une seule
   langue, sans le wiki ni le forum ; `robots.txt` l'annonçait par une adresse relative.
-- **Chaque page du Blog** se déclarait comme adresse de référence `/articles/…`, une redirection ;
-  l'accueil, `/index`. Les liens entre langues sont complets, avec la version par défaut (`x-default`).
+- **Chaque page du Blog** donnait aux moteurs pour adresse de référence `/articles/…`, qui n'est qu'une
+  redirection ; l'accueil donnait `/index`. Les liens entre langues sont complets, avec la version par
+  défaut (`x-default`).
 - **Le titre de l'accueil** ne répète plus le nom du site (« NeoFrag Reborn | NeoFrag Reborn »).
 - **Google Analytics** : le réglage n'acceptait que l'ancien format `UA-…`, que Google a arrêté en
   2023 ; il accepte les identifiants actuels, `G-…`.
 - **La langue du navigateur** : un visiteur dont le navigateur n'annonce que `de-DE` arrive en allemand,
   et non dans la langue par défaut du site.
-- **Le sélecteur de langue** et le bandeau « ce contenu n'existe pas dans votre langue », depuis le
-  Blog, menaient à son ancienne adresse.
+- **Le sélecteur de langue** et le bandeau « Ce contenu n'existe pas en … », depuis le Blog, menaient à
+  son ancienne adresse.
 
 ### Sécurité
 
@@ -1134,7 +1270,7 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
 
 ### Corrigé
 
-- **L'export des membres au format JSON** (RGPD, article 15) écrit de nouveau sa mention « Export des
+- **L'export des membres au format JSON** (RGPD, article 15) écrit désormais sa mention « Export des
   données membres » : elle sortait vide.
 - **Blog** : sur la page d'un auteur, « Voir son profil » menait à une page introuvable.
 
@@ -1142,14 +1278,15 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
 
 - **L'instantané de la démonstration n'emporte plus aucun secret.** Le fichier qui remet la démo à zéro,
   livré avec le paquet de démonstration, aurait recopié l'identifiant d'envoi des e-mails, la clé du
-  service de traduction d'origine et les clés des widgets Twitch et TeamSpeak d'un site où elles
-  auraient été saisies ; il portait encore la ligne, vide, de la clé secrète du captcha. Aucune clé
-  n'avait fui. Un contrôle vérifie désormais la liste contre le code, et le fichier livré lui-même.
+  service de traduction automatique du NeoFrag d'origine et les clés des widgets Twitch et TeamSpeak
+  d'un site où elles auraient été saisies ; il portait encore la ligne, vide, de la clé secrète du
+  captcha. Aucune clé n'avait fui. Un contrôle vérifie désormais la liste contre le code, et le fichier
+  livré lui-même.
 
 ### Documentation
 
 - NeoFrag Reborn se présente comme **le CMS libre des communautés, du gaming aux associations** ; le
-  guide des concepts montre comment monter le site d'une association ou d'un club.
+  guide des concepts indique quel profil choisir pour le site d'une association ou d'un club.
 
 ## [1.2.19] — 2026-10-02
 
@@ -1160,10 +1297,12 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
   pendant qu'il remplit le formulaire : son navigateur fait un petit calcul, que le serveur vérifie. Il
   protège le formulaire de contact, l'inscription et le recrutement. À la mise à jour, un site sans clés
   reCAPTCHA passe sur ALTCHA ; un site qui en avait garde reCAPTCHA. ALTCHA rend l'envoi en masse coûteux
-  pour un robot ; contre un attaquant obstiné, les fournisseurs ci-dessous jugent davantage.
-- **Au choix, Cloudflare Turnstile, hCaptcha ou Google reCAPTCHA v2**, dans *Paramètres → Captcha*,
-  avec le lien vers la console de chacun. La clé secrète est chiffrée et n'est jamais réaffichée. Sans
-  ses deux clés, un fournisseur est remplacé par ALTCHA plutôt que de laisser le formulaire ouvert.
+  pour un robot ; contre un attaquant obstiné, les fournisseurs ci-dessous, qui ajoutent leurs propres
+  contrôles, sont plus solides.
+- **Au choix, Cloudflare Turnstile, hCaptcha ou Google reCAPTCHA v2**, dans
+  *Paramètres → Sécurité anti-bots*, avec le lien vers la console de chacun. La clé secrète est chiffrée
+  et n'est jamais réaffichée. Sans ses deux clés, un fournisseur est remplacé par ALTCHA plutôt que de
+  laisser le formulaire ouvert.
 - Le captcha et ses messages existent dans les six langues.
 
 ### Corrigé
@@ -1172,15 +1311,15 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
   corps de la requête, comme Google le demande. Le lien vers sa console, périmé, est remplacé, et
   l'adresse du visiteur transmise suit la règle du reste du site, qui tient compte d'un mandataire
   déclaré de confiance.
-- Quand la vérification anti-robot manque, le message s'écrit en clair sous le captcha, au lieu d'une
-  icône seule dont la bulle n'apparaît pas sur un écran tactile.
+- Quand la vérification anti-robot n'est pas validée, le message s'écrit en clair sous le captcha, au
+  lieu d'une icône seule dont la bulle n'apparaît pas sur un écran tactile.
 
 ### Sécurité
 
-- **Réussir le captcha une fois ne dispense plus de le refaire.** Depuis NeoFrag, un captcha réussi
-  dispensait de le repasser pour tous les envois suivants du même formulaire, jusqu'à la fin de la
-  session : un robot qui résolvait un seul défi pouvait ensuite envoyer sans limite. La dispense ne
-  vaut plus que pour un seul renvoi, après une autre erreur dans le formulaire.
+- **Réussir le captcha une fois ne dispense plus de le refaire.** Depuis le NeoFrag d'origine, un
+  captcha réussi dispensait de le repasser pour tous les envois suivants du même formulaire, jusqu'à la
+  fin de la session : un robot qui résolvait un seul défi pouvait ensuite envoyer sans limite. La
+  dispense ne vaut plus que pour un seul renvoi, après une autre erreur dans le formulaire.
 - Une solution ALTCHA ne sert qu'une fois : la présenter de nouveau est refusé.
 - La politique de sécurité des pages n'ouvre plus Google par défaut : seulement les adresses du
   fournisseur de captcha choisi, et aucune avec ALTCHA.
@@ -1204,9 +1343,9 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
 - **Le guide d'installation par FTP** désigne le bon paquet (`neofrag-reborn-public-<version>.zip`),
   décrit la mise à jour par le bouton, et ne demande plus de lancer un outil absent du paquet : les
   migrations s'appliquent seules à la première visite, démonstration comprise.
-- **Les guides du développeur** décrivent les adresses saisies dans un lien (`nf_url_sure()`), le verrou
-  du site de démonstration, les listes découpées en pages, les compteurs et les dates ; les chiffres du
-  README et des guides suivent le code (62 modules, 40 widgets).
+- **Les guides du développeur** décrivent comment ne mettre en lien une adresse saisie qu'une fois
+  vérifiée (`nf_url_sure()`), le verrou du site de démonstration, les listes découpées en pages, les
+  compteurs et les dates ; les chiffres du README et des guides suivent le code (62 modules, 40 widgets).
 
 ## [1.2.17] — 2026-10-02
 
@@ -1305,8 +1444,8 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
 - **Statistiques, plus lisibles** : les dates et le pas tiennent sur une ligne. Le graphique ne répète
   plus en légende les cases à cocher, qui portent déjà la couleur de chaque série. Ses courbes ne
   plongent plus sous zéro et son axe s'arrête aux bornes de la période choisie. Ses dates suivent la
-  langue du site (« 2 oct. 2025 », et non « Oct 2, 2025 »). Au-delà de trois séries, des lignes seules
-  plutôt que des aires qui se recouvrent.
+  langue de la page, et non plus celle du navigateur (« 2 oct. 2025 » sur une page en français, et non
+  « Oct 2, 2025 »). Au-delà de trois séries, des lignes seules plutôt que des aires qui se recouvrent.
 - **Permissions → Vue matricielle** : les modules rangés par rubrique, comme dans la barre latérale, en
   colonnes. Ils s'alignaient en une quarantaine de grandes tuiles, sans ordre.
 - **Le journal d'audit, par pages de 50** : il alignait 200 lignes d'un bloc, sur plus de 5 000 pixels.
@@ -1326,8 +1465,9 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
 - **Les dates saisies en anglais et en allemand.** En anglais, le sélecteur écrivait le 2 octobre
   « 10/02/2026 g:05 A », pré-remplissait un événement du 30/09/2026 au « 06/09/2028 », et le 2 octobre
   s'enregistrait 10 février. En allemand, une date affichée « 02.10.2026 » n'était pas relue à
-  l'enregistrement. Les formats courts de l'anglais suivent désormais ceux de ses traductions
-  (« 02/10/2026 14:05 ») ; un test vérifie, dans les six langues, qu'une date affichée se relit.
+  l'enregistrement. En anglais, les dates courtes s'écrivent désormais jour/mois/année et sur 24 heures,
+  comme dans les autres langues (« 02/10/2026 14:05 ») ; un test vérifie, dans les six langues, qu'une
+  date affichée se relit.
 - **Plus de fausses alertes « fichier corrompu » avant une mise à jour.** Le Monitoring comparait les
   fichiers du site à la liste de contrôle de la dernière version publiée, même quand le site n'était
   pas encore à son niveau : tout ce que la nouvelle version change y paraissait corrompu (102 alertes
@@ -1335,8 +1475,8 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
   soit à jour, et le dit.
 - **Statistiques** : en allemand, le graphique ne se chargeait jamais ; les boutons « 7 jours »,
   « 30 jours », « 90 jours » et « 1 an » ne faisaient rien, dans aucune langue.
-- **« Modifiée le », sur une page du wiki**, donnait l'heure de la dernière visite : le compteur de vues
-  réécrivait la date de modification. Même défaut sur les petites annonces.
+- **La date de modification d'une page du wiki** donnait l'heure de la dernière visite : le compteur de
+  vues réécrivait la date de modification. Même défaut sur les petites annonces.
 - **Dans la fenêtre de suppression du gestionnaire de fichiers**, « Annuler » et « Supprimer » étaient
   deux corbeilles rouges identiques. Les textes du module avaient perdu leurs accents (« Dossier cree
   avec succes », « Element deplace ») et comptaient en « élément(s) ».
@@ -1346,16 +1486,16 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
   commentaire.
 - **Un titre accentué** (« journ&amp;eacute;e ») ne s'affiche plus en code dans l'en-tête des cartes
   de l'administration.
-- **En mode sombre**, les textes colorés de l'administration (alertes, pastilles, `.text-success`)
-  restaient sombres sur fond sombre, presque illisibles.
+- **En mode sombre**, les textes colorés de l'administration (alertes, pastilles, messages de réussite
+  en vert) restaient sombres sur fond sombre, presque illisibles.
 - **Les dates de la modération** (sanctions, signalements, historique d'un membre), **de la corbeille,
   des sauvegardes, des notifications et du journal du bot Discord** s'affichent dans la langue et à
   l'heure du visiteur (« 21/09/2026 22:54 »), et non plus telles qu'en base (« 2026-09-21 20:54:11 »).
-- **« Connexions de membres »**, dans les statistiques, s'écrivait « Connections ».
+- **« Connexions de membres »**, dans les statistiques, s'écrivait « Connections de membres ».
 - **Les dates suivent la langue du visiteur** : le wiki, le Bugtracker, les petites annonces, le livre
   d'or, la newsletter, les conversations archivées, le gestionnaire de fichiers et le widget des
-  événements les écrivaient en dur — à l'anglaise (« 2026-09-20 22:54 ») ou à la française même en
-  allemand (« 02.10.2026 » attendu).
+  événements les écrivaient en dur — telles qu'en base (« 2026-09-20 22:54 ») ou à la française même
+  en allemand (« 02.10.2026 » attendu).
 
 ## [1.2.13] — 2026-10-02
 
@@ -1363,10 +1503,10 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
 
 - **Le journal des erreurs, dans l'administration** (*Système → Monitoring → Journal des erreurs*). Plus
   besoin du FTP ni d'un accès au serveur pour savoir ce qui a échoué : les erreurs du site, regroupées,
-  de la plus récente à la plus ancienne, classées par gravité, à filtrer par période ou par mot. Les
-  chemins du serveur, les mots de passe, les clés, les adresses e-mail et IP sont masqués à l'écran ; le
-  fichier se télécharge et se vide (l'ancien est gardé à côté). Le Monitoring signale les erreurs des
-  dernières 24 heures, et un dossier `logs/` où le site ne peut plus écrire.
+  de la plus récente à la plus ancienne, classées par gravité, à filtrer par période ou par mot. Le
+  chemin de l'installation, les mots de passe, les clés et les jetons sont masqués à l'écran, les adresses
+  e-mail et IP en partie ; le fichier se télécharge et se vide (l'ancien est gardé à côté). Le Monitoring
+  signale les erreurs des dernières 24 heures, et un dossier `logs/` où le site ne peut plus écrire.
 - **Les outils de diagnostic s'allument depuis l'administration** (*Monitoring → Diagnostic*), pour une
   heure, sans modifier `config/neofrag.php` par FTP :
   - **le mode débogage** — ce qu'il affiche, la barre en bas de page et le détail des erreurs, ne se
@@ -1395,25 +1535,25 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
 
 ### Corrigé
 
-- **Les heures n'ont plus deux heures de retard.** Le site les affichait à l'heure du serveur — l'heure
-  universelle — pour tout le monde. Le fuseau du profil membre, lui, ne s'appliquait que sur les pages
-  du profil, et décalait les dates que ce membre faisait enregistrer. Le calendrier, le wiki, le
-  Bugtracker, les conversations archivées et le gestionnaire de fichiers écrivaient leurs heures sans
-  conversion ; l'émission « en direct » de la webradio se lisait à l'heure du serveur.
+- **Les heures ne sont plus décalées.** Le site les affichait à l'heure du serveur — l'heure
+  universelle — pour tout le monde : deux heures de retard pour un visiteur en France l'été. Le fuseau
+  du profil membre, lui, ne s'appliquait que sur les pages du profil, et décalait les dates que ce
+  membre faisait enregistrer. Le calendrier, le wiki, le Bugtracker, les conversations archivées et le
+  gestionnaire de fichiers écrivaient leurs heures sans conversion ; l'émission « en direct » de la
+  webradio se lisait à l'heure du serveur.
 - **Le calendrier** : le début et la fin d'un événement se choisissent dans un sélecteur de date, et
   non plus dans un champ texte au format « YYYY-MM-DD HH:MM:SS » ; un titre accentué ne s'affiche plus
   « journ&amp;eacute;e » ; la description mise en forme ne montre plus ses balises ; l'export agenda
   reçoit un texte propre.
 - **Les listes avec recherche** disent « Aucun résultat » dans la langue du site, et non « No results
   found ».
-- **L'éditeur en direct** proposait de composer le Forum, les Galeries, les Équipes, le Contact et le
-  Palmarès : ils manquaient à son menu, faute d'une route déclarée pour leur page d'accueil.
-
+- **L'éditeur en direct** propose désormais de composer les pages du Forum, des Galeries, des Équipes,
+  du Contact et du Palmarès : son menu les omettait, faute de reconnaître leur page d'accueil.
 - **Une page qui plante dit « Une erreur est survenue » (500)**, avec sa référence, au lieu de « Page
   introuvable », qui faisait croire à une mauvaise adresse.
-- **Plus de page blanche.** Une erreur fatale, ou une exception hors des pages, affiche une page d'erreur
-  dans la langue du visiteur. La base de données injoignable aussi (503), au lieu d'un message en anglais
-  brut, et la panne est enfin notée au journal.
+- **Plus de page blanche.** Une erreur fatale, ou une erreur survenue en dehors d'une page, affiche une
+  page d'erreur dans la langue du visiteur. La base de données injoignable aussi (503), au lieu d'un
+  message en anglais brut, et la panne est enfin notée au journal.
 - **Une action qui échoue le dit** : une fenêtre qui ne s'ouvre pas, un envoi refusé, le serveur qui ne
   répond plus affichent un message, avec la référence de l'erreur — au lieu d'un bouton resté grisé sans
   un mot. Le Monitoring qui ne parvient pas à s'actualiser arrête son sablier.
@@ -1424,11 +1564,11 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
   mise à jour, qui s'appuie sur elle pour revenir en arrière, n'aurait rien eu à remettre.
 - **L'erreur d'un champ de formulaire se lit sous le champ**, et non plus seulement au survol d'une
   petite icône.
-- Un formulaire envoyé sans un de ses champs, et une requête sans résultat lue comme une recherche, ne
-  laissent plus d'alerte au journal — la seconde faisait tomber la page.
-- **La barre de débogage s'affiche de nouveau** : un nombre la faisait tomber tout entière depuis le
-  passage du code en typage strict, et son calcul de chronologie était faux.
-
+- Deux erreurs internes ne laissent plus de trace au journal : un formulaire envoyé sans un de ses
+  champs, et une requête à la base de données qui ne renvoie rien à lire — celle-ci faisait tomber la
+  page.
+- **La barre de débogage s'affiche de nouveau** : une valeur numérique la faisait planter depuis que le
+  code vérifie strictement ses types, et sa chronologie était fausse.
 - **L'annonce d'une mise à jour se voit de nouveau.** Elle n'était plus qu'un « 1.2.x » sans couleur
   dans la barre du haut : un nettoyage du style de l'administration avait emporté le sien. Elle
   retrouve un encart sous le logo — « Mise à jour disponible · NeoFrag X.Y.Z » — et une pastille
@@ -1444,26 +1584,33 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
 
 ## [1.2.12] — 2026-10-02
 
-Le bot Discord passe en **version 0.2.0** : remplace son dossier par celui de la nouvelle archive (en
-gardant `.env`), puis crée une nouvelle clé d'accès dans l'administration — la page le demande — pour
-qu'il reçoive les droits du Bugtracker.
+Le bot Discord passe en **version 0.2.0**. Pour le mettre à jour : remplacez son dossier par celui de la
+nouvelle archive en gardant le fichier `.env`, lancez `npm ci --omit=dev`, puis redémarrez-le. Créez ensuite
+une nouvelle clé d'accès dans *Administration → Discord* — la page le demande — et remplacez l'ancienne dans
+`.env` : sans elle, le bot n'a pas les droits du Bugtracker. La mise en place du serveur demande aussi la
+permission Discord « Gérer les salons » : réinvitez un bot invité avec la 1.2.11 par le bouton
+« Inviter le bot », ou donnez cette permission à son rôle dans les réglages du serveur.
 
 ### Ajouté
 
 - **Bot Discord : des fonctionnalités qui s'allument une à une.** *Discord → Fonctionnalités* liste ce
-  que le bot sait faire — il le déclare lui-même — ; chacune s'allume, s'éteint et se règle depuis
-  l'administration, appliquée dans la minute sans redémarrer. Le bouton **Resynchroniser** remet tout
-  d'accord, et le forum rattrape au démarrage ce qui s'est écrit sur Discord pendant une absence du
-  bot.
+  que le bot sait faire (il le déclare lui-même). Chacune s'allume, s'éteint et se règle depuis
+  l'administration ; le changement s'applique dans la minute, sans redémarrer le bot. Le bouton
+  **Resynchroniser** remet tout d'accord, et le forum rattrape au démarrage ce qui s'est écrit sur Discord
+  pendant une absence du bot.
+- **Bot Discord : il rattrape le site à son retour.** Ce qui s'écrit sur le site pendant que le bot est
+  éteint part sur Discord quand il redémarre, dans la limite des 30 jours d'événements que garde le site.
+  Il repartait jusqu'ici du dernier événement, et ce qui s'était écrit entre-temps n'arrivait jamais sur
+  Discord.
 - **Bot Discord : la mise en place du serveur.** Depuis l'administration, le bot crée sur Discord une
-  catégorie, un salon Forum par forum choisi (ses préfixes en étiquettes) et un rôle par groupe, pose
+  catégorie, un salon Forum par forum choisi (ses préfixes en étiquettes) et un rôle par groupe choisi, pose
   les correspondances lui-même, et reprend au lieu de dédoubler ce qui existe déjà. Un aperçu précède,
   et la dernière mise en place s'annule.
-- **Bot Discord : `/forum`.** `/forum account link` relie son compte Discord à son compte du site par
-  un lien à usage unique (et reprend à son nom ce qu'on avait publié depuis Discord) ; `/forum account
-  unlink` le délie. Sans compte relié, `/forum visibility` choisit comment on paraît sur le forum : son
-  pseudo Discord, un nom anonyme, ou un pseudo choisi, changeable tous les sept jours — les messages
-  déjà publiés suivent.
+- **Bot Discord : `/forum`.** `/forum account link` donne un lien à usage unique qui relie son compte Discord
+  à son compte du site ; on peut au passage reprendre à son nom ce qu'on avait publié depuis Discord.
+  `/forum account unlink` le délie. Sans compte relié, `/forum visibility` choisit comment on paraît sur le
+  forum : son pseudo Discord, un nom anonyme, ou un pseudo choisi, changeable tous les sept jours — les
+  messages déjà publiés suivent.
 - **Bot Discord : préfixes du forum ↔ étiquettes des salons Forum**, dans les deux sens : poser un
   préfixe sur un sujet pose l'étiquette sur le fil, et l'inverse.
 - **Bot Discord : le Bugtracker dans un salon Forum** (fonctionnalité à allumer dans *Discord →
@@ -1479,10 +1626,14 @@ qu'il reçoive les droits du Bugtracker.
   qui peut gérer les rôles, donne un rôle à un membre pour une durée — une sanction, un accès d'essai,
   un rôle d'événement —, le retire ou montre ceux en cours. Le bot le retire à l'échéance, même après
   un redémarrage, et le redonne à un membre qui quitte puis rejoint le serveur pour y échapper. Les
-  rôles reliés à un groupe du site, ceux tenus par Discord et ceux placés au-dessus du bot ou de qui
-  les donne sont refusés. La page *Discord → Rôles temporaires* les liste, avec « Retirer maintenant ».
-- **API** : la liste des tickets (`GET bugtracker/tickets`, les seuls ouverts avec `open=1`), et les
-  rôles temporaires du bot (`discord/timed-roles`).
+  rôles reliés à un groupe du site, ceux tenus par Discord et ceux placés au niveau du bot ou de qui les
+  donne, ou plus haut, sont refusés. La page *Discord → Rôles temporaires* les liste, avec « Retirer maintenant ».
+- **API** : deux nouveaux droits, « Lire le Bugtracker » (`bugtracker:read`) et « Écrire dans le Bugtracker »
+  (`bugtracker:write`). Ils permettent de lire les tickets (`GET bugtracker/tickets`, les seuls ouverts avec
+  `open=1`) et leurs commentaires, d'ouvrir un ticket au nom d'un membre, de le commenter au nom d'un membre ou
+  d'un compte Discord, et de modifier ou supprimer ces commentaires. Le préfixe d'un sujet du forum se change
+  aussi par l'API (`PATCH forum/topics/{id}`). Le bot reçoit les adresses `discord/*` de ses nouvelles
+  fonctionnalités : rôles temporaires (`discord/timed-roles`), mise en place du serveur, liaison des comptes.
 
 ### Sécurité
 
@@ -1501,13 +1652,18 @@ qu'il reçoive les droits du Bugtracker.
   « &amp;eacute; ».
 - **Bugtracker** : choisir le statut « Doublon » sans numéro de ticket valable gardait l'ancien
   statut en annonçant « Ticket mis à jour » ; le message dit maintenant ce qui n'a pas été appliqué.
-- **Le wiki** : une page sans sous-pages s'affichait comme un dossier vide sur l'accueil du wiki ; elle
-  montre maintenant son sommaire.
+- **Bot Discord : supprimer sur Discord la copie d'un message du site n'efface plus l'original.** Quand le
+  bot n'avait plus ce message en mémoire (après un redémarrage), supprimer sur Discord la copie d'un message
+  écrit sur le site par un membre ayant lié son compte effaçait aussi le message du site. Dans ce cas, le bot
+  n'efface plus sur le site que les messages venus de Discord.
+- **Le wiki** : sur l'accueil du wiki, une page de premier niveau sans sous-pages s'affichait comme une
+  rubrique vide ; elle montre maintenant ses premières sections (ou le début de son texte) et un lien pour la
+  lire, et la barre latérale en fait un lien.
 - **Les pages introuvables et interdites ne sont plus des pages vides.** Sur tous les thèmes publics, une
   adresse qui ne mène à rien (404) ou une page réservée (403) n'affichait que l'en-tête et le pied de
   page, sans un mot — défaut hérité de NeoFrag. Elles disent maintenant ce qui se passe, dans les six
   langues, avec un bouton pour revenir à l'accueil (au tableau de bord en administration), et l'onglet
-  du navigateur porte « Page introuvable » au lieu du nom du module.
+  du navigateur porte « Page introuvable » ou « Accès non autorisé » au lieu du nom du module.
 
 ## [1.2.11] — 2026-10-01
 
@@ -1548,7 +1704,7 @@ qu'il reçoive les droits du Bugtracker.
 - **Mes comptes liés** (espace membre) : voir ses comptes Discord, GitHub ou Google liés, en lier un, en
   délier un — sauf s'il est le seul moyen de se connecter.
 - **S'inscrire avec Discord** (ou GitHub, Google) : un compte que personne n'a lié crée un membre, lié
-  d'emblée, quand les inscriptions sont ouvertes. Il recevait jusqu'ici « Compte inconnu ».
+  d'emblée, quand les inscriptions sont ouvertes. Il recevait jusqu'ici « Compte Discord inconnu ».
 
 ### Corrigé
 
@@ -1560,8 +1716,9 @@ qu'il reçoive les droits du Bugtracker.
 
 ### Corrigé
 
-- **Blog : le sommaire d'un billet restait titré « Sommaire » dans les autres langues** (et l'écrivait au
-  journal). Un message de l'administration des membres avait le même défaut.
+- **Blog : le sommaire d'un billet restait titré « Sommaire » dans les autres langues**, et laissait un
+  avertissement dans le journal du site. Un message de l'administration des membres
+  (« Groupes du membre édités ») avait le même défaut.
 - **Blog : la pastille de catégorie s'étirait sur toute la largeur des cartes** au lieu de rester une
   petite étiquette.
 
@@ -1587,15 +1744,17 @@ qu'il reçoive les droits du Bugtracker.
   en erreur. La suppression d'un abonné dans l'administration aussi.
 - **Supprimer son compte** marquait le compte supprimé, puis tombait en erreur avant de fermer ses
   sessions et d'effacer ses codes de secours.
-- **Désactiver la double authentification** laissait les anciens codes de secours en base.
+- **Désactiver la double authentification** tombait en erreur une fois la désactivation faite, et laissait
+  les anciens codes de secours en base.
 - **Blog : une catégorie vide ne pouvait pas être supprimée** — le Blog la croyait toujours occupée —, et
-  sa suppression ne demandait pas de confirmation protégée.
+  sa suppression n'était pas protégée contre les liens piégés. Elle demande maintenant confirmation.
 
 ## [1.2.7] — 2026-10-01
 
 ### Corrigé
 
-- **Forum : un forum-lien affiche l'icône choisie** dans l'administration, au lieu du globe d'office.
+- **Forum : un forum-lien affiche son icône.** L'icône choisie dans son formulaire d'administration remplace
+  le globe qu'il affichait toujours.
 
 ## [1.2.6] — 2026-10-01
 
@@ -1605,7 +1764,7 @@ qu'il reçoive les droits du Bugtracker.
   le résout. Elle est mise en avant sous la question, signalée dans le fil, et le sujet s'affiche
   « Résolu » dans la liste. Une solution supprimée ou déplacée ne laisse pas le sujet résolu.
 - **Forum : les préfixes de sujet** (« Question », « Tutoriel », « Important »…), créés par
-  l'administrateur avec leur couleur et traduits dans chaque langue. Le membre en choisit un en
+  l'administrateur avec leur couleur, et traduisibles dans chaque langue active. Le membre en choisit un en
   ouvrant son sujet, et la liste d'un forum se filtre dessus.
 - **Forum : une icône par forum**, choisie dans l'administration.
 
@@ -1627,8 +1786,9 @@ qu'il reçoive les droits du Bugtracker.
   la partie en cours, l'auteur, les billets voisins et « à lire aussi ». L'administrateur choisit la
   mise en page de la liste et de la fiche ; le visiteur passe de la grille aux lignes, et son choix est
   retenu.
-- **Bugtracker : la liste se filtre par type** (bogue, demande de fonctionnalité, question, autre), et
-  « Nouveau ticket » garde le type choisi. On voit ce qui est déjà signalé avant d'ouvrir un ticket.
+- **Bugtracker : la liste se filtre par type** (« Bug », « Demande de feature », « Question », « Autre »),
+  et « Nouveau ticket » garde le type choisi. Un lien vers la liste filtrée (par exemple `/bugtracker?type=bug`)
+  montre les tickets déjà signalés de ce type avant d'en ouvrir un nouveau.
 - **Bugtracker : « Déjà signalé ? »** Pendant qu'on écrit le titre d'un nouveau ticket, les tickets
   ouverts qui lui ressemblent s'affichent dessous, pour commenter l'existant plutôt qu'en ouvrir un
   second. Un ticket peut aussi être marqué **doublon** d'un autre : sa page renvoie vers l'original.
@@ -1638,9 +1798,9 @@ qu'il reçoive les droits du Bugtracker.
 ### Ajouté
 
 - **Forum : des catégories et des forums traduisibles.** Chacun garde son titre par défaut et peut
-  recevoir un titre (et une description) par langue active, dans son formulaire d'administration. Le
-  visiteur voit la traduction de sa langue, sinon le titre par défaut. Une adresse reste valable avec
-  le titre par défaut comme avec chaque traduction.
+  recevoir, dans son formulaire d'administration, un titre par langue active (et, pour un forum, une
+  description). Le visiteur voit la traduction de sa langue, sinon le titre par défaut. Une adresse reste
+  valable avec le titre par défaut comme avec chaque traduction.
 
 ### Corrigé
 
@@ -1648,16 +1808,15 @@ qu'il reçoive les droits du Bugtracker.
   enregistrée, elle échouait (« colonne déjà présente ») et aurait annulé la mise à jour entière. Les
   migrations s'appliquent désormais instruction par instruction, en ignorant seulement ce qui est déjà
   fait.
-
 - **Les modules livrés avec le cœur reçoivent enfin leurs changements de base de données.** Seule la
-  mise à jour d'un addon par la place de marché les appliquait : un module comme le forum ou le
+  mise à jour d'un addon par le marketplace les appliquait : un module comme le forum ou le
   calendrier recevait son code neuf par la mise à jour du cœur, jamais sa base. Ils s'appliquent
   désormais avec ceux du cœur, par le bouton comme après un dépôt FTP.
 - **Articles** : les six droits du module (ajouter, modifier, supprimer, et leurs équivalents pour les
   catégories) n'étaient vérifiés nulle part. Ils le sont, actions groupées comprises.
 - **Un contenu programmé n'apparaît plus avant sa date**, ni un contenu mis à la corbeille : le widget
   « Articles récents », le plan du site envoyé aux moteurs, la recherche des actualités, l'activité
-  d'un membre et le bloc « derniers articles » les montraient. Le widget Tags des actualités ne mêle
+  d'un membre et le bloc « Derniers articles » les montraient. Le widget Tags des actualités ne mêle
   plus les langues, et celui des catégories ne compte plus les brouillons.
 
 ## [1.2.3] — 2026-10-01
@@ -1665,14 +1824,14 @@ qu'il reçoive les droits du Bugtracker.
 ### Corrigé
 
 - **La mise à jour se met enfin à jour elle-même.** Son code — avec celui de la sauvegarde, de la
-  restauration et de la place de marché — vivait dans le dossier `install/`, que la mise à jour ne
+  restauration et du marketplace — vivait dans le dossier `install/`, que la mise à jour ne
   réécrivait jamais : un site gardait celui du jour de son installation, et ses corrections ne
   l'atteignaient pas. Il vit désormais dans le cœur (`neofrag/installer.php`), réécrit à chaque
   version, et le Monitoring en vérifie l'intégrité. Le reste d'`install/` suit aussi les versions ;
   seul le verrou `install/db.txt` reste propre au site. Sur un site existant, `install/` se met à
   jour à partir de la mise à jour suivant celle-ci.
 - **Un site qui supprime son dossier `install/` après l'installation**, comme on le conseille
-  souvent, garde sa mise à jour et sa place de marché ; leurs messages restent alors en français.
+  souvent, garde sa mise à jour et son marketplace ; leurs messages restent alors en français.
 
 ## [1.2.2] — 2026-10-01
 
@@ -1686,12 +1845,13 @@ qu'il reçoive les droits du Bugtracker.
   rendaient une ligne par traduction (recrutements, matchs, fil d'activité de l'administration) n'en
   rendent plus qu'une. Les listes de contenus (actualités, articles, pages) restent dans la langue
   demandée.
-- **Une mise à jour applique enfin les changements de la base de données.** Jusqu'ici, seule
+- **Une mise à jour applique enfin les changements de la base de données du cœur.** Jusqu'ici, seule
   l'installation les appliquait : un site mis à jour gardait sa base ancienne sous un code neuf. Par le
   bouton, ils s'appliquent pendant la mise à jour, qui est annulée s'ils échouent. Par FTP, ils
-  s'appliquent à la première page servie par le nouveau code.
-- **Connexion par Discord** : un avatar animé (102 caractères) ne tenait pas dans sa colonne, et la
-  connexion échouait. Un membre sans avatar recevait une image cassée.
+  s'appliquent à la première page servie par le nouveau code. (Ceux des modules suivent depuis la 1.2.4.)
+- **Connexion par Discord** : l'adresse d'un avatar animé (102 caractères) dépassait la place que la base lui
+  réservait (100), et la connexion échouait ; cette place passe à 255 pour tous les comptes liés. Un membre
+  Discord sans avatar recevait une image cassée.
 
 ### Modifié
 
@@ -1704,20 +1864,22 @@ qu'il reçoive les droits du Bugtracker.
 ### Sécurité
 
 - **Deux failles corrigées dans la bibliothèque Markdown** (`league/commonmark` 2.10.3) : un déni de
-  service par des tableaux construits pour ralentir le serveur (gravité élevée), et un contournement
-  du filtre qui retire le HTML interdit (gravité moyenne). Signalées le 30 septembre 2026. La
-  bibliothèque de nettoyage du HTML (`ezyang/htmlpurifier` 4.19.1) passe aussi à sa dernière version.
+  service par des tableaux construits pour ralentir le serveur (gravité élevée, GHSA-3q6v-r5mr-hxv8), et un
+  contournement du filtre qui retire le HTML interdit (gravité moyenne, GHSA-97jj-33gv-5xf9). Rendues
+  publiques le 21 septembre 2026. La bibliothèque de nettoyage du HTML (`ezyang/htmlpurifier` 4.19.1) passe
+  aussi à sa dernière version.
 
 ### Corrigé
 
-- **Le Monitoring ne déclare plus « manquants » des fichiers présents** (2026-10-01). Depuis la
-  publication de la 1.2.0, il comparait le site au manifeste de la version publiée, mais ignorait les
-  sources Sass d'un seul côté : quatre fausses erreurs, et un état de santé « Le navire coule ! ».
+- **Le Monitoring ne déclare plus « manquants » des fichiers présents.** Depuis la publication de la 1.2.0,
+  il comparait le site à la liste officielle des fichiers de la version, mais n'écartait les sources Sass
+  (fichiers de style avant compilation) que du côté du site : quatre fichiers déclarés manquants à tort, et
+  un état de santé « Le navire coule ! ».
 
 ### Modifié
 
-- **Une mise à jour du cœur s'inscrit au journal d'audit** (2026-09-23) : qui l'a lancée, quand, de
-  quelle version vers quelle version, et combien de fichiers ont été remplacés. Elle s'écrivait
+- **Une mise à jour du cœur s'inscrit au journal d'audit** : qui l'a lancée, quand, de quelle version vers
+  quelle version, combien de fichiers ont été écrits et combien d'anciens fichiers retirés. Elle s'écrivait
   jusqu'ici dans le journal d'erreurs, où elle passait pour une anomalie.
 
 ## [1.2.0] — 2026-09-23
@@ -1728,7 +1890,10 @@ qu'il reçoive les droits du Bugtracker.
   → Monitoring** signale les nouvelles versions de NeoFrag Reborn et les installe : sauvegarde du site,
   vérification de l'empreinte du paquet, application, mise à jour de la base, et retour à la sauvegarde
   si quelque chose échoue. C'est la première version publiée par ce chemin ; il a été éprouvé de bout en
-  bout sur un site neuf avant la publication.
+  bout sur un site neuf avant la publication. Un site en 1.1.0 n'a pas encore ce bouton : il passe à la
+  1.2.0 à la main, en remplaçant ses fichiers. Pour les mainteneurs : `tools/build-release.php` produit les
+  trois fichiers à publier ensemble (`neofrag-reborn-update-<v>.zip`, `version.json`, `checksum.json`) ; la
+  procédure est dans `docs/guide/marketplace.md`.
 
 - **Les annonces sur Discord** (2026-09-23). Un webhook qui pointe vers un salon Discord reçoit
   désormais un vrai message, avec titre, lien et couleur : nouvelle actualité, nouvel article, nouveau
@@ -1751,7 +1916,7 @@ qu'il reçoive les droits du Bugtracker.
   - **L'assistant d'installation se traduit**, avec un sélecteur de langue ; il suit d'abord la
     langue du navigateur. L'installeur en ligne de commande prend `--lang=en`, ou la langue du
     terminal.
-  - **La place de marché** montre le nom et la description de chaque addon dans la langue du site.
+  - **Le marketplace** montre le nom et la description de chaque addon dans la langue du site.
   - **Les pays** (profil, adversaires) s'affichent dans la langue du site.
   - **Les rôles et les modèles d'e-mails livrés** s'affichent traduits ; un nom changé par
     l'administrateur reste le sien.
@@ -1767,17 +1932,10 @@ qu'il reçoive les droits du Bugtracker.
 
   Un contrôle, `check-textes-en-dur`, refuse désormais en CI tout texte d'interface écrit en dur.
 
-- **Les 61 addons de la place de marché ont une vignette** (2026-09-22). Chacun — module, widget
-  ou thème — montre une capture d'écran réelle de ce qu'il fait, en 960×600. Pour y arriver, six
-  modules et deux widgets ont été **installés sur la démonstration**, avec du contenu d'exemple :
-  un dictionnaire, des citations, des recettes, une carte de lieux et une grille de webradio.
-  La démonstration porte aussi enfin l'identité de sa communauté — nom, type, date de création et
-  présentation — qui était restée vide.
-
-- **Le site peut fonctionner sans réseau, si on le demande** (2026-09-22). Le manifeste rendait
-  déjà le site installable ; il garde désormais ses images, ses styles et ses scripts dans le
-  navigateur des visiteurs. **Éteint par défaut**, à allumer dans **Administration → Paramètres →
-  Préférences générales**.
+- **Le navigateur des visiteurs peut garder les fichiers du site, si on le demande** (2026-09-22). Le
+  manifeste rendait déjà le site installable ; le site peut désormais garder ses images, ses styles et ses
+  scripts dans le navigateur des visiteurs. **Éteint par défaut**, à allumer dans **Administration →
+  Paramètres → Préférences générales** (« Application installable »).
 
   **Les pages, elles, ne sont jamais gardées.** Une page en mémoire survivrait à une mise en
   ligne : on servirait un site d'avant-hier à qui l'a déjà visité, sans que rien ne le signale.
@@ -1791,40 +1949,42 @@ qu'il reçoive les droits du Bugtracker.
 
 - **Le site est installable comme une application** (2026-09-21). `/manifest.webmanifest` est produit par
   le site lui-même — nom, description, couleur de thème, adresse de départ et favicon viennent des
-  réglages — et non déposé en fichier, qui serait faux partout ailleurs. Le *service worker*, lui,
-  reste à venir : installé dans un navigateur il y demeure même si le fichier disparaît du serveur,
-  ce qui demande un interrupteur de désinscription avant de le livrer.
+  réglages — et non déposé en fichier, qui serait faux partout ailleurs.
 
 - **Les dossiers sensibles sont fermés sous Apache aussi** (2026-09-21). Les `.htaccess` du paquet
-  protégeaient **moins** que la configuration Caddy fournie : sur toute installation Apache,
-  `cache/`, `install/`, `tools/`, `tests/` et `docs/` étaient joignables — la documentation
-  se lisait en texte. Chaque dossier porte sa garde, la racine refuse aussi `.neon` et `.md`, et
-  `tools/check-htaccess.php` relit la liste à chaque passage, avec la raison de chaque ligne.
+  protégeaient **moins** que la configuration Caddy fournie : sous Apache, l'installateur restait joignable
+  une fois le site installé (seule sa propre vérification l'empêchait de s'exécuter), et sur un site
+  installé depuis le dépôt git, `docs/`, `tools/` et `tests/` l'étaient aussi — la documentation se lisait
+  en texte. `cache/`, `config/`, `install/`, `tools/`, `tests/` et `docs/` portent désormais chacun leur
+  garde, la racine refuse aussi les fichiers `.neon` et `.md`, et `tools/check-htaccess.php` relit la liste
+  à chaque passage, avec la raison de chaque ligne.
 
-- **Un checker peut déclarer que ses refus sont ordinaires** (2026-09-21). Le module `pages`, routeur
-  de repli, écrivait une ligne d'**erreur** dans le journal du site pour chaque adresse
-  inconnue — chaque robot qui sonde en ajoutait une. `Module_Checker::refus_ordinaire()` le déclare ;
-  le diagnostic reste rendu à l'écran en mode débogage, et `check-journal` refuse désormais toute
-  ligne que le produit écrit lui-même dans le journal des erreurs.
+- **Une adresse inconnue n'écrit plus d'erreur dans le journal du site** (2026-09-21). Le module `pages`,
+  qui reçoit en dernier recours les adresses que rien d'autre ne reconnaît, écrivait une ligne d'**erreur**
+  pour chacune — chaque robot qui sonde le site en ajoutait. Pour les développeurs d'addons : un contrôleur
+  peut désormais déclarer un refus ordinaire (`Module_Checker::refus_ordinaire()`) ; le diagnostic reste
+  affiché à l'écran en mode débogage. Le contrôle `check-journal` refuse désormais toute ligne que le
+  produit écrit lui-même dans le journal des erreurs.
 
-- **Deux contrôles tiennent les conventions du dépôt** (2026-09-21). `tools/check-tools.php` vérifie
-  que chaque outil respecte les siennes — en-tête, garde par le socle commun, aucune plomberie
-  recopiée, verdict et codes de sortie, port réservé, catalogue à jour — et `tools/check-docs.php`
-  celles de la documentation : chiffres d'inventaire justes, renvois et ancres vivants, aucun
-  document orphelin, aucun outil nommé qui n'existe plus, aucune phrase recopiée d'un document
-  vivant à l'autre, documents qui restent lisibles. Tous deux sont en intégration continue.
+- **Deux contrôles font respecter les règles du dépôt** (2026-09-21), pour les contributeurs.
+  `tools/check-tools.php` vérifie que chaque outil suit les règles communes : en-tête descriptif, appui sur
+  la bibliothèque partagée plutôt que du code recopié, verdict et codes de sortie normalisés, port réservé,
+  catalogue à jour. `tools/check-docs.php` vérifie la documentation : chiffres exacts, liens et ancres
+  valides, aucun document orphelin, aucun outil cité qui n'existe plus, aucun passage recopié d'un document
+  à l'autre, documents qui restent lisibles. Les deux tournent en intégration continue.
 
-- **Huit nouveaux addons, tous facultatifs** (2026-09-20). Aucun n'est installé d'office : ils
-  s'ajoutent depuis **Administration → Addons**, et se retirent de même.
+- **Huit nouveaux addons, tous facultatifs** (2026-09-20). Une mise à jour ne les installe pas : sur un
+  site existant, ils s'ajoutent depuis **Administration → Thèmes & addons**, et se retirent de même. Une
+  installation neuve les inclut avec le profil *Complet*, proposé par défaut, mais pas avec les autres.
 
   | Addon | Ce qu'il fait |
   |---|---|
-  | **Effet saisonnier** (widget) | Neige, confettis ou feuilles sur tout l'écran, pendant une plage de dates. Les dates s'écrivent `MM-JJ` **sans année** — la saison revient toute seule — et peuvent enjamber le Nouvel An (`du 12-15 au 01-06`). Hors saison, la page ne reçoit **rien du tout** : ni image, ni script. `prefers-reduced-motion` est respecté, et l'animation se met en pause quand l'onglet passe à l'arrière-plan. |
-  | **Lecteur de flux** (widget) | Les derniers articles d'un flux RSS ou Atom extérieur. **Une page n'attend jamais un site tiers** : elle lit un cache, et sert même un contenu périmé plutôt que de faire patienter ; le rafraîchissement a lieu dans la tâche planifiée. Un flux tombé est mis de côté dix minutes au lieu d'être retenté à chaque visite. |
+  | **Effet saisonnier** (widget) | Neige, confettis ou feuilles sur tout l'écran, pendant une plage de dates. Les dates s'écrivent `MM-JJ` **sans année** — la saison revient toute seule — et peuvent enjamber le Nouvel An (`du 12-15 au 01-06`). Hors saison, la page ne reçoit **rien du tout** : ni image, ni script. Le réglage du système qui demande moins d'animations (`prefers-reduced-motion`) est respecté, et l'animation se met en pause quand l'onglet passe à l'arrière-plan. |
+  | **Lecteur de flux** (widget) | Les derniers articles d'un flux RSS ou Atom extérieur. **Une page n'attend presque jamais un site tiers** : elle lit un cache, et sert même un contenu périmé plutôt que de faire patienter ; le rafraîchissement a lieu dans la tâche planifiée. Seul le tout premier affichage, cache vide, attend le flux, trois secondes au plus. Un flux tombé est mis de côté dix minutes au lieu d'être retenté à chaque visite. |
   | **Citations** (module) | Un recueil classé, avec auteur et source. |
   | **Recettes** (module) | Ingrédients et étapes saisis une par ligne, durées et nombre de parts, balisage `schema.org/Recipe` que lisent les moteurs de recherche. |
   | **Dictionnaire** (module) | Un lexique rangé par lettre. « Éclaireur » se range sous E, « Æther » sous A, « 1v1 » sous #. La lettre est calculée, jamais saisie. |
-  | **Carte des lieux** (module) | Des lieux sur une carte OpenStreetMap, avec adresse, description et lien. La bibliothèque est **hébergée par le site** : aucun appel à un service tiers pour l'afficher. **La page reste utile sans JavaScript** — la liste, les adresses et les liens y sont. |
+  | **Carte des lieux** (module) | Des lieux sur une carte OpenStreetMap, avec adresse, description et lien. La bibliothèque de carte est **hébergée par le site** ; seules les images du fond de carte viennent d'OpenStreetMap. **La page reste utile sans JavaScript** — la liste, les adresses et les liens y sont. |
   | **Webradio** (module) | Un lecteur de flux, ce qui passe à l'antenne, et la grille de la semaine. Une émission peut enjamber minuit : « samedi 22:00 → 02:00 » reste l'émission du samedi. |
   | **Bac à sable** (module) | Réservé aux membres : on y essaie la mise en forme et on voit le rendu **exact** du site. Surtout, il affiche **ce que le site a retiré** — c'est la seule page qui réponde à « pourquoi mon tableau a-t-il disparu ». |
 
@@ -1839,27 +1999,22 @@ qu'il reçoive les droits du Bugtracker.
 
   **Aucune liste d'addons n'est écrite à la main** : les profils se composent à partir des déclarations
   `presets` de chaque addon. C'est la différence avec la tentative de juin 2026, abandonnée parce qu'une
-  installation allégée finissait en 500 — des modules du cœur interrogeaient des tables optionnelles
-  sans garde. Ces gardes existent désormais et sont vérifiées à chaque exécution de la CI.
+  installation allégée finissait sur une erreur serveur (500) : des modules du cœur interrogeaient les
+  tables de modules facultatifs sans vérifier qu'elles existaient. Ces vérifications existent désormais et
+  sont contrôlées à chaque exécution de la CI.
 
-- **Déclarations de découplage sur les 99 addons livrés** : chacun déclare dans son `__info()` s'il
-  appartient au cœur, dans quels profils il entre, et de quels modules il a besoin. L'appartenance au
+- **Chaque module, widget et thème livré déclare son rôle** : dans son `__info()`, il dit s'il appartient
+  au cœur, dans quels profils d'installation il entre, et de quels modules il a besoin. L'appartenance au
   cœur était jusqu'ici un effet de bord de la présence dans le paquet — c'est ainsi qu'`emojis`, `files`
   et `webhooks` s'y étaient retrouvés sans qu'aucune décision ne soit prise.
 
-- **Cinq garde-fous en intégration continue**, dont trois neufs :
+- **Trois nouveaux garde-fous en intégration continue** :
 
   | Contrôle | Ce qu'il refuse |
   |---|---|
   | `check-addon-declarations.php` | un addon muet, une dépendance inexistante, **un addon du cœur qui dépend d'un optionnel**, un addon non distribuable publié au catalogue, une déclaration en désaccord avec `seed.sql` |
   | `check-addon-coupling.php` | un couplage **fatal** (table, classe) ni déclaré ni annoté ; un cycle dur. Lu dans le code au **tokenizer PHP**, pas à l'expression régulière — donc aucun faux positif sur les commentaires |
   | `check-install-profiles.php` | un profil qui ne démarre pas. Il **installe pour de vrai** sur une base jetable, sert le site et échoue au moindre 5xx — y compris sur les routes des modules absents, qui doivent rendre un 404 propre |
-
-- **Mise à jour du cœur en un clic**, depuis **Administration → Monitoring**. Sauvegarde, téléchargement
-  du paquet, vérification d'empreinte, superposition des fichiers, migrations en attente, recompilation
-  des styles. `tools/build-release.php` produit les trois fichiers à publier ensemble
-  (`neofrag-reborn-update-<v>.zip`, `version.json`, `checksum.json`) ; la procédure est dans
-  `docs/guide/marketplace.md`.
 
 - **Trouver un membre depuis la barre de recherche.** La recherche du site ne trouvait que du
   contenu — forum, actualités, pages. Chercher quelqu'un obligeait à ouvrir l'annuaire et à le
@@ -1874,15 +2029,15 @@ qu'il reçoive les droits du Bugtracker.
 - **Gérer une série d'événements d'un seul geste.** Créer un événement récurrent produisait déjà
   toutes ses occurrences en un clic — les reprendre demandait ensuite de les ouvrir une par une.
 
-  Désormais, une occurrence de série porte un bouton **supprimer toute la série**, dont la
+  Désormais, une occurrence de série porte un bouton **« Supprimer toute la série »**, dont la
   confirmation annonce combien d'occurrences partiront, et le formulaire d'édition propose
-  **« appliquer à toutes les occurrences »**. Le titre, le type, les descriptions, le lieu, l'image
+  **« Appliquer à toutes les occurrences de la série »**. Le titre, le type, les descriptions, le lieu, l'image
   et la publication sont recopiés sur chacune ; **les dates ne le sont jamais** — ce sont elles qui
   distinguent une séance de la suivante.
 
 - **Retour arrière d'une mise à jour, et restauration d'une sauvegarde.** Le CMS prenait déjà une
   sauvegarde complète — fichiers et base — juste avant chaque mise à jour du cœur. Il ne savait pas
-  s'en reservir : le filet était tendu, personne ne savait tomber dedans.
+  s'en resservir : le filet était tendu, personne ne savait tomber dedans.
 
   Désormais, si la pose des fichiers ou une migration échoue, **le site est automatiquement remis
   dans l'état où il était** ; le message dit à la fois ce qui a échoué et si le retour arrière a
@@ -1899,41 +2054,70 @@ qu'il reçoive les droits du Bugtracker.
   qu'elle ne prenait pas : sans lui, un retour arrière aurait reposé l'ancien code sur les nouvelles
   dépendances.
 
-- **Réponses aux commentaires** (fonctionnalité qui était désactivée `//TODO`) : le bouton « Répondre »
-  est réactivé (classe `comment-reply` attendue par `comments.js`), le formulaire porte un champ caché
-  `comment_id` posé au clic, et le back-end rattache la réponse en `parent_id` — **validé en base** (le
-  parent doit exister, être de premier niveau, du même contenu, non supprimé), profondeur limitée à 1.
-  L'affichage threadé (`comments-child`) existait déjà. Vérifié : rendu threadé correct en base.
-- **Régions nommées dans les thèmes** (idée reprise de HiddenCMS) : les vues rendent une zone par **nom
-  sémantique** — `$this->output->region('content')` — plutôt que par index — `zone(2)`. Le thème déclare
-  une correspondance `regions` (nom → titre de zone) dans son `__info()` ; le cœur résout nom → titre →
-  index → `zone()`. **Purement additif** : `zone()` reste utilisable, et un thème sans map se comporte
-  normalement. Les 5 thèmes front (nebula, forge, granite, blockcraft, extend) migrés vers
-  `region()`. Lisibilité accrue pour les créateurs de thèmes ; fondation pour les « outlines » à venir.
-- **Installeur en ligne de commande** (`install/cli.php`) : alternative scriptable à l'assistant web,
-  pratique pour un déploiement VPS reproductible. Flags `--db-*`, `--admin-*`, `--site-name`, `--site-url`,
-  `--create-db`, `--demo`, `--force`, `--yes`, `--dry-run`, `--no-lock` + **mode interactif** (saisie
-  masquée du mot de passe) et `--admin-pass-env` (mot de passe via variable d'environnement, invisible dans
-  les process). Réutilise exactement la lib `Installer` et la séquence « tout bundlé » → résultat identique
-  à l'installeur web. Idée reprise de HiddenCMS, portée sur le socle Reborn. Validé end-to-end
-  (install complète : 132 tables, tous les addons, admin, wiki).
+- **Répondre à un commentaire.** Le bouton « Répondre », désactivé dans le code d'origine, fonctionne : la
+  réponse s'affiche en retrait sous le commentaire visé. On ne répond qu'à un commentaire de premier niveau
+  (un seul niveau de réponses), du même contenu et encore en ligne : le serveur le vérifie.
+- **Pour les créateurs de thèmes : des zones appelées par leur nom** (idée reprise de HiddenCMS). Une vue
+  appelle désormais une zone par son nom — `$this->output->region('content')` — plutôt que par son numéro
+  — `zone(2)`. Le thème déclare la correspondance entre noms et zones dans son `__info()` (`regions`).
+  L'ancien appel `zone()` fonctionne toujours, et un thème sans cette déclaration ne change pas. Les cinq
+  thèmes publics (Nebula, Forge, Granite, Blockcraft, Extend) emploient les noms.
+- **Installation en ligne de commande** (`install/cli.php`, idée reprise de HiddenCMS) : une alternative à
+  l'assistant web, pratique pour installer un serveur de façon reproductible ou automatisée. Ses options
+  couvrent la base de données (`--db-*`, `--create-db`), le compte administrateur (`--admin-*`), le nom et
+  l'adresse du site (`--site-name`, `--site-url`), la langue (`--lang`), les données de démonstration
+  (`--demo`) et le déroulement (`--force`, `--yes`, `--dry-run`, `--no-lock`). Sans options, il pose les
+  questions une à une et masque la saisie du mot de passe ; `--admin-pass-env` lit le mot de passe dans une
+  variable d'environnement, pour qu'il n'apparaisse pas dans la liste des processus. Il emploie le même code
+  que l'assistant web et installe tous les addons livrés, comme le profil *Complet*.
 
-- **Un lanceur pour toute la batterie** : `php tools/check-all.php`. Les 26 contrôles n'avaient
+- **Un lanceur pour toute la batterie** : `php tools/check-all.php`. Les contrôles n'avaient
   aucun point d'entrée commun — la CI les appelle un par un, et en local chacun refaisait une
   boucle à la main, jamais la même. Le lanceur découvre les contrôles présents (un contrôle neuf
   entre sans qu'on y touche), joue `composer audit` en tête, borne chaque contrôle en durée, et
-  énonce à la fin **ce qu'il n'a pas joué** : les épreuves en navigateur (`--navigateur`) et les trois
+  énonce à la fin **ce qu'il n'a pas joué** : les épreuves en navigateur (`--navigateur`) et les
   contrôles à cible explicite, dont `check-restauration` qui abîme volontairement le site.
 
-- **Chaque addon montre à quoi il ressemble** (2026-09-22). La page « Thèmes & addons » et la
-  place de marché affichent désormais une VIGNETTE pour 85 des 117 addons : une capture d'écran
-  réelle du module, du widget ou de la langue tel qu'il tourne, prise sur la démonstration, où il
-  y a des données à montrer. Ce qui n'a rien à montrer garde son icône : les connecteurs
-  Discord, GitHub et Google, dont l'icône EST le logo, et les widgets qui n'affichent rien sans
-  réglage.
+- **Chaque addon montre à quoi il ressemble** (2026-09-22). La page « Thèmes & addons » de
+  l'administration et le marketplace affichent une vignette : une capture d'écran réelle du module, du
+  widget, du thème ou de la langue tel qu'il tourne sur la démonstration. Les 61 addons de la place de
+  marché en ont tous une, en 960×600 pour les modules et les widgets. Pour y arriver, six modules et deux
+  widgets ont été installés sur la démonstration avec du contenu d'exemple — un dictionnaire, des
+  citations, des recettes, une carte de lieux et une grille de webradio —, et les widgets qui n'affichent
+  rien sans réglage ont été photographiés avec des réglages d'exemple. Ce qui n'a rien à montrer garde son
+  icône, comme les connecteurs Discord, GitHub et Google, dont l'icône est le logo. La démonstration porte
+  aussi enfin l'identité de sa communauté — nom, type, date de création et présentation — qui était
+  restée vide.
 
-- **Dix addons ont enfin une description** (2026-09-22) : les six langues — chacune dans sa
-  propre langue — et les quatre connecteurs de connexion externe.
+- **Dix addons ont enfin une description** (2026-09-22) : les six langues et les quatre addons de connexion
+  externe (le socle et ses connecteurs Discord, GitHub et Google). Elle s'affiche dans la langue du site.
+
+- **Des champs de profil définis par l'administrateur** (2026-09-20). Le profil d'un membre n'avait que des
+  champs fixes. **Administration → Utilisateurs → Champs de profil** permet d'en ajouter — pseudo en jeu,
+  plateforme, rang… — parmi huit types de champ. Les membres les remplissent dans le panneau
+  « Informations complémentaires » de leur profil. Un champ est privé par défaut ; rendu public, il
+  s'affiche sur la fiche du membre. Les valeurs entrent dans l'export des données personnelles du membre et
+  s'effacent avec son compte.
+
+- **La police du site se choisit dans l'administration** (2026-09-20). **Administration → Paramètres →
+  Préférences générales → Police du site** propose douze polices, qui remplacent celle de tous les thèmes.
+  Par défaut, « Police du thème » garde la police de chaque thème et ne fait appel à aucun service
+  extérieur ; les douze polices au choix sont servies par Google Fonts.
+
+- **L'historique des connexions ne se garde plus indéfiniment** (2026-09-20). Il conserve l'adresse IP, le
+  navigateur et la date de chaque connexion, et rien ne l'effaçait. Il est désormais purgé au-delà de
+  395 jours (treize mois), durée réglable dans **Administration → Paramètres → Préférences générales** ;
+  0 désactive la purge.
+
+- **Rappel des événements suivis du calendrier** (2026-09-20). Un membre qui suit un événement du calendrier
+  reçoit un rappel avant son début, comme les participants d'un événement du module Événements. Le délai se
+  règle dans la configuration du calendrier (« Rappel avant un événement suivi », 24 heures par défaut,
+  0 pour désactiver).
+
+- **Le paquet de mise à jour dit ce qu'il protège et ce qu'il retire** (2026-09-20). Il porte un fichier
+  `nf-manifest.json` : les dossiers du site qu'une mise à jour n'écrit jamais (`config/`, `install/`,
+  `upload/`, `logs/`, `backups/`, `cache/`), et les fichiers que la version retire. Jusqu'ici, la mise à
+  jour déduisait d'elle-même ce qu'il fallait effacer ; un paquet sans ce fichier reste accepté.
 
 ### Modifié
 
@@ -1951,8 +2135,8 @@ qu'il reçoive les droits du Bugtracker.
     blanc sur fond blanc ;
   - les **boutons de fermeture** des fenêtres ont une zone de clic suffisante sur téléphone.
 
-- **Le JavaScript est relu par un linter** (2026-09-22). Soixante-dix-huit fichiers écrits sur des
-  années, dont rien ne vérifiait autre chose que la syntaxe. ESLint voit ce que la syntaxe ne dit
+- **Le JavaScript est relu par un linter** (2026-09-22). Soixante et onze fichiers du projet, écrits sur des
+  années, que rien ne vérifiait au-delà de la syntaxe et de l'absence de jQuery. ESLint voit ce que la syntaxe ne dit
   pas : une variable globale créée par oubli d'un `var`, un `eval` déguisé, du code après un
   `return`, un `innerHTML` nourri d'une valeur calculée. Aucun paquet npm n'est déployé : c'est de
   l'outillage de développement, au même titre que l'analyse statique PHP.
@@ -1971,25 +2155,22 @@ qu'il reçoive les droits du Bugtracker.
   annote désormais la langue courante, la liste des langues et les réglages du cœur que lisent les
   modules : ces accès sont analysés au lieu d'être gelés.
 
-- **Les outils de `tools/` refondus sur une bibliothèque commune** (2026-09-21). Soixante outils
-  écrits chacun à sa manière recopiaient la même plomberie : quatorze lançaient leur serveur PHP,
-  huit ouvraient leur session d'administrateur, six lançaient Chrome, vingt-cinq lisaient
-  `config/db.php`. Une leçon apprise dans l'un ne se propageait pas aux autres. `tools/lib/` porte
-  désormais ce socle — connexion, session, serveur, navigateur, parcours du dépôt, SQL, options,
-  verdicts — et chaque outil tient dans sa logique propre. Cinquante-deux outils au lieu de
-  soixante, sans perte de fonction : `check-js-syntax` et `check-js-jquery` forment
-  `check-js-sources` ; `check-docs-counts` et `check-docs-liens` forment `check-docs` ;
-  `check-lang-args` rejoint `check-langs` ;
-  `seed-wiki-docs` et `dump-wiki` forment `wiki-docs` ; `smoke-test` devient
-  `check-smoke`, comme tout contrôle ; `addons-manifest` et `table-map`, qui sont des données,
-  vivent dans la bibliothèque. Chaque outil a désormais son port réservé (deux en partageaient un),
-  trois codes de sortie qui distinguent « rien à reprocher », « refusé » et « n'a pas pu juger », et
-  un en-tête dont le catalogue de `tools/README.md` est engendré. `bs5-codemod`, outil de la
-  migration Bootstrap 4 → 5 de juin, est retiré : `check-classes-bs4` couvre tout ce qu'il
-  vérifiait, points de rupture des utilitaires directionnels compris depuis ce jour.
+- **Les outils de `tools/` refondus sur une bibliothèque commune** (2026-09-21). Une soixantaine d'outils
+  écrits chacun à sa manière recopiaient la même plomberie : lancer un serveur PHP, ouvrir une session
+  d'administrateur, lancer Chrome, lire `config/db.php`. Une leçon apprise dans l'un ne se propageait pas
+  aux autres. `tools/lib/` porte désormais ce socle — connexion, session, serveur, navigateur, parcours du
+  dépôt, SQL, options, verdicts — et chaque outil tient dans sa logique propre. Il en reste cinquante-deux,
+  sans perte de fonction : `check-js-syntax` et `check-js-jquery` forment `check-js-sources` ;
+  `check-docs-counts` et `check-docs-liens` forment `check-docs` ; `check-lang-args` rejoint `check-langs` ;
+  `seed-wiki-docs` et `dump-wiki` forment `wiki-docs` ; `smoke-test` devient `check-smoke`, comme tout contrôle ;
+  `addons-manifest` et `table-map`, qui sont des données, vivent dans la bibliothèque. Chaque outil a
+  désormais son port réservé (plusieurs en partageaient un), trois codes de sortie qui distinguent « rien à
+  reprocher », « refusé » et « n'a pas pu juger », et un en-tête dont le catalogue de `tools/README.md` est
+  engendré. `bs5-codemod`, outil de la migration Bootstrap 4 → 5 de juin, est retiré : `check-classes-bs4`
+  couvre tout ce qu'il vérifiait, points de rupture des utilitaires directionnels compris.
 
 - **`declare(strict_types=1)` sur tout le périmètre utile** (2026-09-21) : **1 365 fichiers** contre
-  78 la veille. Le chantier avançait par lots de quatre à dix fichiers depuis dix mois ; il est
+  78 la veille. Le chantier avançait par petits lots depuis juin ; il est
   terminé. Les 209 fichiers restants sont les gabarits `views/**.tpl.php`, où la déclaration serait
   syntaxiquement valide et ne protégerait rien.
 
@@ -2002,47 +2183,54 @@ qu'il reçoive les droits du Bugtracker.
   page de chaque actualité et plusieurs écrans tombaient donc en erreur fatale — module neutralisé,
   page amputée, sans un mot. La conversion est désormais posée au **point d'échappement**
   (`htmlspecialchars`), c'est-à-dire là où la valeur doit devenir une chaîne par définition :
-  410 emplacements dans 84 fichiers.
+  près de 500 emplacements dans 86 fichiers.
+
+  La vague a aussi imposé onze conversions explicites, dont trois sur des chemins empruntés à chaque
+  page — l'ordre d'affichage des langues et des groupes, lu au démarrage de chaque session, et le calcul du
+  jeton qui protège tous les formulaires contre les requêtes forgées (CSRF) : sans elles, un site à deux
+  langues actives aurait rendu une erreur 500 sur toutes ses pages.
 
 - **Le journal dit désormais OÙ, pas seulement quoi** (2026-09-21). Quand un module lève une
   exception, son rendu est abandonné et la page s'affiche amputée — en silence. La ligne de journal
-  donnait le message sans jamais nommer un fichier. Elle porte maintenant la première image de pile
-  qui appartient au produit. Retrouver l'origine des erreurs ci-dessus est passé d'une enquête à une
+  donnait le message sans jamais nommer un fichier. Elle nomme maintenant le premier emplacement du code
+  du produit dans la pile d'appels. Retrouver l'origine des erreurs ci-dessus est passé d'une enquête à une
   lecture.
 
 - **Le compilateur SCSS passe en 2.1** (2026-09-20). Sur PHP 8.5, chaque compilation des styles écrivait
   **dix dépréciations** dans le journal ; il n'y en a plus aucune. La 2.x minifie un peu plus (`.25rem`
-  au lieu de `0.25rem`, `#ccc` au lieu de `#CCCCCC`), ce qui change quatre feuilles — celles des modules
-  addons, palmarès, commentaires et de la page de maintenance. L'équivalence n'a pas été déduite du
+  au lieu de `0.25rem`, `#ccc` au lieu de `#CCCCCC`), ce qui change trois feuilles — celles des modules
+  addons et palmarès, et celle de la page de maintenance. L'équivalence n'a pas été déduite du
   texte : les deux jeux de CSS ont été donnés à lire au moteur de Chrome, qui y voit exactement les
   mêmes règles, propriétés et valeurs calculées.
 
 - **La documentation a été relue en entier contre le code** (2026-09-17). Les guides d'installation, de
   concepts et de développement (créer un module, un widget, un thème, le framework) dataient de juin et
   décrivaient un CMS d'avant : une installation sans choix de profil, un thème qui chargeait jQuery, des
-  grilles Bootstrap 4. Ils disent désormais ce que fait la 1.1.0 — profils d'installation, déclarations
+  grilles Bootstrap 4. Ils disent désormais ce que fait le produit — profils d'installation, déclarations
   d'addons, régions nommées, front sans jQuery sous politique de sécurité stricte, réglages de widget avec
-  valeurs de repli, vocabulaire de couleurs partagé — et sont republiés dans le wiki du site. Le README,
+  valeurs de repli, vocabulaire de couleurs partagé. Le README,
   le guide de contribution, la politique de sécurité et la référence technique sont alignés de même.
 
 - **Ce qu'un addon autorise se lit dans sa déclaration**, plus dans des listes de noms en dur. Trois
   d'entre elles décidaient du sort des addons, et les trois étaient fausses : celle des widgets
   protégeait sept noms qui ne sont pas des widgets ; celle des thèmes protégeait un thème `default`
-  inexistant **en laissant `nebula`, le seul thème public livré, supprimable** dès qu'il était inactif ;
+  inexistant **en laissant `nebula`, le seul thème public du cœur, supprimable** dès qu'il était inactif ;
   celle des modules dupliquait, en désaccord, ce que `__info()` disait déjà. Vérifié addon par addon
   contre l'ancienne logique : aucun changement de désactivabilité, aucun changement d'état actif, et
   **39 addons deviennent non supprimables** — ce qui est l'objet du correctif.
 
 - **La Corbeille ne connaît plus les autres modules.** Elle tenait en dur la liste des tables, clés
   primaires et méthodes de restauration de `news`, `articles`, `gallery`, `comments` et `forum` : elle
-  ne pouvait donc pas appartenir au cœur sans tirer cinq modules optionnels avec elle. Chaque module
+  ne pouvait donc pas appartenir au cœur sans tirer avec elle quatre modules optionnels — `comments`,
+  lui, est du cœur. Chaque module
   déclare maintenant ses types restaurables ; le cœur collecte. Même inversion pour les descripteurs de
   contenu (réactions, abonnements, révisions).
 
-- **Une seule source de vérité pour les tiers.** `tools/addons-manifest.php`, table écrite à la main et
-  figée en juin, dérive désormais des déclarations. Les deux avaient déjà divergé : `emojis` y figurait
-  comme cœur alors qu'il se déclare à la carte — il était donc décochable à l'installation mais absent
-  du catalogue, donc **impossible à réinstaller**. Catalogue : 52 → **53 addons**.
+- **La liste des addons du cœur et des addons facultatifs n'est plus tenue à la main.**
+  `tools/lib/addons-manifest.php`, table écrite à la main et figée en juin, dérive désormais des
+  déclarations. Les deux avaient déjà divergé : `emojis` y figurait comme cœur alors qu'il se déclare à la
+  carte — il était donc décochable à l'installation mais absent du catalogue, donc **impossible à
+  réinstaller**. Catalogue : 52 → **53 addons** ce jour-là (61 à la sortie de la 1.2.0).
 
 - **Installateur repris sur la forme** : mise en page à deux colonnes, jetons de style repris de `nebula`
   (marine et sarcelle, accent `#2dd4bf`), dégradé sorti de derrière le texte, logo posé dans une pastille.
@@ -2050,7 +2238,7 @@ qu'il reçoive les droits du Bugtracker.
 ### Corrigé
 
 - **La sauvegarde du Monitoring fonctionne de nouveau** (2026-09-23). Depuis le 21 septembre, elle
-  s'arrêtait dès la première ligne de la base : le bouton « Sauvegarde », et la mise à jour du cœur qui
+  s'arrêtait dès la première ligne de la base : le bouton « Lancer la sauvegarde », et la mise à jour du cœur qui
   commence par une sauvegarde, échouaient sur tout site. Trouvé en éprouvant la mise à jour avant de la
   publier.
 
@@ -2102,9 +2290,10 @@ qu'il reçoive les droits du Bugtracker.
 
 - **Derniers restes de Bootstrap 3 et 4** (2026-09-23), que leur nom de classe ne trahissait pas :
   la structure du diaporama, les croix de fermeture qui affichaient un « × » en plus de l'icône,
-  deux accordéons (FAQ, liens de la navigation), des champs qui s'enveloppaient dans un groupe vide,
-  la flèche des bulles d'aide restée blanche sous une bulle sombre, et deux règles du widget des
-  partenaires. `check-classes-bs4` lit désormais aussi la STRUCTURE des composants et les styles
+  deux accordéons (FAQ, liens de la navigation) restés à la structure de Bootstrap 4 (celui de la FAQ
+  s'ouvrait, mais sans l'apparence ni la flèche du composant), des champs qui s'enveloppaient dans un
+  groupe vide, la flèche des bulles d'aide restée blanche sous une bulle sombre, et deux règles du widget
+  des partenaires. `check-classes-bs4` lit désormais aussi la STRUCTURE des composants et les styles
   écrits dans les vues.
 
 - **Les pages d'erreur qui n'en étaient pas** (2026-09-23). Dans la modération, la gestion des
@@ -2115,15 +2304,15 @@ qu'il reçoive les droits du Bugtracker.
   liste d'exceptions.
 
 - **Le bouton des e-mails envoyés aux membres est lisible** (2026-09-23) : validation du compte, mot
-  de passe perdu et les autres modèles avaient un bouton blanc sur turquoise clair (2,3:1). Les
-  modèles livrés comme ceux déjà installés — sauf ceux qu'un administrateur a personnalisés.
+  de passe perdu et les autres modèles avaient un bouton blanc sur turquoise clair (contraste 2,3:1). La
+  correction vaut pour les modèles livrés et pour ceux déjà installés, sauf ceux qu'un administrateur a
+  personnalisés.
 
-- **Dernières finitions de la passe complète** (2026-09-23) : liens du wiki, des lieux et de la
-  webradio dans la teinte lisible du thème ; boutons « succès » des thèmes sombres ; statut d'une
-  candidature, dont la boîte n'avait aucun fond (classes d'un ancien thème d'administration) ;
-  index alphabétique du glossaire, qui n'avait aucune mise en forme ; réseaux sociaux des cartes de
-  membres ; titres coupés dans l'administration ; un visiteur qui suit le lien « participer » d'un
-  événement est invité à se connecter.
+- **Dernières finitions d'affichage** (2026-09-23) : liens du wiki dans la teinte lisible du thème ; boutons
+  « succès » des thèmes sombres ; statut d'une candidature, dont la boîte n'avait aucun fond (classes d'un
+  ancien thème d'administration) ; réseaux sociaux des cartes de membres ; titres coupés dans
+  l'administration ; un visiteur qui suit le lien de participation à un événement reçoit « Accès non
+  autorisé » au lieu d'une page introuvable.
 
 - **Les textes sont lisibles partout, en clair comme en sombre** (2026-09-23). Liens et boutons de
   l'administration, alertes, dates et en-têtes de tableau des thèmes, catégories d'actualités,
@@ -2138,7 +2327,7 @@ qu'il reçoive les droits du Bugtracker.
   forum ne passe plus sous ses boutons.
 
 - **Le forum sur un téléphone** (2026-09-23) : dans un sujet, l'auteur passe au-dessus du message au
-  lieu de lui laisser 200 px, et les boutons d'un message ne recouvrent plus sa date.
+  lieu de ne lui laisser que 200 px de large, et les boutons d'un message ne recouvrent plus sa date.
 
 - **Les pluriels traduits** (2026-09-23). 47 textes avaient perdu leur forme plurielle en
   traduction : un site en anglais affichait « 3 topic », « 5 image », « 2 year ». Le compteur des
@@ -2152,8 +2341,9 @@ qu'il reçoive les droits du Bugtracker.
   pièces jointes autorisés, écrite sans espace, formait un seul mot trop large pour l'écran.
 
 - **Tout le site passé au crible, dans chaque thème, chaque mode et à chaque largeur** (2026-09-23).
-  Un contrôle automatique rend désormais chaque page publique et d'administration dans les six
-  thèmes, en clair et en sombre, connecté et en visiteur, de 360 à 2560 px, avec et sans contenu.
+  Un contrôle automatique rend désormais chaque page d'administration dans son thème et chaque page
+  publique dans chaque thème public, en clair et en sombre, connecté en administrateur et en visiteur, à
+  huit largeurs de 360 à 2560 px, avec et sans contenu.
   Ce premier passage a corrigé :
   - des **icônes cassées** dans les listes de catégories de la galerie, des jeux, des équipes et
     des actualités, quand une catégorie n'avait pas d'icône ;
@@ -2171,14 +2361,16 @@ qu'il reçoive les droits du Bugtracker.
     vérification des mises à jour tant qu'aucune version n'est publiée.
 
 - **Les boutons « Modifier » et « Supprimer » ne sont plus en escalier** (2026-09-22). Dans les
-  listes de l'administration à deux colonnes — catégories des actualités, de la galerie, groupes
-  de membres… —, le second bouton passait à la ligne, décalé sous le premier. Ils restent
+  listes de l'administration à deux colonnes — catégories des actualités, de la galerie… —, le
+  second bouton passait à la ligne, décalé sous le premier. Ils restent
   désormais côte à côte.
 
-- **La jauge « Stockage » ne touche plus son arc** (2026-09-22). La valeur, en haut du
-  demi-cercle, empiétait sur le trait ; elle est descendue dans le creux, le pourcentage juste
-  en dessous. Et le titre « Informations serveur » de la même page n'est plus coupé net quand la
-  colonne est étroite : il passe sur deux lignes.
+- **La carte « Stockage » de la supervision s'affiche correctement** (2026-09-22). La jauge se dessinait
+  en cercle entier au lieu du demi-cercle prévu, avec un nombre brut au centre, et la valeur et le
+  pourcentage, placés en haut, chevauchaient le trait ; ils sont désormais dans le creux de la jauge. Le
+  titre « Informations serveur » de la même page passe sur deux lignes quand la colonne est étroite, au
+  lieu d'être coupé net. Dans le groupe « Envoi d'email », la ligne « Transport email » affichait
+  `[object Object]` à la place de la méthode employée.
 
 - **Un widget posé sans réglages s'affiche avec ses valeurs par défaut** (2026-09-22). Quand un
   thème pose un widget à l'installation, ou qu'une ancienne disposition le restaure, il arrive
@@ -2188,8 +2380,8 @@ qu'il reçoive les droits du Bugtracker.
 
 - **La page des événements s'affiche de nouveau** (2026-09-22). Elle rendait une page d'erreur
   « introuvable » dès qu'elle avait des événements à répartir sur plusieurs pages — sous un
-  titre parfaitement normal, ce qui la rendait difficile à remarquer. Le réglage « nombre
-  d'événements par page » était enregistré comme du texte, et le code, rendu plus strict la
+  titre parfaitement normal, ce qui la rendait difficile à remarquer. Le réglage du nombre
+  d'événements par page était enregistré comme du texte, et le code, rendu plus strict la
   veille, le refusait. Toutes les listes paginées acceptent désormais ce réglage sous les deux
   formes.
 
@@ -2198,9 +2390,9 @@ qu'il reçoive les droits du Bugtracker.
   au sondage. Un vote qui ne vise aucune option du sondage est désormais refusé en le disant,
   au lieu d'être salué.
 
-- **Le widget « Derniers sujets du forum » affiche enfin des sujets** (2026-09-22). Il ne
-  retenait aucune catégorie de forum, et restait donc vide sur tous les sites, quel que soit
-  le nombre de messages.
+- **Le widget « Forum » affiche enfin des sujets et des messages** (2026-09-22). Ses deux types,
+  « Derniers sujets » et « Derniers messages », ne retenaient aucune catégorie de forum, et restaient donc
+  vides sur tous les sites, quel que soit le nombre de messages.
 
 - **Trois autres fonctions tombaient dans le même piège que les sondages** (2026-09-22), trouvées
   par le contrôle écrit pour ce défaut :
@@ -2230,54 +2422,40 @@ qu'il reçoive les droits du Bugtracker.
   d'autres liens ne dépliait rien au clic : il portait encore l'attribut de l'ancienne
   version de Bootstrap, que son propre script ne cherchait plus.
 
-- **Les bulles d'aide des formulaires s'affichent au survol** (2026-09-22). L'icône (i) posée
-  à côté des champs de l'administration, et les info-bulles des étiquettes, ne montraient
-  rien : même défaut d'attribut, sur les deux bibliothèques qui les fabriquent.
+- **Les autres bulles d'aide des formulaires s'affichent au survol** (2026-09-22). La correction de la
+  veille ne couvrait qu'une partie des formulaires : l'icône (i) posée à côté des champs des autres écrans
+  de l'administration, et les info-bulles des étiquettes, ne montraient toujours rien — même défaut
+  d'attribut, dans les deux bibliothèques qui les fabriquent.
 
 - **Les libellés accentués du menu sont traduits** (2026-09-22). Un lien de menu enregistré
   depuis l'administration — « Actualités », « Équipes » — est stocké sous forme codée, et sa
   traduction n'était plus trouvée : il restait en français dans les cinq autres langues, avec
   une alerte au journal à chaque page affichée.
 
-- **Les archives de la place de marché sont reproductibles** (2026-09-22). Elles emportaient les
+- **Les archives du marketplace sont reproductibles** (2026-09-22). Elles emportaient les
   cartes de source `.map`, que le compilateur de styles régénère sur chaque installation et que
   le dépôt ignore : deux archives du même addon, bâties sur deux machines, différaient sans que
-  le code ait bougé. Une archive contient désormais ce que le dépôt contient, rien d'autre.
+  le code ait bougé. Les archives n'emportent plus ces fichiers.
 
 - **Le widget « Palmarès » s'installe enfin par dépôt d'archive** (2026-09-22). Il était le seul
   des 61 addons distribuables à ne pas déclarer sa dépendance au cœur ; l'installeur, qui l'exige
   pour reconnaître un addon, passait son chemin SANS RIEN DIRE — ni message, ni trace.
 
-- **Le lecteur de flux RSS affiche ses dates au lieu de leur code** (2026-09-22). Sous chaque
-  titre s'affichait `<time datetime="2026-09-11…">Le 11/09/2026…</time>` en toutes lettres : la
-  vue échappait un élément que la bibliothèque de dates avait déjà composé. Les résumés, eux,
-  laissaient passer le balisage des flux qui l'échappent.
-
-- **Le lecteur de flux n'a plus besoin d'écrire son cache pour afficher** (2026-09-22). Il
-  renvoyait ce que le cache voulait bien lui relire : quand l'écriture échouait, il affichait le
-  vide alors qu'il avait les articles en main, et sans un mot nulle part.
-
-- **La page de maintenance n'est plus blanche** (2026-09-22). Les deux champs « titre » et
-  « texte » sont livrés VIDES, et la page ne montrait donc RIEN d'autre que le nom du site —
+- **La page de maintenance n'est plus blanche** (2026-09-22). Les deux champs « Titre » et
+  « Contenu » sont livrés VIDES, et la page ne montrait donc RIEN d'autre que le nom du site —
   alors que l'aperçu de l'administration promettait un titre et un texte. Un titre et un
   message par défaut, traduits dans les six langues, comblent le vide ; dès que les champs
   sont remplis, ce sont eux qui s'affichent.
 
-- **Les boutons à contour ont retrouvé leur cadre** (2026-09-22). Les thèmes ne
-  redéfinissaient qu'une seule variante de bouton « contour », et leur propre règle effaçait la
-  bordure des six autres : **90 boutons** du produit ressemblaient à de simples liens. Le plus
-  visible était « Ouvrir le site », dans le bandeau de maintenance, qui n'avait de cadre qu'au
+- **Les boutons à contour ont retrouvé leur cadre** (2026-09-22). Les thèmes ne redéfinissaient que la
+  variante « primaire » du bouton à contour, et leur propre règle effaçait la bordure des autres : les six
+  autres variantes employées par le produit — 90 emplois dans le code — ressemblaient à de simples liens.
+  Le plus visible était « Ouvrir le site », dans le bandeau de maintenance, qui n'avait de cadre qu'au
   survol.
 
 - **Le code technique n'est plus rose dans l'administration** (2026-09-22). Le thème ne fixait
   que la police des extraits `<code>`, qui gardaient donc le rose de Bootstrap — une couleur
   étrangère à toutes les palettes du produit. Très visible sur la liste des rôles.
-
-- **La carte « Stockage » de la supervision s'affiche correctement** (2026-09-22). La valeur et
-  le pourcentage se plaçaient tout en haut de la carte au lieu du creux de la jauge, et la
-  jauge elle-même se dessinait en cercle entier au lieu du demi-cercle prévu, avec un nombre
-  brut en son centre. La ligne « Envoi d'email » affichait `[object Object]` à la place du nom
-  de la méthode employée.
 
 - **Le bouton « Fermer » des fenêtres ferme enfin la fenêtre** (2026-09-22). Dans TOUTES les
   fenêtres du produit, le bouton « Fermer » (ou « Annuler ») du bas ne faisait rien : il fallait
@@ -2285,7 +2463,7 @@ qu'il reçoive les droits du Bugtracker.
   fermeture, et le cœur posait encore l'ancien nom ; un navigateur ignore un attribut inconnu
   **sans rien dire**. Le bouton est aussi devenu un vrai bouton — il était rendu en `<span>`,
   donc inaccessible au clavier. Deux gardes l'empêchent de revenir : le contrôle du code refuse
-  l'ancien nom, et un parcours de navigateur CLIQUE sur le bouton à chaque passage.
+  l'ancien nom, et un parcours de navigateur, lancé à la main, CLIQUE sur le bouton.
 
 - **Le thème Nebula n'affiche plus son menu deux fois** (2026-09-22). Toute installation neuve
   montrait le nom du site deux fois et le menu deux fois : le thème dessine sa propre barre, et
@@ -2302,7 +2480,7 @@ qu'il reçoive les droits du Bugtracker.
   Il fallait revenir en arrière pour s'en sortir.
 
   La cause : ce sélecteur est un vrai formulaire, que rien n'interceptait, et il visait une
-  adresse technique qui répond toujours en JSON. Le serveur distingue désormais l'appel du menu
+  adresse technique qui répond toujours en JSON. Le serveur distingue désormais l'appel de la fenêtre
   « Choisir ma langue », qui attend du JSON, d'un envoi de formulaire ordinaire, qui attend d'être
   emmené sur la page. Trouvé en suivant le geste dans un vrai navigateur, ce qu'aucun contrôle ne
   faisait jusque-là.
@@ -2312,7 +2490,7 @@ qu'il reçoive les droits du Bugtracker.
   sélecteur, et les cinq rendaient 404 : mesuré sur la démonstration, **60 adresses mortes sur 72**.
   Le geste le plus naturel d'un visiteur étranger tombait sur une erreur. La version qui existe est
   désormais servie, avec un bandeau qui le dit dans la langue du visiteur et un lien vers l'original.
-  Cela vaut pour les actualités, les articles, les albums, les équipes et leurs catégories.
+  Cela vaut pour les actualités, les articles et les albums (et leurs catégories), ainsi que les équipes.
 
   Deux précautions indissociables, sans quoi le remède coûterait plus que le mal : la page n'annonce
   plus aux moteurs de recherche que les langues qui **existent vraiment**, et elle désigne l'original
@@ -2320,29 +2498,12 @@ qu'il reçoive les droits du Bugtracker.
   **En administration, aucun repli** : une version vide doit se voir vide, c'est ce qu'on vient
   remplir. `tools/check-langues-contenu.php` tient les trois propriétés, en intégration continue.
 
-- **Webradio : le bouton « Configurer » menait à un 404** (2026-09-21). Il visait une route qui
-  n'existait pas ; il ouvre désormais la modale de configuration commune à tous les addons, celle du
-  bouton « Configuration » de la barre d'administration. Trouvé par `check-liens` en CI, où tous les
-  modules sont installés.
-
-- **La CI est de nouveau lisible : elle était rouge depuis le 26 août** (2026-09-21). Trois causes,
-  aucune dans le produit. Le verrou Composer, régénéré sous PHP 8.5, exigeait 8.4 pour une
-  bibliothèque : cinq jobs qui tournent sous 8.3 échouaient dès `composer install` ; la plateforme
-  est désormais fixée à 8.2.0 dans `composer.json`. `check-docs` comptait les addons distribuables
-  d'après les zips de `marketplace/`, qui ne sont pas versionnés : zéro en CI ; il lit le manifeste.
-  Et `prepare-test-db` créait le compte de test pour `localhost` et `127.0.0.1` seulement, alors
-  que MariaDB, dans son conteneur, voit le client arriver de la passerelle Docker ; l'ancienne
-  version cachait ce refus derrière un `exit` à code zéro. Il crée aussi le compte pour l'hôte que
-  le serveur voit, sans joker. Derrière, un quatrième défaut : les suites d'intégration se sautaient
-  depuis `setUpBeforeClass()`, et `--fail-on-skipped` n'y voyait rien — le saut se prononce dans
-  `setUp()`, test par test, et le drapeau le transforme bien en échec. Chaque job a enfin un budget de
-  temps : celui des épreuves JS avait pendu six heures, deux fois. Et la bibliothèque des outils avait
-  son défaut : `nf_http()` répondait « pas de réponse » à une redirection qu'on lui demandait de ne
-  pas suivre, si bien que `check-install-profiles` comptait `/` et `/admin` en erreur serveur. Enfin,
-  sous PHP 8.3, le serveur intégré présente `SCRIPT_NAME` égal au chemin demandé pour un asset sans
-  fichier : `Url` en tirait une base tronquée et redirigeait feuilles et scripts vers la langue. Le
-  routeur des outils se présente désormais comme un vrai serveur, et `Url` ne déduit la base que d'un
-  `SCRIPT_NAME` qui finit par `index.php`.
+- **L'intégration continue est de nouveau verte** (2026-09-21) ; sur la branche principale, elle était
+  rouge depuis le 10 juin. Les causes tenaient presque toutes aux outils de test et à la configuration de
+  la CI, pas au produit. L'exception : sous le serveur intégré de PHP 8.3, le site pouvait mal calculer
+  son adresse de base et rediriger feuilles de style et scripts ; il ne la déduit plus que d'un
+  `SCRIPT_NAME` qui se termine par `index.php`. Une suite de tests qui ne peut pas tourner échoue
+  désormais au lieu de se sauter en silence, et la plupart des tâches de la CI ont une durée maximale.
 
 - **Le logo de l'installateur ne s'affichait pas sur une installation neuve** (2026-09-21) : le
   chemin était relatif au dossier `install/`, que le serveur ne sert pas sous cette adresse. L'image
@@ -2356,7 +2517,7 @@ qu'il reçoive les droits du Bugtracker.
   |---|---|
   | **L'accordéon de la FAQ** ne s'ouvrait pas | `modules/faq` |
   | **La liste des participants d'un événement** ne se dépliait pas | `modules/events` |
-  | **Tous les popovers d'aide des formulaires** étaient vides | cœur — `neofrag/libraries/form.php` |
+  | **Les bulles d'aide d'une partie des formulaires** étaient vides | cœur — `neofrag/libraries/form.php` |
   | Le popover de profil du forum, celui de la suppression d'un lien de navigation | `modules/forum`, `widgets/navigation` |
   | Le placement des infobulles de l'éditeur en direct, le délai du carrousel | `modules/live_editor`, `widgets/slider` |
 
@@ -2371,52 +2532,34 @@ qu'il reçoive les droits du Bugtracker.
     deux bibliothèques.
   - **Aucun champ de formulaire refusé n'était marqué**, sur tous les thèmes. Les deux bibliothèques
     posaient un nom hérité — `has-error` (Bootstrap 3) et `has-danger` (une préversion de Bootstrap 4)
-    — qu'aucune feuille servie ne définit. Le message s'affichait bien, mais rien ne désignait lequel
-    des dix champs le concernait. Ils sont remplacés par un marqueur maison, défini une fois.
-  - **Le pied de page** portait `<div class="float-right">` : « Propulsé par NeoFrag » tombait à la
-    ligne, à gauche. La valeur vient de loin — une migration de 2019 l'avait passée de `pull-right`
-    à `float-right` au moment de Bootstrap 4, et le pas suivant n'a jamais été fait. Une migration
+    — qu'aucune feuille servie ne définit. Le message s'affichait bien, mais rien ne désignait le champ
+    concerné. Ils sont remplacés par un marqueur maison, défini une fois.
+  - **Le pied de page** portait `<div class="float-right">` : « Propulsé par NeoFrag Reborn » tombait à la
+    ligne, à gauche. La valeur vient de loin — une migration de l'Alpha 0.2.2 l'avait passée de
+    `pull-right` à `float-right` au moment de Bootstrap 4, et le pas suivant n'a jamais été fait. Une migration
     (`2026_09_20_bootstrap5_float`) corrige les sites existants ; le seed livre désormais `float-end`.
   - Et les dernières classes mortes des vues : la barre de débogage sur téléphone, la gouttière des
     listes d'événements, les étiquettes de l'éditeur de menu, les deux barres du vote de recrutement
     — qui sortaient de la **même couleur**, le graphique ne distinguant plus les avis favorables des
     défavorables.
 
-- **Onze coercitions de type, dont trois sur des chemins empruntés à chaque page** (2026-09-21),
-  mises au jour par la vague `strict_types` ci-dessous :
-
-  - `strnatcmp()` recevait l'ordre d'affichage d'une langue et d'un groupe — deux **entiers** — à
-    l'initialisation de la session. Un site à deux langues actives aurait rendu un 500 sur toutes
-    ses pages ;
-  - `crypt::hash()` passait un flottant à `str_split()` ; c'est cette méthode qui fabrique le jeton
-    anti-CSRF de **toute page à formulaire** ;
-  - huit autres dans le diagnostic PHP, le flux de sauvegarde, le graphique par semaine et la barre
-    de débogage — toutes dans des branches qu'aucun test n'emprunte.
-
 - **Le corps d'un article pouvait être effacé à l'affichage** (2026-09-21). La construction du
-  sommaire écrasait le contenu par le résultat de `preg_replace_callback()`, qui vaut `NULL` quand
-  le moteur d'expressions régulières abandonne — ce qu'un article long peut provoquer. La page
-  répondait 200 avec un article **vide**, sans rien dans les journaux.
-
+  sommaire remplaçait le texte par le résultat d'un traitement qui peut abandonner sur un article long :
+  la page répondait alors normalement, avec un article **vide**, sans rien dans les journaux.
 
 - **Un widget placé en haut ou en bas de page disparaissait.** Le thème *Nebula*
   proposait les emplacements « Header » et « Footer » dans l'éditeur de mise en page, mais ne les
   affichait pas. Le widget était bien enregistré, et rien n'apparaissait — sans message. Les quatre
   autres thèmes publics n'étaient pas touchés.
 
-- **Des pages s'affichaient normalement tout en répondant « page introuvable » aux moteurs de
-  recherche.** Trois pages étaient dans ce cas, de façon intermittente : la même recette s'affichait
-  correctement sans nombre de parts, et en erreur avec.
-
-- **Les dépendances entre addons étaient toujours annoncées comme manquantes**, même quand le module
-  requis était bel et bien installé. Deux autres conséquences du même défaut : les statistiques de
-  l'administration se mélangeaient entre modules, et le widget de navigation proposait deux modules
-  internes qu'il aurait dû masquer.
+- **Le widget de navigation proposait deux modules internes** (`live_editor` et `pages`) qu'il aurait dû
+  masquer. Le même défaut faisait perdre leur nom de module aux statistiques de l'administration, sans
+  effet visible tant que deux modules n'emploient pas le même nom de statistique.
 
 - **Le journal de débogage grossissait sans limite** quand il était activé. Il est désormais borné :
   au-delà de 64 Mo, il repart en conservant la génération précédente.
 
-- **En anglais, « Non » s'affichait « Non »** au lieu de « No ».
+- **Sur un site en anglais, « Non » restait en français** au lieu de « No ».
 
 - **Cinq pages d'administration n'offraient aucun retour** (2026-09-20) : la fiche d'un membre, le
   journal d'audit, l'ajout d'un groupe, la liste des sessions et les fichiers du monitoring. Le fil
@@ -2428,8 +2571,8 @@ qu'il reçoive les droits du Bugtracker.
   sans préfixe de langue — la seule façon dont un robot les demande —, `/sitemap.xml` répondait
   `{"redirect":"/fr/sitemap.xml"}` avec un code 200, et `robots.txt` comme `humans.txt` faisaient de
   même. La redirection qui ajoute le préfixe de langue répondait en JSON dès que l'adresse finissait
-  par `.txt`, `.xml` ou `.json`. Ces quatre fichiers n'ayant pas de version par langue, ils ne sont
-  plus redirigés du tout : ils sont servis directement, avec leur vrai type de contenu.
+  par `.txt`, `.xml` ou `.json`. Ces fichiers n'ayant pas de version par langue, ils ne passent
+  plus par cette redirection : ils sont servis directement, avec leur vrai type de contenu.
 
 - **`/favicon.ico` répondait 404.** Les navigateurs demandent cette adresse quoi qu'annonce la page ;
   elle mène désormais au favicon configuré dans les réglages, ou à celui du CMS.
@@ -2440,8 +2583,8 @@ qu'il reçoive les droits du Bugtracker.
   reste.
 
 - **Une limitation « une seule tentative » ne bloquait jamais.** Le seuil n'était vérifié qu'à partir
-  de la deuxième tentative. Sans effet sur les réglages livrés (trois ou cinq tentatives), corrigé pour
-  que le seuil vaille dès la première.
+  de la deuxième tentative. Sans effet sur les seuils livrés, mais la limite de signalements de la
+  modération, réglable jusqu'à 1, ne bloquait alors jamais. Le seuil vaut désormais dès la première.
 
 - **Des textes restaient en français dans les autres langues, et le journal se remplissait.** Trois
   causes, toutes corrigées : le titre d'une page du wiki, d'un type d'événement ou d'une campagne de dons
@@ -2490,8 +2633,8 @@ qu'il reçoive les droits du Bugtracker.
 
   La cause ne venait pas du thème : une zone déclarée mais sans widget renvoyait des espaces plutôt
   que rien du tout, et les thèmes dessinaient donc leur cadre autour du vide. Corrigé une fois pour
-  tous les thèmes. Si vous créez un thème, vous pouvez continuer d'écrire
-  `if ($zone = $this->output->region('banner'))` : la condition dit désormais la vérité.
+  tous les thèmes. Si vous créez un thème, vous pouvez écrire
+  `if ($zone = $this->output->region('banner'))` (ou `zone(n)`) : la condition dit désormais la vérité.
 
 - **Le thème Extend affichait sa mention « Propulsé par NeoFrag Reborn » deux fois.** Sa mise en
   page livrée posait dans le pied un bloc reprenant ce que le thème écrit déjà lui-même. Les sites
@@ -2514,101 +2657,73 @@ qu'il reçoive les droits du Bugtracker.
   l'extrait commence simplement à son début.
 
 - **La mise à jour automatique du cœur ne pouvait pas fonctionner** — cinq défauts, chacun suffisant à
-  lui seul : le réglage qui désigne la source des versions était **vide par défaut et déclaré nulle part**
-  (le manifeste n'était donc jamais téléchargé, et le bouton n'apparaissait jamais) ; un interrupteur
-  global bloquait la méthode ; l'URL de téléchargement était codée en dur vers la release **upstream**,
-  qui aurait écrasé le code de ce fork ; le paquet produit rangeait tout sous un dossier racine alors que
-  l'updater écrit à plat, donc une mise à jour aurait créé un sous-dossier **sans rien remplacer et sans
-  la moindre erreur** ; et l'extraction passait par l'API zip procédurale, dépréciée depuis PHP 8.0.
+  lui seul : l'adresse où chercher les nouvelles versions n'était réglée nulle part, si bien que le bouton
+  n'apparaissait jamais ; un interrupteur global, à poser dans la configuration, bloquait l'opération ; le
+  téléchargement visait les versions du NeoFrag d'origine, qui auraient écrasé NeoFrag Reborn ; le paquet
+  rangeait ses fichiers dans un sous-dossier, si bien qu'une mise à jour n'aurait **rien remplacé, sans la
+  moindre erreur** ; et l'extraction de l'archive passait par une interface de PHP dépréciée depuis
+  PHP 8.0.
 
-  L'interrupteur est remplacé par quatre garanties : l'origine vient d'une **liste d'hôtes autorisés**
-  (la même que le marketplace), le manifeste ne fournit qu'un **nom de fichier** et jamais une URL,
-  l'empreinte **SHA-256** est vérifiée **avant** qu'un seul fichier ne soit touché, et l'archive est
-  contrôlée entrée par entrée (chemins d'évasion et liens symboliques refusés). `config/` et `install/`
-  ne sont jamais réécrits quand ils existent déjà.
+  L'interrupteur est remplacé par quatre garanties : la source des versions doit figurer dans une **liste
+  d'adresses autorisées** (la même que pour le marketplace) ; le fichier de version ne donne qu'un **nom de
+  fichier**, jamais une adresse ; l'empreinte **SHA-256** du paquet est vérifiée **avant** de toucher au
+  moindre fichier ; chaque fichier de l'archive est contrôlé (aucun chemin qui sort du site, aucun lien
+  symbolique). Les dossiers `config/` et `install/` ne sont jamais réécrits s'ils existent déjà.
 
-- **Le catalogue du marketplace était injoignable depuis n'importe quel site.** Le serveur renvoyait
-  `{"redirect":"/fr/…"}` **avec un code 200** au lieu du fichier statique — un corps parfaitement valide
-  en JSON, et parfaitement faux, donc un échec silencieux qui faisait retomber chaque site sur son
-  catalogue local. Corrigé sur le serveur du catalogue (les fichiers de distribution y sont servis en
-  statique) **et** côté code (la forme des manifestes est validée,
-  plus seulement leur décodabilité).
+- **Le catalogue du marketplace était injoignable depuis n'importe quel site.** Le serveur qui le
+  distribue renvoyait `{"redirect":"/fr/…"}` **avec un code 200** au lieu du fichier statique — un corps
+  parfaitement valide en JSON, et parfaitement faux, donc un échec silencieux qui faisait retomber chaque
+  site sur son catalogue local. La cause était la configuration de ce serveur, corrigée : rien à faire sur
+  les sites. Côté code, la mise à jour du cœur vérifie désormais la forme de ses manifestes, et plus
+  seulement qu'ils se lisent comme du JSON.
 
-- **Un widget sans réglages ne pouvait pas être ajouté au Live Editor.** Le contrôle de formulaire
-  exigeait le champ `settings` comme obligatoire : les widgets qui n'ont aucun réglage (Copyright, Fil
-  d'Ariane, Recherche…) échouaient avant d'atteindre le contrôleur, sans message exploitable. Un nom de
-  champ suffixé de `?` le rend facultatif.
+- **Le bouton « Supprimer » d'un thème**, dans « Thèmes & addons », ne protégeait que le thème
+  d'administration, par son nom écrit en dur. Il suit maintenant la déclaration du thème, et protège donc
+  aussi Nebula.
 
-- **Le bouton « Supprimer » de l'administration** ne protégeait que le thème `admin`, par son nom écrit
-  en dur. Il s'appuie maintenant sur la déclaration, donc protège aussi `nebula`.
+- **Couplages du cœur vers l'optionnel.** Sept modules interrogeaient les tables de modules optionnels :
+  cinq du cœur (`admin`, `moderation`, `settings`, `statistics`, `user`), plus `games` et `teams`. Deux
+  requêtes n'étaient pas protégées : dans `teams`, la garde d'existence de `recruits` était placée
+  **après** la requête qu'elle devait protéger, et dans `games`, supprimer un jeu interrogeait la table des
+  équipes sans vérifier qu'elle existe. Les autres étaient gardés mais muets : ils portent désormais une
+  annotation vérifiée par la CI. Le seul cycle dur du paquet (`games` ↔ `teams`) est rompu.
 
-- **Couplages du cœur vers l'optionnel.** Six modules du cœur interrogeaient les tables de modules
-  optionnels. Un seul était réellement cassé — dans `teams`, la garde d'existence de `recruits` était
-  placée **après** la requête qu'elle devait protéger. Les autres étaient gardés mais muets : ils portent
-  désormais une annotation vérifiée par la CI. Le seul cycle dur du paquet (`games` ↔ `teams`) est rompu.
-
-- **Live Editor : les modifications ne s'affichaient qu'après rechargement.** `NF.post()` parse la
-  réponse en JSON (`NF.ajax` fait `response.json()` sauf si `dataType: 'text'`), or **tous** les
-  endpoints `admin/ajax/live-editor/*` répondent en `text/html` : un fragment de disposition, ou un
-  corps vide pour les mutations. `response.json()` levait donc sur `<` (ou sur le corps vide), la
-  promesse était rejetée, et les `.then()` qui mettent le DOM à jour ne tournaient jamais — alors que
-  le serveur, lui, avait bien enregistré. Concrètement : on supprimait un widget et il restait à
-  l'écran, on ajoutait une ligne et elle n'apparaissait pas, jusqu'au rechargement de la page. Les
-  **16 appels** du module passent par un helper `nfLePost()` qui force `dataType: 'text'`, comme le
-  faisaient déjà `js/delete.js` et `js/popover.js`. Régression introduite par la conversion vanilla :
-  jQuery devinait le type de réponse, `fetch` non. *(Audit des autres appelants de
-  `NF.post` : `monitoring.json`, `monitoring/sudo` et le file-manager visent bien du JSON — seul le
-  Live Editor était touché.)*
-- **Live Editor : le glisser-déposer des widgets ne fonctionnait pas.** SortableJS était branché sur
-  `[data-col-id]`, mais les widgets sont enveloppés un cran plus bas dans `.live-editor-col` (le
-  wrapper que `col.php` ajoute avec l'en-tête de colonne quand le mode Colonnes est actif). Or
-  SortableJS ne déplace que les **enfants directs** de son conteneur, là où jQuery UI acceptait un
-  sélecteur de descendants (`items: '[data-widget-id]'`). Symptôme : un widget ajouté restait collé en
-  bas de colonne, impossible de le remonter au-dessus du module de la page. Le tri vise désormais le
-  vrai parent (`.live-editor-col` s'il existe, `[data-col-id]` sinon — le wrapper n'existe pas quand le
-  mode Colonnes est éteint), et `col_id` est relu via `closest()`. Les lignes et les colonnes
-  n'étaient pas concernées : elles sont bien enfants directs de leur conteneur.
-- **Live Editor : impossible d'ajouter 10 des 38 widgets** (`breadcrumb`, `copyright`, `downloads`,
-  `forum`, `module`, `news`, `newsletter`, `slider`, `surveys`, `teams`) — `widget-add` répondait
-  **404**. Le checker serveur fait un `post_check()` qui exige la **présence** du champ `settings` ;
-  les widgets qui ont des réglages nomment leurs champs `settings[clé]` et le remplissent donc, mais
-  ceux **sans `controllers/admin.php`** n'envoient rien. Le JS prévoyait ce cas avec un repli
-  `settings: null`… que le sérialiseur de `NF.ajax` **omet** (`v !== null`), là où `$.param()` de
-  jQuery écrivait `settings=`. Le repli est passé en chaîne vide, ce qui rétablit le format d'avant la
-  dé-jQuery.
-- **`NF.ajax` : un statut HTTP d'erreur ne rejetait pas.** `fetch` ne se contente pas de résoudre, il
-  livre le **corps de la page d'erreur** : un appelant en `dataType: 'text'` insérait donc la page
-  « 404 Not Found » dans le DOM comme une réponse valide. jQuery ne déclenchait pas `.done()` sur un
-  404 ; le garde `response.ok` rétablit ce comportement. Touche tout le front — vérifié que les flux
-  qui signalent une erreur applicative (le `sudo` du file-manager) répondent en 200 avec un JSON.
-- **Live Editor : formulaire de réglages du mauvais widget.** `load_settings()` postait vers
-  `widget-admin` sans numéro de séquence : deux changements rapides de widget ou de type et la réponse
-  la plus lente écrasait la plus récente. La requête dépassée est désormais **annulée**
-  (`AbortController`, déjà supporté par `NF.ajax`) et sa réponse ignorée si elle arrive quand même ;
-  une clé `widget::type` évite en prime de recharger — donc de perdre la saisie en cours — quand la
-  sélection n'a pas réellement changé.
-- **Port de base de données ignoré (connexion possible qu'en 3306)** : le driver runtime
-  (`neofrag/drivers/mysqli.php`) construisait `new mysqli(host, user, pass, db)` **sans port**, et
-  `write_config` ne le persistait pas dans `config/db.php`. Résultat : impossible d'installer/faire tourner
-  le CMS sur un port MySQL non standard (l'assistant web collectait bien le port mais il était perdu, et
-  `install/cli.php --db-port` était silencieusement inopérant). Le port est désormais **persisté** (s'il
-  diffère de 3306, pour garder les config standards propres) et **propagé** jusqu'à `mysqli()` (driver +
-  `db.php` + `write_config` + les 3 installeurs). Le chemin 3306 par défaut est inchangé (aucune régression).
-- **Thèmes vides à l'activation** : activer un thème ne faisait que changer `nf_default_theme` sans
-  appliquer sa mise en page par défaut (son `install()`), lancée seulement au « Réinstaller par défaut »
-  manuel. Résultat : `forge`, `granite`, `blockcraft`, `extend` s'affichaient **vides** (zones sans
-  widgets). `enable()` applique désormais la disposition par défaut du thème s'il n'en a aucune (sans
-  jamais écraser une personnalisation existante).
-- **Changement de thème par défaut ignoré par le cookie visiteur** : le sélecteur de thème (footer) pose
-  un cookie `nf_theme` (1 an) qui prime sur le défaut — l'admin changeait le thème mais les visiteurs (et
-  lui-même) restaient collés sur leur ancien choix, sans moyen d'en sortir depuis un thème sans sélecteur.
-  Introduit une **« époque »** (`nf_theme_epoch`) incrémentée à chaque changement de défaut : la préférence
-  n'est honorée que si elle a été posée **depuis** le dernier changement, sinon le cookie est **ignoré et
-  effacé** et le visiteur suit le nouveau défaut (l'admin décide). Un choix explicite postérieur reste respecté.
-- **Pages dynamiques mises en cache par le navigateur** : aucune réponse n'envoyait d'en-tête de cache →
-  cache heuristique du navigateur, d'où du contenu périmé (ex. thème changé côté admin visible seulement
-  au Ctrl+F5). Les réponses HTML/JSON dynamiques envoient désormais `Cache-Control: no-store` ; les assets
-  statiques (servis par le serveur web, cache-bustés par mtime) ne sont pas concernés.
+- **Live Editor : les modifications s'affichent sans recharger la page.** Supprimer un widget le laissait à
+  l'écran, ajouter une ligne ne la montrait pas — jusqu'au rechargement, alors que le serveur avait bien
+  enregistré. Le script attendait une réponse d'un autre format que celle du serveur ; le défaut datait du
+  retrait de jQuery.
+- **Live Editor : le glisser-déposer des widgets fonctionne de nouveau.** Quand le mode Colonnes était
+  actif, un widget ajouté restait collé en bas de sa colonne, impossible à remonter au-dessus du contenu de
+  la page. Les lignes et les colonnes n'étaient pas touchées.
+- **Live Editor : les widgets sans réglages s'ajoutent de nouveau.** Dix widgets qui n'ont pas d'écran de
+  réglages (`breadcrumb`, `copyright`, `downloads`, `forum`, `module`, `news`, `newsletter`, `slider`,
+  `surveys`, `teams`) ne pouvaient pas être ajoutés : l'ajout échouait sur une erreur 404, sans message
+  utile.
+- **Une erreur du serveur n'est plus affichée comme un contenu.** Quand une action faite sans recharger la
+  page recevait une erreur du serveur (une page 404, par exemple), certains écrans inséraient cette page
+  d'erreur au milieu de l'interface. L'erreur est désormais traitée comme un échec.
+- **Live Editor : le formulaire de réglages correspond toujours au widget choisi.** En changeant vite de
+  widget ou de type, la réponse la plus lente pouvait afficher le formulaire d'un autre widget. La demande
+  dépassée est désormais annulée, et le formulaire n'est plus rechargé (ni la saisie en cours perdue) quand
+  la sélection n'a pas changé.
+- **Le port de la base de données est pris en compte.** Le CMS se connectait toujours au port 3306, quel
+  que soit le port saisi dans l'assistant d'installation : impossible de l'installer ou de le faire tourner
+  sur un serveur MySQL ou MariaDB qui écoute ailleurs. Le port est désormais enregistré dans
+  `config/db.php` (seulement s'il diffère de 3306) et employé à chaque connexion.
+- **Un thème activé n'est plus vide.** Activer Forge, Granite, Blockcraft ou Extend changeait le thème sans
+  poser sa mise en page par défaut, qui ne s'appliquait qu'avec le bouton « Réinstaller par défaut » : le
+  site s'affichait sans aucun widget. L'activation pose désormais la mise en page par défaut du thème s'il
+  n'en a pas encore, sans jamais écraser une mise en page personnalisée.
+- **Changer le thème par défaut s'applique aussi aux visiteurs qui en avaient choisi un.** Le sélecteur de
+  thème du pied de page retenait le choix d'un visiteur pendant un an, et ce choix l'emportait sur le thème
+  par défaut : quand l'administrateur changeait de thème, les visiteurs, et lui-même, restaient sur
+  l'ancien, sans moyen d'en sortir depuis un thème sans sélecteur. Un choix fait avant le dernier
+  changement du thème par défaut est désormais oublié ; un choix fait après reste respecté.
+- **Le navigateur ne garde plus de copie périmée des pages.** Faute d'instruction, il pouvait réafficher
+  une ancienne version d'une page : un changement de thème, par exemple, n'apparaissait qu'après un
+  rechargement forcé (Ctrl+F5). Les pages et réponses du site interdisent désormais cette mise en cache
+  (`Cache-Control: no-store`) ; les images, styles et scripts, servis directement par le serveur web, ne
+  sont pas concernés.
 
 ### Sécurité
 
@@ -2623,25 +2738,27 @@ qu'il reçoive les droits du Bugtracker.
   plus le casser.
 
 - **La politique de sécurité déclare désormais une règle pour les médias** (`media-src`). Elle n'en
-  avait aucune et héritait d'une règle plus large ; la déclarer explicitement la rend plus lisible.
-  L'adresse d'un flux de webradio n'y est ajoutée **que si un flux est configuré** : un site sans
-  webradio n'autorise rien de plus qu'avant. Le reste de la politique est inchangé.
+  avait aucune et retombait sur la règle générale (`default-src 'self'`). Elle autorise désormais les
+  médias du site lui-même et ceux intégrés à la page (`'self' data:`) ; l'adresse d'un flux de webradio
+  n'y est ajoutée **que si un flux est configuré** : un site sans webradio n'autorise aucune origine
+  extérieure de plus.
 
 - **Onze avis de sécurité fermés sur les dépendances** (2026-09-20) : `league/commonmark` passe de
   **2.8.2 à 2.10.1** (dix avis, dont huit graves) et `phpseclib` de **3.0.52 à 3.0.57** (un avis moyen).
 
   Neuf des dix avis de commonmark sont des **dénis de service par Markdown fabriqué** — analyse en temps
-  quadratique, titres aux ancres colliionnantes, notes de bas de page dupliquées, blocs d'attributs
+  quadratique, titres dont les ancres entrent en collision, notes de bas de page dupliquées, blocs d'attributs
   adjacents, sortie XML profondément imbriquée — et le dixième est une **faille XSS** : le filtre des
   attributs `on*` se contournait avec un saut de page U+000C. La bibliothèque rend le Markdown du wiki,
-  des articles et de la FAQ, écrit par des membres ; nos garde-fous (échappement du HTML, liens non
-  sûrs refusés, imbrication bornée) couvraient le XSS mais rien des dénis de service.
+  des articles et de la FAQ, écrit par des membres. Plusieurs de ces avis visent des extensions que le
+  produit n'active pas (notes de bas de page, attributs, ancres de titres, sortie XML) ; la mise à jour les
+  ferme tous.
 
   Le rendu ne change pas, et ce n'est pas une impression : **douze cas représentatifs** — titres,
   tableau, liste de tâches, bloc de code, HTML injecté, lien `javascript:`, citation, texte barré,
   lien automatique, listes imbriquées, image, entités et note de bas de page, imbrication profonde —
   rendus par les deux versions avec la configuration réelle du produit donnent le même HTML
-  **octet pour octet** (1568 octets, même empreinte).
+  **octet pour octet** (1 568 octets, même empreinte).
 
   À noter : Composer **refuse désormais d'installer** la 2.8.2, précisément à cause de ces dix
   avis. Il a fallu désactiver la politique dans un dossier jetable pour mener la comparaison.
@@ -2649,182 +2766,284 @@ qu'il reçoive les droits du Bugtracker.
 ## [1.1.0] — 2026-08-23
 
 ### Sécurité
-- **Audit complet + durcissement** :
-  - **Sauvegardes** : les archives (`backups/*.zip`, contenant le dump SQL + `config/`) ne sont plus
-    servies en HTTP (`backups/.htaccess` + `logs/.htaccess`, parité dans `nginx.conf`) et leur nom est
-    suffixé par `random_bytes` (plus devinable).
-  - **Jetons** : `unique_id()` utilise un CSPRNG (`random_bytes`) — concerne ID de session, jetons CSRF,
-    liens de reset/validation. Les liens de reset/validation **expirent en 1 h** et sont uniques par compte.
-  - **Connexion sociale & reset** : le 2FA (TOTP) et le bannissement sont désormais vérifiés sur **tous**
-    les chemins de connexion (mot de passe, OAuth, reset), pas seulement la voie mot de passe.
-  - **Liens d'e-mail** : URL absolues construites sur une **origine canonique** (`config/url.php`, figée à
-    l'installation) au lieu de l'en-tête `Host` (anti *host header injection* / *password-reset poisoning*).
-    Idem callbacks OAuth et retours Stripe.
-  - **XSS admin** : noms de pièces jointes (snapshot de modération) et IP `X-Real-IP` (forgeable) validés
-    et échappés au stockage et au rendu ; MOTD de serveur de jeu (API tierce) assaini par HTMLPurifier.
-  - **CSRF** : jeton exigé sur **toutes** les actions admin mutantes (suppression/bascule/clôture/
-    approbation/activation/restauration/purge) de 22 modules — auparavant de simples liens GET.
-  - **Outils** : `tools/*.php` refusent toute exécution hors CLI ; `composer audit` ajouté à la CI.
-  - **CSP effective — fin des gestionnaires d'événements inline** : le `script-src` strict (nonce, sans
-    `unsafe-inline`) bloque les attributs `on*="…"` inline (les nonces ne les couvrent pas). Tous les
-    handlers inline restants (bandeau cookies, pagination des tables admin, confirmations trash/revisions,
-    aperçu de fichier des messages privés, actions groupées des mentions forum, sélection au clic, modal de
-    suppression) sont passés en `addEventListener` délégué (via `main.tpl`, `js/delete.js`, `js/confirm.js`).
-    La délégation couvre en prime le contenu injecté en AJAX. Corrige aussi un `onchange` de pagination qui
-    référençait encore `$()` (jQuery pourtant retiré).
-
-### Corrigé (compatibilité base de données)
-- **Transactions sur MySQL 8** : `START TRANSACTION` passait par le pipeline *prepared statement* (refusé
-  par MySQL 8, erreur 1295) → contrôle transactionnel via l'API mysqli (`begin_transaction`/`commit`/
-  `rollback`). Tous les écrits forum/talks/slider étaient fatals sur MySQL 8.
-- **Emojis (utf8mb4)** : la connexion forçait `utf8` (= utf8mb3) → tout caractère 4 octets provoquait une
-  erreur 1366. Connexion en `utf8mb4` + migration de toutes les tables en `utf8mb4_unicode_ci` (collation
-  portable MySQL 8 / MariaDB 10, fin des `uca1400` spécifiques MariaDB 11).
-- **`where('col', [])`** générait une condition vide (→ `DELETE`/`UPDATE` sur toute la table) : produit
-  désormais `1 = 0` (ensemble vide).
-- **Dates futures en `TIMESTAMP` (limite 2038)** : les colonnes stockant une date choisie dans le futur
-  — envoi programmé de newsletter (`scheduled_at`), publication programmée de news/articles/gallery/pages
-  (`date`), dates d'événement (`date`/`date_end`/`publish_date`) — étaient en `TIMESTAMP`, dont la plage
-  s'arrête au 19/01/2038. Au-delà, MariaDB en mode strict **rejette l'écriture** (errno 1292) et
-  l'insertion échouait silencieusement (driver en `mysqli_report(OFF)`). Passées en `DATETIME` (jusqu'à
-  l'an 9999). Migrations fournies pour les installations existantes. Bug attrapé par
-  `tests/Headless/NewsletterSchedulingTest` (jamais exécuté en CI faute de base de données branchée).
-
-### Corrigé (routage & interface)
-- **`/user/login` et `/user/registration` renvoyaient 404** : les thèmes exposent ces URLs en lien des
-  boutons d'en-tête (repli sans JavaScript de la modale), mais les méthodes de contrôleur correspondantes
-  n'existaient que côté AJAX. Ajoutées à `modules/user/controllers/index.php` + gardes dans `checker.php`.
-- **Bouton « Inscription » mort quand les inscriptions sont fermées** : le thème Nebula
-  affichait le bouton sans vérifier `nf_registration_status` → un clic menait à un 404.
-  Masqué quand les inscriptions sont fermées.
+- **Revue de sécurité de tout le code**, et correction des failles graves qu'elle a relevées :
+  - **Sauvegardes** : les archives de sauvegarde (copie de la base et du dossier `config/`, qui contient les mots de
+    passe) ne sont plus téléchargeables par une simple adresse web, sous Apache comme sous nginx ; seule
+    l'administration (Monitoring) les remet. Leur nom contient désormais une partie aléatoire, impossible à deviner. Le
+    dossier des journaux (`logs/`) est protégé de la même façon.
+  - **Jetons secrets** : identifiants de session, jetons des formulaires et liens envoyés par e-mail (mot de passe
+    oublié, validation du compte) sont tirés d'un générateur aléatoire sûr ; ils étaient prévisibles. Ces liens expirent
+    au bout d'une heure, et une nouvelle demande annule la précédente.
+  - **Connexion** : la double authentification (2FA) et le bannissement sont vérifiés quelle que soit la façon de se
+    connecter — mot de passe, compte Discord, Google ou GitHub, lien « mot de passe oublié » —, et plus seulement avec
+    le mot de passe.
+  - **Liens dans les e-mails** : l'adresse du site utilisée dans les liens envoyés par e-mail, au retour d'une connexion
+    par Discord, Google ou GitHub et au retour d'un paiement Stripe est celle enregistrée à l'installation
+    (`config/url.php`), et non plus celle que la requête annonce : un attaquant ne peut plus faire envoyer un lien qui
+    mène chez lui.
+  - **Pages d'administration** : un nom de pièce jointe piégé (dans un signalement de modération) ou une fausse adresse
+    IP (en-tête `X-Real-IP`, dans l'historique des sessions) pouvaient y injecter du code ; ils sont vérifiés et
+    neutralisés. Le message d'accueil d'un serveur de jeu, fourni par un service extérieur, est nettoyé avant affichage.
+  - **Actions d'administration** : supprimer, activer ou désactiver, fermer, approuver, restaurer, purger… exigent
+    désormais un jeton de sécurité dans les 23 modules qui n'en avaient pas. C'étaient de simples liens ou des
+    formulaires sans jeton : un lien piégé, cliqué par un administrateur connecté, suffisait à déclencher l'action.
+  - **Outils** : les scripts du dossier `tools/` ne s'exécutent qu'en ligne de commande, jamais depuis une adresse web ;
+    à chaque modification, l'intégration continue vérifie qu'aucune dépendance PHP n'a de faille connue
+    (`composer audit`).
+  - **Boutons rendus muets par la politique de sécurité (CSP)** : la CSP stricte du site bloque les actions écrites dans
+    le HTML (`onclick="…"`), si bien que ces boutons ne faisaient rien : bandeau des cookies, nombre de lignes des
+    tableaux d'administration, confirmations de la corbeille et des révisions, nom du fichier joint dans la messagerie,
+    actions groupées des mentions du forum, sélection d'un champ au clic, bouton de la fenêtre de suppression. Ils sont
+    rebranchés autrement et fonctionnent aussi dans le contenu chargé sans recharger la page. Le choix du nombre de
+    lignes appelait en outre jQuery, pourtant retiré.
+- **Politique de sécurité du contenu (CSP) stricte** : servie par le site avec un jeton propre à chaque page, elle
+  refuse les scripts écrits dans la page sans ce jeton (`unsafe-inline`), le code construit à la volée (`unsafe-eval`)
+  et les objets intégrés (`object-src 'none'`) ; les scripts ne viennent plus que du site et d'une courte liste
+  d'adresses, TinyMCE et CodeMirror étant désormais hébergés par le site.
+- **Session renouvelée à la connexion** : l'identifiant de session change quand on se connecte ; un identifiant imposé
+  avant la connexion ne donne plus accès à la session ouverte.
+- **Secrets chiffrés en base** : le mot de passe SMTP et la clé de la double authentification (2FA) sont chiffrés
+  (AES-256-GCM) ; une copie de la base ne les livre plus en clair. Une valeur existante est chiffrée au prochain
+  enregistrement.
+- **Webhooks** : un webhook ne peut plus viser le réseau interne du serveur (adresses privées, locales ou réservées
+  refusées, redirections non suivies).
 
 ### Ajouté
-- **Cache-bust des assets par mtime** : chaque CSS/JS est servi `?v=<mtime du fichier résolu>`
-  (overrides inclus, helper `asset_version()`) → **auto-invalidation par fichier** à chaque
-  modification/upload, sans bumper `nf_version_css` à la main (repli sur `nf_version_css` si le fichier
-  n'est pas localisable).
-- **Marketplace** : signalement d'une nouvelle version du **cœur** (lit `base_version` du catalogue) dans
-  l'écran « Mises à jour ».
-- **Installeur** : refonte esthétique — logo NeoFrag (SVG vectoriel), bandeau « Fork non officiel de
-  NeoFrag », crédit Michaël BILCOT & Jérémy VALENTIN (LGPLv3), polices Reborn (Inter + Space Grotesk),
-  palette teal.
-- Module **files** (gestionnaire de fichiers, arborescence + ACL par fichier/dossier) validé et embarqué
-  → **54 modules**.
-- Module **emojis** (cœur) : émojis personnalisés rendus partout via `:nom:` (helper `bbcode()`), CRUD admin.
-- **Newsletter** : programmation d'envoi + file batchée pilotée par cron, suivi des ouvertures (pixel + taux),
-  modèles d'e-mail réutilisables, segmentation (tous / membres / groupe).
-- **Events** : événements récurrents (occurrences matérialisées) + rappels cron aux participants.
-- **Réactions multi-emoji** (👍❤️😂😮😢😡, façon Discord/FB) sur le cœur de réactions polymorphe.
-- Widget **« Statut live »** multi-chaînes / multi-plateformes (Twitch + YouTube, abstraction provider).
-- **Page-builder** : blocs de module paramétriques `[block:clé p=v]` + blocs ordonnés/configurés par page
-  (composer admin, table `nf_pages_instances`).
-- Thème **Extend** (port BS5) distribuable via la marketplace ; **recherche instantanée** (typeahead),
-  **tri** sur 10 grilles admin, **avatars GIF animés** préservés, **ACL** éditable en modale.
-- **Chaîne de publication à source unique** : `tools/changelog-section.php` extrait une section de ce
-  fichier (Markdown ou HTML) ; les notes de version en sont tirées, et leurs textes ne peuvent plus
-  diverger.
+- **Fichiers CSS et JavaScript toujours à jour** : chaque fichier est appelé avec sa date de modification (`?v=…`), si
+  bien que le navigateur le recharge dès qu'il change — y compris un fichier remplacé par un thème ou envoyé à la
+  main —, sans avoir à augmenter `nf_version_css` (qui reste utilisé quand le fichier est introuvable).
+- **Marketplace** : la fenêtre « Mises à jour » de la page *Thèmes & Addons* signale qu'une nouvelle version de
+  NeoFrag Reborn est disponible ; la mise à jour du cœur elle-même reste manuelle.
+- **Mises à jour des addons** : la même fenêtre compare les addons installés au catalogue du marketplace et installe les
+  nouvelles versions, avec leurs migrations de base de données.
+- **Installeur** : nouvelle présentation — logo NeoFrag Reborn, bandeau « Fork non officiel de NeoFrag », crédit à
+  Michaël BILCOT et Jérémy VALENTIN (licence LGPLv3) en pied de page, polices Inter et Space Grotesk, couleurs
+  turquoise.
+- **Fichiers** : un gestionnaire de fichiers (arborescence de dossiers, envoi, droits de lecture par fichier ou par
+  dossier), porté de HiddenCMS, de HiddenBlob (LGPLv3). Livré avec le cœur.
+- **Émojis personnalisés** (module Emojis, livré avec le cœur) : l'administration ajoute des images nommées, que `:nom:`
+  affiche dans les messages et signatures du forum, les actualités, les pages, les événements et le recrutement, entre
+  autres.
+- **Newsletter** : envoi programmé à la date choisie, par petits lots traités par la tâche planifiée du site (cron) au
+  lieu de tout envoyer d'un coup ; suivi des ouvertures (taux d'ouverture par campagne, mesuré par une image
+  invisible) ; modèles d'e-mail réutilisables ; choix des destinataires : tous les abonnés, les membres seulement ou un
+  groupe.
+- **Événements** : un événement peut se répéter chaque jour, chaque semaine ou chaque mois, pour le nombre de fois
+  choisi — chaque date devient un événement à part entière. Les participants, sauf ceux qui ont décliné, reçoivent un
+  rappel sur le site (cloche des notifications) avant l'événement, 24 heures avant par défaut ; les rappels passent par
+  la tâche planifiée du site (cron).
+- **Réactions par émoji** : six réactions au choix (👍❤️😂😮😢😡) au lieu d'un seul cœur, comme sur Discord ou Facebook, avec
+  le compte de chacune ; les anciens « j'aime » deviennent des ❤️.
+- **Widget « Statut live »** (l'ancien widget Twitch) : suit plusieurs chaînes à la fois, sur Twitch et sur YouTube
+  (identifiants Twitch et clé d'API YouTube à fournir), avec jeu, spectateurs, titre, miniature et lecteur intégré.
+- **Pages composées** : sous son texte, une page peut afficher des blocs d'autres modules (dernières actualités,
+  actualités d'une catégorie, derniers articles, téléchargements populaires), placés dans l'ordre voulu et réglés un à
+  un depuis la modification de la page. Le code court accepte aussi des réglages, par exemple
+  `[block:news.latest count=2]`.
+- **Thème Extend**, de Chewbaka, porté sur NeoFrag Reborn (Bootstrap 5, modes jour et nuit), sous licence
+  CC BY-NC-SA 4.0 ; disponible dans le marketplace.
+- **Recherche instantanée** : le widget de recherche propose des résultats dès la deuxième lettre (actualités, forum,
+  pages).
+- **Tri des listes d'administration** : dix listes (actualités, articles, petites annonces, téléchargements, FAQ, livre
+  d'or, liens, médias, sondages, wiki) se trient selon le critère choisi.
+- **Avatars animés** : un GIF animé envoyé comme avatar reste animé — toujours si le serveur dispose d'Imagick, sinon
+  tant qu'il ne dépasse pas 250 × 250 pixels.
+- **Permissions** : la grille des permissions s'ouvre dans une fenêtre, sans quitter la page.
+- **Gestionnaire de fichiers du webmaster** (Monitoring, bouton « Gérer les fichiers ») : parcourir les fichiers du
+  site, les modifier dans un éditeur (CodeMirror), en créer, en renommer ou en supprimer. Les dossiers `config/`,
+  `logs/` et `backups/` restent hors d'atteinte ; chaque enregistrement garde une copie `.nfbak` et entre au journal
+  d'audit. Toute écriture exige le **mot de passe webmaster**, distinct de celui du compte et gardé hors de la base
+  (défini à l'installation ou dans Monitoring, carte « Sécurité webmaster ») ; une fois défini, il est aussi redemandé
+  pour supprimer ou purger des sauvegardes et pour changer la clé de la tâche planifiée.
+- **Notes de version tirées d'une seule source** : `tools/changelog-section.php` extrait une version de ce journal
+  (`CHANGELOG.md`), en Markdown ou en HTML ; les notes des releases GitHub en sont tirées, et leurs textes ne peuvent
+  plus diverger.
 
 ### Modifié
-- **Bootstrap 4.6.2 → 5.3.8** + **jQuery entièrement retiré** : JS 100 % vanilla derrière un helper minimal
-  `window.NF` (ready/data/ajax/setHtml/loadScript avec nonce CSP). 9 plugins jQuery/BS4 remplacés
-  (notify→toasts BS5, selectize→tom-select, datetimepicker→flatpickr, FullCalendar 3→6, color/iconpicker
-  /treeview/knob→vanilla, mCustomScrollbar→scroll natif), jQuery UI→SortableJS.
-- **Dark mode** harmonisé sur tous les thèmes (`data-bs-theme` + remap des variables BS5 sur les tokens
-  `--nf-*`, TinyMCE suit le thème).
-- **Réglages widgets & dispositions encodés en JSON** (remplace `serialize` PHP) — supprime la surface
-  d'injection d'objet ; décodage rétro-compatible de l'ancien format.
+- **Installeur « tout compris »** : l'assistant passe à quatre étapes (Prérequis → Base de
+  données → Administrateur → Terminé). Tous les modules, widgets et thèmes livrés sont installés et activés à l'étape
+  « Base de données », et la page d'accueil affiche les actualités dès la fin de l'installation ; l'étape « Modules » et
+  ses profils disparaissent.
+- **Bootstrap 4.6.2 → 5.3.8, et jQuery n'est plus chargé** : le JavaScript du site s'appuie sur un petit outil maison
+  (`window.NF`). Neuf extensions jQuery ou Bootstrap 4 sont remplacées (notifications → toasts de Bootstrap 5,
+  selectize → Tom Select, sélecteur de date → flatpickr, FullCalendar 3 → 6, sélecteurs de couleur et d'icône,
+  arborescence et jauges → code maison, barres de défilement → défilement natif), et jQuery UI par SortableJS. Quatre
+  scripts oubliés appelaient encore jQuery : ils sont réécrits en 1.2.0.
+- **Mode sombre** : tableaux, cartes, menus déroulants et éditeur de texte prennent les couleurs sombres du thème au
+  lieu de rester blancs, dans tous les thèmes.
+- **Réglages des widgets et disposition des pages** : enregistrés en JSON au lieu du format de sérialisation de PHP, ce
+  qui ferme une voie d'injection de code ; les anciens réglages restent lus.
+- **Graphiques des statistiques** : Chart.js (licence MIT) remplace Highstock, une bibliothèque commerciale qui
+  interdisait de redistribuer librement le CMS.
 
 ### Corrigé
-- **Widget Discord** : vrai diagnostic d'échec (widget désactivé / ID introuvable / réseau) au lieu d'un
-  message générique, **vrai logo du serveur** (via l'invitation publique), compteur en ligne **autoritatif**
-  (`presence_count`, la liste des membres est plafonnée à 100).
-- **Widget TeamSpeak (mode arbre)** : le viewer du framework crashait sous PHP 8 → **rendu maison** (arbre
-  canaux/clients, icônes FontAwesome 6, plus aucun pack d'icônes requis) ; erreurs réseau génériques (ne
-  fuitent plus `host:port`).
-- **Widgets réseau** : `Network` auto-décodait déjà le JSON → double-décodage = faux « inaccessible » (Discord,
-  Twitch, gameserver) ; + **User-Agent par défaut** (sans lui, les API derrière Cloudflare renvoient 403).
-- **Monitoring / sauvegarde sous PHP-FPM** : `_stream()` appelait `@apache_setenv()` (disponible seulement
-  sous mod_php) → fatal sous Apache fpm-fcgi (en PHP 8 le `@` ne masque pas l'`Error`) ; gardé par
-  `function_exists()`. Backup AJAX servi **sans extension `.json`** (avalée par le « smart static »
-  nginx/Plesk → 404). Suppression/téléchargement de sauvegarde (le placeholder `{url_title}` n'accepte pas
-  le `.zip`). Garde treeview « Not initialized » + `padding-bottom` invalide.
+- **MySQL 8** : ouvrir un sujet ou répondre sur le forum, scinder ou fusionner des sujets, créer une conversation dans
+  la messagerie, réordonner les images du Slider… échouaient par une erreur fatale sur MySQL 8, qui refusait la façon
+  dont le site ouvrait ses transactions. Elles passent désormais par les fonctions prévues de mysqli.
+- **Émojis** : un émoji — ou tout caractère codé sur 4 octets — dans un texte provoquait une erreur de base de données.
+  La connexion et toutes les tables passent en `utf8mb4` (interclassement `utf8mb4_unicode_ci`, reconnu par MySQL 8
+  comme par MariaDB 10 ; les interclassements propres à MariaDB 11, qui faisaient échouer l'installation ailleurs,
+  disparaissent).
+- **`where('col', [])`** générait une condition vide (→ `DELETE`/`UPDATE` sur toute la table) : produit
+  désormais `1 = 0` (ensemble vide).
+- **Dates au-delà de 2038** : l'envoi programmé d'une newsletter, la publication programmée d'une actualité, d'un
+  article, d'une galerie ou d'une page, et les dates d'un événement ne pouvaient pas dépasser le 19 janvier 2038 :
+  au-delà, MariaDB refusait l'enregistrement, sans aucun message. Ces dates vont désormais jusqu'en l'an 9999 ; les
+  installations existantes sont mises à jour par migration.
+- **`/user/login` et `/user/registration` répondaient « page introuvable »** : les boutons « Connexion » et
+  « Inscription » des thèmes y mènent quand JavaScript est désactivé ou que le lien s'ouvre dans un nouvel onglet. Ces
+  adresses ouvrent désormais la fenêtre de connexion ou d'inscription.
+- **Nebula** : le bouton « Inscription » restait affiché quand les inscriptions étaient fermées, et menait à une page
+  introuvable. Il est masqué dans ce cas.
+- **Widget Discord** : il donne la vraie cause d'un échec (widget désactivé sur le serveur, identifiant introuvable,
+  réseau) au lieu d'un message général, montre le vrai logo du serveur (lu dans l'invitation publique) et compte juste
+  les membres en ligne — la liste fournie par Discord s'arrête à 100, ce qui faussait le compte des grands serveurs.
+- **Widget TeamSpeak, affichage en arbre** : il plantait sous PHP 8 et retombait sur la carte simple. L'arbre des canaux
+  et des clients est désormais dessiné par le widget lui-même, avec des icônes Font Awesome (plus besoin de pack
+  d'icônes) ; une erreur réseau affiche un message général, sans révéler l'adresse ni le port du serveur.
+- **Widgets Discord, Twitch et Serveur de jeu** : ils affichaient « inaccessible » même quand le service répondait (la
+  réponse était décodée deux fois). Les requêtes du site envoient aussi un identifiant de navigateur (User-Agent) : sans
+  lui, les services protégés par Cloudflare répondaient par un refus (erreur 403).
+- **Sauvegardes et Monitoring** : créer une sauvegarde plantait sur les serveurs en PHP-FPM, et échouait sous nginx ou
+  Plesk, qui répondaient « page introuvable » aux adresses en `.json` ; supprimer ou télécharger une sauvegarde menait à
+  une page introuvable ; l'arborescence du Monitoring affichait une erreur au premier rafraîchissement. Tout est
+  corrigé.
 - **Marketplace injoignable** : URL par défaut passée en **non-www** (`https://neofrag-reborn.xyz/marketplace`).
-- **Upload** : `uploaded_file($files, …, $var)` traitait `$var = 0` (1er fichier d'un envoi multiple) comme
-  falsy → `basename(array)` → 404 ; corrigé (`$var !== NULL`).
+- **Envoi de plusieurs fichiers** : le premier fichier d'un envoi multiple faisait échouer l'envoi
+  (« page introuvable ») — c'est ce qui bloquait l'envoi dans le module Fichiers. Pour les développeurs :
+  `uploaded_file()` prenait l'indice `0` pour une absence d'indice.
+- **Webhooks** : l'inscription d'un membre (`user.registered`), un nouveau commentaire (`comment.created`) et un nouveau
+  sujet du forum (`forum.topic`) déclenchent enfin leur webhook ; ces événements étaient proposés mais jamais émis.
 
 ### Documentation
-- Wiki dev/utilisateur enrichi (`form()`/`form2()`, checker de widget, dépannage installation, workflow
-  rôle, marketplace injoignable…) + note de déploiement **nginx/Plesk** (`.json` en static → 404).
+- **Documentation** (guides du wiki) : pour les développeurs, les formulaires (`form()` et `form2()`) et la validation
+  des réglages d'un widget ; pour les administrateurs, le dépannage de l'installation, un exemple de création de rôle et
+  que faire quand le marketplace est injoignable. Une note explique comment régler nginx ou Plesk, qui répondaient
+  « page introuvable » aux adresses en `.json`.
 
 ---
 
 ## [1.0.0] — 2026-06-06 · socle Reborn (base Alpha 0.2.4)
 
-Premier cycle du fork : modernisation du socle, durcissement sécurité et large vague de
+Premier cycle du fork : modernisation du socle, durcissement de la sécurité et large vague de
 fonctionnalités.
 
 ### Ajouté
 
 **Plateforme & outillage**
-- Runner de migrations versionnées + commande `baseline`, tests PHPUnit pilotes, bootstrap tolérant.
-- **Installeur web** (assistant 4 étapes : Prérequis → Base de données → Administrateur → Terminé) :
-  modèle **« tout bundlé »** — tous les modules, widgets et thèmes livrés sont installés et activés
-  automatiquement à l'étape « Base de données » (page d'accueil garantie non vide).
-- **Marketplace distant** (catalogue + archives servis depuis neofrag-reborn.xyz) : sert **après**
-  l'installation — **détection des mises à jour** des addons installés (+ migrations de schéma par-addon)
-  et **ajout d'addons tiers** en un clic depuis l'admin. Sécurité : HTTPS strict, vérification **SHA-256**,
-  **anti-zip-slip** (chemins/`..`/symlinks), origine fixe (anti-SSRF), tailles/timeout bornés.
-- Outils de packaging : `package-addons` (catalogue du marketplace) / `build-release` (paquets FTP).
-- CLI de **maintenance** : purge de la corbeille et des comptes jamais confirmés (cron externe).
+- **Migrations de base de données** numérotées (`tools/migrate.php`, avec une commande `baseline` pour reprendre une
+  base existante) et premiers tests automatisés (PHPUnit).
+- **Nouvel installeur web**, qui remplace celui de NeoFrag d'origine : un assistant en cinq étapes (Prérequis → Base de
+  données → Modules → Administrateur → Terminé). L'étape « Modules » propose trois profils de site (Communauté,
+  Gaming / eSport, Site simple) et peut ajouter des addons depuis le marketplace.
+- **Marketplace distant** (catalogue et archives servis par neofrag-reborn.xyz) : l'installeur (étape « Modules ») et
+  l'administration (bouton « Marketplace » de la page *Thèmes & Addons*) y ajoutent en un clic les addons du catalogue
+  officiel qui ne sont pas livrés avec le site. Sécurité : HTTPS obligatoire, empreinte SHA-256 vérifiée, archive
+  contrôlée entrée par entrée (aucun chemin qui sorte du dossier de l'addon, aucun lien symbolique), adresse du
+  catalogue fixe, tailles et délais bornés.
+- **Outils de fabrication des paquets** : `package-addons` prépare le catalogue du marketplace, `build-release` les
+  archives à déposer par FTP.
+- **Script de maintenance** (`tools/maintenance.php`, à lancer par une tâche planifiée) : vide la corbeille de ce qui y
+  dort depuis plus de 30 jours (réglable) et supprime les comptes jamais confirmés au bout de 7 jours, quand la
+  validation des inscriptions est activée — jamais un administrateur.
 
 **Thèmes & interface**
-- Thème communautaire **Nebula** + thèmes **Forge**, **Blockcraft**, **Granite** ; pont de tokens `--nf-*` pour la cohérence.
-- **Rework complet du panel admin** (nouvelle direction artistique, sidebar, palette de commandes, clair/sombre).
+- **Quatre thèmes créés pour NeoFrag Reborn** : Nebula, pensé pour les sites de communauté, Forge, Blockcraft et
+  Granite. Des variables de couleur communes (`--nf-*`) habillent modules et widgets aux couleurs de chaque thème.
+- **Refonte complète de l'administration** : nouvelle présentation, barre latérale, palette de commandes (Ctrl+K), modes
+  clair et sombre.
 - Sélecteurs de **thème** et de **langue** en pied de page (visiteurs inclus).
+- **Menus** : constructeur de menus à plusieurs niveaux, utilisable dans le widget Navigation (option « Menu géré »).
 
 **Contenu**
-- News & articles : image à la une, **publication programmée** (parution à l'heure réelle via endpoint cron gardé par token : notifications/webhooks/gamification émis au bon moment, plus à l'enregistrement), compteur de vues, actions en masse, recherche/filtre/pagination, page article dédiée.
+- **Actualités et articles** : publication programmée — le contenu paraît à l'heure choisie, et les notifications,
+  webhooks et points ne partent qu'à ce moment-là, plus à l'enregistrement (adresse à appeler par une tâche planifiée,
+  protégée par une clé) ; actions groupées ; recherche, filtres et pagination dans l'administration ; une page dédiée
+  pour lire une actualité. Les articles reçoivent une image à la une, comme les actualités, et le compteur de vues des
+  actualités, qui n'augmentait jamais, compte enfin.
 - **Publication programmée** aussi sur pages, galeries et événements (date de parution distincte de la date de tenue pour les événements).
-- Wiki : documentation on-site (sommaire en cartes, markdown fiable), recherche & pagination, **diff visuel entre révisions** (comparaison ligne à ligne, moteur LCS maison).
-- Médias & galeries : éditeur de métadonnées, recherche/filtre ; recherche/filtre/pagination aussi sur downloads, links, faq, surveys, guestbook.
+- **Wiki** : sert de documentation sur le site (sommaire en cartes, rendu Markdown fiable) ; recherche et pagination ;
+  comparaison visuelle de deux révisions d'une page, ligne à ligne.
+- **Médias** : titre et description modifiables pour chaque fichier, recherche, filtre par type et pagination.
+  Recherche, filtres et pagination aussi dans l'administration des Téléchargements, de l'Annuaire de liens, de la FAQ,
+  des Sondages et du Livre d'or.
 - Flux **RSS 2.0** (news + articles), boutons de **partage** social, **SEO** (meta description, canonical, Open Graph, Twitter Card, meta par page).
 
 **Communauté & engagement**
-- Centre de **notifications** in-site (cloche + non-lus) avec **abonnements** (suivre contenu/catégorie) et triggers (commentaires, forum, @mention, MP, invitations d'événement).
-- **Réactions** « j'aime » polymorphes (news/articles/commentaires/forum), **révisions** de contenu (historique + restauration), widget « derniers commentaires ».
-- **Corbeille** générique (soft-delete + restauration) sur news, articles, galeries, commentaires, **messages forum**.
+- **Centre de notifications** sur le site (cloche et nombre de non-lues), avec **abonnements** (suivre un contenu ou une
+  catégorie). Elles signalent les commentaires, les réponses du forum, les mentions @pseudo, les messages privés et les
+  invitations à un événement.
+- **Réactions** « j'aime » sur les actualités, articles, commentaires et messages du forum ; **révisions** des contenus
+  (historique et restauration) ; widget « Derniers commentaires ».
+- **Corbeille** commune : actualités, articles, galeries, commentaires et messages du forum supprimés y passent, et
+  peuvent en être restaurés.
+- **Forum** : catégorie réservée aux membres VIP, image par catégorie.
 
 **Gaming**
-- Événements : CRUD complet des adversaires, compte à rebours live, notification d'invitation.
-- Forum : zone **VIP**, image par catégorie ; **menu builder** (constructeur de menus hiérarchiques) intégré au widget navigation.
+- **Événements** : gestion complète des adversaires (liste, modification, suppression ; NeoFrag d'origine permettait
+  seulement d'en ajouter depuis un match), compte à rebours en direct, notification d'invitation.
 
 **Monétisation & gamification**
 - Karma/réputation → **points** (barème configurable) → **boutique** (paiement en points) → statut **VIP**.
-- **Stripe** (recharge de points + packs VIP), régie **publicitaire** (option sans-pub VIP), dons.
+- **Stripe** (achat de points et de formules VIP), **régie publicitaire** (masquée pour les membres VIP), **dons**
+  (module et widget portés du « Donation v3 » de HiddenBlob, d'après majiid ; LGPLv3).
 
-**Carrefours de contribution inter-modules**
-- Statistiques agrégées (19 modules), **mur d'activité** cross-module sur le profil, **tableau de bord** « à traiter », et **blocs de page** : injection d'un bloc de module dans une page statique via le shortcode `[block:clé]` (news/articles/downloads).
+**Liens entre modules**
+- **Statistiques** étendues à 19 modules (NeoFrag d'origine en couvrait 3 : commentaires, forum, membres) ; **mur
+  d'activité** sur le profil, qui rassemble l'activité d'un membre dans tous les modules ; tableau de bord
+  **« À traiter »** dans l'administration ; **blocs de page** : le code court `[block:…]` insère dans une page un bloc
+  d'un module (actualités, articles, téléchargements).
 
 **Webhooks & audit**
-- **Webhooks** sortants signés HMAC (lib + admin CRUD). **Journal d'audit** : installation/désinstallation d'addon, activation thème/module, **sauvegarde de réglages** (`settings.saved`).
+- **Webhooks** sortants signés (HMAC), gérés depuis l'administration. Le **journal d'audit** enregistre aussi
+  l'installation et la désinstallation d'un addon, l'activation d'un thème ou d'un module et l'enregistrement des
+  réglages.
 
 **Administration des comptes**
-- Édition et suppression d'utilisateurs côté admin, **export des membres CSV/JSON (RGPD)**, réglages de modération côté espace membre.
+- **Membres** : export des membres en CSV ou JSON (RGPD) ; les modérateurs qui en ont le droit règlent la modération
+  depuis leur espace membre. La modification et la suppression d'un membre depuis l'administration, déjà présentes dans
+  NeoFrag d'origine, sont rebranchées sur la nouvelle liste des membres.
 
 ### Modifié
 - Versionnage normalisé en **SemVer pur** dans les dépendances d'addons (retrait des libellés « Alpha »).
-- Packaging : `pages` reclassé dans le **core** ; news/forum/gallery désinstallables.
-- Éditeur riche fonctionnel (sanitisation au lieu d'échappement).
+- **Pages** fait désormais partie du cœur ; **Actualités**, **Forum** et **Galeries** peuvent être désinstallés.
+- **Éditeur de texte riche** : il fonctionne enfin — le HTML qu'il produit est nettoyé au lieu d'être affiché comme du
+  texte.
+
+### Retiré
+- Les deux thèmes de NeoFrag d'origine, « Thème par défaut » (`default`) et Azuro, remplacés par les thèmes de
+  NeoFrag Reborn.
+- L'éditeur BBCode de NeoFrag d'origine (WysiBB) et la conversion du BBCode : l'éditeur de texte riche le remplace, et
+  un texte écrit en BBCode s'affiche désormais tel quel.
 
 ### Corrigé
-- 10 bugs fonctionnels relevés à l'audit ; déduplication des compteurs de vues (anti-gonflage).
-- Publication programmée masquée aussi en accès URL direct ; câblages morts réparés (boutons de période des stats, toggles de templates email, réseaux sociaux, routes « Ajouter »).
-- Thèmes : lisibilité & contrastes WCAG, login soudé, alignements.
-- **Responsive** (tous supports, téléphone→TV) : tiroir mobile + contenu pleine largeur de l'admin, profil membre, userbar compacte des 4 thèmes communautaires.
-- `strict_types` : TypeErrors corrigés (timetostr, helpers) ; `(int)` sur `row(FALSE)` d'un COUNT/SUM.
+- **Dix défauts corrigés**, dont : les événements sans participant ni match n'apparaissaient pas ; modifier ou supprimer
+  un mode de jeu échouait ; supprimer une offre de recrutement échouait ; le lien vers un partenaire menait à une page
+  introuvable (il mène à son site) ; l'auteur d'un signalement n'était jamais montré, même aux modérateurs autorisés ;
+  les widgets Galeries et Forum vérifiaient mal leurs réglages ou les droits. Les compteurs de vues ne comptent plus
+  qu'une fois par visite et ignorent les robots.
+- Un contenu programmé n'est plus visible par son adresse directe avant l'heure. Des boutons sans effet fonctionnent :
+  périodes des statistiques, activation des modèles d'e-mail, réseaux sociaux (les six s'affichent), boutons « Ajouter »
+  des actualités, pages et galeries.
+- **Thèmes** : contrastes des boutons relevés au niveau WCAG AA, champs de connexion soudés à leur icône, alignements
+  corrigés.
+- **Affichage sur petits et grands écrans** (vérifié de 390 à 2 560 pixels de large) : dans l'administration, menu
+  latéral en tiroir et contenu en pleine largeur sur téléphone ; profil membre ; barre du compte compacte dans Nebula,
+  Forge, Blockcraft et Granite.
+- Les pages Membres, Statistiques et Live Editor de l'administration affichaient une erreur 500 ; des compteurs
+  restaient bloqués à 1 (pastille de modération, abonnés de la newsletter, statistiques des médias), et une catégorie
+  vide de Téléchargements, de FAQ ou de liens ne pouvait pas être supprimée. (Pour les développeurs : erreurs de typage
+  strict dans `timetostr()` et les helpers ; `(int)` sur `row(FALSE)` d'un `COUNT`/`SUM` valait toujours 1.)
 
 ### Sécurité
-- Sanitisation HTML serveur anti-XSS stocké (HTMLPurifier), validation d'upload par **magic bytes**, **HSTS**.
-- **CSRF** durci (`hash_equals`, IP client secure-by-default), checks de permission **RBAC** manquants ajoutés.
-- `unserialize` legacy bornés via `allowed_classes`.
-- **Empreinte de session** (anti-détournement) : déconnexion si le user-agent diffère fortement de celui d'origine (tolérant, membres connectés). Endpoint de parution cron gardé par token (`hash_equals`).
+- Le HTML envoyé par les membres est nettoyé côté serveur (HTMLPurifier) contre l'injection de code ; un fichier envoyé
+  est vérifié d'après son contenu réel, pas seulement son extension ; HSTS activé (le navigateur ne revient plus en
+  HTTP).
+- **Jetons anti-CSRF** comparés en temps constant. **Adresse IP** : la limitation de débit et la liste des IP bannies ne
+  croient plus les en-têtes falsifiables (`X-Forwarded-For`…), sauf proxy de confiance déclaré. **Droits** : contrôles
+  de permission ajoutés là où ils manquaient (Livre d'or, Jeux, Galeries, Événements, Statistiques).
+- Les anciens scripts de mise à jour ne peuvent plus recréer n'importe quel objet PHP en relisant des réglages
+  (`unserialize` limité par `allowed_classes`).
+- **Empreinte de session** contre le vol de session : un membre connecté est déconnecté si son navigateur (user-agent)
+  change nettement en cours de session — une simple mise à jour du navigateur ne suffit pas. L'adresse de parution
+  programmée est protégée par une clé comparée en temps constant.

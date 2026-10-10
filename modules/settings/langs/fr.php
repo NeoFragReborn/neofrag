@@ -265,4 +265,6 @@ return [
 	'b5cf4695' => 'Comptes inactifs',
 	'd35683b8' => 'Un compte sans visite depuis ce nombre d’années est effacé ; un e-mail prévient son membre un mois avant, et une visite annule tout. Les administrateurs ne sont jamais effacés. 0 pour ne jamais effacer.',
 	'68b7ca29' => 'Indiquez un nombre d’années entre 0 et 20.',
+	'bfeaf8bc' => 'Les adresses à rediriger : le relevé des %s, dans le Monitoring.',
+	'9339febd' => 'pages introuvables',
 ];

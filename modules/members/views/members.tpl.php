@@ -4,8 +4,9 @@
 		<div class="col mb-4">
 			<div class="card card-member text-center<?php echo $this->user->id == $member->id ? ' border-primary' : '' ?>">
 				<div class="m-auto pt-3"><?php echo $member->avatar() ?></div>
-				<div class="card-body pt-3 px-0">
-					<h6 class="card-title mb-0"><?php echo nf_texte($member->username) ?></h6>
+				<?php /* Une marge latérale : un pseudo long, sans espace, touchait les bords de la carte (2026-10-10). */ ?>
+				<div class="card-body pt-3 px-2">
+					<h6 class="card-title mb-0 text-break"><?php echo nf_texte($member->username) ?></h6>
 					<?php
 					$socials = $this->array([
 										['website',   'fas fa-globe',       ''],

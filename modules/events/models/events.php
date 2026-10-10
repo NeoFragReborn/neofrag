@@ -9,6 +9,7 @@ namespace NF\Modules\Events\Models;
 
 use NF\NeoFrag\Loadables\Model;
 
+// couplage(games): le mode de jeu d'un match, joint seulement si Matches::possibles() (m17)
 class Events extends Model
 {
 	/**
@@ -25,13 +26,21 @@ class Events extends Model
 
 	public function check_event($event_id, $title)
 	{
-		$this->db	->select('e.event_id', 'e.title', 'e.type_id', 'e.date', 'e.date_end', 'e.description', 'e.private_description', 'e.location', 'e.image_id', 'e.published', 'e.publish_date', 'e.series_id', 't.type', 'm.mode_id', 'm.webtv', 'm.website', 'gm.title as mode_title')
+		// Le mode de jeu d'un match n'existe qu'avec le module Jeux (m17) : sans lui, sa table est absente.
+		$jeux = \NF\Modules\Events\Models\Matches::possibles();
+
+		$this->db	->select('e.event_id', 'e.title', 'e.type_id', 'e.date', 'e.date_end', 'e.description', 'e.private_description', 'e.location', 'e.image_id', 'e.published', 'e.publish_date', 'e.series_id', 't.type', 'm.mode_id', 'm.webtv', 'm.website', $jeux ? 'gm.title as mode_title' : 'NULL as mode_title')
 					->from('nf_events e')
 					->join('nf_events_types t',        'e.type_id = t.type_id')
 					->join('nf_events_participants p', 'e.event_id = p.event_id', 'LEFT')
-					->join('nf_events_matches m', 'e.event_id = m.event_id', 'LEFT')
-					->join('nf_games_modes gm', 'm.mode_id = gm.mode_id', 'LEFT')
-					->where('e.event_id', $event_id)
+					->join('nf_events_matches m', 'e.event_id = m.event_id', 'LEFT');
+
+		if ($jeux)
+		{
+			$this->db->join('nf_games_modes gm', 'm.mode_id = gm.mode_id', 'LEFT');
+		}
+
+		$this->db	->where('e.event_id', $event_id)
 					->group_by('e.event_id');
 
 		if (!$this->url->admin)

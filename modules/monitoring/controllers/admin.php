@@ -66,7 +66,8 @@ class Admin extends Controller_Module
 				.'<a class="btn btn-secondary btn-sm refresh" href="#" title="'.$this->lang('Actualiser').'"><i class="fas fa-sync"></i></a>'
 				.'</span>'
 				.'</div>'
-				.'<table class="table table-notifications m-0"></table>'
+				// Défile dans la carte plutôt que d'en déborder : au téléphone, une notification touchait son bord droit (2026-10-10).
+				.'<div class="table-responsive"><table class="table table-notifications m-0"></table></div>'
 				.'</div>'
 			.'</div>'
 			.'<div class="col-12 col-xl-4">'
@@ -523,7 +524,7 @@ class Admin extends Controller_Module
 			][$outil];
 
 			// Une carte par outil, côte à côte : l'onglet Diagnostic leur laisse toute la largeur.
-			$lignes .= '<div class="col-12 col-lg-4"><div class="card h-100 mb-0">'
+			$lignes .= '<div class="col-12 col-md-6 col-xl-3"><div class="card h-100 mb-0">'
 				.'<div class="nf-card-header"><span><i class="'.$icone.'"></i> '.$titre.'</span>'.$etat.'</div>'
 				.'<div class="card-body small d-flex flex-column">'
 				.'<p class="mb-2">'.$texte.'</p>'
@@ -532,6 +533,31 @@ class Admin extends Controller_Module
 				.'</div>'
 				.'</div></div>';
 		}
+
+		// Le relevé des pages introuvables : toujours tenu, rien à allumer (nf_noter_introuvable()).
+		$semaine = $this->db->table_exists('nf_pages_introuvables')
+			? (int) $this->db->select('COUNT(*)')->from('nf_pages_introuvables')->where('derniere_fois >', date('Y-m-d H:i:s', time() - 7 * 86400))->row()
+			: 0;
+
+		$lignes .= '<div class="col-12 col-md-6 col-xl-3"><div class="card h-100 mb-0">'
+			.'<div class="nf-card-header"><span><i class="fas fa-unlink"></i> '.$this->lang('Pages introuvables').'</span><span class="badge text-bg-secondary">'.$this->lang('Toujours tenu').'</span></div>'
+			.'<div class="card-body small d-flex flex-column">'
+			.'<p class="mb-2">'.$this->lang('Les adresses que le site n’a pas trouvées, d’où venaient les visiteurs, et de quoi rediriger une adresse qui a changé. Ni adresse IP, ni navigateur.').'</p>'
+			.'<div class="mt-auto pt-2 d-flex flex-wrap align-items-center gap-2"><span class="text-body-secondary">'.$this->lang('%d adresse cette semaine|%d adresses cette semaine', $semaine, $semaine).'</span><span class="ms-auto"><a class="small" href="'.url('admin/monitoring/introuvables').'">'.$this->lang('Voir le relevé').'</a></span></div>'
+			.'</div>'
+			.'</div></div>';
+
+		// Les images de l'éditeur riche : ce que le disque en garde ; la recherche des abandonnées lit toute la base, elle
+		// ne se fait que sur sa page.
+		[$images, $octets] = $this->_images_editeur_sur_le_disque();
+
+		$lignes .= '<div class="col-12 col-md-6 col-xl-3"><div class="card h-100 mb-0">'
+			.'<div class="nf-card-header"><span><i class="far fa-images"></i> '.$this->lang('Images de l’éditeur').'</span><span class="badge text-bg-secondary">'.human_size($octets).'</span></div>'
+			.'<div class="card-body small d-flex flex-column">'
+			.'<p class="mb-2">'.$this->lang('Les images envoyées dans les textes. Celles qu’aucun texte n’affiche plus depuis 30 jours — retirées d’un message, ou d’un brouillon jamais enregistré — se retrouvent et s’effacent ici.').'</p>'
+			.'<div class="mt-auto pt-2 d-flex flex-wrap align-items-center gap-2"><span class="text-body-secondary">'.$this->lang('%d image|%d images', $images, $images).'</span><span class="ms-auto"><a class="small" href="'.url('admin/monitoring/images-editeur').'">'.$this->lang('Chercher les images abandonnées').'</a></span></div>'
+			.'</div>'
+			.'</div></div>';
 
 		return '<div class="row g-3">'.$lignes.'</div>';
 	}
@@ -760,6 +786,203 @@ class Admin extends Controller_Module
 
 		return $this->admin_back('admin/monitoring')
 			.$this->admin_card('fas fa-language', $this->lang('Traductions manquantes'), $etat.($corps !== '' ? $corps : $this->admin_empty('fas fa-check-circle', (string) $this->lang('Rien à signaler'), (string) $this->lang('Aucune traduction manquante n’a été notée.'))), '', $actions);
+	}
+
+	/**
+	 * Les pages introuvables (ligne 0.41 du reste-à-faire) : chaque adresse que le site n'a pas trouvée, notée par
+	 * nf_noter_introuvable() — combien de fois, par des visiteurs ou des robots, quand, et d'où l'on venait —, avec de
+	 * quoi la rediriger (Paramètres → Redirections, l'adresse déjà remplie). Les sondes des robots qui cherchent une
+	 * faille sont rangées à part.
+	 */
+	public function _introuvables()
+	{
+		$this->_administrateur_seulement();
+
+		if (nf_demo())
+		{
+			return $this->_demo_ferme($this->lang('Pages introuvables'), 'fas fa-unlink');
+		}
+
+		$this->title($this->lang('Pages introuvables'))->icon('fas fa-unlink');
+
+		$lignes      = $this->db->table_exists('nf_pages_introuvables') ? $this->db->select('id', 'chemin', 'visites', 'robots', 'provenance', 'derniere_fois')->from('nf_pages_introuvables')->order_by('derniere_fois DESC')->limit(500)->get() : [];
+		$redirigees  = $this->db->table_exists('nf_redirects') ? array_column((array) $this->db->select('source', 'target')->from('nf_redirects')->get(), 'target', 'source') : [];
+		$adresses    = '';
+		$sondes      = '';
+		$nb_sondes   = 0;
+
+		foreach ($lignes as $l)
+		{
+			$chemin = (string) $l['chemin'];
+			$sonde  = nf_sonde_introuvable($chemin);
+			$cible  = $redirigees[$chemin] ?? NULL;
+
+			$action = $cible !== NULL
+				? '<span class="badge text-bg-success" title="'.nf_texte($this->lang('Redirigée vers %s', (string) $cible)).'">'.$this->lang('Redirigée').'</span>'
+				: ($sonde ? '' : '<a class="btn btn-sm btn-outline-primary" href="'.url('admin/settings/seo-redirections').'?source='.rawurlencode($chemin).'"><i class="fas fa-route"></i> '.$this->lang('Rediriger').'</a> ');
+
+			$ligne = '<tr>'
+				.'<td><code style="overflow-wrap:anywhere">/'.nf_texte($chemin).'</code></td>'
+				.'<td class="text-end">'.(int) $l['visites'].'</td>'
+				.'<td class="text-end">'.(int) $l['robots'].'</td>'
+				.'<td class="text-nowrap">'.nf_date_heure((string) $l['derniere_fois']).'</td>'
+				.'<td>'.((string) $l['provenance'] !== '' ? '<code style="overflow-wrap:anywhere">'.nf_texte((string) $l['provenance']).'</code>' : '<span class="text-body-secondary">—</span>').'</td>'
+				.'<td class="text-end text-nowrap">'.$action.'<a class="btn btn-sm btn-outline-danger" href="'.$this->csrf_url('admin/monitoring/introuvables/oublier/'.(int) $l['id']).'" title="'.nf_texte($this->lang('Oublier cette adresse')).'"><i class="far fa-trash-alt"></i></a></td>'
+				.'</tr>';
+
+			if ($sonde)
+			{
+				$sondes .= $ligne;
+				$nb_sondes++;
+			}
+			else
+			{
+				$adresses .= $ligne;
+			}
+		}
+
+		$tete = '<thead><tr><th>'.$this->lang('Adresse').'</th><th class="text-end">'.$this->lang('Visiteurs').'</th><th class="text-end">'.$this->lang('Robots').'</th><th>'.$this->lang('Dernière fois').'</th><th>'.$this->lang('Venue de').'</th><th></th></tr></thead>';
+		$aide = '<p class="small text-body-secondary mb-3">'.$this->lang('Chaque adresse que le site n’a pas trouvée, sans la langue ni les paramètres. Une adresse qui a changé se redirige vers la nouvelle : les moteurs et les liens d’ailleurs suivent. Une adresse qu’on ne demande plus depuis 90 jours s’oublie.').'</p>';
+
+		$corps = $adresses !== ''
+			? $aide.'<div class="table-responsive"><table class="table table-sm small align-middle">'.$tete.'<tbody>'.$adresses.'</tbody></table></div>'
+			: $aide.$this->admin_empty('fas fa-check-circle', (string) $this->lang('Rien à signaler'), (string) $this->lang('Aucune page introuvable n’a été notée.'));
+
+		if ($sondes !== '')
+		{
+			$corps .= '<details class="mt-3"><summary class="small">'.$this->lang('Sondes de robots qui cherchent une faille (%d) : rien à faire, le site leur répond qu’elles n’existent pas.', $nb_sondes).'</summary>'
+				.'<div class="table-responsive mt-2"><table class="table table-sm small align-middle">'.$tete.'<tbody>'.$sondes.'</tbody></table></div></details>';
+		}
+
+		$actions = $lignes
+			? '<a class="btn btn-outline-danger btn-sm" href="'.$this->csrf_url('admin/monitoring/introuvables/vider').'" data-confirm="'.nf_texte($this->lang('Vider le relevé des pages introuvables ?')).'"><i class="far fa-trash-alt"></i> '.$this->lang('Vider').'</a>'
+			: '';
+
+		return $this->admin_back('admin/monitoring')
+			.$this->admin_card('fas fa-unlink', $this->lang('Pages introuvables'), $corps, '', $actions);
+	}
+
+	public function _introuvables_oublier($id)
+	{
+		$this->_administrateur_seulement();
+		$this->check_csrf('admin/monitoring/introuvables');
+
+		$this->db->where('id', (int) $id)->delete('nf_pages_introuvables');
+
+		redirect('admin/monitoring/introuvables');
+	}
+
+	public function _introuvables_vider()
+	{
+		$this->_administrateur_seulement();
+		$this->check_csrf('admin/monitoring/introuvables');
+
+		$this->db->execute('DELETE FROM nf_pages_introuvables');
+		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('monitoring.introuvables.vide');
+		notify($this->lang('Le relevé des pages introuvables est vidé.'));
+
+		redirect('admin/monitoring/introuvables');
+	}
+
+	/**
+	 * Les images de l'éditeur riche abandonnées (ligne 0.17 du reste-à-faire) : celles qu'aucun texte du site ne cite
+	 * plus depuis 30 jours (nf_images_editeur_abandonnees()), listées puis effacées sur demande — seulement celles qui le
+	 * sont encore au moment d'effacer (nf_effacer_images_editeur()).
+	 */
+	public function _images_editeur()
+	{
+		$this->_administrateur_seulement();
+
+		if (nf_demo())
+		{
+			return $this->_demo_ferme($this->lang('Images de l’éditeur'), 'far fa-images');
+		}
+
+		if (!empty($_POST['effacer_images']) && is_array($_POST['effacer_images']))
+		{
+			$effacees = nf_effacer_images_editeur(array_map('strval', $_POST['effacer_images']));
+
+			(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('monitoring.images_editeur.effacees', ['details' => (string) $effacees]);
+			notify($this->lang('%d image effacée.|%d images effacées.', $effacees, $effacees));
+			refresh();
+		}
+
+		$this->title($this->lang('Images de l’éditeur'))->icon('far fa-images');
+
+		[$images, $octets] = $this->_images_editeur_sur_le_disque();
+		$abandonnees       = nf_images_editeur_abandonnees();
+
+		$aide = '<p class="small text-body-secondary mb-3">'.$this->lang('%d image envoyée dans les textes du site, %s en tout.|%d images envoyées dans les textes du site, %s en tout.', $images, $images, human_size($octets))
+			.' '.$this->lang('Une image est abandonnée quand aucun texte ne l’affiche plus — ni contenu, ni message, ni réglage, ni révision, ni corbeille — et qu’elle a plus de 30 jours.').'</p>';
+
+		if ($abandonnees === NULL)
+		{
+			$corps = $aide.'<div class="alert alert-warning mb-0">'.icon('fas fa-exclamation-triangle').' '.$this->lang('La base n’a pas pu être lue en entier : aucune image n’est proposée à l’effacement. Le détail est dans le %s.', '<a href="'.url('admin/monitoring/journal').'">'.$this->lang('journal des erreurs').'</a>').'</div>';
+		}
+		else if (!$abandonnees)
+		{
+			$corps = $aide.$this->admin_empty('fas fa-check-circle', (string) $this->lang('Rien à signaler'), (string) $this->lang('Aucune image abandonnée.'));
+		}
+		else
+		{
+			$lignes = '';
+			$total  = 0;
+
+			foreach ($abandonnees as $image)
+			{
+				$total  += $image['size'];
+				$taille  = human_size($image['size']);
+				$date    = timetostr('j M Y', $image['date']);
+
+				// Au téléphone, la taille et la date passent sous le nom : quatre colonnes n'y tiennent pas.
+				$lignes .= '<tr>'
+					.'<td><input class="form-check-input" type="checkbox" name="effacer_images[]" value="'.nf_texte($image['path']).'" checked aria-label="'.nf_texte($image['path']).'"></td>'
+					.'<td><a href="'.$this->url->base.$image['path'].'" target="_blank" rel="noopener"><img src="'.$this->url->base.$image['path'].'" alt="" loading="lazy" style="max-width:4rem;max-height:3rem" class="rounded"></a></td>'
+					.'<td><code style="overflow-wrap:anywhere">'.nf_texte($image['path']).'</code>'
+					.($image['name'] !== '' ? '<br><span class="text-body-secondary">'.nf_texte($image['name']).'</span>' : '')
+					.'<br class="d-md-none"><span class="d-md-none text-body-secondary">'.$taille.' · '.$date.'</span></td>'
+					.'<td class="d-none d-md-table-cell text-end text-nowrap">'.$taille.'</td>'
+					.'<td class="d-none d-md-table-cell text-nowrap">'.$date.'</td>'
+					.'</tr>';
+			}
+
+			$corps = $aide
+				.'<form action="'.url($this->url->request).'" method="post">'
+				.'<div class="table-responsive"><table class="table table-sm small align-middle">'
+				.'<thead><tr><th></th><th></th><th>'.$this->lang('Fichier').'</th><th class="d-none d-md-table-cell text-end">'.$this->lang('Taille').'</th><th class="d-none d-md-table-cell">'.$this->lang('Envoyée le').'</th></tr></thead>'
+				.'<tbody>'.$lignes.'</tbody></table></div>'
+				.'<button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="'.nf_texte($this->lang('Effacer les images cochées ? Elles ne pourront pas être retrouvées.')).'"><i class="far fa-trash-alt"></i> '.$this->lang('Effacer les images cochées (%s)', human_size($total)).'</button>'
+				.'</form>';
+		}
+
+		return $this->admin_back('admin/monitoring')
+			.$this->admin_card('far fa-images', $this->lang('Images de l’éditeur'), $corps);
+	}
+
+	/**
+	 * Le nombre d'images de l'éditeur sur le disque et leur poids.
+	 *
+	 * @return array{0: int, 1: int}
+	 */
+	private function _images_editeur_sur_le_disque(): array
+	{
+		$racine = NEOFRAG_CMS.'/'.\NF\NeoFrag\Libraries\Editeur_Images::DOSSIER;
+		$images = 0;
+		$octets = 0;
+
+		if (is_dir($racine))
+		{
+			foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($racine, \FilesystemIterator::SKIP_DOTS)) as $fichier)
+			{
+				if ($fichier->isFile() && !in_array($fichier->getFilename(), ['.htaccess', 'index.html'], TRUE))
+				{
+					$images++;
+					$octets += (int) $fichier->getSize();
+				}
+			}
+		}
+
+		return [$images, $octets];
 	}
 
 	public function _traductions_vider()

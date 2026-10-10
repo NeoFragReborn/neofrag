@@ -112,3 +112,21 @@
  */
 .form-select { padding-right: 2.25rem; }
 .form-select[multiple], .form-select[size]:not([size="1"]) { padding-right: .75rem; }
+
+/*
+ * LES IMAGES DE L'EDITEUR NE DEBORDENT NULLE PART.
+ *
+ * Une image inseree dans l'editeur porte ses dimensions d'origine (`width`, `height`) : la page d'un
+ * evenement, d'un partenaire, d'un album, d'une offre de recrutement ou d'une equipe la montrait a sa
+ * taille, plus large que la colonne, et au telephone plus large que l'ecran. Le blog, les actualites et
+ * le wiki la bornaient chacun de leur cote. Toutes passent par `upload/editeur/` : une regle pour toutes
+ * (m08, 2026-10-10), le rapport largeur/hauteur garde.
+ */
+img[src*="/upload/editeur/"] { max-width: 100%; height: auto; }
+
+/*
+ * Le bouton « Signaler ce contenu » (Moderation::report_button()) n'est qu'une icone : 24 x 21 px au telephone sous un
+ * message du livre d'or, sous le minimum d'une cible de doigt (check-mise-en-page, 2026-10-10). 24 x 24 px au moins,
+ * dans tous les themes.
+ */
+.nf-report-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; min-height: 24px; }

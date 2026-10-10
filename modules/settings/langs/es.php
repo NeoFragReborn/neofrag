@@ -267,4 +267,6 @@ return [
 	'b5cf4695' => 'Cuentas inactivas',
 	'd35683b8' => 'Una cuenta sin visitas desde este número de años se elimina; un correo avisa a su miembro un mes antes, y una visita lo anula todo. Los administradores nunca se eliminan. 0 para no eliminar nunca.',
 	'68b7ca29' => 'Indica un número de años entre 0 y 20.',
+	'bfeaf8bc' => 'Las direcciones que redirigir: la lista de %s, en Monitoring.',
+	'9339febd' => 'páginas no encontradas',
 ];

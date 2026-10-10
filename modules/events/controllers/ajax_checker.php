@@ -22,7 +22,21 @@ class Ajax_Checker extends Module_Checker
 	{
 		if ($event = $this->model()->check_event($event_id, $title))
 		{
-			return $event;
+			// Dans l'ordre de la signature d'Ajax::_event(), colonne par colonne : la ligne entière, passée telle quelle,
+			// donnait la date de publication à `$type` (2026-10-10).
+			return [
+				$event['event_id'],
+				$event['title'],
+				$event['type_id'],
+				$event['date'],
+				$event['date_end'],
+				$event['description'],
+				$event['private_description'],
+				$event['location'],
+				$event['image_id'],
+				$event['published'],
+				$event['type'],
+			];
 		}
 	}
 }

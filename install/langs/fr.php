@@ -153,7 +153,6 @@ return [
 	'720335b6' => 'Gaming / eSport',
 	'5ffcd177' => 'Le socle communautaire plus l’attirail compétitif : équipes, matchs, événements, recrutement, palmarès, partenaires et gamification.',
 	'8a3b82de' => 'Communauté',
-	'53a6ac20' => 'Actualités, forum de discussion et galeries. De quoi faire vivre une communauté, sans l’attirail esport.',
 	'ddf9fbfb' => 'Cœur seul',
 	'c0418d17' => 'Rien que l’essentiel : pages, commentaires, menu, contact, membres et messagerie. Vous ajouterez le reste depuis le marketplace, quand vous en aurez besoin.',
 	'c1d8f9a3' => 'Adresse email',
@@ -196,7 +195,6 @@ return [
 	'df383219' => 'Corrigez les points en rouge — extensions PHP manquantes, ou droits d\'écriture sur le dossier <code>config/</code> — puis revérifiez.',
 	'f43a187f' => 'Revérifier',
 	'6b41f3af' => 'Association / club',
-	'efd057dc' => 'Actualités, forum, galeries, calendrier, dons, newsletter, wiki et FAQ. De quoi faire vivre une association ou un club, sans l’attirail esport.',
 	'd716c0be' => 'Contenu de démonstration…',
 	'0a0551e7' => 'PHP %s ou plus récent est requis (ce PHP : %s).',
 	'7338e32d' => 'Ce PHP ne sait pas hacher les mots de passe en %s : il faut un PHP compilé avec Argon2.',
@@ -204,4 +202,6 @@ return [
 	'23bcdfc3' => 'disponible',
 	'c2f31600' => 'absent de ce PHP',
 	'3e30f3e2' => 'Ce site a déjà un administrateur : l\'installation est terminée.',
+	'5c71bd6a' => 'Actualités, forum de discussion, galeries et événements. De quoi faire vivre une communauté, sans l’attirail esport.',
+	'29d4b6b2' => 'Actualités, forum, galeries, calendrier, événements, dons, newsletter, wiki et FAQ. De quoi faire vivre une association ou un club, sans l’attirail esport.',
 ];
