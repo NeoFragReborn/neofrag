@@ -10,6 +10,18 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.47] — 2026-10-09
+
+La barre d'objets de Blockcraft, au téléphone.
+
+### Corrigé
+
+- **La barre d'objets de Blockcraft occupe toute la largeur du téléphone** : ses cases se partagent l'écran à parts
+  égales et chaque nom tient dans la sienne — sur deux lignes pour « Mon espace », coupé au trait d'union pour un mot
+  allemand ou portugais trop long (« Neuig-keiten »). Elle s'arrêtait à 326 px quelle que soit la largeur de
+  l'écran : un vide à droite, des cases étroites et « Nouvelles » qui débordait de la sienne. Le cadre blanc de la
+  case choisie ne touche plus son nom.
+
 ## [1.2.46] — 2026-10-08
 
 Les bandeaux du haut de page ne recouvrent plus rien, la cloche arrive dans Nebula, et le panneau des extensions

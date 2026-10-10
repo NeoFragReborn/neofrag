@@ -12,6 +12,17 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.47] — 2026-10-09
+
+The Blockcraft hotbar, on phones.
+
+### Fixed
+
+- **The Blockcraft hotbar spans the whole width of the phone**: its slots share the screen equally and each name fits
+  in its own — on two lines for “My space”, hyphenated for a German or Portuguese word that is too long
+  (“Neuig-keiten”). It stopped at 326 px whatever the screen width: an empty space on the right, narrow slots and
+  “News” spilling out of its slot. The white frame of the selected slot no longer touches its name.
+
 ## [1.2.46] — 2026-10-08
 
 The bars at the top of the page no longer cover anything, the bell comes to Nebula, and the extensions panel can
