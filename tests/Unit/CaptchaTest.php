@@ -45,6 +45,15 @@ final class CaptchaTest extends TestCase
 		self::assertSame($attendu, Captcha::cle_active($reglage, $public, $prive));
 	}
 
+	public function test_un_captcha_tiers_refuse_par_le_visiteur_laisse_place_a_altcha(): void
+	{
+		self::assertSame('altcha', Captcha::cle_pour_le_visiteur('recaptcha', FALSE));
+		self::assertSame('altcha', Captcha::cle_pour_le_visiteur('turnstile', FALSE));
+		self::assertSame('hcaptcha', Captcha::cle_pour_le_visiteur('hcaptcha', TRUE));
+		self::assertSame('altcha', Captcha::cle_pour_le_visiteur('altcha', FALSE));
+		self::assertSame('', Captcha::cle_pour_le_visiteur('', FALSE));
+	}
+
 	public function test_la_politique_de_securite_n_ouvre_que_le_fournisseur_actif(): void
 	{
 		self::assertSame([], Captcha::csp('altcha'));

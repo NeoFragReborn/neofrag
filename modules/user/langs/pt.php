@@ -257,7 +257,6 @@ return [
 	'e4b31aee' => 'Repor o 2FA de <b>%s</b>? O utilizador terá de o reconfigurar para o reativar. Esta ação fica registada no registo de auditoria.',
 	'954424e6' => '2FA reposto para %s.',
 	'9b69ece2' => 'Eliminar o utilizador',
-	'ed704c4f' => 'Eliminar a conta de <b>%s</b>? A conta será anonimizada (soft-delete RGPD) e as suas sessões encerradas. Ação registada no registo de auditoria.',
 	'906937be' => 'Utilizador %s eliminado.',
 	'4f98863b' => 'Identificador',
 	'6ffdfb99' => 'Administrador (acesso completo)',
@@ -405,4 +404,5 @@ return [
 	'a0000a84' => 'O que recebo',
 	'34f13694' => 'Tudo o que o site te assinalou. Notificações a mais? Escolhe o que recebes.',
 	'fd3c356f' => 'Preferências',
+	'62f0618d' => 'Eliminar a conta de <b>%s</b>? O perfil, as contas associadas, o histórico de ligações e as notificações são apagados e as sessões fechadas; o que publicou permanece, com um pseudónimo neutro. A ação fica registada no registo de auditoria.',
 ];

@@ -35,7 +35,6 @@ class Newsletter extends Module
 				'subscribe'                     => '_subscribe',
 				'confirm/{url_title}'           => '_confirm',
 				'unsubscribe/{url_title}'       => '_unsubscribe',
-				'track/{url_title}'             => '_track',
 				'admin{pages}'                  => 'index',
 				'admin/campaigns'                 => '_campaigns',
 				'admin/campaigns/send/{id}'       => '_campaign_send',

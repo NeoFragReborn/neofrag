@@ -257,7 +257,6 @@ return [
 	'e4b31aee' => '¿Restablecer el 2FA de <b>%s</b>? El usuario tendrá que reconfigurarlo si quiere reactivarlo. Esta acción queda registrada en el registro de auditoría.',
 	'954424e6' => '2FA restablecido para %s.',
 	'9b69ece2' => 'Eliminar el usuario',
-	'ed704c4f' => '¿Eliminar la cuenta de <b>%s</b>? La cuenta se anonimizará (soft-delete RGPD) y se cerrarán sus sesiones. Acción registrada en el registro de auditoría.',
 	'906937be' => 'Usuario %s eliminado.',
 	'4f98863b' => 'Identificador',
 	'6ffdfb99' => 'Administrador (acceso completo)',
@@ -405,4 +404,5 @@ return [
 	'a0000a84' => 'Lo que recibo',
 	'34f13694' => 'Todo lo que el sitio te ha avisado. ¿Demasiadas notificaciones? Elige lo que recibes.',
 	'fd3c356f' => 'Preferencias',
+	'62f0618d' => '¿Eliminar la cuenta de <b>%s</b>? Su perfil, sus cuentas vinculadas, su historial de conexiones y sus notificaciones se borran, y sus sesiones se cierran; lo que publicó permanece, con un seudónimo neutro. La acción queda registrada en el registro de auditoría.',
 ];

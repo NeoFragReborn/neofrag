@@ -9,10 +9,9 @@ declare(strict_types=1);
  * dans une liste, mais rien n'empêche un POST de porter autre chose, et cette valeur finirait dans
  * une adresse envoyée à Google et dans une feuille de style. On ne fait donc confiance qu'à la liste.
  *
- * Les polices sont servies par Google Fonts, que la politique de sécurité autorise déjà en
- * `style-src` (cf. index.php). C'est la seule exception au principe « aucun tiers » du projet, et
- * elle est délibérée : embarquer des dizaines de fichiers de fontes alourdirait le paquet livré, et
- * l'administrateur qui ne veut pas de tiers garde « Police du thème », qui ne demande rien à personne.
+ * Les polices sont servies par le site lui-même (`css/fonts/<nom>.css` et `fonts/<nom>/`, écrits par
+ * tools/polices-locales.php) : jusqu'au 2026-10-08, elles venaient de Google Fonts, et le navigateur de
+ * chaque visiteur envoyait son adresse IP à Google sans qu'on le lui demande. Plus aucun tiers ici.
  *
  * `--nf-font-mono` n'est pas concernée : du code se lit en chasse fixe, toujours.
  */
@@ -24,7 +23,7 @@ declare(strict_types=1);
  * — la seule à traduire — est ajoutée par le formulaire d'administration, seul endroit qui ait la
  * langue de l'utilisateur sous la main.
  *
- * @return array<string, string> nom envoyé à Google Fonts => libellé affiché
+ * @return array<string, string> nom de la famille => libellé affiché
  */
 function polices_disponibles(): array
 {
@@ -60,6 +59,15 @@ function police_du_site(): ?string
 	}
 
 	return $choix;
+}
+
+/**
+ * La feuille locale d'une police de la liste : `fonts/<nom>`, pour `path(…, 'css')` (« Source Sans 3 » →
+ * `fonts/source-sans-3`).
+ */
+function police_du_site_feuille(string $police): string
+{
+	return 'fonts/'.strtolower(str_replace(' ', '-', $police));
 }
 
 /**

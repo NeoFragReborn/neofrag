@@ -79,8 +79,6 @@ return [
 	'0cfde910' => 'Nada a enviar (nenhum subscritor confirmado).',
 	'1c3b7c57' => 'Campanha cancelada.',
 	'5c8e6526' => 'Cancelamento impossível (campanha já em envio).',
-	'b588414d' => 'aber.',
-	'75df0f92' => 'Taxa de abertura',
 	'8f0057d4' => 'Modelos',
 	'14bd4f31' => 'Nenhum modelo. Cria um para reutilizar assunto + conteúdo ao compor.',
 	'54231355' => 'Nome',

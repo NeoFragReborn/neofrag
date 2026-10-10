@@ -227,10 +227,12 @@ if (!$is_dashboard) {
 			<footer class="nf-footer">
 				<span><?php echo $this->lang('Propulsé par') ?> <strong>NeoFrag Reborn</strong> <?php echo NEOFRAG_VERSION ?></span>
 				<ul>
-					<?php foreach ([
-						[$this->lang('Fonctionnalités'), 'https://neofr.ag/#features'],
-						[$this->lang('Documentation'),   'https://docs.neofr.ag'],
-						[$this->lang('Forum'),           'https://neofr.ag/forum']
+					<?php // Le site du projet : ces liens menaient encore à neofr.ag, le site du NeoFrag d'origine, que NeoFrag
+					// Reborn continue mais qui n'est pas le sien (sa documentation n'est pas celle de ce produit).
+					foreach ([
+						[$this->lang('Fonctionnalités'), 'https://neofrag-reborn.xyz'],
+						[$this->lang('Documentation'),   'https://neofrag-reborn.xyz/wiki'],
+						[$this->lang('Forum'),           'https://neofrag-reborn.xyz/forum']
 					] as list($title, $href)): ?>
 					<li><a href="<?php echo $href ?>" target="_blank" rel="noopener"><?php echo $title ?></a></li>
 					<?php endforeach ?>

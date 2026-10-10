@@ -15,7 +15,8 @@ $embed_full = function($c) use ($host) {
 	<div class="widget-twitch <?php echo $is_live ? 'is-live' : 'is-offline' ?>">
 		<?php if ($is_live && !empty($c['thumbnail'])): ?>
 		<div class="widget-twitch-thumb">
-			<img src="<?php echo nf_texte($c['thumbnail']).'?_='.time() ?>" alt="" loading="lazy" />
+			<?php /* Servie par le site (helpers/relais.php), qui reprend l'aperçu d'un direct toutes les dix minutes. */ ?>
+			<img src="<?php echo nf_texte($c['thumbnail']) ?>" alt="" loading="lazy" />
 			<div class="widget-twitch-live-badge"><span class="dot"></span> LIVE</div>
 			<?php if (!empty($c['viewers'])): ?>
 			<div class="widget-twitch-viewers"><i class="fas fa-eye"></i> <?php echo number_format((int)$c['viewers'], 0, ',', ' ') ?></div>
@@ -63,13 +64,15 @@ $embed_full = function($c) use ($host) {
 <?php endforeach ?>
 </div>
 
-<!-- Lecteur intégré (modal) — une instance partagée par page -->
+<!-- Lecteur intégré (modal) — une instance partagée par page. Le lecteur vient de Twitch ou de YouTube : il ne
+     se charge qu'une fois le service accepté par le visiteur (js/consentement.js) ; jusque-là, son avis. -->
 <script>
 (function(){
 	if (window._nfLivePlayerInit) return;
 	window._nfLivePlayerInit = true;
 
-	var modal, iframe, label;
+	var TEXTES = <?php echo json_encode(['ouvrir' => (string) $this->lang('Ouvrir la chaîne'), 'fermer' => (string) $this->lang('Fermer')], JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?>;
+	var modal, iframe, label, corps;
 
 	function ensureModal(){
 		if (modal) return;
@@ -80,16 +83,23 @@ $embed_full = function($c) use ($host) {
 			'<div class="nf-twitch-modal-dialog">' +
 				'<div class="nf-twitch-modal-header">' +
 					'<span class="nf-twitch-modal-label"><i class="fas fa-broadcast-tower"></i> <span></span></span>' +
-					'<a href="#" target="_blank" rel="noopener" class="nf-twitch-modal-open" title="Ouvrir la chaîne"><i class="fas fa-external-link-alt"></i></a>' +
-					'<button type="button" class="nf-twitch-modal-close" aria-label="Fermer">×</button>' +
+					'<a href="#" target="_blank" rel="noopener" class="nf-twitch-modal-open"><i class="fas fa-external-link-alt"></i></a>' +
+					'<button type="button" class="nf-twitch-modal-close">×</button>' +
 				'</div>' +
 				'<div class="nf-twitch-modal-body"><iframe allowfullscreen frameborder="0" scrolling="no"></iframe></div>' +
 			'</div>';
 		document.body.appendChild(modal);
 		iframe = modal.querySelector('iframe');
 		label  = modal.querySelector('.nf-twitch-modal-label span');
+		corps  = modal.querySelector('.nf-twitch-modal-body');
+		modal.querySelector('.nf-twitch-modal-open').setAttribute('title', TEXTES.ouvrir);
+		modal.querySelector('.nf-twitch-modal-close').setAttribute('aria-label', TEXTES.fermer);
 
-		var close = function(){ modal.classList.remove('show'); iframe.src = ''; };
+		var close = function(){
+			modal.classList.remove('show');
+			iframe.src = '';
+			corps.querySelectorAll('.nf-tiers').forEach(function(a){ a.remove(); });
+		};
 		modal.querySelector('.nf-twitch-modal-backdrop').addEventListener('click', close);
 		modal.querySelector('.nf-twitch-modal-close').addEventListener('click', close);
 		document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && modal.classList.contains('show')) close(); });
@@ -101,10 +111,22 @@ $embed_full = function($c) use ($host) {
 		e.preventDefault();
 		if (btn.dataset.mode === 'newtab'){ window.open(btn.dataset.channelUrl, '_blank', 'noopener'); return; }
 		ensureModal();
-		iframe.src = btn.dataset.embed;
 		label.textContent = btn.dataset.channel;
 		modal.querySelector('.nf-twitch-modal-open').href = btn.dataset.channelUrl;
 		modal.classList.add('show');
+
+		var service = /youtube/i.test(btn.dataset.embed) ? 'youtube' : 'twitch';
+		var embed   = btn.dataset.embed;
+
+		corps.querySelectorAll('.nf-tiers').forEach(function(a){ a.remove(); });
+		iframe.hidden = true;
+
+		if (window.NF && window.NF.consentement){
+			window.NF.consentement.demander(service, corps, function(){
+				iframe.hidden = false;
+				iframe.src = embed;
+			});
+		}
 	});
 })();
 </script>

@@ -3,6 +3,8 @@
  * Un salon public : ses derniers messages (le plus récent en bas, comme dans la messagerie), puis le lien pour le
  * rejoindre. Pour un visiteur ($messages === NULL) : l'invitation à se connecter, sans le texte des messages.
  */
+$messages = $messages ?? NULL;
+$lien     = (string) ($lien ?? url('talks'));
 $sans_balises = static fn (string $texte): string => trim((string) preg_replace('#\[/?[a-z*]+(=[^\]]*)?\]#i', '', $texte));
 ?>
 <div class="nf-salon">

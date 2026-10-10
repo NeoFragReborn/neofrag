@@ -11,6 +11,8 @@ use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 
 class Admin extends Controller_Module
 {
+	use \NF\Modules\User\Effacement;
+
 	/**
 	 * Nav locale pour les sous-pages user (Membres / Sessions / Audit log).
 	 * Affichée en haut des 3 pages user pour navigation rapide entre elles.
@@ -644,22 +646,15 @@ class Admin extends Controller_Module
 	{
 		$this	->title($this->lang('Supprimer l\'utilisateur'))
 				->form()
-				->confirm_deletion($this->lang('Supprimer l\'utilisateur'), $this->lang('Supprimer le compte de <b>%s</b> ? Le compte sera anonymisé (soft-delete RGPD) et ses sessions fermées. Action tracée dans l\'audit log.', nf_texte($user['username'])));
+				->confirm_deletion($this->lang('Supprimer l\'utilisateur'), $this->lang('Supprimer le compte de <b>%s</b> ? Son profil, ses comptes liés, son historique de connexions et ses notifications sont effacés, ses sessions fermées ; ce qu\'il a publié reste, sous un pseudo neutre. Action tracée dans le journal d\'audit.', nf_texte($user['username'])));
 
 		if ($this->form()->is_valid())
 		{
 			$user_id = (int)$user['id'];
 
-			$this->db	->where('id', $user_id)
-						->update('nf_user', [
-							'deleted'      => 1,
-							'email'        => 'deleted-'.$user_id.'@deleted.local',
-							'totp_secret'  => NULL,
-							'totp_enabled' => 0
-						]);
-
-			$this->db->where('user_id', $user_id)->delete('nf_session');
-			$this->db->where('user_id', $user_id)->delete('nf_user_totp_recovery');
+			// Le même effacement que celui que le membre demande lui-même (Effacement) : jusqu'au 2026-10-08,
+			// l'administrateur ne faisait que fermer le compte, et tout le reste demeurait.
+			$this->_effacer_donnees($user_id);
 
 			(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('user.admin_deleted', [
 				'target_user_id'  => $user_id,

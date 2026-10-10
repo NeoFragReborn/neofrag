@@ -2,13 +2,13 @@
 /**
  * Google Analytics, sous CONSENTEMENT.
  *
- * La bannière de cookies pose `nf_consent` : « full » (tout accepter) ou « essentials » (refuser le
- * non essentiel). Jusqu'au 2026-09-17, ce gabarit chargeait Google dès que `nf_analytics` était
- * renseigné, sans regarder ce cookie — la bannière demandait un accord qui n'était pas attendu.
+ * Le visiteur accepte ou refuse chaque service tiers (helpers/consentement.php, service `analytics`).
+ * Jusqu'au 2026-09-17, ce gabarit chargeait Google dès que `nf_analytics` était renseigné, sans regarder
+ * le choix du visiteur — la bannière demandait un accord qui n'était pas attendu.
  *
- *   - consentement complet déjà donné : le chargeur de Google est émis directement ;
- *   - sinon : un petit script attend l'événement `nf:consent` que la bannière émet au clic, et ne
- *     charge Google que si le niveau est « full ». Rien ne part avant.
+ *   - Google Analytics déjà accepté : le chargeur de Google est émis directement ;
+ *   - sinon : un petit script attend l'événement `nf:consent` qu'émet le bandeau ou la fenêtre « Gérer
+ *     mes cookies », et ne charge Google que si `analytics` est dans la liste. Rien ne part avant.
  *
  * Les <script> inline reçoivent leur nonce du filtre d'index.php ; le chargeur externe le porte aussi,
  * et index.php n'ajoute googletagmanager.com à `script-src` que si un identifiant est configuré.
@@ -20,7 +20,7 @@ if ($id === '')
 	return;
 }
 
-if (($_COOKIE['nf_consent'] ?? '') === 'full'):
+if (nf_consentement_accepte('analytics')):
 ?>
 <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo rawurlencode($id) ?>"></script>
 <script>

@@ -1,0 +1,135 @@
+/*
+ * Le consentement du visiteur (2026-10-08) : la fenêtre « Gérer mes cookies », le bandeau, les avis posés à la
+ * place des contenus tiers (neofrag/views/theme/consentement.tpl.php, helpers/consentement.php).
+ *
+ * Les couleurs sont celles du thème actif, par le vocabulaire partagé --nf-* ; chaque valeur a son repli, pour un
+ * thème qui ne le définirait pas. « Tout accepter » et « Tout refuser » ont exactement le même style : aucun des
+ * deux ne doit attirer l'œil plus que l'autre.
+ */
+
+.nf-consentement,
+.nf-consentement-bandeau,
+.nf-tiers {
+	--nfc-fond:    var(--nf-surface, #1d2427);
+	--nfc-fond-2:  var(--nf-surface-2, #2b373a);
+	--nfc-texte:   var(--nf-text, #e8eef0);
+	--nfc-fort:    var(--nf-text-strong, #fff);
+	--nfc-discret: var(--nf-muted, #9aa8ad);
+	--nfc-bord:    var(--nf-border, rgba(255, 255, 255, .14));
+	--nfc-accent:  var(--nf-accent, #03c1a2);
+	--nfc-sur:     var(--nf-on-accent, #fff);
+	--nfc-rayon:   var(--nf-radius, 8px);
+	font-family:   var(--nf-font, system-ui, sans-serif);
+	color:         var(--nfc-texte);
+}
+
+/* La fenêtre */
+.nf-consentement {
+	width:         min(640px, calc(100vw - 32px));
+	max-height:    calc(100vh - 32px);
+	padding:       0;
+	border:        1px solid var(--nfc-bord);
+	border-radius: var(--nfc-rayon);
+	background:    var(--nfc-fond);
+	box-shadow:    var(--nf-shadow-md, 0 12px 40px rgba(0, 0, 0, .35));
+}
+
+.nf-consentement::backdrop { background: rgba(0, 0, 0, .55); }
+
+.nf-consentement__corps { display: flex; flex-direction: column; gap: 14px; padding: 20px; font-size: 14px; line-height: 1.55; }
+.nf-consentement__corps p { margin: 0; }
+.nf-consentement__tete { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.nf-consentement__tete h2 { margin: 0; font-size: 1.25rem; color: var(--nfc-fort); }
+.nf-consentement__fermer { border: 0; background: none; color: var(--nfc-discret); font-size: 1.2rem; padding: 4px 8px; cursor: pointer; }
+.nf-consentement__fermer:hover { color: var(--nfc-fort); }
+
+.nf-consentement__groupe { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--nfc-bord); }
+.nf-consentement__groupe h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; font-size: 1rem; color: var(--nfc-fort); }
+.nf-consentement__groupe > p { color: var(--nfc-discret); }
+.nf-consentement__toujours { font-size: .75rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--nfc-fond-2); color: var(--nfc-discret); }
+
+.nf-consentement__propres { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.nf-consentement__propres li { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; padding: 8px 10px; border-radius: calc(var(--nfc-rayon) * .6); background: var(--nfc-fond-2); }
+.nf-consentement__propres code { justify-self: start; padding: 0; border: 0; background: none; font-size: .85em; color: var(--nfc-fort); overflow-wrap: anywhere; }
+.nf-consentement__propres small { color: var(--nfc-discret); }
+
+.nf-consentement__service { display: flex; align-items: flex-start; gap: 12px; padding: 8px 10px; border-radius: calc(var(--nfc-rayon) * .6); background: var(--nfc-fond-2); cursor: pointer; }
+.nf-consentement__service input { flex: none; width: 2.4em; height: 1.3em; margin: 2px 0 0; accent-color: var(--nfc-accent); cursor: pointer; }
+.nf-consentement__nom { display: flex; flex-direction: column; min-width: 0; }
+.nf-consentement__nom strong { color: var(--nfc-fort); }
+.nf-consentement__nom small { color: var(--nfc-discret); overflow-wrap: anywhere; }
+.nf-consentement__nom a, .nf-consentement-bandeau a, .nf-tiers a { color: var(--nfc-accent); text-decoration: underline; }
+
+.nf-consentement__aucun { padding: 10px; border-radius: calc(var(--nfc-rayon) * .6); background: var(--nfc-fond-2); }
+
+.nf-consentement__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding-top: 12px; border-top: 1px solid var(--nfc-bord); }
+
+/* Les boutons : « Tout refuser » et « Tout accepter » identiques ; « Enregistrer » plein, dans la fenêtre seulement. */
+.nf-consentement__bouton {
+	padding:       8px 16px;
+	border:        1px solid var(--nfc-accent);
+	border-radius: calc(var(--nfc-rayon) * .6);
+	background:    transparent;
+	color:         var(--nfc-fort);
+	font:          inherit;
+	font-weight:   600;
+	font-size:     13px;
+	cursor:        pointer;
+}
+.nf-consentement__bouton:hover, .nf-consentement__bouton:focus-visible { background: color-mix(in srgb, var(--nfc-accent) 18%, transparent); }
+.nf-consentement__bouton--plein { background: var(--nfc-accent); color: var(--nfc-sur); }
+.nf-consentement__bouton--plein:hover, .nf-consentement__bouton--plein:focus-visible { background: var(--nfc-accent); filter: brightness(1.08); }
+.nf-consentement__bouton--lien { border-color: transparent; text-decoration: underline; }
+
+/* Le bandeau */
+.nf-consentement-bandeau {
+	position:   fixed;
+	right:      16px;
+	bottom:     16px;
+	left:       16px;
+	z-index:    9999;
+	display:    flex;
+	flex-wrap:  wrap;
+	align-items: center;
+	gap:        12px 20px;
+	max-width:  960px;
+	margin:     0 auto;
+	padding:    16px 20px;
+	border:     1px solid var(--nfc-bord);
+	border-radius: var(--nfc-rayon);
+	background: var(--nfc-fond);
+	box-shadow: var(--nf-shadow-md, 0 12px 40px rgba(0, 0, 0, .35));
+	font-size:  14px;
+	line-height: 1.5;
+}
+.nf-consentement-bandeau__texte { flex: 1 1 320px; margin: 0; }
+.nf-consentement-bandeau__texte strong:first-child { display: block; margin-bottom: 2px; color: var(--nfc-fort); }
+.nf-consentement-bandeau__boutons { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* L'avis posé à la place d'un contenu tiers (une vidéo, un widget) */
+.nf-tiers {
+	display:        flex;
+	flex-direction: column;
+	justify-content: center;
+	gap:            10px;
+	min-height:     160px;
+	padding:        18px;
+	border:         1px dashed var(--nfc-bord);
+	border-radius:  var(--nfc-rayon);
+	background:     var(--nfc-fond-2);
+	font-size:      14px;
+	line-height:    1.5;
+	text-align:     left;
+}
+.nf-tiers p { margin: 0; }
+.nf-tiers__titre { display: flex; align-items: center; gap: 8px; color: var(--nfc-fort); font-weight: 700; }
+.nf-tiers__boutons { display: flex; flex-wrap: wrap; gap: 8px; }
+
+@media (max-width: 575.98px) {
+	.nf-consentement-bandeau { right: 8px; bottom: 8px; left: 8px; padding: 14px; }
+	.nf-consentement-bandeau__boutons, .nf-consentement__actions { width: 100%; }
+	.nf-consentement-bandeau__boutons .nf-consentement__bouton, .nf-consentement__actions .nf-consentement__bouton { flex: 1 1 auto; }
+}
+
+/* Les liens légaux du pied de page (nf_liens_legaux()) : un lien ne se coupe pas en deux. */
+.nf-liens-legaux a { white-space: nowrap; }

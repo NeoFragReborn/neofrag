@@ -10,6 +10,58 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.43] — 2026-10-08
+
+La confidentialité : plus aucun visiteur envoyé chez un tiers sans son accord.
+
+### Ajouté
+
+- **Un vrai choix sur les services d'autres sociétés.** Le bandeau de cookies ne réglait que Google Analytics, pendant
+  que les vidéos, le widget Discord et les captchas se chargeaient quoi que le visiteur réponde. La fenêtre **« Gérer
+  mes cookies »**, ouverte depuis le pied de chaque page, montre les cookies du site lui-même, puis chaque service, à
+  accepter ou à refuser un par un. À la place d'une vidéo YouTube, Twitch, Vimeo ou Dailymotion, d'un morceau Spotify ou
+  SoundCloud, ou du widget Discord, un avis dit qui recevrait l'adresse IP du visiteur, avec « Afficher » et « Toujours
+  autoriser ». Le bandeau ne s'ouvre que si le site a vraiment quelque chose à demander d'emblée (la mesure d'audience,
+  un captcha confié à un tiers) ; « Tout accepter » et « Tout refuser » y ont le même poids. Le choix est gardé six
+  mois, et sa trace, sans adresse IP, treize mois.
+- **Paramètres → Confidentialité** : les pages de mentions légales et de politique de confidentialité, choisies parmi
+  les pages publiées. Le pied de chaque thème les relie, à côté de « Gérer mes cookies ».
+
+### Modifié
+
+- **Les polices sont servies par le site** : les thèmes et le réglage « Police du site » les prenaient chez Google
+  Fonts, et le navigateur de chaque visiteur envoyait son adresse IP à Google, sur chaque page.
+- **Les images d'autres sites sont servies par le site** — un avatar Discord, Steam ou Twitch, un GIF de la messagerie,
+  une image collée dans un article, le forum ou une annonce, une bannière : le site les récupère lui-même et les garde
+  sept jours, et le navigateur ne contacte plus leur hébergeur. Les tuiles de la carte des lieux aussi.
+- **La politique de sécurité ne laisse plus passer que le site** pour les images et les connexions (Analytics excepté,
+  s'il est réglé), et les lecteurs des services connus pour les cadres, qu'elle refusait : la vidéo d'un article ne
+  s'affichait pas. Un script d'un autre site collé dans un widget « Code HTML » ou une publicité ne s'exécute plus que
+  si son origine est autorisée.
+- **Un captcha confié à un tiers et refusé par le visiteur laisse place à ALTCHA**, servi par le site : personne n'a à
+  céder ses données à Google, à hCaptcha ou à Cloudflare pour écrire au site ou s'inscrire.
+- **Plus de pixel de suivi dans la lettre d'information**, ni de taux d'ouverture : un traceur que l'inscription ne
+  demandait pas (recommandation de la CNIL du 12 mars 2026 sur les pixels de suivi dans les courriels).
+- **Des durées de conservation** : le journal d'audit un an, les compteurs anti-abus un jour, les inscriptions à la
+  lettre jamais confirmées trente jours, sa file d'envoi quatre-vingt-dix jours ; pour un signalement traité depuis un
+  an, l'adresse IP de son auteur et la copie du contenu s'en vont. Le cookie de connexion s'arrête à la fermeture du
+  navigateur, sauf avec « Se souvenir de moi » (un an), qui n'est plus coché d'avance.
+- **Plus de cartes Google** dans l'éditeur de texte : la carte du produit est celle d'OpenStreetMap.
+- Le lien « Propulsé par NeoFrag Reborn » des thèmes, le mot magique `{neofrag}` du copyright et les liens du pied de
+  l'administration mènent au site du projet ; ils menaient au site du NeoFrag d'origine.
+
+### Corrigé
+
+- **Plus aucune adresse IP envoyée à neofr.ag** : pour poser un drapeau devant les adresses des sessions, le navigateur
+  de l'administrateur les y envoyait toutes.
+- **La suppression d'un compte par l'administrateur efface vraiment** le profil, les comptes liés, l'historique des
+  connexions et les notifications, comme celle que le membre demande lui-même ; elle ne faisait que fermer le compte.
+- **L'archive « Mes données » se télécharge de nouveau** : trois de ses listes (sujets du forum, commentaires, messages
+  des discussions) lisaient des colonnes qui n'existent pas.
+- Les infobulles des sessions et de la galerie étaient vides (un attribut de Bootstrap 4).
+- L'avatar du widget Steam n'était pas échappé.
+- Les deux libellés du lecteur du widget Twitch, restés en français, se traduisent.
+
 ## [1.2.42] — 2026-10-07
 
 Un thème refait : **Extend**, le site comme le lanceur d'un jeu en ligne.

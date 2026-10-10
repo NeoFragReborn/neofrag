@@ -257,7 +257,6 @@ return [
 	'e4b31aee' => '2FA von <b>%s</b> zurücksetzen? Der Benutzer muss es neu einrichten, um es wieder zu aktivieren. Diese Aktion wird im Audit-Log protokolliert.',
 	'954424e6' => '2FA für %s zurückgesetzt.',
 	'9b69ece2' => 'Benutzer löschen',
-	'ed704c4f' => 'Konto von <b>%s</b> löschen? Das Konto wird anonymisiert (DSGVO-Soft-Delete) und seine Sitzungen werden geschlossen. Aktion im Audit-Log protokolliert.',
 	'906937be' => 'Benutzer %s gelöscht.',
 	'4f98863b' => 'Benutzername',
 	'6ffdfb99' => 'Administrator (Vollzugriff)',
@@ -405,4 +404,5 @@ return [
 	'a0000a84' => 'Was ich erhalte',
 	'34f13694' => 'Alles, worauf dich die Website hingewiesen hat. Zu viele Benachrichtigungen? Wähle aus, was du erhältst.',
 	'fd3c356f' => 'Einstellungen',
+	'62f0618d' => 'Das Konto von <b>%s</b> löschen? Profil, verknüpfte Konten, Anmeldeverlauf und Benachrichtigungen werden gelöscht, die Sitzungen geschlossen; was veröffentlicht wurde, bleibt unter einem neutralen Benutzernamen. Die Aktion wird im Audit-Protokoll festgehalten.',
 ];

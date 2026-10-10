@@ -36,4 +36,5 @@ return [
 	'88835a36' => 'Sur <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a>, active <strong>YouTube Data API v3</strong>.',
 	'f7e50b21' => 'Crée une <strong>clé API</strong> (Identifiants) et colle-la ci-dessus. Pour la chaîne, utilise son <code>channelId</code> (UC...).',
 	'364d1ba1' => 'Sans identifiants, les chaînes restent listées avec un statut « indisponible » et un lien direct.',
+	'ed9e84ae' => 'Ouvrir la chaîne',
 ];

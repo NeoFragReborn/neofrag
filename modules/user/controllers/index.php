@@ -16,6 +16,8 @@ use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 
 class Index extends Controller_Module
 {
+	use \NF\Modules\User\Effacement;
+
 	public function index()
 	{
 		$this	->title($this->lang('Mon espace'))
@@ -269,25 +271,29 @@ class Index extends Controller_Module
 			'notifications' => !$this->db->table_exists('nf_notifications') ? [] : $this->db	->from('nf_notifications')
 																								->where('user_id', $id)
 																								->get(FALSE),
-			'forum_topics' => !$forum ? [] : $this->db	->select('topic_id', 'title', 'UNIX_TIMESTAMP(date) AS created_at')
-														->from('nf_forum_topics')
-														->where('user_id', $id)
+			// Les colonnes de ces trois listes n'existaient pas (un sujet n'a ni auteur ni date à lui : ce sont
+			// ceux de son premier message ; un commentaire s'identifie par `id` et `module_id` ; un message de
+			// discussion porte `message`) : la requête échouait, et l'archive avec elle (2026-10-08).
+			'forum_topics' => !$forum ? [] : $this->db	->select('t.topic_id', 't.title', 'UNIX_TIMESTAMP(m.date) AS created_at')
+														->from('nf_forum_topics t')
+														->join('nf_forum_messages m', 'm.message_id = t.message_id', 'INNER')
+														->where('m.user_id', $id)
 														->get(),
 			'forum_messages' => !$forum ? [] : $this->db	->select('message_id', 'topic_id', 'message', 'UNIX_TIMESTAMP(date) AS created_at')
 														->from('nf_forum_messages')
 														->where('user_id', $id)
 														->get(),
-			'comments' => $this->db	->select('comment_id', 'module', 'object_id', 'content', 'UNIX_TIMESTAMP(date) AS created_at')
+			'comments' => $this->db	->select('id AS comment_id', 'module', 'module_id AS object_id', 'content', 'UNIX_TIMESTAMP(date) AS created_at')
 									->from('nf_comment')
 									->where('user_id', $id)
 									->get(),
-			'messages_envoyes' => $this->db	->select('t.talk_id', 't.name AS title', 't.type', 'm.content', 'UNIX_TIMESTAMP(m.date) AS sent_at')
+			'messages_envoyes' => $this->db	->select('t.talk_id', 't.name AS title', 't.type', 'm.message AS content', 'UNIX_TIMESTAMP(m.date) AS sent_at')
 											->from('nf_talks_messages m')
 											->join('nf_talks t', 't.talk_id = m.talk_id')
 											->where('m.user_id', $id)
 											->where('m.deleted_at', NULL)
 											->get(),
-			'cookie_consent' => $this->db	->select('consent_essentials', 'consent_analytics', 'consent_marketing', 'UNIX_TIMESTAMP(created_at) AS at')
+			'cookie_consent' => $this->db	->select('services', 'UNIX_TIMESTAMP(created_at) AS at')
 											->from('nf_cookie_consent')
 											->where('user_id', $id)
 											->get()
@@ -450,62 +456,15 @@ class Index extends Controller_Module
 	}
 
 	/**
-	 * Ce que la suppression d'un compte efface, demandée par son membre (2026-10-05). Elle promettait
-	 * « tes posts resteront mais seront anonymisés » et ne retirait que l'adresse : le pseudo restait sur
-	 * chaque message, le profil (nom, naissance, lieu, signature, liens), les comptes liés, l'historique
-	 * des connexions et les notifications restaient en base — et un compte Discord lié ne pouvait plus
-	 * jamais servir à se réinscrire.
-	 *
-	 * Ce qui reste : ce que le membre a publié (sous un pseudo neutre, `supprime-<id>`), les journaux de
-	 * sécurité et les consentements, qui se gardent pour prouver. Une suppression faite par un
-	 * administrateur (Models\User::delete()) ne passe pas ici : elle ne fait que fermer le compte.
+	 * La suppression d'un compte demandée par son membre (2026-10-05) : l'effacement commun (Effacement), puis
+	 * la session en cours déconnectée, et non effacée, pour que le message « Ton compte a été supprimé »
+	 * s'affiche encore. Une suppression faite par un administrateur efface la même chose depuis le
+	 * 2026-10-08 (Admin::_delete()).
 	 */
 	private function _effacer_compte(int $user_id): void
 	{
-		// Les comptes externes liés : leur clé identifie la personne chez le service. Le bot Discord du site
-		// apprend la déliaison et retire les rôles du membre.
-		foreach ((array) $this->db->select('a.key', 'ad.name')->from('nf_user_auth a')->join('nf_addon ad', 'ad.id = a.authenticator_id', 'INNER')->where('a.user_id', $user_id)->get() as $lien)
-		{
-			$this->_compte_externe_change('unlinked', (string) $lien['name'], $user_id, (string) $lien['key']);
-		}
-
-		$profil = $this->db->select('avatar', 'cover')->from('nf_user_profile')->where('id', $user_id)->row(FALSE);
-
-		// Vides, ou NULL pour les colonnes qui l'admettent (la signature et les textes ne l'admettent pas).
-		$this->db	->where('id', $user_id)
-					->update('nf_user_profile', array_fill_keys(['first_name', 'last_name', 'signature', 'country', 'timezone', 'location', 'quote', 'website', 'linkedin', 'github', 'instagram', 'twitch'], '') + array_fill_keys(['avatar', 'cover', 'date_of_birth', 'sex'], NULL)
-						// Un compte effacé ne montre plus rien de lui.
-						+ array_fill_keys(['montrer_points', 'montrer_karma', 'montrer_vip', 'montrer_age', 'montrer_statut'], 0));
-
-		foreach (is_array($profil) ? array_filter([(int) ($profil['avatar'] ?? 0), (int) ($profil['cover'] ?? 0)]) : [] as $fichier)
-		{
-			$this->model2('file', $fichier)->delete();
-		}
-
-		foreach (['nf_user_auth', 'nf_session_history', 'nf_user_totp_recovery', 'nf_user_token', 'nf_user_fields_values', 'nf_notifications', 'nf_notifications_preferences', 'nf_users_roles', 'nf_users_groups'] as $table)
-		{
-			if ($this->db->table_exists($table))
-			{
-				$this->db->where('user_id', $user_id)->delete($table);
-			}
-		}
-
-		// Ses sessions sur les autres appareils sont fermées ; celle-ci est déconnectée, et non effacée :
-		// effacée, elle emportait le message « Ton compte a été supprimé », qui ne s'affichait jamais.
-		$this->db->where('user_id', $user_id)->where('id <>', (string) $this->session->id)->delete('nf_session');
+		$this->_effacer_donnees($user_id, (string) $this->session->id);
 		$this->session->logout();
-
-		$this->db	->where('id', $user_id)
-					->update('nf_user', [
-						'username'     => 'supprime-'.$user_id,
-						'email'        => 'deleted-'.$user_id.'@deleted.local',
-						'password'     => '',
-						'salt'         => '',
-						'data'         => '',
-						'totp_secret'  => NULL,
-						'totp_enabled' => 0,
-						'deleted'      => '1',
-					]);
 	}
 
 	public function security_setup()
@@ -1519,31 +1478,6 @@ class Index extends Controller_Module
 
 		notify($this->lang('Compte délié.'));
 		redirect('user/auth');
-	}
-
-	/**
-	 * Un compte Discord lié ou délié ici : le bot Discord du site l'apprend par le fil de
-	 * l'API, et donne ou retire aussitôt les rôles du membre. Les autres comptes externes (GitHub,
-	 * Google) ne concernent aucun bot.
-	 *
-	 * couplage(api): facultatif — sans le module api, `Module::__load` rend NULL et rien n'est inscrit.
-	 */
-	private function _compte_externe_change(string $quoi, string $authentificateur, int $user_id, string $cle): void
-	{
-		if ($authentificateur !== 'discord' || $cle === '')
-		{
-			return;
-		}
-
-		$evenement = 'user.discord.'.$quoi;
-		$charge    = ['user_id' => $user_id, 'discord_id' => $cle];
-
-		$this->events->fire($evenement, $charge);
-
-		if (($api = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['api'])) instanceof \NF\Modules\Api\Api)
-		{
-			$api->consigner($evenement, $charge);
-		}
 	}
 
 	public function lost_password($token)

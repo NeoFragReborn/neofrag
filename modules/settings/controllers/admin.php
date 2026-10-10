@@ -81,8 +81,15 @@ class Admin extends Controller_Module
 				'color' => 'info'
 			],
 			[
+				'title' => $this->lang('Confidentialité'),
+				'desc'  => $this->lang('Pages légales du pied de page, services tiers et consentement des visiteurs'),
+				'icon'  => 'fas fa-user-shield',
+				'url'   => 'admin/settings/confidentialite',
+				'color' => 'success'
+			],
+			[
 				'title' => $this->lang('Copyright'),
-				'desc'  => $this->lang('Mentions légales, copyright affiché en bas de site'),
+				'desc'  => $this->lang('Texte du copyright affiché en bas de site'),
 				'icon'  => 'far fa-copyright',
 				'url'   => 'admin/settings/copyright',
 				'color' => 'accent'
@@ -1643,6 +1650,103 @@ class Admin extends Controller_Module
 		return $html;
 	}
 
+	/**
+	 * `admin/settings/confidentialite` — ce que le pied de page affiche (helpers/theme.php, nf_liens_legaux()) et
+	 * ce que le site demande à ses visiteurs (helpers/consentement.php). Les pages légales se choisissent parmi
+	 * les pages publiées ; leur contenu est un texte juridique, il revient à l'exploitant du site. Le reste se
+	 * lit : les services tiers que le site peut afficher, ceux qui ouvrent le bandeau, et où les régler.
+	 */
+	public function confidentialite()
+	{
+		$this	->subtitle($this->lang('Confidentialité'))
+				->icon('fas fa-user-shield');
+
+		$pages = ['' => (string) $this->lang('Aucune')];
+
+		if (($module = @$this->module('pages')) && $module->is_enabled())
+		{
+			// Le titre dans la langue de l'administrateur, sinon dans une autre, sinon l'adresse de la page.
+			$langue = (string) $this->config->lang->info()->name;
+
+			foreach ($this->db	->select('p.name', 'pl.lang', 'pl.title')
+								->from('nf_pages p')
+								->join('nf_pages_lang pl', 'pl.page_id = p.page_id', 'LEFT')
+								->where('p.published', '1')
+								->order_by('p.name')
+								->get() as $page)
+			{
+				$nom = (string) $page['name'];
+
+				if (!isset($pages[$nom]) || $page['lang'] === $langue)
+				{
+					$pages[$nom] = (string) ($page['title'] ?: $nom);
+				}
+			}
+		}
+
+		$choisie = function (string $reglage, string $defaut) use ($pages): string {
+			$nom = (string) $this->config->$reglage ?: $defaut;
+
+			return isset($pages[$nom]) ? $nom : '';
+		};
+
+		$this	->form()
+				->add_rules([
+					'page_mentions' => [
+						'label'       => $this->lang('Mentions légales'),
+						'description' => $this->lang('L’identité de l’éditeur du site et de son hébergeur (loi pour la confiance dans l’économie numérique, art. 1-1).'),
+						'values'      => $pages,
+						'value'       => $choisie('nf_page_mentions', 'mentions-legales'),
+						'type'        => 'select'
+					],
+					'page_confidentialite' => [
+						'label'       => $this->lang('Politique de confidentialité'),
+						'description' => $this->lang('Ce que le site fait des données de ses visiteurs et de ses membres (RGPD, art. 12 à 14).'),
+						'values'      => $pages,
+						'value'       => $choisie('nf_page_confidentialite', 'confidentialite'),
+						'type'        => 'select'
+					]
+				])
+				->add_submit($this->lang('Valider'))
+				->display_required(FALSE);
+
+		if ($this->form()->is_valid($post))
+		{
+			// Une page hors de la liste (un select n'est pas validé par le form) ne s'enregistre pas.
+			foreach (['page_mentions' => 'nf_page_mentions', 'page_confidentialite' => 'nf_page_confidentialite'] as $champ => $reglage)
+			{
+				$nom = (string) ($post[$champ] ?? '');
+				$this->config($reglage, isset($pages[$nom]) && $nom !== '' ? $nom : '-');
+			}
+
+			$this->_audit('confidentialite');
+			notify($this->lang('Pages légales enregistrées'));
+			refresh();
+		}
+
+		$site     = nf_consentement_du_site();
+		$services = nf_consentement_services();
+		$noms     = fn(array $cles): string => $cles ? implode(', ', array_map(fn(string $c): string => nf_texte($services[$c]['nom']), $cles)) : (string) $this->lang('aucun');
+
+		$etat = '<p>'.$this->lang('Le pied de chaque page porte les liens vers ces deux pages, s’ils existent, et « Gérer mes cookies », toujours : chaque visiteur y retrouve ce que le site dépose et y change ses choix.').'</p>'
+			.'<ul class="mb-3">'
+			.'<li><strong>'.$this->lang('Services qui ouvrent le bandeau').'</strong> : '
+			.($site['bandeau'] ? $noms($site['bandeau']).'. '.$this->lang('Ils agiraient sur toutes les pages : le bandeau demande l’accord du visiteur avant tout.') : $this->lang('Aucun : le site n’a rien à demander d’emblée, et n’affiche pas de bandeau.')).'</li>'
+			.'<li><strong>'.$this->lang('Contenus d’autres sites').'</strong> : '.$noms($site['contenus']).'. '.$this->lang('Là où une page en contient, un avis tient leur place jusqu’à ce que le visiteur les accepte.').'</li>'
+			.'<li><strong>'.$this->lang('Images d’autres sites').'</strong> : '.$this->lang('servies par le site lui-même ; le navigateur des visiteurs ne les demande jamais ailleurs.').'</li>'
+			.'</ul>'
+			.'<p class="mb-0">'.$this->lang('La mesure d’audience se règle dans %s, le captcha dans %s.', '<a href="'.url('admin/settings/general').'">'.$this->lang('Préférences générales').'</a>', '<a href="'.url('admin/settings/captcha').'">'.$this->lang('Sécurité anti-bots').'</a>').'</p>';
+
+		return $this->_layout(function($col) use ($etat){
+			$col->append($this	->panel()
+								->heading($this->lang('Pages légales'), 'fas fa-scale-balanced')
+								->body($this->form()->display()));
+			$col->append($this	->panel()
+								->heading($this->lang('Ce que le site demande à ses visiteurs'), 'fas fa-user-shield')
+								->body($etat));
+		});
+	}
+
 	public function copyright()
 	{
 		$this	->subtitle($this->lang('Copyright'))
@@ -1671,7 +1775,7 @@ class Admin extends Controller_Module
 		// Render preview with magic words replaced (same logic as widgets/copyright/controllers/index.php)
 		$keywords = [
 			'name'      => '<a href="'.url().'">'.$this->config->nf_name.'</a>',
-			'neofrag'   => '<a href="https://neofr.ag">NeoFrag Reborn</a>',
+			'neofrag'   => '<a href="https://neofrag-reborn.xyz">NeoFrag Reborn</a>',
 			'year'      => date('Y'),
 			'copyright' => icon('far fa-copyright')
 		];

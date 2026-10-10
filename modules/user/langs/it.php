@@ -257,7 +257,6 @@ return [
 	'e4b31aee' => 'Reimpostare il 2FA di <b>%s</b>? L\'utente dovrà riconfigurarlo per riattivarlo. Questa azione è registrata nel log di audit.',
 	'954424e6' => '2FA reimpostato per %s.',
 	'9b69ece2' => 'Elimina l\'utente',
-	'ed704c4f' => 'Eliminare l\'account di <b>%s</b>? L\'account verrà anonimizzato (soft-delete GDPR) e le sue sessioni chiuse. Azione registrata nel log di audit.',
 	'906937be' => 'Utente %s eliminato.',
 	'4f98863b' => 'Identificativo',
 	'6ffdfb99' => 'Amministratore (accesso completo)',
@@ -405,4 +404,5 @@ return [
 	'a0000a84' => 'Cosa ricevo',
 	'34f13694' => 'Tutto ciò che il sito ti ha segnalato. Troppe notifiche? Scegli cosa ricevere.',
 	'fd3c356f' => 'Preferenze',
+	'62f0618d' => 'Eliminare l’account di <b>%s</b>? Il profilo, gli account collegati, la cronologia degli accessi e le notifiche vengono cancellati, le sessioni chiuse; ciò che ha pubblicato resta, con uno pseudonimo neutro. L’azione è registrata nel registro di audit.',
 ];

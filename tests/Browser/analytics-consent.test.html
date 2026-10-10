@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Google Analytics — chargé seulement avec le consentement complet</title>
+<title>Google Analytics — chargé seulement s'il est accepté</title>
 
 <!--
   La bannière de cookies demande au visiteur d'accepter ou de refuser les cookies analytiques, et
@@ -8,11 +8,12 @@
   réponse, dès qu'un identifiant était configuré. La bannière posait une question dont la réponse
   n'était pas attendue.
 
-  Le script js/analytics-consent.js, émis quand le consentement complet n'est pas encore donné,
-  attend l'événement `nf:consent` que la bannière émet au clic. Ici on éprouve son contrat sur le
-  VRAI fichier (/src/js/analytics-consent.js) : rien avant l'événement, rien sur un refus, le
-  chargeur de Google inséré avec le bon identifiant et le nonce de la page sur une acceptation, et
-  une seule fois.
+  Le script js/analytics-consent.js, émis tant que Google Analytics n'est pas accepté, attend
+  l'événement `nf:consent` qu'émettent le bandeau et la fenêtre « Gérer mes cookies », avec la liste
+  des services acceptés (2026-10-08, js/consentement.js). Ici on éprouve son contrat sur le VRAI
+  fichier (/src/js/analytics-consent.js) : rien avant l'événement, rien sur un refus ni sur
+  l'acceptation d'un AUTRE service, le chargeur de Google inséré avec le bon identifiant et le nonce
+  de la page quand `analytics` est accepté, et une seule fois.
 -->
 
 <script src="/harness.js"></script>
@@ -29,26 +30,29 @@ function scripts_google() {
 	});
 }
 
-function consentir(level) {
-	document.dispatchEvent(new CustomEvent('nf:consent', { detail: { level: level } }));
+function consentir(services) {
+	document.dispatchEvent(new CustomEvent('nf:consent', { detail: { services: services } }));
 }
 
 try {
 	NFTest.verifie('avant toute réponse : aucun script Google, pas de dataLayer', [0, 'undefined'], [scripts_google().length, typeof window.dataLayer]);
 
-	consentir('essentials');
-	NFTest.verifie('un refus du non-essentiel ne charge rien', [0, 'undefined'], [scripts_google().length, typeof window.dataLayer]);
+	consentir([]);
+	NFTest.verifie('un refus de tout ne charge rien', [0, 'undefined'], [scripts_google().length, typeof window.dataLayer]);
 
-	consentir('full');
+	consentir(['youtube', 'discord']);
+	NFTest.verifie('accepter d\'autres services ne charge pas Google', [0, 'undefined'], [scripts_google().length, typeof window.dataLayer]);
+
+	consentir(['youtube', 'analytics']);
 	var google = scripts_google();
-	NFTest.verifie('une acceptation complète insère le chargeur de Google', 1, google.length);
+	NFTest.verifie('accepter Google Analytics insère le chargeur de Google', 1, google.length);
 	NFTest.verifie('… avec l\'identifiant configuré', true, google.length === 1 && google[0].src.indexOf('id=G-TEST123') !== -1);
 	NFTest.verifie('… avec le nonce de la page, sinon la CSP le refuserait', 'NONCE-TEST', google.length === 1 ? google[0].getAttribute('nonce') : null);
 	NFTest.verifie('… en asynchrone', true, google.length === 1 && google[0].async);
 	NFTest.verifie('la file dataLayer est initialisée avec js puis config', ['js', 'config', 'G-TEST123'],
 		window.dataLayer && window.dataLayer.length === 2 ? [window.dataLayer[0][0], window.dataLayer[1][0], window.dataLayer[1][1]] : window.dataLayer);
 
-	consentir('full');
+	consentir(['analytics']);
 	NFTest.verifie('une seconde acceptation ne charge pas deux fois', 1, scripts_google().length);
 }
 catch (e) {

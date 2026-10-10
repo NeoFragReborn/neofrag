@@ -133,6 +133,13 @@ de page : le cœur rend le menu des thèmes installés (hors `admin`) et retient
 au site. Il ne s'affiche que s'il y a plus d'un thème public, et que l'administrateur n'a pas fermé le
 choix (**Préférences générales → Choix du thème**).
 
+Écris aussi `<?php echo nf_liens_legaux() ?>` dans ton pied de page, à côté de « Propulsé par » : le cœur
+rend les liens vers les mentions légales et la politique de confidentialité, quand leurs pages sont publiées
+(**Paramètres → Confidentialité**), et **« Gérer mes cookies »**, toujours. Ce dernier lien est le seul moyen
+qu'a un visiteur de revenir sur ses choix : retirer son accord doit être aussi simple que de le donner. Si ta
+ligne de pied ne passe pas à la ligne (`white-space: nowrap`), laisse au moins ces liens le faire : au
+téléphone, collés au reste, ils font déborder la page.
+
 ## 3. Les dispositions par défaut — `install()`
 
 `install()` décrit, par motif de page et par **titre de zone**, la grille de widgets posée à

@@ -169,3 +169,96 @@ function nf_rubriques_admin(): array
 		'autres'       => ['title' => (string) $nf->lang('Autres modules'), 'icon' => 'fas fa-ellipsis-h',   'modules' => []],
 	];
 }
+
+/**
+ * Les pages légales du site, si elles sont publiées : celles que l'administrateur a choisies, sinon celles
+ * qui portent l'adresse attendue — `mentions-legales` et `confidentialite`. Leur contenu est un texte
+ * juridique : il revient à l'exploitant du site, le produit ne l'écrit pas à sa place.
+ *
+ * @return array{mentions: ?string, confidentialite: ?string} l'adresse de chaque page, NULL si elle n'est pas publiée
+ */
+function nf_pages_legales(): array
+{
+	static $memo = NULL;
+
+	if ($memo !== NULL)
+	{
+		return $memo;
+	}
+
+	$memo = ['mentions' => NULL, 'confidentialite' => NULL];
+	$nf   = NeoFrag();
+
+	// Un site dont les pages légales sont celles d'un autre — une démonstration, que son instantané remet à zéro
+	// sans elles, renvoie à celles du site principal : leurs adresses, en https, dans config/neofrag.php,
+	//   define('NF_PAGES_LEGALES', ['mentions' => 'https://…', 'confidentialite' => 'https://…']);
+	$ailleurs = defined('NF_PAGES_LEGALES') ? constant('NF_PAGES_LEGALES') : NULL;
+
+	if (is_array($ailleurs))
+	{
+		foreach (array_keys($memo) as $cle)
+		{
+			$adresse = (string) ($ailleurs[$cle] ?? '');
+			$memo[$cle] = preg_match('#^https://[^\s"<>]+$#i', $adresse) ? $adresse : NULL;
+		}
+
+		return $memo;
+	}
+
+	if (!($pages = @$nf->module('pages')) || !$pages->is_enabled())
+	{
+		return $memo;
+	}
+
+	// Le réglage (Paramètres → Confidentialité) : le nom d'une page, « - » pour aucune ; sans réglage, le nom attendu.
+	$voulues = [
+		'mentions'        => (string) $nf->config->nf_page_mentions ?: 'mentions-legales',
+		'confidentialite' => (string) $nf->config->nf_page_confidentialite ?: 'confidentialite',
+	];
+
+	try
+	{
+		$publiees = array_map('strval', $nf->db->select('name')->from('nf_pages')->where('published', '1')->get());
+	}
+	catch (\Throwable $e)
+	{
+		return $memo;
+	}
+
+	foreach ($voulues as $cle => $nom)
+	{
+		if (in_array($nom, $publiees, TRUE))
+		{
+			$memo[$cle] = url($nom);
+		}
+	}
+
+	return $memo;
+}
+
+/**
+ * Les liens légaux du pied de page : les mentions légales et la politique de confidentialité si leurs pages
+ * sont publiées, et « Gérer mes cookies », toujours — retirer son accord doit être aussi simple que de le
+ * donner (RGPD, art. 7.3), depuis n'importe quelle page. Les thèmes l'affichent par
+ * `<?php echo nf_liens_legaux() ?>`, à côté de « Propulsé par ».
+ */
+function nf_liens_legaux(): string
+{
+	$nf    = NeoFrag();
+	$pages = nf_pages_legales();
+	$liens = [];
+
+	if ($pages['mentions'] !== NULL)
+	{
+		$liens[] = '<a href="'.nf_texte($pages['mentions']).'">'.$nf->lang('Mentions légales').'</a>';
+	}
+
+	if ($pages['confidentialite'] !== NULL)
+	{
+		$liens[] = '<a href="'.nf_texte($pages['confidentialite']).'">'.$nf->lang('Confidentialité').'</a>';
+	}
+
+	$liens[] = '<a href="#nf-consentement" data-nf-consentement-ouvrir>'.$nf->lang('Gérer mes cookies').'</a>';
+
+	return '<span class="nf-liens-legaux">'.implode(' · ', $liens).'</span>';
+}

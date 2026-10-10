@@ -178,7 +178,7 @@ class Newsletter extends Model
 		}
 
 		// 2) Envoi borné des destinataires en attente, toutes campagnes 'sending' confondues.
-		foreach ($this->db	->select('q.id', 'q.email', 'q.token', 'q.track_token', 'c.subject', 'c.content')
+		foreach ($this->db	->select('q.id', 'q.email', 'q.token', 'c.subject', 'c.content')
 							->from('nf_newsletter_queue q')
 							->join('nf_newsletter_campaigns c', 'q.campaign_id = c.id', 'INNER')
 							->where('q.status', 'pending')
@@ -264,7 +264,6 @@ class Newsletter extends Model
 				'campaign_id' => $campaign_id,
 				'email'       => $sub['email'],
 				'token'       => $sub['token'],
-				'track_token' => bin2hex(random_bytes(16))
 			]);
 
 			$total++;
@@ -275,18 +274,24 @@ class Newsletter extends Model
 		return $total;
 	}
 
-	// Envoi d'un destinataire (lien de désinscription + pixel de suivi d'ouverture). @return bool succès SMTP.
+	/**
+	 * Envoi d'un destinataire, avec son lien de désinscription. @return bool succès SMTP.
+	 *
+	 * Plus de pixel de suivi depuis le 2026-10-08 : une image invisible, propre à chaque destinataire, disait
+	 * au site qui ouvrait la lettre et quand. La CNIL tient un tel pixel pour un traceur soumis au
+	 * consentement (loi Informatique et Libertés, art. 82 ; recommandation du 12 mars 2026 sur les pixels de
+	 * suivi dans les courriels), et l'inscription ne le demandait pas. Le taux d'ouverture n'était qu'une
+	 * statistique : il disparaît avec lui.
+	 */
 	protected function _send_one($row)
 	{
-		// Adresses ABSOLUES : relatives, le lien de désinscription et le pixel de suivi se résolvaient
-		// contre le domaine du client de messagerie — se désinscrire était impossible depuis le courriel.
+		// Adresse ABSOLUE : relative, le lien de désinscription se résolvait contre le domaine du client de
+		// messagerie — se désinscrire était impossible depuis le courriel.
 		$unsub   = absolute_url('newsletter/unsubscribe/'.$row['token']);
-		$pixel   = !empty($row['track_token']) ? '<img src="'.absolute_url('newsletter/track/'.$row['track_token']).'" width="1" height="1" alt="" style="display:none">' : '';
 		$content = $row['content']
 			.'<hr><p style="font-size:0.85em;color:#888;text-align:center">'
 			.$this->lang('Tu reçois ce mail car tu es inscrit à la newsletter de %s.', nf_texte($this->config->nf_name)).' '
-			.'<a href="'.$unsub.'">'.$this->lang('Se désinscrire').'</a></p>'
-			.$pixel;
+			.'<a href="'.$unsub.'">'.$this->lang('Se désinscrire').'</a></p>';
 
 		return (bool)$this->email
 			->to($row['email'])
@@ -295,36 +300,5 @@ class Newsletter extends Model
 				return ['content' => $content];
 			})
 			->send();
-	}
-
-	/**
-	 * Enregistre l'ouverture d'un email (pixel de suivi). Pose opened_at + incrémente opened_to de la
-	 * campagne, une seule fois par destinataire (claim atomique). @return bool true si NOUVELLE ouverture.
-	 */
-	public function record_open($track_token)
-	{
-		$row = $this->db	->select('id', 'campaign_id')
-							->from('nf_newsletter_queue')
-							->where('track_token', (string) $track_token)
-							->where('opened_at', NULL)
-							->row(FALSE);
-
-		if (!$row)
-		{
-			return FALSE;
-		}
-
-		$claimed = (int) $this->db	->where('id', (int) $row['id'])
-									->where('opened_at', NULL)
-									->update('nf_newsletter_queue', ['opened_at' => date('Y-m-d H:i:s')]);
-
-		if ($claimed < 1)
-		{
-			return FALSE;
-		}
-
-		$this->db->where('id', (int) $row['campaign_id'])->update('nf_newsletter_campaigns', 'opened_to = opened_to + 1');
-
-		return TRUE;
 	}
 }

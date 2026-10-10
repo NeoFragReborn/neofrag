@@ -55,6 +55,9 @@ class Admin extends Theme
 				->css('fonts/titillium-web')
 				->css('icons/Pe-icon-7-stroke')
 				->css('icons/fontawesome.min')
+				->css('fonts/inter') // les polices, servies par le site (tools/polices-locales.php)
+				->css('fonts/space-grotesk')
+				->css('fonts/jetbrains-mono')
 				->css('style')
 				// APRES la feuille du theme, et jamais avant : elle retablit ce que le theme
 				// ecrase sans le vouloir — cadre des boutons « contour », coins des cartes.

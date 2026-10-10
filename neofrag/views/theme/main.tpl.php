@@ -11,7 +11,8 @@
 <?php if ($this->config->nf_theme_color): ?>
 <meta name="theme-color" content="<?php echo $this->config->nf_theme_color ?>">
 <?php endif ?>
-<?php if ($this->config->nf_analytics) echo $this->view('theme/analytics') ?>
+<?php /* La mesure d'audience, jamais dans l'administration : elle n'y mesurerait rien d'utile, et enverrait à Google les adresses des écrans d'administration. */ ?>
+<?php if ($this->config->nf_analytics && empty($this->url->admin)) echo $this->view('theme/analytics') ?>
 <?php if ($this->config->nf_humans_txt): ?>
 <link rel="author" href="<?php echo url('humans.txt') ?>" type="text/plain">
 <?php endif ?>
@@ -31,18 +32,16 @@
  * thème définit avec sa propre police. Les jetons propres aux thèmes (`--gr-font`, `--bc-font`…)
  * pointent tous dessus, si bien qu'une seule déclaration suffit pour les sept.
  *
- * `police_du_site()` ne rend que des valeurs de la liste blanche : ce qui suit part dans une adresse
- * envoyée à un tiers et dans une feuille de style, ce n'est pas un endroit pour de la saisie libre.
- *
- * `preconnect` avant la feuille : la fonte vient d'un autre domaine, et la résolution DNS plus la
- * poignée de main TLS coûtent un aller-retour qu'on évite ici. `display=swap` affiche le texte avec
- * la police de repli le temps que la fonte arrive, plutôt que de laisser un blanc.
+ * `police_du_site()` ne rend que des valeurs de la liste blanche : ce qui suit part dans une adresse et dans
+ * une feuille de style, ce n'est pas un endroit pour de la saisie libre. La police est servie par le site
+ * lui-même (tools/polices-locales.php) : aucun visiteur n'est plus envoyé chez Google (2026-10-08). Ses
+ * feuilles portent `font-display: swap` : le texte s'affiche avec la police de repli le temps qu'elle arrive.
  */
 if ($nf_police = police_du_site()):
+	$nf_police_feuille = police_du_site_feuille($nf_police).'.css';
+	$nf_police_version = nf_version_asset($nf_police_feuille, 'css');
 ?>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=<?php echo rawurlencode($nf_police) ?>:wght@400;500;600;700&amp;display=swap">
+<link rel="stylesheet" href="<?php echo path($nf_police_feuille, 'css').($nf_police_version !== '' ? '?v='.$nf_police_version : '') ?>">
 <style>:root{--nf-font:<?php echo police_du_site_pile($nf_police) ?>;--nf-font-display:<?php echo police_du_site_pile($nf_police) ?>}</style>
 <?php endif ?>
 <?php
@@ -361,7 +360,12 @@ window.NF = (function(){
 		for (var i = 0; i < old.attributes.length; i++){
 			s.setAttribute(old.attributes[i].name, old.attributes[i].value);
 		}
-		if (n){ s.setAttribute('nonce', n); }
+		// Jamais de nonce pour un script d'un autre site : il ne passe que si son origine est dans la politique
+		// (Analytics, le captcha) — la même règle que le filtre d'index.php pour les pages.
+		var src = old.getAttribute('src') || '';
+		var tiers = false;
+		try { tiers = /^(?:https?:)?\/\//i.test(src) && new URL(src, location.href).origin !== location.origin; } catch (e){ tiers = true; }
+		if (n && !tiers){ s.setAttribute('nonce', n); }
 		s.textContent = old.textContent;
 		old.parentNode.replaceChild(s, old);
 	}
@@ -506,101 +510,10 @@ NF.ready(function(){
 });
 </script>
 <?php
-/* Jamais dans le back-office : un administrateur connecte n'est pas un visiteur a qui l'on
-   demande son consentement analytique, et la banniere y recouvrait le pied de page et le bas
-   des formulaires sur toutes les pages. Elle reste servie sur le site public. */
-if (empty($_COOKIE['nf_consent']) && empty($this->url->admin)): ?>
-<style>
-/* Couleurs via tokens du thème actif (dungeon puis admin), fallback codé en dur. */
-.nf-cookie-banner {
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	background: var(--dungeon-surface-2, var(--nf-surface-2, #2b373a));
-	color: var(--dungeon-text, var(--nf-text, #fff));
-	padding: 16px 20px;
-	z-index: 9999;
-	border-top: 1px solid var(--dungeon-border, var(--nf-border, rgba(255,255,255,0.12)));
-	box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 16px;
-	font-size: 14px;
-}
-.nf-cookie-banner__text { flex: 1 1 280px; line-height: 1.5; }
-.nf-cookie-banner__text a { color: var(--dungeon-link, var(--nf-accent, #03c1a2)); }
-.nf-cookie-banner__buttons { display: flex; gap: 8px; flex-wrap: wrap; }
-.nf-cookie-banner__btn {
-	padding: 8px 16px;
-	border: none;
-	border-radius: var(--dungeon-radius-sm, var(--nf-radius-sm, 4px));
-	cursor: pointer;
-	font-weight: 500;
-	font-size: 13px;
-}
-.nf-cookie-banner__btn--accept { background: var(--dungeon-accent, var(--nf-accent, #03c1a2)); color: var(--nf-on-accent, #fff); }
-.nf-cookie-banner__btn--reject { background: transparent; color: var(--dungeon-text, var(--nf-text, #fff)); border: 1px solid var(--dungeon-border-strong, var(--nf-border, #888)); }
-.nf-cookie-banner__btn:hover { opacity: 0.85; }
-</style>
-<div id="nf-cookie-banner" class="nf-cookie-banner" role="dialog" aria-label="<?php echo $this->lang('Consentement aux cookies') ?>">
-	<div class="nf-cookie-banner__text">
-		<?php
-		/**
-		 * « En savoir plus » ne s'affiche que si la page existe VRAIMENT.
-		 *
-		 * Le lien pointait en dur vers `mentions-legales`, une page statique qu'aucune installation
-		 * ne crée : sur un site neuf — et sur celui-ci — il menait à un 404, affiché à CHAQUE
-		 * visiteur, en bas de CHAQUE page. Le bandeau reste utile sans lui ; un lien mort, non.
-		 *
-		 * La page se crée depuis l'administration (Contenu → Pages), avec l'adresse
-		 * « mentions-legales ». Son contenu est un texte juridique : il revient à l'exploitant du
-		 * site, pas au produit.
-		 */
-		$page_mentions = FALSE;
-
-		if (($pages = $this->module('pages')) && $pages->is_enabled())
-		{
-			foreach ($pages->model()->get_pages() as $page_statique)
-			{
-				if ($page_statique['name'] === 'mentions-legales' && $page_statique['published'])
-				{
-					$page_mentions = TRUE;
-					break;
-				}
-			}
-		}
-		?>
-		<strong>🍪 <?php echo $this->lang('Cookies & confidentialité') ?></strong> — <?php echo $this->lang('Ce site utilise des cookies essentiels pour fonctionner. Vous pouvez accepter les cookies analytiques pour nous aider à améliorer le site, ou les refuser.') ?><?php if ($page_mentions): ?> <a href="<?php echo url('mentions-legales') ?>"><?php echo $this->lang('En savoir plus') ?></a><?php endif ?>
-	</div>
-	<div class="nf-cookie-banner__buttons">
-		<button type="button" class="nf-cookie-banner__btn nf-cookie-banner__btn--accept" data-nf-consent="full"><?php echo $this->lang('Tout accepter') ?></button>
-		<button type="button" class="nf-cookie-banner__btn nf-cookie-banner__btn--reject" data-nf-consent="essentials"><?php echo $this->lang('Refuser non-essentiels') ?></button>
-	</div>
-</div>
-<script>
-// Handlers liés en JS (addEventListener), PAS en onclick="" inline : le CSP strict (script-src sans
-// 'unsafe-inline') bloque les gestionnaires d'événements inline — même noncés, les nonces ne les couvrent
-// pas. Ce <script> reçoit un nonce (injecté par index.php) et s'exécute donc normalement.
-(function() {
-	function nfCookieConsent(level) {
-		var d = new Date();
-		d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
-		document.cookie = "nf_consent=" + level + ";expires=" + d.toUTCString() + ";path=/;SameSite=Lax";
-		var banner = document.getElementById('nf-cookie-banner');
-		if (banner) banner.style.display = 'none';
-		document.dispatchEvent(new CustomEvent('nf:consent', { detail: { level: level } }));
-	}
-
-	var buttons = document.querySelectorAll('#nf-cookie-banner [data-nf-consent]');
-	for (var i = 0; i < buttons.length; i++) {
-		buttons[i].addEventListener('click', function() {
-			nfCookieConsent(this.getAttribute('data-nf-consent'));
-		});
-	}
-})();
-</script>
-<?php endif ?>
+/* Le consentement du visiteur aux services tiers : la fenêtre « Gérer mes cookies », le bandeau quand le site a
+   quelque chose à demander (jamais dans l'administration), et le script des avis posés à la place des contenus
+   tiers. Cf. theme/consentement.tpl.php et helpers/consentement.php. */
+echo $this->view('theme/consentement');
+?>
 </body>
 </html>

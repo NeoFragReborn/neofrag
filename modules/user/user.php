@@ -50,6 +50,8 @@ class User extends Module
 				'{id}/{url_title}/{url_title}'               => '_member',
 				'ajax/{id}/{url_title}'                      => '_member',
 				'ajax/lost-password/{url_title}'             => '_lost_password',
+				'ajax/relais/{key_id}/{key_id}'              => '_relais',
+				'ajax/tuile/{id}/{id}/{id}'                  => '_tuile',
 
 				//Admin
 				'admin{pages}'                                   => 'index',

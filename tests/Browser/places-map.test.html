@@ -26,6 +26,7 @@
 <body>
 
 <div class="nf-places" data-places-lat="46.9665" data-places-lon="3.861" data-places-zoom="6"
+     data-places-tuiles="/fr/ajax/user/tuile/{z}/{x}/{y}"
      data-places-attribution="&copy; les contributeurs d'OpenStreetMap">
 	<div class="nf-places-map" hidden style="height:300px"></div>
 	<ul class="nf-places-list">
@@ -106,8 +107,9 @@ try {
 	NFTest.verifie('le premier marqueur est au bon endroit', [48.8566, 2.3522], journal.marqueurs[0].latlon);
 	NFTest.verifie('le second aussi', [50.6365, 3.063], journal.marqueurs[1].latlon);
 
-	NFTest.verifie('les tuiles viennent d\'OpenStreetMap, en https',
-		true, journal.tuiles && journal.tuiles.url.indexOf('https://tile.openstreetmap.org/') === 0);
+	// Depuis le 2026-10-08, les tuiles passent par le site (User Ajax::_tuile()) : le navigateur ne parle plus à OpenStreetMap.
+	NFTest.verifie('les tuiles viennent du site lui-même, à l\'adresse que le gabarit donne',
+		'/fr/ajax/user/tuile/{z}/{x}/{y}', journal.tuiles && journal.tuiles.url);
 	NFTest.verifie('… avec l\'attribution que le gabarit a fournie',
 		true, journal.tuiles && journal.tuiles.options.attribution.indexOf('OpenStreetMap') !== -1);
 

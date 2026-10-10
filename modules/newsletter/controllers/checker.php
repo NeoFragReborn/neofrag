@@ -44,10 +44,4 @@ class Checker extends Module_Checker
 
 		return [$sub];
 	}
-
-	// Pixel de suivi : toujours servi (jamais 404), même token inconnu → pas d'image cassée côté client.
-	public function _track($token)
-	{
-		return [$token];
-	}
 }

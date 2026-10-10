@@ -121,8 +121,8 @@ if (!defined('NEOFRAG_HEADLESS'))
 
 	// Helpers framework (index.php:127-150).
 	foreach ([
-				'array', 'assets', 'color', 'countries', 'debug', 'file', 'geolocalisation', 'dir', 'erreurs',
-				'input', 'location', 'markdown', 'notify', 'sanitize', 'statistics', 'string',
+				'array', 'assets', 'color', 'consentement', 'countries', 'debug', 'file', 'dir', 'erreurs',
+				'input', 'location', 'markdown', 'notify', 'relais', 'remote', 'sanitize', 'statistics', 'string',
 				'system', 'theme', 'time', 'user_agent'
 			] as $helper)
 	{

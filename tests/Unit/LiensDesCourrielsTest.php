@@ -119,7 +119,7 @@ final class LiensDesCourrielsTest extends TestCase
 		$modele = (string) file_get_contents(self::RACINE.'/modules/newsletter/models/newsletter.php');
 
 		self::assertStringContainsString("absolute_url('newsletter/unsubscribe/'", $modele, 'le lien de désinscription');
-		self::assertStringContainsString("absolute_url('newsletter/track/'", $modele, 'le pixel de suivi');
+		self::assertStringNotContainsString('newsletter/track/', $modele, 'plus de pixel de suivi (2026-10-08) : un traceur que l\'inscription ne demandait pas');
 		self::assertDoesNotMatchRegularExpression("/(?<!absolute_)url\('newsletter\/(unsubscribe|track|confirm)\//", $modele);
 	}
 }

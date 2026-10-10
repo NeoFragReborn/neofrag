@@ -47,9 +47,8 @@ $nf_langue = nf_install_langue();
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?php echo nf_e(lang('Installation de NeoFrag Reborn')); ?></title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<?php /* Aucune police distante (2026-10-08) : l'assistant tourne avant le moteur du site, qui sert les polices locales ;
+         il s'affiche avec les polices du système (les piles de repli ci-dessous), sans envoyer personne chez Google. */ ?>
 <style>
 /* Tokens repris de themes/nebula/css/style.css — ne pas les faire diverger à nouveau. */
 :root{

@@ -19,6 +19,9 @@ use NF\NeoFrag\Core;
  * @property mixed $nf_cookie_expire
  * @property mixed $nf_font
  * @property mixed $nf_session_history_days
+ * @property mixed $nf_menage_jour
+ * @property mixed $nf_page_mentions
+ * @property mixed $nf_page_confidentialite
  * @property mixed $nf_cookie_name
  * @property mixed $nf_copyright
  * @property mixed $nf_cron_key

@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS `nf_newsletter_campaigns` (
   `sent_to` int(10) unsigned NOT NULL DEFAULT 0,
   `recipients_total` int(10) unsigned NOT NULL DEFAULT 0,
   `failed_to` int(10) unsigned NOT NULL DEFAULT 0,
-  `opened_to` int(10) unsigned NOT NULL DEFAULT 0,
   `user_id` int(10) unsigned NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
@@ -45,15 +44,12 @@ CREATE TABLE IF NOT EXISTS `nf_newsletter_queue` (
   `campaign_id` int(10) unsigned NOT NULL,
   `email` varchar(150) NOT NULL,
   `token` varchar(64) NOT NULL,
-  `track_token` varchar(32) DEFAULT NULL,
   `status` varchar(10) NOT NULL DEFAULT 'pending',
   `error` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `sent_at` timestamp NULL DEFAULT NULL,
-  `opened_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_campaign_status` (`campaign_id`,`status`),
-  KEY `idx_track` (`track_token`)
+  KEY `idx_campaign_status` (`campaign_id`,`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_newsletter_templates` (

@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.2.42');
+define('NEOFRAG_VERSION', '1.2.43');
 
 error_reporting(E_ALL);
 
@@ -141,10 +141,10 @@ foreach ([
 			'assets',
 			'bootstrap',
 			'color',
+			'consentement',
 			'countries',
 			'debug',
 			'file',
-			'geolocalisation',
 			'dir',
 			'erreurs',
 			'input',
@@ -153,6 +153,7 @@ foreach ([
 			'notify',
 			'fonts',
 			'remote',
+			'relais',
 			'sanitize',
 			'statistics',
 			'seo',
@@ -293,6 +294,20 @@ ob_start(function($html){
 		header('Cache-Control: no-store, max-age=0');
 	}
 
+	// Les services tiers, pour toutes les pages, tous les fragments et toutes les réponses JSON, quel que soit
+	// le module qui les a écrits : un cadre (une vidéo YouTube dans un article, le widget Discord) que le
+	// visiteur n'a pas accepté devient son avis, qui le garde sans le charger ; une image d'un autre site est
+	// servie par le site lui-même, et le navigateur n'a plus à la demander ailleurs (helpers/consentement.php,
+	// helpers/relais.php). Un échec ici laisse la réponse telle quelle plutôt que de la perdre.
+	if ($is_html || $is_json)
+	{
+		try {
+			$html = $is_html ? nf_tiers_page($html) : nf_tiers_json($html);
+		} catch (\Throwable $e) {
+			error_log('[tiers] filtre des services tiers : '.$e->getMessage());
+		}
+	}
+
 	if (!$is_html || stripos($html, '<script') === FALSE)
 	{
 		return $html;
@@ -302,13 +317,27 @@ ob_start(function($html){
 	{
 		// script-src : plus de `https:` générique (n'importe quelle origine https). Allowlist précise —
 		// 'self' couvre tout le JS NeoFrag + TinyMCE/CodeMirror/ALTCHA auto-hébergés.
-		// style-src garde 'unsafe-inline' (styles inline BS5/TinyMCE) + fonts.googleapis.com (@import des
-		// thèmes). img/font/connect gardent `https:` (avatars, fonts gstatic, widgets Steam/Twitch).
+		// style-src garde 'unsafe-inline' (styles inline BS5/TinyMCE). Plus aucune origine de polices : depuis le
+		// 2026-10-08, le site sert ses polices lui-même (tools/polices-locales.php) — `font-src 'self' data:`, et
+		// un thème ou un addon qui rappellerait Google serait refusé par le navigateur. img-src n'a plus que le
+		// site non plus : depuis le 2026-10-08, toute image d'un autre site est servie par le site lui-même
+		// (helpers/relais.php), les tuiles de la carte des lieux comprises ; seul Analytics y ajoute les siennes.
+		// connect-src, de même : plus aucun script du produit n'envoie quoi que ce soit ailleurs (le drapeau des
+		// adresses IP, qui les envoyait à neofr.ag, est retiré) ; seul Analytics ajoute les adresses de Google.
 		// googletagmanager.com n'entre dans l'allowlist QUE si un identifiant Analytics est configuré :
 		// un site sans Analytics ne déclare aucune origine tierce de plus. Sans cette ligne, le chargeur de
 		// Google était refusé par la politique — Analytics n'a jamais pu fonctionner sous la CSP stricte.
-		$analytics = '';
-		try { $analytics = (string) NeoFrag()->config->nf_analytics !== '' ? ' https://www.googletagmanager.com' : ''; } catch (\Throwable $e) {}
+		$analytics        = '';
+		$analytics_envois = '';
+		$images           = '';
+		try {
+			if ((string) NeoFrag()->config->nf_analytics !== '')
+			{
+				$analytics        = ' https://www.googletagmanager.com';
+				$analytics_envois = ' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com';
+				$images           = ' https://*.google-analytics.com https://*.googletagmanager.com';
+			}
+		} catch (\Throwable $e) {}
 
 		// media-src : la directive n'existait pas et héritait donc de `default-src 'self'`. Tant que
 		// tout l'audio et toute la vidéo venaient de `upload/`, cela suffisait — un flux de webradio,
@@ -345,15 +374,35 @@ ob_start(function($html){
 		// le site (cf. Editeur_Images) ; refusée, l'image s'affichait cassée (2026-10-04). Le risque est
 		// nul : une adresse `blob:` ne peut être fabriquée que par un script de la page elle-même, et
 		// `img-src` ne règle que l'affichage d'images — rien ne s'y exécute.
+		//
+		// frame-src : les lecteurs des services que le produit connaît (YouTube, Twitch, Discord…,
+		// nf_consentement_cadres()). Ils n'y étaient pas : la vidéo d'un article, le widget Discord en cadre
+		// et le lecteur du widget Twitch étaient refusés par le navigateur. Ce n'est pas la politique qui
+		// décide s'ils se chargent, c'est le visiteur : tant qu'il ne les a pas acceptés, l'avis posé à leur
+		// place les garde sans les charger (le filtre plus haut).
 		header("Content-Security-Policy: default-src 'self'; object-src 'none'; ".
 			"script-src 'self' 'nonce-$nonce'{$captcha['script']}$analytics; ".
-			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com{$captcha['style']}; ".
-			"img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; ".
+			"style-src 'self' 'unsafe-inline'{$captcha['style']}; ".
+			"img-src 'self' data: blob:$images; font-src 'self' data:; connect-src 'self'$analytics_envois; ".
 			"media-src 'self' data:$media; ".
-			"frame-src 'self'{$captcha['frame']}; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
+			"frame-src 'self' ".nf_consentement_cadres()."{$captcha['frame']}; frame-ancestors 'self'; base-uri 'self'; form-action 'self'");
 	}
 
-	return preg_replace('/<script(?=[\s>])(?![^>]*\bnonce=)/i', '<script nonce="'.$nonce.'"', $html);
+	// Le nonce va aux scripts du site, écrits dans la page ou servis par lui ; jamais à un script d'un autre site
+	// (`<script src="https://…">`), qui ne s'exécute donc que si son origine est dans script-src — Analytics,
+	// le captcha. Avant le 2026-10-08, chaque <script> recevait le nonce : un script tiers collé dans un widget
+	// « Code HTML » ou une publicité s'exécutait quelle que soit son origine, et la liste ne servait à rien.
+	$hote = strtolower((string) parse_url(site_origin(), PHP_URL_HOST));
+
+	return (string) preg_replace_callback('/<script(?=[\s>])(?![^>]*\bnonce=)([^>]*)>/i', function(array $m) use ($nonce, $hote): string {
+		if (preg_match('#\bsrc\s*=\s*(["\']?)\s*((?:https?:)?//[^"\'\s>]+)#i', $m[1], $src)
+			&& strtolower((string) parse_url(str_starts_with($src[2], '//') ? 'https:'.$src[2] : $src[2], PHP_URL_HOST)) !== $hote)
+		{
+			return $m[0];
+		}
+
+		return '<script nonce="'.$nonce.'"'.$m[1].'>';
+	}, $html);
 });
 
 NeoFrag()->output();

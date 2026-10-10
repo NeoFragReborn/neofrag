@@ -15,8 +15,8 @@ $this	->compact()
 					->title('Mot de passe')
 					->required()
 		)
+		// Pas coché d'avance (2026-10-08) : rester connecté un an sur cet appareil se choisit, cela ne se subit pas.
 		->rule($this->form_checkbox('remember')
-					->value(['on'])
 					->data([
 						'on' => $this->lang('Se souvenir de moi')
 					])

@@ -111,11 +111,11 @@ final class HelpersSanitizeTest extends TestCase
         $this->assertStringNotContainsString('evil.example', $out);
     }
 
-    public function test_allows_google_maps_embed(): void
+    public function test_drops_google_maps_embed(): void
     {
+        // La carte du produit est celle d'OpenStreetMap, servie par le site : Google Maps pose ses cookies (2026-10-08).
         $out = sanitize_html('<iframe src="https://www.google.com/maps/embed?pb=!1m18!2sParis" width="600" height="450"></iframe>');
-        $this->assertStringContainsString('<iframe', $out);
-        $this->assertStringContainsString('google.com/maps/embed', $out);
+        $this->assertStringNotContainsString('google.com/maps', $out);
     }
 
     public function test_preserves_safe_inline_color(): void

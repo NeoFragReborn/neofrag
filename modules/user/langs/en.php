@@ -259,7 +259,6 @@ return [
 	'e4b31aee' => 'Reset 2FA for <b>%s</b>? The user will have to set it up again to re-enable it. This action is logged in the audit log.',
 	'954424e6' => '2FA reset for %s.',
 	'9b69ece2' => 'Delete the user',
-	'ed704c4f' => 'Delete <b>%s</b>\'s account? The account will be anonymised (GDPR soft-delete) and its sessions closed. Action logged in the audit log.',
 	'906937be' => 'User %s deleted.',
 	'4f98863b' => 'Username',
 	'6ffdfb99' => 'Administrator (full access)',
@@ -407,4 +406,5 @@ return [
 	'a0000a84' => 'What I receive',
 	'34f13694' => 'Everything the site has let you know about. Too many notifications? Choose what you receive.',
 	'fd3c356f' => 'Preferences',
+	'62f0618d' => 'Delete the account of <b>%s</b>? Their profile, linked accounts, login history and notifications are erased and their sessions closed; what they published stays, under a neutral username. This action is recorded in the audit log.',
 ];

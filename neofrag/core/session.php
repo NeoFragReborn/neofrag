@@ -51,6 +51,12 @@ class Session extends Core
 							->where('last_activity <', $expiration_date->sql())
 							->delete('nf_session');
 
+				// Les sessions « Se souvenir de moi » ne s'effaçaient jamais. Leur cookie expire au bout d'un an :
+				// au-delà d'un an sans activité, la ligne ne servirait plus à personne (2026-10-08).
+				$this->db	->where('remember', TRUE)
+							->where('last_activity <', $this->date()->sub('1 year')->sql())
+							->delete('nf_session');
+
 				/**
 				 * Historique des connexions : purge au-delà de la durée de conservation.
 				 *
@@ -73,6 +79,13 @@ class Session extends Core
 					$this->db	->where('date <', $this->date()->sub($retention.' days')->sql())
 								->delete('nf_session_history');
 				}
+			}
+
+			// Le ménage du jour : une fois par jour, à la première visite.
+			if (($jour = date('Y-m-d')) !== (string) $this->config->nf_menage_jour)
+			{
+				$this->config('nf_menage_jour', $jour);
+				$this->_menage_du_jour();
 			}
 
 			$cookie_name = $this->config->nf_cookie_name;
@@ -241,8 +254,11 @@ class Session extends Core
 
 				if ($this->_session->commit())
 				{
+					// Jusqu'à la fermeture du navigateur ; un an pour « Se souvenir de moi » (2026-10-08). Le
+					// cookie vivait un an pour tout le monde, visiteurs compris, alors que le site oubliait la
+					// session au bout de `nf_cookie_expire` sans activité : il durait onze mois de trop.
 					setcookie($cookie_name, $this->_session->id, [
-						'expires'  => strtotime('+1 year'),
+						'expires'  => $this->_session->remember ? strtotime('+1 year') : 0,
 						'path'     => $this->url->base,
 						'domain'   => $this->url->domain,
 						'secure'   => (bool)$this->url->https,
@@ -272,6 +288,75 @@ class Session extends Core
 
 		$this->_session = $this->model2('session');
 		$this->_data    = $this->_session->data->__extends($this);
+	}
+
+	/**
+	 * Les durées de conservation (2026-10-08). Ces tables gardaient tout, pour toujours : le journal d'audit
+	 * (adresse IP et navigateur de chaque action d'administration et de chaque connexion), les compteurs
+	 * anti-abus (une adresse IP dans leur clé), la file d'envoi des lettres d'information (une adresse
+	 * électronique par destinataire et par lettre), les inscriptions jamais confirmées, l'adresse IP de qui
+	 * signale un contenu et la copie du contenu signalé. Le RGPD veut une durée limitée à ce que la finalité
+	 * exige (art. 5.1.e) ; la politique de confidentialité du site les annonce, elles doivent donc être vraies.
+	 *
+	 *   - journal d'audit : un an ;
+	 *   - compteurs anti-abus : un jour après la dernière tentative, une fois le blocage levé ;
+	 *   - traces du consentement : treize mois (un choix vaut six mois ; la trace le survit, pour la preuve) ;
+	 *   - file d'envoi des lettres : quatre-vingt-dix jours après l'envoi ;
+	 *   - inscription à la lettre jamais confirmée : trente jours ;
+	 *   - signalement traité depuis un an : l'adresse IP de qui l'a fait, la copie du contenu et des
+	 *     pièces jointes s'en vont ; le signalement, lui, reste (qui a décidé quoi).
+	 *
+	 * Une table absente (son module n'est pas installé) est passée en silence.
+	 */
+	private function _menage_du_jour(): void
+	{
+		$an = $this->date()->sub('1 year')->sql();
+
+		$purges = [
+			fn() => $this->db->where('created_at <', $an)->delete('nf_audit_log'),
+			fn() => $this->db	->where('first_attempt_at <', $this->date()->sub('1 day')->sql())
+								->where('(locked_until IS NULL OR locked_until < NOW())')
+								->delete('nf_rate_limit'),
+			fn() => $this->db->where('created_at <', $this->date()->sub('395 days')->sql())->delete('nf_cookie_consent'),
+			fn() => $this->db	->where('status <>', 'pending')
+								->where('created_at <', $this->date()->sub('90 days')->sql())
+								->delete('nf_newsletter_queue'),
+			fn() => $this->db	->where('confirmed', 0)
+								->where('created_at <', $this->date()->sub('30 days')->sql())
+								->delete('nf_newsletter_subscribers'),
+			function() use ($an) {
+				$anciens = array_map('intval', $this->db	->select('id')
+															->from('nf_reports')
+															->where('status <>', 'pending')
+															->where('handled_at <', $an)
+															->where('(reporter_ip <> \'\' OR content_snapshot IS NOT NULL)')
+															->get());
+
+				foreach ($anciens as $id)
+				{
+					foreach (glob(NEOFRAG_CMS.'/backups/moderation/reports/'.$id.'/*') ?: [] as $fichier)
+					{
+						@unlink($fichier);
+					}
+
+					@rmdir(NEOFRAG_CMS.'/backups/moderation/reports/'.$id);
+
+					$this->db->where('report_id', $id)->delete('nf_reports_attachments_snapshot');
+					$this->db->where('id', $id)->update('nf_reports', ['reporter_ip' => '', 'content_snapshot' => NULL]);
+				}
+			},
+		];
+
+		foreach ($purges as $purge)
+		{
+			try
+			{
+				$purge();
+			}
+			catch (\Throwable $e)
+			{
+			}
+		}
 	}
 
 	public function login($user, $remember = NULL)

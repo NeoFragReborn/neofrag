@@ -89,7 +89,8 @@ $is_admin = $logged && $this->access->effective_admin();
 		<div class="nb-foot-bar">
 			<div class="nb-copy">
 				© <?php echo date('Y') ?> <span class="fg-site-name"><?php echo nf_texte($this->config->nf_name) ?></span>
-				· <?php echo $this->lang('Propulsé par') ?> <a href="https://neofr.ag" target="_blank" rel="noopener">NeoFrag Reborn</a>
+				· <?php echo $this->lang('Propulsé par') ?> <a href="https://neofrag-reborn.xyz" target="_blank" rel="noopener">NeoFrag Reborn</a>
+				· <?php echo nf_liens_legaux() ?>
 			</div>
 			<div class="nb-foot-tools">
 				<?php echo nf_selecteur_theme() ?>

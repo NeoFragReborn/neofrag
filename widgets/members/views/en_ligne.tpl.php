@@ -3,6 +3,12 @@
  * « Qui est en ligne ? (liste) » : les trois nombres, puis les présents eux-mêmes — administrateurs d'abord,
  * chacun avec son avatar, son pseudo (vers son profil) et sa dernière activité. Une pastille verte dit « en ligne ».
  */
+$administrators = $administrators ?? [];
+$members        = $members ?? [];
+$autres         = (int) ($autres ?? 0);
+$nb_admins      = (int) ($nb_admins ?? 0);
+$nb_members     = (int) ($nb_members ?? 0);
+$nb_visitors    = (int) ($nb_visitors ?? 0);
 $groupes = [
 	[$this->lang('Administrateurs'), $administrators],
 	[$this->lang('Membres'),         $members]

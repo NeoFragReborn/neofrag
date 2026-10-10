@@ -1,9 +1,9 @@
-// Google Analytics ne se charge qu'avec le consentement COMPLET du visiteur.
+// Google Analytics ne se charge que si le visiteur l'a accepté.
 //
-// La bannière de cookies (neofrag/views/theme/main.tpl.php) pose le cookie `nf_consent` — « full » ou
-// « essentials » — et émet l'événement `nf:consent` avec ce niveau. Ce script, émis par
-// theme/analytics.tpl.php quand aucun consentement complet n'est encore donné, attend cet événement :
-// tant qu'il ne vient pas, ou s'il vient avec un autre niveau, aucune requête ne part vers Google.
+// Le bandeau et la fenêtre « Gérer mes cookies » (js/consentement.js) émettent l'événement `nf:consent`
+// avec la liste des services acceptés. Ce script, émis par theme/analytics.tpl.php tant que Google
+// Analytics n'est pas accepté, attend cet événement : tant qu'il ne vient pas, ou s'il vient sans
+// `analytics`, aucune requête ne part vers Google.
 //
 // Le script de Google est inséré avec le nonce de la page (lu sur cette balise même), sans quoi la
 // politique de sécurité stricte le refuserait — c'est aussi pour cela que index.php n'autorise l'origine
@@ -38,7 +38,7 @@
 	}
 
 	document.addEventListener('nf:consent', function(e){
-		if (e.detail && e.detail.level === 'full'){
+		if (e.detail && Array.isArray(e.detail.services) && e.detail.services.indexOf('analytics') >= 0){
 			charger();
 		}
 	});

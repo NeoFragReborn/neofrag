@@ -79,8 +79,6 @@ return [
 	'0cfde910' => 'Nothing to send (no confirmed subscriber).',
 	'1c3b7c57' => 'Campaign cancelled.',
 	'5c8e6526' => 'Cannot cancel (campaign already sending).',
-	'b588414d' => 'opens',
-	'75df0f92' => 'Open rate',
 	'8f0057d4' => 'Templates',
 	'14bd4f31' => 'No template. Create one to reuse a subject + content when composing.',
 	'54231355' => 'Name',

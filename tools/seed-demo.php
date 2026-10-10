@@ -1124,10 +1124,10 @@ function seed_newsletter(mysqli $db, array $users): void
     ]);
 
     $campagnes = [
-        ['Les nouvelles de la communauté — septembre', 'sent', 18, 4, 30],
-        ['Inscriptions ouvertes pour la LAN d\'hiver', 'scheduled', 0, 0, 3],
+        ['Les nouvelles de la communauté — septembre', 'sent', 18, 30],
+        ['Inscriptions ouvertes pour la LAN d\'hiver', 'scheduled', 0, 3],
     ];
-    foreach ($campagnes as [$sujet, $etat, $envoyes, $ouverts, $jours]) {
+    foreach ($campagnes as [$sujet, $etat, $envoyes, $jours]) {
         ins($db, 'nf_newsletter_campaigns', [
             'subject'          => $sujet,
             'content'          => "<p>" . $sujet . "</p><p>Rendez-vous sur le site pour le détail.</p>",
@@ -1138,7 +1138,6 @@ function seed_newsletter(mysqli $db, array $users): void
             'sent_to'          => $envoyes,
             'recipients_total' => count($emails),
             'failed_to'        => 0,
-            'opened_to'        => $ouverts,
             'user_id'          => $users[0],
             'created_at'       => date('Y-m-d H:i:s', time() - 86400 * ($jours + 2)),
         ]);

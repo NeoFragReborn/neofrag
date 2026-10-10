@@ -679,16 +679,13 @@ CREATE TABLE `nf_audit_log` (
 DROP TABLE IF EXISTS `nf_cookie_consent`;
 CREATE TABLE `nf_cookie_consent` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `consent_token` varchar(64) NOT NULL,
+  `consent_token` char(16) NOT NULL,
   `user_id` int(10) unsigned DEFAULT NULL,
-  `consent_essentials` tinyint(1) NOT NULL DEFAULT 1,
-  `consent_analytics` tinyint(1) NOT NULL DEFAULT 0,
-  `consent_marketing` tinyint(1) NOT NULL DEFAULT 0,
-  `ip_address` varchar(45) DEFAULT NULL,
-  `user_agent` varchar(500) DEFAULT NULL,
+  `services` varchar(255) NOT NULL DEFAULT '',
+  `empreinte` char(6) NOT NULL DEFAULT '',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_token` (`consent_token`),
+  KEY `idx_token` (`consent_token`),
   KEY `idx_user` (`user_id`),
   KEY `idx_created` (`created_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -968,7 +965,11 @@ INSERT INTO `nf_migrations` (`id`, `name`, `batch`, `applied_at`) VALUES
 
 -- Les préférences de notifications : nf_notifications_preferences ci-dessus.
 -- Cf. migrations/2026_10_05_preferences_de_notifications.
-('60', '2026_10_05_preferences_de_notifications', '48', '2026-10-05 00:00:00');
+('60', '2026_10_05_preferences_de_notifications', '48', '2026-10-05 00:00:00'),
+
+-- Les traces du consentement : nf_cookie_consent ci-dessus a deja sa forme nouvelle.
+-- Cf. migrations/2026_10_08_consentement.
+('61', '2026_10_08_consentement', '49', '2026-10-08 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

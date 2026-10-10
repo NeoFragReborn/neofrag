@@ -56,4 +56,5 @@ return [
 	'88835a36' => 'Na <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a>, ativa <strong>YouTube Data API v3</strong>.',
 	'f7e50b21' => 'Cria uma <strong>chave API</strong> (Credenciais) e cola-a acima. Para o canal, usa o seu <code>channelId</code> (UC...).',
 	'364d1ba1' => 'Sem credenciais, os canais continuam listados com estado «indisponível» e uma ligação direta.',
+	'ed9e84ae' => 'Abrir o canal',
 ];

@@ -135,8 +135,11 @@ $labels = [
 		rows += '<div><dt>' + esc(L.size) + '</dt><dd>' + esc(size) + '</dd></div>';
 		if (a.sha256) rows += '<div><dt>' + esc(L.sceau) + '</dt><dd><code>' + esc(a.sha256.slice(0, 16)) + '…</code></dd></div>';
 
-		// L'apercu d'abord : c'est ce qu'on vient voir.
-		var apercu = a.preview ? '<img class="mkt-apercu mkt-modal-apercu" src="' + esc(BASE + '/' + a.preview) + '" alt="" />' : '';
+		// L'apercu d'abord : c'est ce qu'on vient voir. Celui de la carte, dont le site a déjà réglé l'adresse : venu
+		// du catalogue d'un autre site, il passe par le relais (helpers/relais.php), et le navigateur ne le demande
+		// pas ailleurs — la politique de sécurité refuserait d'ailleurs une image d'un autre site.
+		var vignette = document.querySelector('.mkt-card[data-key="' + (window.CSS && CSS.escape ? CSS.escape(key) : key) + '"] .mkt-apercu');
+		var apercu = vignette ? '<img class="mkt-apercu mkt-modal-apercu" src="' + esc(vignette.getAttribute('src')) + '" alt="" />' : '';
 
 		body.innerHTML =
 			apercu +

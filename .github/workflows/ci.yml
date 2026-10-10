@@ -72,6 +72,12 @@ jobs:
             echo "::error::notify() avec un type invalide (s'affiche en vert). Utiliser 'danger'."
             exit 1
           fi
+          # Aucune police distante : le site sert ses polices lui-même (tools/polices-locales.php, 2026-10-08).
+          # Un @import ou un <link> vers Google Fonts enverrait l'adresse IP de chaque visiteur à Google.
+          if grep -rnE "fonts\.(googleapis|gstatic)\.com" --include='*.php' --include='*.css' --include='*.js' neofrag/ modules/ widgets/ themes/ addons/ css/ js/ install/ index.php | grep -v "^tools/"; then
+            echo "::error::Police chargée depuis Google Fonts : la servir localement (php tools/polices-locales.php)."
+            exit 1
+          fi
           # CSRF : tout fichier qui émet un lien d'action mutante (csrf_url/csrf_token) doit aussi
           # vérifier le jeton dans le même fichier (check_csrf, ou csrf_valide pour une réponse JSON) —
           # sinon l'action GET est exposée au CSRF. Une page qui pose le jeton pour une action d'un AUTRE

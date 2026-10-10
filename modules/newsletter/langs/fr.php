@@ -78,8 +78,6 @@ return [
 	'0cfde910' => 'Rien à envoyer (aucun abonné confirmé).',
 	'1c3b7c57' => 'Campagne annulée.',
 	'5c8e6526' => 'Annulation impossible (campagne déjà partie).',
-	'b588414d' => 'ouv.',
-	'75df0f92' => 'Taux d\'ouverture',
 	'8f0057d4' => 'Modèles',
 	'14bd4f31' => 'Aucun modèle. Crée-en un pour réutiliser un sujet + contenu au composer.',
 	'54231355' => 'Nom',

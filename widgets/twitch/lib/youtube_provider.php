@@ -56,7 +56,7 @@ class Youtube_Provider implements Live_Provider
 			'viewers'      => $viewers,
 			'thumbnail'    => $is_live ? (string)($live_item['snippet']['thumbnails']['medium']['url'] ?? '') : '',
 			'channel_url'  => 'https://www.youtube.com/channel/'.rawurlencode($channel),
-			'embed_url'    => $is_live && $video_id !== '' ? 'https://www.youtube.com/embed/'.rawurlencode($video_id) : 'https://www.youtube.com/channel/'.rawurlencode($channel).'/live',
+			'embed_url'    => $is_live && $video_id !== '' ? 'https://www.youtube-nocookie.com/embed/'.rawurlencode($video_id) : 'https://www.youtube.com/channel/'.rawurlencode($channel).'/live',
 		];
 	}
 }

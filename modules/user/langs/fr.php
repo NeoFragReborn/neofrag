@@ -225,7 +225,6 @@ return [
 	'e4b31aee' => 'Réinitialiser le 2FA de <b>%s</b> ? Le user devra le reconfigurer s\'il veut le réactiver. Cette action est tracée dans l\'audit log.',
 	'954424e6' => '2FA réinitialisé pour %s.',
 	'9b69ece2' => 'Supprimer l\'utilisateur',
-	'ed704c4f' => 'Supprimer le compte de <b>%s</b> ? Le compte sera anonymisé (soft-delete RGPD) et ses sessions fermées. Action tracée dans l\'audit log.',
 	'906937be' => 'Utilisateur %s supprimé.',
 	'881485c2' => 'Éditer : %s',
 	'd6cecdee' => 'Rôle',
@@ -401,4 +400,5 @@ return [
 	'34f13694' => 'Tout ce que le site t’a signalé. Trop de notifications ? Choisis ce que tu reçois.',
 	'fd3c356f' => 'Préférences',
 	'5be93818' => 'Aucune notification.',
+	'62f0618d' => 'Supprimer le compte de <b>%s</b> ? Son profil, ses comptes liés, son historique de connexions et ses notifications sont effacés, ses sessions fermées ; ce qu\'il a publié reste, sous un pseudo neutre. Action tracée dans le journal d\'audit.',
 ];

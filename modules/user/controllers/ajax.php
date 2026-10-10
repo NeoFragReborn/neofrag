@@ -107,6 +107,165 @@ class Ajax extends Controller_Module
 		$this->_editeur_reponse(200, ['location' => $this->url->base.$relatif]);
 	}
 
+	/**
+	 * `ajax/user/consentement` — la trace d'un choix fait dans le bandeau ou la fenêtre « Gérer mes cookies »
+	 * (js/consentement.js) : la preuve du consentement (RGPD, art. 7.1). Rien n'est lu dans la requête que le
+	 * cookie du choix lui-même : une page d'un autre site ne peut donc rien faire enregistrer de faux (le
+	 * cookie est SameSite=Lax, il ne part pas avec un envoi venu d'ailleurs). Ni adresse IP ni navigateur :
+	 * le jeton tiré au hasard, les services acceptés, l'empreinte de ce qui était proposé, la date, et le
+	 * membre s'il est connecté — son archive « Mes données » le lui rend. Six mois de choix, donc treize
+	 * mois de traces au plus (le ménage, Session).
+	 *
+	 * Le débit est compté par visiteur — sur une empreinte de son adresse, jamais l'adresse elle-même.
+	 */
+	public function consentement()
+	{
+		if (strtolower((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) !== 'post' || !($choix = nf_consentement_lire(nf_consentement_valeur())) || $choix['jeton'] === '')
+		{
+			http_response_code(400);
+			exit;
+		}
+
+		$limiteur = new Rate_Limit($this);
+		$cle      = 'consentement:'.substr(hash_hmac('sha256', (string) Rate_Limit::client_ip(), $this->crypt->derive('consentement')), 0, 24);
+
+		if (!$limiteur->check($cle)['allowed'] || $limiteur->hit($cle, 30, 3600, 3600)['locked'])
+		{
+			http_response_code(429);
+			exit;
+		}
+
+		$this->db->insert('nf_cookie_consent', [
+			'consent_token' => $choix['jeton'],
+			'user_id'       => $this->user() ? (int) $this->user->id : NULL,
+			'services'      => implode(',', $choix['services']),
+			'empreinte'     => $choix['empreinte'],
+		]);
+
+		http_response_code(204);
+		exit;
+	}
+
+	/**
+	 * `ajax/user/relais/<signature>/<adresse>` — une image d'un autre site, que le site va chercher lui-même
+	 * pour que le navigateur du visiteur n'ait pas à le faire (helpers/relais.php). L'adresse, en hexadécimal,
+	 * doit porter la signature du site : seul ce que le site a lui-même affiché passe ici. L'image est gardée
+	 * dans upload/relais/, d'où le serveur web la sert les fois suivantes.
+	 */
+	public function _relais($signature, $hexa)
+	{
+		$adresse = strlen((string) $hexa) % 2 === 0 && ctype_xdigit((string) $hexa) ? (string) hex2bin((string) $hexa) : '';
+		$cle     = $this->crypt->derive('relais');
+
+		if ($adresse === '' || !hash_equals(nf_relais_signature($adresse, $cle), (string) $signature) || nf_relais_distante($adresse, (string) parse_url(site_origin(), PHP_URL_HOST)) === NULL)
+		{
+			http_response_code(404);
+			exit;
+		}
+
+		$donnees = nf_fetch_public_url($adresse, 6, NF_RELAIS_OCTETS, 'NeoFrag-Reborn/'.NEOFRAG_VERSION.' (relais d\'images ; +'.site_origin().')');
+		$info    = $donnees !== NULL ? @getimagesizefromstring($donnees) : FALSE;
+
+		if (!$info || !isset(NF_RELAIS_FORMATS[$info[2]]))
+		{
+			http_response_code(404);
+			exit;
+		}
+
+		$dossier = NEOFRAG_CMS.'/'.NF_RELAIS_DOSSIER;
+		$nom     = nf_relais_empreinte($adresse);
+
+		if (is_dir($dossier) || @mkdir($dossier, 0775, TRUE))
+		{
+			// Une autre extension d'une version précédente de la même image s'en va : une seule à la fois.
+			foreach (NF_RELAIS_FORMATS as $extension)
+			{
+				@unlink($dossier.'/'.$nom.'.'.$extension);
+			}
+
+			$provisoire = $dossier.'/.'.$nom.'.'.bin2hex(random_bytes(4));
+
+			if (@file_put_contents($provisoire, $donnees) !== FALSE)
+			{
+				@rename($provisoire, $dossier.'/'.$nom.'.'.NF_RELAIS_FORMATS[$info[2]]);
+			}
+
+			// Le ménage, de temps en temps. Une image encore affichée est reprise chaque semaine au plus (dix minutes
+			// pour un aperçu de direct) : un fichier de plus de trente jours n'est plus affiché nulle part.
+			if (random_int(1, 100) === 1)
+			{
+				foreach (glob($dossier.'/*') ?: [] as $ancien)
+				{
+					if (filemtime($ancien) < time() - 2592000)
+					{
+						@unlink($ancien);
+					}
+				}
+			}
+		}
+
+		$this->_image($donnees, $info['mime'], 600);
+	}
+
+	/**
+	 * `ajax/user/tuile/<zoom>/<x>/<y>` — une tuile de la carte des lieux (js/places.js), que le site va chercher
+	 * lui-même chez OpenStreetMap : le navigateur du visiteur ne parle qu'au site. Gardée sept jours, comme le
+	 * demandent les règles d'usage des tuiles d'OpenStreetMap (operations.osmfoundation.org/policies/tiles),
+	 * qui exigent aussi un agent qui nomme l'application. L'hôte est fixe et les trois nombres vérifiés :
+	 * personne ne fait télécharger au serveur autre chose qu'une tuile.
+	 */
+	public function _tuile($zoom, $x, $y)
+	{
+		$zoom = (int) $zoom;
+		$x    = (int) $x;
+		$y    = (int) $y;
+
+		if ($zoom < 0 || $zoom > 19 || $x < 0 || $y < 0 || $x >= 2 ** $zoom || $y >= 2 ** $zoom)
+		{
+			http_response_code(404);
+			exit;
+		}
+
+		$fichier = NEOFRAG_CMS.'/'.NF_RELAIS_DOSSIER.'/tuile-'.$zoom.'-'.$x.'-'.$y.'.png';
+
+		if (is_file($fichier) && filemtime($fichier) >= time() - 604800 && ($donnees = @file_get_contents($fichier)) !== FALSE)
+		{
+			$this->_image($donnees, 'image/png', 604800);
+		}
+
+		$donnees = nf_fetch_public_url('https://tile.openstreetmap.org/'.$zoom.'/'.$x.'/'.$y.'.png', 6, 1048576, 'NeoFrag-Reborn/'.NEOFRAG_VERSION.' (carte des lieux ; +'.site_origin().')');
+		$info    = $donnees !== NULL ? @getimagesizefromstring($donnees) : FALSE;
+
+		if (!$info || $info[2] !== IMAGETYPE_PNG)
+		{
+			http_response_code(404);
+			exit;
+		}
+
+		if (is_dir(dirname($fichier)) || @mkdir(dirname($fichier), 0775, TRUE))
+		{
+			$provisoire = $fichier.'.'.bin2hex(random_bytes(4));
+
+			if (@file_put_contents($provisoire, $donnees) !== FALSE)
+			{
+				@rename($provisoire, $fichier);
+			}
+		}
+
+		$this->_image($donnees, 'image/png', 604800);
+	}
+
+	/** Une image, puis la fin de la requête. */
+	private function _image(string $donnees, string $type, int $duree): never
+	{
+		header('Content-Type: '.$type);
+		header('Content-Length: '.strlen($donnees));
+		header('Cache-Control: public, max-age='.$duree);
+		header('X-Content-Type-Options: nosniff');
+
+		exit($donnees);
+	}
+
 	/** La réponse JSON de l'envoi d'image, puis la fin de la requête. */
 	private function _editeur_reponse(int $statut, array $corps): never
 	{

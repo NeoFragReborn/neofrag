@@ -12,6 +12,57 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.43] — 2026-10-08
+
+Privacy: no visitor is sent to a third party any more without their consent.
+
+### Added
+
+- **A real choice about services from other companies.** The cookie banner only controlled Google Analytics, while
+  videos, the Discord widget and captchas loaded whatever the visitor answered. The **“Manage my cookies”** window,
+  opened from the footer of every page, shows the site's own cookies, then each service, to accept or refuse one by
+  one. In place of a YouTube, Twitch, Vimeo or Dailymotion video, a Spotify or SoundCloud track, or the Discord widget,
+  a notice says who would receive the visitor's IP address, with “Show” and “Always allow”. The banner only opens if
+  the site really has something to ask up front (audience measurement, a captcha run by a third party); “Accept all”
+  and “Refuse all” carry the same weight. The choice is kept for six months, and its record, without the IP address,
+  for thirteen months.
+- **Settings → Privacy**: the legal notice and privacy policy pages, chosen among published pages. Every theme's
+  footer links to them, next to “Manage my cookies”.
+
+### Changed
+
+- **Fonts are served by the site**: the themes and the “Site font” setting took them from Google Fonts, and every
+  visitor's browser sent its IP address to Google, on every page.
+- **Images from other sites are served by the site** — a Discord, Steam or Twitch avatar, a GIF in a conversation, an
+  image pasted into an article, the forum or a classified ad, a banner: the site fetches them itself and keeps them for
+  seven days, and the browser no longer contacts their host. The places map tiles too.
+- **The security policy only lets the site through** for images and connections (except Analytics, if configured),
+  and the players of known services for frames, which it used to refuse: a video in an article did not show. A script
+  from another site pasted into an “HTML code” widget or an ad now only runs if its origin is allowed.
+- **A third-party captcha refused by the visitor gives way to ALTCHA**, served by the site: no one has to hand their
+  data to Google, hCaptcha or Cloudflare to write to the site or sign up.
+- **No more tracking pixel in the newsletter**, nor open rate: a tracker the subscription did not ask for (CNIL
+  recommendation of 12 March 2026 on tracking pixels in emails).
+- **Retention periods**: the audit log one year, the anti-abuse counters one day, newsletter subscriptions never
+  confirmed thirty days, its sending queue ninety days; for a report handled more than a year ago, its author's IP
+  address and the copy of the content are removed. The login cookie ends when the browser closes, except with
+  “Remember me” (one year), which is no longer ticked by default.
+- **No more Google Maps** in the text editor: the product's map is OpenStreetMap.
+- The themes' “Powered by NeoFrag Reborn” link, the `{neofrag}` copyright keyword and the admin footer links lead to
+  the project's site; they led to the original NeoFrag site.
+
+### Fixed
+
+- **No IP address is sent to neofr.ag any more**: to show a flag next to session addresses, the administrator's
+  browser sent all of them there.
+- **Deleting an account as an administrator really erases** the profile, linked accounts, login history and
+  notifications, like the deletion a member requests themselves; it only closed the account.
+- **The “My data” archive downloads again**: three of its lists (forum topics, comments, conversation messages) read
+  columns that do not exist.
+- The session and gallery tooltips were empty (a Bootstrap 4 attribute).
+- The Steam widget avatar was not escaped.
+- The two labels of the Twitch widget player, left in French, are translated.
+
 ## [1.2.42] — 2026-10-07
 
 A theme redone: **Extend**, the website as an online game launcher.

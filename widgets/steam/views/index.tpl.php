@@ -7,7 +7,7 @@ $group_url  = 'https://steamcommunity.com/groups/'.nf_texte($url);
 	<?php if ($show_avatar): ?>
 	<div class="widget-steam-avatar-wrap">
 		<div class="widget-steam-avatar-ring" style="--online-pct:<?php echo $online_pct ?>%">
-			<a href="<?php echo $group_url ?>" target="_blank" rel="noopener"><img src="<?php echo $avatar ?>" class="widget-steam-avatar" alt="<?php echo nf_texte($name) ?>" /></a>
+			<a href="<?php echo $group_url ?>" target="_blank" rel="noopener"><img src="<?php echo nf_texte($avatar) ?>" class="widget-steam-avatar" alt="<?php echo nf_texte($name) ?>" /></a>
 		</div>
 		<?php if ($online_pct > 0): ?>
 		<div class="widget-steam-online-badge"><?php echo $online_pct ?>%</div>

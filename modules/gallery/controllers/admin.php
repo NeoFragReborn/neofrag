@@ -27,7 +27,7 @@ class Admin extends Controller_Module
 										return '<i class="fas fa-calendar-alt" data-bs-toggle="tooltip" title="'.$this->lang('Programmée le %s', timetostr($this->lang('d/m/Y H:i'), $data['date'])).'" style="color: #e0a32e;"></i>';
 									}
 
-									return '<i class="fas fa-circle text-success" data-bs-toggle="tooltip" data-original-title="'.$this->lang('Publiée dans la galerie').'"></i>';
+									return '<i class="fas fa-circle text-success" data-bs-toggle="tooltip" title="'.$this->lang('Publiée dans la galerie').'"></i>';
 								},
 								'sort'    => function($data){
 									return $data['published'];

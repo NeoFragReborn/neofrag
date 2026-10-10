@@ -305,3 +305,6 @@
 	border: 0;
 	display: block;
 }
+.nf-twitch-modal-body iframe[hidden] { display: none; }
+/* L'avis du service, tant que le visiteur ne l'a pas accepté (js/consentement.js). */
+.nf-twitch-modal-body .nf-tiers { flex: 1; margin: 0; border: 0; border-radius: 0; }

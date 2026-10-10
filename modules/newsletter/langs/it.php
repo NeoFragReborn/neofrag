@@ -79,8 +79,6 @@ return [
 	'0cfde910' => 'Niente da inviare (nessun iscritto confermato).',
 	'1c3b7c57' => 'Campagna annullata.',
 	'5c8e6526' => 'Annullamento impossibile (campagna già in invio).',
-	'b588414d' => 'aper.',
-	'75df0f92' => 'Tasso di apertura',
 	'8f0057d4' => 'Modelli',
 	'14bd4f31' => 'Nessun modello. Creane uno per riutilizzare oggetto + contenuto durante la composizione.',
 	'54231355' => 'Nome',

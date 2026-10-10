@@ -127,6 +127,7 @@ Ils agissent — construire, publier, régénérer, installer — plutôt qu'ils
 | [`maintenance`](maintenance.php) | tâches de maintenance périodiques, à lancer par un cron externe. | `php tools/maintenance.php [trash|accounts|all] [--pretend]` |
 | [`migrate`](migrate.php) | le runner des migrations SQL du cœur. | `php tools/migrate.php status` |
 | [`package-addons`](package-addons.php) | zippe chaque addon distribuable et génère le catalogue du marketplace. | `php tools/package-addons.php` |
+| [`polices-locales`](polices-locales.php) | les polices des thèmes et du réglage « Police du site », servies par le site lui-même. | `php tools/polices-locales.php` |
 | [`prepare-test-db`](prepare-test-db.php) | prépare la base de données des tests d'intégration. | `php tools/prepare-test-db.php` |
 | [`seed-demo`](seed-demo.php) | peuple un site de données de DÉMO réalistes (gaming/communauté). | `php tools/seed-demo.php` |
 | [`stan-baseline`](stan-baseline.php) | régénère la liste d'exceptions de PHPStan, et refuse d'y geler une erreur neuve. | `php tools/stan-baseline.php` |

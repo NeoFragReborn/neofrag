@@ -15,7 +15,7 @@ class Index extends Controller_Widget
 	{
 		$keywords = [
 			'name'      => '<a href="'.url().'">'.$this->config->nf_name.'</a>',
-			'neofrag'   => '<a href="https://neofr.ag">NeoFrag Reborn</a>',
+			'neofrag'   => '<a href="https://neofrag-reborn.xyz">NeoFrag Reborn</a>',
 			'year'      => date('Y'),
 			'copyright' => icon('far fa-copyright')
 		];

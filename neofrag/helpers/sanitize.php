@@ -59,13 +59,14 @@ function sanitize_html($html): string
 		$config->set('HTML.TargetBlank', TRUE);
 		$config->set('HTML.Nofollow', TRUE);
 
-		// Embeds iframe restreints à une whitelist d'hôtes (vidéo/audio).
+		// Embeds iframe restreints à une whitelist d'hôtes (vidéo/audio). Plus de cartes Google depuis le
+		// 2026-10-08 : la carte du produit est celle d'OpenStreetMap (module Lieux), servie par le site sans
+		// qu'aucun visiteur ne soit envoyé chez un tiers ; Google Maps pose ses cookies et piste.
 		$config->set('HTML.SafeIframe', TRUE);
 		$config->set('URI.SafeIframeRegexp',
 			'%^https://(www\.youtube(?:-nocookie)?\.com/embed/|player\.vimeo\.com/video/|'.
 			'(www\.)?dailymotion\.com/embed/|player\.twitch\.tv/|clips\.twitch\.tv/embed|'.
-			'open\.spotify\.com/embed/|w\.soundcloud\.com/player/|'.
-			'www\.google\.com/maps/embed|maps\.google\.com/maps)%'
+			'open\.spotify\.com/embed/|w\.soundcloud\.com/player/)%'
 		);
 
 		// Cache des définitions (perf). Désactive proprement si le dossier n'est pas inscriptible.

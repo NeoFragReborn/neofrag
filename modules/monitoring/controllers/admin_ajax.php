@@ -671,6 +671,10 @@ class Admin_Ajax extends Controller_Module
 			['index.php', '.htaccess']
 		);
 
+		// Les images d'autres sites que le site sert lui-même (helpers/relais.php) : une copie de passage, que
+		// le site refait à la demande — pas une donnée à sauvegarder.
+		$files = array_values(array_filter($files, static fn ($chemin): bool => !str_starts_with(str_replace('\\', '/', (string) $chemin), NF_RELAIS_DOSSIER.'/')));
+
 		$total = count($files);
 		$i     = 0;
 

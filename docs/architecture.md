@@ -83,9 +83,9 @@ pas les tables** (aucun DDL dans l'ORM ; le schéma vient de `schema.sql` + migr
   `social_connect_session`, `moderation`, `mysqldump`, `disposition`, `json`, `collection`,
   `file_jail`… Accédées magiquement
   (`$this->form2`, `$this->rate_limit`, etc.).
-- **24 helpers** (`neofrag/helpers/`, fonctions globales pures) : `array`, `string`, `color`,
+- **26 helpers** (`neofrag/helpers/`, fonctions globales pures) : `array`, `string`, `color`,
   `countries`, `time`, `file`, `dir`, `fonts`, `input`, `location`, `markdown`, `notify`, `remote`,
-  `sanitize`, `statistics`, `system`, `user_agent`, `assets`, `geolocalisation`, `debug`,
+  `sanitize`, `statistics`, `system`, `user_agent`, `assets`, `seo`, `debug`, `consentement`, `relais`,
   `bootstrap`, `erreurs`, `journal`, `theme`. Ce sont les **seuls éléments testables sans bootstrapper le singleton** (cf. tests
   pilotes). `sanitize` expose `sanitize_html()` (HTMLPurifier, anti XSS stocké) ; `bootstrap` expose
   `nf_bs_align()`, le point unique qui traduit un alignement en classe Bootstrap 5 — les
@@ -177,8 +177,8 @@ corbeille (`Trash::TYPES`), recherche et flux RSS par module.
 ## 11. Dette technique notable
 
 - **Service locator + méthodes magiques** partout → testabilité et IDE freinés (cf. §3).
-- **`strict_types`** : 1457 fichiers sur 1701 dans `neofrag`, `modules`, `widgets`, `addons` (2026-10-07) — tout le
-  périmètre utile ; les 244 restants sont les gabarits `views/**.tpl.php`, où un `declare` ne protégerait rien.
+- **`strict_types`** : 1459 fichiers sur 1704 dans `neofrag`, `modules`, `widgets`, `addons` (2026-10-08) — tout le
+  périmètre utile ; les 245 restants sont les gabarits `views/**.tpl.php`, où un `declare` ne protégerait rien.
   Le cliquet
   `tools/check-strict-types.php` interdit de reculer, la conversion se fait par petits lots éprouvés, la machinerie
   magique `__get` / `__call` pouvant révéler des coercitions à l'exécution.

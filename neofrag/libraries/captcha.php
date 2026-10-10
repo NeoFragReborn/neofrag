@@ -70,6 +70,17 @@ class Captcha extends Library
 	}
 
 	/**
+	 * Le fournisseur que voit CE visiteur. Un captcha confié à un tiers (Google, hCaptcha, Cloudflare) dépose
+	 * ses cookies et reçoit l'adresse IP du visiteur : il ne se charge que si le visiteur a accepté ce service
+	 * (helpers/consentement.php). Sinon, ALTCHA, servi par le site lui-même : le formulaire reste protégé, et
+	 * personne n'est obligé de céder ses données à un tiers pour écrire au site ou s'inscrire (2026-10-08).
+	 */
+	public static function cle_pour_le_visiteur(string $cle, bool $accepte): string
+	{
+		return $cle === '' || $cle === Altcha::cle() || $accepte ? $cle : Altcha::cle();
+	}
+
+	/**
 	 * Les origines que la politique de sécurité ouvre pour ce fournisseur.
 	 *
 	 * @return array{script?: list<string>, frame?: list<string>, style?: list<string>}
@@ -91,6 +102,7 @@ class Captcha extends Library
 		$public        = (string) $this->config->nf_captcha_public_key;
 		$prive         = (string) $this->crypt->decrypt_secret((string) $this->config->nf_captcha_private_key);
 		$cle           = self::cle_active((string) $this->config->nf_captcha_provider, $public, $prive);
+		$cle           = self::cle_pour_le_visiteur($cle, $cle !== '' && nf_consentement_accepte($cle));
 
 		if ($cle === Altcha::cle())
 		{

@@ -1,8 +1,8 @@
 {
     "schema": 1,
     "project": "NeoFrag Reborn",
-    "base_version": "1.2.42",
-    "generated_at": "2026-10-07T21:07:10+00:00",
+    "base_version": "1.2.43",
+    "generated_at": "2026-10-08T12:59:40+00:00",
     "count": 67,
     "addons": [
         {
@@ -42,7 +42,7 @@
             "size": 31139,
             "sha256": "01d174c979259d5978ed24e16acace61a6f05834c1d2f11cec7e895bf6f31228",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -87,7 +87,7 @@
             "size": 93897,
             "sha256": "4f1a431f0e46141b2025d8db82c86f7e11093c75188cd220c93386d5a64d06c1",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -130,7 +130,7 @@
             "size": 88832,
             "sha256": "0df726a673f422a8b442a64392d0fabf0bdac83f66858e9a2a30ebf87cf80048",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -175,7 +175,7 @@
             "size": 47751,
             "sha256": "471c248af2148094a67437d8321edaa99ba0f8ad8e330fb062f0c1f22b3463e6",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": [
                     "teams",
                     "games"
@@ -223,7 +223,7 @@
             "size": 59046,
             "sha256": "6a7c39b86deaf75075babc7427a994f8d49d5acc98edd8ea7de2fccaf0c65d1c",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -266,7 +266,7 @@
             "size": 38078,
             "sha256": "81053cae4d9a68158dfd58d13ac6f2da3b22a11bbe6066d601296bdfb0ccfcbe",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -311,7 +311,7 @@
             "size": 48146,
             "sha256": "4e0b91e0b2132bfe82a09e7fdc42ed34a5f6eef42da3fb80928c7f070fd62f83",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -354,7 +354,7 @@
             "size": 148435,
             "sha256": "28d94c4fe94c52a7bff12375e5ad01ff4e1f7e14dbe13545c5b1c5f0829cfa02",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": [
                     "api"
                 ]
@@ -399,7 +399,7 @@
             "size": 61489,
             "sha256": "29f57dfe34578124fdbc406a12d665066d70df6361e5f3dd6ece8c1cd61f68fa",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -444,7 +444,7 @@
             "size": 49596,
             "sha256": "018d6bf805064b40b050bda09d63c7b102fe090711399afa88ba65aefcdc1b4d",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -489,7 +489,7 @@
             "size": 30507,
             "sha256": "d6e14c3e84176120f606e66ebdd7727d68676c621132418e793bb0183a09a22a",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -532,7 +532,7 @@
             "size": 194076,
             "sha256": "480ae54eb36295d14d5c4cb72d6a53c3500c39ed99681dff31c8c3379abd475f",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": [
                     "games",
                     "teams"
@@ -580,7 +580,7 @@
             "size": 33201,
             "sha256": "7be36610a5c9dd2580f864c138faeca3e5c52d98cf2380d3580f174417e33bca",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -623,7 +623,7 @@
             "size": 28828,
             "sha256": "05f24156b60d2999ac074790faa9432d62ecad67e0bcf0a50c27221e0d4620fe",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": [
                     "news",
                     "articles"
@@ -669,7 +669,7 @@
             "size": 155274,
             "sha256": "d0909a25387b5c5b5012dbf3b1a9fd8ca0dd554c93d38e8797e91c1f7b71ef10",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -711,10 +711,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/gallery.zip",
             "preview": "modules/gallery.jpg",
-            "size": 93952,
-            "sha256": "aba7ba674d77a2ade920d5e3a70092cc92116bc9ff0953f817ab72ae9c36e3d8",
+            "size": 93943,
+            "sha256": "7a33e6503bae1eede45acdc4601a6a6534d4fc1530873258e2a4842c659e4fc8",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -759,7 +759,7 @@
             "size": 62907,
             "sha256": "f5950705d040139b29019af2ae5e9c3be250ef1c27f11f2e19a15da25d018717",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -802,7 +802,7 @@
             "size": 41976,
             "sha256": "f8cee3c18b492d3d529deb78646732083ccd86829c553c1f742af4233862563c",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -845,7 +845,7 @@
             "size": 56218,
             "sha256": "b861ff6f7ce884c6051708b265ff0190aa61c5f0c94b75ac7ec1c89a077a84af",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -888,7 +888,7 @@
             "size": 27618,
             "sha256": "48acd605fc16bf8576868982338870560a70a0acd19493deea6c2d1c895e37c6",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -933,7 +933,7 @@
             "size": 38141,
             "sha256": "91edb9d7e529e36de40a672273d4e1569920e6af8ef6d3fa0b98dc322eb336f4",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -978,7 +978,7 @@
             "size": 76635,
             "sha256": "0b4354404e151593328201a1f251c2727990fb21cc3508bf29070284fb3870f7",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -1020,10 +1020,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/newsletter.zip",
             "preview": "modules/newsletter.jpg",
-            "size": 61763,
-            "sha256": "b279d75cb29264506954b49130a8f8862e8192c4616d9918cc6a5fc948ae6f37",
+            "size": 61665,
+            "sha256": "f53c9c811c9f82214e14796e7da09678d13714f074dc562b208687647325c087",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -1068,7 +1068,7 @@
             "size": 46653,
             "sha256": "174fda8c69c3b4ad10bd87791d9fc3550438f681c02d9913cb8a9ad3a8fb7913",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -1113,7 +1113,7 @@
             "size": 48303,
             "sha256": "0fc2705309518fa38e2dd94c95269fc88a23e3fd156aeaea216fdf07814baabb",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": [
                     "gamification"
                 ]
@@ -1155,10 +1155,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/places.zip",
             "preview": "modules/places.jpg",
-            "size": 178639,
-            "sha256": "bbd38070fdf71b77a50aef667cb0217f567b7c5e32e3e01d85a808500d5ee778",
+            "size": 178824,
+            "sha256": "f6a8a31400532092feed26f617701b3420a632344731771009e0d73dc30e6cf4",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1201,7 +1201,7 @@
             "size": 60691,
             "sha256": "636275551fd2bd1942f01bc8bdd88e5dbe30a1f4a2bbac01e30b30c482d4d0c2",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1244,7 +1244,7 @@
             "size": 53826,
             "sha256": "5d5ddf63c45b21df676759030883f17c00b3fb5761ebf6fcb166567995bb164a",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1287,7 +1287,7 @@
             "size": 75054,
             "sha256": "49e6fd5cf531dbbb0f51cc2dc3ea522eeebcfa8e0856b0b530c36c638ff18a45",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": [
                     "teams",
                     "games"
@@ -1335,7 +1335,7 @@
             "size": 50343,
             "sha256": "80b680a3dab102a5d02ac7c7dcdb6141d3e10daf0c673f72ddf45bfd4e0b8f2f",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1378,7 +1378,7 @@
             "size": 46892,
             "sha256": "b61ddc71c3011a3a688cc51c018b27fd1b82d46b27ada9dab9ff7c438043e5d4",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1421,7 +1421,7 @@
             "size": 49632,
             "sha256": "1a06bfffb8bceaa6c5c7a8c15020d58df691589c23c9d9c2fbabc345566d531c",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [
@@ -1466,7 +1466,7 @@
             "size": 57446,
             "sha256": "8c887f7968fc2170f2d41d54db24adcbaf1d7fca3e9584126526295b6e603bfd",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": [
                     "games"
                 ]
@@ -1513,7 +1513,7 @@
             "size": 63159,
             "sha256": "54ca3f08529c4f23356fe47b3da5fc047dce78d5a0def36d4f80f8d9df8693b5",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1556,7 +1556,7 @@
             "size": 39268,
             "sha256": "265cf960ab8d0640f268ccac6269b69d146828f32dd3a452cacb5101d6de8e28",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1591,10 +1591,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/blockcraft.zip",
             "preview": "themes/blockcraft.jpg",
-            "size": 166104,
-            "sha256": "eff07dc91a39410eb542c1d3e9b9eda7a4b7fe3383dea0708c234519d2b1529c",
+            "size": 166105,
+            "sha256": "e3a9ca448cc490fc9b279fe550d1d957861971977df1d53962a4b4a2240661c7",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1629,10 +1629,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/chronique.zip",
             "preview": "themes/chronique.jpg",
-            "size": 79326,
-            "sha256": "9bc34470f9ad596368bd50fe97e934e0d015b96bd1165c46faf7678015e787e7",
+            "size": 79296,
+            "sha256": "e49ec5da0f30329cd5623654c001e58a6d7cdbcd517d6a89498ae0e5d196f0f1",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1667,10 +1667,10 @@
             "license": "Creative Commons CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>",
             "file": "themes/extend.zip",
             "preview": "themes/extend.jpg",
-            "size": 101701,
-            "sha256": "21584d190ca680f6d13a232835cc79369e00a671e85c89ca1301acff17ad3533",
+            "size": 101841,
+            "sha256": "d6aa1b806a9877ee3a7bae6b637ca655a2a89a1489e2885d76315a9c837e0e05",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1705,10 +1705,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/forge.zip",
             "preview": "themes/forge.jpg",
-            "size": 114073,
-            "sha256": "5c29299783067d9270b8a5ec209c8bf4721711c8dc9bd30e61355ad0e59ce0ef",
+            "size": 114055,
+            "sha256": "76760e4edbc2f6c04023c30e51604972825e39d91f904904fcbb598dc4931dfb",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1743,10 +1743,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/granite.zip",
             "preview": "themes/granite.jpg",
-            "size": 122114,
-            "sha256": "007c66c0315cf52cec3e06199ac95e01e0b90d574952b096bd9bba7ebe944b85",
+            "size": 122101,
+            "sha256": "4adbb2e33b938687c513b368af81210c0096cab6ed52ba583a989231921c037b",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1781,10 +1781,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/pulse.zip",
             "preview": "themes/pulse.jpg",
-            "size": 93377,
-            "sha256": "d3786949583436173cf5b06aa7b230e0eb1e805b24bb7ab2085d66579f328b61",
+            "size": 93356,
+            "sha256": "736fd7b5afe6a8c38433b2044a6c8a68279b4c470f9319e852f5d61ffe8077d4",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1827,7 +1827,7 @@
             "size": 32736,
             "sha256": "3bc627516db6d5a0bd4632bbcae585bb76a6dbbc144644a29e92eea2546ed407",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1870,7 +1870,7 @@
             "size": 22269,
             "sha256": "1eba2c93d997dcb4b6f95a1d88c878dce0ef3eabb38f52aedcd3e7e35c33e6cf",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1913,7 +1913,7 @@
             "size": 37391,
             "sha256": "9af44320673c5a1605d8d01c5e1e61b84612ca1da72080fb02baa693117b39dd",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1956,7 +1956,7 @@
             "size": 20319,
             "sha256": "78db19345042bd06a2205384f7dfacac9b9e1b870199663abdaa6324f670c6df",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1999,7 +1999,7 @@
             "size": 34473,
             "sha256": "117bce2a6b9fa4897e0ad3bf925764385c726c244d26182cc48f069ba10866ac",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2042,7 +2042,7 @@
             "size": 28739,
             "sha256": "30d99fa37b1a9eaada965a8638339160458229829a987bb9de3da33553a7a260",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2085,7 +2085,7 @@
             "size": 29757,
             "sha256": "d6dc251979d5a2261e689e05c85a88c80c6fdc204b5716efe13d71eb6127c38a",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2128,7 +2128,7 @@
             "size": 33378,
             "sha256": "467cb65aed9be1057e1fbbf5ca360fb0d1383c59a53a59e42083f9cfeb8a839d",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2171,7 +2171,7 @@
             "size": 34848,
             "sha256": "dc3681a95329ed39976a3aac32d85cdd5c7dc4bfe71a9f3ef43f176381ec9bc3",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2214,7 +2214,7 @@
             "size": 43822,
             "sha256": "2ee9c1674b20476b4164d0528af8c316a4dc4922e84a59258052c8d5bf99a2fb",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2257,7 +2257,7 @@
             "size": 50665,
             "sha256": "e94796a63d7a640ee94a8aa53adfc1f8454b824ea9401162983add4103263841",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2300,7 +2300,7 @@
             "size": 31590,
             "sha256": "cf5156d9c28e1af1b90adea7f52a7612bb9672721cbbe1a8d8731e2b3a42ce7f",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2343,7 +2343,7 @@
             "size": 44609,
             "sha256": "3111d23f0edb876e28ea9622044e196c212c055245a917de9ae4915c9992deab",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2386,7 +2386,7 @@
             "size": 29066,
             "sha256": "53caac18d7bf65031e455d563412d223439f543d52cdbfaa4dfcffb4e136ef81",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2429,7 +2429,7 @@
             "size": 23773,
             "sha256": "366b083d5a47aef0d39506d68b7de6db73b955ed01dfabd2895602d5b5929879",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2472,7 +2472,7 @@
             "size": 26647,
             "sha256": "6fa81bccba63e9bfa5ee10354807f0cef4bc61ca2e2d9c1c32a7accdc9bc67cc",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2515,7 +2515,7 @@
             "size": 28436,
             "sha256": "c8561662eadf447d3f06ec966330175e3bcaad5c44b2b06a579c8dc1db38a103",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2558,7 +2558,7 @@
             "size": 24221,
             "sha256": "5fd0a46b76026825bb4ac772a86c215c007d8f297111799a25a6e9b3cf4bccde",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2601,7 +2601,7 @@
             "size": 36080,
             "sha256": "caac7f8d05353c44d547f55d950a9cf68f347992bcc58ee4ef8cc7a7fcc027e6",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": [
                     "teams"
                 ]
@@ -2646,7 +2646,7 @@
             "size": 56545,
             "sha256": "d1adf41aa41439c086283d425cafcf1fc02ada7cdf2a798a44a2d4e8a32a2aa8",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2689,7 +2689,7 @@
             "size": 46386,
             "sha256": "2212a2e67d6262d4fcd48911e96e9d32d7910e0d01b0678248dc5d6e1fadbe55",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2729,10 +2729,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/steam.zip",
             "preview": "widgets/steam.jpg",
-            "size": 39754,
-            "sha256": "a6aa99752c525e315952cb8082d87f77f4e8804fd172aeb2fa4d9ea9e42ec0e2",
+            "size": 39753,
+            "sha256": "e81ecfcaff875d80b37463def06b3ec75517bfa418ac938fb3fb6358a56ed7f5",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2775,7 +2775,7 @@
             "size": 27356,
             "sha256": "fc6a615bf2ed39476e8ad650d5e8dd6adfc12a1c9eb7805c0efe100db0437444",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2818,7 +2818,7 @@
             "size": 26550,
             "sha256": "a9570f0e3ee101d52006f00fad4172565e604c964055e00bc187c6eacc17b16f",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2861,7 +2861,7 @@
             "size": 44444,
             "sha256": "45437d4449c47cd81bae76a00a60cf0750c1c798362f73d31be150bb6623b6b9",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2901,10 +2901,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/twitch.zip",
             "preview": "widgets/twitch.jpg",
-            "size": 52653,
-            "sha256": "807b94f53fa8a0810f04620db06bc9286200c34b3feb8c254e54752e58ad778a",
+            "size": 53246,
+            "sha256": "e85970eb6d38cbe5a25ac69d2f7b998ba8fe48b4de4ec1f61c2603853ef197b6",
             "requires": {
-                "base": ">=1.2.42",
+                "base": ">=1.2.43",
                 "addons": []
             },
             "provides_widgets": [],

@@ -79,8 +79,6 @@ return [
 	'0cfde910' => 'Nada que enviar (ningún suscriptor confirmado).',
 	'1c3b7c57' => 'Campaña cancelada.',
 	'5c8e6526' => 'No se puede cancelar (la campaña ya se está enviando).',
-	'b588414d' => 'aper.',
-	'75df0f92' => 'Tasa de apertura',
 	'8f0057d4' => 'Plantillas',
 	'14bd4f31' => 'Ninguna plantilla. Crea una para reutilizar asunto + contenido al redactar.',
 	'54231355' => 'Nombre',

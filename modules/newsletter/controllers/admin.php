@@ -93,7 +93,6 @@ class Admin extends Controller_Module
 				$total       = (int)$c['recipients_total'];
 				$sent        = (int)$c['sent_to'];
 				$failed      = (int)$c['failed_to'];
-				$opened      = (int)($c['opened_to'] ?? 0);
 
 				$seg_label = '';
 				if (($c['segment'] ?? 'all') === 'members')    { $seg_label = ' <small class="text-muted">· <i class="fas fa-user-friends"></i> '.$this->lang('Membres').'</small>'; }
@@ -118,7 +117,7 @@ class Admin extends Controller_Module
 					default:
 						$badge = '<span class="badge text-bg-success"><i class="fas fa-check"></i> '.$this->lang('Envoyée').'</span>'
 							.($failed > 0 ? ' <span class="badge text-bg-danger" title="'.nf_texte($this->lang('Échecs d\'envoi')).'">'.$failed.' ⚠</span>' : '');
-						$recip = $sent.($sent > 0 ? ' <small class="text-muted" title="'.nf_texte($this->lang('Taux d\'ouverture')).'">· '.$opened.' '.$this->lang('ouv.').' ('.round($opened / $sent * 100).'%)</small>' : '');
+						$recip = (string) $sent;
 						$date  = $c['sent_at'] ? timetostr('j M Y H:i', $c['sent_at']) : '—';
 				}
 

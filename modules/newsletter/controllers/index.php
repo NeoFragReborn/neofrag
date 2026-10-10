@@ -152,23 +152,6 @@ class Index extends Controller_Module
 		return $this->panel()->title($this->lang('Newsletter'), 'far fa-envelope')->body($body);
 	}
 
-	public function _track($token)
-	{
-		/** @var \NF\Modules\Newsletter\Models\Newsletter $model */
-		$model = $this->model('newsletter');
-		$model->record_open($token);
-
-		if (!headers_sent())
-		{
-			header('Content-Type: image/gif');
-			header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-			header('Pragma: no-cache');
-		}
-
-		// GIF transparent 1×1 — l'email client ne voit jamais d'image cassée.
-		exit(base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'));
-	}
-
 	public function _unsubscribe($sub)
 	{
 		$this->title($this->lang('Désinscription'))->icon('far fa-envelope')->breadcrumb();

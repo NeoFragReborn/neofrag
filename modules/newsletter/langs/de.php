@@ -79,8 +79,6 @@ return [
 	'0cfde910' => 'Nichts zu senden (kein bestätigter Abonnent).',
 	'1c3b7c57' => 'Kampagne abgebrochen.',
 	'5c8e6526' => 'Abbruch nicht möglich (Kampagne wird bereits gesendet).',
-	'b588414d' => 'Öffn.',
-	'75df0f92' => 'Öffnungsrate',
 	'8f0057d4' => 'Vorlagen',
 	'14bd4f31' => 'Keine Vorlage. Erstelle eine, um Betreff + Inhalt beim Verfassen wiederzuverwenden.',
 	'54231355' => 'Name',
