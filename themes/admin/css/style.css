@@ -196,7 +196,7 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 .nf-app {
 	display: grid;
 	grid-template-columns: var(--nf-sidebar-w) 1fr;
-	min-height: 100vh;
+	min-height: calc(100vh - var(--nf-haut, 0px));
 }
 
 @media (max-width: 991.98px) {
@@ -213,9 +213,9 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 	display: flex;
 	flex-direction: column;
 	position: sticky;
-	top: 0;
-	height: 100vh;
-	max-height: 100vh;
+	top: var(--nf-haut, 0px);
+	height: calc(100vh - var(--nf-haut, 0px));
+	max-height: calc(100vh - var(--nf-haut, 0px));
 	overflow: hidden;
 	z-index: 100;
 }
@@ -224,7 +224,7 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 	.nf-sidebar {
 		position: fixed;
 		left: 0;
-		top: 0;
+		top: var(--nf-haut, 0px);
 		bottom: 0;
 		width: min(86vw, 300px);
 		transform: translateX(-100%);
@@ -289,6 +289,8 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 	gap: 12px;
 	background: var(--nf-surface);
 	border-bottom: 1px solid var(--nf-border);
+	/* `top: 0`, pas `var(--nf-haut)` : la barre colle DANS `.nf-main`, que son `overflow-x: hidden` fait conteneur
+	   de défilement — décalée de la hauteur des bandeaux du haut de page, elle descendait sur le contenu. */
 	position: sticky;
 	top: 0;
 	z-index: 50;
@@ -2040,6 +2042,7 @@ i.icon:only-child { margin: 0; }
 
 .settings-section-card .settings-section-header {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 10px;
 	padding: 12px 16px;
@@ -2980,12 +2983,17 @@ i.icon:only-child { margin: 0; }
 }
 .nf-action-bar .btn { font-size: 12.5px; }
 
-/* Boutons d'action à droite du settings-section-header (ex: bouton Créer dans header de liste) */
+/* Boutons d'action à droite du settings-section-header (ex: bouton Créer dans header de liste). Quand la place manque,
+   ils passent sous le titre, puis à la ligne entre eux : au téléphone, les trois boutons des articles recouvraient
+   « 4 publiés » et « Nouvel article » sortait de l'écran (check-mise-en-page, 2026-10-08). */
 .settings-section-card .nf-section-actions {
 	margin-left: auto;
 	display: inline-flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
 	gap: 6px;
-	flex: 0 0 auto;
+	flex: 0 1 auto;
+	max-width: 100%;
 }
 
 /* R2.1 fix : cards listings avec table — body padding 0 mais la table garde son air via table cellpadding */
@@ -3580,9 +3588,9 @@ button.nf-local-tab {
 
 :root { --nf-sidebar-w: 268px; }
 
-.nf-app { display: grid; grid-template-columns: var(--nf-sidebar-w) 1fr; min-height: 100vh; }
+.nf-app { display: grid; grid-template-columns: var(--nf-sidebar-w) 1fr; min-height: calc(100vh - var(--nf-haut, 0px)); }
 
-.nf-sidebar { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; background: var(--nf-surface); border-right: 1px solid var(--nf-border); }
+.nf-sidebar { position: sticky; top: var(--nf-haut, 0px); height: calc(100vh - var(--nf-haut, 0px)); display: flex; flex-direction: column; background: var(--nf-surface); border-right: 1px solid var(--nf-border); }
 .nf-sb-top { display: flex; align-items: center; height: 60px; padding: 0 18px; border-bottom: 1px solid var(--nf-border); flex-shrink: 0; }
 .nf-sb-brand { display: flex; align-items: center; gap: 10px; font-family: "Space Grotesk", var(--nf-font); font-weight: 700; font-size: 18px; color: var(--nf-text); text-decoration: none; }
 /* Logo de marque : PNG (tuile incluse), s'adapte au mode admin (clair/sombre) et à la taille. */
@@ -3671,7 +3679,7 @@ button.nf-local-tab {
 @media (max-width: 991.98px) {
 	.nf-app { grid-template-columns: 1fr; }
 	.nf-sidebar {
-		position: fixed; left: 0; top: 0; bottom: 0; height: auto;
+		position: fixed; left: 0; top: var(--nf-haut, 0px); bottom: 0; height: auto;
 		width: min(86vw, 300px);
 		transform: translateX(-100%);
 		transition: transform 200ms ease;

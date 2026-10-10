@@ -157,7 +157,7 @@ class Ajax extends Controller_Module
 		$adresse = strlen((string) $hexa) % 2 === 0 && ctype_xdigit((string) $hexa) ? (string) hex2bin((string) $hexa) : '';
 		$cle     = $this->crypt->derive('relais');
 
-		if ($adresse === '' || !hash_equals(nf_relais_signature($adresse, $cle), (string) $signature) || nf_relais_distante($adresse, (string) parse_url(site_origin(), PHP_URL_HOST)) === NULL)
+		if ($adresse === '' || !hash_equals(nf_relais_signature($adresse, $cle), (string) $signature) || nf_relais_distante($adresse, nf_relais_hote()) === NULL)
 		{
 			http_response_code(404);
 			exit;

@@ -747,54 +747,13 @@ body .widget-user .avatar, body .widget-user img.avatar {
 .bg-warning { background-color: var(--fg-warning) !important; }
 
 /* =========================================================================
-   §25 — Vitrine Reborn : navbar glass + boutons + footer
+   §25 — Le fond de la page
    ======================================================================== */
 
+/* Les règles de la vitrine copiées ici — sa barre, ses boutons, son pied (`.vt-*`) — ne servaient à rien : aucun
+   gabarit de Nebula ne les emploie. Retirées le 2026-10-08 (check-colles relevait leur barre fixée sous les bandeaux). */
+
 body { background: var(--fg-bg); }
-
-.vt-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1030; transition: background-color .3s ease, border-color .3s ease; border-bottom: 1px solid transparent; }
-.vt-nav.scrolled { background: rgba(7,10,16,.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom-color: var(--fg-border); }
-.vt-nav-in { max-width: 1180px; margin: 0 auto; padding: 0 24px; height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-.vt-logo { display: flex; align-items: center; gap: 10px; font-family: var(--fg-font-display); font-weight: 700; font-size: 20px; color: #fff; text-decoration: none; white-space: nowrap; }
-.vt-logo small { font-size: 11px; color: var(--fg-accent); font-weight: 600; letter-spacing: .16em; text-transform: uppercase; margin-left: -2px; }
-.vt-mark { width: 34px; height: 34px; border-radius: 9px; background: var(--fg-banner-gradient); display: grid; place-items: center; color: #04201d; font-size: 16px; }
-.vt-nav-links { display: flex; gap: 28px; font-size: 14.5px; font-weight: 500; }
-.vt-nav-links a { color: var(--fg-muted); text-decoration: none; transition: color .2s ease; }
-.vt-nav-links a:hover { color: #fff; }
-.vt-nav-cta { display: flex; align-items: center; gap: 10px; }
-
-.vt-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 11px; font-weight: 600; font-size: 14.5px; text-decoration: none; transition: .25s ease; border: 1px solid transparent; cursor: pointer; white-space: nowrap; }
-.vt-btn-sm { padding: 9px 16px; font-size: 14px; }
-.vt-btn-primary { background: var(--fg-banner-gradient); color: #04201d; }
-.vt-btn-primary:hover { transform: translateY(-2px); color: #04201d; }
-.vt-btn-ghost { background: rgba(255,255,255,.04); border-color: var(--fg-border); color: var(--fg-text); }
-.vt-btn-ghost:hover { border-color: color-mix(in srgb, var(--fg-accent) 50%, transparent); color: #fff; }
-
-.vt-main { min-height: 60vh; }
-.vt-main:not(.vt-main-home) { padding-top: 96px; }
-/* Home : landing vraiment pleine largeur, sans la gouttière/marge des rows forge
-   (le margin-top:14px de .row-default créait une bande sombre au-dessus du hero). */
-.vt-main-home .row.row-default { margin: 0; }
-.vt-main-home .row.row-default > [class*="col-"] { padding-left: 0; padding-right: 0; }
-.vt-main-home .widget { margin-bottom: 0; }
-
-.vt-footer { border-top: 1px solid var(--fg-border); background: #070a10; padding: 60px 0 28px; margin-top: 80px; }
-.vt-foot-in { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
-.vt-foot-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 42px; }
-.vt-foot-about p { color: var(--fg-muted); font-size: 14.5px; margin-top: 14px; max-width: 300px; }
-.vt-foot-col h4 { font-size: 13px; text-transform: uppercase; letter-spacing: .12em; color: var(--fg-muted); margin-bottom: 16px; font-family: var(--fg-font); font-weight: 600; }
-.vt-foot-col a { display: block; color: var(--fg-muted); font-size: 14.5px; margin-bottom: 10px; text-decoration: none; transition: color .2s ease; }
-.vt-foot-col a:hover { color: var(--fg-accent); }
-.vt-credit { padding: 18px 20px; border-radius: 12px; background: rgba(255,255,255,.03); border: 1px solid var(--fg-border); margin-bottom: 30px; font-size: 14px; color: var(--fg-muted); line-height: 1.7; }
-.vt-credit i { color: var(--fg-accent); } .vt-credit strong { color: var(--fg-text); } .vt-credit a { color: var(--fg-accent); text-decoration: none; }
-.vt-foot-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; padding-top: 24px; border-top: 1px solid var(--fg-border); font-size: 13.5px; color: var(--fg-muted); }
-.vt-foot-bottom .fg-site-name { color: var(--fg-text); }
-.vt-footer .fg-socials, .vt-footer .socials, .vt-footer ul { display: flex; gap: 10px; list-style: none; padding: 0; margin: 0; }
-
-@media (max-width: 860px) {
-	.vt-nav-links { display: none; }
-	.vt-foot-grid { grid-template-columns: 1fr 1fr; }
-}
 
 .fg-to-top {
 	position: fixed; right: 18px; bottom: 18px; width: 42px; height: 42px;
@@ -923,7 +882,7 @@ body::before {
 .nb-nav, .nb-main, .nb-foot { position: relative; z-index: 1; }
 
 /* Navbar */
-.nb-nav { position: sticky; top: 0; z-index: 1030; border-bottom: 1px solid transparent; transition: background .3s, border-color .3s; }
+.nb-nav { position: sticky; top: var(--nf-haut, 0px); z-index: 1030; border-bottom: 1px solid transparent; transition: background .3s, border-color .3s; }
 .nb-nav.scrolled { background: rgba(7, 10, 16, 0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom-color: var(--fg-border); }
 .nb-nav-in { max-width: 1240px; margin: 0 auto; padding: 0 28px; height: var(--nb-nav-h); display: flex; align-items: center; gap: 26px; }
 .nb-logo { display: flex; align-items: center; gap: 11px; font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 20px; color: #fff; text-decoration: none; white-space: nowrap; }
@@ -960,6 +919,11 @@ body::before {
 .nb-btn-ghost:hover { border-color: rgba(45, 212, 191, 0.5); color: #fff; }
 .nb-btn-primary { background: var(--nb-grad); color: #04201d; }
 .nb-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 26px -10px rgba(45, 212, 191, 0.55); color: #04201d; }
+/* La cloche des notifications : un bouton fantôme carré, de la hauteur des autres, sa pastille dans le coin. */
+.nb-cloche { display: flex; margin: 0; padding: 0; list-style: none; }
+.nb-cloche .nf-notif > .nav-link { display: inline-grid; place-items: center; width: 41px; height: 41px; padding: 0; border-radius: 9px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--fg-border); color: var(--fg-text); transition: .18s; }
+.nb-cloche .nf-notif > .nav-link:hover, .nb-cloche .nf-notif > .nav-link:focus-visible { border-color: rgba(45, 212, 191, 0.5); color: #fff; }
+.nb-cloche .nf-notif-badge { top: -7px; right: -7px; background: #2dd4bf !important; color: #04201d !important; }
 
 /* Hero (home) */
 .nb-hero { position: relative; text-align: center; padding: 80px 24px 56px; overflow: hidden; }

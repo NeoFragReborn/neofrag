@@ -70,7 +70,7 @@ class Index extends Controller_Module
 		$kids = [];
 		foreach ($all as $p) { $kids[$p['parent_id'] ?? 0][] = $p; }
 
-		$nav = '<nav class="wiki-nav"><a class="wiki-nav-head" href="'.url('wiki').'"><i class="fas fa-book"></i> '.$this->lang('Documentation').'</a>';
+		$nav = '<nav class="wiki-nav" data-nf-colle><a class="wiki-nav-head" href="'.url('wiki').'"><i class="fas fa-book"></i> '.$this->lang('Documentation').'</a>';
 		foreach (($kids[0] ?? []) as $cat)
 		{
 			// Une page de premier niveau sans sous-pages est un lien, pas un titre de rubrique.

@@ -12,6 +12,49 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.46] — 2026-10-08
+
+The bars at the top of the page no longer cover anything, the bell comes to Nebula, and the extensions panel can
+reinstall a theme again.
+
+### Fixed
+
+- **Whatever sticks to the top of the screen now sits below the bars at the top of the page** — the demo bar, the
+  maintenance bar and the permissions preview bar. As soon as you scrolled, half of the Extend, Chronique, Pulse and
+  Nebula headers slid under the demo bar; the bottom of the Forge rail and of the administration sidebar went off
+  screen; on phones, the Forge crest and account were hidden. The main template now stacks the bars and publishes
+  their height; the themes, the administration and the live editor line up below them, and on-screen notifications
+  appear under them.
+- **Sticky module columns line up below the theme header**, whatever it is: the member area menu (16 px from the top,
+  it slid under a 60 to 70 px sticky header), the wiki contents, an article's contents and side box. A column taller
+  than the room left to it no longer sticks: its bottom stayed off screen until the end of the page — the Extend
+  member area menu, on a laptop screen.
+- **A link to an anchor stops below the sticky header** — a forum post, a wiki or article section — instead of placing
+  its title underneath: each theme set this offset by hand, without counting the bars.
+- **“Reset to default” and “Delete” a theme go through from the extensions panel**, and the order of languages and
+  authenticators is saved: the confirmation was refused, “invalid security token”.
+- **The demo bar is readable**: its text, white on green (2.4:1 contrast), turns dark.
+- **On phones, the buttons of an administration header move below the title**: on the articles page, “Categories”,
+  “Series” and “New article” covered “4 published”, and the last one went off screen.
+- **A site reached under another name than the one it declares also relays the images of that name** (with or
+  without `www.`): the security policy judges the host the browser sees, and refused these images, left as direct
+  addresses.
+- **`check-mise-en-page` no longer cries wolf** over the content of a closed entry (`<details>`), which Chrome keeps
+  in the page without showing it — 48 false overlaps in the error log —, nor over the messages that log shows on
+  purpose.
+
+### Added
+
+- **The notification bell in Nebula**, as in the other themes: the member area announces it “at the top of every
+  page”, and Nebula had none.
+- **For theme authors**: a theme's sticky header carries `data-nf-entete`, and whatever sticks to the top of the screen
+  lines up on `--nf-haut` (and a column on `--nf-entete`); a new check, `check-colles`, verifies it — on 1.2.45, it
+  found twenty rules (*Create a theme*).
+
+### Removed
+
+- **The showcase rules left in the Nebula stylesheet** (its bar, buttons and footer): no Nebula template used them.
+
 ## [1.2.45] — 2026-10-08
 
 The notification bell, reviewed in every theme, and two-factor login in one go.

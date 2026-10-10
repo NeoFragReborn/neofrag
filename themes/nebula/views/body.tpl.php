@@ -8,7 +8,7 @@ $is_home = ((string) $this->url->request === '');
 $logged  = (bool) $this->user();
 $is_admin = $logged && $this->access->effective_admin();
 ?>
-<nav class="nb-nav" id="nb-nav">
+<nav class="nb-nav" id="nb-nav" data-nf-entete>
 	<div class="nb-nav-in">
 		<a class="nb-logo" href="<?php echo url('') ?>">
 			<span class="nb-mark"><i class="fas fa-meteor"></i></span>
@@ -28,6 +28,9 @@ $is_admin = $logged && $this->access->effective_admin();
 				<button class="nb-burger" id="nb-burger" type="button" aria-label="<?php echo $this->lang('Menu') ?>" aria-expanded="false" aria-controls="nb-links"><i class="fas fa-bars"></i></button>
 			<?php endif ?>
 			<?php if ($logged): ?>
+				<?php /* La cloche des notifications, comme dans les autres thèmes : l'espace membre l'annonce « en haut de
+				        chaque page », et Nebula n'en avait pas (relevé sur la démo le 2026-10-08). */ ?>
+				<?php if ($notifications = $this->module('notifications')): ?><ul class="nb-cloche"><?php echo $notifications->bell() ?></ul><?php endif ?>
 				<a class="nb-btn nb-btn-ghost" href="<?php echo url('user') ?>"><i class="fas fa-user-astronaut"></i> <span><?php echo nf_texte($this->user->username) ?></span></a>
 				<?php if ($is_admin): ?><a class="nb-btn nb-btn-primary" href="<?php echo url('admin') ?>"><i class="fas fa-gauge-high"></i> <span><?php echo $this->lang('Admin') ?></span></a><?php endif ?>
 			<?php else: ?>

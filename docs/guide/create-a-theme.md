@@ -140,6 +140,32 @@ qu'a un visiteur de revenir sur ses choix : retirer son accord doit être aussi 
 ligne de pied ne passe pas à la ligne (`white-space: nowrap`), laisse au moins ces liens le faire : au
 téléphone, collés au reste, ils font déborder la page.
 
+### Ce qui colle en haut de l'écran
+
+Trois bandeaux peuvent occuper le haut de la fenêtre : celui de la démonstration, celui de la maintenance et
+celui de l'aperçu des droits. Le cœur les empile, réserve leur place en haut de la page et publie leur hauteur
+dans `--nf-haut`. Si ton en-tête reste collé quand on fait défiler, cale-le dessous et marque-le
+`data-nf-entete` : le cœur mesure sa hauteur et la publie dans `--nf-entete`, sur laquelle les colonnes
+collées des modules (le menu de l'espace membre, le sommaire du wiki) se calent à leur tour.
+
+```php
+<header class="au-tete" data-nf-entete>…</header>
+<aside class="au-cote" data-nf-colle>…</aside>
+```
+
+```css
+.au-tete { position: sticky; top: var(--nf-haut, 0px); z-index: 1030; }
+.au-cote { position: sticky; top: calc(var(--nf-haut, 0px) + var(--nf-entete, 0px) + 16px); }
+```
+
+Une colonne collée qui peut être plus haute que l'écran porte `data-nf-colle` : quand elle ne tient pas
+dans la place qu'il lui reste, le cœur la décolle — collée, son bas resterait hors de l'écran jusqu'au bout
+de la page. Les ancres (`#section`) s'arrêtent d'elles-mêmes sous les bandeaux et sous ton en-tête : ne fixe
+pas de `scroll-padding-top`. Un élément fixé en haut (`position: fixed`) se cale de même sur `--nf-haut` ;
+seul un panneau qui recouvre toute la page à dessein (une fenêtre, un tiroir) peut partir de zéro.
+`check-colles` refuse un élément collé ou fixé en haut qui ignore les bandeaux : sur la démonstration, la
+moitié de l'en-tête de quatre thèmes disparaissait sous le sien dès qu'on faisait défiler.
+
 ## 3. Les dispositions par défaut — `install()`
 
 `install()` décrit, par motif de page et par **titre de zone**, la grille de widgets posée à
@@ -297,7 +323,7 @@ exemptions motivées vivent dans `tools/lib/vignettes.php`. Modules et widgets s
 3. **Activer** sur sa fiche (définit le thème par défaut). Si le thème a été enregistré sans dispositions,
    l'activation lance `install()` d'elle-même. Le bouton **Réinstaller par défaut** ré-exécute `install()`.
 4. Avant de livrer, fais passer : `check-addon-declarations`, `check-addon-contracts` (la clé `regions`),
-   `check-css-variables`, `check-classes-bs4`, `check-js-sources`, puis `check-responsive`,
+   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, puis `check-responsive`,
    `check-contraste`, `check-bleu-bootstrap` (le bleu par défaut de Bootstrap resté dans un composant que
    ta palette n'a pas repris) et `check-js-console` sur une installation où le thème est actif. Regarde la page
    rendue : un bandeau vide, un copyright en double ou un commentaire illisible ne se voient pas dans le
@@ -305,8 +331,10 @@ exemptions motivées vivent dans `tools/lib/vignettes.php`. Modules et widgets s
 
 ## Bonnes pratiques
 
-- **Polices** : Google Fonts est autorisé par la politique de sécurité (feuilles) ; préfère un `<link>` à
-  un `@import` en tête de CSS, qui bloque le rendu.
+- **Polices** : sers-les depuis le thème ou le cœur, jamais depuis Google Fonts — la politique de sécurité
+  n'autorise plus aucune origine de polices (`font-src 'self' data:`), et un tel chargement envoyait l'adresse
+  IP de chaque visiteur à Google. `php tools/polices-locales.php --nom=…` télécharge une police de Google Fonts
+  dans `fonts/` et écrit sa feuille `css/fonts/<nom>.css`, que le thème charge par `->css('fonts/<nom>')`.
 - **Aucun script depuis un CDN** : la CSP stricte (`script-src 'self' 'nonce-…'`) le refuserait, et le
   projet ne dépend d'aucun tiers. Tout JS vit dans le thème ou le cœur.
 - **Crédite** le projet d'origine (NeoFrag, Michaël BILCOT & Jérémy VALENTIN, LGPLv3) si tu pars d'un

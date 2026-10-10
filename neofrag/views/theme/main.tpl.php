@@ -196,16 +196,36 @@ $nf_robots = $this->url->admin ? 'noindex, nofollow' : (string) ($this->output->
 <title><?php echo nf_texte($title) ?></title>
 </head>
 <body>
+<?php
+/*
+ * LES BANDEAUX DU HAUT DE PAGE — la démonstration, la maintenance, l'aperçu des droits — portent `data-nf-bandeau` :
+ * fixés en haut, ils s'empilent dans l'ordre du document, et NF.bandeaux() réserve leur hauteur totale en haut de la
+ * page et la publie dans `--nf-haut`. L'en-tête d'un thème qui reste collé en haut quand on fait défiler porte
+ * `data-nf-entete`, et sa hauteur est publiée dans `--nf-entete` (zéro quand, à cette largeur, il ne colle pas).
+ * Tout ce qui colle s'y cale : un en-tête ou un rail à `top: var(--nf-haut, 0px)`, une colonne à
+ * `top: calc(var(--nf-haut, 0px) + var(--nf-entete, 0px) + 16px)`, et les ancres s'arrêtent sous les deux.
+ *
+ * Ils passaient dessous : sur la démonstration, la moitié de l'en-tête de quatre thèmes disparaissait sous son bandeau
+ * dès qu'on faisait défiler, le bas du rail de Forge et de la barre de l'administration sortait de l'écran, et le menu
+ * de l'espace membre glissait sous l'en-tête de trois thèmes (mesuré le 2026-10-08). Chaque bandeau se rangeait à sa
+ * façon — l'un collé, l'autre fixé, le troisième posé par un script — et seul Forge en tenait compte, pour deux sur
+ * trois.
+ */
+?>
+<style>
+:root { --nf-haut: 0px; --nf-entete: 0px; }
+html { scroll-padding-top: calc(var(--nf-haut, 0px) + var(--nf-entete, 0px) + 16px); }
+[data-nf-bandeau] { position: fixed; top: 0; left: 0; right: 0; z-index: 1035; }
+.nf-colle-trop-haut { position: static !important; }
+</style>
+<?php if (nf_demo()): ?>
+	<?php /* Le texte sombre sur le vert : en blanc, il n'avait que 2,4:1 de contraste. */ ?>
+	<style>#nf-demo-bar { padding: 6px 12px; background: #1abc9c; color: #0b2e26; text-align: center; font: 600 13px/1.5 system-ui, "Segoe UI", sans-serif; box-shadow: 0 2px 6px rgba(0, 0, 0, .25); }</style>
+	<div id="nf-demo-bar" data-nf-bandeau><?php echo $this->lang('Démo %s — réinitialisée régulièrement · connexion : %s', '<strong>NeoFrag Reborn</strong>', '<strong>demo / demo</strong>') ?></div>
+<?php endif ?>
 <?php if ($this->config->nf_maintenance && !$this->url->admin && isset($this->user) && $this->access->effective_admin() && $this->output->module()->name != 'live_editor'): ?>
-	<style>
-	/* Bandeau sticky : fournit son espace en haut ET reste visible au scroll. Décale la navbar
-	   FIXE de la vitrine (.vt-nav) en dessous — sinon elle recouvre le bandeau (no-op sur les
-	   thèmes à navbar en flux normal, qui sont déjà poussés par le bandeau). */
-	#nf-maint-banner { position: sticky; top: 0; z-index: 1031; min-height: 52px; display: flex; align-items: center; }
-	body.nf-maint-on .vt-nav { top: 52px; }
-	</style>
-	<script>document.body.classList.add('nf-maint-on');</script>
-	<div id="nf-maint-banner" class="bg-danger py-2 w-100">
+	<style>#nf-maint-banner { min-height: 52px; display: flex; align-items: center; }</style>
+	<div id="nf-maint-banner" class="bg-danger py-2 w-100" data-nf-bandeau>
 		<div class="container">
 			<div class="row align-items-center">
 				<div class="col-12 col-lg-6 text-white"><?php echo icon('fas fa-power-off').' '.$this->lang('Site en opération de maintenance') ?></div>
@@ -219,12 +239,10 @@ $nf_robots = $this->url->admin ? 'noindex, nofollow' : (string) ($this->output->
 if (isset($this->user) && $this->user->admin && method_exists($this->access, 'get_preview_target') && ($preview = $this->access->get_preview_target())):
 ?>
 	<style>
-	.nf-preview-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 1100; background: #ffc107; color: #212529; padding: 8px 0; border-bottom: 2px solid #d39e00; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+	.nf-preview-banner { background: #ffc107; color: #212529; padding: 8px 0; border-bottom: 2px solid #d39e00; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
 	.nf-preview-banner a.btn { font-weight: 500; }
-	body.nf-preview-active { padding-top: 46px !important; }
 	</style>
-	<script>document.body.classList.add('nf-preview-active');</script>
-	<div class="nf-preview-banner">
+	<div class="nf-preview-banner" data-nf-bandeau>
 		<div class="container-fluid">
 			<div class="row align-items-center">
 				<div class="col">
@@ -426,12 +444,50 @@ window.NF = (function(){
 		});
 	}
 
+	/*
+	 * Les bandeaux du haut de page et l'en-tête collé du thème (cf. le haut de <body>) : les bandeaux s'empilent, leur
+	 * hauteur est réservée en haut de la page, et les deux hauteurs sont publiées. Une colonne collée (`data-nf-colle`)
+	 * plus haute que la place qu'il lui reste ne colle plus : collée, son bas restait hors de l'écran jusqu'au bout de
+	 * la page — le sommaire du wiki, le menu de l'espace membre (mesuré le 2026-10-08).
+	 */
+	function bandeaux(){
+		var racine = document.documentElement, haut = 0, entete = 0;
+		Array.prototype.forEach.call(document.querySelectorAll('[data-nf-bandeau]'), function(b){
+			b.style.top = haut + 'px';
+			haut += b.offsetHeight;
+		});
+		Array.prototype.forEach.call(document.querySelectorAll('[data-nf-entete]'), function(e){
+			var position = getComputedStyle(e).position;
+			if (position === 'sticky' || position === 'fixed'){ entete = Math.max(entete, e.offsetHeight); }
+		});
+		racine.style.setProperty('--nf-haut', haut + 'px');
+		racine.style.setProperty('--nf-entete', entete + 'px');
+		document.body.style.paddingTop = haut ? haut + 'px' : '';
+		Array.prototype.forEach.call(document.querySelectorAll('[data-nf-colle]'), function(c){
+			c.classList.remove('nf-colle-trop-haut');
+			var haute = c.offsetHeight > window.innerHeight - (parseFloat(getComputedStyle(c).top) || 0) - 16;
+			c.classList.toggle('nf-colle-trop-haut', haute);
+		});
+	}
+
 	return {
 		ready: ready, data: data, ajax: ajax, post: post,
 		setHtml: setHtml, insertHtml: insertHtml, replaceHtml: replaceHtml,
-		runScripts: runScripts, loadScript: loadScript
+		runScripts: runScripts, loadScript: loadScript, bandeaux: bandeaux
 	};
 })();
+
+// Calés tout de suite — la page est déjà là —, puis à chaque changement de taille : un bandeau passe sur deux lignes
+// au téléphone, un en-tête se replie quand on fait défiler, une colonne s'allonge quand un widget se charge.
+NF.bandeaux();
+window.addEventListener('resize', NF.bandeaux);
+NF.ready(function(){
+	NF.bandeaux();
+	if (window.ResizeObserver){
+		var observateur = new ResizeObserver(function(){ NF.bandeaux(); });
+		Array.prototype.forEach.call(document.querySelectorAll('[data-nf-bandeau], [data-nf-entete], [data-nf-colle]'), function(e){ observateur.observe(e); });
+	}
+});
 
 /*
  * Une action qui échoue le DIT. NF.ajax rejette sur un statut d'erreur, mais la plupart des appelants

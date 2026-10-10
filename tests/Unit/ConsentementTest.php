@@ -130,6 +130,36 @@ final class ConsentementTest extends TestCase
         $this->assertNull(nf_relais_distante('javascript:alert(1)', 'exemple.org'));
     }
 
+    public function test_le_relais_juge_l_hote_que_voit_le_navigateur(): void
+    {
+        $avant = $_SERVER['HTTP_HOST'] ?? NULL;
+
+        try
+        {
+            // L'atelier déclare l'adresse de la production et se joint par 127.0.0.1:8250 : les images de la
+            // production y sont d'une autre origine, que `img-src 'self'` refuse sans le relais.
+            $_SERVER['HTTP_HOST'] = '127.0.0.1:8250';
+            $this->assertSame('127.0.0.1', nf_relais_hote(), 'le port ne compte pas');
+            $this->assertNotNull(nf_relais_distante('https://neofrag-reborn.xyz/marketplace/modules/ads.jpg', nf_relais_hote()));
+
+            $_SERVER['HTTP_HOST'] = 'WWW.Exemple.org';
+            $this->assertSame('www.exemple.org', nf_relais_hote());
+            $this->assertNotNull(nf_relais_distante('https://exemple.org/upload/a.png', nf_relais_hote()), 'joint par www., le nom nu est une autre origine');
+            $this->assertNull(nf_relais_distante('https://www.exemple.org/upload/a.png', nf_relais_hote()));
+        }
+        finally
+        {
+            if ($avant === NULL)
+            {
+                unset($_SERVER['HTTP_HOST']);
+            }
+            else
+            {
+                $_SERVER['HTTP_HOST'] = $avant;
+            }
+        }
+    }
+
     public function test_le_relais_signe_et_rafraichit(): void
     {
         $a = 'https://cdn.discordapp.com/avatars/1/a.png';

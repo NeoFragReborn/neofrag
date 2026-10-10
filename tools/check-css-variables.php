@@ -39,6 +39,8 @@ $verbeux = $o['verbeux'];
  */
 const TOLEREES = [
     '--online-pct' => 'posée en ligne par widgets/steam/views/index.tpl.php (pourcentage de joueurs en ligne)',
+    '--nf-haut'    => 'posée par le gabarit principal (neofrag/views/theme/main.tpl.php, NF.bandeaux()) : la hauteur des bandeaux du haut de page',
+    '--nf-entete'  => 'posée par le gabarit principal (neofrag/views/theme/main.tpl.php, NF.bandeaux()) : la hauteur de l’en-tête collé du thème',
 ];
 
 /** Les feuilles d'un thème définissent son vocabulaire ; celles des modules et widgets l'emploient. */

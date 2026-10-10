@@ -12,7 +12,7 @@
 
 .nf-espace-menu {
 	position: sticky;
-	top: 16px;
+	top: calc(var(--nf-haut, 0px) + var(--nf-entete, 0px) + 16px);
 	display: grid;
 	gap: 6px;
 	padding: 10px;

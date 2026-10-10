@@ -8,7 +8,7 @@
 $menu  = $menu ?? [];
 $actif = $actif ?? '';
 ?>
-<nav class="nf-espace-menu" aria-label="<?php echo $this->lang('Mon espace') ?>">
+<nav class="nf-espace-menu" data-nf-colle aria-label="<?php echo $this->lang('Mon espace') ?>">
 	<?php foreach ($menu as $groupe => $entrees): if (!$entrees) continue; ?>
 	<ul class="nf-espace-groupe">
 		<?php if ($groupe === 'reglages'): ?>

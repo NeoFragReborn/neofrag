@@ -219,6 +219,7 @@ membre (`nf_user_profile.timezone`, appliqué à l'ouverture de la session), sin
 | `NF.insertHtml(cible, position, html)` | `insertAdjacentHTML` + exécution des seuls scripts ajoutés |
 | `NF.replaceHtml(el, html)` | remplace l'élément, scripts exécutés |
 | `NF.runScripts(root)`, `NF.loadScript(src)` | ré-exécuter, charger avec le nonce |
+| `NF.bandeaux()` | range les bandeaux du haut de page et republie `--nf-haut` et `--nf-entete` (cf. *Créer un thème*) ; à rappeler après avoir ajouté un bandeau |
 
 - Les modales (`js/modal.js`), les notifications (`js/notify.js`) et les confirmations (`js/confirm.js`)
   sont chargées par les thèmes.

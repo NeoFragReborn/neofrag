@@ -38,6 +38,7 @@ Joués par défaut par `check-all`. Ils lisent les sources, sans base ni serveur
 | [`check-addon-name`](check-addon-name.php) | aucune lecture `->name` sur un addon chargé : elle rend FALSE en silence, le nom est dans `info()->name`. | `php tools/check-addon-name.php` |
 | [`check-assets`](check-assets.php) | deux fichiers d'asset homonymes dont l'un masque l'autre, et les cartes de source absentes. | `php tools/check-assets.php` |
 | [`check-classes-bs4`](check-classes-bs4.php) | aucun legs de Bootstrap 3 ou 4 : classes disparues, attributs `data-*` sans `bs`, classes fabriquées par concaténation. | `php tools/check-classes-bs4.php` |
+| [`check-colles`](check-colles.php) | tout ce qui colle en haut de l'écran se cale sous les bandeaux du haut de page. | `php tools/check-colles.php` |
 | [`check-css-variables`](check-css-variables.php) | toute variable CSS qu'un module ou un widget emploie est définie par tous les thèmes. | `php tools/check-css-variables.php` |
 | [`check-db-colonne`](check-db-colonne.php) | une requête à UNE colonne rend des valeurs, pas des lignes : aucune n'est lue comme un tableau. | `php tools/check-db-colonne.php` |
 | [`check-db-compteurs`](check-db-compteurs.php) | un compteur (vues, clics) ne fait pas avancer la date de modification de sa ligne. | `php tools/check-db-compteurs.php` |

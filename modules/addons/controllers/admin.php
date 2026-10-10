@@ -76,7 +76,18 @@ class Admin extends Controller_Module
 	{
 		// Les actions qui mutent (activer/désactiver, ordre, reset/suppression de thème)
 		// exigent le jeton porté par les liens du panneau Addons.
-		if (in_array($action, ['enable', 'disable', 'order', 'reset', 'delete'], TRUE))
+		//
+		// Pas l'envoi qui SUIT le lien de trois d'entre elles : la confirmation de « Réinstaller par défaut » et de
+		// « Supprimer », le glisser-déposer d'« Ordre ». Il part en AJAX vers l'adresse nue, sans le jeton du lien. La
+		// fenêtre de confirmation porte le sien (form2, champ `_`), qu'elle vérifie avant d'agir ; le glisser-déposer,
+		// l'en-tête X-Requested-With, qu'une page d'un autre site ne peut pas poser. Leur demander ici le jeton du lien
+		// les refusait tous — « jeton de sécurité invalide » : un thème n'était jamais réinstallé ni supprimé depuis ce
+		// panneau, l'ordre des langues et des authentificateurs jamais enregistré (relevé sur l'atelier le 2026-10-08).
+		$suite = in_array($action, ['order', 'reset', 'delete'], TRUE)
+			&& $this->url->ajax_header
+			&& strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'POST';
+
+		if (in_array($action, ['enable', 'disable', 'order', 'reset', 'delete'], TRUE) && !$suite)
 		{
 			$this->check_csrf('admin/addons');
 		}

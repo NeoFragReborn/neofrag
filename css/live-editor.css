@@ -327,11 +327,11 @@ body.nf-le-chrome .live-editor-navbar .dropdown-menu.screen .btn.active {
 
 /* Iframe panel */
 body.nf-le-chrome .live-editor-iframe {
-	height: calc(100vh - 92px);
+	height: calc(100vh - 92px - var(--nf-haut, 0px));
 	left: 24px;
 	right: 24px;
 	position: fixed;
-	top: 76px;
+	top: calc(76px + var(--nf-haut, 0px)); /* sous la barre de l'éditeur, elle-même sous les bandeaux du haut de page */
 	width: calc(100% - 48px);
 }
 

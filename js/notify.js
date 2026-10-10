@@ -15,8 +15,9 @@ function notify(message, type) {
 	if (!container) {
 		container = document.createElement('div');
 		container.id = 'nf-toast-container';
-		container.className = 'toast-container position-fixed top-0 end-0 p-3';
+		container.className = 'toast-container position-fixed end-0 p-3';
 		container.style.zIndex = '1090'; // au-dessus des modales (1055)
+		container.style.top = 'var(--nf-haut, 0px)'; // sous les bandeaux du haut de page (gabarit principal)
 		document.body.appendChild(container);
 	}
 

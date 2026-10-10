@@ -47,7 +47,8 @@ $couleurs  = ['fatale' => 'danger', 'erreur' => 'danger', 'avertissement' => 'wa
 	<details class="list-group-item">
 		<summary class="d-flex flex-wrap gap-2 align-items-start" style="cursor:pointer;list-style:none">
 			<span class="badge text-bg-<?php echo $couleurs[$g['gravite']] ?? 'secondary' ?>"><?php echo $etiquettes[$g['gravite']] ?? '' ?></span>
-			<span class="flex-grow-1 small" style="min-width:0;overflow-wrap:anywhere"><?php echo nf_texte($g['message']) ?></span>
+			<?php /* `samp` : la sortie d'un programme, montrée telle quelle — check-mise-en-page n'y cherche pas de message d'erreur affiché par erreur. */ ?>
+			<samp class="flex-grow-1 small" style="min-width:0;overflow-wrap:anywhere;font-family:inherit"><?php echo nf_texte($g['message']) ?></samp>
 			<span class="small text-body-secondary text-nowrap"><?php echo $this->lang('%d×', $g['nombre']) ?> · <?php echo $g['dernier'] ?></span>
 		</summary>
 		<?php if ($g['references']): ?>

@@ -10,6 +10,49 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.46] — 2026-10-08
+
+Les bandeaux du haut de page ne recouvrent plus rien, la cloche arrive dans Nebula, et le panneau des extensions
+réinstalle de nouveau un thème.
+
+### Corrigé
+
+- **Ce qui colle en haut de l'écran se range sous les bandeaux du haut de page** — celui de la démonstration, de la
+  maintenance et de l'aperçu des droits. Dès qu'on faisait défiler, la moitié de l'en-tête d'Extend, de Chronique, de
+  Pulse et de Nebula passait sous le bandeau de la démonstration ; le bas du rail de Forge et de la barre latérale de
+  l'administration sortait de l'écran ; au téléphone, le blason et le compte de Forge étaient cachés. Le gabarit
+  principal empile désormais les bandeaux et publie leur hauteur ; les thèmes, l'administration et l'éditeur en direct
+  s'y calent, et les notifications à l'écran s'affichent dessous.
+- **Les colonnes collées des modules se calent sous l'en-tête du thème**, quel qu'il soit : le menu de l'espace membre
+  (à 16 px du haut, il se glissait sous un en-tête collé de 60 à 70 px), le sommaire du wiki, le sommaire et l'encart
+  d'un article. Une colonne plus haute que la place qu'il lui reste ne colle plus : son bas restait hors de l'écran
+  jusqu'au bout de la page — le menu de l'espace membre d'Extend, sur un écran de portable.
+- **Un lien vers une ancre s'arrête sous l'en-tête collé** — un message du forum, une section du wiki ou d'un article —
+  au lieu de poser son titre dessous : chaque thème fixait ce décalage à la main, sans compter les bandeaux.
+- **« Réinstaller par défaut » et « Supprimer » un thème aboutissent depuis le panneau des extensions**, et l'ordre des
+  langues et des authentificateurs s'enregistre : la confirmation était refusée, « jeton de sécurité invalide ».
+- **Le bandeau de la démonstration se lit** : son texte, blanc sur vert (2,4:1 de contraste), passe en sombre.
+- **Au téléphone, les boutons d'un en-tête de l'administration passent sous le titre** : sur la page des articles,
+  « Catégories », « Séries » et « Nouvel article » recouvraient « 4 publiés », et le dernier sortait de l'écran.
+- **Un site joint sous un autre nom que celui qu'il déclare relaie aussi les images de ce nom** (avec ou sans `www.`) :
+  la politique de sécurité juge l'hôte que voit le navigateur, et refusait ces images, laissées en adresse directe.
+- **`check-mise-en-page` ne crie plus à tort** sur le contenu d'une entrée refermée (`<details>`), que Chrome garde en
+  page sans l'afficher — 48 faux chevauchements dans le journal des erreurs —, ni sur les messages que ce journal
+  montre à dessein.
+
+### Ajouté
+
+- **La cloche des notifications dans Nebula**, comme dans les autres thèmes : l'espace membre l'annonce « en haut de
+  chaque page », et Nebula n'en avait pas.
+- **Pour les auteurs de thèmes** : l'en-tête collé d'un thème porte `data-nf-entete`, et tout ce qui colle en haut de
+  l'écran se cale sur `--nf-haut` (et une colonne sur `--nf-entete`) ; un nouveau contrôle, `check-colles`, le vérifie
+  — sur la 1.2.45, il relevait vingt règles (*Créer un thème*).
+
+### Retiré
+
+- **Les règles de la vitrine restées dans la feuille de Nebula** (sa barre, ses boutons, son pied) : aucun gabarit de
+  Nebula ne les employait.
+
 ## [1.2.45] — 2026-10-08
 
 La cloche des notifications, revue dans tous les thèmes, et la connexion à double authentification d'un seul geste.

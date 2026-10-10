@@ -86,6 +86,15 @@
             return false;
         }
 
+        // Le contenu d'un `<details>` refermé — hors son `<summary>` — n'est pas affiché ; Chrome le garde pourtant
+        // en page (`content-visibility`), avec des boîtes qui « chevauchaient » l'entrée suivante du journal des
+        // erreurs : 48 faux défauts (2026-10-08).
+        var replie = el.closest('details:not([open])');
+
+        if (replie && !el.closest('summary')) {
+            return false;
+        }
+
         for (var a = el.parentElement; a && a !== document.documentElement; a = a.parentElement) {
             var sa = style(a);
 

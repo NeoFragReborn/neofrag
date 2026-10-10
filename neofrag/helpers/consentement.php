@@ -414,7 +414,7 @@ function nf_tiers_page(string $html): string
 		static $relais = NULL;
 
 		$relais ??= [
-			'hote'    => (string) parse_url(site_origin(), PHP_URL_HOST),
+			'hote'    => nf_relais_hote(),
 			'cle'     => $nf->crypt->derive('relais'),
 			'base'    => (string) $nf->url->base,
 			'adresse' => url('ajax/user/relais').'/',
@@ -437,8 +437,7 @@ function nf_tiers_page(string $html): string
  */
 function nf_tiers_json(string $json): string
 {
-	if (stripos($json, '<iframe') === FALSE && stripos($json, '<img') === FALSE && stripos($json, 'url(') === FALSE
-		&& stripos($json, '<iframe') === FALSE && stripos($json, '<img') === FALSE)
+	if (stripos($json, '<iframe') === FALSE && stripos($json, '<img') === FALSE && stripos($json, 'url(') === FALSE)
 	{
 		return $json;
 	}

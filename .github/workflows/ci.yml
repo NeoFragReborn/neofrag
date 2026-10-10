@@ -215,6 +215,12 @@ jobs:
       - name: Garde zones de thème (déclarées ↔ rendues)
         if: ${{ !cancelled() }}
         run: php tools/check-theme-zones.php
+      # Les bandeaux du haut de page (démonstration, maintenance, aperçu des droits) publient leur hauteur dans
+      # --nf-haut, et l'en-tête collé du thème la sienne dans --nf-entete. Un élément collé à `top: 0` passe dessous :
+      # la moitié de l'en-tête de quatre thèmes disparaissait sous le bandeau de la démonstration (2026-10-08).
+      - name: Garde éléments collés (sous les bandeaux du haut de page)
+        if: ${{ !cancelled() }}
+        run: php tools/check-colles.php
       # Chaque addon a sa vignette (`images/thumbnail.jpg`, 960 × 600), ou une exemption écrite avec sa
       # raison dans tools/lib/vignettes.php. Le 2026-10-04, `api` et `discord` étaient au catalogue
       # sans aperçu et quatre thèmes gardaient un ancien 480 × 270 : rien ne le disait avant une

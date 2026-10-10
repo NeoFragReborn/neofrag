@@ -45,6 +45,20 @@ const NF_RELAIS_FORMATS = [
 ];
 
 /**
+ * L'hôte du site tel que le voit le navigateur — celui de la requête, que vise `img-src 'self'` —, et à défaut celui
+ * que déclare config/url.php. Sous un autre nom que celui déclaré (avec ou sans `www.`, l'atelier qui déclare
+ * l'adresse de la production), les images du nom déclaré sont d'une autre origine : la politique de sécurité les
+ * refusait, et le relais ne les prenait pas (2026-10-08). Le filtre des pages et l'adresse du relais en jugent
+ * pareillement.
+ */
+function nf_relais_hote(): string
+{
+	$hote = strtolower((string) preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? '')));
+
+	return $hote !== '' ? $hote : strtolower((string) parse_url(site_origin(), PHP_URL_HOST));
+}
+
+/**
  * L'adresse complète d'une image d'un autre site, NULL si elle n'en est pas une : une adresse du site
  * lui-même, relative, en `data:`, ou d'un autre protocole que le web. Une adresse sans protocole
  * (`//hote/x`) prend celui du web sécurisé.

@@ -634,12 +634,8 @@ class Output extends Core
 				NeoFrag()->js_load("if ('serviceWorker' in navigator) { navigator.serviceWorker.register(".json_encode($this->url->base.'service-worker.js').").catch(function(){}); }");
 			}
 
-			if (nf_demo())
-			{
-				NeoFrag()->js_load("(function(){var d=document;if(d.getElementById('nf-demo-bar'))return;var b=d.createElement('div');b.id='nf-demo-bar';b.innerHTML=".json_encode((string) $this->lang('Démo %s — réinitialisée régulièrement · connexion : %s', '<strong>NeoFrag Reborn</strong>', '<strong>demo / demo</strong>')).";b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#1abc9c;color:#fff;text-align:center;padding:6px 12px;font:600 13px/1.5 system-ui,Segoe UI,sans-serif;box-shadow:0 2px 6px rgba(0,0,0,.25)';d.body.insertBefore(b,d.body.firstChild);var s=d.createElement('style');s.textContent='#nf-toast-container{top:var(--nf-demo-bar,32px)!important}';d.head.appendChild(s);var h=function(){var px=b.offsetHeight+'px';d.documentElement.style.setProperty('--nf-demo-bar',px);d.body.style.paddingTop=px;};h();window.addEventListener('resize',h);})();");
-			// La bannière mesure sa hauteur (deux lignes sur un téléphone) et décale d'autant la page et
-			// les notifications, qu'elle recouvrait (relevé le 2026-10-02).
-			}
+			// Le bandeau de la démonstration est rendu par le gabarit principal, avec les autres bandeaux du haut de page
+			// (views/theme/main.tpl.php) : posé ici par un script, il recouvrait ce qui colle en haut de l'écran.
 
 			if (!$error && $this->_module->info()->name == 'live_editor')
 			{
