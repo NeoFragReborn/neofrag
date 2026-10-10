@@ -165,6 +165,11 @@ class Index extends Controller_Module
 
 	public function _postulate($recruit_id, $title, $introduction, $description, $requierments, $date, $recruit_user_id, $size, $role, $icon, $date_end, $closed, $team_id, $image_id, $username, $avatar, $sex, $candidacies, $candidacies_pending, $candidacies_accepted, $candidacies_declined, $team_name)
 	{
+		if ($bloque = $this->moderation->is_blocked_for((int) $this->user->id, 'recruits.recruit_postulate'))
+		{
+			return $this->moderation->panneau($bloque, (string) $this->lang('Déposer ma candidature'), 'fab fa-black-tie');
+		}
+
 		if ($candidacy = $this->model()->postulated($this->user->id, $recruit_id, $title))
 		{
 			return $this->panel()
@@ -231,7 +236,9 @@ class Index extends Controller_Module
 						->add_captcha()
 						->add_submit($this->lang('Envoyer ma candidature'), 'fas fa-paper-plane');
 
-				if ($this->form()->is_valid($post))
+				$refus = NULL;
+
+				if ($this->form()->is_valid($post) && !($refus = $this->moderation->lien_refuse((int) $this->user->id, $post['presentation'] ?? NULL, $post['motivations'] ?? NULL, $post['experiences'] ?? NULL)))
 				{
 					$custom_answers = [];
 					foreach ($custom_fields as $cf)
@@ -307,6 +314,10 @@ class Index extends Controller_Module
 					{
 						redirect('recruits');
 					}
+				}
+				else if ($refus)
+				{
+					$this->form()->error($refus['message'], 'presentation');
 				}
 
 				return $this->panel()

@@ -25,9 +25,9 @@ class Search extends Controller_Module
 
 	public function search()
 	{
-		$categories = array_filter($this->db->select('category_id')->from('nf_forum_categories')->get(), function($a){
-			return $this->access('forum', 'category_read', $a);
-		});
+		// Le droit de lecture ET la réserve VIP (Forum::categories_lisibles()) : le droit seul laissait lire le VIP.
+		$modele     = $this->model('forum');
+		$categories = $modele instanceof \NF\Modules\Forum\Models\Forum ? $modele->categories_lisibles() : [];
 
 		$this->db	->select('t.topic_id', 't.title as topic_title', 'm.message_id', 'm.message', 'm.date', 'u.id as user_id', 'u.username', 't.forum_id', 'f.title', 't.count_messages')
 					->from('nf_forum_messages m')
@@ -37,6 +37,12 @@ class Search extends Controller_Module
 					->join('nf_user           u',  'm.user_id = u.id AND u.deleted = "0"')
 					->where('IFNULL(f2.parent_id, f.parent_id)', $categories)
 					->order_by('m.date DESC');
+
+		// Ni les messages d'un membre sous shadow ban (audit du 2026-10-09).
+		if ($sans_masques = $this->moderation->condition_sans_masques('m.user_id'))
+		{
+			$this->db->where($sans_masques);
+		}
 
 		return ['t.title', 'm.message'];
 	}

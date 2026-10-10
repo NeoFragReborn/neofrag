@@ -34,4 +34,5 @@ return [
 	'016d7125' => 'Sistema di commenti riutilizzabile dai moduli (notizie, articoli, ecc.).',
 	'e16ce76b' => 'Commento',
 	'472a9d35' => 'Un commento su ciò che ho pubblicato o che seguo',
+	'219c2d4e' => 'Questo commento è stato segnalato: non può essere eliminato finché la moderazione non lo ha esaminato.',
 ];

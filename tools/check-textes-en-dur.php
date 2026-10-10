@@ -105,6 +105,11 @@ const EXEMPTIONS = [
     'neofrag/actions/create.php|Ajouter'             => 'traduit par Action::__button() et Action::modal()',
     'neofrag/actions/update.php|Éditer'              => 'traduit par Action::__button() et Action::modal()',
     'neofrag/actions/delete.php|Supprimer'           => 'traduit par Action::__button() et Action::modal()',
+    // Une méthode HTTP, pas un mot : les lectures que nf_envoi_d_un_autre_site() laisse passer.
+    'neofrag/helpers/location.php|OPTIONS' => 'méthode HTTP',
+    // Les erreurs du client HTTP des services de connexion : une exception PSR-18, lue au journal (`[auth]`), jamais à l'écran.
+    'neofrag/libraries/client_http.php|adresse refusée, HTTPS seulement :' => 'exception pour le journal',
+    'neofrag/libraries/client_http.php|réponse de plus de 2 Mo :'          => 'exception pour le journal',
     // Le diagnostic d'un refus de checker, à l'écran du DÉVELOPPEUR seulement (NEOFRAG_DEBUG_BAR).
     'neofrag/core/output.php|extension d\'URL refusée par le checker (demandée :' => 'diagnostic pour le développeur',
     'neofrag/core/output.php|au lieu d\'un tableau de segments'                => 'diagnostic pour le développeur',

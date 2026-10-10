@@ -17,7 +17,7 @@ class Monitoring extends Module
 			'title'       => $this->lang('Monitoring'),
 			'description' => $this->lang('Surveillance de la santé du site : PHP, mémoire, base de données, mises à jour.'),
 			'icon'        => 'fas fa-heartbeat',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

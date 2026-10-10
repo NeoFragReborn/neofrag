@@ -40,8 +40,20 @@ class Events extends Core
 		return $this;
 	}
 
+	/**
+	 * Les événements qui PUBLIENT un contenu. Quand son auteur est sous shadow ban, ils ne se diffusent pas : ni courriel
+	 * ni cloche, ni recopie sur Discord, ni annonce au salon public, ni points — le contenu n'existe que pour lui et les
+	 * modérateurs (audit du 2026-10-09).
+	 */
+	const PUBLICATIONS = ['forum.topic.created', 'forum.post.created', 'forum.post.edited', 'talks.message.created', 'bugtracker.ticket.created', 'bugtracker.comment.created', 'bugtracker.comment.edited'];
+
 	public function fire($event, ...$args)
 	{
+		if (in_array($event, self::PUBLICATIONS, TRUE) && is_array($args[0] ?? NULL) && !empty($args[0]['user_id']) && NeoFrag()->moderation->est_masque((int) $args[0]['user_id']))
+		{
+			return [];
+		}
+
 		$results = [];
 
 		if (isset(static::$_listeners[$event]))

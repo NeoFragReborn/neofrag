@@ -11,45 +11,6 @@ use NF\NeoFrag\Loadables\Controllers\Module_Checker;
 
 class Ajax_Checker extends Module_Checker
 {
-	public function index()
-	{
-		if ($check = post_check('talk_id', 'message_id'))
-		{
-			if ($this->access('talks', 'read', $check['talk_id']))
-			{
-				return $check;
-			}
-
-			$this->error->unauthorized();
-		}
-	}
-
-	public function older()
-	{
-		if ($check = post_check('talk_id', 'message_id', 'position'))
-		{
-			if ($this->access('talks', 'read', $check['talk_id']))
-			{
-				return $check;
-			}
-
-			$this->error->unauthorized();
-		}
-	}
-
-	public function add_message()
-	{
-		if ($check = post_check('talk_id', 'message'))
-		{
-			if ($this->access('talks', 'write', $check['talk_id']))
-			{
-				return $check;
-			}
-
-			$this->error->unauthorized();
-		}
-	}
-
 	public function delete($message_id)
 	{
 		$this->ajax();

@@ -166,4 +166,32 @@ final class AccessControlTest extends HeadlessTestCase
 		$this->assertTrue($access->can_for_group('members', 'forum.category_write', $a), 'Il écrit là où seuls les visiteurs sont refusés.');
 		$this->assertFalse($access->can_for_group('members', 'forum.category_read', $b), 'Une règle des membres déjà posée reste.');
 	}
+
+	/**
+	 * Un rôle donné EN PLUS (Modérateur) ne retire pas les droits d'un membre : il les remplaçait, et un modérateur perdait
+	 * le forum (audit du 2026-10-09). Ce que le rôle accorde l'emporte sur un refus du rôle de base.
+	 */
+	public function test_un_role_en_plus_garde_les_droits_du_membre(): void
+	{
+		$membre = $this->role('member');
+		$modo   = $this->createRole();
+
+		$this->grant($membre, 'essai_roles.lire');
+		$this->grant($membre, 'essai_roles.ecrire', 'never', 7);
+		$this->grant($modo, 'essai_roles.moderer');
+		$this->grant($modo, 'essai_roles.ecrire', 'allow', 7);
+
+		$moderateur = $this->createUser('modo');
+		$ordinaire  = $this->createUser('membre');
+		$this->db()->insert('nf_users_roles', ['user_id' => $moderateur, 'role_id' => $modo]);
+
+		$access = $this->access();
+
+		$this->assertTrue($access->can('essai_roles.moderer', 0, $moderateur), 'Le droit de son rôle.');
+		$this->assertTrue($access->can('essai_roles.lire', 0, $moderateur), 'Les droits d’un membre, gardés.');
+		$this->assertTrue($access->can('essai_roles.ecrire', 7, $moderateur), 'Son rôle accorde plus que le membre : il l’emporte sur le refus.');
+		$this->assertTrue($access->can('essai_roles.lire', 0, $ordinaire), 'Un membre ordinaire lit.');
+		$this->assertFalse($access->can('essai_roles.ecrire', 7, $ordinaire), 'Un membre ordinaire reste refusé.');
+		$this->assertFalse($access->can('essai_roles.moderer', 0, $ordinaire), 'Il ne modère pas.');
+	}
 }

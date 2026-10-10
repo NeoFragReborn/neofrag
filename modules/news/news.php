@@ -27,6 +27,13 @@ class News extends Module
 		];
 	}
 
+	/** Une actualité se montre si elle est publiée, parue et hors de la corbeille (la règle de check_news()). */
+	public function contenu_visible(string $type, int $id): bool
+	{
+		return in_array($type, ['news'], TRUE)
+			&& (bool) $this->db->select('1')->from('nf_news')->where('news_id', $id)->where('deleted_at', NULL)->where('published', TRUE)->where('date <=', date('Y-m-d H:i:s'))->row();
+	}
+
 	/** URL publique d'une actualite (titre lu dans la langue courante). */
 	public function content_url($type, $id)
 	{
@@ -66,7 +73,7 @@ class News extends Module
 			'title'       => $this->lang('Actualités'),
 			'description' => $this->lang('Actualités classées par catégories et tags : publication programmée, commentaires, réactions, abonnement par catégorie et historique des modifications.'),
 			'icon'        => 'far fa-file-alt',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

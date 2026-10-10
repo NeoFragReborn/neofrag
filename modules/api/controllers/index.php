@@ -34,7 +34,7 @@ class Index extends Controller_Module
 	{
 		$segments = array_values(array_filter(array_map('strval', $segments), static fn (string $s): bool => $s !== ''));
 		$methode  = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
-		$ip       = \NF\NeoFrag\Libraries\Rate_Limit::client_ip();
+		$ip       = \NF\NeoFrag\Libraries\Rate_Limit::bloc_ip();
 		$limites  = $this->rate_limit;
 
 		// Une adresse qui accumule les clés refusées est bloquée un temps : deviner une clé de
@@ -420,6 +420,9 @@ class Index extends Controller_Module
 	{
 		$modele   = $this->_modele_discord();
 		$reglages = $modele->reglages();
+		// Ce que le site dit des groupes (bot 0.2.5) : le nom et la couleur de ceux qu'un rôle relie, et leurs droits sur
+		// le forum de chaque salon relié — le bot en tire l'apparence des rôles et les permissions des salons.
+		[$groupes, $droits] = $this->_groupes_et_droits_discord();
 
 		return [
 			'token'     => $modele->jeton(),
@@ -427,10 +430,10 @@ class Index extends Controller_Module
 			'guild_id'  => $reglages['guild_id'],
 			'running'   => $reglages['running'],
 			'nicknames' => $reglages['nicknames'],
-			'channels'  => array_map(static fn (array $s): array => ['channel_id' => $s['channel_id'], 'forum_id' => $s['forum_id'], 'mode' => $s['mode'], 'emoji' => $s['emoji']], $modele->salons()),
-			'roles'     => array_map(static fn (array $r): array => ['group_key' => $r['group_key'], 'role_id' => $r['role_id']], $modele->roles()),
+			'channels'  => array_map(static fn (array $s): array => ['channel_id' => $s['channel_id'], 'forum_id' => $s['forum_id'], 'mode' => $s['mode'], 'emoji' => $s['emoji'], 'access' => (object) ($droits[$s['channel_id']] ?? [])], $modele->salons()),
+			'roles'     => array_map(static fn (array $r): array => ['group_key' => $r['group_key'], 'role_id' => $r['role_id'], 'name' => $groupes[$r['group_key']]['nom'] ?? NULL, 'color' => $groupes[$r['group_key']]['couleur'] ?? NULL], $modele->roles()),
 			'tags'      => array_map(static fn (array $t): array => ['channel_id' => $t['channel_id'], 'prefix_id' => $t['prefix_id'], 'tag_id' => $t['tag_id']], $modele->etiquettes()),
-			'version'   => $reglages['version'],
+			'version'   => $this->_version_discord($reglages['version'], $groupes, $droits),
 			// Où reprendre le fil d'événements : là où le bot s'était arrêté — ce qui s'est écrit sur le
 			// site pendant qu'il était éteint part donc sur Discord à son retour —, ou, la toute première
 			// fois, au dernier événement.
@@ -519,7 +522,38 @@ class Index extends Controller_Module
 
 		$reglages = $modele->reglages();
 
-		return ['running' => $reglages['running'], 'version' => $reglages['version'], 'commands' => $modele->prendre_commandes()];
+		[$groupes, $droits] = $this->_groupes_et_droits_discord();
+
+		return ['running' => $reglages['running'], 'version' => $this->_version_discord($reglages['version'], $groupes, $droits), 'commands' => $modele->prendre_commandes()];
+	}
+
+	/**
+	 * Les groupes tels que Discord les montre (nom, couleur), et les droits des groupes reliés sur le forum de chaque salon
+	 * relié.
+	 *
+	 * @return array{0: array<string, array{nom: string, couleur: ?string}>, 1: array<string, array<string, array{read: bool, write: bool}>>}
+	 */
+	private function _groupes_et_droits_discord(): array
+	{
+		$modele  = $this->_modele_discord();
+		$module  = $this->_module_discord();
+
+		return [$module->groupes_pour_discord(), $module->droits_des_salons($modele->salons(), array_column($modele->roles(), 'group_key'))];
+	}
+
+	/**
+	 * Le numéro de configuration que voit le bot : celui des réglages, et l'empreinte de ce que le site dit des groupes
+	 * reliés — leur nom, leur couleur, leurs droits sur les forums des salons reliés. Un groupe renommé ou un droit changé
+	 * sur le site fait ainsi relire sa configuration au bot (bot 0.2.5), qui ne compare que l'égalité du numéro.
+	 *
+	 * @param array<string, array{nom: string, couleur: ?string}>                  $groupes
+	 * @param array<string, array<string, array{read: bool, write: bool}>>          $droits
+	 */
+	private function _version_discord(int $version, array $groupes, array $droits): int
+	{
+		$apparences = array_map(static fn (array $r): array => $groupes[$r['group_key']] ?? [], $this->_modele_discord()->roles());
+
+		return $version * 4294967296 + crc32((string) json_encode([$apparences, $droits]));
 	}
 
 	/**
@@ -751,7 +785,7 @@ class Index extends Controller_Module
 			$this->_repondre(422, ['error' => ['code' => 'validation_failed', 'message' => (string) $this->lang('Certains champs sont invalides.'), 'fields' => ['type' => implode(' | ', self::TYPES_DE_LIEN), 'site_id' => '> 0', 'discord_id' => 'digits']]]);
 		}
 
-		$this->_modele_discord()->lier($type, $site, $disc);
+		$this->_modele_discord()->lier($type, $site, $disc, !empty($corps['replace']));
 		$this->_code = 201;
 
 		return ['type' => $type, 'site_id' => $site, 'discord_id' => $disc];
@@ -910,6 +944,8 @@ class Index extends Controller_Module
 		}
 
 		$this->_valider($erreurs);
+		$this->_exiger_ecriture($forum, $auteur);
+		$this->_exiger_sans_sanction($auteur['user_id'] ?? NULL, 'forum.category_write', $titre, $contenu);
 
 		$topic_id = (int) $modele->add_topic($forum, $this->_texte_du_site($titre, 100), $contenu, '0', $auteur);
 
@@ -927,7 +963,7 @@ class Index extends Controller_Module
 	{
 		$corps  = $this->_corps();
 		$modele = $this->_modele_forum();
-		$sujet  = $this->db->select('topic_id', 'status')->from('nf_forum_topics')->where('topic_id', $topic_id)->row();
+		$sujet  = $this->db->select('topic_id', 'status', 'forum_id')->from('nf_forum_topics')->where('topic_id', $topic_id)->row();
 
 		if (!is_array($sujet) || !$sujet)
 		{
@@ -945,12 +981,76 @@ class Index extends Controller_Module
 		$reponse  = !empty($corps['reply_to']) ? (int) $corps['reply_to'] : NULL;
 
 		$this->_valider($erreurs);
+		$this->_exiger_ecriture((int) $sujet['forum_id'], $auteur);
+		$this->_exiger_sans_sanction($auteur['user_id'] ?? NULL, 'forum.message_post', $contenu);
 
 		$message_id = (int) $modele->add_message($topic_id, $contenu, $reponse, $auteur);
 
 		$this->_code = 201;
 
 		return $this->_message($message_id);
+	}
+
+	/**
+	 * L'auteur doit pouvoir écrire dans ce forum, comme sur le site : un membre (ou un compte Discord lié) par ses droits sur
+	 * la catégorie, un auteur Discord sans compte du site par ceux des membres — rejoindre le serveur vaut une inscription.
+	 * Une catégorie réservée aux VIP n'accepte qu'un membre VIP. Le bot recopiait jusqu'ici le message de n'importe qui,
+	 * même dans un forum réservé à l'équipe (2026-10-09) : 403 `forum_forbidden`.
+	 *
+	 * @param array{user_id: ?int, identity_id: ?int, name: string} $auteur
+	 */
+	private function _exiger_ecriture(int $forum_id, array $auteur): void
+	{
+		$categorie = $this->_modele_forum()->categorie_du_forum($forum_id);
+		$user_id   = $auteur['user_id'] ?? NULL;
+
+		if ($categorie === NULL)
+		{
+			return;
+		}
+
+		if ($user_id)
+		{
+			// Comme le forum (Models\Forum::_vip_locked()) : un administrateur passe, un membre doit être VIP.
+			$vip    = $this->module('gamification');
+			$permis = $this->access->can('forum.category_write', $categorie['category_id'], $user_id)
+				&& (!$categorie['vip_only']
+					|| (string) $this->db->select('admin')->from('nf_user')->where('id', $user_id)->row() === '1'
+					|| ($vip instanceof \NF\Modules\Gamification\Gamification && $vip->is_vip($user_id))); // couplage: gamification — sans lui, module() rend NULL et personne n'est VIP
+		}
+		else
+		{
+			$permis = !$categorie['vip_only'] && $this->access->can_for_group('members', 'forum.category_write', $categorie['category_id']);
+		}
+
+		if (!$permis)
+		{
+			$this->_erreur(403, 'forum_forbidden', $this->lang('Cet auteur n’a pas le droit d’écrire dans ce forum.'));
+		}
+	}
+
+	/**
+	 * L'auteur d'une écriture que la modération a sanctionné, comme sur le site : 403 `sanctioned` quand une sanction lui
+	 * ferme cet endroit (muet, bannissement), 403 `links_forbidden` quand une restriction des liens pèse sur lui et que le
+	 * texte en porte un. Le bot recopiait jusqu'ici les messages d'un membre muet ou banni (2026-10-09). Un auteur Discord
+	 * sans compte du site n'a pas de sanction : il n'y a personne à qui l'appliquer.
+	 */
+	private function _exiger_sans_sanction(?int $user_id, string $permission, ?string ...$textes): void
+	{
+		if (!$user_id)
+		{
+			return;
+		}
+
+		if ($bloque = $this->moderation->is_blocked_for($user_id, $permission))
+		{
+			$this->_erreur(403, 'sanctioned', $bloque['message']);
+		}
+
+		if ($refus = $this->moderation->lien_refuse($user_id, ...$textes))
+		{
+			$this->_erreur(403, 'links_forbidden', $refus['message']);
+		}
 	}
 
 	/**
@@ -1086,6 +1186,8 @@ class Index extends Controller_Module
 			$this->_erreur(409, 'not_linked', $this->lang('Un ticket appartient à un membre : ce compte Discord doit d’abord être lié.'));
 		}
 
+		$this->_exiger_sans_sanction($auteur['user_id'], 'bugtracker.write', $titre, $texte);
+
 		$this->_code = 201;
 
 		return $this->_ticket($this->_modele_bugtracker()->creer_ticket($this->_texte_du_site($titre, 200), $this->_texte_du_site($texte), $type, 'normal', $auteur['user_id']));
@@ -1113,6 +1215,7 @@ class Index extends Controller_Module
 		$auteur = $this->_auteur_ecriture_ticket($corps, $erreurs);
 
 		$this->_valider($erreurs);
+		$this->_exiger_sans_sanction($auteur['user_id'], 'bugtracker.write', $texte);
 
 		$this->_code = 201;
 
@@ -1124,12 +1227,14 @@ class Index extends Controller_Module
 		$corps   = $this->_corps();
 		$texte   = trim((string) ($corps['content'] ?? ''));
 
-		$this->_commentaire_de_l_auteur($id, $corps);
+		$commentaire = $this->_commentaire_de_l_auteur($id, $corps);
 
 		if ($texte === '' || mb_strlen($texte) > self::CONTENU_MAX)
 		{
 			$this->_valider(['content' => (string) $this->lang('De 1 à %d caractères.', self::CONTENU_MAX)]);
 		}
+
+		$this->_exiger_sans_sanction($commentaire['user_id'] ? (int) $commentaire['user_id'] : NULL, 'bugtracker.write', $texte);
 
 		$this->_modele_bugtracker()->modifier_commentaire($id, $this->_texte_du_site($texte));
 
@@ -1246,6 +1351,7 @@ class Index extends Controller_Module
 		$contenu = $this->_contenu($corps, $erreurs);
 
 		$this->_valider($erreurs);
+		$this->_exiger_sans_sanction($message['user_id'] ? (int) $message['user_id'] : NULL, 'forum.message_edit', $contenu);
 
 		$this->db->where('message_id', $message_id)->update('nf_forum_messages', ['message' => $contenu]);
 

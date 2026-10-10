@@ -34,4 +34,5 @@ return [
 	'016d7125' => 'Von den Modulen wiederverwendbares Kommentarsystem (News, Artikel usw.).',
 	'e16ce76b' => 'Kommentar',
 	'472a9d35' => 'Ein Kommentar zu etwas, das ich veröffentlicht habe oder dem ich folge',
+	'219c2d4e' => 'Dieser Kommentar wurde gemeldet: Er kann nicht gelöscht werden, bevor die Moderation ihn geprüft hat.',
 ];

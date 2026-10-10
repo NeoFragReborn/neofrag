@@ -159,6 +159,7 @@ ajoute dans les *Directives nginx supplémentaires* :
 
 ```nginx
 location ~ ^/(backups|cache|config|logs|install|tools|tests|docs)/ { deny all; }
+location ~ ^/(upload/forum|upload/talks)/ { deny all; }
 location ~* \.(sql|lock|scssc|map|dist|ini|sh|neon|md)$ { deny all; }
 location ~ ^/(package\.json|package-lock\.json|eslint\.config\.js|playwright\.config\.js|Caddyfile|nginx\.conf)$ { deny all; }
 ```

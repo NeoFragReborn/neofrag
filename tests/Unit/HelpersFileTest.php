@@ -60,6 +60,18 @@ final class HelpersFileTest extends TestCase
         }
     }
 
+    /** La pièce jointe d'un membre : en plus, rien qu'un navigateur exécute servi depuis le site (audit du 2026-10-09). */
+    public function test_member_attachment_refuses_browser_active_types(): void
+    {
+        foreach (['x.js', 'x.MJS', 'style.css', 'feed.xml', 'page.xsl', 'anim.swf', 'shell.php', 'vector.svg'] as $f) {
+            $this->assertTrue(nf_piece_jointe_refusee($f), "$f doit être refusé");
+        }
+
+        foreach (['photo.png', 'doc.pdf', 'archive.zip', 'notes.txt', 'config.cfg'] as $f) {
+            $this->assertFalse(nf_piece_jointe_refusee($f), "$f doit être accepté");
+        }
+    }
+
     public function test_detect_mime_type_reads_real_content_not_extension(): void
     {
         $png = tempnam(sys_get_temp_dir(), 'nf_png_');
@@ -82,9 +94,18 @@ final class HelpersFileTest extends TestCase
 
     public function test_human_size_formats_with_unit(): void
     {
-        $this->assertSame('0.00 B', human_size(0));
-        $this->assertSame('500.00 B', human_size(500));
-        $this->assertSame('1.00 MB', human_size(1048576));
+        $this->assertSame('0.00 B', human_size(0, 2, 'en'));
+        $this->assertSame('500.00 B', human_size(500, 2, 'en'));
+        $this->assertSame('1.00 MB', human_size(1048576, 2, 'en'));
+    }
+
+    public function test_une_taille_se_lit_dans_la_langue_de_la_page(): void
+    {
+        $this->assertSame('40,04 Ko', human_size(41000, 2, 'fr'));
+        $this->assertSame('1,00 Mo', human_size(1048576, 2, 'fr'));
+        $this->assertSame('500 o', human_size(500, 0, 'fr'));
+        $this->assertSame('40,04 KB', human_size(41000, 2, 'de'));
+        $this->assertSame('40.04 KB', human_size(41000, 2, 'en'));
     }
 
     public function test_les_sauvegardes_anciennes_se_retirent_jamais_les_cinq_dernieres(): void

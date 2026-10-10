@@ -456,6 +456,8 @@ window.NF = (function(){
 			b.style.top = haut + 'px';
 			haut += b.offsetHeight;
 		});
+		// Plusieurs éléments peuvent porter la marque : seul compte celui qui colle à cette largeur (un en-tête qui ne
+		// dessine plus de boîte au téléphone mesure zéro).
 		Array.prototype.forEach.call(document.querySelectorAll('[data-nf-entete]'), function(e){
 			var position = getComputedStyle(e).position;
 			if (position === 'sticky' || position === 'fixed'){ entete = Math.max(entete, e.offsetHeight); }

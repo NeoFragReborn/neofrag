@@ -7,7 +7,7 @@
 $profil      = $user->profile();
 $couverture  = $profil() ? (string) $profil->cover->path() : '';
 $moi         = $this->user() && (int) $this->user->id === (int) $user->id;
-$groupes     = NeoFrag()->groups($user->id);
+$groupes     = NeoFrag()->groups->visibles($user->id);
 $adresse     = 'user/'.(int) $user->id.'/'.url_title((string) $user->username);
 $gamification = $this->module('gamification');
 $prive       = '<span class="nf-membre-prive" data-bs-toggle="tooltip" title="'.$this->lang('Visible par toi seul').'">'.icon('fas fa-lock').'</span>';

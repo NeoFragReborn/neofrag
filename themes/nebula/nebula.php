@@ -143,6 +143,7 @@ class Nebula extends Theme
 										'type'   => 'online'
 									]))
 									->style('panel-default'),
+							// couplage(news): les catégories d'actualités en colonne ; sans le module, la case reste vide.
 							$this	->widget($this->db->insert('nf_widgets', [
 										'widget' => 'news',
 										'type'   => 'categories'

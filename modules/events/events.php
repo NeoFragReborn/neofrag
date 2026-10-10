@@ -17,7 +17,7 @@ class Events extends Module
 			'title'       => $this->lang('Événements'),
 			'description' => $this->lang('Événements et matchs d\'une guilde ou d\'une équipe eSport : invitations avec réponse présent, absent ou peut-être, scores par manche, récurrence, rappels.'),
 			'icon'        => 'fas fa-trophy',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
@@ -182,6 +182,19 @@ class Events extends Module
 				]
 			]
 		];
+	}
+
+	/**
+	 * Un événement se montre s'il est publié, paru, et de l'un des types que celui qui regarde peut voir (la règle de
+	 * check_event()) — pour qui le cite hors de sa page (Module::content_visible_of()).
+	 */
+	public function contenu_visible(string $type, int $id): bool
+	{
+		$type_id = $type === 'events'
+			? $this->db->select('type_id')->from('nf_events')->where('event_id', $id)->where('published', TRUE)->where('(publish_date IS NULL OR publish_date <= NOW())')->row()
+			: NULL;
+
+		return is_numeric($type_id) && $this->access('events', 'access_events_type', (int) $type_id);
 	}
 
 	public function comments($event_id)

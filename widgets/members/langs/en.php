@@ -15,7 +15,7 @@ return [
 	'df542860' => 'Latest registered or connected members.',
 	'2939ca55' => 'Member List',
 	'4c3fbd1f' => 'Members online',
-	'60e74195' => '%d person online| %d persons online',
+	'60e74195' => '%d person online|%d people online',
 	'813733e8' => 'Visitor|Visitors',
 	'8f747e78' => 'Who is online? (mini)',
 	'9e4dc5d0' => 'Member|Members',

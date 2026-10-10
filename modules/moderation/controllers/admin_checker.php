@@ -86,8 +86,29 @@ class Admin_Checker extends Module_Checker
 		return [];
 	}
 
+	public function _user_sanction($id)
+	{
+		if (!$this->access('moderation', 'view_reports') || (int) $id === nf_compte_masque())
+		{
+			$this->error->unauthorized();
+			return;
+		}
+
+		return [(int) $id];
+	}
+
 	public function _report_dismiss($id)    { return $this->_check_handle($id); }
 	public function _report_sanction($id)   { return $this->_check_handle($id); }
+
+	public function _report_mediation($id)
+	{
+		if (!$this->access('moderation', 'mediation'))
+		{
+			$this->error->unauthorized();
+			return;
+		}
+		return [(int)$id];
+	}
 
 	public function _sanction_approve($id)
 	{

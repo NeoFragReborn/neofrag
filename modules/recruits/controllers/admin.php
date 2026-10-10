@@ -519,7 +519,7 @@ class Admin extends Controller_Module
 												$post['reply'],
 												$post['status']);
 
-			$this->contact_applicant($candidacy_id, $title, $post['reply'], $post['status']);
+			$this->_prevenir_candidat($candidacy_id, $title, $post['reply'], $post['status']);
 
 			if ($post['status'] == 2)
 			{
@@ -705,7 +705,12 @@ class Admin extends Controller_Module
 		return $this->form()->display();
 	}
 
-	public function contact_applicant($candidacy_id, $title, $reply, $status)
+	/**
+	 * Le candidat apprend la réponse à sa candidature (message et courriel). Une aide interne, pas une page : publique sous
+	 * le nom `contact_applicant`, l'adresse `admin/recruits/contact-applicant/…` l'appelait avec les segments de l'URL, et
+	 * envoyait au candidat un texte pris dans l'adresse (audit du 2026-10-09).
+	 */
+	private function _prevenir_candidat($candidacy_id, $title, $reply, $status)
 	{
 		if ($candidacy = $this->model()->check_candidacy($candidacy_id, url_title($title)))
 		{
@@ -797,7 +802,7 @@ class Admin extends Controller_Module
 
 				$list .= '<li class="list-group-item d-flex justify-content-between align-items-center">'
 						.'<span>'.nf_texte($f['label']).' <small class="text-muted">('.$meta.')</small></span>'
-						.'<a href="'.url('admin/recruits/fields/delete/'.$f['field_id'].'/'.url_title($title)).'" class="btn btn-sm btn-outline-danger" data-confirm="'.nf_texte($this->lang('Supprimer ce champ ?')).'">'.icon('far fa-trash-alt').'</a>'
+						.'<a href="'.$this->csrf_url('admin/recruits/fields/delete/'.$f['field_id'].'/'.url_title($title)).'" class="btn btn-sm btn-outline-danger" data-confirm="'.nf_texte($this->lang('Supprimer ce champ ?')).'">'.icon('far fa-trash-alt').'</a>'
 						.'</li>';
 			}
 
@@ -812,6 +817,9 @@ class Admin extends Controller_Module
 
 	public function _field_delete($field_id, $recruit_id)
 	{
+		// Un lien qui modifie : son jeton (audit du 2026-10-09).
+		$this->check_csrf('admin/recruits');
+
 		$this->model()->delete_field($field_id, $recruit_id);
 		notify($this->lang('Champ supprimé.'));
 		redirect_back('admin/recruits');

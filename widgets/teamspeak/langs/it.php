@@ -19,7 +19,7 @@ return [
 	'6d6cf1e7' => 'Titolo personalizzato',
 	'71e8c00c' => 'Opzionale: sostituisce il nome del server',
 	'2445659b' => 'Modalità ad albero — ServerQuery richiesto',
-	'20f0248e' => 'Per mostrare canali e client, il widget si collega a ServerQuery (TCP, porta predefinita 10011). Devi creare un account query dedicato sul tuo server TS3.',
+	'20f0248e' => 'Per mostrare canali e client, il widget si collega a ServerQuery (TCP, porta predefinita 10011). Devi creare un account query dedicato sul tuo server TS3 (comando TSDNS: <code>serverqueryadd client_login_name=neofrag_viewer client_login_password=…</code>).',
 	'85eb1a62' => 'Porta ServerQuery',
 	'7b2f0edd' => 'Predefinito: 10011',
 	'f76e4fdf' => 'Utente Query',

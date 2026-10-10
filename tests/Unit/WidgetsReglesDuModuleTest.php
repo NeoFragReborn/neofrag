@@ -80,9 +80,12 @@ final class WidgetsReglesDuModuleTest extends TestCase
 		self::assertStringContainsString('->forums_lisibles()', $modele);
 		self::assertStringContainsString("->where('m.deleted_at', NULL)", $modele);
 
-		// … où elle tient le droit de lecture de la catégorie ET la réserve du VIP.
+		// … où elle tient le droit de lecture de la catégorie ET la réserve du VIP — dans categories_lisibles(), que la
+		// recherche, le profil et l'activité emploient aussi depuis l'audit du 2026-10-09.
 		$module = (string) file_get_contents(self::RACINE.'/modules/forum/models/forum.php');
 		self::assertSame(1, preg_match('/public function forums_lisibles\(\): array.*?\n\t\}/s', $module, $corps));
+		self::assertStringContainsString('->categories_lisibles()', $corps[0]);
+		self::assertSame(1, preg_match('/public function categories_lisibles\(\): array.*?\n\t\}/s', $module, $corps));
 		self::assertStringContainsString("'category_read'", $corps[0]);
 		self::assertStringContainsString('->_vip_locked(', $corps[0]);
 	}

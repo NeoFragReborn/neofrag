@@ -17,7 +17,7 @@ class Teams extends Module
 			'title'       => $this->lang('Équipes'),
 			'description' => $this->lang('Une page par équipe : jeu, présentation, joueurs et rôles, résultats et recrutement selon les modules installés. Pour une guilde ou une équipe eSport.'),
 			'icon'        => 'fas fa-headset',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

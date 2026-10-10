@@ -17,7 +17,7 @@ class Recruits extends Module
 			'title'       => $this->lang('Recrutements'),
 			'description' => $this->lang('Offres de recrutement par équipe et par poste, avec leurs propres questions ; les recruteurs donnent leur avis, puis acceptent ou refusent la candidature.'),
 			'icon'        => 'fas fa-bullhorn',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

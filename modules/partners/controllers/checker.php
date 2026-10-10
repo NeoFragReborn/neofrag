@@ -27,8 +27,7 @@ class Checker extends Module_Checker
 			// Compté par la base, pas relu puis réécrit : deux visites simultanées comptent deux.
 			$this->db->execute('UPDATE nf_partners SET `count` = `count` + 1 WHERE partner_id = '.(int) $partner_id);
 
-			header('Location: '.$partner['website']);
-			exit;
+			nf_quitter_le_site((string) $partner['website'], 'partners');
 		}
 	}
 }

@@ -111,6 +111,21 @@ abstract class Module extends Addon
 			: '';
 	}
 
+	/**
+	 * Le contenu `$type` n° `$id` se montre-t-il à celui qui regarde ? DÉLÉGUÉ au module qui le porte, comme son adresse
+	 * (content_url_of()) : `contenu_visible($type, $id)`. `$type` est un type de contenu déclaré, ou le nom du module pour
+	 * un contenu commenté (`nf_comment.module`). Sans réponse du module, NON : celui qui cite un contenu hors de sa page
+	 * — le widget « Derniers commentaires », les réactions — montrait des extraits d'actualités dépubliées, d'albums ou de
+	 * types d'événements réservés, de forums VIP (audit du 2026-10-09).
+	 */
+	static public function content_visible_of($type, $id): bool
+	{
+		$types  = self::content_types();
+		$module = NeoFrag()->module($types[$type]['module'] ?? (string) $type);
+
+		return $module && method_exists($module, 'contenu_visible') && $module->contenu_visible((string) $type, (int) $id);
+	}
+
 	static public function __class($name)
 	{
 		return 'Modules\\'.$name.'\\'.$name;

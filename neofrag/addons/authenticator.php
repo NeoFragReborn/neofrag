@@ -70,7 +70,18 @@ abstract class Authenticator extends Addon
 	public function _params()
 	{
 		return [
-			'callback' => static::url().'/'.url_title($this->info()->name)
+			'callback' => $this->adresse_de_retour()
 		];
+	}
+
+	/**
+	 * L'adresse où le service renvoie le membre : celle que l'écran de réglage demande de déclarer chez lui
+	 * (`callback`), et celle que la connexion lui envoie. Elle ne portait pas le nom du service à l'envoi
+	 * (`user/auth`) : le service refusait une adresse non déclarée, et son retour serait tombé sur la liste
+	 * « Mes comptes liés » sans être lu (2026-10-09).
+	 */
+	public function adresse_de_retour(): string
+	{
+		return static::url().'/'.url_title($this->info()->name);
 	}
 }

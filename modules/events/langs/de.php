@@ -160,4 +160,7 @@ return [
 	'8fd9c7ef' => 'Speichern',
 	'992d9fb3' => 'Eine Einladung zu einem Event',
 	'c58bcb5d' => 'Die Erinnerung an ein Event, an dem ich teilnehme',
+	'49a80df0' => 'Online',
+	'48b614a4' => 'Offline',
+	'ff8f2a30' => 'Administrator',
 ];

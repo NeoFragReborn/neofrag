@@ -2,6 +2,13 @@
 -- Généré par tools/dump-schema.php depuis la base vive (filtrée par tier). NE PAS éditer à la main.
 -- Régénérer : docker compose exec web php tools/dump-schema.php
 
+-- couplage(events): ses réglages par défaut servent le jour où le module s'installe.
+-- couplage(forum): ses réglages, ses droits de lecture et ses gabarits d'e-mail servent le jour où le module s'installe.
+-- couplage(news): sa pagination sert le jour où le module s'installe ; sans lui, la case de la colonne de nebula reste vide.
+-- couplage(newsletter): son gabarit de confirmation sert le jour où le module s'installe.
+-- couplage(partners): son affichage des logos sert le jour où le module s'installe.
+-- couplage(recruits): ses réglages par défaut servent le jour où le module s'installe.
+
 SET FOREIGN_KEY_CHECKS = 0;
 SET NAMES utf8mb4;
 
@@ -70,82 +77,10 @@ INSERT INTO `nf_addon_type` (`id`, `name`) VALUES
 ('5', 'authenticator');
 
 INSERT INTO `nf_settings` (`name`, `site`, `lang`, `value`, `type`) VALUES
-('blockcraft_background', '', '', '0', 'int'),
-('blockcraft_background_attachment', '', '', 'scroll', 'string'),
-('blockcraft_background_color', '', '', '#eef3f7', 'string'),
-('blockcraft_background_position', '', '', 'center top', 'string'),
-('blockcraft_background_repeat', '', '', 'repeat', 'string'),
-('blockcraft_header', '', '', '0', 'int'),
-('blockcraft_header_attachment', '', '', 'scroll', 'string'),
-('blockcraft_header_color', '', '', '#6aa84f', 'string'),
-('blockcraft_header_position', '', '', 'center top', 'string'),
-('blockcraft_header_repeat', '', '', 'no-repeat', 'string'),
-('blockcraft_logo', '', '', '0', 'int'),
-('blockcraft_navbar_display', '', '', '0', 'bool'),
-('blockcraft_social_discord', '', '', '', 'string'),
-('blockcraft_social_facebook', '', '', '', 'string'),
-('blockcraft_social_github', '', '', '', 'string'),
-('blockcraft_social_instagram', '', '', '', 'string'),
-('blockcraft_social_tiktok', '', '', '', 'string'),
-('blockcraft_social_twitch', '', '', '', 'string'),
-('blockcraft_social_twitter', '', '', '', 'string'),
-('blockcraft_social_youtube', '', '', '', 'string'),
-('blockcraft_text_color', '', '', '#2e2a25', 'string'),
-('blockcraft_theme_color', '', '', '#6aa84f', 'string'),
 ('events_alert_mp', '', '', '1', 'string'),
 ('events_per_page', '', '', '10', 'int'),
-('extend_background', '', '', '0', 'int'),
-('extend_background_attachment', '', '', 'scroll', 'string'),
-('extend_background_color', '', '', '#11171a', 'string'),
-('extend_background_position', '', '', 'center top', 'string'),
-('extend_background_repeat', '', '', 'repeat', 'string'),
-('extend_header', '', '', '0', 'int'),
-('extend_header_attachment', '', '', 'scroll', 'string'),
-('extend_header_color', '', '', '#236daf', 'string'),
-('extend_header_position', '', '', 'center top', 'string'),
-('extend_header_repeat', '', '', 'no-repeat', 'string'),
-('extend_logo', '', '', '0', 'int'),
-('extend_navbar_display', '', '', '0', 'bool'),
-('extend_text_color', '', '', '#c3cdd6', 'string'),
-('extend_theme_color', '', '', '#236daf', 'string'),
-('forge_background', '', '', '0', 'int'),
-('forge_background_attachment', '', '', 'scroll', 'string'),
-('forge_background_color', '', '', '#16100e', 'string'),
-('forge_background_position', '', '', 'center top', 'string'),
-('forge_background_repeat', '', '', 'repeat', 'string'),
-('forge_header', '', '', '0', 'int'),
-('forge_header_attachment', '', '', 'scroll', 'string'),
-('forge_header_color', '', '', '#e2502b', 'string'),
-('forge_header_position', '', '', 'center top', 'string'),
-('forge_header_repeat', '', '', 'no-repeat', 'string'),
-('forge_logo', '', '', '0', 'int'),
-('forge_navbar_display', '', '', '0', 'bool'),
-('forge_text_color', '', '', '#e8d8d0', 'string'),
-('forge_theme_color', '', '', '#e2502b', 'string'),
 ('forum_messages_per_page', '', '', '15', 'int'),
 ('forum_topics_per_page', '', '', '20', 'int'),
-('granite_background', '', '', '0', 'int'),
-('granite_background_attachment', '', '', 'scroll', 'string'),
-('granite_background_color', '', '', '#f3f5f7', 'string'),
-('granite_background_position', '', '', 'center top', 'string'),
-('granite_background_repeat', '', '', 'repeat', 'string'),
-('granite_header', '', '', '0', 'int'),
-('granite_header_attachment', '', '', 'scroll', 'string'),
-('granite_header_color', '', '', '#0e7c86', 'string'),
-('granite_header_position', '', '', 'center top', 'string'),
-('granite_header_repeat', '', '', 'no-repeat', 'string'),
-('granite_logo', '', '', '0', 'int'),
-('granite_navbar_display', '', '', '0', 'bool'),
-('granite_social_discord', '', '', '', 'string'),
-('granite_social_facebook', '', '', '', 'string'),
-('granite_social_github', '', '', '', 'string'),
-('granite_social_instagram', '', '', '', 'string'),
-('granite_social_tiktok', '', '', '', 'string'),
-('granite_social_twitch', '', '', '', 'string'),
-('granite_social_twitter', '', '', '', 'string'),
-('granite_social_youtube', '', '', '', 'string'),
-('granite_text_color', '', '', '#1f2933', 'string'),
-('granite_theme_color', '', '', '#0e7c86', 'string'),
 ('images_per_page', '', '', '24', 'int'),
 ('news_per_page', '', '', '5', 'int'),
 ('nf_analytics', '', '', '', 'string'),
@@ -158,6 +93,7 @@ INSERT INTO `nf_settings` (`name`, `site`, `lang`, `value`, `type`) VALUES
 ('nf_copyright', '', '', 'Copyright {copyright} {year} {name}, tous droits r&eacute;serv&eacute;s &lt;div class=&quot;float-end&quot;&gt;Propuls&eacute; par {neofrag}&lt;/div&gt;', 'string'),
 ('nf_cron_key', '', '', '', 'string'),
 ('nf_session_history_days', '', '', '395', 'int'),
+('nf_comptes_inactifs_ans', '', '', '3', 'int'),
 ('nf_default_page', '', '', 'pages', 'string'),
 ('nf_default_theme', '', '', 'nebula', 'string'),
 ('nf_theme_epoch', '', '', '0', 'int'),
@@ -319,7 +255,10 @@ INSERT INTO `nf_email_templates` (`template_id`, `key`, `title`, `description`, 
 ('4', 'forum.subscription_reply', 'Forum : nouvelle réponse', 'Notification email quand un sujet abonné reçoit une nouvelle réponse.', '[\"{{username}}\",\"{{topic_title}}\",\"{{topic_url}}\",\"{{author}}\",\"{{site_name}}\"]', 'forum', '1', '2026-06-01 10:41:51', '2026-06-01 10:41:51'),
 ('5', 'talks.new_message', 'Talks : nouveau message', 'Notification email quand un user reçoit un nouveau MP/message dans un talk.', '[\"{{username}}\",\"{{talk_name}}\",\"{{talk_url}}\",\"{{author}}\",\"{{site_name}}\"]', 'talks', '1', '2026-06-01 10:41:51', '2026-06-01 10:41:51'),
 ('6', 'moderation.sanction', 'Modération : sanction', 'Email envoyé à un user qui reçoit une sanction (warn/restrict/ban).', '[\"{{username}}\",\"{{site_name}}\",\"{{sanction_type}}\",\"{{reason}}\",\"{{duration}}\"]', 'moderation', '1', '2026-06-01 10:41:51', '2026-06-01 10:41:51'),
-('7', 'newsletter.confirmation', 'Newsletter : confirmation', 'Email de double-opt-in pour confirmer l\'inscription à la newsletter.', '[\"{{site_name}}\",\"{{confirm_url}}\"]', 'newsletter', '1', '2026-06-01 10:41:51', '2026-06-01 10:41:51');
+('7', 'newsletter.confirmation', 'Newsletter : confirmation', 'Email de double-opt-in pour confirmer l\'inscription à la newsletter.', '[\"{{site_name}}\",\"{{confirm_url}}\"]', 'newsletter', '1', '2026-06-01 10:41:51', '2026-06-01 10:41:51'),
+('8', 'user.email_change', 'Confirmation de la nouvelle adresse', 'Envoyé à la nouvelle adresse e-mail d\'un membre, avec le lien qui la confirme.', '[\"{{username}}\",\"{{site_name}}\",\"{{email}}\",\"{{confirmation_url}}\"]', 'user', '1', '2026-10-09 00:00:00', '2026-10-09 00:00:00'),
+('9', 'user.email_change_notice', 'Changement d\'adresse demandé', 'Envoyé à l\'ancienne adresse d\'un membre quand il en demande une nouvelle.', '[\"{{username}}\",\"{{site_name}}\",\"{{email}}\"]', 'user', '1', '2026-10-09 00:00:00', '2026-10-09 00:00:00'),
+('10', 'user.inactivite', 'Compte inactif bientôt effacé', 'Envoyé un mois avant d\'effacer un compte resté sans visite (Paramètres : comptes inactifs).', '[\"{{username}}\",\"{{site_name}}\",\"{{date}}\",\"{{connexion_url}}\"]', 'user', '1', '2026-10-09 00:00:00', '2026-10-09 00:00:00');
 
 INSERT INTO `nf_email_template_translations` (`template_id`, `lang`, `subject`, `body`, `updated_at`) VALUES
 ('1', 'de', 'Bestätige dein Konto auf {{site_name}}', '<p>Hallo <strong>{{username}}</strong>,</p><p>Willkommen auf <strong>{{site_name}}</strong>! Um dein Konto zu aktivieren, klicke auf den folgenden Link:</p><p><a href=\"{{validation_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Mein Konto aktivieren</a></p><p>Falls die Schaltfläche nicht funktioniert, kopiere diese URL in deinen Browser:<br><code>{{validation_url}}</code></p><p>Falls du diese Registrierung nicht veranlasst hast, ignoriere diese E-Mail einfach.</p>', '2026-06-11 09:08:07'),
@@ -363,7 +302,25 @@ INSERT INTO `nf_email_template_translations` (`template_id`, `lang`, `subject`, 
 ('7', 'es', 'Confirma tu suscripción a la newsletter — {{site_name}}', '<p>¡Hola!</p><p>Para completar tu suscripción a la newsletter de <strong>{{site_name}}</strong>, haz clic en el botón de abajo:</p><p><a href=\"{{confirm_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Confirmar mi suscripción</a></p><p>Si no has solicitado esta suscripción, simplemente ignora este correo.</p>', '2026-06-11 09:08:07'),
 ('7', 'fr', 'Confirme ton inscription à la newsletter — {{site_name}}', '<p>Salut !</p><p>Pour finaliser ton inscription à la newsletter de <strong>{{site_name}}</strong>, clique sur le bouton ci-dessous :</p><p><a href=\"{{confirm_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Confirmer mon inscription</a></p><p>Si tu n\'es pas à l\'origine de cette inscription, ignore simplement cet email.</p>', '2026-06-01 10:41:51'),
 ('7', 'it', 'Conferma la tua iscrizione alla newsletter — {{site_name}}', '<p>Ciao!</p><p>Per completare la tua iscrizione alla newsletter di <strong>{{site_name}}</strong>, clicca sul pulsante qui sotto:</p><p><a href=\"{{confirm_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Conferma la mia iscrizione</a></p><p>Se non sei stato tu a richiedere questa iscrizione, ignora semplicemente questa email.</p>', '2026-06-11 09:08:07'),
-('7', 'pt', 'Confirma a tua subscrição da newsletter — {{site_name}}', '<p>Olá!</p><p>Para concluir a tua subscrição da newsletter de <strong>{{site_name}}</strong>, clica no botão abaixo:</p><p><a href=\"{{confirm_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Confirmar a minha subscrição</a></p><p>Se não foste tu a fazer esta subscrição, ignora simplesmente este email.</p>', '2026-06-11 09:08:07');
+('7', 'pt', 'Confirma a tua subscrição da newsletter — {{site_name}}', '<p>Olá!</p><p>Para concluir a tua subscrição da newsletter de <strong>{{site_name}}</strong>, clica no botão abaixo:</p><p><a href=\"{{confirm_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Confirmar a minha subscrição</a></p><p>Se não foste tu a fazer esta subscrição, ignora simplesmente este email.</p>', '2026-06-11 09:08:07'),
+('8', 'de', 'Bestätige deine neue Adresse auf {{site_name}}', '<p>Hallo <strong>{{username}}</strong>,</p><p>Du hast beantragt, die E-Mail-Adresse deines Kontos auf <strong>{{site_name}}</strong> durch diese zu ersetzen: <strong>{{email}}</strong>. Um sie zu bestätigen, klicke auf den Link unten; er bleibt zwei Tage gültig:</p><p><a href=\"{{confirmation_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Diese Adresse bestätigen</a></p><p>Falls der Button nicht funktioniert, kopiere diese URL in deinen Browser:<br><code>{{confirmation_url}}</code></p><p>Wenn du diese Anfrage nicht gestellt hast, ignoriere diese E-Mail einfach: Deine Adresse ändert sich nicht.</p>', '2026-10-09 00:00:00'),
+('8', 'en', 'Confirm your new address on {{site_name}}', '<p>Hello <strong>{{username}}</strong>,</p><p>You asked to replace the email address of your account on <strong>{{site_name}}</strong> with this one: <strong>{{email}}</strong>. To confirm it, click the link below; it stays valid for two days:</p><p><a href=\"{{confirmation_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Confirm this address</a></p><p>If the button does not work, copy and paste this URL into your browser:<br><code>{{confirmation_url}}</code></p><p>If you did not make this request, simply ignore this email: your address will not change.</p>', '2026-10-09 00:00:00'),
+('8', 'es', 'Confirma tu nueva dirección en {{site_name}}', '<p>Hola <strong>{{username}}</strong>,</p><p>Has pedido sustituir la dirección de correo de tu cuenta en <strong>{{site_name}}</strong> por esta: <strong>{{email}}</strong>. Para confirmarla, haz clic en el enlace de abajo; sigue siendo válido durante dos días:</p><p><a href=\"{{confirmation_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Confirmar esta dirección</a></p><p>Si el botón no funciona, copia y pega esta URL en tu navegador:<br><code>{{confirmation_url}}</code></p><p>Si no has hecho esta solicitud, simplemente ignora este correo: tu dirección no cambiará.</p>', '2026-10-09 00:00:00'),
+('8', 'fr', 'Confirme ta nouvelle adresse sur {{site_name}}', '<p>Bonjour <strong>{{username}}</strong>,</p><p>Tu as demandé à remplacer l\'adresse e-mail de ton compte sur <strong>{{site_name}}</strong> par celle-ci : <strong>{{email}}</strong>. Pour la confirmer, clique sur le lien ci-dessous ; il reste valable deux jours :</p><p><a href=\"{{confirmation_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Confirmer cette adresse</a></p><p>Si le bouton ne fonctionne pas, copie-colle cette URL dans ton navigateur :<br><code>{{confirmation_url}}</code></p><p>Si tu n\'es pas à l\'origine de cette demande, ignore simplement cet e-mail : ton adresse ne changera pas.</p>', '2026-10-09 00:00:00'),
+('8', 'it', 'Conferma il tuo nuovo indirizzo su {{site_name}}', '<p>Ciao <strong>{{username}}</strong>,</p><p>Hai chiesto di sostituire l\'indirizzo e-mail del tuo account su <strong>{{site_name}}</strong> con questo: <strong>{{email}}</strong>. Per confermarlo, fai clic sul link qui sotto; resta valido per due giorni:</p><p><a href=\"{{confirmation_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Conferma questo indirizzo</a></p><p>Se il pulsante non funziona, copia e incolla questo URL nel browser:<br><code>{{confirmation_url}}</code></p><p>Se non hai fatto tu questa richiesta, ignora semplicemente questa e-mail: il tuo indirizzo non cambierà.</p>', '2026-10-09 00:00:00'),
+('8', 'pt', 'Confirma o teu novo endereço em {{site_name}}', '<p>Olá <strong>{{username}}</strong>,</p><p>Pediste para substituir o endereço de e-mail da tua conta em <strong>{{site_name}}</strong> por este: <strong>{{email}}</strong>. Para o confirmar, clica na ligação abaixo; continua válida durante dois dias:</p><p><a href=\"{{confirmation_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Confirmar este endereço</a></p><p>Se o botão não funcionar, copia e cola este URL no teu navegador:<br><code>{{confirmation_url}}</code></p><p>Se não fizeste este pedido, ignora simplesmente este e-mail: o teu endereço não vai mudar.</p>', '2026-10-09 00:00:00'),
+('9', 'de', 'Adressänderung beantragt auf {{site_name}}', '<p>Hallo <strong>{{username}}</strong>,</p><p>Soeben wurde beantragt, die E-Mail-Adresse deines Kontos auf <strong>{{site_name}}</strong> zu ersetzen durch: <strong>{{email}}</strong>. Die Änderung gilt erst, wenn sie von dieser neuen Adresse aus bestätigt wurde.</p><p>Wenn du diese Anfrage nicht gestellt hast, ändere sofort dein Passwort und informiere das Team der Website.</p>', '2026-10-09 00:00:00'),
+('9', 'en', 'Address change requested on {{site_name}}', '<p>Hello <strong>{{username}}</strong>,</p><p>Someone just asked to replace the email address of your account on <strong>{{site_name}}</strong> with: <strong>{{email}}</strong>. It will only take effect once confirmed from that new address.</p><p>If you did not make this request, change your password right away and let the site team know.</p>', '2026-10-09 00:00:00'),
+('9', 'es', 'Cambio de dirección solicitado en {{site_name}}', '<p>Hola <strong>{{username}}</strong>,</p><p>Se acaba de pedir sustituir la dirección de correo de tu cuenta en <strong>{{site_name}}</strong> por: <strong>{{email}}</strong>. Solo surtirá efecto una vez confirmada desde esa nueva dirección.</p><p>Si no has hecho esta solicitud, cambia tu contraseña ahora mismo y avisa al equipo del sitio.</p>', '2026-10-09 00:00:00'),
+('9', 'fr', 'Changement d\'adresse demandé sur {{site_name}}', '<p>Bonjour <strong>{{username}}</strong>,</p><p>Le remplacement de l\'adresse e-mail de ton compte sur <strong>{{site_name}}</strong> vient d\'être demandé, vers : <strong>{{email}}</strong>. Il ne prendra effet qu\'une fois confirmé depuis cette nouvelle adresse.</p><p>Si tu n\'es pas à l\'origine de cette demande, change ton mot de passe dès maintenant et préviens l\'équipe du site.</p>', '2026-10-09 00:00:00'),
+('9', 'it', 'Cambio di indirizzo richiesto su {{site_name}}', '<p>Ciao <strong>{{username}}</strong>,</p><p>È appena stato chiesto di sostituire l\'indirizzo e-mail del tuo account su <strong>{{site_name}}</strong> con: <strong>{{email}}</strong>. Avrà effetto solo dopo la conferma da questo nuovo indirizzo.</p><p>Se non hai fatto tu questa richiesta, cambia subito la password e avvisa lo staff del sito.</p>', '2026-10-09 00:00:00'),
+('9', 'pt', 'Pedido de mudança de endereço em {{site_name}}', '<p>Olá <strong>{{username}}</strong>,</p><p>Acaba de ser pedido substituir o endereço de e-mail da tua conta em <strong>{{site_name}}</strong> por: <strong>{{email}}</strong>. Só terá efeito depois de confirmado a partir desse novo endereço.</p><p>Se não fizeste este pedido, muda já a tua palavra-passe e avisa a equipa do site.</p>', '2026-10-09 00:00:00'),
+('10', 'de', 'Dein Konto auf {{site_name}} wird am {{date}} gelöscht', '<p>Hallo <strong>{{username}}</strong>,</p><p>du hast dich lange nicht mehr auf <strong>{{site_name}}</strong> angemeldet. Konten ohne Besuch werden gelöscht, damit deine Daten nicht grundlos aufbewahrt werden: deines am <strong>{{date}}</strong>.</p><p>Um es zu behalten, melde dich einfach bis dahin an:</p><p><a href=\"{{connexion_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Anmelden</a></p><p>Wenn du es nicht mehr möchtest, musst du nichts tun.</p>', '2026-10-09 00:00:00'),
+('10', 'en', 'Your account on {{site_name}} will be deleted on {{date}}', '<p>Hello <strong>{{username}}</strong>,</p><p>You have not signed in to <strong>{{site_name}}</strong> for a long time. Accounts left without a visit are deleted, so that your data is not kept for no reason: yours will be on <strong>{{date}}</strong>.</p><p>To keep it, just sign in before then:</p><p><a href=\"{{connexion_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Sign in</a></p><p>If you no longer want it, you do not need to do anything.</p>', '2026-10-09 00:00:00'),
+('10', 'es', 'Tu cuenta en {{site_name}} se eliminará el {{date}}', '<p>Hola <strong>{{username}}</strong>,</p><p>Hace mucho que no inicias sesión en <strong>{{site_name}}</strong>. Las cuentas sin visitas se eliminan para no conservar tus datos sin motivo: la tuya lo será el <strong>{{date}}</strong>.</p><p>Para conservarla, basta con que inicies sesión antes de esa fecha:</p><p><a href=\"{{connexion_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Iniciar sesión</a></p><p>Si ya no la quieres, no tienes que hacer nada.</p>', '2026-10-09 00:00:00'),
+('10', 'fr', 'Ton compte sur {{site_name}} sera effacé le {{date}}', '<p>Bonjour <strong>{{username}}</strong>,</p><p>Tu ne t\'es pas connecté à <strong>{{site_name}}</strong> depuis longtemps. Les comptes restés sans visite sont effacés, pour ne pas garder tes données sans raison : le tien le sera le <strong>{{date}}</strong>.</p><p>Pour le garder, il suffit de te connecter d\'ici là :</p><p><a href=\"{{connexion_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Me connecter</a></p><p>Si tu n\'en veux plus, tu n\'as rien à faire.</p>', '2026-10-09 00:00:00'),
+('10', 'it', 'Il tuo account su {{site_name}} sarà eliminato il {{date}}', '<p>Ciao <strong>{{username}}</strong>,</p><p>non accedi a <strong>{{site_name}}</strong> da molto tempo. Gli account senza visite vengono eliminati per non conservare i tuoi dati senza motivo: il tuo lo sarà il <strong>{{date}}</strong>.</p><p>Per conservarlo, basta accedere entro quella data:</p><p><a href=\"{{connexion_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Accedi</a></p><p>Se non lo vuoi più, non devi fare nulla.</p>', '2026-10-09 00:00:00'),
+('10', 'pt', 'A tua conta em {{site_name}} será eliminada a {{date}}', '<p>Olá <strong>{{username}}</strong>,</p><p>Não inicias sessão em <strong>{{site_name}}</strong> há muito tempo. As contas sem visitas são eliminadas para não guardar os teus dados sem motivo: a tua sê-lo-á a <strong>{{date}}</strong>.</p><p>Para a manteres, basta iniciares sessão até lá:</p><p><a href=\"{{connexion_url}}\" style=\"display:inline-block;padding:10px 20px;background:#027a66;color:#fff;text-decoration:none;border-radius:4px;\">Iniciar sessão</a></p><p>Se já não a quiseres, não tens de fazer nada.</p>', '2026-10-09 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

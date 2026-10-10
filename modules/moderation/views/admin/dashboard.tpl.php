@@ -116,7 +116,7 @@ $_col_laterale   = $_user ? 'col-12 mt-3' : 'col-12 col-lg-5';
 					<?php foreach ($top_reporters as $u):
 						$score = (int)$u['actioned'] - (int)$u['dismissed'];
 					?>
-						<tr<?php echo (int)$u['report_count'] >= 5 && $score < 0 ? ' class="text-danger" title="'.$this->lang('Reporter suspect (faux signalements)').'"' : '' ?>>
+						<tr<?php echo (int)$u['report_count'] >= NeoFrag()->moderation->seuil_signaleur_suspect() && $score < 0 ? ' class="text-danger" title="'.$this->lang('Reporter suspect (faux signalements)').'"' : '' ?>>
 							<td><a href="<?php echo url($_modbase.'/users/'.(int)$u['reporter_id']) ?>">@<?php echo nf_texte($u['username']) ?></a></td>
 							<td class="text-end"><?php echo (int)$u['report_count'] ?></td>
 							<td class="text-end text-success"><?php echo (int)$u['actioned'] ?></td>

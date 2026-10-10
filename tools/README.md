@@ -62,7 +62,7 @@ Joués par défaut par `check-all`. Ils lisent les sources, sans base ni serveur
 | [`check-tools`](check-tools.php) | les outils de `tools/` respectent leurs propres conventions. | `php tools/check-tools.php` |
 | [`check-vignettes`](check-vignettes.php) | chaque addon a sa vignette, au bon format, ou une exemption écrite qui dit pourquoi. | `php tools/check-vignettes.php` |
 | [`check-widget-reglages`](check-widget-reglages.php) | aucun checker de widget ne lit un réglage sans valeur de repli. | `php tools/check-widget-reglages.php` |
-| [`check-wiki-docs`](check-wiki-docs.php) | le wiki livré et celui de la démonstration disent ce que disent les guides. | `php tools/check-wiki-docs.php` |
+| [`check-wiki-docs`](check-wiki-docs.php) | la documentation ne se livre pas, et le wiki d'un site en service dit ce que disent les guides. | `php tools/check-wiki-docs.php` |
 
 ### Contrôles en navigateur
 
@@ -132,7 +132,7 @@ Ils agissent — construire, publier, régénérer, installer — plutôt qu'ils
 | [`prepare-test-db`](prepare-test-db.php) | prépare la base de données des tests d'intégration. | `php tools/prepare-test-db.php` |
 | [`seed-demo`](seed-demo.php) | peuple un site de données de DÉMO réalistes (gaming/communauté). | `php tools/seed-demo.php` |
 | [`stan-baseline`](stan-baseline.php) | régénère la liste d'exceptions de PHPStan, et refuse d'y geler une erreur neuve. | `php tools/stan-baseline.php` |
-| [`wiki-docs`](wiki-docs.php) | transfère docs/guide/*.md dans le module wiki, puis fige le wiki en install/wiki.sql. | `php tools/wiki-docs.php` |
+| [`wiki-docs`](wiki-docs.php) | transfère docs/guide/*.md dans le wiki du site de ce dossier, d'où le site officiel se recopie. | `php tools/wiki-docs.php` |
 <!-- catalogue:fin -->
 
 Hors catalogue, un fichier qui n'est pas un outil à lancer : `router-builtin.php`, le routeur que le
@@ -199,10 +199,10 @@ Engendrée elle aussi par `check-tools`, depuis la première ligne de chaque fic
 |---|---|---|
 | [`addons-manifest.php`](lib/addons-manifest.php) | les trois tiers d'addons (cœur, identité, à la carte), dérivés des déclarations. | — |
 | [`banc.php`](lib/banc.php) | poser un widget sur une page le temps d'une mesure, puis tout remettre. | `nf_banc_widget()`, `nf_banc_zone_contenu()` |
-| [`demo.php`](lib/demo.php) | ce que l'instantané de la démonstration ne porte jamais. | `NF_DEMO_REGLAGES_EXCLUS`, `NF_DEMO_MOTIF_SECRET`, `NF_DEMO_REGLAGES_PUBLICS`, `nf_demo_reglages_widget()` |
+| [`demo.php`](lib/demo.php) | ce que l'instantané de la démonstration ne porte jamais, et les droits qu'il rétablit. | `NF_DEMO_REGLAGES_EXCLUS`, `NF_DEMO_MOTIF_SECRET`, `NF_DEMO_REGLAGES_PUBLICS`, `NF_DEMO_DROITS`, `nf_demo_reglages_widget()` |
 | [`depot.php`](lib/depot.php) | parcourir les fichiers du dépôt, toujours avec les mêmes exclusions. | `NF_EXCLUS`, `NF_DOSSIERS_PRODUIT`, `NF_DOSSIERS_JS`, `nf_fichiers()`, `nf_parcourir()`, `nf_supprimer()`, `nf_relatif()`, `nf_addons()`, `nf_themes_publics()`, `nf_extensions_absentes()`, `nf_exiger_assemblage()` |
 | [`entetes.php`](lib/entetes.php) | ce que l'en-tête d'un outil déclare : sa famille, son usage, sa batterie, sa diffusion. | `NF_FAMILLES`, `NF_DIFFUSIONS`, `nf_diffusion()`, `nf_resume()`, `nf_entete_outil()` |
-| [`interdits.php`](lib/interdits.php) | ce qu'un serveur web ne doit jamais servir : les dossiers, les extensions, les fichiers. | `NF_DOSSIERS_INTERDITS`, `NF_EXTENSIONS_INTERDITES`, `NF_FICHIERS_INTERDITS` |
+| [`interdits.php`](lib/interdits.php) | ce qu'un serveur web ne doit jamais servir : les dossiers, les extensions, les fichiers. | `NF_DOSSIERS_INTERDITS`, `NF_PIECES_JOINTES`, `NF_EXTENSIONS_INTERDITES`, `NF_FICHIERS_INTERDITS` |
 | [`journal.php`](lib/journal.php) | lire le journal PHP d'une installation, classer ses lignes, et les montrer regroupées. | `nf_journal_preparer()`, `nf_journal_taille()`, `nf_journal_depuis_octet()`, `nf_journal_depuis_date()`, `nf_journal_montrer()` |
 | [`langues.php`](lib/langues.php) | lire et écrire les fichiers de langue (`langs/<code>.php`) sans les exécuter. | `NF_LANGUES`, `nf_langue_cle()`, `nf_langue_valeurs()`, `nf_langue_cles()`, `nf_langue_echapper()`, `nf_langue_ajouter()`, `nf_langue_jokers()` |
 | [`navigateur.php`](lib/navigateur.php) | ouvrir une page dans un Chrome sans interface, et relire ce qu'une sonde y a écrit. | `nf_chrome()`, `nf_chrome_utilisable()`, `nf_chrome_dom()`, `nf_chrome_capture()`, `nf_chrome_commande()`, `nf_sonde_verdict()`, `nf_chrome_menage()` |

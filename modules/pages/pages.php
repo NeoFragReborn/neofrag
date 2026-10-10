@@ -36,7 +36,7 @@ class Pages extends Module
 			'title'       => $this->lang('Pages'),
 			'description' => $this->lang('Pages CMS statiques : à propos, mentions légales, conditions, etc.'),
 			'icon'        => 'far fa-file',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

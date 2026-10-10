@@ -17,7 +17,7 @@ class Tools extends Module
 			'title'       => $this->lang('Outils'),
 			'description' => $this->lang('Outils techniques d\'administration : cache, SCSS, base de données.'),
 			'icon'        => 'fas fa-wrench',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

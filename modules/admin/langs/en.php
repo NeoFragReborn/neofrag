@@ -37,7 +37,6 @@ return [
 	'8d45e21b' => 'NeoFrag version',
 	'93d4184a' => 'Web designer',
 	'942f08a4' => 'Publish long content',
-	'9be6592e' => 'Your contribution is essencial to the evolution of the project, if you have any suggestions, problems, or simply wanto to give your opinion, do not hesitate to log on the <a href="https://neofr.ag"> NeoFrag forum</a>.',
 	'9e4dc5d0' => 'Membre|Member',
 	'a05569ca' => 'Article published',
 	'a17a54a7' => 'Enabled',

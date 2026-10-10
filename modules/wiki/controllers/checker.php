@@ -36,9 +36,14 @@ class Checker extends Module_Checker
 		return [$page];
 	}
 
+	/*
+	 * L'historique, une révision et la comparaison ne s'ouvrent que sur une page PUBLIÉE, comme la page elle-même : ils
+	 * rendaient le texte d'un brouillon à n'importe quel visiteur — chaque modification écrit une révision, et leurs
+	 * numéros se suivent (audit du 2026-10-09). Un brouillon se relit dans l'administration.
+	 */
 	public function _history($slug)
 	{
-		$page = NeoFrag()->db->select('id', 'slug', 'title')->from('nf_wiki_pages')->where('slug', $slug)->row();
+		$page = NeoFrag()->db->select('id', 'slug', 'title')->from('nf_wiki_pages')->where('slug', $slug)->where('published', '1')->row();
 		if (empty($page)) return;
 
 		$revisions = NeoFrag()->db	->select('r.id', 'r.title', 'r.comment', 'UNIX_TIMESTAMP(r.created_at) AS ts', 'u.id AS user_id', 'u.username')
@@ -58,6 +63,7 @@ class Checker extends Module_Checker
 								->join('nf_wiki_pages p', 'r.page_id = p.id')
 								->join('nf_user u', 'r.user_id = u.id', 'LEFT')
 								->where('r.id', $id)
+								->where('p.published', '1')
 								->row();
 		return $rev ? [$rev] : NULL;
 	}
@@ -84,6 +90,7 @@ class Checker extends Module_Checker
 								->from('nf_wiki_pages p')
 								->join('nf_user u', 'p.user_id = u.id', 'LEFT')
 								->where('p.id', (int)$a['page_id'])
+								->where('p.published', '1')
 								->row();
 
 		if (empty($page))

@@ -111,6 +111,15 @@ function post_check($args, $post = NULL)
  * d'un contrôleur : une image collée part avec ce jeton (cf. Editeur_Images). Une seule définition, que
  * le trait reprend : deux copies d'un même jeton finiraient par diverger.
  */
+/**
+ * L'adresse d'une action qui modifie, avec le jeton de session (`?_=`), pour une vue, un widget ou un thème — le
+ * pendant de `csrf_url()` des contrôleurs. Le contrôleur qui la reçoit vérifie le jeton (`check_csrf()`).
+ */
+function nf_url_action(string $chemin): string
+{
+	return url($chemin).'?_='.nf_jeton_csrf();
+}
+
 function nf_jeton_csrf(): string
 {
 	$jetons = (array) NeoFrag()->session('csrf');

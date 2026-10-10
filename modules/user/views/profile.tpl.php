@@ -20,7 +20,7 @@ $prive = '<span class="nf-membre-prive" data-bs-toggle="tooltip" title="'.$this-
 		</div>
 	<?php endif ?>
 
-	<?php if ($user_group_ids = NeoFrag()->groups($user->id)): ?>
+	<?php if ($user_group_ids = NeoFrag()->groups->visibles($user->id)): ?>
 		<div class="user-profile-groups mb-2">
 			<?php foreach ($user_group_ids as $gid): ?>
 				<?php echo NeoFrag()->groups->display($gid, TRUE, FALSE) ?>

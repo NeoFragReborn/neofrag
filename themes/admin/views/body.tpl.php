@@ -102,15 +102,17 @@ if (!$is_dashboard) {
 				<?php endif ?>
 				<span class="nf-sb-user-name"><?php echo nf_texte($this->user->username) ?></span>
 			</a>
-			<a class="nf-icon-btn" href="<?php echo url('user/logout') ?>" title="<?php echo $this->lang('Se déconnecter') ?>" aria-label="<?php echo $this->lang('Se déconnecter') ?>">
+			<a class="nf-icon-btn" href="<?php echo nf_url_action('user/logout') ?>" title="<?php echo $this->lang('Se déconnecter') ?>" aria-label="<?php echo $this->lang('Se déconnecter') ?>">
 				<i class="fas fa-sign-out-alt"></i>
 			</a>
 		</div>
 	</aside>
 
 	<main class="nf-main">
-		<header class="nf-topbar">
-
+		<header class="nf-topbar" data-nf-entete>
+			<?php /* La tête de la barre — le menu et le fil d'Ariane — colle seule au téléphone ; les boutons, en dessous,
+			        partent avec la page : collés, ils montaient la barre à 180 px (2026-10-09). */ ?>
+			<div class="nf-topbar-tete" data-nf-entete>
 			<button type="button" class="nf-icon-btn nf-sidebar-toggle" id="nfSidebarToggle" title="<?php echo $this->lang('Menu') ?>" aria-label="<?php echo $this->lang('Menu') ?>"><i class="fas fa-bars"></i></button>
 
 			<?php if (!($error = $this->output->error())):
@@ -166,6 +168,7 @@ if (!$is_dashboard) {
 				<span class="nf-breadcrumb-sub"><?php echo $titre_courant ?></span>
 				<?php endif ?>
 			</nav>
+			</div>
 
 			<div class="nf-topbar-actions">
 				<?php
@@ -191,6 +194,7 @@ if (!$is_dashboard) {
 				<span class="nf-breadcrumb-sep">/</span>
 				<span class="nf-breadcrumb-current"><?php echo $this->lang('Erreur') ?></span>
 			</nav>
+			</div>
 			<?php endif ?>
 		</header>
 
@@ -260,7 +264,7 @@ if (!$is_dashboard) {
 
 <script>
 window.nfHomeUrl = <?php echo json_encode(url(), JSON_UNESCAPED_SLASHES) ?>;
-window.nfLogoutUrl = <?php echo json_encode(url('user/logout'), JSON_UNESCAPED_SLASHES) ?>;
+window.nfLogoutUrl = <?php echo json_encode(nf_url_action('user/logout'), JSON_UNESCAPED_SLASHES) ?>;
 window.nfSidebarData = <?php
 	$cmd = [];
 	foreach ($sections as $sec) {

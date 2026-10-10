@@ -17,7 +17,7 @@ class Addons extends Module
 			'title'       => $this->lang('Thèmes & Addons'),
 			'description' => $this->lang('Gestion des modules, widgets, thèmes, langues et authentificateurs installés.'),
 			'icon'        => 'fas fa-puzzle-piece',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

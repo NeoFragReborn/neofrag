@@ -19,13 +19,13 @@ class Slider extends Widget
 			'title'       => $this->lang('Slider'),
 			'description' => $this->lang('Diaporama d\'images plein largeur, slides éditables depuis l\'admin.'),
 			'icon'        => 'fas fa-images',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],
-			'requires'    => [],
+			'requires'    => ['slider'],
 			'version'     => '2.0',
 			'depends'     => [
 				'neofrag' => '0.2.0'

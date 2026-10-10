@@ -124,6 +124,12 @@ class Index extends Controller_Widget
 		if ($present('forum') && ($forum = NeoFrag()->module('forum')) && ($modele = $forum->model('forum')) instanceof \NF\Modules\Forum\Models\Forum
 			&& ($forums = $modele->forums_lisibles()))
 		{
+			// Ni les sujets d'un membre sous shadow ban (audit du 2026-10-09).
+			if ($sans_masques = NeoFrag()->moderation->condition_sans_masques('m.user_id'))
+			{
+				$this->db->where($sans_masques);
+			}
+
 			foreach ($this->db	->select('t.topic_id', 't.title', 't.count_messages', 'm.date', 'u.username')
 								->from('nf_forum_topics t')
 								->join('nf_forum_messages m', 'm.message_id = t.message_id', 'INNER')

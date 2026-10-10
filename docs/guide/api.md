@@ -87,12 +87,12 @@ n'est pas installé. Elles servent au bot de NeoFrag Reborn ; un autre programme
 
 | Méthode et adresse | Rend |
 |---|---|
-| `GET /api/v1/discord/config` | La configuration du bot : `token` (sa clé Discord, déchiffrée), `client_id`, `guild_id`, `running`, `channels`, `roles`, `tags` (préfixe ↔ étiquette), `features` (chaque fonctionnalité allumée ou non, et ses réglages), `lang`, `i18n` (les traductions des textes qu'il affiche), `version` (le numéro qui change à chaque réglage), `events_cursor`, `api_token_id`, `texts` |
+| `GET /api/v1/discord/config` | La configuration du bot : `token` (sa clé Discord, déchiffrée), `client_id`, `guild_id`, `running`, `channels`, `roles` (chacun `group_key`, `role_id`, et le `name` et la `color` de son groupe), `tags` (préfixe ↔ étiquette), `features` (chaque fonctionnalité allumée ou non, et ses réglages), `lang`, `i18n` (les traductions des textes qu'il affiche), `version` (le numéro qui change à chaque réglage), `events_cursor`, `api_token_id`, `texts` |
 | `POST /api/v1/discord/heartbeat` | Le signe de vie du bot (`version`, `connected`, `intents`, `guild` : le serveur, ses salons, leurs étiquettes et ses rôles ; `features` : ses fonctionnalités et leurs réglages ; `texts` : ses textes à traduire ; `events_cursor`) ; rend `running`, `version` et les `commands` en attente, chacune `type` (`restart`, `resync`, `setup`, `setup-undo`) et `data` |
 | `POST /api/v1/discord/logs` | Des lignes de son journal : `entries`, chacune `level`, `message`, `template` et `args` (le modèle que l'administration traduit) |
 | `GET /api/v1/discord/members` | Les membres qui ont lié leur Discord : `discord_id`, `member_id`, `username`, `groups` |
 | `GET /api/v1/discord/links?type=…&site_id=…` (ou `discord_id=…`) | Le lien d'un élément du site et de son pendant Discord — `type` : `topic`, `message`, `ticket` ou `comment` ; 404 `link_not_found` s'il n'y en a pas |
-| `POST /api/v1/discord/links` | Garde un lien : `type`, `site_id`, `discord_id` |
+| `POST /api/v1/discord/links` | Garde un lien : `type`, `site_id`, `discord_id` ; avec `replace: true`, celui que l'élément du site avait déjà cède la place (un ticket qui change de salon) |
 | `POST /api/v1/discord/links/lookup` | Lesquels de ces éléments Discord (`type`, `discord_ids`, 500 au plus) ont déjà leur pendant sur le site : `found` |
 | `POST /api/v1/discord/link-request` | `/forum account link` : un lien à usage unique vers le site (`url`, `expires_in`), ou `linked` et `member` si ce Discord est déjà lié |
 | `POST /api/v1/discord/unlink` | `/forum account unlink` : délie ce Discord (409 `not_linked`, `only_login_method`) |
@@ -128,10 +128,17 @@ curl -X POST -H "Authorization: Bearer nfr_…" -H "Content-Type: application/js
 | `author` | tout | L'auteur (ci-dessus) |
 
 Le Markdown est converti en HTML ; tout HTML qu'on y glisse est **échappé**, et le HTML passe par le
-même nettoyage que le reste du site. Un sujet **verrouillé** refuse les réponses (409
-`topic_locked`). Modifier ou supprimer exige le **même auteur** que le message (403 `not_author`
+même nettoyage que le reste du site. L'auteur doit avoir le **droit d'écrire** dans le forum, comme sur
+le site (403 `forum_forbidden` sinon) : un membre, ou un compte Discord lié, par ses droits sur la
+catégorie ; un compte Discord sans compte du site, par ceux des membres. Un sujet **verrouillé** refuse
+les réponses (409 `topic_locked`). Modifier ou supprimer exige le **même auteur** que le message (403 `not_author`
 sinon) : la personne qui l'a écrit le corrige. Une requête mal formée rend 400 `invalid_json` ; un
 champ invalide, 422 `validation_failed` avec le détail dans `error.fields`.
+
+Les **sanctions de modération** valent aussi par l'API : un membre muet ou banni du forum (ou du site)
+n'y écrit pas (403 `sanctioned`), et un membre privé de liens externes ne publie pas un texte qui en
+porte (403 `links_forbidden`). `error.message` dit la sanction, à montrer à l'auteur. Un compte Discord
+sans compte du site n'a pas de sanction.
 
 Les écritures de l'API apparaissent dans le fil d'événements avec `source.token_id` : un programme
 qui recopie le forum ailleurs reconnaît ainsi ce qu'il a lui-même écrit.
@@ -141,6 +148,7 @@ qui recopie le forum ailleurs reconnaît ainsi ce qu'il a lui-même écrit.
 Comme sur le forum, l'API écrit **au nom d'un auteur** (`author`, même forme). Un **ticket** appartient
 à un membre : un compte Discord qui n'est lié à aucun membre est refusé (409 `not_linked`). Un
 **commentaire**, lui, peut venir d'un compte Discord non lié : il paraît sous son pseudo Discord.
+Les sanctions de modération s'appliquent comme sur le forum (403 `sanctioned`, `links_forbidden`).
 
 | Champ | Pour | Contenu |
 |---|---|---|
@@ -216,7 +224,7 @@ programme peut s'y fier) et le `message` lisible :
 | HTTP | `code` | Quand |
 |---|---|---|
 | 401 | `unauthorized` | Clé absente, inconnue ou révoquée (avec l'en-tête `WWW-Authenticate: Bearer`) |
-| 403 | `forbidden`, `not_author` | La clé n'a pas le droit demandé par l'adresse ; l'auteur donné n'est pas celui du message |
+| 403 | `forbidden`, `not_author`, `forum_forbidden`, `sanctioned`, `links_forbidden` | La clé n'a pas le droit demandé par l'adresse ; l'auteur donné n'est pas celui du message ; l'auteur n'a pas le droit d'écrire dans ce forum ; une sanction de modération l'en empêche, ou lui interdit le lien que porte son texte |
 | 400 | `invalid_json` | Le corps de la requête n'est pas un JSON valide |
 | 404 | `not_found`, `member_not_found`, `topic_not_found`, `message_not_found`, `ticket_not_found`, `comment_not_found`, `link_not_found`, `module_unavailable` | Adresse inconnue ; élément absent ; module (le forum, le Bugtracker, Discord) non installé |
 | 409 | `topic_locked`, `is_first_message`, `not_linked`, `role_mapped`, … | Sujet verrouillé ; suppression du premier message d'un sujet ; compte Discord non lié ; rôle relié à un groupe — et les refus propres aux adresses du bot, dits avec elles |

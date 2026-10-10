@@ -22,6 +22,10 @@ declare(strict_types=1);
  * (global, forum, talks, comments, wiki, gallery, guestbook, profile, bugtracker, recruits).
  *
  * Si une permission n'est PAS dans ce mapping → aucune sanction ne la bloque (only-roles).
+ *
+ * Jusqu'au 2026-10-09, aucun formulaire ne consultait cette carte : seuls le muet du forum et de la messagerie et les
+ * pièces jointes de la messagerie s'appliquaient. Chaque point d'écriture d'un membre l'appelle désormais
+ * (`$this->moderation->is_blocked_for()`), et ce qu'il publie passe par `lien_refuse()` pour la restriction des liens.
  */
 
 return [
@@ -39,26 +43,37 @@ return [
 	// === COMMENTS ===
 	'comments.write'         => ['can_comment' => TRUE,    'is_banned' => 'comments', 'is_banned_global' => TRUE],
 
-	// === GALLERY ===
-	'gallery.upload'         => ['can_upload_files' => TRUE, 'is_banned' => 'gallery', 'is_banned_global' => TRUE],
-	'gallery.write'          => ['is_banned' => 'gallery', 'is_banned_global' => TRUE],
+	// Le MUET empêche de publier, où que ce soit : il ne valait que pour le forum, la messagerie et les commentaires, et
+	// un membre muet signait le livre d'or, déposait une annonce ou ouvrait un ticket (audit du 2026-10-09). Sa portée
+	// est celle du module ; un muet de tout le site (`global`) les ferme tous.
 
-	// === WIKI ===
-	'wiki.edit'              => ['is_banned' => 'wiki',    'is_banned_global' => TRUE],
+	// === GALLERY ===
+	'gallery.upload'         => ['can_upload_files' => TRUE, 'is_muted' => 'gallery', 'is_banned' => 'gallery', 'is_banned_global' => TRUE],
+	'gallery.write'          => ['is_muted' => 'gallery', 'is_banned' => 'gallery', 'is_banned_global' => TRUE],
+
+	// (Le wiki et la médiathèque ne s'écrivent que depuis l'administration : aucun membre n'y écrit.)
 
 	// === GUESTBOOK ===
-	'guestbook.write'        => ['is_banned' => 'guestbook', 'is_banned_global' => TRUE],
+	'guestbook.write'        => ['is_muted' => 'guestbook', 'is_banned' => 'guestbook', 'is_banned_global' => TRUE],
 
-	// === MEDIA ===
-	'media.upload'           => ['can_upload_files' => TRUE, 'is_banned_global' => TRUE],
+	// === PETITES ANNONCES ===
+	'classifieds.write'      => ['is_muted' => 'global', 'is_banned_global' => TRUE],
+
+	// === ÉDITEUR RICHE : une image collée ou déposée, envoyée au site ===
+	'editor.image_upload'    => ['can_upload_files' => TRUE, 'is_muted' => 'global', 'is_banned_global' => TRUE],
 
 	// === BUGTRACKER ===
-	'bugtracker.write'       => ['is_banned' => 'bugtracker', 'is_banned_global' => TRUE],
+	'bugtracker.write'       => ['is_muted' => 'bugtracker', 'is_banned' => 'bugtracker', 'is_banned_global' => TRUE],
 
 	// === RECRUITS ===
-	'recruits.recruit_postulate' => ['is_banned' => 'recruits', 'is_banned_global' => TRUE],
+	'recruits.recruit_postulate' => ['is_muted' => 'recruits', 'is_banned' => 'recruits', 'is_banned_global' => TRUE],
 
 	// === USER PROFILE ===
-	'user.profile_avatar'    => ['can_change_avatar' => TRUE,    'is_banned' => 'profile'],
+	// Le bannissement de portée « profile » ferme toute la page « Modifier mon profil » ; les restrictions ferment leur
+	// formulaire : l'avatar et la couverture sont des envois de fichiers, les liens du profil sont des liens externes.
+	'user.profile_edit'      => ['is_muted' => 'profile', 'is_banned' => 'profile', 'is_banned_global' => TRUE],
+	'user.profile_avatar'    => ['can_change_avatar' => TRUE,    'can_upload_files' => TRUE, 'is_banned' => 'profile'],
+	'user.profile_cover'     => ['can_upload_files' => TRUE,     'is_banned' => 'profile'],
+	'user.profile_links'     => ['can_post_links' => TRUE,       'is_banned' => 'profile'],
 	'user.profile_signature' => ['can_change_signature' => TRUE, 'is_banned' => 'profile'],
 ];

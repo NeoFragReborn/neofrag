@@ -112,9 +112,12 @@ class Talks extends Model
 			return 0;
 		}
 
+		// Les messages d'un membre sous shadow ban ne comptent pas : on lisait « 1 non lu » sans rien à lire (2026-10-09).
+		$masques = ($condition = $this->moderation->condition_sans_masques('m.user_id')) ? ' AND '.$condition : '';
+
 		$row = $this->db->select('SUM(unread) AS total')
 						->from('('
-							.'SELECT (SELECT COUNT(*) FROM nf_talks_messages m WHERE m.talk_id = t.talk_id AND m.deleted_at IS NULL AND m.user_id != '.(int)$user_id.' AND (p.last_read_at IS NULL OR m.date > p.last_read_at)) AS unread '
+							.'SELECT (SELECT COUNT(*) FROM nf_talks_messages m WHERE m.talk_id = t.talk_id AND m.deleted_at IS NULL AND m.user_id != '.(int)$user_id.$masques.' AND (p.last_read_at IS NULL OR m.date > p.last_read_at)) AS unread '
 							.'FROM nf_talks t '
 							.'JOIN nf_talks_participants p ON p.talk_id = t.talk_id '
 							.'WHERE p.user_id = '.(int)$user_id.' '
@@ -130,12 +133,14 @@ class Talks extends Model
 
 	public function get_my_conversations($user_id)
 	{
+		$masques = ($condition = $this->moderation->condition_sans_masques('m.user_id')) ? ' AND '.$condition : '';
+
 		// Retourne les talks (group, direct, public) où je suis participant ni archivé ni supprimé.
 		return $this->db->select(
 								't.talk_id', 't.name', 't.type', 't.description', 't.creator_id',
 								't.created_at', 't.updated_at',
 								'p.role', 'p.last_read_at', 'p.notify_email',
-								'(SELECT COUNT(*) FROM nf_talks_messages m WHERE m.talk_id = t.talk_id AND m.deleted_at IS NULL AND (p.last_read_at IS NULL OR m.date > p.last_read_at)) as unread_count',
+								'(SELECT COUNT(*) FROM nf_talks_messages m WHERE m.talk_id = t.talk_id AND m.deleted_at IS NULL'.$masques.' AND (p.last_read_at IS NULL OR m.date > p.last_read_at)) as unread_count',
 								'(SELECT COUNT(*) FROM nf_talks_participants p2 WHERE p2.talk_id = t.talk_id AND p2.archived_at IS NULL AND p2.deleted_at IS NULL) as participants_count',
 								'(SELECT MAX(date) FROM nf_talks_messages m WHERE m.talk_id = t.talk_id AND m.deleted_at IS NULL) as last_message_date'
 							)
@@ -521,7 +526,12 @@ class Talks extends Model
 			if ($tok === '') continue;
 			if ($tok[0] === '"' && substr($tok, -1) === '"')
 			{
-				$out[] = $tok;
+				// Le mot entre guillemets, nettoyé comme les autres : il partait tel quel dans la requête SQL, d'où
+				// un membre sortait (antislash + apostrophe), comme dans la recherche du forum (audit du 2026-10-09).
+				if (($phrase = preg_replace('/[^\p{L}\p{N}_]/u', '', substr($tok, 1, -1))) !== '')
+				{
+					$out[] = '"'.$phrase.'"';
+				}
 			}
 			else if ($tok[0] === '-' && strlen($tok) > 1)
 			{
@@ -536,9 +546,10 @@ class Talks extends Model
 		return implode(' ', $out);
 	}
 
+	/** Une chaîne SQL échappée par la base elle-même : doubler l'apostrophe laissait « \' » refermer la chaîne. */
 	private function _quote($s)
 	{
-		return "'".str_replace("'", "''", (string)$s)."'";
+		return "'".$this->db->escape_string((string) $s)."'";
 	}
 
 	// =================================================================
@@ -660,6 +671,12 @@ class Talks extends Model
 		if ($before_id)
 		{
 			$this->db->where('m.message_id <', (int)$before_id);
+		}
+
+		// Les messages d'un membre sous shadow ban ne se montrent qu'à lui et aux modérateurs (audit du 2026-10-09).
+		if ($sans_masques = $this->moderation->condition_sans_masques('m.user_id'))
+		{
+			$this->db->where($sans_masques);
 		}
 
 		return array_reverse($this->db->get()); // chronologique pour l'affichage

@@ -37,6 +37,15 @@ const NF_DOSSIERS_INTERDITS = [
 ];
 
 /** Les extensions refusées, quelle que soit leur place dans l'arborescence. */
+/**
+ * Les pièces jointes des membres : le site les sert lui-même après avoir vérifié l'accès (`forum/piece-jointe/…`,
+ * `talks/piece-jointe/…`, nf_servir_piece_jointe()) ; le serveur web ne doit plus les servir (audit du 2026-10-09).
+ */
+const NF_PIECES_JOINTES = [
+    'upload/forum' => 'pièces jointes du forum, dont celles des forums réservés',
+    'upload/talks' => 'pièces jointes des conversations, privées comprises',
+];
+
 const NF_EXTENSIONS_INTERDITES = ['sql', 'lock', 'scssc', 'map', 'dist', 'ini', 'sh', 'neon', 'md'];
 
 /*

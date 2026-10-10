@@ -101,6 +101,18 @@ function is_dangerous_upload(string $filename): bool
 	return in_array(extension($filename), $blocked, TRUE);
 }
 
+/**
+ * La pièce jointe d'un MEMBRE (forum, messagerie) qu'on refuse : ce que is_dangerous_upload() refuse partout, et ce
+ * qu'un navigateur exécute ou interprète quand le site le sert lui-même — un `.js` servi depuis notre origine
+ * contournerait la politique des scripts (`script-src 'self'`), une feuille XML/XSL peut porter du HTML actif (audit du
+ * 2026-10-09). L'administration, qui propose ce qu'elle veut au téléchargement, n'est pas concernée.
+ */
+function nf_piece_jointe_refusee(string $filename): bool
+{
+	return is_dangerous_upload($filename)
+		|| in_array(extension($filename), ['js', 'mjs', 'cjs', 'css', 'xml', 'xsl', 'xslt', 'swf', 'shtml', 'wasm', 'map'], TRUE);
+}
+
 function file_upload_max_size()
 {
 	static $max_size = -1;
@@ -155,14 +167,26 @@ function nf_sauvegardes_a_retirer(array $sauvegardes, int $maintenant, int $gard
 	return $retirer;
 }
 
-function human_size($bytes, $decimals = 2): string
+/**
+ * Une taille de fichier lisible, dans la langue de la page (`$langue`, sinon celle du site) : « 40,04 Ko » en français —
+ * l'octet —, « 40.04 KB » en anglais, la virgule décimale ailleurs. Elle s'écrivait en anglais sur toutes les pages
+ * (vu le 2026-10-09 sur la page des pièces jointes du forum).
+ */
+function human_size($bytes, $decimals = 2, ?string $langue = NULL): string
 {
+	if ($langue === NULL)
+	{
+		$config = function_exists('NeoFrag') ? NeoFrag()->config : NULL;
+		$langue = $config && isset($config->lang) && is_object($config->lang) ? (string) $config->lang->info()->name : 'en';
+	}
+
 	// (string) obligatoire : le fichier est en strict_types, strlen(int|float) lèverait une TypeError
 	// (human_size est appelé avec des entiers/floats : file_upload_max_size(), tailles de fichiers…).
-	$bytes  = (int)$bytes;
-	$size   = str_split('KMGTP');
-	$factor = (int)floor((strlen((string)$bytes) - 1) / 3);
-	return sprintf('%.'.$decimals.'f', $bytes / pow(1024, $factor)).' '.($factor ? $size[$factor - 1] : '').'B';
+	$bytes  = (int) $bytes;
+	$factor = min(5, (int) floor((strlen((string) $bytes) - 1) / 3));
+	$unites = $langue === 'fr' ? ['o', 'Ko', 'Mo', 'Go', 'To', 'Po'] : ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+	return number_format($bytes / pow(1024, $factor), (int) $decimals, $langue === 'en' ? '.' : ',', '').' '.$unites[$factor];
 }
 
 function image_resize($filename, $width, $height = NULL)
@@ -406,4 +430,124 @@ function nf_log_rotate(string $fichier, int $max_octets): bool
 	// `rename` est atomique : une requête concurrente qui écrit encore dans l'ancien descripteur
 	// n'écrit pas dans le vide — sa ligne finit dans `.1`.
 	return @rename($fichier, $fichier.'.1');
+}
+
+/**
+ * Les fichiers orphelins d'un dossier de pièces jointes (`upload/<dossier>/`, à plat ; ligne 0.36 du tableau de bord,
+ * 2026-10-09) : ceux que `nf_file` garde sans qu'aucune pièce jointe (`<table>.file_id`) ne les vise — supprimer une
+ * pièce jointe laissait son fichier jusqu'à la 1.2.28 —, et ceux du disque que `nf_file` ne connaît pas (un envoi
+ * interrompu). Un fichier de moins d'une heure n'en est pas encore un : il peut attendre le message qui le joindra.
+ *
+ * @param string $table la table des pièces jointes du module, qui vise `nf_file` par sa colonne `file_id`
+ * @return list<array{file_id: ?int, path: string, name: string, size: int, date: int}>
+ */
+function nf_fichiers_orphelins(string $dossier, string $table): array
+{
+	$avant     = time() - 3600;
+	$orphelins = [];
+	$connus    = [];
+	$prefixe   = 'upload/'.$dossier.'/';
+
+	foreach ((array) NeoFrag()->db->select('path')->from('nf_file')->where('path LIKE', $prefixe.'%')->get() as $chemin)
+	{
+		$connus[(string) $chemin] = TRUE;
+	}
+
+	foreach ((array) NeoFrag()->db	->select('f.id', 'f.name', 'f.path', 'UNIX_TIMESTAMP(f.date) AS date')
+									->from('nf_file f')
+									->where('f.path LIKE', $prefixe.'%')
+									->where('f.id NOT IN (SELECT file_id FROM '.$table.')')
+									->where('f.date <', date('Y-m-d H:i:s', $avant))
+									->order_by('f.id')
+									->get(FALSE) as $f)
+	{
+		$orphelins[] = ['file_id' => (int) $f['id'], 'path' => (string) $f['path'], 'name' => (string) $f['name'], 'size' => (int) @filesize(NEOFRAG_CMS.'/'.$f['path']), 'date' => (int) $f['date']];
+	}
+
+	foreach (glob(NEOFRAG_CMS.'/'.$prefixe.'*') ?: [] as $fichier)
+	{
+		$chemin = $prefixe.basename($fichier);
+
+		if (is_file($fichier) && !isset($connus[$chemin]) && !in_array(basename($fichier), ['.htaccess', 'index.html'], TRUE) && (int) @filemtime($fichier) < $avant)
+		{
+			$orphelins[] = ['file_id' => NULL, 'path' => $chemin, 'name' => '', 'size' => (int) @filesize($fichier), 'date' => (int) @filemtime($fichier)];
+		}
+	}
+
+	return $orphelins;
+}
+
+/**
+ * Efface, parmi `$chemins`, les fichiers qui sont TOUJOURS orphelins — relus au moment d'effacer : une liste affichée il
+ * y a dix minutes ne fait rien disparaître qui a été joint depuis. Rien sur une démonstration. Rend leur nombre.
+ *
+ * @param list<string> $chemins
+ */
+function nf_effacer_orphelins(string $dossier, string $table, array $chemins): int
+{
+	if (nf_demo())
+	{
+		return 0;
+	}
+
+	$voulus = array_flip(array_map('strval', $chemins));
+	$effaces = 0;
+
+	foreach (nf_fichiers_orphelins($dossier, $table) as $orphelin)
+	{
+		if (!isset($voulus[$orphelin['path']]))
+		{
+			continue;
+		}
+
+		if ($orphelin['file_id'] !== NULL)
+		{
+			NeoFrag()->model2('file', $orphelin['file_id'])->delete();
+		}
+		else
+		{
+			@unlink(NEOFRAG_CMS.'/'.$orphelin['path']);
+		}
+
+		$effaces++;
+	}
+
+	return $effaces;
+}
+
+/**
+ * Sert une pièce jointe d'un membre (forum, messagerie), une fois le contrôle d'accès de son module passé (audit de
+ * sécurité du 2026-10-09) : le serveur web servait le fichier tel quel à quiconque avait son adresse, celui d'une
+ * conversation privée comme d'un forum réservé. `upload/forum/` et `upload/talks/` ne sont plus servis directement.
+ *
+ * Une image, un PDF s'affichent ; le reste se télécharge. Jamais exécuté : type borné à ceux qui s'affichent sans
+ * risque, `nosniff`, et une politique de contenu qui n'autorise aucun script.
+ */
+function nf_servir_piece_jointe(string $chemin, string $nom, string $type): never
+{
+	$fichier = NEOFRAG_CMS.'/'.$chemin;
+
+	if (!preg_match('#^upload/(forum|talks)/[^/]+$#', $chemin) || !is_file($fichier))
+	{
+		http_response_code(404);
+		exit;
+	}
+
+	$affichable = in_array($type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'], TRUE);
+	$nom        = trim(str_replace(['"', '\\', "\r", "\n"], '', $nom)) ?: basename($chemin);
+
+	while (ob_get_level() > 0)
+	{
+		ob_end_clean();
+	}
+
+	header('Content-Type: '.($affichable ? $type : 'application/octet-stream'));
+	header('Content-Length: '.(int) filesize($fichier));
+	header('Content-Disposition: '.($affichable ? 'inline' : 'attachment').'; filename="'.preg_replace('/[^\x20-\x7e]/', '_', $nom).'"; filename*=UTF-8\'\''.rawurlencode($nom));
+	header('X-Content-Type-Options: nosniff');
+	header("Content-Security-Policy: default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; sandbox");
+	header('Cache-Control: private, max-age=86400');
+
+	readfile($fichier);
+	exit;
 }

@@ -23,7 +23,7 @@ class Steam extends Widget
 			'presets'     => ['gaming'],
 			'requires'    => [],
 			'version'     => '2.0',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'depends'     => [
 				'neofrag' => '0.2.0'
 			],

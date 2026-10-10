@@ -31,4 +31,5 @@ return [
 	'016d7125' => 'Système de commentaires réutilisable par les modules (news, articles, etc.).',
 	'e16ce76b' => 'Commentaire',
 	'472a9d35' => 'Un commentaire sur ce que j’ai publié ou ce que je suis',
+	'219c2d4e' => 'Ce commentaire est signalé : il ne peut pas être supprimé tant que la modération ne l’a pas examiné.',
 ];

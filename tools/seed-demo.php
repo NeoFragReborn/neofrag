@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 require __DIR__.'/lib/outil.php';
 require __DIR__.'/lib/site.php';
+require __DIR__.'/lib/demo.php';
 
 [$o] = nf_options(['sans-config-demo' => FALSE, 'anglais' => FALSE]);
 
@@ -66,7 +67,7 @@ function main(): void
     $gaming = seed_gaming($db, $users);
     seed_events_extras($db, $users, $gaming);
     seed_social($db, $users);
-    // Couverture large : modules « à la carte ». (Le wiki = doc, géré par seed-wiki-docs + dump-wiki.)
+    // Couverture large : modules « à la carte ». (Le wiki : des pages d'exemple, jamais la documentation du produit.)
     seed_faq($db);
     seed_downloads($db);
     seed_links($db);
@@ -801,18 +802,33 @@ function seed_social(mysqli $db, array $users): void
 
 function seed_wiki(mysqli $db, array $users): void
 {
+    // Le wiki d'exemple : une page d'accueil et deux rubriques, comme sur le site d'une communauté. La documentation
+    // du produit n'y va pas : elle n'a sa place que sur le site officiel (2026-10-09). install/demo.sql porte les
+    // mêmes pages. [slug, titre, rubrique parente, contenu, vues]
     $pages = [
-        ['Bienvenue', "<h2>Bienvenue sur le wiki</h2><p>Ce wiki rassemble guides, règlement et ressources de la communauté. Naviguez via le sommaire.</p>"],
-        ['Règlement', "<h2>Règlement</h2><p>Respect, fair-play et bonne humeur. Tout comportement toxique est sanctionné.</p>"],
-        ['Rejoindre une équipe', "<h2>Rejoindre une équipe</h2><p>Consultez la page Recrutement et postulez. Un essai sera organisé.</p>"],
+        ['bienvenue', 'Bienvenue sur le wiki', NULL,
+            "<p>Ce wiki rassemble le savoir de la communauté : le règlement, les guides pour bien démarrer et nos stratégies de jeu. Tout le monde peut le lire ; l'équipe le tient à jour.</p>\n<h2>Par où commencer</h2>\n<ul>\n<li>Lire le <strong>règlement</strong>, dans la rubrique « La communauté ».</li>\n<li>Découvrir comment <strong>rejoindre une équipe</strong>.</li>\n<li>Réviser les <strong>bases de CS2</strong> avant votre premier entraînement.</li>\n</ul>\n<h2>Proposer une page</h2>\n<p>Une idée de guide ? Proposez-la sur le forum, dans « Discussions générales » : une page validée arrive ici, et son historique garde chaque version.</p>", 87],
+        ['communaute', 'La communauté', NULL,
+            "<p>Les règles de vie, et tout ce qu'il faut savoir pour trouver sa place parmi nous.</p>", 41],
+        ['reglement', 'Règlement', 'communaute',
+            "<p>Ce règlement vaut pour le site, le forum et le serveur Discord.</p>\n<h2>Les règles</h2>\n<ol>\n<li><strong>Respect</strong> : pas d'insulte, de harcèlement ni de propos discriminants.</li>\n<li><strong>Fair-play</strong> : la triche et l'exploitation de bugs sont interdites, en match comme à l'entraînement.</li>\n<li><strong>Pas de spam</strong> : ni publicité, ni messages répétés, ni liens douteux.</li>\n<li><strong>Chaque sujet à sa place</strong> : chaque forum a son thème ; les annonces sont réservées à l'équipe.</li>\n</ol>\n<h2>Les sanctions</h2>\n<p>Selon la gravité : un avertissement, une exclusion temporaire, puis un bannissement. Une sanction se conteste auprès d'un modérateur, par message privé.</p>", 64],
+        ['rejoindre-une-equipe', 'Rejoindre une équipe', 'communaute',
+            "<p>Nos équipes recrutent régulièrement. Voici comment se passe une candidature.</p>\n<h2>Les étapes</h2>\n<ol>\n<li>Consultez les offres de la page <strong>Recrutement</strong> et choisissez un poste.</li>\n<li>Envoyez votre candidature depuis l'offre : votre jeu, votre rôle, vos disponibilités.</li>\n<li>Un capitaine vous propose un <strong>essai</strong> : un entraînement avec l'équipe.</li>\n<li>Après l'essai, la réponse arrive par message privé.</li>\n</ol>\n<h2>Ce que nous attendons</h2>\n<ul>\n<li>de la régularité aux entraînements ;</li>\n<li>un micro, et Discord ;</li>\n<li>l'envie de progresser ensemble.</li>\n</ul>", 38],
+        ['jeux', 'Jeux et stratégies', NULL,
+            "<p>Les guides de nos équipes : les bases à connaître, et l'organisation de nos événements.</p>", 29],
+        ['strategies-cs2', 'Stratégies CS2 : les bases', 'jeux',
+            "<p>Les principes que nos joueurs appliquent sur toutes les cartes.</p>\n<h2>L'économie</h2>\n<ul>\n<li>Achetez ensemble : un round d'économie se joue à cinq.</li>\n<li>Après un round au pistolet perdu, préparez le suivant plutôt que de forcer.</li>\n</ul>\n<h2>La communication</h2>\n<ul>\n<li>Annoncez ce que vous voyez, pas ce que vous supposez : « deux en B, un blessé ».</li>\n<li>Un seul joueur mène le round.</li>\n</ul>\n<h2>Les cartes de notre pool</h2>\n<p>Mirage, Inferno, Nuke et Ancient. Chaque carte a son sujet dans le forum « Stratégies ».</p>", 52],
+        ['organiser-un-tournoi', 'Organiser un tournoi', 'jeux',
+            "<p>Le guide des bénévoles pour nos tournois communautaires.</p>\n<h2>Avant</h2>\n<ul>\n<li>Créez l'événement dans le <strong>calendrier</strong>, avec le règlement du tournoi.</li>\n<li>Ouvrez les inscriptions, puis annoncez-les sur Discord.</li>\n</ul>\n<h2>Pendant</h2>\n<ul>\n<li>Un arbitre par match, joignable sur Discord.</li>\n<li>Saisissez les scores au fil des matchs.</li>\n</ul>\n<h2>Après</h2>\n<p>Publiez le palmarès, et une actualité avec les plus belles actions.</p>", 21],
     ];
-    $i = 0;
-    foreach ($pages as [$title, $content]) {
+    $ids = $ordre = [];
+    foreach ($pages as [$slug, $title, $parent, $content, $views]) {
+        $ordre[$parent ?? ''] = ($ordre[$parent ?? ''] ?? 0) + 1;
         ins($db, 'nf_wiki_pages', [
-            'slug' => slugify($title), 'title' => $title, 'content' => $content,
-            'parent_id' => null, 'sort_order' => $i, 'published' => 1, 'user_id' => $users[0], 'views' => 12 + $i * 5,
+            'slug' => $slug, 'title' => $title, 'content' => $content, 'parent_id' => $parent === null ? null : $ids[$parent],
+            'sort_order' => $ordre[$parent ?? ''], 'published' => 1, 'user_id' => $users[0], 'views' => $views,
         ]);
-        $i++;
+        $ids[$slug] = (int) $db->insert_id;
     }
     echo "  wiki OK (" . count($pages) . " pages)\n";
 }
@@ -1434,7 +1450,7 @@ function seed_activite(mysqli $db, array $users): void
         'created_at' => date('Y-m-d H:i:s', time() - 86400 * 2),
     ]);
 
-    $wiki = $db->query("SELECT id, title, content FROM nf_wiki_pages ORDER BY id LIMIT 2");
+    $wiki = $db->query("SELECT id, title, content FROM nf_wiki_pages WHERE slug IN ('bienvenue', 'reglement') ORDER BY id");
     $rev_wiki = 0;
     while ($page = $wiki ? $wiki->fetch_assoc() : null) {
         ins($db, 'nf_wiki_revisions', [
@@ -1502,10 +1518,15 @@ function configure_demo(mysqli $db): void
     // (`$this->error->unauthorized()` quand `user()` est vide), indépendamment des permissions.
     // Son 403 au visiteur anonyme est le comportement voulu, pas un droit manquant — c'est une
     // messagerie. Le visiteur de la démo la voit en se connectant avec le compte `demo`.
-    foreach (['forum.category_read', 'gallery.gallery_see', 'pages.access_page', 'events.access_events_type'] as $permission) {
+    //
+    // Les MEMBRES (rôle 2) reçoivent la même lecture — leur rôle n'hérite pas de celui des visiteurs (2026-10-05) — et
+    // l'écriture que les modules ne refusent qu'aux visiteurs (`['visitors', FALSE]` : forum, messagerie, candidatures),
+    // celle que l'administration pose en créant une catégorie. Sans elle, un membre ordinaire de la démo n'ouvrait aucun
+    // sujet, ne répondait nulle part et ne postulait à rien (2026-10-09) ; le compte `demo`, administrateur, passait.
+    foreach (NF_DEMO_DROITS as [$role, $permission]) {
         $p = $db->real_escape_string($permission);
-        $db->query("DELETE FROM nf_role_permissions WHERE role_id = 3 AND permission = '$p'");
-        $db->query("INSERT INTO nf_role_permissions (role_id, permission, scope_id, authorized) VALUES (3, '$p', 0, 'allow')");
+        $db->query("DELETE FROM nf_role_permissions WHERE role_id = $role AND permission = '$p'");
+        $db->query("INSERT INTO nf_role_permissions (role_id, permission, scope_id, authorized) VALUES ($role, '$p', 0, 'allow')");
     }
 }
 

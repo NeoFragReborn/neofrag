@@ -1076,7 +1076,7 @@ class Admin extends Controller_Module
 		$this->handle_post($dir);
 
 		$content = '<div class="row files-manager">'
-				.'<div class="col-md-3 files-sidebar"><div class="files-sidebar-card">'.$this->render_tree($dir).'</div></div>'
+				.'<div class="col-md-3 files-sidebar"><div class="files-sidebar-card" data-nf-colle>'.$this->render_tree($dir).'</div></div>'
 				.'<div class="col-md-9 files-content">'
 					.$this->render_breadcrumb($dir)
 					.$this->render_toolbar($dir)

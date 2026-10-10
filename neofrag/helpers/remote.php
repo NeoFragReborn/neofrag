@@ -32,6 +32,11 @@ declare(strict_types=1);
  *
  * Rend NULL pour une boucle locale, une plage privée, une adresse de lien local ou réservée, en IPv4
  * comme en IPv6, et pour un hôte qui ne résout pas. Un hôte déjà écrit en IP est validé tel quel.
+ *
+ * « Publique » au sens strict depuis l'audit du 2026-10-09 : `FILTER_FLAG_GLOBAL_RANGE` écarte aussi les
+ * plages que les deux autres drapeaux laissaient passer — l'espace partagé des opérateurs (100.64.0.0/10),
+ * les plages de test et de mesure (192.0.2.0/24, 198.18.0.0/15, 198.51.100.0/24, 203.0.113.0/24), leurs
+ * équivalents IPv6 —, et l'adresse du site lui-même : le serveur ne va pas se chercher.
  */
 function nf_resolve_public_ip(string $host): ?string
 {
@@ -62,15 +67,64 @@ function nf_resolve_public_ip(string $host): ?string
 
 	// TOUTES les adresses résolues doivent être publiques : il suffirait sinon qu'un nom en réponde
 	// une interne à côté d'une publique pour que le garde soit contourné.
+	$siennes = nf_adresses_du_site();
+
 	foreach ($ips as $ip)
 	{
-		if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE))
+		if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE | FILTER_FLAG_GLOBAL_RANGE)
+			|| in_array(inet_pton($ip), $siennes, TRUE))
 		{
 			return NULL;
 		}
 	}
 
 	return $ips[0];
+}
+
+/**
+ * Les adresses du serveur qui sert le site, sous leur forme binaire (`inet_pton`) : celle de la connexion
+ * en cours, et celles que résout le nom du site. Une requête que le site enverrait vers elles reviendrait
+ * à lui-même, ou aux autres services du même serveur.
+ *
+ * @return list<string>
+ */
+function nf_adresses_du_site(): array
+{
+	static $adresses;
+
+	if ($adresses === NULL)
+	{
+		$adresses = [];
+		$ips      = [(string) ($_SERVER['SERVER_ADDR'] ?? '')];
+
+		// Hors du site (un outil, un test), l'origine peut manquer : on fait sans.
+		try
+		{
+			$hote = (string) parse_url(site_origin(), PHP_URL_HOST);
+		}
+		catch (\Throwable)
+		{
+			$hote = '';
+		}
+
+		if ($hote !== '')
+		{
+			foreach ((array) @dns_get_record($hote, DNS_A | DNS_AAAA) as $record)
+			{
+				$ips[] = (string) ($record['ip'] ?? $record['ipv6'] ?? '');
+			}
+		}
+
+		foreach ($ips as $ip)
+		{
+			if ($ip !== '' && ($binaire = @inet_pton($ip)) !== FALSE)
+			{
+				$adresses[] = $binaire;
+			}
+		}
+	}
+
+	return $adresses;
 }
 
 /**
@@ -96,7 +150,9 @@ function nf_fetch_public_url(string $url, int $timeout = 5, int $max_octets = 10
 	$host  = $parts['host'] ?? '';
 	$port  = $parts['port'] ?? (strtolower($parts['scheme'] ?? '') === 'https' ? 443 : 80);
 
-	if (!$host || !($ip = nf_resolve_public_ip((string) $host)))
+	// Les ports du web seulement (audit du 2026-10-09) : une adresse publique, sur un autre port, faisait sonder par le
+	// serveur les services d'une machine (courrier, base de données, administration).
+	if (!$host || !in_array((int) $port, [80, 443], TRUE) || !($ip = nf_resolve_public_ip((string) $host)))
 	{
 		return NULL;
 	}

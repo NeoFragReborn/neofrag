@@ -178,6 +178,20 @@ class Groups extends Core
 		}
 	}
 
+	/**
+	 * Les groupes d'un membre que celui qui regarde peut voir : un groupe caché ne se montre qu'à un administrateur, dans
+	 * l'administration — la règle de user_groups(). Le profil public et sa fiche au survol montraient le badge d'un
+	 * groupe caché à tous (audit du 2026-10-09).
+	 *
+	 * @return list<string|int>
+	 */
+	public function visibles($user_id): array
+	{
+		$admin = $this->access->effective_admin() && $this->url->admin;
+
+		return array_values(array_filter($this($user_id), fn ($group_id) => $admin || empty($this->_groups[$group_id]['hidden'])));
+	}
+
 	public function user_groups($user_id, $label = TRUE)
 	{
 		$groups = [];

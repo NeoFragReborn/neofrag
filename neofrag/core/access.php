@@ -141,12 +141,7 @@ class Access extends Core
 				{
 					return TRUE;
 				}
-				$roles = $this->roles_for_user($preview['id']);
-				if (empty($roles))
-				{
-					$roles = [$this->_default_role_id(TRUE)];
-				}
-				return $this->_evaluate($roles, $permission, $scope);
+				return $this->_evaluer_membre($this->roles_for_user($preview['id']), $permission, $scope);
 			}
 		}
 
@@ -169,15 +164,29 @@ class Access extends Core
 		}
 
 		// 2. Calcule rôles effectifs
-		$roles = $this->roles_for_user($user_id);
-
-		if (empty($roles))
+		if ($user_id === NULL)
 		{
-			// User sans rôle assigné → fallback sur visitor/member par défaut
-			$roles = [$this->_default_role_id($user_id !== NULL)];
+			return $this->_evaluate([$this->_default_role_id(FALSE)], $permission, $scope);
 		}
 
-		return $this->_evaluate($roles, $permission, $scope);
+		return $this->_evaluer_membre($this->roles_for_user($user_id), $permission, $scope);
+	}
+
+	/**
+	 * Le droit d'un membre connecté, selon ses rôles : ce qu'ils disent l'emporte — un droit accordé, ou refusé —, et sur
+	 * tout ce dont ils ne disent rien, il a les droits d'un membre (rôle « member »). Le rôle « member » ne servait qu'à
+	 * qui n'avait AUCUN rôle : un rôle donné en plus (Modérateur) le remplaçait, et un modérateur perdait le forum, la
+	 * messagerie, tout ce qu'un membre peut faire (audit du 2026-10-09). Le « never » du rôle de base ne l'emporte pas sur
+	 * un rôle qui accorde davantage (écrire dans un forum fermé aux membres, par exemple).
+	 */
+	private function _evaluer_membre(array $roles, $permission, $scope): bool
+	{
+		if ($roles && ($decision = $this->_decision($roles, $permission, $scope)) !== NULL)
+		{
+			return $decision;
+		}
+
+		return $this->_evaluate($this->_with_inheritance([$this->_default_role_id(TRUE)]), $permission, $scope);
 	}
 
 	/**
@@ -558,6 +567,12 @@ class Access extends Core
 	 */
 	private function _evaluate(array $role_ids, $permission, $scope)
 	{
+		return $this->_decision($role_ids, $permission, $scope) ?? FALSE;
+	}
+
+	/** TRUE si les rôles accordent, FALSE si l'un refuse (un seul « never » suffit), NULL s'ils ne disent rien. */
+	private function _decision(array $role_ids, $permission, $scope): ?bool
+	{
 		$dot       = strpos($permission, '.');
 		$wildcard  = $dot !== FALSE ? substr($permission, 0, $dot).'.*' : NULL;
 
@@ -592,7 +607,7 @@ class Access extends Core
 			}
 		}
 
-		return $found_allow;
+		return $found_allow ? TRUE : NULL;
 	}
 
 	/**

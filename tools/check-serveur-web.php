@@ -19,7 +19,8 @@ declare(strict_types=1);
  * Celui-ci interroge le site servi, en posant des SONDES dans son arbre — un fichier marqué d'un
  * jeton tiré au hasard —, puis en les demandant :
  *   1. chaque dossier interdit refuse sa sonde (`config/`, `logs/`, `install/`…) ;
- *   2. `upload/` sert un fichier texte, mais n'exécute jamais un script ;
+ *   2. `upload/` sert un fichier texte, mais n'exécute jamais un script ; les pièces jointes des membres
+ *      (`upload/forum/`, `upload/talks/`) ne se servent pas directement — le site les donne lui-même ;
  *   3. chaque extension interdite (`.sql`, `.md`…) et chaque fichier interdit par son nom
  *      (`package.json`, `Caddyfile`…) est refusé ;
  *   4. aucun script PHP autre que `index.php` à la racine ne s'exécute — ni ailleurs dans l'arbre, ni
@@ -174,6 +175,13 @@ $r = demander(sonder('upload/nf-sonde-'.$jeton.'.txt', $texte));
 juger('un fichier déposé se sert', $r['code'] === 200 && str_contains($r['corps'], $texte), 'HTTP '.$r['code']);
 $r = demander(sonder('upload/nf-sonde-'.$jeton.'.php', $script));
 juger('un script déposé ne s\'exécute pas', !str_contains($r['corps'], $execute), 'HTTP '.$r['code']);
+
+// Les pièces jointes des membres : le site les sert après avoir vérifié l'accès, jamais le serveur web (2026-10-09).
+foreach (array_keys(NF_PIECES_JOINTES) as $dossier)
+{
+    $r = demander(sonder($dossier.'/nf-sonde-'.$jeton.'.txt', $texte));
+    juger("/{$dossier}/ ne se sert pas directement", !str_contains($r['corps'], $texte), 'HTTP '.$r['code']);
+}
 
 // 3. Les extensions et les fichiers interdits
 echo "\nExtensions et fichiers interdits :\n";

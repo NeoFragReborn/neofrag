@@ -9,6 +9,9 @@ namespace NF\NeoFrag\Models;
 
 use NF\NeoFrag\Loadables\Model2;
 
+/**
+ * @property int|string $id  la clé du membre
+ */
 class User extends Model2
 {
 	static public $icon = 'fas fa-user';
@@ -136,13 +139,17 @@ class User extends Model2
 					->content($this->view('avatar'));
 	}
 
-	public function token()
+	/**
+	 * Un lien envoyé par e-mail : `mot_de_passe` (mot de passe oublié) ou `validation` (inscription). Il ne vaut que pour
+	 * son usage (checker.php).
+	 */
+	public function token(string $type)
 	{
 		// Un seul token actif par compte : une nouvelle demande invalide les précédentes
 		// (sinon chaque email de reset laisse un lien valable derrière lui).
 		NeoFrag()->db->where('user_id', $this->id)->delete('nf_user_token');
 
-		$token = $this->module('user')->model2('token')->set('user', $this);
+		$token = $this->module('user')->model2('token')->set('user', $this)->set('type', $type);
 
 		do
 		{
@@ -197,6 +204,12 @@ class User extends Model2
 					->update([
 						'user_id' => NULL
 					]);
+
+			// Les liens en attente tombent avec l'ancien mot de passe (audit du 2026-10-09) : une nouvelle adresse pas
+			// encore confirmée, un lien « mot de passe oublié ». Un intrus qui avait demandé à mettre SA boîte sur le
+			// compte gardait sinon la main après que le membre avait repris son compte.
+			NeoFrag()->db->where('user_id', $this->id)->delete('nf_user_email_change');
+			NeoFrag()->db->where('user_id', $this->id)->delete('nf_user_token');
 		}
 
 		return $this;

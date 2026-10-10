@@ -258,7 +258,8 @@ class Index extends Controller_Module
 										->join('nf_addon ad', 'ad.id = a.authenticator_id', 'INNER')
 										->where('a.user_id', $id)
 										->get(),
-			'historique_connexions' => $this->db	->select('date', 'ip_address', 'host_name', 'user_agent', 'referer', 'auth')
+			// Sur une démonstration, le compte est partagé : son historique est celui de tous les visiteurs.
+			'historique_connexions' => nf_demo() ? [] : $this->db	->select('date', 'ip_address', 'host_name', 'user_agent', 'referer', 'auth')
 													->from('nf_session_history')
 													->where('user_id', $id)
 													->order_by('date DESC')
@@ -296,7 +297,13 @@ class Index extends Controller_Module
 			'cookie_consent' => $this->db	->select('services', 'UNIX_TIMESTAMP(created_at) AS at')
 											->from('nf_cookie_consent')
 											->where('user_id', $id)
-											->get()
+											->get(),
+			// Les signalements qu'il a faits : la table les range par `reporter_id`, que la collecte des autres tables
+			// (par `user_id`) ne voyait pas (2026-10-09). Sans la copie du contenu signalé : elle est d'un autre.
+			'signalements' => !$this->db->table_exists('nf_reports') ? [] : $this->db	->select('target_type', 'target_id', 'reason', 'comment', 'url', 'reporter_ip', 'status', 'UNIX_TIMESTAMP(created_at) AS created_at', 'mediation_accord')
+																						->from('nf_reports')
+																						->where('reporter_id', $id)
+																						->get()
 		];
 
 		$data['autres_donnees'] = $this->_autres_donnees($id);
@@ -424,9 +431,9 @@ class Index extends Controller_Module
 			{
 				$this->form()->error($this->lang('Tape exactement « %s » (en majuscules) pour confirmer.', $mot));
 			}
-			else if (!$sans && !$this->user->password($post['password']))
+			else if (!$sans && ($refus = $this->_mot_de_passe_refuse((string) $post['password'])))
 			{
-				$this->form()->error($this->lang('Mot de passe incorrect.'));
+				$this->form()->error($refus);
 			}
 			else
 			{
@@ -474,6 +481,17 @@ class Index extends Controller_Module
 		if ($this->user->totp_enabled || nf_demo())
 		{
 			redirect('user/security');
+		}
+
+		// L'identité se confirme d'abord (audit du 2026-10-09) : une session volée activait sinon la double authentification
+		// avec SON application, et le membre ne pouvait plus se reconnecter, même par « mot de passe oublié ».
+		if ($panneau = $this->_exiger_confirmation('user/security/setup', $this->lang('Pour activer la double authentification, confirme d’abord que c’est bien toi.')))
+		{
+			$this->title($this->lang('Activer le 2FA'))->icon('fas fa-shield-alt')->breadcrumb();
+
+			return $this->_layout(function($row) use ($panneau){
+				$row->append($this->col($panneau)->size('col-12'));
+			}, 'user/security');
 		}
 
 		$totp = new \NF\NeoFrag\Libraries\Totp_Service($this);
@@ -610,9 +628,9 @@ class Index extends Controller_Module
 
 		if ($this->form()->is_valid($post))
 		{
-			if (!$sans && !$this->user->password($post['password']))
+			if (!$sans && ($refus = $this->_mot_de_passe_refuse((string) $post['password'])))
 			{
-				$this->form()->error($this->lang('Mot de passe incorrect.'));
+				$this->form()->error($refus);
 			}
 			else
 			{
@@ -665,9 +683,17 @@ class Index extends Controller_Module
 			$contenu = $this->_formulaire_compte($sans_mot_de_passe);
 		}
 
+		$module  = $this->module('user');
+		$attente = !nf_demo() && $module instanceof \NF\Modules\User\User ? $module->adresse_en_attente($this->user) : NULL;
+
 		// La langue et le fuseau horaire, rangés ici depuis le chantier A (le fuseau était au milieu du profil
 		// public) ; sur une démonstration, le compte partagé garde les siens.
-		return $this->_layout(function($row) use ($contenu){
+		return $this->_layout(function($row) use ($contenu, $attente){
+			if ($attente)
+			{
+				$row->append($this->col($this->_panneau_adresse_en_attente($attente['email']))->size('col-12'));
+			}
+
 			$row->append($this->col($contenu)->size('col-12'));
 
 			if (!nf_demo())
@@ -676,6 +702,16 @@ class Index extends Controller_Module
 					->append($this->col($this->_formulaire_fuseau())->size('col-12 col-xl-6'));
 			}
 		}, 'user/account');
+	}
+
+	/** La nouvelle adresse qui attend le clic sur son lien : la renvoyer, ou y renoncer. */
+	private function _panneau_adresse_en_attente(string $email)
+	{
+		return '<div class="alert alert-info d-flex flex-wrap align-items-center gap-2">'
+			.'<span class="me-auto">'.icon('fas fa-envelope-circle-check').' '.$this->lang('Ta nouvelle adresse %s attend sa confirmation : ouvre le lien qu’on lui a envoyé. D’ici là, le site t’écrit à l’ancienne.', '<strong>'.nf_texte($email).'</strong>').'</span>'
+			.'<a class="btn btn-sm btn-primary" href="'.$this->csrf_url('user/adresse/renvoyer').'">'.$this->lang('Renvoyer le lien').'</a>'
+			.'<a class="btn btn-sm btn-outline-secondary" href="'.$this->csrf_url('user/adresse/annuler').'">'.$this->lang('Annuler le changement').'</a>'
+			.'</div>';
 	}
 
 	/**
@@ -783,12 +819,35 @@ class Index extends Controller_Module
 								$user->reset('password');
 							}
 
-							// La validation par e-mail porte sur l'INSCRIPTION (User::a_valider()). Confirmer une
-							// nouvelle adresse — la garder en attente jusqu'au clic sur un lien — demande de la ranger
-							// à part : une suite notée au tableau de bord, pas une branche vide ici.
+							// Une nouvelle adresse ne s'enregistre pas d'emblée : elle attend le clic sur le lien qu'on lui
+							// envoie (User::demander_adresse(), 2026-10-09). Le compte garde l'ancienne jusque-là.
+							$ancienne = (string) $this->db->select('email')->from('nf_user')->where('id', (int) $user->id)->row();
+							$nouvelle = trim((string) $user->email);
+							$module   = $this->module('user');
+
+							if ($module instanceof \NF\Modules\User\User && mb_strtolower($nouvelle) !== mb_strtolower($ancienne))
+							{
+								$user->set('email', $ancienne);
+							}
+							else
+							{
+								$module = NULL;
+							}
+
 							$user->update();
 
-							notify($this->lang('Informations modifiées'));
+							if (!$module)
+							{
+								notify($this->lang('Informations modifiées'));
+							}
+							else if ($module->demander_adresse($user, $nouvelle))
+							{
+								notify($this->lang('Un lien de confirmation vient de partir à %s : ta nouvelle adresse comptera dès que tu l’auras ouvert.', nf_texte($nouvelle)));
+							}
+							else
+							{
+								notify($this->lang('Le lien de confirmation n’a pas pu partir à %s : ton adresse ne change pas.', nf_texte($nouvelle)), 'danger');
+							}
 
 							refresh();
 						})
@@ -917,13 +976,21 @@ class Index extends Controller_Module
 					: (is_array($brut) ? '' : (string) $brut);
 			}
 
-			/** @var \NF\Modules\User\Models\Fields $fields */
-			$fields = $this->model('fields');
-			$fields->set_values((int) $this->user->id, $saisies);
+			// Un champ « adresse » ou un texte libre porte un lien comme une signature : la restriction « Liens externes » s'y applique.
+			if ($refus = $this->moderation->lien_refuse((int) $this->user->id, ...array_values($saisies)))
+			{
+				$this->form()->error($refus['message']);
+			}
+			else
+			{
+				/** @var \NF\Modules\User\Models\Fields $fields */
+				$fields = $this->model('fields');
+				$fields->set_values((int) $this->user->id, $saisies);
 
-			notify($this->lang('Profil modifié'));
+				notify($this->lang('Profil modifié'));
 
-			refresh();
+				refresh();
+			}
 		}
 
 		return $this->panel()
@@ -937,36 +1004,53 @@ class Index extends Controller_Module
 				->icon('fas fa-pen')
 				->breadcrumb();
 
+		$uid = (int) $this->user->id;
+
+		// Un bannissement du profil (ou du site) ferme la page entière : rien ne s'y enregistre.
+		if ($bloque = $this->moderation->is_blocked_for($uid, 'user.profile_edit'))
+		{
+			return $this->_layout(function($row) use ($bloque){
+				$row->append($this->col($this->moderation->panneau($bloque, (string) $this->lang('Modifier mon profil'), 'fas fa-pen'))->size('col-12'));
+			}, 'user/profile');
+		}
+
 		// Les sanctions d'avatar et de signature, prononcées par la modération, ne s'appliquaient nulle part (0.30) :
-		// le formulaire n'est plus construit — il ne peut donc rien enregistrer —, et le panneau dit pourquoi.
-		$avatar_refuse    = $this->_sanction('restrict_avatar');
+		// le formulaire n'est plus construit — il ne peut donc rien enregistrer —, et le panneau dit pourquoi. Même
+		// règle pour la couverture (envoi de fichiers) et les liens (restriction « Liens externes »), depuis le 2026-10-09.
+		$avatar_refuse    = $this->moderation->is_blocked_for($uid, 'user.profile_avatar');
+		$cover_refuse     = $this->moderation->is_blocked_for($uid, 'user.profile_cover');
+		$liens_refuses    = $this->moderation->is_blocked_for($uid, 'user.profile_links');
 		$signature_refuse = $this->_sanction('restrict_signature');
 
-		return $this->_layout(function($row) use ($avatar_refuse, $signature_refuse){
+		return $this->_layout(function($row) use ($avatar_refuse, $cover_refuse, $liens_refuses, $signature_refuse){
 			$row->append($this	->col()
 								->size('col-12 col-xl-7')
 								// Sans la signature quand une sanction l'interdit : forms/profile.php consulte la modération.
 								->append($this	->form2('profile', $this->user->profile())
 												->panel()
 								)
-								->append_if($signature_refuse, fn () => $this->_panneau_sanction($signature_refuse, (string) $this->lang('Signature'), 'fas fa-signature', (string) $this->lang('Une sanction de modération t’empêche de changer ta signature')))
-								->append($this	->form2('profile_socials', $this->user->profile())
-												->panel()
-												->title($this->lang('Liens'), 'fas fa-globe')
+								->append_if($signature_refuse, fn () => $this->moderation->panneau(['sanction' => $signature_refuse], (string) $this->lang('Signature'), 'fas fa-signature'))
+								->append($liens_refuses
+									? $this->moderation->panneau($liens_refuses, (string) $this->lang('Liens'), 'fas fa-globe')
+									: $this	->form2('profile_socials', $this->user->profile())
+											->panel()
+											->title($this->lang('Liens'), 'fas fa-globe')
 								)
 								->append_if(($champs = $this->_champs_personnalises()) !== '', $champs)
 				)
 				->append($this	->col()
 								->size('col-12 col-xl-5')
 								->append($avatar_refuse
-									? $this->_panneau_sanction($avatar_refuse, (string) $this->lang('Avatar'), 'fas fa-user-circle', (string) $this->lang('Une sanction de modération t’empêche de changer ton avatar'))
+									? $this->moderation->panneau($avatar_refuse, (string) $this->lang('Avatar'), 'fas fa-user-circle')
 									: $this	->form2('avatar', $this->user->profile())
 											->panel()
 											->title($this->lang('Avatar'), 'fas fa-user-circle')
 								)
-								->append($this	->form2('cover', $this->user->profile())
-												->panel()
-												->title($this->lang('Photo de couverture'), 'far fa-image')
+								->append($cover_refuse
+									? $this->moderation->panneau($cover_refuse, (string) $this->lang('Photo de couverture'), 'far fa-image')
+									: $this	->form2('cover', $this->user->profile())
+											->panel()
+											->title($this->lang('Photo de couverture'), 'far fa-image')
 								)
 				);
 		}, 'user/profile');
@@ -1038,7 +1122,8 @@ class Index extends Controller_Module
 				'id'      => (string) $session->id,
 				'actuel'  => (string) $session->id === (string) $this->session->id,
 				'agent'   => analyser_user_agent(html_entity_decode($agent, ENT_QUOTES | ENT_HTML5, 'UTF-8')),
-				'ip'      => $donnees ? (string) $donnees->get('session', 'ip_address') : '',
+				// Sur une démonstration, le compte est partagé : l'adresse des autres visiteurs ne se montre pas.
+				'ip'      => $donnees && !nf_demo() ? (string) $donnees->get('session', 'ip_address') : '',
 				'activite'=> $session->last_activity,
 				'fermer'  => $this->csrf_url('user/sessions/fermer/'.$session->id),
 			];
@@ -1063,25 +1148,15 @@ class Index extends Controller_Module
 		return NULL;
 	}
 
-	/** Le panneau qui dit au membre ce qu'une sanction l'empêche de faire, et jusqu'à quand. */
-	private function _panneau_sanction(array $sanction, string $titre, string $icone, string $message)
-	{
-		$fin = !empty($sanction['expires_at'])
-			? (string) $this->lang('jusqu’au %s', timetostr($this->lang('d/m/Y à H:i'), $sanction['expires_at']))
-			: (string) $this->lang('jusqu’à nouvel ordre');
-
-		return $this	->panel()
-						->heading($titre, $icone)
-						->body('<div class="alert alert-warning mb-0">'.icon('fas fa-gavel').' '.$message.' ('.nf_texte($fin).')'
-							.(!empty($sanction['reason']) ? '<br /><small>'.$this->lang('Motif : %s', nf_texte($sanction['reason'])).'</small>' : '').'</div>');
-	}
-
 	public function auth($authenticator)
 	{
-		$service = new \SocialConnect\Auth\Service(
-			new \SocialConnect\Common\Http\Client\Curl,
+		// La bibliothèque OAuth en version 3 parle à travers une pile PSR-18 / PSR-17 : on lui passait encore le client de
+		// la version 2, qui n'existe plus, et la connexion par un service tombait en erreur (2026-10-09).
+		$fabrique = new \Nyholm\Psr7\Factory\Psr17Factory();
+		$service  = new \SocialConnect\Auth\Service(
+			new \SocialConnect\Common\HttpStack(new \NF\NeoFrag\Libraries\Client_Http(), $fabrique, $fabrique),
 			new \NF\NeoFrag\Libraries\Social_Connect_Session($this->session), [
-				'redirectUri' => $authenticator->static_url(),
+				'redirectUri' => $authenticator->adresse_de_retour(),
 				'provider'    => [
 					$name = str_replace('_', '-', $authenticator->info()->name) => $authenticator->config()
 				]
@@ -1092,7 +1167,25 @@ class Index extends Controller_Module
 
 		if ($callback = $authenticator->data($params))
 		{
-			$data = array_merge(array_fill_keys(['id', 'username', 'avatar'], ''), $callback($provider->getIdentity($provider->getAccessTokenByRequestParameters($params))));
+			// Un retour que le service refuse — code périmé, état qui ne correspond pas (page rechargée, lien forgé), service
+			// injoignable — se dit au membre, au lieu d'une page d'erreur (2026-10-09). Le détail part au journal.
+			try
+			{
+				$identite = $provider->getIdentity($provider->getAccessTokenByRequestParameters($params));
+			}
+			catch (\Throwable $e)
+			{
+				$identite = NULL;
+				error_log('[auth] '.$name.' : '.$e->getMessage());
+			}
+
+			if ($identite === NULL)
+			{
+				notify($this->lang('La connexion par %s n’a pas abouti : réessaie.', $authenticator->info()->title), 'danger');
+				redirect($this->user() ? 'user/auth' : '');
+			}
+
+			$data = array_merge(array_fill_keys(['id', 'username', 'avatar'], ''), $callback($identite));
 
 			$auth = $this->collection('auth')->where('authenticator_id', $authenticator->__addon->id)->where('key', $data['id'])->row();
 
@@ -1157,6 +1250,13 @@ class Index extends Controller_Module
 			}
 			else if ($this->user())
 			{
+				// Rien ne se lie sans une confirmation d'identité récente (voir plus bas).
+				if (!$this->_confirmation_recente())
+				{
+					notify($this->lang('Confirme d’abord que c’est bien toi pour lier un compte %s.', $authenticator->info()->title), 'danger');
+					redirect('user/auth');
+				}
+
 				$auth	->set('user',          $this->user)
 						->set('authenticator', $authenticator->__addon)
 						->set('key',           $data['id'])
@@ -1197,6 +1297,16 @@ class Index extends Controller_Module
 		{
 			$this->session->set('confirmation_externe', 'retour', $retour);
 		}
+		// Lier un nouveau service : l'identité se confirme d'abord (audit du 2026-10-09). Une session volée y liait sinon
+		// SON compte Discord, GitHub ou Google, et gardait l'accès après que le membre avait changé son mot de passe.
+		else if ($this->user() && ($panneau = $this->_exiger_confirmation('user/auth/'.url_title((string) $authenticator->info()->name), $this->lang('Pour lier un compte %s, confirme d’abord que c’est bien toi.', $authenticator->info()->title))))
+		{
+			$this->title($this->lang('Mes comptes liés'))->icon('fas fa-link')->breadcrumb();
+
+			return $this->_layout(function($row) use ($panneau){
+				$row->append($this->col($panneau)->size('col-12'));
+			}, 'user/auth');
+		}
 
 		$this->url->redirect($provider->makeAuthUrl());
 	}
@@ -1226,6 +1336,64 @@ class Index extends Controller_Module
 		return $this->user()
 			&& (int) $this->session('confirmation_externe', 'user_id') === (int) $this->user->id
 			&& (int) $this->session('confirmation_externe', 'at') >= time() - self::CONFIRMATION_DUREE;
+	}
+
+	/**
+	 * La confirmation d'identité avant une action sensible : NULL si elle date de moins de dix minutes, sinon le panneau
+	 * qui la demande — le mot de passe, ou le service relié pour un compte qui n'en a pas. Le mot de passe juste vaut
+	 * confirmation pour dix minutes, comme un passage par le service, et ramène à `$retour`.
+	 */
+	private function _exiger_confirmation(string $retour, \Stringable|string $pourquoi)
+	{
+		if ($this->_confirmation_recente())
+		{
+			return NULL;
+		}
+
+		if ($this->_sans_mot_de_passe())
+		{
+			return $this->_panneau_confirmation($retour, $pourquoi);
+		}
+
+		$this	->form()
+				->add_rules([
+					'password' => [
+						'label' => $this->lang('Confirme avec ton mot de passe'),
+						'type'  => 'password',
+						'rules' => 'required'
+					]
+				])
+				->add_submit($this->lang('Confirmer'), 'fas fa-check');
+
+		if ($this->form()->is_valid($post))
+		{
+			if ($refus = $this->_mot_de_passe_refuse((string) $post['password']))
+			{
+				$this->form()->error($refus);
+			}
+			else
+			{
+				$this->_noter_confirmation((int) $this->user->id);
+				redirect($retour);
+			}
+		}
+
+		return $this->panel()
+					->heading($this->lang('Confirme ton identité'), 'fas fa-user-shield')
+					->body('<p>'.$pourquoi.'</p>'.$this->form()->display());
+	}
+
+	/** Le mot de passe du membre, redemandé : NULL s'il est juste, sinon l'erreur (User::confirmation_refusee(), sa limite d'essais). */
+	private function _mot_de_passe_refuse(string $saisie): ?string
+	{
+		$module = $this->module('user');
+
+		if ($module instanceof \NF\Modules\User\User)
+		{
+			return $module->confirmation_refusee($this->user, $saisie);
+		}
+
+		return $this->user->password($saisie) ? NULL : (string) $this->lang('Mot de passe incorrect');
 	}
 
 	/** La page où revenir après une confirmation : une page de l'espace membre, et rien d'autre. */
@@ -1348,7 +1516,7 @@ class Index extends Controller_Module
 	private function _inscription_externe($authenticator, array $data): void
 	{
 		$limite = new \NF\NeoFrag\Libraries\Rate_Limit($this);
-		$cle    = 'register:ip:'.\NF\NeoFrag\Libraries\Rate_Limit::client_ip();
+		$cle    = 'register:ip:'.\NF\NeoFrag\Libraries\Rate_Limit::bloc_ip();
 
 		if (!($etat = $limite->check($cle))['allowed'])
 		{
@@ -1521,6 +1689,83 @@ class Index extends Controller_Module
 		redirect();
 	}
 
+	/**
+	 * `user/adresse/{jeton}` : le lien envoyé à une nouvelle adresse (User::demander_adresse()). L'adresse est prouvée,
+	 * elle remplace l'ancienne — sauf si un autre compte l'a prise entre-temps. Les liens de mot de passe oublié encore
+	 * ouverts partaient à l'ancienne adresse : ils tombent avec elle.
+	 */
+	public function _adresse(array $ligne)
+	{
+		$user_id = (int) $ligne['user_id'];
+		$email   = (string) $ligne['email'];
+
+		$this->db->where('user_id', $user_id)->delete('nf_user_email_change');
+
+		$compte = $this->db->select('username', 'email')->from('nf_user')->where('id', $user_id)->where('deleted', FALSE)->row(FALSE);
+
+		if (!$compte)
+		{
+			redirect();
+		}
+
+		if (!$this->db->from('nf_user')->where('email', $email)->where('deleted', FALSE)->where('id <>', $user_id)->empty())
+		{
+			notify($this->lang('Cette adresse est déjà utilisée par un autre compte : ton adresse ne change pas.'), 'danger');
+		}
+		else
+		{
+			$this->db->where('id', $user_id)->update('nf_user', ['email' => $email]);
+			$this->db->where('user_id', $user_id)->delete('nf_user_token');
+
+			(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('user.email_changed', ['user_id' => $user_id, 'username' => (string) $compte['username']]);
+
+			notify($this->lang('Ton adresse e-mail est maintenant %s.', nf_texte($email)));
+		}
+
+		redirect((int) $this->user->id === $user_id ? 'user/account' : '');
+	}
+
+	/** Renvoyer le lien de confirmation, à la même adresse : trois fois par heure au plus. */
+	public function _adresse_renvoyer()
+	{
+		$this->check_csrf('user/account');
+
+		$module  = $this->module('user');
+		$attente = $module instanceof \NF\Modules\User\User ? $module->adresse_en_attente($this->user) : NULL;
+
+		if ($attente)
+		{
+			$limite = new \NF\NeoFrag\Libraries\Rate_Limit($this);
+			$cle    = 'adresse:user:'.(int) $this->user->id;
+
+			if (!($etat = $limite->check($cle))['allowed'])
+			{
+				notify($this->lang('Le lien est déjà reparti plusieurs fois : réessaye dans %d minute(s).', ceil($etat['retry_after'] / 60)), 'warning');
+			}
+			else
+			{
+				$limite->hit($cle, 3, 3600, 3600);
+
+				$module->demander_adresse($this->user, $attente['email'], FALSE)
+					? notify($this->lang('Un nouveau lien de confirmation vient de partir à %s.', nf_texte($attente['email'])))
+					: notify($this->lang('Le lien de confirmation n’a pas pu partir : réessaye plus tard.'), 'danger');
+			}
+		}
+
+		redirect('user/account');
+	}
+
+	/** Renoncer à la nouvelle adresse : le lien déjà envoyé ne vaut plus rien. */
+	public function _adresse_annuler()
+	{
+		$this->check_csrf('user/account');
+
+		$this->db->where('user_id', (int) $this->user->id)->delete('nf_user_email_change');
+
+		notify($this->lang('Le changement d’adresse est annulé : ton adresse reste la même.'));
+		redirect('user/account');
+	}
+
 	// Entrées NON-AJAX de la connexion / inscription. Les thèmes exposent `user/login` et
 	// `user/registration` en href des boutons d'en-tête (le clic normal ouvre la modale via
 	// `data-modal-ajax`, ces URLs sont le repli sans JS / clic milieu / lien copié). Le routage
@@ -1539,10 +1784,29 @@ class Index extends Controller_Module
 		redirect_back();
 	}
 
+	/**
+	 * Se déconnecter (audit du 2026-10-09). Les liens du produit portent le jeton de session et déconnectent d'un clic.
+	 * Sans lui — un lien qu'un thème fabrique lui-même, ou un lien piégé d'un autre site qui déconnectait le membre à son
+	 * insu —, la page demande de confirmer, par un bouton.
+	 */
 	public function logout()
 	{
-		$this->session->logout();
-		redirect();
+		if ($this->csrf_valide())
+		{
+			$this->session->logout();
+			redirect();
+		}
+
+		$this->title($this->lang('Déconnexion'))->icon('fas fa-right-from-bracket');
+
+		return $this->panel()
+					->heading($this->lang('Déconnexion'), 'fas fa-right-from-bracket')
+					->body('<p>'.$this->lang('Te déconnecter de ce site ?').'</p>'
+						.'<form method="post" action="'.url('user/logout').'">'
+						.'<input type="hidden" name="_" value="'.nf_texte($this->csrf_token()).'" />'
+						.'<button type="submit" class="btn btn-primary">'.icon('fas fa-right-from-bracket').' '.$this->lang('Se déconnecter').'</button>'
+						.' <a class="btn btn-link" href="'.url().'">'.$this->lang('Annuler').'</a>'
+						.'</form>');
 	}
 
 	/**

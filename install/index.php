@@ -158,11 +158,15 @@ function nf_handle_modules(string $root): array
 
 	[$modules, $ajoutes] = Installer::close_requires($coches, $root);
 
-	// Les widgets et thèmes du profil suivent, mais un widget dont le module est décoché
-	// n'a rien à faire là : il s'afficherait vide, ou chercherait une table absente.
+	// Les widgets et thèmes du profil suivent, mais un widget dont un module requis n'est pas retenu
+	// n'a rien à faire là : il ne s'afficherait pas (Widget::modules_manquants()). Le cœur est toujours là.
+	$decl    = Installer::addon_declarations($root);
 	$widgets = array_values(array_filter(
 		$profil['widget'],
-		static fn (string $w): bool => !in_array($w, $profil['module'], TRUE) || in_array($w, $modules, TRUE)
+		static fn (string $w): bool => !array_filter(
+			$decl['widget:'.$w]['requires'] ?? [],
+			static fn (string $m): bool => !in_array($m, $modules, TRUE) && empty($decl['module:'.$m]['core'])
+		)
 	));
 
 	$_SESSION['nf_install_preset']    = $choisi;
@@ -312,15 +316,11 @@ function nf_handle_admin(string $config_dir, string $lock): array
 			Installer::set_setting($db, 'nf_contact', 'noreply@' . $host);
 		}
 
-		// Contenu du wiki (documentation). En « tout bundlé », le module wiki est installé (install_complete)
-		// donc nf_wiki_pages existe et la doc s'importe. La garde table_exists reste un filet (ex. un paquet
-		// démo qui n'embarquerait pas le module wiki).
-		if (is_file($wiki_sql = __DIR__ . '/wiki.sql') && Installer::table_exists($db, 'nf_wiki_pages')) {
-			Installer::import_sql_file($db, $wiki_sql);
-		}
+		// Le wiki arrive vide : la documentation du produit ne vit que sur le site officiel, elle n'est plus
+		// livrée ni chargée à l'installation (2026-10-09).
 
 		// Mise en page de la VITRINE (paquet PRINCIPAL uniquement) : dispositions + thème vitrine actif.
-		// Le code du thème vitrine (accueil ancré dans le thème) et la doc (wiki.sql) sont bundlés à part ;
+		// Le code du thème vitrine (accueil ancré dans le thème) est bundlé à part ;
 		// ce fichier ne porte que la mise en page, perdue à la réinstallation. Best-effort : un échec ne bloque pas l'install
 		// (le site reste fonctionnel sur nebula). Appliqué APRÈS le seed (override nf_default_theme).
 		if (is_file($vitrine_sql = __DIR__ . '/vitrine.sql')) {

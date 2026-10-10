@@ -1,4 +1,4 @@
-<?php $_modbase = !empty($_user_side ?? FALSE) ? 'moderation' : 'admin/moderation'; ?>
+<?php $_modbase = !empty($_user_side ?? FALSE) ? 'moderation' : 'admin/moderation'; $report = $report ?? []; $csrf = $csrf ?? ''; ?>
 <?php
 $status_class = [
 	'pending'   => 'warning',
@@ -112,91 +112,7 @@ $status_class = [
 		<div class="card mb-3">
 			<div class="nf-card-header"><span><i class="fas fa-gavel"></i> <?php echo $this->lang('Actions') ?></span></div>
 			<div class="card-body">
-				<form method="post" action="<?php echo url($_modbase.'/reports/'.(int)$report['id'].'/sanction') ?>"><input type="hidden" name="_" value="<?php echo $csrf ?>">
-					<div class="row">
-						<div class="col-md-6">
-							<label><?php echo $this->lang('Type de sanction') ?></label>
-							<select name="type" class="form-select" required>
-								<option value=""><?php echo $this->lang('— Choisir —') ?></option>
-								<?php
-								$types = [
-									'warning'           => $this->lang('Avertissement'),
-									'mute'              => $this->lang('Mute (empêche de poster)'),
-									'ban_temp'          => $this->lang('Ban temporaire'),
-									'ban_perm'          => $this->lang('Ban définitif'),
-									'restrict_upload'   => $this->lang('Restreindre l\'upload de fichiers'),
-									'restrict_links'    => $this->lang('Restreindre les liens'),
-									'restrict_avatar'   => $this->lang('Restreindre la modif d\'avatar'),
-									'restrict_signature' => $this->lang('Restreindre la modif de signature'),
-									'restrict_comment'  => $this->lang('Restreindre les commentaires'),
-									'shadow_ban'        => $this->lang('Shadow ban (silencieux, sans notif)')
-								];
-								foreach ($types as $val => $label): ?>
-								<option value="<?php echo $val ?>"><?php echo nf_texte($label) ?></option>
-								<?php endforeach ?>
-							</select>
-						</div>
-						<div class="col-md-3">
-							<label><?php echo $this->lang('Scope') ?></label>
-							<select name="scope" class="form-select">
-								<option value="global"><?php echo $this->lang('Global (tout le site)') ?></option>
-								<option value="forum"><?php echo $this->lang('Forum') ?></option>
-								<option value="talks"><?php echo $this->lang('Discussions') ?></option>
-								<option value="comments"><?php echo $this->lang('Commentaires') ?></option>
-								<option value="wiki">Wiki</option>
-								<option value="gallery"><?php echo $this->lang('Galerie') ?></option>
-								<option value="guestbook"><?php echo $this->lang('Livre d\'or') ?></option>
-							</select>
-						</div>
-						<div class="col-md-3">
-							<label><?php echo $this->lang('Durée (heures)') ?></label>
-							<input type="number" class="form-control" name="duration_seconds_h" min="0" step="1" placeholder="<?php echo $this->lang('0 = permanent') ?>" />
-							<small class="text-muted"><?php echo $this->lang('Vide ou 0 pour permanent (warning/restrict ignorent)') ?></small>
-						</div>
-					</div>
-					<div class="nf-field mt-3">
-						<label id="reason_label"><?php echo $this->lang('Raison (visible par le user sanctionné)') ?></label>
-						<textarea name="reason" id="reason_textarea" class="form-control" rows="3" required maxlength="1000" placeholder="<?php echo $this->lang('Explique la sanction. Tu peux référencer le commentaire du reporter.') ?>"></textarea>
-					</div>
-					<div class="form-check mt-2">
-						<input type="checkbox" name="notify_user" id="notify_user" value="1" checked class="form-check-input" />
-						<label for="notify_user" class="form-check-label" id="notify_user_label"><?php echo $this->lang('Notifier l\'utilisateur (email + in-site)') ?></label>
-						<small class="d-block text-muted" id="shadow_ban_hint" style="display:none !important;"><i class="fas fa-user-secret"></i> <?php echo $this->lang('Shadow ban : pas de notif par nature (silencieux côté user, raison écrite obligatoire pour le staff).') ?></small>
-					</div>
-					<input type="hidden" name="duration_seconds" id="duration_seconds_hidden" value="" />
-					<script>
-						(function(){
-							var hourInput = document.querySelector('input[name="duration_seconds_h"]');
-							var hidden    = document.getElementById('duration_seconds_hidden');
-							hourInput.addEventListener('input', function(){
-								hidden.value = this.value ? (parseInt(this.value, 10) * 3600) : '';
-							});
-
-							var typeSel  = document.querySelector('select[name="type"]');
-							var notifyCb = document.getElementById('notify_user');
-							var notifyLb = document.getElementById('notify_user_label');
-							var hint     = document.getElementById('shadow_ban_hint');
-							var reasonLb = document.getElementById('reason_label');
-							var reasonTa = document.getElementById('reason_textarea');
-							var REASON_PUBLIC = <?php echo json_encode((string)$this->lang('Raison (visible par le user sanctionné)')) ?>;
-							var REASON_INTERN = <?php echo json_encode((string)$this->lang('Raison interne (visible uniquement par le staff)')) ?>;
-							var PH_PUBLIC = <?php echo json_encode((string)$this->lang('Explique la sanction. Tu peux référencer le commentaire du reporter.')) ?>;
-							var PH_INTERN = <?php echo json_encode((string)$this->lang('Justification interne pour le staff. Le user ne verra jamais ce texte.')) ?>;
-							typeSel.addEventListener('change', function(){
-								var isShadow = (this.value === 'shadow_ban');
-								notifyCb.checked  = !isShadow;
-								notifyCb.disabled = isShadow;
-								notifyLb.classList.toggle('text-muted', isShadow);
-								hint.style.cssText = isShadow ? '' : 'display:none !important;';
-								reasonLb.textContent = isShadow ? REASON_INTERN : REASON_PUBLIC;
-								reasonTa.placeholder = isShadow ? PH_INTERN : PH_PUBLIC;
-							});
-						})();
-					</script>
-					<div class="mt-3">
-						<button type="submit" class="btn btn-primary"><i class="fas fa-gavel"></i> <?php echo $this->lang('Appliquer la sanction') ?></button>
-					</div>
-				</form>
+				<?php echo $formulaire_sanction ?? '' ?>
 
 				<hr />
 
@@ -208,6 +124,25 @@ $status_class = [
 					</div>
 					<button type="submit" class="btn btn-outline-secondary"><i class="fas fa-times"></i> <?php echo $this->lang('Ignorer (dismiss)') ?></button>
 				</form>
+
+				<?php // La médiation : une conversation privée à trois pour régler un conflit sans sanction (2026-10-09). Le modérateur la
+				      // propose ; elle ne s'ouvre qu'avec l'accord de celui qui a signalé, que le membre signalé y verra. ?>
+				<?php if ($report['reporter_id'] && $report['target_user_id'] && (int) $report['reporter_id'] !== (int) $report['target_user_id'] && $this->access('moderation', 'mediation')): ?>
+				<hr />
+				<?php if (empty($report['mediation_le'])): ?>
+				<form method="post" action="<?php echo url($_modbase.'/reports/'.(int)$report['id'].'/mediation') ?>" class="mt-2"><input type="hidden" name="_" value="<?php echo $csrf ?>">
+					<p class="mb-2"><?php echo $this->lang('Proposer une médiation : une conversation privée entre toi, le membre signalé et celui qui l’a signalé, pour régler le conflit sans sanction.') ?></p>
+					<div class="alert alert-info py-2 small"><?php echo icon('fas fa-user-shield').' '.$this->lang('Celui qui a signalé décide : le membre signalé saura que c’est lui, la conversation ne s’ouvre donc qu’avec son accord. Tu seras prévenu de sa réponse.') ?></div>
+					<button type="submit" class="btn btn-outline-primary"><i class="fas fa-handshake"></i> <?php echo $this->lang('Proposer une médiation') ?></button>
+				</form>
+				<?php elseif ($report['mediation_accord'] === 'non'): ?>
+				<p class="mb-0 small text-muted"><?php echo icon('fas fa-handshake-slash').' '.$this->lang('Médiation refusée par celui qui a signalé, le %s : le signalement reste à traiter.', nf_date_heure((string) $report['mediation_reponse_le'])) ?></p>
+				<?php elseif ($report['mediation_accord'] === 'oui'): ?>
+				<p class="mb-0 small text-muted"><?php echo icon('fas fa-handshake').' '.$this->lang('Médiation acceptée le %s (discussion #%d).', nf_date_heure((string) $report['mediation_reponse_le']), (int) $report['mediation_talk_id']) ?></p>
+				<?php else: ?>
+				<p class="mb-0 small text-muted"><?php echo icon('fas fa-hourglass-half').' '.$this->lang('Médiation proposée le %s : en attente de la réponse de celui qui a signalé.', nf_date_heure((string) $report['mediation_le'])) ?></p>
+				<?php endif ?>
+				<?php endif ?>
 			</div>
 		</div>
 		<?php else: ?>

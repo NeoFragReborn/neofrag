@@ -23,9 +23,8 @@ class Checker extends Module_Checker
 				// la véracité ; le checker doit être cohérent.)
 				if (!empty($forum['url']))
 				{
-					header('Location: '.$forum['url']);
 					$this->model()->increment_redirect($forum_id);
-					exit;
+					nf_quitter_le_site((string) $forum['url'], 'forum');
 				}
 				else
 				{
@@ -74,6 +73,34 @@ class Checker extends Module_Checker
 			{
 				$this->error->unauthorized();
 			}
+		}
+	}
+
+	/**
+	 * `forum/piece-jointe/{id}` : une pièce jointe, servie par le site après les contrôles du sujet qui la porte — droit
+	 * de lire la catégorie, réserve VIP, auteur sous shadow ban, message supprimé (audit du 2026-10-09). Le fichier se
+	 * servait tel quel à quiconque avait son adresse, celui d'un forum réservé aussi.
+	 */
+	public function _piece_jointe($attachment_id)
+	{
+		$piece = $this->db	->select('a.mime_type', 'f.name', 'f.path', 'm.topic_id', 'm.user_id', 'm.deleted_at', 't.title')
+							->from('nf_forum_attachments a')
+							->join('nf_file f', 'f.id = a.file_id', 'INNER')
+							->join('nf_forum_messages m', 'm.message_id = a.message_id', 'INNER')
+							->join('nf_forum_topics t', 't.topic_id = m.topic_id', 'INNER')
+							->where('a.attachment_id', (int) $attachment_id)
+							->row(FALSE);
+
+		$titre  = $piece ? url_title((string) $piece['title']) : '';
+		$modele = $this->model('forum');
+
+		if ($piece && $modele instanceof \NF\Modules\Forum\Models\Forum
+			&& ($piece['deleted_at'] === NULL || $this->access->effective_admin())
+			&& ($sujet = $modele->check_topic((int) $piece['topic_id'], $titre))
+			&& $this->access('forum', 'category_read', $sujet['category_id'])
+			&& !in_array((int) $piece['user_id'], $this->moderation->auteurs_masques(), TRUE))
+		{
+			return [(string) $piece['path'], (string) $piece['name'], (string) $piece['mime_type']];
 		}
 	}
 

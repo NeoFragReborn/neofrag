@@ -39,10 +39,10 @@
 				?>
 				<?php if ($this->user()): ?>
 				<div class="nav-item">
-					<?php echo $this->user->username ?>
+					<?php echo nf_texte($this->user->username) ?>
 				</div>
 				<?php endif ?>
-				<?php echo $this->user() ? '<a href="'.url('user/logout').'" class="nav-link">'.icon('fas fa-times').' '.$this->lang('Déconnexion').'</a>' : '<a href="#" class="nav-link ms-5" data-modal-ajax="'.url('ajax/user/auth').'">'.icon('fas fa-sign-in-alt').' '.$this->lang('Se connecter').'</a>' ?>
+				<?php echo $this->user() ? '<a href="'.nf_url_action('user/logout').'" class="nav-link">'.icon('fas fa-times').' '.$this->lang('Déconnexion').'</a>' : '<a href="#" class="nav-link ms-5" data-modal-ajax="'.url('ajax/user/auth').'">'.icon('fas fa-sign-in-alt').' '.$this->lang('Se connecter').'</a>' ?>
 			</nav>
 		</div>
 	</header>

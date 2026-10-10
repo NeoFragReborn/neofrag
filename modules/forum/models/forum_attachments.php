@@ -63,17 +63,6 @@ trait Forum_Attachments
 						->get();
 	}
 
-	public function find_orphan_files()
-	{
-		// Files dans nf_file qui ne sont liés à aucun forum_attachment (et qui pointent vers /upload/forum/)
-		// Détection simple : tous les nf_file dont le path commence par 'upload/forum/' et qui ne sont pas dans nf_forum_attachments
-		return $this->db->select('f.id as file_id', 'f.name', 'f.path', 'f.date', 'f.user_id')
-						->from('nf_file f')
-						->where('f.path LIKE', 'upload/forum/%')
-						->where('f.id NOT IN (SELECT file_id FROM nf_forum_attachments)')
-						->get();
-	}
-
 	public function attach_file($message_id, $file_id, $size, $mime)
 	{
 		return $this->db->insert('nf_forum_attachments', [

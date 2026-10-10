@@ -17,7 +17,7 @@ class Socials extends Widget
 			'title'       => $this->lang('Réseaux sociaux'),
 			'description' => $this->lang('Liens vers les réseaux sociaux configurés (Facebook, Twitter, Instagram, etc.).'),
 			'icon'        => 'fas fa-share-nodes',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Jérémy VALENTIN <jeremy.valentin@neofr.ag>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

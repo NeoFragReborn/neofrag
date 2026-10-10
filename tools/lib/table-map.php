@@ -71,7 +71,7 @@ return [
     // moderation/pages/menu/statistics/talks/slider/media/webhooks) + données utilisateur.
     'core' => [
         'nf_addon', 'nf_addon_type',
-        'nf_user', 'nf_user_auth', 'nf_user_profile', 'nf_user_token', 'nf_user_totp_recovery',
+        'nf_user', 'nf_user_auth', 'nf_user_profile', 'nf_user_token', 'nf_user_totp_recovery', 'nf_user_email_change', 'nf_user_inactivite',
         // Champs de profil definis par l'administrateur : du coeur, comme le profil
         // lui-meme — ils prolongent nf_user_profile et vivent avec le compte.
         'nf_user_fields', 'nf_user_fields_values',

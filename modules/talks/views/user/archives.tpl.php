@@ -57,7 +57,7 @@
 						</div>
 					</div>
 					<div>
-						<a class="btn btn-sm btn-outline-primary" href="<?php echo \url('talks/'.(int)$c['talk_id'].'/'.\url_title($c['name']).'/unarchive') ?>">
+						<a class="btn btn-sm btn-outline-primary" href="<?php echo nf_url_action('talks/'.(int)$c['talk_id'].'/'.\url_title($c['name']).'/unarchive') ?>">
 							<?php echo \icon('fas fa-undo').' '.$this->lang('Désarchiver') ?>
 						</a>
 					</div>

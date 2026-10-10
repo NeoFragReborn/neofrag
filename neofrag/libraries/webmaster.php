@@ -111,7 +111,7 @@ class Webmaster extends Library
 	public function attempt(string $plain): array
 	{
 		$rl  = new Rate_Limit($this);
-		$key = 'webmaster:'.Rate_Limit::client_ip();
+		$key = 'webmaster:'.Rate_Limit::bloc_ip();
 
 		$check = $rl->check($key);
 

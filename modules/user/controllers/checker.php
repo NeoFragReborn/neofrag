@@ -152,9 +152,10 @@ class Checker extends Module_Checker
 	{
 		$this->error_if($this->user());
 
-		if (($token = $this->model2('token', $token)) && $token())
+		// Un lien « mot de passe oublié », et lui seul : un lien de validation ne choisit pas de mot de passe.
+		if (($token = $this->model2('token', $token)) instanceof \NF\Modules\User\Models\Token && $token() && $token->type === 'mot_de_passe')
 		{
-			// Un lien de reset / validation n'est valable qu'une heure.
+			// Un lien de reset n'est valable qu'une heure.
 			if ($token->date && $token->date->timestamp() < time() - 3600)
 			{
 				$token->delete();
@@ -176,7 +177,8 @@ class Checker extends Module_Checker
 	/**
 	 * `user/validation/{jeton}` : le lien de l'e-mail de validation d'une inscription (Index::validation),
 	 * valable deux jours. Un lien inconnu, déjà servi ou expiré le dit, et renvoie à la connexion — qui fait
-	 * partir un nouveau lien.
+	 * partir un nouveau lien. Il ne vaut que pour un compte qui attend encore sa validation, et jamais un lien
+	 * « mot de passe oublié » : celui-ci connectait sans rien demander pendant deux jours (audit du 2026-10-09).
 	 */
 	public function validation($token)
 	{
@@ -187,7 +189,10 @@ class Checker extends Module_Checker
 
 		$jeton = $this->model2('token', $token);
 
-		if ($jeton && $jeton() && !($jeton->date && $jeton->date->timestamp() < time() - \NF\Modules\User\User::VALIDATION_DUREE))
+		$module = $this->module('user');
+
+		if ($jeton instanceof \NF\Modules\User\Models\Token && $jeton() && $jeton->type === 'validation' && $module instanceof \NF\Modules\User\User && $module->a_valider($jeton->user)
+			&& !($jeton->date && $jeton->date->timestamp() < time() - \NF\Modules\User\User::VALIDATION_DUREE))
 		{
 			return [$jeton];
 		}
@@ -199,6 +204,43 @@ class Checker extends Module_Checker
 
 		notify($this->lang('Ce lien de validation n\'est plus valable : connectez-vous, un nouveau lien vous sera envoyé.'), 'warning');
 		redirect();
+	}
+
+	/**
+	 * `user/adresse/{jeton}` : le lien qui confirme une nouvelle adresse e-mail (Index::_adresse), valable deux jours
+	 * (User::ADRESSE_DUREE). Il vaut connecté ou non : on l'ouvre souvent depuis un autre appareil que celui de la
+	 * demande. Un lien inconnu ou expiré le dit, et renvoie au compte.
+	 */
+	public function _adresse($jeton)
+	{
+		$ligne = $this->db->select('user_id', 'email', 'created_at')->from('nf_user_email_change')->where('token', (string) $jeton)->row(FALSE);
+
+		if ($ligne && strtotime((string) $ligne['created_at']) >= time() - \NF\Modules\User\User::ADRESSE_DUREE)
+		{
+			return [$ligne];
+		}
+
+		if ($ligne)
+		{
+			$this->db->where('token', (string) $jeton)->delete('nf_user_email_change');
+		}
+
+		notify($this->lang('Ce lien de confirmation n\'est plus valable : demande de nouveau le changement d\'adresse depuis ton compte.'), 'warning');
+		redirect($this->user() ? 'user/account' : '');
+	}
+
+	public function _adresse_renvoyer()
+	{
+		$this->error->unconnected();
+
+		return [];
+	}
+
+	public function _adresse_annuler()
+	{
+		$this->error->unconnected();
+
+		return [];
 	}
 
 	/**

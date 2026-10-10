@@ -9,41 +9,25 @@ namespace NF\Modules\Talks\Controllers;
 
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
 
-// La vue `index` rend les messages par Security::render_message(), comme la conversation.
-require_once __DIR__ . '/../security.php';
-
+/**
+ * Les adresses `ajax/talks` et `ajax/talks/older` de l'ancienne messagerie sont retirées (2026-10-09) : rien ne les
+ * appelait plus, et elles rendaient les messages de n'importe quelle conversation à qui avait le droit « lire » — droit
+ * que chaque conversation, même privée, accorde à tous à sa création (`Access::init()`). Un visiteur lisait ainsi un
+ * groupe privé de la démonstration. Une conversation se lit par sa page, qui vérifie la participation
+ * (`Models\Talks::user_can_access()`).
+ */
 class Ajax extends Controller_Module
 {
-	public function index($talk_id, $message_id)
-	{
-		return $this->view('index', [
-			'messages' => $this->model()->get_messages($talk_id, $message_id)
-		]);
-	}
-
-	public function older($talk_id, $message_id, $position)
-	{
-		return $this->view('index', [
-			'position' => $position,
-			'user_id'  => $this->db->select('user_id')->from('nf_talks_messages')->where('message_id', $message_id)->row(),
-			'messages' => $this->model()->get_messages($talk_id, $message_id, TRUE)
-		]);
-	}
-
-	public function add_message($talk_id, $message)
-	{
-		if ($message = trim($message))
-		{
-			$this->db->insert('nf_talks_messages', [
-				'talk_id' => $talk_id,
-				'user_id' => $this->user->id,
-				'message' => utf8_htmlentities($message)
-			]);
-		}
-	}
-
 	public function delete($message_id, $talk_id)
 	{
+		// Un message signalé ne s'efface pas par son auteur tant que la modération ne l'a pas examiné (audit du 2026-10-09).
+		$auteur = (int) $this->db->select('user_id')->from('nf_talks_messages')->where('message_id', (int) $message_id)->row();
+
+		if ($this->user() && $auteur === (int) $this->user->id && !$this->access('talks', 'delete', $talk_id) && $this->moderation->is_message_locked('talks', (int) $message_id))
+		{
+			return '<div class="alert alert-warning mb-0">'.$this->lang('Ce message est signalé : il ne peut pas être supprimé tant que la modération ne l’a pas examiné.').'</div>';
+		}
+
 		$this	->title($this->lang('Confirmation de suppression'))
 				->form()
 				->confirm_deletion($this->lang('Confirmation de suppression'), $this->lang('Êtes-vous sûr(e) de vouloir supprimer ce message ?'));

@@ -64,4 +64,22 @@ final class ForumSearchTest extends TestCase
 		$this->assertSame("'a''b'", Forum_Search::quote("a'b"));
 		$this->assertSame("''''", Forum_Search::quote("'"));
 	}
+
+	/**
+	 * L'injection relevée par l'audit du 2026-10-09 : un mot entre guillemets passait tel quel, et l'antislash n'était
+	 * pas échappé — `"\')…"` refermait la chaîne SQL. Rien d'autre qu'une lettre, un chiffre ou `_` ne reste dans un
+	 * mot entre guillemets, et l'antislash est doublé.
+	 */
+	public function test_a_quoted_token_cannot_carry_sql(): void
+	{
+		$this->assertSame('"aOR11b"', Forum_Search::to_boolean_query("\"a\\')/**/OR/**/1=1#b\""));
+		$this->assertSame('"OR11"', Forum_Search::to_boolean_query("\"\\')OR(1=1)--\""));
+		$this->assertSame('', Forum_Search::to_boolean_query("\"\\'\""));
+		$this->assertSame("'a\\\\''b'", Forum_Search::quote("a\\'b"));
+
+		foreach (["\"x\\'y\"", "\"'\"", "\"x\\\"", "-\\'x", "\\'abc"] as $saisie)
+		{
+			$this->assertDoesNotMatchRegularExpression("/['\\\\]/", Forum_Search::to_boolean_query($saisie), $saisie);
+		}
+	}
 }

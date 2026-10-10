@@ -457,6 +457,52 @@ foreach ($domaines as $nom => $dossier)
 }
 
 /*
+ * ── La FORME d'une traduction ───────────────────────────────────────────────────
+ * Une traduction garde ce qui n'est pas du texte : les balises de son modèle français (`<b>`, `<br />`), ses
+ * marques de remplacement (`%s`, `%d`), et un séparateur de pluriel collé à ses formes. Le 2026-10-09, l'anglais
+ * portait vingt pluriels écrits « forme| forme » (une espace en tête de la seconde forme) et un `< br / >` qui
+ * s'affichait en toutes lettres — relevés sur une capture de la démo, où le forum disait « There are 1 user ».
+ */
+$forme = static function (string $t): array {
+    preg_match_all('#</?[a-z][a-z0-9]*(?:\s[^<>]*)?/?>#i', $t, $b);
+    preg_match_all('/%(?:\d+\$)?[sd]/', $t, $r);
+    $balises = array_map(static fn (string $x): string => strtolower((string) preg_replace('#^<(/?)([a-z0-9]+).*$#is', '$1$2', $x)), $b[0]);
+    sort($balises);
+
+    return ['balises' => $balises, 'remplacements' => count($r[0])];
+};
+
+foreach ($domaines as $nom => $dossier)
+{
+    $source = nf_langue_valeurs($dossier.'/langs/fr.php');
+
+    foreach (LANGUES as $langue)
+    {
+        foreach (nf_langue_valeurs($dossier.'/langs/'.$langue.'.php') as $cle => $traduit)
+        {
+            $ou = sprintf('%s/langs/%s.php, %s — « %s »', nf_relatif($dossier), $langue, $cle, mb_strimwidth($traduit, 0, 80, '…'));
+
+            if (preg_match('/\s\||\|\s/', $traduit))
+            {
+                $erreurs[] = 'pluriel mal séparé (une espace contre « | ») : '.$ou;
+            }
+
+            if (preg_match('#<\s+/?[a-z]+[^<>]*>|<[a-z]+\s*/\s+>#i', $traduit))
+            {
+                $erreurs[] = 'balise mal écrite (elle s\'afficherait en toutes lettres) : '.$ou;
+            }
+
+            if ($langue !== 'fr' && isset($source[$cle]) && ($a = $forme($source[$cle])) !== ($t = $forme($traduit)))
+            {
+                $erreurs[] = sprintf('traduction qui ne garde pas la forme du français (%s) : %s',
+                    $a['balises'] !== $t['balises'] ? 'balises '.implode(' ', $a['balises']).' → '.(implode(' ', $t['balises']) ?: 'aucune') : sprintf('%d marque(s) %%s/%%d → %d', $a['remplacements'], $t['remplacements']),
+                    $ou);
+            }
+        }
+    }
+}
+
+/*
  * ── La traduction RECOPIÉE du français ──────────────────────────────────────────
  * Un texte qui a l'air français (accent, petit mot) et dont la « traduction » est le texte même.
  * Quelques mots s'écrivent pareil dans une autre langue : ils sont déclarés ici.

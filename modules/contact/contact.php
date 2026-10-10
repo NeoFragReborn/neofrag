@@ -17,7 +17,7 @@ class Contact extends Module
 			'title'       => $this->lang('Contact'),
 			'description' => $this->lang('Formulaire de contact public avec captcha optionnel.'),
 			'icon'        => 'far fa-envelope',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

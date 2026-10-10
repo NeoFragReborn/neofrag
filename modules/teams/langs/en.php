@@ -36,7 +36,7 @@ return [
 	'7d05aea8' => 'team edited',
 	'7d8a2b79' => 'Delete role',
 	'86c33902' => 'Edit',
-	'8d48eebf' => '%d player| %d players',
+	'8d48eebf' => '%d player|%d players',
 	'929c165d' => 'Our players',
 	'938fa9a9' => 'Are you sure you want to delete the team <b>%s</b>?',
 	'93e5de5b' => 'Teams list',

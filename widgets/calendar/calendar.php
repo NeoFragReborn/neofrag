@@ -16,7 +16,7 @@ class Calendar extends Widget
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
 			'presets'     => ['association', 'gaming'],
-			'requires'    => [],
+			'requires'    => ['calendar'],
 			'version' => '1.2',
 			'link'        => 'https://neofrag-reborn.xyz',
 			'depends' => ['neofrag' => '0.2.0'],

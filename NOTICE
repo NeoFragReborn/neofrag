@@ -105,6 +105,7 @@ Bibliothèques PHP livrées dans vendor/ (composer.lock) — chacune y garde son
   league/uri-interfaces 7.8.1 — MIT
   nette/schema 1.3.5 — BSD-3-Clause ou GPL-2.0-only ou GPL-3.0-only
   nette/utils 4.1.3 — BSD-3-Clause ou GPL-2.0-only ou GPL-3.0-only
+  nyholm/psr7 1.8.2 — MIT
   paragonie/constant_time_encoding 3.1.3 — MIT
   paragonie/random_compat 9.99.100 — MIT
   phpmailer/phpmailer 7.1.1 — LGPL-2.1-only

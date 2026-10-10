@@ -86,14 +86,15 @@ class Talks extends Module
 
 				try
 				{
-					$this->email->template('talks.new_message', [
+					// Dans la langue du destinataire, pas de celui qui écrit (audit du 2026-10-09).
+					nf_dans_la_langue_du_membre((int) $r['user_id'], fn () => $this->email->template('talks.new_message', [
 									'username'  => $r['username'],
 									'talk_name' => $talk['name'],
 									'talk_url'  => $talk_url,
 									'author'    => $talk['author']
 								])
 								->to($r['email'])
-								->send();
+								->send());
 				}
 				catch (\Throwable $e)
 				{
@@ -178,7 +179,7 @@ class Talks extends Module
 			'title'       => $this->lang('Discussion'),
 			'description' => $this->lang('Talkbox / chat rapide entre membres connectés.'),
 			'icon'        => 'far fa-comment',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
@@ -204,12 +205,11 @@ class Talks extends Module
 				'{id}/{url_title}/unarchive'      => '_unarchive',
 				'{id}/{url_title}/delete'         => '_delete',
 				'{id}/{url_title}/restore'        => '_restore',
-				'{id}/{url_title}/report/{key_id}' => '_report',
 				'search'                          => '_search',
+				'piece-jointe/{id}'               => '_piece_jointe',
 
 				// Routes admin (existantes + ajouts T6)
 				'admin{pages}'                    => 'index',
-				'admin/reports{page}'             => '_reports',
 				'admin/{id}/{url_title*}'         => '_edit',
 				'admin/delete/{id}/{url_title*}'  => '_admin_delete'
 			]

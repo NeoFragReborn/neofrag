@@ -16,11 +16,6 @@ abstract class Widget extends Addon
 		return 'Widgets\\'.$name.'\\'.$name;
 	}
 
-	// Widgets adossés à un module optionnel (homonyme, tables préfixées nf_<nom>). Si le module
-	// n'est pas installé, le bloc se masque au lieu de fataliser (ex. module news désinstallé mais
-	// widget news resté dans une disposition). Même réflexe que le widget slider, centralisé ici.
-	static protected $_module_widgets = ['articles', 'awards', 'calendar', 'donations', 'downloads', 'events', 'forum', 'gallery', 'guestbook', 'links', 'news', 'newsletter', 'partners', 'surveys', 'teams'];
-
 	public function output($type = 'index', $settings = [])
 	{
 		if (is_array($type))
@@ -29,7 +24,8 @@ abstract class Widget extends Addon
 			$type     = 'index';
 		}
 
-		if (in_array($name = $this->info()->name, self::$_module_widgets, TRUE) && !$this->_module_installed($name))
+		// Sans le module qu'il montre, le widget se tait : ses tables manquent, ou ses liens mènent à une page fermée.
+		if ($this->modules_manquants())
 		{
 			return;
 		}
@@ -83,24 +79,29 @@ abstract class Widget extends Addon
 		return $settings + $defauts[$cle];
 	}
 
-	private function _module_installed($name)
+	/**
+	 * Les modules que ce widget déclare dans `requires` et qui manquent ici : pas installés, ou désactivés.
+	 *
+	 * Un widget qui montre ce que fait un module — ses actualités, son forum, sa galerie — le déclare : sans lui, il
+	 * ne s'affiche pas, et l'éditeur en direct ne le propose pas. Jusqu'au 2026-10-09, une liste de quinze noms écrite
+	 * ici tenait ce rôle et devinait le module à ses tables : elle oubliait Recrutement, et ne voyait pas un module
+	 * DÉSACTIVÉ, dont le widget restait affiché avec des liens vers des pages fermées. La déclaration fait foi.
+	 *
+	 * @return list<string>
+	 */
+	public function modules_manquants(): array
 	{
-		static $tables;
+		$manquants = [];
 
-		if ($tables === NULL)
+		foreach ((array) ($this->info()->requires ?? []) as $nom)
 		{
-			$tables = $this->db->tables();
-		}
-
-		foreach ($tables as $table)
-		{
-			if ($table === 'nf_'.$name || strpos($table, 'nf_'.$name.'_') === 0)
+			if (!($module = $this->module((string) $nom)) || !$module->is_enabled())
 			{
-				return TRUE;
+				$manquants[] = (string) $nom;
 			}
 		}
 
-		return FALSE;
+		return $manquants;
 	}
 
 	public function get_admin($type, $settings = [])

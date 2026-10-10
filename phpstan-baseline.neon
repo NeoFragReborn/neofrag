@@ -331,12 +331,6 @@ parameters:
 			path: modules/admin/controllers/admin.php
 
 		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 12
-			path: modules/ads/controllers/admin.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Articles\\Articles\:\:form_number\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -967,12 +961,6 @@ parameters:
 			path: modules/donations/controllers/admin.php
 
 		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 10
-			path: modules/donations/controllers/admin.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_active_campaigns\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -1297,12 +1285,6 @@ parameters:
 			path: modules/events/controllers/admin.php
 
 		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 34
-			path: modules/events/controllers/admin.php
-
-		-
 			message: '#^Variable \$form_match might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
@@ -1317,18 +1299,6 @@ parameters:
 		-
 			message: '#^Variable \$form_round might not be defined\.$#'
 			identifier: variable.undefined
-			count: 2
-			path: modules/events/controllers/admin.php
-
-		-
-			message: '#^Variable \$post in empty\(\) is never defined\.$#'
-			identifier: empty.variable
-			count: 2
-			path: modules/events/controllers/admin.php
-
-		-
-			message: '#^Variable \$post on left side of \?\? is never defined\.$#'
-			identifier: nullCoalesce.variable
 			count: 2
 			path: modules/events/controllers/admin.php
 
@@ -1783,12 +1753,6 @@ parameters:
 			path: modules/forum/controllers/admin.php
 
 		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:find_orphan_files\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: modules/forum/controllers/admin.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_attachments_stats\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -1863,7 +1827,7 @@ parameters:
 		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 22
+			count: 21
 			path: modules/forum/controllers/admin.php
 
 		-
@@ -2725,18 +2689,6 @@ parameters:
 			path: modules/gallery/controllers/admin.php
 
 		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 10
-			path: modules/gallery/controllers/admin.php
-
-		-
-			message: '#^Variable \$post on left side of \?\? is never defined\.$#'
-			identifier: nullCoalesce.variable
-			count: 1
-			path: modules/gallery/controllers/admin.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:add_image\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -3175,12 +3127,6 @@ parameters:
 			path: modules/gamification/controllers/admin.php
 
 		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 2
-			path: modules/gamification/controllers/admin.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Live_Editor\\Controllers\\Admin\:\:theme\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -3499,12 +3445,6 @@ parameters:
 			path: modules/moderation/controllers/admin_ajax_checker.php
 
 		-
-			message: '#^Constant NEOFRAG_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: modules/moderation/controllers/ajax.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\Moderation\\Controllers\\Ajax_Checker\:\:ajax\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -3541,12 +3481,6 @@ parameters:
 			path: modules/moderation/controllers/index.php
 
 		-
-			message: '#^Constant NEOFRAG_PATH not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: modules/moderation/controllers/index.php
-
-		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
 			count: 5
@@ -3563,18 +3497,6 @@ parameters:
 			identifier: variable.undefined
 			count: 8
 			path: modules/moderation/views/admin/dashboard.tpl.php
-
-		-
-			message: '#^Variable \$csrf might not be defined\.$#'
-			identifier: variable.undefined
-			count: 2
-			path: modules/moderation/views/admin/report_detail.tpl.php
-
-		-
-			message: '#^Variable \$report might not be defined\.$#'
-			identifier: variable.undefined
-			count: 23
-			path: modules/moderation/views/admin/report_detail.tpl.php
 
 		-
 			message: '#^Variable \$reporter_score might not be defined\.$#'
@@ -3598,12 +3520,6 @@ parameters:
 			message: '#^Variable \$filter might not be defined\.$#'
 			identifier: variable.undefined
 			count: 3
-			path: modules/moderation/views/admin/reports.tpl.php
-
-		-
-			message: '#^Variable \$page might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
 			path: modules/moderation/views/admin/reports.tpl.php
 
 		-
@@ -3633,7 +3549,7 @@ parameters:
 		-
 			message: '#^Variable \$sanction might not be defined\.$#'
 			identifier: variable.undefined
-			count: 19
+			count: 18
 			path: modules/moderation/views/admin/sanction_detail.tpl.php
 
 		-
@@ -3643,15 +3559,9 @@ parameters:
 			path: modules/moderation/views/admin/sanctions.tpl.php
 
 		-
-			message: '#^Variable \$page might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: modules/moderation/views/admin/sanctions.tpl.php
-
-		-
 			message: '#^Variable \$config might not be defined\.$#'
 			identifier: variable.undefined
-			count: 12
+			count: 11
 			path: modules/moderation/views/admin/settings.tpl.php
 
 		-
@@ -4651,12 +4561,6 @@ parameters:
 			path: modules/payments/controllers/admin.php
 
 		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 13
-			path: modules/payments/controllers/admin.php
-
-		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Config\:\:\$pay_stripe_webhook_secret\.$#'
 			identifier: property.notFound
 			count: 1
@@ -4900,12 +4804,6 @@ parameters:
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
 			count: 24
-			path: modules/recruits/controllers/admin.php
-
-		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 11
 			path: modules/recruits/controllers/admin.php
 
 		-
@@ -5443,22 +5341,10 @@ parameters:
 			path: modules/search/views/results.tpl.php
 
 		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 25
-			path: modules/settings/controllers/admin.php
-
-		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Core\\Session\:\:set\(\)\.$#'
 			identifier: method.notFound
 			count: 3
 			path: modules/settings/controllers/ajax.php
-
-		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 12
-			path: modules/shop/controllers/admin.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Addons\\Module\:\:get_points\(\)\.$#'
@@ -5530,24 +5416,6 @@ parameters:
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
 			count: 9
-			path: modules/slider/controllers/admin.php
-
-		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 7
-			path: modules/slider/controllers/admin.php
-
-		-
-			message: '#^Variable \$post in empty\(\) is never defined\.$#'
-			identifier: empty.variable
-			count: 2
-			path: modules/slider/controllers/admin.php
-
-		-
-			message: '#^Variable \$post on left side of \?\? is never defined\.$#'
-			identifier: nullCoalesce.variable
-			count: 1
 			path: modules/slider/controllers/admin.php
 
 		-
@@ -5657,18 +5525,6 @@ parameters:
 			identifier: arguments.count
 			count: 3
 			path: modules/talks/controllers/admin_checker.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_messages\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: modules/talks/controllers/ajax.php
-
-		-
-			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
-			identifier: arguments.count
-			count: 2
-			path: modules/talks/controllers/ajax.php
 
 		-
 			message: '#^Call to an undefined method NF\\Modules\\Talks\\Controllers\\Ajax_Checker\:\:ajax\(\)\.$#'
@@ -5811,25 +5667,13 @@ parameters:
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:user_can_access\(\)\.$#'
 			identifier: method.notFound
-			count: 3
+			count: 2
 			path: modules/talks/controllers/index.php
 
 		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 34
-			path: modules/talks/controllers/index.php
-
-		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 8
-			path: modules/talks/controllers/index.php
-
-		-
-			message: '#^Variable \$post in isset\(\) is never defined\.$#'
-			identifier: isset.variable
-			count: 1
+			count: 33
 			path: modules/talks/controllers/index.php
 
 		-
@@ -5837,12 +5681,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: modules/talks/talks.php
-
-		-
-			message: '#^Variable \$messages might not be defined\.$#'
-			identifier: variable.undefined
-			count: 2
-			path: modules/talks/views/index.tpl.php
 
 		-
 			message: '#^Variable \$conversations might not be defined\.$#'
@@ -6004,12 +5842,6 @@ parameters:
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
 			count: 6
-			path: modules/teams/controllers/admin.php
-
-		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 9
 			path: modules/teams/controllers/admin.php
 
 		-
@@ -6409,12 +6241,6 @@ parameters:
 			path: modules/user/controllers/ajax.php
 
 		-
-			message: '#^Access to an undefined property NF\\NeoFrag\\Loadables\\Model2\:\:\$date\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/user/controllers/ajax_checker.php
-
-		-
 			message: '#^Call to an undefined method NF\\Modules\\User\\Controllers\\Ajax_Checker\:\:error_if\(\)\.$#'
 			identifier: method.notFound
 			count: 4
@@ -6424,12 +6250,6 @@ parameters:
 			message: '#^Access to an undefined property NF\\NeoFrag\\Core\\Session\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
-			path: modules/user/controllers/checker.php
-
-		-
-			message: '#^Access to an undefined property NF\\NeoFrag\\Loadables\\Model2\:\:\$date\.$#'
-			identifier: property.notFound
-			count: 2
 			path: modules/user/controllers/checker.php
 
 		-
@@ -6523,22 +6343,10 @@ parameters:
 			path: modules/user/controllers/index.php
 
 		-
-			message: '#^Instantiated class SocialConnect\\Common\\Http\\Client\\Curl not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: modules/user/controllers/index.php
-
-		-
 			message: '#^Undefined variable\: \$params$#'
 			identifier: variable.undefined
 			count: 2
 			path: modules/user/controllers/index.php
-
-		-
-			message: '#^Access to an undefined property NF\\NeoFrag\\Models\\User\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 10
-			path: modules/user/models/user.php
 
 		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Models\\User\:\:\$online\.$#'
@@ -6575,18 +6383,6 @@ parameters:
 			identifier: method.notFound
 			count: 1
 			path: modules/user/models/user/update.php
-
-		-
-			message: '#^Undefined variable\: \$post$#'
-			identifier: variable.undefined
-			count: 3
-			path: modules/user/models/user/update.php
-
-		-
-			message: '#^Access to an undefined property NF\\Modules\\User\\User\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: modules/user/user.php
 
 		-
 			message: '#^Variable \$form_id might not be defined\.$#'
@@ -7403,12 +7199,6 @@ parameters:
 			identifier: staticMethod.notFound
 			count: 1
 			path: neofrag/libraries/modal.php
-
-		-
-			message: '#^Call to an undefined method NF\\NeoFrag\\Libraries\\Moderation\:\:groups\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: neofrag/libraries/moderation.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:create_conversation\(\)\.$#'

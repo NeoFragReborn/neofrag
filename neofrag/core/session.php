@@ -88,12 +88,7 @@ class Session extends Core
 				$this->_menage_du_jour();
 			}
 
-			$cookie_name = $this->config->nf_cookie_name;
-
-			if ($this->url->https)
-			{
-				$cookie_name .= '_https';
-			}
+			$cookie_name = $this->nom_du_cookie();
 
 			$this->_session = $this->model2('session', isset($_COOKIE[$cookie_name]) ? $_COOKIE[$cookie_name] : NULL);
 
@@ -120,14 +115,12 @@ class Session extends Core
 			{
 				$this->_renew_id();
 
-				// X-Real-IP est un header CLIENT (forgeable hors reverse-proxy de confiance) :
-				// validé comme IP, sinon repli sur REMOTE_ADDR — il est stocké puis affiché
-				// dans l'historique de sessions admin (XSS stocké si brut).
-				$real_ip = isset($_SERVER['HTTP_X_REAL_IP']) ? filter_var($_SERVER['HTTP_X_REAL_IP'], FILTER_VALIDATE_IP) : FALSE;
-
+				// L'adresse du client : celle de la connexion, ou celle qu'un relais de confiance transmet
+				// (Rate_Limit::client_ip()). X-Real-IP était lu tel quel : n'importe quel navigateur l'envoie, et
+				// l'historique des connexions montrait l'adresse de son choix (audit du 2026-10-09).
 				$this->set('session', [
 					'date'       => NeoFrag()->date(),
-					'ip_address' => $ip_address = $real_ip !== FALSE ? $real_ip : $_SERVER['REMOTE_ADDR'],
+					'ip_address' => $ip_address = (string) \NF\NeoFrag\Libraries\Rate_Limit::client_ip(),
 					'host_name'  => utf8_string(gethostbyaddr($ip_address)),
 					'referer'    => isset($_SERVER['HTTP_REFERER'])                 ? utf8_htmlentities($_SERVER['HTTP_REFERER'])    : '',
 					'user_agent' => isset($_SERVER['HTTP_USER_AGENT'])              ? utf8_htmlentities($_SERVER['HTTP_USER_AGENT']) : ''
@@ -231,12 +224,7 @@ class Session extends Core
 	// ou passer en navigation privée, et c'est tout.
 	private function _renew_id()
 	{
-		$cookie_name = $this->config->nf_cookie_name;
-
-		if ($this->url->https)
-		{
-			$cookie_name .= '_https';
-		}
+		$cookie_name = $this->nom_du_cookie();
 
 		// Deux passes. La première couvre la collision d'identifiant. Si elle échoue, la cause la
 		// plus probable est la référence à un utilisateur qui n'existe plus : on la détache et on
@@ -257,14 +245,7 @@ class Session extends Core
 					// Jusqu'à la fermeture du navigateur ; un an pour « Se souvenir de moi » (2026-10-08). Le
 					// cookie vivait un an pour tout le monde, visiteurs compris, alors que le site oubliait la
 					// session au bout de `nf_cookie_expire` sans activité : il durait onze mois de trop.
-					setcookie($cookie_name, $this->_session->id, [
-						'expires'  => $this->_session->remember ? strtotime('+1 year') : 0,
-						'path'     => $this->url->base,
-						'domain'   => $this->url->domain,
-						'secure'   => (bool)$this->url->https,
-						'httponly' => TRUE,
-						'samesite' => 'Lax'
-					]);
+					setcookie($cookie_name, $this->_session->id, $this->_attributs_du_cookie($this->_session->remember ? strtotime('+1 year') : 0));
 
 					return;
 				}
@@ -277,14 +258,7 @@ class Session extends Core
 		// ne répond jamais.
 		trigger_error('Session inécrivable après dix tentatives : session abandonnée.', E_USER_WARNING);
 
-		setcookie($cookie_name, '', [
-			'expires'  => 1,
-			'path'     => $this->url->base,
-			'domain'   => $this->url->domain,
-			'secure'   => (bool)$this->url->https,
-			'httponly' => TRUE,
-			'samesite' => 'Lax'
-		]);
+		setcookie($cookie_name, '', $this->_attributs_du_cookie(1));
 
 		$this->_session = $this->model2('session');
 		$this->_data    = $this->_session->data->__extends($this);
@@ -303,6 +277,7 @@ class Session extends Core
 	 *   - traces du consentement : treize mois (un choix vaut six mois ; la trace le survit, pour la preuve) ;
 	 *   - file d'envoi des lettres : quatre-vingt-dix jours après l'envoi ;
 	 *   - inscription à la lettre jamais confirmée : trente jours ;
+	 *   - nouvelle adresse e-mail jamais confirmée : deux jours, la vie de son lien (User::ADRESSE_DUREE) ;
 	 *   - signalement traité depuis un an : l'adresse IP de qui l'a fait, la copie du contenu et des
 	 *     pièces jointes s'en vont ; le signalement, lui, reste (qui a décidé quoi).
 	 *
@@ -324,6 +299,28 @@ class Session extends Core
 			fn() => $this->db	->where('confirmed', 0)
 								->where('created_at <', $this->date()->sub('30 days')->sql())
 								->delete('nf_newsletter_subscribers'),
+			fn() => $this->db->where('created_at <', $this->date()->sub('2 days')->sql())->delete('nf_user_email_change'),
+			// Les comptes restés sans visite : prévenus un mois avant, puis effacés (User::menage_des_comptes_inactifs()). En FIN
+			// de requête : les e-mails se rédigent dans la langue du membre, et la langue du site n'est pas encore chargée ici.
+			// Sous PHP-FPM, la réponse part d'abord : le visiteur n'attend pas les envois.
+			fn() => register_shutdown_function(function () {
+				if (function_exists('fastcgi_finish_request'))
+				{
+					fastcgi_finish_request();
+				}
+
+				try
+				{
+					if (($membres = $this->module('user')) instanceof \NF\Modules\User\User)
+					{
+						$membres->menage_des_comptes_inactifs();
+					}
+				}
+				catch (\Throwable $e)
+				{
+					error_log('[ménage du jour] '.$e->getMessage().' — '.$e->getFile().':'.$e->getLine());
+				}
+			}),
 			function() use ($an) {
 				$anciens = array_map('intval', $this->db	->select('id')
 															->from('nf_reports')
@@ -353,10 +350,43 @@ class Session extends Core
 			{
 				$purge();
 			}
+			// Une purge qui échoue n'arrête pas les autres, mais se dit au journal : elle échouait sans un mot.
 			catch (\Throwable $e)
 			{
+				error_log('[ménage du jour] '.$e->getMessage().' — '.$e->getFile().':'.$e->getLine());
 			}
 		}
+	}
+
+	/**
+	 * Le nom du cookie de session. En HTTPS, pour un site à la racine de son domaine : `__Host-` devant (audit du
+	 * 2026-10-09). Le navigateur n'accepte un tel cookie que posé par CE site, en HTTPS, pour tout le site, et ne l'envoie
+	 * qu'à lui : un sous-domaine (une démo, un webmail) ne peut ni le recevoir ni en poser un à sa place pour imposer une
+	 * session. Ailleurs — en HTTP, ou pour un site dans un sous-dossier, que ce préfixe n'admet pas —, le nom d'avant.
+	 */
+	public function nom_du_cookie(): string
+	{
+		$nom = (string) $this->config->nf_cookie_name;
+
+		if (!$this->url->https)
+		{
+			return $nom;
+		}
+
+		return $this->url->base === '/' ? '__Host-'.$nom : $nom.'_https';
+	}
+
+	/** Les attributs du cookie de session ; un cookie `__Host-` n'a jamais de domaine (le navigateur le refuserait). */
+	private function _attributs_du_cookie(int $expire): array
+	{
+		return [
+			'expires'  => $expire,
+			'path'     => $this->url->base,
+			'domain'   => str_starts_with($this->nom_du_cookie(), '__Host-') ? '' : $this->url->domain,
+			'secure'   => (bool) $this->url->https,
+			'httponly' => TRUE,
+			'samesite' => 'Lax'
+		];
 	}
 
 	public function login($user, $remember = NULL)
@@ -368,12 +398,10 @@ class Session extends Core
 		// ID persiste aussi l'utilisateur qu'on vient de poser).
 		$this->_renew_id();
 
-		// Même validation qu'à la création de session : X-Real-IP est forgeable.
-		$real_ip = isset($_SERVER['HTTP_X_REAL_IP']) ? filter_var($_SERVER['HTTP_X_REAL_IP'], FILTER_VALIDATE_IP) : FALSE;
-
+		// La même adresse qu'à la création de session : jamais un en-tête que le navigateur choisit.
 		$this	->model2('session_history')
 				->set('user',       $user)
-				->set('ip_address', $ip_address = $real_ip !== FALSE ? $real_ip : $_SERVER['REMOTE_ADDR'])
+				->set('ip_address', $ip_address = (string) \NF\NeoFrag\Libraries\Rate_Limit::client_ip())
 				->set('host_name',  utf8_string(gethostbyaddr($ip_address)))
 				->set('referer',    (string)$this('session', 'referer'))
 				->set('user_agent', isset($_SERVER['HTTP_USER_AGENT']) ? utf8_htmlentities($_SERVER['HTTP_USER_AGENT']) : '')

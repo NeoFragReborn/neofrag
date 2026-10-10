@@ -160,4 +160,7 @@ return [
 	'8fd9c7ef' => 'Salva',
 	'992d9fb3' => 'Un invito a un evento',
 	'c58bcb5d' => 'Il promemoria di un evento a cui partecipo',
+	'49a80df0' => 'Online',
+	'48b614a4' => 'Offline',
+	'ff8f2a30' => 'Amministratore',
 ];

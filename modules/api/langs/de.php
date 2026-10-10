@@ -71,4 +71,5 @@ return [
 	'f7232257' => 'Nur der Autor dieses Kommentars kann ihn über die API bearbeiten oder löschen.',
 	'31a19f58' => 'Der Bugtracker ist auf dieser Website nicht installiert.',
 	'38ce3464' => 'Diese Rolle ist mit einer Gruppe der Website verknüpft: Die Gruppensynchronisierung vergibt und entfernt sie bereits.',
+	'fc49b15e' => 'Dieser Autor darf in diesem Forum nicht schreiben.',
 ];

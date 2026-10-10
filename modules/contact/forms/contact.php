@@ -19,8 +19,7 @@ $this->rule($this->form_text('subject')
 	->success(function($data, $form){
 		// R2.0 — Rate limit anti-spam : 3 contacts par IP / heure
 		$rateLimit = new \NF\NeoFrag\Libraries\Rate_Limit($this);
-		$ip        = \NF\NeoFrag\Libraries\Rate_Limit::client_ip();
-		$rl_key    = 'contact:ip:'.$ip;
+		$rl_key    = 'contact:ip:'.\NF\NeoFrag\Libraries\Rate_Limit::bloc_ip();
 		$rl_check  = $rateLimit->check($rl_key);
 		if (!$rl_check['allowed'])
 		{

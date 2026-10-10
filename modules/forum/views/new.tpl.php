@@ -26,7 +26,8 @@
 						<textarea class="form-control editor" name="<?php echo $form_id ?>[message]" rows="12"><?php echo isset($post['message']) ? $post['message'] : (isset($message) ? $message : '') ?></textarea>
 					</div>
 					<?php // Pièce jointe (Phase 5) — pas affiché en mode édition pour ne pas recréer un attachment ?>
-					<?php if (empty($is_topic) && empty($message)): ?>
+					<?php // Sans le droit d'envoyer des fichiers (sanction de modération), pas de champ : le contrôleur n'a pas la règle. ?>
+					<?php if (empty($is_topic) && empty($message) && ($fichiers ?? TRUE)): ?>
 					<div class="nf-field">
 						<label class="d-block mb-1" for="forum_attachment">
 							<?php echo icon('fas fa-paperclip').' '.$this->lang('Pièce jointe (optionnel)') ?>

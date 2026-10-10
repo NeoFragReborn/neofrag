@@ -3,7 +3,7 @@ declare(strict_types=1);
 require_once __DIR__.'/outil.php';
 
 /**
- * demo — ce que l'instantané de la démonstration ne porte jamais.
+ * demo — ce que l'instantané de la démonstration ne porte jamais, et les droits qu'il rétablit.
  *
  * Diffusion : publique
  *
@@ -53,6 +53,23 @@ const NF_DEMO_REGLAGES_PUBLICS = [
     'nf_captcha_public_key' => 'la clé publique du captcha : elle est écrite dans chaque page qui affiche le captcha',
     'nf_smtp_port'          => "un numéro de port : rien qu'un attaquant n'apprenne en interrogeant le serveur",
     'nf_smtp_secure'        => 'le chiffrement de la connexion (tls, ssl) : un choix, pas un secret',
+];
+
+/**
+ * Les droits que le semeur pose et que l'instantané rétablit, en portée globale : `[rôle, permission]` (2 membre,
+ * 3 visiteur). Le semeur crée les catégories en SQL et saute donc ce que l'administration pose en les créant
+ * (`Access::init()`) : la LECTURE pour les visiteurs et les membres, et l'ÉCRITURE que les modules ne refusent
+ * qu'aux visiteurs (`['visitors', FALSE]`) pour les membres. Sans cette dernière, un membre ordinaire de la démo
+ * n'ouvrait aucun sujet, ne répondait nulle part et ne postulait à rien (2026-10-09).
+ */
+const NF_DEMO_DROITS = [
+    [3, 'forum.category_read'], [2, 'forum.category_read'],
+    [3, 'gallery.gallery_see'], [2, 'gallery.gallery_see'],
+    [3, 'pages.access_page'], [2, 'pages.access_page'],
+    [3, 'events.access_events_type'], [2, 'events.access_events_type'],
+    [2, 'forum.category_write'],
+    [2, 'talks.write'],
+    [2, 'recruits.recruit_postulate'],
 ];
 
 /**

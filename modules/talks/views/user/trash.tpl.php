@@ -62,7 +62,7 @@
 						</div>
 					</div>
 					<div>
-						<a class="btn btn-sm btn-outline-success" href="<?php echo \url('talks/'.(int)$c['talk_id'].'/'.\url_title($c['name']).'/restore') ?>">
+						<a class="btn btn-sm btn-outline-success" href="<?php echo nf_url_action('talks/'.(int)$c['talk_id'].'/'.\url_title($c['name']).'/restore') ?>">
 							<?php echo \icon('fas fa-undo').' '.$this->lang('Restaurer') ?>
 						</a>
 					</div>

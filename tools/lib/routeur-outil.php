@@ -24,7 +24,7 @@ if (PHP_SAPI !== 'cli-server')
 
 if ($session = getenv('NF_OUTIL_SESSION'))
 {
-    $_COOKIE['session'] = $_COOKIE['session_https'] = $session;
+    $_COOKIE['session'] = $_COOKIE['session_https'] = $_COOKIE['__Host-session'] = $session;
 }
 
 if ($consent = getenv('NF_OUTIL_CONSENT'))

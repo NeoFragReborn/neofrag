@@ -70,7 +70,8 @@ class Participants extends Model
 			$dropdown[] = $this	->label()
 								->title($title)
 								->icon($icon)
-								->url('events/participant/'.$event_id.'/'.url_title($event_title).'/'.$i);
+								// Le jeton de session : un lien piégé changeait la disponibilité d'un membre (audit du 2026-10-09).
+								->url('events/participant/'.$event_id.'/'.url_title($event_title).'/'.$i.'?_='.nf_jeton_csrf());
 		}
 
 		list($title, $color, $icon) = $statuts[$current_status];

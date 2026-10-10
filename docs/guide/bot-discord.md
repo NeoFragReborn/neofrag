@@ -145,7 +145,11 @@ repris.
 - un membre lié qui est dans le groupe reçoit le rôle ; qui n'y est plus le perd ;
 - un rôle que rien ne relie n'est **jamais touché** ; un membre qui n'a pas lié son compte non plus ;
 - avec le réglage *Pseudos*, le membre lié porte sur le serveur son pseudo du site (sauf le
-  propriétaire du serveur, que Discord protège).
+  propriétaire du serveur, que Discord protège) ;
+- un rôle relié porte le **nom et la couleur de son groupe** (bot 0.2.5) : un
+  groupe renommé ou recoloré sur le site l'est aussi sur le serveur. Un rôle relié à plusieurs groupes
+  garde les siens, et un groupe sans couleur laisse celle du rôle. Le réglage « Donner aux rôles
+  reliés le nom et la couleur de leur groupe » l'éteint.
 
 Le bot applique un changement de groupe dans la demi-minute, l'arrivée d'un membre lié sur le serveur
 et la liaison d'un compte aussitôt, et repasse sur tout le monde au démarrage, à chaque changement de
@@ -195,6 +199,9 @@ Ce qui suit, et comment :
   salon. La mise en place les relie d'elle-même.
 - Un message venu de Discord est publié sous le **compte du membre** qui a lié son Discord ; sinon
   sous son **identité Discord**, comme il l'a choisi avec `/forum visibility`, marquée du logo Discord.
+- Les **sanctions de modération** du site suivent le membre lié : muet ou banni du forum, ses messages
+  Discord ne sont pas recopiés ; privé de liens externes, un message qui en porte non plus (bot 0.2.5).
+  Le journal du bot le note, sans rien dire dans le salon ; `/bug` et `/idee` répondent à l'auteur seul.
 - Un message trop long pour Discord (2 000 caractères) y est coupé, avec un lien vers la suite.
 - Les **images** d'un message du site partent sur Discord en aperçus, sous le texte ; les liens du
   message n'y affichent pas de carte d'aperçu.
@@ -203,6 +210,15 @@ Ce qui suit, et comment :
   pièces jointes, et toutes celles du Bugtracker, sont signalées par un lien vers le message Discord.
 - Réglages : un lien vers le site sous chaque sujet recopié, et le **rattrapage** au démarrage de ce
   qui s'est écrit sur Discord pendant que le bot était éteint.
+- Les **permissions** de chaque salon relié suivent les droits de son forum sur le site (bot 0.2.5,
+  réglage allumé par défaut). Tout le serveur compte comme les membres du site : qui ne peut pas lire
+  le forum ne voit pas le salon, qui ne peut pas y écrire n'y poste pas — l'écriture en mode **Tout**
+  seulement ; en mode **À la demande**, Discord reste un lieu de discussion. Un rôle relié rend à son
+  groupe ce que les membres n'ont pas : le salon d'un forum de l'équipe n'est montré qu'aux rôles de
+  l'équipe. Le bot ne touche qu'à la vue et à l'écriture, pour @everyone, les rôles reliés et
+  lui-même ; un autre réglage fait à la main reste.
+- Le site, lui, refuse d'écrire au nom de qui n'en a pas le droit : un message venu de Discord dans un
+  forum où son auteur ne peut pas écrire reste sur Discord, et le journal du bot le dit.
 - Ne sont pas reportés : la suppression d'un fil entier sur Discord (le sujet reste, le journal le
   signale), celle de son message d'ouverture, et sur Discord la modification d'un message écrit sur
   Discord (il appartient à son auteur). La copie Discord d'un message du site, effacée par un
@@ -214,17 +230,24 @@ Dans les réglages de la fonctionnalité, choisis le **salon Forum des tickets**
 à un forum). Le bot y crée les étiquettes des types (Bogue, Idée, Question, Autre) et des statuts
 (Ouvert, En cours, Résolu, Fermé, Ne sera pas fait, Doublon), dans la langue du site.
 
+Pour tenir les idées à part des bogues, choisis aussi un **salon Forum des suggestions** (bot 0.2.5) :
+les tickets de type Idée y ont leur fil, avec l'étiquette Idée et celles des statuts ; les autres
+restent dans le salon des tickets.
+
 - Chaque ticket devient un **fil**, sous le nom et l'avatar de son auteur, avec son numéro, son type,
   sa priorité et un lien vers le site. Les tickets encore ouverts reçoivent leur fil quand tu choisis
-  le salon.
+  le salon — et, quand tu choisis le salon des suggestions, les idées encore ouvertes y passent.
+- Un ticket qui **change de type** (un bogue devenu idée) change de salon : Discord ne déplace pas un
+  fil, le bot en ouvre donc un nouveau dans le bon salon. L'ancien fil, verrouillé, y renvoie, et le
+  nouveau renvoie à l'ancien. Sur le site, le ticket garde tous ses commentaires.
 - Quand le ticket change sur le site, le fil suit : étiquettes, titre, description. Il **s'archive**
   quand le ticket est clos ; un doublon renvoie à son ticket d'origine ; un ticket supprimé emporte
   son fil.
 - Les **commentaires** passent dans les deux sens. Sur Discord, celui qui n'a pas relié son compte
   commente sous son pseudo Discord.
 - `/bug` et `/idee` ouvrent un ticket par une petite fenêtre (titre, description), et un fil ouvert à
-  la main dans le salon devient un ticket. Un ticket appartient à un membre : il faut avoir relié son
-  compte (le bot le rappelle sinon).
+  la main dans l'un des salons devient un ticket — une idée dans le salon des suggestions. Un ticket
+  appartient à un membre : il faut avoir relié son compte (le bot le rappelle sinon).
 - Le **site fait foi** : une étiquette changée à la main sur Discord est remise comme le dit le ticket.
 
 ## Les rôles temporaires : `/role`

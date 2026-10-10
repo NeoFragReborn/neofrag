@@ -183,12 +183,12 @@ function nf_cli_main(array $argv): int
 			return nf_cli_fail(lang('Erreurs pendant l\'installation : %s', implode(' | ', $summary['errors'])));
 		}
 
-		// 3b. Le contenu livré : la documentation du wiki, une mise en page propre au site s'il en porte une
-		// (`install/vitrine.sql`, absent des paquets), et la démonstration si elle est demandée.
-		nf_cli_line('· ' . ($c['demo'] ? lang('Contenu (documentation du wiki et démonstration)…') : lang('Contenu (documentation du wiki)…')));
-		if (is_file($wiki = NF_CLI_ROOT . '/install/wiki.sql') && Installer::table_exists($db, 'nf_wiki_pages'))
+		// 3b. Le contenu livré : une mise en page propre au site s'il en porte une (`install/vitrine.sql`, absent des
+		// paquets), et la démonstration si elle est demandée. Le wiki arrive vide : la documentation du produit ne
+		// vit que sur le site officiel (2026-10-09).
+		if ($c['demo'])
 		{
-			Installer::import_sql_file($db, $wiki);
+			nf_cli_line('· ' . lang('Contenu de démonstration…'));
 		}
 		$optional = array_merge(['vitrine.sql'], $c['demo'] ? ['demo.sql'] : []);
 		foreach ($optional as $file)

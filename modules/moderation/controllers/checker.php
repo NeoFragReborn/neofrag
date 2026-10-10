@@ -14,6 +14,36 @@ use NF\NeoFrag\Loadables\Controllers\Module_Checker;
 class Checker extends Module_Checker
 {
 	public function index()             { return $this->_check(); }
+
+	/** « Mes sanctions » : à tout membre connecté, pour les siennes. */
+	public function _mes_sanctions()
+	{
+		if (!$this->user())
+		{
+			$this->error->unconnected();
+			return;
+		}
+
+		return [];
+	}
+
+	/** Une médiation proposée : à celui qui a fait le signalement, et à lui seul (Moderation::proposer_mediation()). */
+	public function _mediation($id)
+	{
+		if (!$this->user())
+		{
+			$this->error->unconnected();
+			return;
+		}
+
+		// Introuvable (rien de rendu) pour tout autre que lui : qu'une médiation existe ne regarde que lui.
+		$report = $this->moderation->get_report((int) $id);
+
+		if ($report && (int) $report['reporter_id'] === (int) $this->user->id && !empty($report['mediation_le']))
+		{
+			return [(int) $id];
+		}
+	}
 	public function _reports($page = '') { return $this->_check([$page]); }
 	public function _report_detail($id)  { return $this->_check([(int)$id]); }
 	public function _sanctions($page = '') { return $this->_check([$page]); }
@@ -21,8 +51,11 @@ class Checker extends Module_Checker
 	// Le compte de secours d'une démonstration est introuvable ici comme partout (nf_compte_masque()).
 	public function _user_history($id)   { return ($args = $this->_check([(int)$id])) && (int)$id !== nf_compte_masque() ? $args : NULL; }
 
-	public function _report_dismiss($id)    { return $this->_check([(int)$id]); }
-	public function _report_sanction($id)   { return $this->_check([(int)$id]); }
+	// Classer et sanctionner demandent de traiter les signalements, comme dans l'administration : le droit de les voir
+	// suffisait ici (audit du 2026-10-09).
+	public function _report_dismiss($id)    { return $this->_check([(int)$id]) && $this->access('moderation', 'handle_reports') ? [(int)$id] : $this->_refus(); }
+	public function _report_sanction($id)   { return $this->_check([(int)$id]) && $this->access('moderation', 'handle_reports') ? [(int)$id] : $this->_refus(); }
+	public function _report_mediation($id)  { return $this->_check([(int)$id]) && $this->access('moderation', 'mediation') ? [(int)$id] : $this->_refus(); }
 	public function _snapshot_download($id) { return $this->_check([(int)$id]); }
 	public function _sanction_approve($id)
 	{
@@ -55,6 +88,11 @@ class Checker extends Module_Checker
 			return;
 		}
 		return [];
+	}
+
+	private function _refus()
+	{
+		$this->error->unauthorized();
 	}
 
 	private function _check(array $args = [])

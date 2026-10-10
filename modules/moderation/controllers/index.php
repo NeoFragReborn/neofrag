@@ -26,7 +26,7 @@ class Index extends Controller_Module
 		$stats         = $this->model()->dashboard_stats();
 		$top_reported  = $this->model()->top_reported_users(10);
 		$top_reporters = $this->model()->top_reporters(10);
-		$recent_reports = $this->moderation->get_pending_reports([], 0, 10);
+		$recent_reports = $this->moderation->get_pending_reports(['status' => 'pending'], 0, 10); // il montrait tous les statuts
 
 		$this->title($this->lang('Modération'))->icon('fas fa-shield-alt')->breadcrumb();
 
@@ -37,6 +37,57 @@ class Index extends Controller_Module
 			'recent_reports' => $recent_reports,
 			'_user_side'     => TRUE
 		]);
+	}
+
+	/**
+	 * « Mes sanctions » (2026-10-09) : ce que la modération a prononcé contre le membre depuis un an, en cours ou passé,
+	 * avec son motif — un avertissement dont l'e-mail ne partait pas restait invisible. Dans le cadre de l'espace membre.
+	 */
+	public function _mes_sanctions()
+	{
+		$this->title($this->lang('Mes sanctions'))->icon('fas fa-gavel')->breadcrumb();
+
+		$liste = $this->view('mes_sanctions', ['sanctions' => $this->module->mes_sanctions((int) $this->user->id)]);
+
+		return ($espace = $this->module('user')) instanceof \NF\Modules\User\User ? $espace->espace($liste, 'moderation/mes-sanctions') : $liste;
+	}
+
+	/**
+	 * Une médiation proposée sur l'un de ses signalements (Moderation::proposer_mediation()), pour celui qui l'a fait : ce
+	 * qu'elle implique — le membre signalé saura qui l'a signalé —, et sa réponse. Accepter ouvre la conversation ;
+	 * refuser laisse le signalement anonyme (Moderation::repondre_mediation()).
+	 */
+	public function _mediation($id)
+	{
+		if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) === 'POST')
+		{
+			$this->_demo_refuse();
+
+			$this->check_csrf('moderation/mediation/'.(int) $id);
+
+			$reponse = $_POST['reponse'] ?? '';
+			$issue   = in_array($reponse, ['oui', 'non'], TRUE)
+				? $this->module->repondre_mediation((int) $id, $reponse === 'oui')
+				: ['ok' => FALSE, 'message' => (string) $this->lang('Choisis d’accepter ou de refuser.')];
+
+			notify($issue['message'], $issue['ok'] ? 'success' : 'danger');
+			redirect(!empty($issue['adresse']) ? $issue['adresse'] : 'moderation/mediation/'.(int) $id);
+		}
+
+		$this->title($this->lang('Proposition de médiation'))->icon('fas fa-handshake')->breadcrumb();
+
+		$report = $this->moderation->get_report((int) $id);
+
+		// La conversation ouverte, si elle existe encore : son adresse porte son titre (la messagerie le vérifie).
+		$nom = !empty($report['mediation_talk_id']) ? $this->db->select('name')->from('nf_talks')->where('talk_id', (int) $report['mediation_talk_id'])->row() : NULL;
+
+		$page = $this->view('mediation', [
+			'report'       => $report,
+			'conversation' => is_string($nom) ? 'talks/'.(int) $report['mediation_talk_id'].'/'.url_title($nom) : '',
+			'csrf'         => nf_jeton_csrf(),
+		]);
+
+		return ($espace = $this->module('user')) instanceof \NF\Modules\User\User ? $espace->espace($page, 'moderation/mediation/'.(int) $id) : $page;
 	}
 
 	public function _reports($page = '')
@@ -54,7 +105,7 @@ class Index extends Controller_Module
 		];
 		$active_filter = array_filter($filter);
 
-		$page_num = is_numeric($page) ? (int)$page : 0;
+		$page_num = (preg_match('#page/(\d+)#', (string) $page, $numero) ? max(0, (int) $numero[1] - 1) : 0); // « page/N » (N dès 1) : `is_numeric('page/2')` laissait toujours la page 1
 		$reports = $this->moderation->get_pending_reports($active_filter, $page_num, 50);
 
 		// La vue check `url('admin/moderation/...')` ; on la passe en mode user via flag $_user_side
@@ -63,7 +114,7 @@ class Index extends Controller_Module
 			'reports'       => $reports,
 			'filter'        => $filter,
 			'page'          => $page_num,
-			'show_reporter' => TRUE,
+			'show_reporter' => (bool)$this->access('moderation', 'see_reporter'), // forcé à TRUE ici, sans le droit
 			'_user_side'    => TRUE
 		]);
 	}
@@ -80,11 +131,12 @@ class Index extends Controller_Module
 		// Privacy : audit log + permission stricte si conv privée
 		if ($report['target_type'] === 'talks_message')
 		{
-			$row = $this->db->select('t.type')->from('nf_talks_messages m')
+			$row = $this->db->select('t.type', 't.audience')->from('nf_talks_messages m')
 			                ->join('nf_talks t', 't.talk_id = m.talk_id')
 			                ->where('m.message_id', (int)$report['target_id'])
 			                ->row(FALSE);
-			$is_private = is_array($row) && in_array($row['type'] ?? '', ['direct', 'group'], TRUE);
+			// Le salon de l'équipe (audience « staff ») n'est ouvert qu'aux administrateurs : privé lui aussi (2026-10-09).
+			$is_private = is_array($row) && (in_array($row['type'] ?? '', ['direct', 'group'], TRUE) || ($row['audience'] ?? '') === 'staff');
 			if ($is_private && !$this->access('moderation', 'access_private'))
 			{
 				notify($this->lang('Permission insuffisante : ce signalement concerne une conversation privée.'), 'danger');
@@ -126,9 +178,10 @@ class Index extends Controller_Module
 		return $this->view('admin/report_detail', [
 			'report'         => $report,
 			'csrf'           => $this->csrf_token(),
+			'formulaire_sanction' => (string) $this->view('admin/sanction_form', ['action' => url('moderation/reports/'.(int) $report['id'].'/sanction'), 'csrf' => $this->csrf_token()]),
 			'reporter_score' => $reporter_score,
 			'target_history' => $target_history,
-			'show_reporter'  => TRUE,
+			'show_reporter'  => (bool)$this->access('moderation', 'see_reporter'),
 			'_user_side'     => TRUE
 		]);
 	}
@@ -146,7 +199,7 @@ class Index extends Controller_Module
 			'pending_approval' => !empty($_GET['pending_approval']),
 			'type'             => trim((string)($_GET['type'] ?? ''))
 		];
-		$page_num = is_numeric($page) ? (int)$page : 0;
+		$page_num = (preg_match('#page/(\d+)#', (string) $page, $numero) ? max(0, (int) $numero[1] - 1) : 0); // « page/N » (N dès 1) : `is_numeric('page/2')` laissait toujours la page 1
 		$sanctions = $this->model()->get_sanctions($filter, $page_num, 50);
 
 		return $this->view('admin/sanctions', [
@@ -226,32 +279,15 @@ class Index extends Controller_Module
 		// Même logique de sauvegarde que le panel admin (controllers/admin.php::_settings).
 		if (!empty($_POST['save_moderation_settings']))
 		{
-			$keys = [
-				'nf_moderation_enabled',
-				'nf_moderation_auto_escalation',
-				'nf_moderation_warning_window_days',
-				'nf_moderation_warning_threshold_mute',
-				'nf_moderation_warning_threshold_ban',
-				'nf_moderation_report_rate_limit_per_hour',
-				'nf_moderation_report_flag_threshold_per_day',
-				'nf_moderation_require_approval_ban_perm',
-				'nf_moderation_require_approval_ban_temp',
-				'nf_moderation_default_mute_duration_seconds',
-				'nf_moderation_default_ban_temp_duration_seconds',
-				'nf_moderation_preserve_content_snapshot'
-			];
-			foreach ($keys as $k)
-			{
-				if (isset($_POST[$k]))
-				{
-					$this->config($k, (string)$_POST[$k]);
-				}
-			}
+			// Un formulaire de réglages sans jeton se soumettait depuis une autre page (audit du 2026-10-09).
+			$this->check_csrf('moderation/settings');
+			$this->module->enregistrer_reglages($_POST);
 			notify($this->lang('Réglages modération sauvegardés.'));
 			redirect('moderation/settings');
 		}
 
 		return $this->view('admin/settings', [
+			'csrf'   => $this->csrf_token(),
 			'config'     => $this->config,
 			'_user_side' => TRUE
 		]);
@@ -265,13 +301,9 @@ class Index extends Controller_Module
 
 		$this->check_csrf('moderation/reports');
 
-		$report = $this->moderation->get_report($id);
-		if (!$report) { notify($this->lang('Signalement introuvable.'), 'danger'); redirect('moderation/reports'); }
-
-		$note = trim((string)($_POST['note'] ?? ''));
-		$this->moderation->update_report_status($id, 'dismissed', (int)$this->user->id, $note);
-		notify($this->lang('Signalement marqué comme dismissed.'));
-		redirect('moderation/reports');
+		$issue = $this->module->classer((int) $id, (string)($_POST['note'] ?? ''));
+		notify($issue['message'], $issue['ok'] ? 'success' : 'danger');
+		redirect('moderation/reports'.($issue['ok'] ? '' : '/'.(int) $id));
 	}
 
 	public function _report_sanction($id)
@@ -280,48 +312,21 @@ class Index extends Controller_Module
 
 		$this->check_csrf('moderation/reports');
 
-		$report = $this->moderation->get_report($id);
-		if (!$report) { notify($this->lang('Signalement introuvable.'), 'danger'); redirect('moderation/reports'); }
-		if (!$report['target_user_id']) { notify($this->lang('Pas de user cible identifié.'), 'danger'); redirect('moderation/reports/'.$id); }
+		$issue = $this->module->prononcer((int) $id, $_POST);
+		notify($issue['message'], $issue['ok'] ? 'success' : 'danger');
+		redirect('moderation/reports/'.(int) $id);
+	}
 
-		$type = (string)($_POST['type'] ?? '');
-		$valid_types = ['warning','mute','ban_temp','ban_perm','restrict_upload','restrict_links','restrict_avatar','restrict_signature','restrict_comment','shadow_ban'];
-		if (!in_array($type, $valid_types, TRUE))
-		{
-			notify($this->lang('Type de sanction invalide.'), 'danger');
-			redirect('moderation/reports/'.$id);
-		}
+	/** Proposer une médiation depuis un signalement (Moderation::proposer_mediation()). */
+	public function _report_mediation($id)
+	{
+		$this->_demo_refuse();
 
-		$perm_map = [
-			'warning' => 'warn', 'mute' => 'mute', 'ban_temp' => 'ban_temp', 'ban_perm' => 'ban_perm',
-			'restrict_upload' => 'restrict', 'restrict_links' => 'restrict', 'restrict_avatar' => 'restrict',
-			'restrict_signature' => 'restrict', 'restrict_comment' => 'restrict', 'shadow_ban' => 'ban_perm'
-		];
-		if (!$this->access('moderation', $perm_map[$type] ?? 'view_reports'))
-		{
-			notify($this->lang('Permission insuffisante pour ce type de sanction.'), 'danger');
-			redirect('moderation/reports/'.$id);
-		}
+		$this->check_csrf('moderation/reports/'.(int) $id);
 
-		$opts = [
-			'scope'             => (string)($_POST['scope'] ?? 'global'),
-			'reason'            => (string)($_POST['reason'] ?? ''),
-			'duration_seconds'  => isset($_POST['duration_seconds']) ? (int)$_POST['duration_seconds'] : NULL,
-			'issued_by'         => (int)$this->user->id,
-			'related_report_id' => (int)$id,
-			'notify_user'       => (int)($_POST['notify_user'] ?? 1)
-		];
-
-		$sanction_id = $this->moderation->sanction((int)$report['target_user_id'], $type, $opts);
-		if (!$sanction_id)
-		{
-			notify($this->lang('Échec de la création de la sanction (permissions hiérarchiques ou auto-protection).'), 'danger');
-			redirect('moderation/reports/'.$id);
-		}
-
-		$this->moderation->update_report_status($id, 'actioned', (int)$this->user->id, NULL, $sanction_id);
-		notify($this->lang('Sanction appliquée.'));
-		redirect('moderation/reports/'.$id);
+		$issue = $this->module->proposer_mediation((int) $id);
+		notify($issue['message'], $issue['ok'] ? 'success' : 'danger');
+		redirect('moderation/reports/'.(int) $id);
 	}
 
 	public function _sanction_approve($id)
@@ -336,7 +341,7 @@ class Index extends Controller_Module
 		}
 		else
 		{
-			notify($this->lang('Sanction déjà approuvée ou inexistante.'), 'danger');
+			notify($this->moderation->refus_d_approbation((int) $id, (int)$this->user->id) ?? $this->lang('Sanction déjà approuvée ou inexistante.'), 'danger');
 		}
 		redirect('moderation/sanctions/'.$id);
 	}
@@ -353,13 +358,16 @@ class Index extends Controller_Module
 			notify($this->lang('Une raison est requise pour révoquer une sanction.'), 'danger');
 			redirect('moderation/sanctions/'.$id);
 		}
-		if ($this->moderation->revoke($id, (int)$this->user->id, $reason))
+		// Le refus se dit (refus_de_levee()) : une sanction qui vous vise, ou trop haut placée.
+		$refus = $this->moderation->refus_de_levee((int) $id, (int)$this->user->id);
+
+		if ($refus === NULL && $this->moderation->revoke($id, (int)$this->user->id, $reason))
 		{
 			notify($this->lang('Sanction levée.'));
 		}
 		else
 		{
-			notify($this->lang('Sanction inexistante ou déjà levée.'), 'danger');
+			notify($refus ?? $this->lang('Sanction inexistante ou déjà levée.'), 'danger');
 		}
 		redirect('moderation/sanctions/'.$id);
 	}
@@ -394,11 +402,11 @@ class Index extends Controller_Module
 		// Privacy : si conv privée talks, exiger access_private + audit log
 		if ($snap['target_type'] === 'talks_message')
 		{
-			$row = $controller->db->select('t.type')->from('nf_talks_messages m')
+			$row = $controller->db->select('t.type', 't.audience')->from('nf_talks_messages m')
 				->join('nf_talks t', 't.talk_id = m.talk_id')
 				->where('m.message_id', (int)$snap['target_id'])
 				->row(FALSE);
-			$is_private = is_array($row) && in_array($row['type'] ?? '', ['direct', 'group'], TRUE);
+			$is_private = is_array($row) && (in_array($row['type'] ?? '', ['direct', 'group'], TRUE) || ($row['audience'] ?? '') === 'staff');
 			if ($is_private && !$controller->access('moderation', 'access_private'))
 			{
 				$controller->error->unauthorized();
@@ -419,7 +427,7 @@ class Index extends Controller_Module
 			}
 		}
 
-		$docroot   = realpath(NEOFRAG_PATH);
+		$docroot   = realpath(NEOFRAG_CMS); // NEOFRAG_PATH n'existait pas (audit du 2026-10-09)
 		$file_path = $docroot.'/backups/'.ltrim((string)$snap['backup_path'], '/');
 		if (!is_file($file_path) || !is_readable($file_path))
 		{

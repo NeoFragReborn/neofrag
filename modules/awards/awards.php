@@ -17,7 +17,7 @@ class Awards extends Module
 			'title'       => $this->lang('Palmarès'),
 			'description' => $this->lang('Le palmarès des équipes : rang obtenu, nombre d\'équipes, date, lieu, jeu et plateforme de chaque compétition, et les podiums comptés par équipe et par jeu.'),
 			'icon'        => 'fas fa-trophy',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
@@ -70,6 +70,12 @@ class Awards extends Module
 				]
 			]
 		];
+	}
+
+	/** Un palmarès est public : il se montre tant qu'il existe — pour qui le cite hors de sa page. */
+	public function contenu_visible(string $type, int $id): bool
+	{
+		return $type === 'awards' && (bool) $this->db->select('1')->from('nf_awards')->where('award_id', $id)->row();
 	}
 
 	public function comments($award_id)

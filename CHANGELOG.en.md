@@ -12,6 +12,117 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.48] — 2026-10-09
+
+A big batch: a full security audit, moderation that finally works — its sanctions now apply to everything members
+write —, a new email address confirmed before it counts, deletion of inactive accounts, and sign-in with Discord,
+GitHub or Google repaired. The Discord bot moves to **version 0.2.5** (see its own changelog). **After the update,
+everyone signs in again once**: the session cookie changes its name.
+
+### Security
+
+- **The forum search, open to visitors, let SQL be injected** through a word written between quotes; the private
+  messaging search carried the same copy. The word is cleaned like the others, and escaping is the database's own.
+- **A submission coming from another site is refused** (POST, PUT, DELETE…), based on what the browser says
+  (`Sec-Fetch-Site`, otherwise `Origin`): a trapped page can no longer make a signed-in member act without knowing.
+  A client without a browser — the bot, a payment service — is not affected.
+- **Twenty actions that changed something through a plain link** now require the session token, or only accept
+  POST: following a topic, pinning it, marking everything as read, leaving, archiving, deleting or restoring a
+  conversation, reacting, marking notifications as read, giving one's availability for an event, opening or closing
+  the site and registrations, starting a backup or an update, deleting a recruitment field… Signing out through a
+  link without a token asks for confirmation with a button.
+- **Over HTTPS, the session cookie has the `__Host-` prefix**: a subdomain (a demo, a webmail) no longer receives it
+  and can no longer impose one.
+- **Accounts**:
+  - the "forgot password" link also opened the validation of a registration, which signs in without asking anything
+    for two days: each link now only works for its own purpose;
+  - changing one's password drops a pending new address and "forgot password" links;
+  - sign-in failures are counted per account — however it is written — and per network: an IPv6 address counts for
+    its /64 network, in every attempt limit of the site;
+  - turning on two-factor authentication or linking a Discord, GitHub or Google account asks for the password again;
+    five errors lock this confirmation for a quarter of an hour;
+  - "forgot password" answers the same whether an address is registered or not, and registration no longer says
+    without limit that an address is already taken;
+  - the sign-in history records the address of the connection, no longer a header the browser chooses.
+- **Twelve access leaks closed**: the history and revisions of a draft wiki page; VIP-only forum categories, through
+  search and profiles; hidden groups; the image of a closed album; matches of a restricted type; the presence that
+  participants had hidden; comments and reactions of an invisible content; reporting a conversation one is not part
+  of.
+- **Two old private messaging addresses returned the messages of any conversation**, even private, to anyone with
+  the read right — visitors included: removed. Posting an image to the gallery only required the right to see the
+  album.
+- **Forum and conversation attachments are served by the site**, to whoever can read the topic or the conversation,
+  no longer by the web server to anyone who had their address. An image or a PDF is displayed, anything else is
+  downloaded; an attachment a browser would execute is refused on upload.
+- **What the server fetches itself** (image relay, RSS feeds, webhooks) is limited to strictly public addresses, on
+  ports 80 and 443.
+- **Stripe keys are no longer shown in clear** in the administration: stored encrypted, never displayed again.
+- **Demo**: visitors' IP addresses, host names and referring sites are no longer shown there; an ad, a link, a partner
+  leading outside the site is shown on a page that says where it leads, instead of redirecting there.
+- An address entered by a member no longer comes out as a `javascript:` link (sessions' referring pages, match
+  links), and a report's context address can only point to a page of the site.
+
+### Added
+
+- **A new email address waits for its confirmation**: the link goes to the new address (valid for two days), the old
+  one is notified, and "My account" offers to resend the link or cancel. Until now a typo cut the member off from
+  everything the site sends.
+- **Inactive accounts are deleted**: with no visit for three years — adjustable in *Settings*, `0` for never —, an
+  email warns the member a month before, a visit cancels everything. Never an administrator.
+- **Sanctioning a member without waiting for a report**, from their moderation history, which their administration
+  page links to.
+- **A "Report" button** on the guestbook, gallery images, classified ads, tickets and their comments.
+- **"My sanctions"** in the member area, for whoever had one in the year: its kind, its reason, its period.
+- **Mediation**: from a report, the moderator proposes a private conversation between them, the reported member and
+  the one who reported. The reported member will see who reported them there, so it only opens with the reporter's
+  agreement, given on a page that explains what they accept; if they decline, their report stays anonymous and goes
+  on as usual.
+
+### Fixed
+
+- **Moderation sanctions apply to everything members write**: forum, private messaging, comments, guestbook,
+  bug tracker, recruitment, classified ads, gallery, profile, image editor. Only the forum and messaging mute were
+  checked, and after sending. The form gives way to a notice that says what the sanction forbids, until when, and
+  why; the "External links" restriction refuses a text that carries one, without losing it.
+- **No sanction could be issued from the moderation screen** (a table removed in May: internal error), so escalation
+  never triggered. Reviewed along with it: the settings (boxes that could not be unticked, suspicious reporter
+  threshold), scopes, durations (a temporary ban without a duration became permanent), approval by a higher-ranking
+  moderator, the moderators' panel, duplicate reports, pages 2 and beyond, the IP list; lifting a sanction refuses
+  one's own and one of a higher rank.
+- **Shadow ban works**: what a shadow-banned member writes is only shown to them and to moderators, and nothing is
+  broadcast — no notification, no Discord, no subscribers.
+- **An extra role — Moderator — removed a member's rights**: a moderator lost the forum and private messaging. A role
+  adds rights, it no longer removes any.
+- **Emails are sent in the language of whoever receives them** — sanctions, forum replies, private messaging —, no
+  longer in that of the member who triggered them.
+- **Signing in with Discord, GitHub or Google failed** as soon as a service was configured (the OAuth library had
+  changed), and sent the service a return address it refused. A refused return now says why instead of an error
+  page, and the Discord avatar is kept.
+- **Guestbook, administration**: approving, rejecting or deleting a message led to a page not found.
+- **A form field's error is written under the field**, on a phone as on a computer: it could only be read in a
+  tooltip on hover.
+- **The administration's top bar stays at the top** when scrolling; on a phone, only the menu and the breadcrumb stay
+  stuck.
+- **Forty translation mistakes** in thirteen language files ("There are 1 user", deletion confirmations showing
+  `< br / >`, English plurals…).
+- The "extension website" links of 48 core addons lead to the project's site. The administration's *Emails* page no
+  longer lists the templates of a missing module. An error of a classic form no longer leads to a page not found.
+- **Demo**: an ordinary member could not open a topic, reply anywhere or apply to anything.
+- **The "My data" export includes the reports the member made**: they were missing from the archive.
+
+### Changed
+
+- **A widget that shows what a module does declares it** (21 widgets): without that module, or if it is disabled, the
+  widget is no longer displayed and the live editor no longer offers it; "Add" refuses a widget archive without its
+  module.
+- **The product documentation is no longer shipped** in the wiki of a new site, which arrives empty; it lives on the
+  project's site. A new installation no longer receives the settings of themes it does not have.
+
+### Removed
+
+- The old `ajax/talks` addresses and the old report of a private message (audit log only), with its administration
+  page: a message is reported through moderation.
+
 ## [1.2.47] — 2026-10-09
 
 The Blockcraft hotbar, on phones.

@@ -22,6 +22,11 @@ class Emails extends Model
 							->order_by('t.module', 't.title')
 							->get(FALSE);
 
+		// Les gabarits d'un module qui n'est pas installé ne se listent pas. Le jeu de données du cœur porte ceux du
+		// forum et de la lettre d'information, prêts pour le jour où le module s'installe ; un site sans eux les
+		// voyait ici, sans rien qui les envoie (2026-10-09).
+		$rows = array_values(array_filter((array) $rows, static fn (array $r): bool => empty($r['module']) || NeoFrag()->module((string) $r['module'])));
+
 		if (!$rows)
 		{
 			return [];

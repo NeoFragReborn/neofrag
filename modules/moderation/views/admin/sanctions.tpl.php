@@ -1,4 +1,4 @@
-<?php $_modbase = !empty($_user_side ?? FALSE) ? 'moderation' : 'admin/moderation'; ?>
+<?php $_modbase = !empty($_user_side ?? FALSE) ? 'moderation' : 'admin/moderation'; $page = (int) ($page ?? 0); ?>
 <form method="get" class="card mb-3">
 	<div class="card-body">
 		<div class="row align-items-end">
@@ -59,7 +59,7 @@
 					<td><small title="<?php echo nf_date_heure($s['created_at']) ?>"><?php echo time_span(strtotime($s['created_at'])) ?></small></td>
 					<td><span class="badge <?php echo badge_class(strpos($s['type'], 'ban') !== FALSE ? 'danger' : (strpos($s['type'], 'restrict') !== FALSE ? 'warning' : (strpos($s['type'], 'mute') !== FALSE ? 'secondary' : 'info'))) ?>"><?php echo nf_texte($this->module('moderation')->libelle('sanction', $s['type'])) ?></span><br><small class="text-muted"><?php echo nf_texte($this->module('moderation')->libelle('portee', $s['scope'])) ?></small></td>
 					<td><a href="<?php echo url($_modbase.'/users/'.(int)$s['user_id']) ?>">@<?php echo nf_texte($s['user_username']) ?></a></td>
-					<td><small><?php echo nf_texte($s['issuer_username']) ?></small></td>
+					<td><small><?php echo !empty($s['issuer_username']) ? nf_texte($s['issuer_username']) : '<i>'.$this->lang('Escalade automatique').'</i>' ?></small></td>
 					<td>
 						<?php if (empty($s['expires_at'])): ?>
 							<span class="badge text-bg-dark"><?php echo $this->lang('Permanent') ?></span>
@@ -88,9 +88,15 @@
 	<?php endif ?>
 </div>
 
-<?php if (count($sanctions) >= 50): ?>
+<?php
+// Les pages : /sanctions/page/N (N dès 1), filtres gardés ; on revient en arrière même sur la dernière page. « Suivant »
+// ouvrait sanctions/1, l'adresse du n° 1, et rien au-delà de 50 n'était joignable (audit du 2026-10-09).
+$requete = http_build_query(array_filter((array) ($filter ?? [])));
+$adresse = fn (int $n) => url($_modbase.'/sanctions'.($n > 0 ? '/page/'.($n + 1) : '')).($requete !== '' ? '?'.$requete : '');
+?>
+<?php if ($page > 0 || count($sanctions) >= 50): ?>
 <div class="mt-3 text-center">
-	<?php if ($page > 0): ?><a class="btn btn-secondary" href="<?php echo url($_modbase.'/sanctions/'.($page - 1)) ?>"><i class="fas fa-arrow-left"></i> <?php echo $this->lang('Précédent') ?></a><?php endif ?>
-	<a class="btn btn-secondary" href="<?php echo url($_modbase.'/sanctions/'.($page + 1)) ?>"><?php echo $this->lang('Suivant') ?> <i class="fas fa-arrow-right"></i></a>
+	<?php if ($page > 0): ?><a class="btn btn-secondary" href="<?php echo $adresse($page - 1) ?>"><i class="fas fa-arrow-left"></i> <?php echo $this->lang('Précédent') ?></a><?php endif ?>
+	<?php if (count($sanctions) >= 50): ?><a class="btn btn-secondary" href="<?php echo $adresse($page + 1) ?>"><?php echo $this->lang('Suivant') ?> <i class="fas fa-arrow-right"></i></a><?php endif ?>
 </div>
 <?php endif ?>

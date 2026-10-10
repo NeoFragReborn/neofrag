@@ -3,11 +3,11 @@
 		<div class="float-end">
 			<?php if ($this->user()): ?>
 				<?php if (!empty($is_subscribed)): ?>
-					<a class="btn btn-sm btn-outline-warning me-2" href="<?php echo url('forum/topic/unsubscribe/'.$topic_id.'/'.url_title($title)) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Se désabonner de ce sujet') ?>">
+					<a class="btn btn-sm btn-outline-warning me-2" href="<?php echo nf_url_action('forum/topic/unsubscribe/'.$topic_id.'/'.url_title($title)) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Se désabonner de ce sujet') ?>">
 						<?php echo icon('fas fa-bell-slash').' '.$this->lang('Suivi') ?>
 					</a>
 				<?php else: ?>
-					<a class="btn btn-sm btn-outline-primary me-2" href="<?php echo url('forum/topic/subscribe/'.$topic_id.'/'.url_title($title)) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('S\'abonner à ce sujet') ?>">
+					<a class="btn btn-sm btn-outline-primary me-2" href="<?php echo nf_url_action('forum/topic/subscribe/'.$topic_id.'/'.url_title($title)) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('S\'abonner à ce sujet') ?>">
 						<?php echo icon('far fa-bell').' '.$this->lang('Suivre') ?>
 					</a>
 				<?php endif ?>

@@ -15,6 +15,12 @@ class Forum extends Model
 	{
 		$forums = $this->_get_forum();
 
+		// Ni les messages d'un membre sous shadow ban (audit du 2026-10-09).
+		if ($sans_masques = $this->moderation->condition_sans_masques('m.user_id'))
+		{
+			$this->db->where($sans_masques);
+		}
+
 		return $this->_noms_externes($this->db->select('m.message_id', 'm.topic_id', 'm.message', 'm.date', 't.title as topic_title', 'u.id as user_id', 'u.username', 'm.identity_id', 'up.avatar', 'up.sex')
 						->from('nf_forum_messages m')
 						->join('nf_forum_topics t',  'm.topic_id = t.topic_id')
@@ -32,6 +38,12 @@ class Forum extends Model
 	public function get_last_topics()
 	{
 		$forums = $this->_get_forum();
+
+		// Ni les messages d'un membre sous shadow ban (audit du 2026-10-09).
+		if ($sans_masques = $this->moderation->condition_sans_masques('m.user_id'))
+		{
+			$this->db->where($sans_masques);
+		}
 
 		return $this->_noms_externes($this->db->select('t.topic_id', 't.title', 'm.message_id', 'u.id as user_id', 'm.date', 'u.username', 'm.identity_id', 'up.avatar', 'up.sex', 't.count_messages')
 						->from('nf_forum_messages m')

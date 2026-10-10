@@ -156,6 +156,19 @@ class Output extends Core
 			exit;
 		}
 
+		// Un envoi parti d'un autre site ne passe pas, quel qu'il soit (nf_envoi_d_un_autre_site(), audit du 2026-10-09).
+		if (nf_envoi_d_un_autre_site(NULL, site_origin()))
+		{
+			http_response_code(403);
+			header('Content-Type: text/html; charset=UTF-8');
+			$titre = nf_texte($this->lang('Accès refusé'));
+			echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>403 — '.$titre.'</title><style>body{font-family:-apple-system,sans-serif;max-width:600px;margin:80px auto;padding:24px;color:#333;}h1{color:#dc3545;}</style></head><body>'
+				.'<h1>403 — '.$titre.'</h1>'
+				.'<p>'.$this->lang('Cet envoi vient d’un autre site : il est refusé. Retourne sur le site et recommence depuis sa page.').'</p>'
+				.'</body></html>';
+			exit;
+		}
+
 		$error = FALSE;
 
 		try
@@ -884,6 +897,16 @@ class Output extends Core
 		$data = $this->_data;
 		$this->_data = $this->array;
 
+		// Les feuilles et scripts que le thème déclare pour l'e-mail ne sont pas ceux de la page : une réponse AJAX qui
+		// avait envoyé un e-mail les emportait, et sa forme disait qu'un e-mail était parti — le « mot de passe oublié »
+		// trahissait ainsi les adresses inscrites (audit du 2026-10-09).
+		$ressources = [];
+
+		foreach (['css', 'js', 'js_load'] as $cle)
+		{
+			$ressources[$cle] = $this->data->get($cle);
+		}
+
 		$theme = $this->_theme;
 		$this->_theme = parent::theme($this->config->nf_default_theme);
 		$this->_theme->__init();
@@ -893,6 +916,11 @@ class Output extends Core
 		$this->url->external(FALSE);
 		$this->_data = $data;
 		$this->_theme = $theme;
+
+		foreach ($ressources as $cle => $avant)
+		{
+			$avant === NULL ? $this->data->destroy($cle) : $this->data->set($cle, $avant);
+		}
 	}
 
 	function asset($file_path, $file_name = '')

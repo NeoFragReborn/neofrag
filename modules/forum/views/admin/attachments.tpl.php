@@ -27,15 +27,21 @@
 
 <?php if (!empty($orphans)): ?>
 	<div class="alert alert-warning">
-		<?php echo icon('fas fa-exclamation-triangle').' '.$this->lang('%d fichier(s) orphelin(s) détecté(s) dans /upload/forum/ (présents en nf_file mais sans entry attachment associée).', count($orphans)) ?>
+		<?php echo icon('fas fa-exclamation-triangle').' '.$this->lang('%d fichier(s) orphelin(s) dans /upload/forum/ : plus aucun message ne les joint, ou le site ne les connaît pas.', count($orphans)) ?>
 		<a href="#orphan-list" class="alert-link" data-bs-toggle="collapse"><?php echo $this->lang('Voir la liste') ?></a>
-		<div id="orphan-list" class="collapse mt-2">
-			<ul class="small">
+		<form id="orphan-list" class="collapse mt-2" action="<?php echo url($this->url->request) ?>" method="post">
+			<ul class="list-unstyled small mb-2">
 				<?php foreach ($orphans as $o): ?>
-					<li><code><?php echo nf_texte($o['path']) ?></code> · <?php echo nf_texte($o['name']) ?> (file_id=<?php echo (int)$o['file_id'] ?>)</li>
+					<li>
+						<label class="form-check">
+							<input class="form-check-input" type="checkbox" name="purger_orphelins[]" value="<?php echo nf_texte($o['path']) ?>" checked />
+							<code><?php echo nf_texte($o['path']) ?></code><?php echo $o['name'] !== '' ? ' · '.nf_texte($o['name']) : '' ?> · <?php echo human_size($o['size']) ?> · <?php echo timetostr('j M Y', $o['date']) ?>
+						</label>
+					</li>
 				<?php endforeach ?>
 			</ul>
-		</div>
+			<button type="submit" class="btn btn-sm btn-danger"><?php echo icon('far fa-trash-alt').' '.$this->lang('Effacer les fichiers cochés') ?></button>
+		</form>
 	</div>
 <?php endif ?>
 
@@ -69,7 +75,7 @@
 							<i class="fas fa-file"></i>
 						<?php endif ?>
 					</td>
-					<td><a href="<?php echo url($a['path']) ?>" target="_blank" rel="noopener"><?php echo nf_texte($a['name']) ?></a></td>
+					<td><a href="<?php echo url('forum/piece-jointe/'.(int) $a['attachment_id']) ?>" target="_blank" rel="noopener"><?php echo nf_texte($a['name']) ?></a></td>
 					<td><small><?php echo human_size((int)$a['file_size']) ?></small></td>
 					<td><small><code><?php echo nf_texte($a['mime_type']) ?></code></small></td>
 					<td><a href="<?php echo url('forum/topic/'.(int)$a['topic_id'].'/'.url_title($a['topic_title']).'#'.(int)$a['message_id']) ?>"><?php echo nf_texte($a['topic_title']) ?></a></td>

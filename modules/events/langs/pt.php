@@ -160,4 +160,7 @@ return [
 	'8fd9c7ef' => 'Guardar',
 	'992d9fb3' => 'Um convite para um evento',
 	'c58bcb5d' => 'O lembrete de um evento em que participo',
+	'49a80df0' => 'Online',
+	'48b614a4' => 'Offline',
+	'ff8f2a30' => 'Administrador',
 ];

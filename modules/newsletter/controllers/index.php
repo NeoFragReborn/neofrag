@@ -69,7 +69,7 @@ class Index extends Controller_Module
 		// pouvait faire envoyer par le site des e-mails de confirmation en masse, à des adresses de
 		// son choix. Même mécanisme que le livre d'or.
 		$frein = new \NF\NeoFrag\Libraries\Rate_Limit($this);
-		$cles  = $modele::cles_du_frein(\NF\NeoFrag\Libraries\Rate_Limit::client_ip(), $modele::adresse($saisie));
+		$cles  = $modele::cles_du_frein(\NF\NeoFrag\Libraries\Rate_Limit::bloc_ip(), $modele::adresse($saisie));
 
 		foreach ($cles as $cle)
 		{

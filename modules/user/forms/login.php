@@ -23,9 +23,17 @@ $this	->compact()
 		)
 		->success(function($data, $form){
 			$rateLimit = new \NF\NeoFrag\Libraries\Rate_Limit($this);
-			$ip        = \NF\NeoFrag\Libraries\Rate_Limit::client_ip();
-			$ipKey     = 'login:ip:'.$ip;
-			$userKey   = 'login:user:'.strtolower($data['login']);
+			$ipKey     = 'login:ip:'.\NF\NeoFrag\Libraries\Rate_Limit::bloc_ip();
+
+			$user = $this->db	->collection('user')
+								->where('deleted', FALSE)
+								->where('username', $data['login'], 'OR', 'email', $data['login'])
+								->row();
+
+			// Les essais se comptent par COMPTE (audit du 2026-10-09) : compter par saisie laissait cinq essais de plus
+			// à chaque façon d'écrire le même compte — son adresse au lieu de son pseudo, une majuscule, un accent, une
+			// espace que la base ignore. Une saisie qui ne mène à aucun compte se compte telle quelle.
+			$userKey   = $user() ? 'login:uid:'.(int) $user->id : 'login:user:'.mb_strtolower(trim((string) $data['login']));
 
 			$ipCheck   = $rateLimit->check($ipKey);
 			$userCheck = $rateLimit->check($userKey);
@@ -37,10 +45,12 @@ $this	->compact()
 				return;
 			}
 
-			$user = $this->db	->collection('user')
-								->where('deleted', FALSE)
-								->where('username', $data['login'], 'OR', 'email', $data['login'])
-								->row();
+			// Sans compte, ou sans mot de passe (inscrit par un service), on calcule quand même une empreinte : la réponse
+			// arrivait sinon bien plus vite, et sa durée disait si le compte existe (audit du 2026-10-09).
+			if (!$user() || (string) $user->password === '')
+			{
+				password_verify((string) $data['password'], '$argon2id$v=19$m=65536,t=4,p=1$UnV1UW94Mnk4TWxDLlc5UA$/35hXmLcZdefpr4exsUoYdLauElM12OFrw8cc3NLbvQ');
+			}
 
 			$auditLog = new \NF\NeoFrag\Libraries\Audit_Log($this);
 

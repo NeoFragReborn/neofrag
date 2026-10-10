@@ -278,7 +278,12 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 	display: flex;
 	flex-direction: column;
 	background: var(--nf-bg);
+	/* `clip` et non `hidden` : les deux rognent ce qui déborde, mais `hidden` faisait de la colonne un cadre qui
+	   défile, et tout ce qui y colle (la barre du haut, les barres « Enregistrer ») s'y collait au lieu de la
+	   fenêtre — la barre du haut n'a jamais suivi le défilement (2026-10-09). `hidden` reste pour un navigateur
+	   qui ne connaîtrait pas `clip`. */
 	overflow-x: hidden;
+	overflow-x: clip;
 }
 
 .nf-topbar {
@@ -289,10 +294,8 @@ hr { border: 0; border-top: 1px solid var(--nf-border); margin: 1rem 0; }
 	gap: 12px;
 	background: var(--nf-surface);
 	border-bottom: 1px solid var(--nf-border);
-	/* `top: 0`, pas `var(--nf-haut)` : la barre colle DANS `.nf-main`, que son `overflow-x: hidden` fait conteneur
-	   de défilement — décalée de la hauteur des bandeaux du haut de page, elle descendait sur le contenu. */
 	position: sticky;
-	top: 0;
+	top: var(--nf-haut, 0px);
 	z-index: 50;
 	box-shadow: var(--nf-shadow-sm);
 }
@@ -3648,7 +3651,7 @@ button.nf-local-tab {
 .nf-avatar-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .nf-main { display: flex; flex-direction: column; min-width: 0; }
-.nf-topbar { display: flex; align-items: center; gap: 14px; height: 60px; min-height: 60px; padding: 0 24px; background: color-mix(in srgb, var(--nf-bg) 78%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--nf-border); position: sticky; top: 0; z-index: 20; }
+.nf-topbar { display: flex; align-items: center; gap: 14px; height: 60px; min-height: 60px; padding: 0 24px; background: color-mix(in srgb, var(--nf-bg) 78%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--nf-border); position: sticky; top: var(--nf-haut, 0px); z-index: 20; }
 .nf-sb-toggle { display: none; }
 .nf-topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .nf-icon-btn { width: 36px; height: 36px; border-radius: 9px; border: 1px solid var(--nf-border); background: var(--nf-surface); color: var(--nf-muted); display: inline-grid; place-items: center; cursor: pointer; text-decoration: none; transition: .15s; }
@@ -3766,6 +3769,24 @@ button.nf-local-tab {
 
 	.nf-topbar-actions > * { flex: 0 0 auto; }
 	.nf-topbar-actions .nf-actions { flex: 0 1 auto; max-width: 100%; flex-wrap: wrap; row-gap: 6px; }
+}
+
+/* La tête de la barre : le menu et le fil d'Ariane. À l'ordinateur, elle n'est qu'un groupe dans la barre, qui colle
+   tout entière. Sous 1 200 px, la barre ne dessine plus de boîte (`display: contents`) : la tête colle seule, sous
+   les bandeaux du haut de page, et les boutons forment une rangée ordinaire qui part avec la page (2026-10-09). */
+.nf-topbar-tete { display: flex; align-items: center; gap: 14px; flex: 1 1 auto; min-width: 0; }
+.nf-topbar-tete .nf-breadcrumb { max-width: 100%; }
+@media (max-width: 1199.98px) {
+	.nf-topbar { display: contents; }
+	.nf-topbar-tete {
+		position: sticky; top: var(--nf-haut, 0px); z-index: 20;
+		flex: 0 0 auto; gap: 12px;
+		min-height: 52px; padding: 8px 16px;
+		background: color-mix(in srgb, var(--nf-bg) 88%, transparent);
+		-webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+		border-bottom: 1px solid var(--nf-border);
+	}
+	.nf-topbar-actions { order: 0; flex: 0 0 auto; display: flex; align-items: center; gap: 8px; margin: 0; padding: 10px 16px; border-bottom: 1px solid var(--nf-border); background: var(--nf-bg); }
 }
 
 /* =========================================================================

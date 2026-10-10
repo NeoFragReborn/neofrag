@@ -22,7 +22,7 @@ return [
 	'84f63e4f' => 'Add a game',
 	'86c33902' => 'Edit',
 	'9caeb208' => 'The icon must be square',
-	'a87c4a2a' => 'Are you sure you want to delete the game <b>%s</b>? < br / > All cards and the teams associated in this game will be also deleted.',
+	'a87c4a2a' => 'Are you sure you want to delete the game <b>%s</b>? <br /> All cards and the teams associated in this game will be also deleted.',
 	'aec4768e' => ' image (square format min. %dpx and max. %d MB)',
 	'c00cf454' => ' image (max. %d MB)',
 	'c165d350' => 'Maps list',

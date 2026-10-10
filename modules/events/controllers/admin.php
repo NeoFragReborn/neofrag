@@ -787,7 +787,10 @@ class Admin extends Controller_Module
 								[
 									'title'   => $this->lang('Site web'),
 									'content' => function($data){
-										return $data['website'] ? '<a href="'.$data['website'].'" target="_blank" rel="noopener noreferrer">'.$data['website'].'</a>' : '';
+										// Une adresse sûre devient un lien, échappé ; une autre reste du texte (audit du 2026-10-09).
+										return $data['website'] && nf_url_sure((string) $data['website'])
+											? '<a href="'.nf_texte($data['website']).'" target="_blank" rel="noopener noreferrer">'.nf_texte($data['website']).'</a>'
+											: nf_texte((string) $data['website']);
 									}
 								],
 								[

@@ -26,7 +26,7 @@ class Ajax extends Controller_Module
 		{
 			// Endpoint public + LIKE non indexé : rate-limit léger anti-amplification (60 req / 60 s par IP).
 			$rl  = new \NF\NeoFrag\Libraries\Rate_Limit($this);
-			$key = 'search_suggest:ip:'.\NF\NeoFrag\Libraries\Rate_Limit::client_ip();
+			$key = 'search_suggest:ip:'.\NF\NeoFrag\Libraries\Rate_Limit::bloc_ip();
 
 			if (!$rl->check($key)['allowed'])
 			{

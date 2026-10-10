@@ -71,4 +71,5 @@ return [
 	'f7232257' => 'Only the author of this comment can edit or delete it through the API.',
 	'31a19f58' => 'The Bugtracker is not installed on this site.',
 	'38ce3464' => 'This role is linked to a site group: the group sync already gives and removes it.',
+	'fc49b15e' => 'This author is not allowed to write in this forum.',
 ];

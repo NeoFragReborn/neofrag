@@ -71,4 +71,5 @@ return [
 	'f7232257' => 'Só o autor deste comentário o pode editar ou eliminar através da API.',
 	'31a19f58' => 'O Bugtracker não está instalado neste site.',
 	'38ce3464' => 'Este cargo está ligado a um grupo do site: a sincronização dos grupos já o atribui e retira.',
+	'fc49b15e' => 'Este autor não tem o direito de escrever neste fórum.',
 ];

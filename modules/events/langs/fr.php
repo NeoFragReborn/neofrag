@@ -157,4 +157,7 @@ return [
 	'8fd9c7ef' => 'Enregistrer',
 	'992d9fb3' => 'Une invitation à un événement',
 	'c58bcb5d' => 'Le rappel d’un événement où je participe',
+	'49a80df0' => 'En ligne',
+	'48b614a4' => 'Hors ligne',
+	'ff8f2a30' => 'Administrateur',
 ];

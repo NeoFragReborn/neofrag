@@ -66,6 +66,13 @@ class Hello extends Widget
   embarqué (des icônes ont été renommées entre la version 5 et la 6).
 - `core`, `presets`, `requires` : mêmes règles que pour un module — voir
   [Créer un module](create-a-module.md), « Les trois déclarations de découplage ».
+- Un widget qui **montre ce que fait un module** — ses actualités, son forum, sa galerie — déclare ce
+  module dans `requires`, même s'il porte son nom : sans lui, ou quand il est désactivé, le widget ne
+  s'affiche pas et l'éditeur en direct ne le propose pas ; « Ajouter » refuse de l'installer seul, et
+  l'assistant d'installation l'écarte d'un profil qui n'a pas le module. Ses `presets` sont ceux du module
+  (`tools/check-addon-declarations.php`, règle 9). Un widget qui vit sans le module (il lit les tables du
+  cœur) ne le déclare pas, et garde seulement ce qui en dépend, un lien par exemple, derrière
+  `$this->module('x')` et `is_enabled()`.
 - Les **réglages** ne se déclarent pas dans cette classe mais dans `controllers/admin.php` (§5).
 
 ## 2. Le contrôleur — `controllers/index.php`

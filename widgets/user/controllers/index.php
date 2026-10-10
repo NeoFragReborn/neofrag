@@ -22,7 +22,7 @@ class Index extends Controller_Widget
 			$preview_active = method_exists($this->access, 'get_preview_target') && $this->access->get_preview_target() !== NULL;
 			$footer = $preview_active
 				? '<a href="'.url('admin/access/preview/exit').'" class="text-warning"><strong>'.icon('fas fa-eye-slash').' '.$this->lang('Quitter le preview').'</strong></a>'
-				: '<a href="'.url('user/logout').'">'.icon('fas fa-times').' '.$this->lang('Se déconnecter').'</a>';
+				: '<a href="'.nf_url_action('user/logout').'">'.icon('fas fa-times').' '.$this->lang('Se déconnecter').'</a>';
 
 			return $this->panel()
 						->heading($this->lang('Espace membre'))

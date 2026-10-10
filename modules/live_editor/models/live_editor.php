@@ -81,6 +81,12 @@ class Live_Editor extends Model
 
 		foreach (NeoFrag()->model2('addon')->get('widget') as $widget)
 		{
+			// Un widget dont le module manque ou est désactivé ne s'afficherait pas : il n'est ni proposé, ni accepté.
+			if ($widget->modules_manquants())
+			{
+				continue;
+			}
+
 			$info = $widget->info();
 
 			$widgets[$name = $info->name] = $info->title;

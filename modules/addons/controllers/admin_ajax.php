@@ -79,6 +79,8 @@ class Admin_Ajax extends Controller_Module
 
 										$version = $addon->info()->version;
 										$depends = $addon->info()->depends;
+										$requis  = (array) ($addon->info()->requires ?? []);
+										$titre   = (string) ($addon->info()->title ?? $match[1]);
 
 										$nf_version = $depends['neofrag'];
 
@@ -108,6 +110,17 @@ class Admin_Ajax extends Controller_Module
 														'danger' => (string) $this->lang('Le %s %s est déjà installé avec une version supérieure', $nom_type, $addon->info()->title)
 													];
 												}
+											}
+
+											// Les modules qu'il déclare dans `requires` doivent être là AVANT : un widget posé sans
+											// son module cherche ses tables. Le marketplace le refusait déjà ; une archive envoyée
+											// par « Ajouter » passait (2026-10-09). Une archive qui porte le module et son widget
+											// installe le module d'abord (dossier modules/ avant widgets/).
+											if ($manquants = array_values(array_filter($requis, static fn ($dep): bool => is_string($dep) && $dep !== '' && !NeoFrag()->module($dep))))
+											{
+												return [
+													'danger' => (string) $this->lang('<b>%s</b> a besoin de : %s. Installe-les d\'abord.', $titre, implode(', ', $manquants))
+												];
 											}
 
 											if (($cmp = version_compare($nf_version, version_format(NEOFRAG_VERSION))) !== 1)

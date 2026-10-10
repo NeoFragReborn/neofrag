@@ -11,6 +11,12 @@
 # galerie, médias (trouvé par check-serveur-web sur un vrai Apache, 2026-10-04). Le refus ci-dessus
 # suffit : aucun script n'est servi, donc aucun n'est exécuté.
 
+# Les pièces jointes des membres ne se servent pas directement : le site les donne lui-même, à qui a le droit de
+# les voir (forum/piece-jointe, talks/piece-jointe ; audit du 2026-10-09).
+<If "%{REQUEST_URI} =~ m#/upload/(forum|talks)/#">
+    Require all denied
+</If>
+
 # Pas de sniffing de type : un upload n'est jamais réinterprété.
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options "nosniff"

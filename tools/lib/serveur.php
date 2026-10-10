@@ -25,7 +25,7 @@ declare(strict_types=1);
  *   nf_http($serveur->base.'/', ['bocal' => $bocal]);
  *
  * Variables lues par le routeur (toutes facultatives) :
- *   NF_OUTIL_SESSION   identifiant de session à poser en cookie (session ET session_https)
+ *   NF_OUTIL_SESSION   identifiant de session à poser en cookie (session, session_https et __Host-session)
  *   NF_OUTIL_CONSENT   valeur du cookie `nf_consent` (`essentials` écarte le bandeau cookies)
  *   NF_OUTIL_THEME     `light` ou `dark` : force le mode dans TOUTES les clés de thème du
  *                      localStorage et fige animations, transitions et carrousel

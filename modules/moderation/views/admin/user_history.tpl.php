@@ -25,7 +25,7 @@
 					<li class="list-group-item">
 						<a href="<?php echo url($_modbase.'/sanctions/'.(int)$s['id']) ?>">
 							<span class="badge text-bg-danger"><?php echo nf_texte($this->module('moderation')->libelle('sanction', $s['type'])) ?></span>
-							<small class="text-muted"><?php echo nf_texte($s['scope']) ?></small>
+							<small class="text-muted"><?php echo nf_texte($this->module('moderation')->libelle('portee', $s['scope'])) ?></small>
 						</a>
 						<div class="small text-muted mt-1">
 							<?php if (empty($s['expires_at'])): ?>
@@ -61,6 +61,12 @@
 
 	<!-- Timeline mergée -->
 	<div class="col-12 col-lg-8">
+		<?php if (!empty($formulaire_sanction)): ?>
+		<div class="card mb-3">
+			<div class="nf-card-header"><span><i class="fas fa-gavel"></i> <?php echo $this->lang('Sanctionner ce membre') ?></span></div>
+			<div class="card-body"><?php echo $formulaire_sanction ?></div>
+		</div>
+		<?php endif ?>
 		<div class="card">
 			<div class="nf-card-header">
 				<span><i class="fas fa-history"></i> <?php echo $this->lang('Timeline modération') ?></span>

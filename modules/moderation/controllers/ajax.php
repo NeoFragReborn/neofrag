@@ -9,6 +9,8 @@ declare(strict_types=1);
  * `forum_message` / `forum_topic` du switch sur $target_type. Sans le module forum, aucun
  * signalement de ce type ne peut exister en base, donc ces branches sont inatteignables.
  * couplage(guestbook): meme raisonnement, branche `guestbook`.
+ * couplage(talks): un message de la messagerie ne se signale que si la conversation est lisible par qui signale ;
+ * sans le module, le contrôle refuse (aucun message n'existe).
  */
 
 namespace NF\Modules\Moderation\Controllers;
@@ -36,7 +38,9 @@ class Ajax extends Controller_Module
 		$reason      = trim((string)($_POST['reason'] ?? 'other'));
 		$comment     = trim((string)($_POST['comment'] ?? ''));
 		$url         = trim((string)($_POST['url'] ?? ''));
-		$url         = nf_url_sure($url) ? $url : '';   // envoyée par le membre qui signale, montrée au modérateur
+		// L'adresse de contexte, envoyée par le membre et ouverte par le modérateur : celle d'une page DU SITE seulement — une
+		// adresse quelconque menait le modérateur vers un faux écran de connexion (audit du 2026-10-09).
+		$url         = nf_url_sure($url) && (str_starts_with($url, '/') && !str_starts_with($url, '//') || str_starts_with($url, site_origin().'/')) ? $url : '';
 
 		if ($target_type === '' || $target_id === '')
 		{
@@ -50,6 +54,23 @@ class Ajax extends Controller_Module
 		if (!$auto_context && mb_strlen($comment) < 15)
 		{
 			echo json_encode(['ok' => FALSE, 'error' => 'context_required']);
+			exit;
+		}
+
+		// Un message de la messagerie ne se signale que depuis une conversation qu'on peut lire : un membre qui n'y
+		// participait pas en faisait copier le texte et les pièces jointes dans la file de modération (audit du
+		// 2026-10-09). Même réponse qu'un message inconnu.
+		if ($target_type === 'talks_message' && !$this->_conversation_lisible((int) $target_id))
+		{
+			echo json_encode(['ok' => FALSE, 'error' => 'not_found']);
+			exit;
+		}
+
+		// Livre d'or, image de la galerie, petite annonce, ticket : seulement ce que celui qui signale peut voir — sinon le
+		// signalement copiait dans la file de modération un message en attente ou l'image d'un album fermé.
+		if (!$this->_contenu_signalable($target_type, (int) $target_id))
+		{
+			echo json_encode(['ok' => FALSE, 'error' => 'not_found']);
 			exit;
 		}
 
@@ -85,8 +106,51 @@ class Ajax extends Controller_Module
 			error_log('[moderation] backup_attachments failed for report '.$report_id.': '.$e->getMessage());
 		}
 
-		echo json_encode(['ok' => TRUE, 'report_id' => $report_id]);
+		// Un doublon (le même membre, le même contenu, moins de 24 h) est enregistré comme tel : on le lui dit, plutôt que
+		// « un modérateur va l'examiner » (audit du 2026-10-09).
+		$doublon = (string) $this->db->select('status')->from('nf_reports')->where('id', (int) $report_id)->row() === 'duplicate';
+
+		echo json_encode(['ok' => TRUE, 'report_id' => $report_id, 'duplicate' => $doublon]);
 		exit;
+	}
+
+	/**
+	 * Les contenus que l'on signale depuis le 2026-10-09 (livre d'or, galerie, petites annonces, tickets) : existent-ils,
+	 * et celui qui signale peut-il les voir ? Les autres types gardent leurs propres gardes (TRUE ici).
+	 */
+	private function _contenu_signalable(string $target_type, int $target_id): bool
+	{
+		switch ($target_type)
+		{
+			case 'guestbook':
+				return (string) $this->db->select('status')->from('nf_guestbook')->where('id', $target_id)->row() === 'approved';
+			case 'gallery_image':
+				return \NF\NeoFrag\Addons\Module::content_visible_of('gallery', $target_id);
+			case 'classified':
+				return $this->module('classifieds') && (string) $this->db->select('status')->from('nf_classifieds')->where('id', $target_id)->row() === 'published'; // couplage: classifieds — signaler une annonce ; refusé sans le module (_contenu_signalable)
+			case 'bug_ticket':
+				if (!$this->module('bugtracker')) return FALSE;
+				$auteur = $this->db->select('user_id')->from('nf_bug_tickets')->where('id', $target_id)->row(FALSE); // couplage: bugtracker — signaler un ticket ; refusé sans le module (_contenu_signalable)
+				return is_array($auteur) && $auteur && !in_array((int) $auteur['user_id'], $this->moderation->auteurs_masques(), TRUE);
+			case 'bug_comment':
+				if (!$this->module('bugtracker')) return FALSE;
+				$auteur = $this->db->select('user_id')->from('nf_bug_comments')->where('id', $target_id)->row(FALSE); // couplage: bugtracker — signaler un commentaire de ticket ; refusé sans le module (_contenu_signalable)
+				return is_array($auteur) && $auteur && !in_array((int) $auteur['user_id'], $this->moderation->auteurs_masques(), TRUE);
+		}
+
+		return TRUE;
+	}
+
+	/** La conversation d'un message de la messagerie, si celui qui signale peut la lire (Models\Talks::user_can_access()). */
+	private function _conversation_lisible(int $message_id): bool
+	{
+		$talk_id = (int) $this->db->select('talk_id')->from('nf_talks_messages')->where('message_id', $message_id)->row();
+		$talks   = $this->module('talks');
+		$modele  = $talks ? $talks->model('talks') : NULL;
+
+		return $talk_id > 0
+			&& $modele instanceof \NF\Modules\Talks\Models\Talks
+			&& (bool) $modele->user_can_access($talk_id, (int) $this->user->id, (bool) $this->access->effective_admin());
 	}
 
 	/**
@@ -116,7 +180,7 @@ class Ajax extends Controller_Module
 		$cumulative = 0;
 
 		// Dossier racine du report (chemin filesystem ; les paths nf_file sont relatifs au docroot)
-		$docroot  = realpath(NEOFRAG_PATH);
+		$docroot  = realpath(NEOFRAG_CMS); // NEOFRAG_PATH n'existait pas : la copie défensive levait une erreur, avalée (audit du 2026-10-09)
 		$base_dir = $docroot.'/backups/moderation/reports/'.$report_id;
 		if (!is_dir($base_dir))
 		{
@@ -193,9 +257,20 @@ class Ajax extends Controller_Module
 			case 'profile':
 			case 'user':
 				return (int)$target_id;
+			// La clé du livre d'or est `id` : `guestbook_id` n'existe pas, et la requête échouait.
 			case 'guestbook':
-				$row = $this->db->select('user_id')->from('nf_guestbook')->where('guestbook_id', (int)$target_id)->row(FALSE);
-				return is_array($row) && $row ? (int)$row['user_id'] : NULL;
+				$row = $this->db->select('user_id')->from('nf_guestbook')->where('id', (int)$target_id)->row(FALSE);
+				return is_array($row) && $row && $row['user_id'] ? (int)$row['user_id'] : NULL;
+			case 'classified':
+				$row = $this->db->select('user_id')->from('nf_classifieds')->where('id', (int)$target_id)->row(FALSE); // couplage: classifieds — signaler une annonce ; refusé sans le module (_contenu_signalable)
+				return is_array($row) && $row && $row['user_id'] ? (int)$row['user_id'] : NULL;
+			case 'bug_ticket':
+				$row = $this->db->select('user_id')->from('nf_bug_tickets')->where('id', (int)$target_id)->row(FALSE); // couplage: bugtracker — signaler un ticket ; refusé sans le module (_contenu_signalable)
+				return is_array($row) && $row && $row['user_id'] ? (int)$row['user_id'] : NULL;
+			case 'bug_comment':
+				$row = $this->db->select('user_id')->from('nf_bug_comments')->where('id', (int)$target_id)->row(FALSE); // couplage: bugtracker — signaler un commentaire de ticket ; refusé sans le module (_contenu_signalable)
+				return is_array($row) && $row && $row['user_id'] ? (int)$row['user_id'] : NULL;
+			// Une image de la galerie ne garde pas son auteur : le signalement se traite sans sanction directe.
 		}
 		return NULL;
 	}
@@ -229,8 +304,20 @@ class Ajax extends Controller_Module
 				$row = $this->db->select('content')->from('nf_comment')->where('id', (int)$target_id)->row(FALSE);
 				return is_array($row) && $row ? mb_substr((string)$row['content'], 0, 5000) : NULL;
 			case 'guestbook':
-				$row = $this->db->select('message')->from('nf_guestbook')->where('guestbook_id', (int)$target_id)->row(FALSE);
+				$row = $this->db->select('message')->from('nf_guestbook')->where('id', (int)$target_id)->row(FALSE);
 				return is_array($row) && !empty($row['message']) ? mb_substr((string)$row['message'], 0, 5000) : NULL;
+			case 'classified':
+				$row = $this->db->select('title', 'description')->from('nf_classifieds')->where('id', (int)$target_id)->row(FALSE); // couplage: classifieds — signaler une annonce ; refusé sans le module (_contenu_signalable)
+				return is_array($row) && $row ? mb_substr('['.$row['title'].'] '.$row['description'], 0, 5000) : NULL;
+			case 'bug_ticket':
+				$row = $this->db->select('title', 'description')->from('nf_bug_tickets')->where('id', (int)$target_id)->row(FALSE); // couplage: bugtracker — signaler un ticket ; refusé sans le module (_contenu_signalable)
+				return is_array($row) && $row ? mb_substr('['.$row['title'].'] '.$row['description'], 0, 5000) : NULL;
+			case 'bug_comment':
+				$row = $this->db->select('content')->from('nf_bug_comments')->where('id', (int)$target_id)->row(FALSE); // couplage: bugtracker — signaler un commentaire de ticket ; refusé sans le module (_contenu_signalable)
+				return is_array($row) && $row ? mb_substr((string) $row['content'], 0, 5000) : NULL;
+			case 'gallery_image':
+				$row = $this->db->select('title', 'description')->from('nf_gallery_images')->where('image_id', (int)$target_id)->row(FALSE); // couplage: gallery — signaler une image ; refusé sans le module (_contenu_signalable)
+				return is_array($row) && $row ? mb_substr('['.$row['title'].'] '.$row['description'], 0, 5000) : NULL;
 			case 'profile':
 			case 'user':
 				// Snapshot du profil : username + signature + quote + location au moment du report

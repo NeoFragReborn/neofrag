@@ -25,6 +25,7 @@
         "ezyang/htmlpurifier": "^4.19",
         "jdorn/sql-formatter": "^1.2",
         "league/commonmark": "^2.8",
+        "nyholm/psr7": "^1.8",
         "phpmailer/phpmailer": "^7.1",
         "planetteamspeak/ts3-php-framework": "^1.3",
         "pragmarx/google2fa": "^9.0",

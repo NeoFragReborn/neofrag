@@ -41,9 +41,10 @@
 						$opponent .= '<img src="'.url('images/flags/'.$match['opponent']['country'].'.png').'" data-bs-toggle="tooltip" title="'.country_name($match['opponent']['country']).'" style="margin-left: 10px;" alt="" />';
 					}
 
-					if ($match['opponent']['website'])
+					// Le site de l'adversaire : une adresse sûre (pas de `javascript:`), échappée (audit du 2026-10-09).
+					if ($match['opponent']['website'] && nf_url_sure((string) $match['opponent']['website']))
 					{
-						$opponent = '<a href="'.$match['opponent']['website'].'" target="_blank">'.$opponent.'</a>';
+						$opponent = '<a href="'.nf_texte($match['opponent']['website']).'" target="_blank" rel="noopener noreferrer">'.$opponent.'</a>';
 					}
 
 					echo $opponent;
@@ -99,8 +100,9 @@ endif;
 <?php if ($webtv || $website): ?>
 <div class="card-body">
 	<ul class="list-inline m-0">
-		<?php echo $webtv ? '<li class="list-inline-item"><a href="'.$webtv.'" target="_blank">'.icon('fab fa-twitch').' '.$this->lang('Retransmission sur Twitch').'</a></li>' : '' ?>
-		<?php echo $website ? '<li class="list-inline-item"><a href="'.$website.'" target="_blank">'.icon('far fa-newspaper').' '.$this->lang('On en parle ici').'</a></li>' : '' ?>
+		<?php // Des adresses saisies : sûres (pas de `javascript:`) et échappées (audit du 2026-10-09). ?>
+		<?php echo $webtv && nf_url_sure((string) $webtv) ? '<li class="list-inline-item"><a href="'.nf_texte($webtv).'" target="_blank" rel="noopener noreferrer">'.icon('fab fa-twitch').' '.$this->lang('Retransmission sur Twitch').'</a></li>' : '' ?>
+		<?php echo $website && nf_url_sure((string) $website) ? '<li class="list-inline-item"><a href="'.nf_texte($website).'" target="_blank" rel="noopener noreferrer">'.icon('far fa-newspaper').' '.$this->lang('On en parle ici').'</a></li>' : '' ?>
 	</ul>
 </div>
 <?php endif ?>

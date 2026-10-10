@@ -17,7 +17,7 @@ class Live_Editor extends Module
 			'title'       => $this->lang('Live Editor'),
 			'description' => $this->lang('Éditeur visuel de mise en page : glisser-déposer des widgets dans les zones du thème.'),
 			'icon'        => 'fas fa-desktop',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

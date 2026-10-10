@@ -34,4 +34,5 @@ return [
 	'016d7125' => 'Sistema de comentários reutilizável pelos módulos (notícias, artigos, etc.).',
 	'e16ce76b' => 'Comentário',
 	'472a9d35' => 'Um comentário sobre algo que publiquei ou que sigo',
+	'219c2d4e' => 'Este comentário foi denunciado: não pode ser eliminado enquanto a moderação não o tiver analisado.',
 ];

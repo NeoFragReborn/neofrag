@@ -7,7 +7,7 @@ aux associations : crée le site de ton équipe, de ta guilde, de ton club ou de
 > NeoFrag Reborn est la continuité communautaire de **NeoFrag**, créé à l'origine par
 > **Michaël BILCOT** & **Jérémy VALENTIN** ([neofr.ag](https://neofr.ag)). Projet open source sous
 > licence **LGPLv3**. Ces guides sont **vérifiés contre le code** (relecture
-> complète du 2026-09-17, complétée le 2026-10-02) ; ils sont aussi publiés dans le wiki du site.
+> complète du 2026-09-17, complétée le 2026-10-02) ; ils sont aussi publiés dans le wiki de [neofrag-reborn.xyz](https://neofrag-reborn.xyz).
 
 ## Pour les utilisateurs
 

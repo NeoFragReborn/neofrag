@@ -75,7 +75,7 @@
 		</div>
 
 		<small class="text-muted">
-			<?php echo \icon('fas fa-info-circle').' '.$this->lang('Tu peux signaler 5 contenus par heure. Les abus de signalement (faux positifs répétés) sont eux-mêmes signalés.') ?>
+			<?php echo \icon('fas fa-info-circle').' '.$this->lang('Tu peux signaler %d contenus par heure. Les abus de signalement (faux positifs répétés) sont signalés aux modérateurs.', (int) $this->config->nf_moderation_report_rate_limit_per_hour ?: 5) ?>
 		</small>
 	</form>
 
@@ -107,11 +107,14 @@
 			.then(function(r){ return r.json(); })
 			.then(function(data){
 				$result.style.display = 'block';
-				if (data.ok) {
+				if (data.ok && data.duplicate) {
+					$result.innerHTML = '<div class="alert alert-info"><i class="fas fa-info-circle"></i> <?php echo addslashes($this->lang('Tu as déjà signalé ce contenu : un modérateur va l’examiner.')) ?></div>';
+					setTimeout(function(){ document.querySelectorAll('.modal.show').forEach(function(m){ bootstrap.Modal.getOrCreateInstance(m).hide(); }); }, 2500);
+				} else if (data.ok) {
 					$result.innerHTML = '<div class="alert alert-success"><i class="fas fa-check"></i> <?php echo addslashes($this->lang('Signalement envoyé. Un modérateur va l\'examiner.')) ?></div>';
 					setTimeout(function(){ document.querySelectorAll('.modal.show').forEach(function(m){ bootstrap.Modal.getOrCreateInstance(m).hide(); }); }, 1500);
 				} else if (data.error === 'rate_limit_or_dup') {
-					$result.innerHTML = '<div class="alert alert-warning"><?php echo addslashes($this->lang('Limite atteinte ou doublon : tu as déjà signalé ce contenu récemment ou dépassé 5 reports/heure.')) ?></div>';
+					$result.innerHTML = '<div class="alert alert-warning"><?php echo addslashes($this->lang('Limite atteinte : tu peux signaler %d contenus par heure.', (int) $this->config->nf_moderation_report_rate_limit_per_hour ?: 5)) ?></div>';
 					$btn.disabled = false;
 					$btn.innerHTML = '<i class="fas fa-flag"></i> <?php echo addslashes($this->lang('Envoyer le signalement')) ?>';
 				} else if (data.error === 'context_required') {

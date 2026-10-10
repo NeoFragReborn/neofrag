@@ -118,7 +118,9 @@ class Index extends Controller_Module
 								->heading($title, 'far fa-image')
 								->body($this->view('image', [
 									'original_file_id' => $original_file_id
-								]).($description ? '<p class="mt-3 mb-0">'.bbcode($description).'</p>' : ''))
+								]).($description ? '<p class="mt-3 mb-0">'.bbcode($description).'</p>' : '')
+								// Signaler une image (2026-10-09 : la galerie n'avait pas de bouton). Une image ne garde pas son auteur.
+								.(($moderation = $this->module('moderation')) instanceof \NF\Modules\Moderation\Moderation ? '<div class="text-end">'.$moderation->report_button('gallery_image', (int) $image_id, url('gallery/image/'.$image_id.'/'.url_title($title))).'</div>' : ''))
 								->footer('<a href="'.url($album).'">'.icon('fas fa-arrow-left').' '.$this->lang('Retour à l\'album %s', $gallery_title).'</a>', 'left')
 					)))
 					->append_if(($comments = $this->module('comments')) && $comments->is_enabled(), function() use (&$comments, $image_id){

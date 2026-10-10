@@ -33,10 +33,4 @@ class Admin_Checker extends Module_Checker
 			return $talk;
 		}
 	}
-
-	public function _reports($page = '')
-	{
-		// Page admin signalements (Phase T6)
-		return [$page];
-	}
 }

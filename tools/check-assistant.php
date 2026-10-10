@@ -56,6 +56,7 @@ require __DIR__.'/lib/serveur.php';
 require __DIR__.'/lib/paquet.php';
 require __DIR__.'/lib/profils.php';
 require __DIR__.'/lib/journal.php';
+require __DIR__.'/lib/wiki.php';
 require nf_racine().'/neofrag/installer.php';
 
 use NF\NeoFrag\Installer;
@@ -619,10 +620,27 @@ foreach ($profils as $cle => $profil)
     $tables_intruses = nf_tables_hors_profil($db, $profil['module'], $tous);
     juger('Aucune table d\'un module absent', !$tables_intruses, implode(', ', $tables_intruses));
 
-    if (in_array('wiki', $profil['module'], TRUE) && is_file($racine.'/install/wiki.sql'))
+    // La documentation du produit ne se livre plus, elle vit sur le site officiel (2026-10-09) : le wiki arrive vide
+    // sur un site neuf, et la démonstration n'y porte que ses pages d'exemple.
+    if (in_array('wiki', $profil['module'], TRUE))
     {
-        $pages = nf_table_existe($db, 'nf_wiki_pages') ? (int) nf_scalar($db, 'SELECT COUNT(*) FROM nf_wiki_pages') : 0;
-        juger('La documentation est importée dans le wiki', $pages > 0, $pages.' page(s)');
+        $documentation = [];
+
+        foreach (nf_wiki_sections() as $section => $definition)
+        {
+            $documentation = array_merge($documentation, [$section], array_keys($definition['pages']));
+        }
+
+        $slugs = [];
+
+        if (nf_table_existe($db, 'nf_wiki_pages') && ($r = $db->query('SELECT slug FROM nf_wiki_pages')) instanceof mysqli_result)
+        {
+            $slugs = array_column($r->fetch_all(MYSQLI_ASSOC), 'slug');
+        }
+
+        juger('Le wiki ne porte pas la documentation du produit', !array_intersect($slugs, $documentation), implode(', ', array_intersect($slugs, $documentation)));
+        juger($demo ? 'Le wiki de la démonstration porte ses pages d\'exemple' : 'Le wiki arrive vide',
+            $demo ? count($slugs) > 0 : !$slugs, count($slugs).' page(s)');
     }
 
     // 7. Le site, une fois installé

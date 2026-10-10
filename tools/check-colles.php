@@ -47,15 +47,11 @@ $detail = $o['detail'];
 
 /** Les éléments qui collent dans un cadre qui défile, et non dans la fenêtre — « feuille sélecteur » => raison. */
 const DANS_UN_CADRE = [
-    'themes/admin/css/style.css .nf-topbar'                => 'colle dans `.nf-main`, que son `overflow-x: hidden` fait conteneur de défilement : décalée de la hauteur des bandeaux, elle descendait sur le contenu',
-    'modules/files/css/file_manager.css .files-sidebar-card' => 'colle dans `.nf-main` de l\'administration, comme la barre du haut',
     'modules/access/css/access.css .matrix-table thead th'   => 'colle en haut du tableau des permissions, qui défile dans son propre cadre',
 ];
 
-/** Les thèmes dont l'élément collé sous les bandeaux n'est pas un en-tête : le rail de l'administration. */
-const SANS_ENTETE = [
-    'admin' => 'son seul élément collé sous les bandeaux est la barre latérale, pas un en-tête au-dessus du contenu',
-];
+/** Les thèmes dont l'élément collé sous les bandeaux n'est pas un en-tête (aucun aujourd'hui). */
+const SANS_ENTETE = [];
 
 /** Les déclarations d'un bloc : nom => valeur (la dernière l'emporte, comme dans le navigateur). */
 function declarations(string $bloc): array

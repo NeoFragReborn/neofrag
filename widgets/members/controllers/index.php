@@ -23,12 +23,13 @@ class Index extends Controller_Widget
 
 		if (!empty($members))
 		{
+			// Le widget lit les comptes du cœur et vit sans le module Membres ; seul ce lien mène à sa liste.
 			return $this->panel()
 						->heading($this->lang('Derniers membres'))
 						->body($this->view('index', [
 							'members'  => $members
 						]), FALSE)
-						->footer('<a href="'.url('members').'">'.icon('far fa-arrow-alt-circle-right').' '.$this->lang('Liste des membres').'</a>', 'right');
+						->footer_if(($liste = $this->module('members')) && $liste->is_enabled(), '<a href="'.url('members').'">'.icon('far fa-arrow-alt-circle-right').' '.$this->lang('Liste des membres').'</a>', 'right');
 		}
 		else
 		{

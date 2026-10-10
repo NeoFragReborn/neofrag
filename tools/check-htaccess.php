@@ -224,6 +224,28 @@ foreach (['nginx.conf', 'docs/deploy-ftp.md'] as $fichier)
     }
 }
 
+// ── Les pièces jointes des membres : servies par le site, jamais par le serveur web ─────────────────
+$upload  = (string) @file_get_contents($racine.'/upload/.htaccess');
+$motifs  = preg_match('/^\s*@interdit\s+path\s+(.+)$/m', (string) @file_get_contents($racine.'/Caddyfile'), $m) ? preg_split('/\s+/', trim($m[1])) ?: [] : [];
+
+foreach (NF_PIECES_JOINTES as $dossier => $pourquoi)
+{
+    $nom = substr($dossier, strlen('upload/'));
+
+    // Apache : un bloc `<If>` du .htaccess d'upload/ qui nomme le dossier et refuse tout.
+    preg_match('#<If\s+"[^"]*/upload/\(([^)]+)\)/[^"]*">\s*Require\s+all\s+denied\s*</If>#i', $upload, $si);
+    in_array($nom, explode('|', $si[1] ?? ''), TRUE) ? $vu('upload/.htaccess', $dossier.'/ refusé') : $manques[] = ['upload/.htaccess', "ne refuse pas `/{$dossier}/`", $pourquoi];
+
+    in_array('/'.$dossier.'/*', $motifs, TRUE) ? $vu('Caddyfile', $dossier.'/ refusé') : $manques[] = ['Caddyfile', "@interdit ne refuse pas `/{$dossier}/*`", $pourquoi];
+
+    foreach (['nginx.conf', 'docs/deploy-ftp.md'] as $fichier)
+    {
+        in_array($dossier, nginx_refuse((string) @file_get_contents($racine.'/'.$fichier), '/location\s+~\s+\^\/\(([^)]+)\)\/\s*\{\s*deny\s+all;/'), TRUE)
+            ? $vu($fichier, $dossier.'/ refusé')
+            : $manques[] = [$fichier, "ne refuse pas `/{$dossier}/`", $pourquoi];
+    }
+}
+
 // ── Le verdict ──────────────────────────────────────────────────────────────
 printf("%d dossier(s), %d extension(s) et %d fichier(s) surveillés, dans 3 configurations et le guide de déploiement.\n\n",
     count(NF_DOSSIERS_INTERDITS), count(NF_EXTENSIONS_INTERDITES), count(NF_FICHIERS_INTERDITS));

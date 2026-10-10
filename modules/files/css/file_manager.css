@@ -17,7 +17,7 @@
 
 .files-sidebar-card{
 	position: sticky;
-	top: 15px;
+	top: calc(var(--nf-haut, 0px) + var(--nf-entete, 0px) + 15px);
 }
 
 .files-tree-heading{

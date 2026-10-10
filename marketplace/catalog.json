@@ -1,8 +1,8 @@
 {
     "schema": 1,
     "project": "NeoFrag Reborn",
-    "base_version": "1.2.47",
-    "generated_at": "2026-10-09T08:55:41+00:00",
+    "base_version": "1.2.48",
+    "generated_at": "2026-10-09T20:04:51+00:00",
     "count": 67,
     "addons": [
         {
@@ -39,10 +39,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/ads.zip",
             "preview": "modules/ads.jpg",
-            "size": 31139,
-            "sha256": "01d174c979259d5978ed24e16acace61a6f05834c1d2f11cec7e895bf6f31228",
+            "size": 31126,
+            "sha256": "6bdbdef23e5ca4836c78a0b77f12f196f1cfa3020e93b784cc4c767fe2e17511",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -84,10 +84,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/api.zip",
             "preview": "modules/api.jpg",
-            "size": 93897,
-            "sha256": "4f1a431f0e46141b2025d8db82c86f7e11093c75188cd220c93386d5a64d06c1",
+            "size": 95541,
+            "sha256": "7f820c9dae483525bfdcb7926c5a41dd8e67fa6e2ae38950e830c01bf32e9d2b",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -127,10 +127,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/articles.zip",
             "preview": "modules/articles.jpg",
-            "size": 88858,
-            "sha256": "98912059b275a462c57ed7fc93b334acd9fe75d7e2f91c934a3f17c09e3c5183",
+            "size": 88986,
+            "sha256": "54acbdc1f9f83f0a15173358b3988ddc68129b55ca4973a6bf1da3f5a8d50047",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -172,10 +172,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/awards.zip",
             "preview": "modules/awards.jpg",
-            "size": 47751,
-            "sha256": "471c248af2148094a67437d8321edaa99ba0f8ad8e330fb062f0c1f22b3463e6",
+            "size": 47899,
+            "sha256": "8651c27e14e30f9c9a1d0981da6a91804aa0c794daf74184416d404f3694f787",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": [
                     "teams",
                     "games"
@@ -220,10 +220,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/bugtracker.zip",
             "preview": "modules/bugtracker.jpg",
-            "size": 59046,
-            "sha256": "6a7c39b86deaf75075babc7427a994f8d49d5acc98edd8ea7de2fccaf0c65d1c",
+            "size": 59586,
+            "sha256": "7ca248d69b6a3444ca5e9acca17b5fb16cf53b337cb69d004489acb21f75338b",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -266,7 +266,7 @@
             "size": 38078,
             "sha256": "81053cae4d9a68158dfd58d13ac6f2da3b22a11bbe6066d601296bdfb0ccfcbe",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -308,10 +308,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/classifieds.zip",
             "preview": "modules/classifieds.jpg",
-            "size": 48146,
-            "sha256": "4e0b91e0b2132bfe82a09e7fdc42ed34a5f6eef42da3fb80928c7f070fd62f83",
+            "size": 48690,
+            "sha256": "ad6f5bbd8557e0e350f0afe20b66a5076af92d2b2abdd9da7dacf98d220e5884",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -351,10 +351,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/discord.zip",
             "preview": "modules/discord.jpg",
-            "size": 148435,
-            "sha256": "28d94c4fe94c52a7bff12375e5ad01ff4e1f7e14dbe13545c5b1c5f0829cfa02",
+            "size": 155452,
+            "sha256": "4e061d35ec01d879b05059b28fc3ad46ec09d68de8eff6dc660f9d258710c338",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": [
                     "api"
                 ]
@@ -399,7 +399,7 @@
             "size": 61489,
             "sha256": "29f57dfe34578124fdbc406a12d665066d70df6361e5f3dd6ece8c1cd61f68fa",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -441,10 +441,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/downloads.zip",
             "preview": "modules/downloads.jpg",
-            "size": 49596,
-            "sha256": "018d6bf805064b40b050bda09d63c7b102fe090711399afa88ba65aefcdc1b4d",
+            "size": 49600,
+            "sha256": "919a170679ba682a057f1f9e8b52200523acbe52cf5b727026ab4bd2f67d8f52",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -489,7 +489,7 @@
             "size": 30507,
             "sha256": "d6e14c3e84176120f606e66ebdd7727d68676c621132418e793bb0183a09a22a",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -529,10 +529,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/events.zip",
             "preview": "modules/events.jpg",
-            "size": 194076,
-            "sha256": "480ae54eb36295d14d5c4cb72d6a53c3500c39ed99681dff31c8c3379abd475f",
+            "size": 195243,
+            "sha256": "f797bb33723a51679fdae53d8696646417abf972444036724d911ae5cf6b2232",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": [
                     "games",
                     "teams"
@@ -580,7 +580,7 @@
             "size": 33201,
             "sha256": "7be36610a5c9dd2580f864c138faeca3e5c52d98cf2380d3580f174417e33bca",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -623,7 +623,7 @@
             "size": 28828,
             "sha256": "05f24156b60d2999ac074790faa9432d62ecad67e0bcf0a50c27221e0d4620fe",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": [
                     "news",
                     "articles"
@@ -666,10 +666,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/forum.zip",
             "preview": "modules/forum.jpg",
-            "size": 155274,
-            "sha256": "d0909a25387b5c5b5012dbf3b1a9fd8ca0dd554c93d38e8797e91c1f7b71ef10",
+            "size": 159143,
+            "sha256": "cd8d2a6e8df03fc20c22c2dcfe9b5d2c747ae906d87b02eea801719850af3f01",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -711,10 +711,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/gallery.zip",
             "preview": "modules/gallery.jpg",
-            "size": 93943,
-            "sha256": "7a33e6503bae1eede45acdc4601a6a6534d4fc1530873258e2a4842c659e4fc8",
+            "size": 94870,
+            "sha256": "822dc43bb199ea28963f6f05bc5274e8c6f6a3f24ece5f752d4f6bd1e2f8afab",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -756,10 +756,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/games.zip",
             "preview": "modules/games.jpg",
-            "size": 62907,
-            "sha256": "f5950705d040139b29019af2ae5e9c3be250ef1c27f11f2e19a15da25d018717",
+            "size": 62915,
+            "sha256": "0a49e53fc58c4d0b28d7e3aa1e2ee91c1db255fbd0b263008931dc43fa8f5aa1",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -802,7 +802,7 @@
             "size": 41976,
             "sha256": "f8cee3c18b492d3d529deb78646732083ccd86829c553c1f742af4233862563c",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -845,7 +845,7 @@
             "size": 56218,
             "sha256": "b861ff6f7ce884c6051708b265ff0190aa61c5f0c94b75ac7ec1c89a077a84af",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -885,10 +885,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/guestbook.zip",
             "preview": "modules/guestbook.jpg",
-            "size": 27618,
-            "sha256": "48acd605fc16bf8576868982338870560a70a0acd19493deea6c2d1c895e37c6",
+            "size": 28332,
+            "sha256": "9b34552df34b25e0a0bac66257b2c9af397a22df5c7b323bf1d40cdfb25e632c",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -930,10 +930,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/links.zip",
             "preview": "modules/links.jpg",
-            "size": 38141,
-            "sha256": "91edb9d7e529e36de40a672273d4e1569920e6af8ef6d3fa0b98dc322eb336f4",
+            "size": 38138,
+            "sha256": "57a34d39afee251d1aaea24aefa334ea91522dbc6fae30906647f8b78f9a7605",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -975,10 +975,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/news.zip",
             "preview": "modules/news.jpg",
-            "size": 76635,
-            "sha256": "0b4354404e151593328201a1f251c2727990fb21cc3508bf29070284fb3870f7",
+            "size": 76802,
+            "sha256": "d5f21d94988f4c8e2f8a9a61369653ede32f753f5db819aa9d27fa9a70711827",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -1020,10 +1020,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/newsletter.zip",
             "preview": "modules/newsletter.jpg",
-            "size": 62139,
-            "sha256": "c18209b5dd9e6f32aae4dc90d2909183a0a39bde24bda2283c13af6a5e41a98b",
+            "size": 62140,
+            "sha256": "f6b0a73d66ef93c1a0b75a8839bf7da4a14b19cbb06948da3f8ea916ca5df971",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -1065,10 +1065,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/partners.zip",
             "preview": "modules/partners.jpg",
-            "size": 46653,
-            "sha256": "174fda8c69c3b4ad10bd87791d9fc3550438f681c02d9913cb8a9ad3a8fb7913",
+            "size": 46666,
+            "sha256": "8d1b98acfd6367e346f59293151fd2c2a0b4edb15d9874f9710f38c1b953889f",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -1110,10 +1110,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/payments.zip",
             "preview": "modules/payments.jpg",
-            "size": 48303,
-            "sha256": "0fc2705309518fa38e2dd94c95269fc88a23e3fd156aeaea216fdf07814baabb",
+            "size": 48913,
+            "sha256": "19ec496b7d63635016ed247f939fc6f1c3349df7de0caa36ddecd731ee52d560",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": [
                     "gamification"
                 ]
@@ -1158,7 +1158,7 @@
             "size": 178824,
             "sha256": "f6a8a31400532092feed26f617701b3420a632344731771009e0d73dc30e6cf4",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1201,7 +1201,7 @@
             "size": 60691,
             "sha256": "636275551fd2bd1942f01bc8bdd88e5dbe30a1f4a2bbac01e30b30c482d4d0c2",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1244,7 +1244,7 @@
             "size": 53826,
             "sha256": "5d5ddf63c45b21df676759030883f17c00b3fb5761ebf6fcb166567995bb164a",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1284,10 +1284,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/recruits.zip",
             "preview": "modules/recruits.jpg",
-            "size": 75054,
-            "sha256": "49e6fd5cf531dbbb0f51cc2dc3ea522eeebcfa8e0856b0b530c36c638ff18a45",
+            "size": 75406,
+            "sha256": "640f6c1d6d1d33b118a5211346219b17d61f14bcf2ed7cb5ee4b40f770fd1c1f",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": [
                     "teams",
                     "games"
@@ -1335,7 +1335,7 @@
             "size": 50343,
             "sha256": "80b680a3dab102a5d02ac7c7dcdb6141d3e10daf0c673f72ddf45bfd4e0b8f2f",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1378,7 +1378,7 @@
             "size": 46892,
             "sha256": "b61ddc71c3011a3a688cc51c018b27fd1b82d46b27ada9dab9ff7c438043e5d4",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1418,10 +1418,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/surveys.zip",
             "preview": "modules/surveys.jpg",
-            "size": 49632,
-            "sha256": "1a06bfffb8bceaa6c5c7a8c15020d58df691589c23c9d9c2fbabc345566d531c",
+            "size": 49717,
+            "sha256": "3d7fed54f754437028bdce657902f69197bc109bdf2ffadfb5fcdd38628930c3",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [
@@ -1463,10 +1463,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/teams.zip",
             "preview": "modules/teams.jpg",
-            "size": 57446,
-            "sha256": "8c887f7968fc2170f2d41d54db24adcbaf1d7fca3e9584126526295b6e603bfd",
+            "size": 57456,
+            "sha256": "aa4728fee393ee8def62fe7c68adffd2a2f94d9752f9ab77ac3060c615dbd59f",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": [
                     "games"
                 ]
@@ -1513,7 +1513,7 @@
             "size": 63159,
             "sha256": "54ca3f08529c4f23356fe47b3da5fc047dce78d5a0def36d4f80f8d9df8693b5",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1553,10 +1553,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/wiki.zip",
             "preview": "modules/wiki.jpg",
-            "size": 39303,
-            "sha256": "543f8dbda19635b1c09248c514210f30d86a6021033b71c60427eefa7b59805b",
+            "size": 39497,
+            "sha256": "7cc91e81af598182f6487cfae945d4838085c3488becc2ee52be5915c066e24e",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1594,7 +1594,7 @@
             "size": 166675,
             "sha256": "227039e519448eab16f59efa71bb42ac6c313a05f6e96eb37ba09352f374bc05",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1632,7 +1632,7 @@
             "size": 79323,
             "sha256": "fc85ce937a7d4d72c78b40e2020a87378274711f48c35d20a0501e263f3e9cc3",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1670,7 +1670,7 @@
             "size": 101843,
             "sha256": "e4ae144368f924044a0888cea9416da2f9d9167975a7a8dabbe6451e48ce6d92",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1708,7 +1708,7 @@
             "size": 113969,
             "sha256": "b83dfafa373ad30fd9594af972908561dff75d71b2908f3c739bc3c02e954ca3",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1746,7 +1746,7 @@
             "size": 122108,
             "sha256": "bb93184cd40560703cf298ccc9b582beeb0e081dae0a4c693813b147cd5738a8",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1784,7 +1784,7 @@
             "size": 93383,
             "sha256": "1f25ea4b9602744914bc3765cd717d7306a131fedb76c04290bc605dc557a8e3",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1824,10 +1824,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/about.zip",
             "preview": "widgets/about.jpg",
-            "size": 32736,
-            "sha256": "3bc627516db6d5a0bd4632bbcae585bb76a6dbbc144644a29e92eea2546ed407",
+            "size": 32746,
+            "sha256": "5e2623790b6650b09919574f5621a6a95d4f090eb333b4a81126f5d1b715e75d",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1867,11 +1867,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/ads.zip",
             "preview": "widgets/ads.jpg",
-            "size": 22269,
-            "sha256": "1eba2c93d997dcb4b6f95a1d88c878dce0ef3eabb38f52aedcd3e7e35c33e6cf",
+            "size": 22274,
+            "sha256": "ef49a54b8d34b65c16a612bfa4136dae0c26e025aa3170591c5f4272ae7975b4",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "ads"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -1910,11 +1912,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/articles.zip",
             "preview": "widgets/articles.jpg",
-            "size": 37391,
-            "sha256": "9af44320673c5a1605d8d01c5e1e61b84612ca1da72080fb02baa693117b39dd",
+            "size": 37396,
+            "sha256": "0cd9b3d9a146d15b94bbbc1c4a179b330f09e0137da78f2d6127572341956c3a",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "articles"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -1953,11 +1957,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/awards.zip",
             "preview": "widgets/awards.jpg",
-            "size": 20319,
-            "sha256": "78db19345042bd06a2205384f7dfacac9b9e1b870199663abdaa6324f670c6df",
+            "size": 20335,
+            "sha256": "cf155c15246f08449e67068f971d1b0099c5ea42f89530e1e72faac9b8464923",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "awards"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -1996,11 +2002,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/calendar.zip",
             "preview": "widgets/calendar.jpg",
-            "size": 34473,
-            "sha256": "117bce2a6b9fa4897e0ad3bf925764385c726c244d26182cc48f069ba10866ac",
+            "size": 34474,
+            "sha256": "683d6740283cd4d525ab20eb7341652e5cdc467320d07a52cc63580908f47883",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "calendar"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2042,7 +2050,7 @@
             "size": 28739,
             "sha256": "30d99fa37b1a9eaada965a8638339160458229829a987bb9de3da33553a7a260",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2082,11 +2090,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/donations.zip",
             "preview": "widgets/donations.jpg",
-            "size": 29757,
-            "sha256": "d6dc251979d5a2261e689e05c85a88c80c6fdc204b5716efe13d71eb6127c38a",
+            "size": 29760,
+            "sha256": "6f1bca37903cba60bbe4896104a0c640dbbbe647e81dd5cc5c2372e28849154f",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "donations"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2125,11 +2135,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/downloads.zip",
             "preview": "widgets/downloads.jpg",
-            "size": 33378,
-            "sha256": "467cb65aed9be1057e1fbbf5ca360fb0d1383c59a53a59e42083f9cfeb8a839d",
+            "size": 33384,
+            "sha256": "9a69a04a92b48638ae25db1942376f386ec36aee766829457f7d24828007ade4",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "downloads"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2168,11 +2180,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/events.zip",
             "preview": "widgets/events.jpg",
-            "size": 34848,
-            "sha256": "dc3681a95329ed39976a3aac32d85cdd5c7dc4bfe71a9f3ef43f176381ec9bc3",
+            "size": 34860,
+            "sha256": "1dacbea29808c55d8fd323bd86ed69a354cb6b3610cf0dc94cbaf88be3cc5359",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "events"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2211,11 +2225,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/forum.zip",
             "preview": "widgets/forum.jpg",
-            "size": 43822,
-            "sha256": "2ee9c1674b20476b4164d0528af8c316a4dc4922e84a59258052c8d5bf99a2fb",
+            "size": 43921,
+            "sha256": "19cf6636e12536c56d8ec6f4be1ff6ee8776401847c1f79c4f12d7ac0d885f8e",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "forum"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2254,10 +2270,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/frise.zip",
             "preview": "widgets/frise.jpg",
-            "size": 50665,
-            "sha256": "e94796a63d7a640ee94a8aa53adfc1f8454b824ea9401162983add4103263841",
+            "size": 50749,
+            "sha256": "28685245aa9b2ee4fd90047e4737dea17de9d9d5f2af9b6c1835e6f93066278d",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2297,11 +2313,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/gallery.zip",
             "preview": "widgets/gallery.jpg",
-            "size": 31590,
-            "sha256": "cf5156d9c28e1af1b90adea7f52a7612bb9672721cbbe1a8d8731e2b3a42ce7f",
+            "size": 31604,
+            "sha256": "c70013c0e05d511dc13705b063e943e75f02f084587820d4fd80a14cad1d9803",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "gallery"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2343,7 +2361,7 @@
             "size": 44609,
             "sha256": "3111d23f0edb876e28ea9622044e196c212c055245a917de9ae4915c9992deab",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2383,11 +2401,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/guestbook.zip",
             "preview": "widgets/guestbook.jpg",
-            "size": 29066,
-            "sha256": "53caac18d7bf65031e455d563412d223439f543d52cdbfaa4dfcffb4e136ef81",
+            "size": 29069,
+            "sha256": "75ae3032a5528e3f93ef4ee0a0f94823addcb4d0ceab7b232a6e4369af0b9317",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "guestbook"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2426,11 +2446,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/links.zip",
             "preview": "widgets/links.jpg",
-            "size": 23773,
-            "sha256": "366b083d5a47aef0d39506d68b7de6db73b955ed01dfabd2895602d5b5929879",
+            "size": 23778,
+            "sha256": "27c04b9d98dd9b62ee92afd55c503704221e0f20895504a7b6663eac8a1e006b",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "links"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2469,11 +2491,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/news.zip",
             "preview": "widgets/news.jpg",
-            "size": 26647,
-            "sha256": "6fa81bccba63e9bfa5ee10354807f0cef4bc61ca2e2d9c1c32a7accdc9bc67cc",
+            "size": 26659,
+            "sha256": "fb0b9262ac9b1446ebc8ef7278ea55f7495b8b4ab21f1ae124733117bf4d31dd",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "news"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2512,11 +2536,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/newsletter.zip",
             "preview": "widgets/newsletter.jpg",
-            "size": 28436,
-            "sha256": "c8561662eadf447d3f06ec966330175e3bcaad5c44b2b06a579c8dc1db38a103",
+            "size": 28439,
+            "sha256": "53d521f4bc654f2cfa6c9519324c2607615fd9a9bccbe8892e83579a9aa8461c",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "newsletter"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2555,11 +2581,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/partners.zip",
             "preview": "widgets/partners.jpg",
-            "size": 24221,
-            "sha256": "5fd0a46b76026825bb4ac772a86c215c007d8f297111799a25a6e9b3cf4bccde",
+            "size": 24233,
+            "sha256": "24ab7cf5181446bcb3e6e11a111732eb025b1852e8654276c901d300720f54f6",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "partners"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2598,11 +2626,12 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/recruits.zip",
             "preview": "widgets/recruits.jpg",
-            "size": 36080,
-            "sha256": "caac7f8d05353c44d547f55d950a9cf68f347992bcc58ee4ef8cc7a7fcc027e6",
+            "size": 36095,
+            "sha256": "1b3c11adb6f8b6c6ea1c3b5cc7342f08d3971cd2d8a12840e29d2ab80cff3c04",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": [
+                    "recruits",
                     "teams"
                 ]
             },
@@ -2646,7 +2675,7 @@
             "size": 56545,
             "sha256": "d1adf41aa41439c086283d425cafcf1fc02ada7cdf2a798a44a2d4e8a32a2aa8",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2689,7 +2718,7 @@
             "size": 46386,
             "sha256": "2212a2e67d6262d4fcd48911e96e9d32d7910e0d01b0678248dc5d6e1fadbe55",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2729,10 +2758,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/steam.zip",
             "preview": "widgets/steam.jpg",
-            "size": 39753,
-            "sha256": "e81ecfcaff875d80b37463def06b3ec75517bfa418ac938fb3fb6358a56ed7f5",
+            "size": 39762,
+            "sha256": "eebfd16e93f496695fbe8baf7230269d4aab6bbf89f1be51bfd46e14ef9c73ce",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2772,11 +2801,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/surveys.zip",
             "preview": "widgets/surveys.jpg",
-            "size": 27356,
-            "sha256": "fc6a615bf2ed39476e8ad650d5e8dd6adfc12a1c9eb7805c0efe100db0437444",
+            "size": 27360,
+            "sha256": "13b53a82950732be32ec8f3a18a0725f701e95ecfee04496f1df2c15aa2f02db",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "surveys"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2815,11 +2846,13 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/teams.zip",
             "preview": "widgets/teams.jpg",
-            "size": 26550,
-            "sha256": "a9570f0e3ee101d52006f00fad4172565e604c964055e00bc187c6eacc17b16f",
+            "size": 26564,
+            "sha256": "b815d2245faf6ce64a6bc0788ed81714bc6ddc811d9b5dec3550bb7736cc1b00",
             "requires": {
-                "base": ">=1.2.47",
-                "addons": []
+                "base": ">=1.2.48",
+                "addons": [
+                    "teams"
+                ]
             },
             "provides_widgets": [],
             "install": "zip"
@@ -2858,10 +2891,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/teamspeak.zip",
             "preview": "widgets/teamspeak.jpg",
-            "size": 44444,
-            "sha256": "45437d4449c47cd81bae76a00a60cf0750c1c798362f73d31be150bb6623b6b9",
+            "size": 44636,
+            "sha256": "12141e3c9dddc7ebf22f765fb27203c47d18eb3a8390f937c5248be51133d135",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2904,7 +2937,7 @@
             "size": 53246,
             "sha256": "e85970eb6d38cbe5a25ac69d2f7b998ba8fe48b4de4ec1f61c2603853ef197b6",
             "requires": {
-                "base": ">=1.2.47",
+                "base": ">=1.2.48",
                 "addons": []
             },
             "provides_widgets": [],

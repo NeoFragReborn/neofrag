@@ -244,6 +244,19 @@ class Admin extends Controller_Module
 							}
 						}
 					],
+					// Les comptes inactifs (2026-10-09) : effacés après ce nombre d'années sans visite, prévenus un mois avant.
+					'comptes_inactifs_ans' => [
+						'label'       => $this->lang('Comptes inactifs'),
+						'description' => $this->lang('Un compte sans visite depuis ce nombre d’années est effacé ; un e-mail prévient son membre un mois avant, et une visite annule tout. Les administrateurs ne sont jamais effacés. 0 pour ne jamais effacer.'),
+						'value'       => (int) $this->config->nf_comptes_inactifs_ans,
+						'type'        => 'number',
+						'check'       => function($ans){
+							if ($ans !== '' && (!ctype_digit((string) $ans) || (int) $ans > 20))
+							{
+								return $this->lang('Indiquez un nombre d’années entre 0 et 20.');
+							}
+						}
+					],
 					'analytics' => [
 						'label'       => '<a href="https://analytics.google.com" target="_blank">'.$this->lang('Code Google Analytics').'</a>',
 						// Google Analytics 4 (`G-…`) : Universal Analytics (`UA-…`) a cessé de compter en juillet

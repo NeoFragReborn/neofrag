@@ -135,7 +135,14 @@ class Index extends Controller_Module
 					],
 					[
 						'content' => function($data){
-							return '<div>'.$this->user->link($data['user_id'], $data['username']).'</div><small>'.icon('fas fa-circle '.($data['online'] ? 'text-green' : 'text-gray')).' '.($data['admin'] ? 'Admin' : 'Membre').' '.($data['online'] ? 'en ligne' : 'hors ligne').'</small>';
+							// La présence suit le choix du membre (Models\User::montre('statut')), comme son profil : elle se
+							// montrait à tous ; et ces mots s'écrivaient en français dans toutes les langues (2026-10-09).
+							$membre   = $this->module('user')->model2('user', $data['user_id']);
+							$presence = $membre instanceof \NF\NeoFrag\Models\User && $membre->montre('statut')
+								? ' · '.icon('fas fa-circle '.($data['online'] ? 'text-green' : 'text-gray')).' '.($data['online'] ? $this->lang('En ligne') : $this->lang('Hors ligne'))
+								: '';
+
+							return '<div>'.$this->user->link($data['user_id'], $data['username']).'</div><small>'.($data['admin'] ? $this->lang('Administrateur') : $this->lang('Membre')).$presence.'</small>';
 						}
 					],
 					[
@@ -249,6 +256,8 @@ class Index extends Controller_Module
 
 	public function _participant_add($event_id, $title, $status)
 	{
+		$this->check_csrf('events/'.$event_id.'/'.$title);
+
 		$this->db	->where('event_id', $event_id)
 					->where('user_id', $this->user->id)
 					->update('nf_events_participants', [

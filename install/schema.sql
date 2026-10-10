@@ -100,6 +100,7 @@ DROP TABLE IF EXISTS `nf_user_token`;
 CREATE TABLE `nf_user_token` (
   `id` varchar(32) NOT NULL,
   `user_id` int(11) unsigned NOT NULL,
+  `type` enum('mot_de_passe','validation') NOT NULL DEFAULT 'mot_de_passe',
   `date` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
@@ -438,6 +439,11 @@ CREATE TABLE `nf_reports` (
   `handled_at` timestamp NULL DEFAULT NULL,
   `handled_action_id` bigint(20) unsigned DEFAULT NULL,
   `handled_note` text DEFAULT NULL,
+  `mediation_par` int(10) unsigned DEFAULT NULL,
+  `mediation_le` timestamp NULL DEFAULT NULL,
+  `mediation_accord` enum('oui','non') DEFAULT NULL,
+  `mediation_reponse_le` timestamp NULL DEFAULT NULL,
+  `mediation_talk_id` int(10) unsigned DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_reports_status_created` (`status`,`created_at`),
@@ -674,6 +680,25 @@ CREATE TABLE `nf_audit_log` (
   KEY `idx_action` (`action`),
   KEY `idx_created` (`created_at`),
   KEY `idx_success` (`success`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `nf_user_inactivite`;
+CREATE TABLE `nf_user_inactivite` (
+  `user_id` int(11) unsigned NOT NULL,
+  `prevenu_le` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `fk_user_inactivite_user` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `nf_user_email_change`;
+CREATE TABLE `nf_user_email_change` (
+  `user_id` int(11) unsigned NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `token` char(32) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `uk_token` (`token`),
+  CONSTRAINT `fk_user_email_change_user` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `nf_cookie_consent`;
@@ -969,7 +994,23 @@ INSERT INTO `nf_migrations` (`id`, `name`, `batch`, `applied_at`) VALUES
 
 -- Les traces du consentement : nf_cookie_consent ci-dessus a deja sa forme nouvelle.
 -- Cf. migrations/2026_10_08_consentement.
-('61', '2026_10_08_consentement', '49', '2026-10-08 00:00:00');
+('61', '2026_10_08_consentement', '49', '2026-10-08 00:00:00'),
+
+-- La nouvelle adresse en attente de confirmation : nf_user_email_change ci-dessus, ses modèles dans install/seed.sql.
+-- Cf. migrations/2026_10_09_adresse_en_attente.
+('62', '2026_10_09_adresse_en_attente', '50', '2026-10-09 00:00:00'),
+
+-- L'usage d'un lien envoyé par e-mail : la colonne `type` de nf_user_token ci-dessus.
+-- Cf. migrations/2026_10_09_jetons_par_usage.
+('63', '2026_10_09_jetons_par_usage', '51', '2026-10-09 00:00:00'),
+
+-- Les comptes inactifs : nf_user_inactivite ci-dessus, le réglage et le modèle d'e-mail dans install/seed.sql.
+-- Cf. migrations/2026_10_09_comptes_inactifs.
+('64', '2026_10_09_comptes_inactifs', '52', '2026-10-09 00:00:00'),
+
+-- La médiation attend l'accord de celui qui a signalé : les colonnes mediation_* de nf_reports ci-dessus.
+-- Cf. migrations/2026_10_09_mediation_accord.
+('65', '2026_10_09_mediation_accord', '53', '2026-10-09 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

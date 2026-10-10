@@ -485,8 +485,15 @@ class Admin extends Controller_Module
 			refresh();
 		}
 
+		// Les fichiers orphelins, montrés puis effacés sur demande : seulement ceux qui le sont encore (ligne 0.36).
+		if (!empty($_POST['purger_orphelins']) && is_array($_POST['purger_orphelins']))
+		{
+			notify($this->lang('%d fichier(s) orphelin(s) effacé(s).', nf_effacer_orphelins('forum', 'nf_forum_attachments', array_map('strval', $_POST['purger_orphelins']))));
+			refresh();
+		}
+
 		$stats   = $this->model()->get_attachments_stats();
-		$orphans = $this->model()->find_orphan_files();
+		$orphans = nf_fichiers_orphelins('forum', 'nf_forum_attachments');
 
 		return $this->admin_card('fas fa-paperclip', $this->lang('Pièces jointes du forum'), $this->view('admin/attachments', [
 				'attachments' => $attachments,

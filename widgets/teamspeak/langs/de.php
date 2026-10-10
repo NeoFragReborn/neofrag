@@ -19,7 +19,7 @@ return [
 	'6d6cf1e7' => 'Benutzerdefinierter Titel',
 	'71e8c00c' => 'Optional: ersetzt den Servernamen',
 	'2445659b' => 'Baum-Modus — ServerQuery erforderlich',
-	'20f0248e' => 'Um Kanäle & Clients anzuzeigen, verbindet sich das Widget mit ServerQuery (TCP, Standard-Port 10011). Du musst ein dediziertes Query-Konto auf deinem TS3-Server erstellen.',
+	'20f0248e' => 'Um Kanäle & Clients anzuzeigen, verbindet sich das Widget mit ServerQuery (TCP, Standard-Port 10011). Du musst ein dediziertes Query-Konto auf deinem TS3-Server erstellen (TSDNS-Befehl: <code>serverqueryadd client_login_name=neofrag_viewer client_login_password=…</code>).',
 	'85eb1a62' => 'ServerQuery-Port',
 	'7b2f0edd' => 'Standard: 10011',
 	'f76e4fdf' => 'Query-Benutzer',

@@ -19,7 +19,7 @@ return [
 	'6d6cf1e7' => 'Título personalizado',
 	'71e8c00c' => 'Opcional: substitui o nome do servidor',
 	'2445659b' => 'Modo árvore — ServerQuery necessário',
-	'20f0248e' => 'Para mostrar canais e clientes, o widget se conecta ao ServerQuery (TCP, porta padrão 10011). Você deve criar uma conta query dedicada no seu servidor TS3.',
+	'20f0248e' => 'Para mostrar canais e clientes, o widget se conecta ao ServerQuery (TCP, porta padrão 10011). Você deve criar uma conta query dedicada no seu servidor TS3 (comando TSDNS: <code>serverqueryadd client_login_name=neofrag_viewer client_login_password=…</code>).',
 	'85eb1a62' => 'Porta ServerQuery',
 	'7b2f0edd' => 'Padrão: 10011',
 	'f76e4fdf' => 'Usuário Query',

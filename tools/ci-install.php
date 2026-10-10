@@ -84,14 +84,10 @@ if (!empty($summary['errors']))
     nf_refus('erreurs install : '.implode(' | ', $summary['errors']));
 }
 
-// 3b. Contenu du PAQUET PRINCIPAL (fidèle au vrai installeur web, cf. install/index.php) : doc wiki
-//     + mise en page de la vitrine. Sans ça, l'accueil vitrine et le wiki sont vides.
-echo "[ci-install] contenu vitrine (wiki + mise en page)…\n";
-
-if (is_file($wiki_sql = $root.'/install/wiki.sql') && Installer::table_exists($db, 'nf_wiki_pages'))
-{
-    Installer::import_sql_file($db, $wiki_sql);
-}
+// 3b. Contenu du PAQUET PRINCIPAL (fidèle au vrai installeur web, cf. install/index.php) : la mise en page
+//     de la vitrine. Sans elle, l'accueil vitrine est vide. Le wiki arrive vide, comme chez tout le monde : la
+//     documentation du produit n'est plus livrée (2026-10-09).
+echo "[ci-install] mise en page de la vitrine…\n";
 
 if (is_file($vitrine_sql = $root.'/install/vitrine.sql'))
 {

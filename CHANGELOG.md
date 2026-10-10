@@ -10,6 +10,123 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.48] — 2026-10-09
+
+Un gros lot : un audit de sécurité complet, la modération qui fonctionne enfin — ses sanctions s'appliquent à
+toutes les écritures des membres —, une nouvelle adresse e-mail confirmée avant de compter, l'effacement des comptes
+inactifs, et la connexion par Discord, GitHub ou Google réparée. Le bot Discord passe en **version 0.2.5** (voir son
+propre journal des versions). **Après la mise à jour, chacun se reconnecte une fois** : le cookie de session change
+de nom.
+
+### Sécurité
+
+- **La recherche du forum, ouverte aux visiteurs, laissait injecter du SQL** par un mot écrit entre guillemets ; la
+  recherche de la messagerie portait la même copie. Le mot est nettoyé comme les autres, et l'échappement est celui de
+  la base.
+- **Un envoi venu d'un autre site est refusé** (POST, PUT, DELETE…), d'après ce que dit le navigateur
+  (`Sec-Fetch-Site`, à défaut `Origin`) : une page piégée ne peut plus faire agir un membre connecté à son insu. Un
+  client sans navigateur — le bot, un service de paiement — n'est pas concerné.
+- **Vingt actions qui modifiaient quelque chose par un simple lien** demandent désormais le jeton de la session, ou
+  n'acceptent plus que POST : suivre un sujet, l'épingler, tout marquer comme lu, quitter, archiver, supprimer ou
+  restaurer une conversation, réagir, marquer ses notifications comme lues, donner sa disponibilité à un événement,
+  ouvrir ou fermer le site et les inscriptions, lancer une sauvegarde ou une mise à jour, supprimer un champ de
+  recrutement… Une déconnexion par un lien sans jeton se confirme par un bouton.
+- **En HTTPS, le cookie de session porte le préfixe `__Host-`** : un sous-domaine (une démonstration, un webmail) ne
+  le reçoit plus et ne peut plus en imposer un.
+- **Les comptes** :
+  - le lien « mot de passe oublié » ouvrait aussi la validation d'une inscription, qui connecte sans rien demander
+    pendant deux jours : chaque lien ne vaut plus que pour son usage ;
+  - changer de mot de passe fait tomber une nouvelle adresse en attente et les liens « mot de passe oublié » ;
+  - les erreurs de connexion se comptent par compte — quelle que soit la façon de l'écrire — et par réseau : une
+    adresse IPv6 compte pour son réseau /64, dans toutes les limites d'essais du site ;
+  - activer la double authentification ou lier un compte Discord, GitHub ou Google redemande le mot de passe ; cinq
+    erreurs bloquent cette confirmation un quart d'heure ;
+  - « mot de passe oublié » répond la même chose qu'une adresse soit inscrite ou non, et l'inscription ne dit plus
+    sans limite qu'une adresse est déjà prise ;
+  - l'historique des connexions note l'adresse de la connexion, plus un en-tête que le navigateur choisit.
+- **Douze fuites d'accès fermées** : l'historique et les révisions d'une page du wiki en brouillon ; les catégories
+  du forum réservées au VIP, par la recherche et les profils ; les groupes cachés ; l'image d'un album fermé ; les
+  matchs d'un type réservé ; la présence que des participants avaient cachée ; les commentaires et réactions d'un
+  contenu invisible ; le signalement d'une conversation dont on ne fait pas partie.
+- **Deux anciennes adresses de la messagerie rendaient les messages de n'importe quelle conversation**, même privée,
+  à qui avait le droit de lire — visiteurs compris : retirées. Poster une image dans la galerie demandait le seul
+  droit de voir l'album.
+- **Les pièces jointes du forum et des conversations sont servies par le site**, à qui peut lire le sujet ou la
+  conversation, et plus par le serveur web à quiconque avait leur adresse. Une image ou un PDF s'affichent, le reste
+  se télécharge ; une pièce jointe qu'un navigateur exécuterait est refusée à l'envoi.
+- **Ce que le serveur va chercher lui-même** (relais d'images, flux RSS, webhooks) se limite aux adresses publiques au
+  sens strict, sur les ports 80 et 443.
+- **Les clés Stripe ne se relisent plus en clair** dans l'administration : enregistrées chiffrées, jamais
+  réaffichées.
+- **Démonstration** : les adresses IP, noms d'hôte et sites de provenance des visiteurs ne s'y montrent plus ; une
+  publicité, un lien, un partenaire qui mène hors du site s'affiche sur une page qui dit où il mène, au lieu d'y
+  rediriger.
+- Une adresse saisie par un membre ne sort plus en lien `javascript:` (pages d'où arrivent les sessions, liens d'un
+  match), et l'adresse de contexte d'un signalement ne peut viser qu'une page du site.
+
+### Ajouté
+
+- **Une nouvelle adresse e-mail attend sa confirmation** : le lien part à la nouvelle adresse (valable deux jours),
+  l'ancienne est prévenue, et « Mon compte » propose de renvoyer le lien ou d'annuler. Une faute de frappe coupait
+  jusqu'ici le membre de tout ce que le site lui envoie.
+- **Les comptes inactifs s'effacent** : sans visite depuis trois ans — réglable dans *Paramètres*, `0` pour jamais —,
+  un e-mail prévient le membre un mois avant, une visite annule tout. Jamais un administrateur.
+- **Sanctionner un membre sans attendre un signalement**, depuis son historique de modération, que sa fiche
+  d'administration propose.
+- **Un bouton « Signaler »** sur le livre d'or, les images de la galerie, les petites annonces, les tickets et leurs
+  commentaires.
+- **« Mes sanctions »** dans l'espace membre, pour qui en a eu une dans l'année : sa nature, son motif, sa période.
+- **La médiation** : depuis un signalement, le modérateur propose une conversation privée entre lui, le membre signalé
+  et celui qui l'a signalé. Le membre signalé y verra qui l'a signalé : elle ne s'ouvre donc qu'avec l'accord de ce
+  dernier, à qui une page explique ce qu'il accepte ; s'il refuse, son signalement reste anonyme et suit son cours.
+
+### Corrigé
+
+- **Les sanctions de modération s'appliquent à toutes les écritures des membres** : forum, messagerie,
+  commentaires, livre d'or, Bugtracker, recrutement, petites annonces, galerie, profil, éditeur d'images. Seuls le
+  muet du forum et de la messagerie étaient vérifiés, et après l'envoi. Le formulaire laisse place à un avis qui dit
+  ce que la sanction interdit, jusqu'à quand, et pourquoi ; la restriction « Liens externes » refuse un texte qui en
+  porte un, sans le perdre.
+- **Aucune sanction ne se prononçait depuis l'écran de modération** (une table supprimée en mai : erreur interne),
+  et l'escalade ne s'est donc jamais déclenchée. Revus avec : les réglages (cases qui ne se décochaient pas, seuil du
+  signaleur suspect), les portées, les durées (un bannissement temporaire sans durée devenait définitif), la
+  validation par un modérateur plus haut placé, le panneau des modérateurs, les signalements en double, les pages 2
+  et suivantes, la liste d'IP ; la levée d'une sanction refuse la sienne et celle d'un rang supérieur.
+- **Le shadow ban fonctionne** : ce qu'écrit un membre qui en fait l'objet ne se montre qu'à lui et aux
+  modérateurs, et rien ne se diffuse — ni notification, ni Discord, ni abonnés.
+- **Un rôle donné en plus — Modérateur — retirait les droits d'un membre** : un modérateur perdait le forum et la
+  messagerie. Un rôle ajoute des droits, il n'en retire plus.
+- **Les e-mails partent dans la langue de celui qui les reçoit** — sanctions, réponses du forum, messagerie —, et
+  plus dans celle du membre qui les a déclenchés.
+- **La connexion par Discord, GitHub ou Google tombait en erreur** dès qu'un service était configuré (la
+  bibliothèque OAuth avait changé), et envoyait au service une adresse de retour qu'il refusait. Un retour refusé dit
+  maintenant pourquoi au lieu d'une page d'erreur, et l'avatar Discord est repris.
+- **Livre d'or, administration** : approuver, rejeter ou supprimer un message menait à une page introuvable.
+- **L'erreur d'un champ de formulaire s'écrit sous le champ**, au téléphone comme à l'ordinateur : elle ne se lisait
+  que dans une bulle au survol.
+- **La barre du haut de l'administration reste en haut** au défilement ; au téléphone, seul le menu et le fil
+  d'Ariane restent collés.
+- **Quarante fautes de traduction** dans treize fichiers de langue (« There are 1 user », des confirmations de
+  suppression qui affichaient `< br / >`, des pluriels anglais…).
+- Les liens « site de l'extension » de 48 addons du cœur mènent au site du projet. La page *Courriels* de
+  l'administration ne liste plus les modèles d'un module absent. Une erreur d'un formulaire classique ne mène plus à
+  une page introuvable.
+- **Démonstration** : un membre ordinaire n'ouvrait aucun sujet, ne répondait nulle part, ne postulait à rien.
+- **L'export « Mes données » contient les signalements faits par le membre** : ils manquaient à l'archive.
+
+### Modifié
+
+- **Un widget qui montre ce que fait un module le déclare** (21 widgets) : sans ce module, ou s'il est désactivé, le
+  widget ne s'affiche plus et l'éditeur en direct ne le propose plus ; « Ajouter » refuse une archive de widget sans
+  son module.
+- **La documentation du produit ne se livre plus** dans le wiki d'un site neuf, qui arrive vide ; elle vit sur le site
+  du projet. Une installation neuve ne reçoit plus les réglages de thèmes qu'elle n'a pas.
+
+### Retiré
+
+- Les anciennes adresses `ajax/talks` et l'ancien signalement d'un message de la messagerie (journal d'audit seul),
+  avec sa page d'administration : un message se signale par la modération.
+
 ## [1.2.47] — 2026-10-09
 
 La barre d'objets de Blockcraft, au téléphone.

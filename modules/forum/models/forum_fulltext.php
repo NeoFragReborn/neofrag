@@ -24,12 +24,8 @@ trait Forum_Fulltext
 			return [];
 		}
 
-		$accessible_categories = array_filter(
-			$this->db->select('category_id')->from('nf_forum_categories')->get(),
-			function($a){
-				return $this->access('forum', 'category_read', $a);
-			}
-		);
+		// Le droit de lecture ET la réserve VIP (Forum::categories_lisibles()).
+		$accessible_categories = $this->categories_lisibles();
 
 		if (empty($accessible_categories))
 		{
@@ -84,6 +80,12 @@ trait Forum_Fulltext
 		// Exclure les messages soft-deleted
 		$this->db->where('m.deleted_at', NULL);
 
+		// Ni ceux d'un membre sous shadow ban (audit du 2026-10-09).
+		if ($sans_masques = $this->moderation->condition_sans_masques('m.user_id'))
+		{
+			$this->db->where($sans_masques);
+		}
+
 		if ($sort === 'date_desc')
 		{
 			$this->db->order_by('m.date DESC');
@@ -105,9 +107,10 @@ trait Forum_Fulltext
 		return \NF\Modules\Forum\Lib\Forum_Search::to_boolean_query((string)$query);
 	}
 
+	/** Une chaîne SQL échappée par la base elle-même (jeu de caractères et sql_mode compris). */
 	private function _quote($s)
 	{
-		return \NF\Modules\Forum\Lib\Forum_Search::quote((string)$s);
+		return "'".$this->db->escape_string((string) $s)."'";
 	}
 
 	public function reindex_fulltext()

@@ -96,6 +96,11 @@ class Index extends Controller_Module
 		$this	->title($this->lang('Nouvelle conversation'))
 				->breadcrumb($this->lang('Mes conversations'), 'talks');
 
+		if ($bloque = $this->moderation->is_blocked_for((int) $this->user->id, 'talks.create_conversation'))
+		{
+			return $this->moderation->panneau($bloque, (string) $this->lang('Nouvelle conversation'), 'fas fa-plus');
+		}
+
 		// Pré-remplir destinataire si user passé en query (?user=alice)
 		$prefill_user = !empty($_GET['user']) ? trim((string)$_GET['user']) : '';
 		$prefill_type = !empty($_GET['type']) && in_array($_GET['type'], ['direct', 'group', 'public'], TRUE)
@@ -164,7 +169,9 @@ class Index extends Controller_Module
 			->add_submit($this->lang('Créer'), 'fas fa-plus')
 			->save();
 
-		if ($form->is_valid($post))
+		$refus = NULL;
+
+		if ($form->is_valid($post) && !($refus = $this->moderation->lien_refuse((int) $this->user->id, $post['name'], $post['description'])))
 		{
 			$participants = isset($post['participants']) ? (array)$post['participants'] : [];
 
@@ -178,6 +185,10 @@ class Index extends Controller_Module
 
 			notify($this->lang('Conversation créée !'));
 			redirect('talks/'.$talk_id.'/'.\url_title($post['name']));
+		}
+		else if ($refus)
+		{
+			notify($refus['message'], 'danger');
 		}
 
 		return $this->panel()
@@ -207,16 +218,16 @@ class Index extends Controller_Module
 		// Action submit message + upload optionnel
 		if (!empty($_POST['talk_message']) || !empty($_FILES['talk_attachment']['name']))
 		{
-			// Phase 4 modération — block si user mute sur talks
-			if ($this->moderation->is_muted((int)$this->user->id, 'talks'))
+			// Les sanctions, avant tout enregistrement : muet ou bannissement de la messagerie, bannissement du site, envoi
+			// de fichiers, liens. Seuls le muet et l'envoi de fichiers étaient vérifiés (2026-10-09).
+			$uid    = (int) $this->user->id;
+			$bloque = $this->moderation->is_blocked_for($uid, 'talks.write')
+				?: (!empty($_FILES['talk_attachment']['name']) ? $this->moderation->is_blocked_for($uid, 'talks.attach') : NULL)
+				?: $this->moderation->lien_refuse($uid, (string) ($_POST['talk_message'] ?? ''));
+
+			if ($bloque)
 			{
-				notify($this->moderation->block_message_for_user((int)$this->user->id, 'talks') ?: $this->lang('Tu es actuellement muet sur les talks.'), 'danger');
-				redirect('talks/'.$talk_id.'/'.\url_title($title));
-			}
-			// Phase 4 modération — block upload si restrict_upload
-			if (!empty($_FILES['talk_attachment']['name']) && !$this->moderation->can_upload_files((int)$this->user->id))
-			{
-				notify($this->lang('Upload de fichiers désactivé pour ton compte.'), 'danger');
+				notify($bloque['message'], 'danger');
 				redirect('talks/'.$talk_id.'/'.\url_title($title));
 			}
 
@@ -253,6 +264,12 @@ class Index extends Controller_Module
 					$this->model()->get_allowed_mimes(),
 					$this->model()->get_max_size_bytes()
 				);
+
+				// Le type lu dans le fichier, ET son extension : un script étiqueté « texte » passait (nf_piece_jointe_refusee()).
+				if ($validation === TRUE && nf_piece_jointe_refusee((string) $_FILES['talk_attachment']['name']))
+				{
+					$validation = (string) $this->lang('extension refusée');
+				}
 
 				if ($validation === TRUE)
 				{
@@ -292,12 +309,12 @@ class Index extends Controller_Module
 		// "Quitter" = sortir du groupe/salon (hard, perd l'accès) — uniquement pour group/public
 		if (in_array($talk['type'], ['group', 'public'], TRUE))
 		{
-			$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/leave').'" class="btn btn-sm btn-outline-warning" data-confirm="'.nf_texte($this->lang('Quitter cette conversation ? Tu ne pourras plus la voir ni y répondre.')).'" data-confirm-style="warning">'.\icon('fas fa-sign-out-alt').' '.$this->lang('Quitter').'</a>';
+			$actions[] = '<a href="'.$this->csrf_url('talks/'.$talk_id.'/'.\url_title($title).'/leave').'" class="btn btn-sm btn-outline-warning" data-confirm="'.nf_texte($this->lang('Quitter cette conversation ? Tu ne pourras plus la voir ni y répondre.')).'" data-confirm-style="warning">'.\icon('fas fa-sign-out-alt').' '.$this->lang('Quitter').'</a>';
 		}
 		// "Archiver" = soft hide, retrouvable dans /talks/archives, ne quitte pas
-		$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/archive').'" class="btn btn-sm btn-outline-secondary">'.\icon('fas fa-archive').' '.$this->lang('Archiver').'</a>';
+		$actions[] = '<a href="'.$this->csrf_url('talks/'.$talk_id.'/'.\url_title($title).'/archive').'" class="btn btn-sm btn-outline-secondary">'.\icon('fas fa-archive').' '.$this->lang('Archiver').'</a>';
 		// "Supprimer pour moi" = soft-delete user-side, conservé 14j dans /talks/trash, restaurable
-		$actions[] = '<a href="'.url('talks/'.$talk_id.'/'.\url_title($title).'/delete').'" class="btn btn-sm btn-outline-danger" data-confirm="'.nf_texte($this->lang('Supprimer cette conversation pour toi ? Elle reste accessible aux autres participants. Tu peux la restaurer pendant 14 jours depuis la corbeille.')).'">'.\icon('far fa-trash-alt').' '.$this->lang('Supprimer').'</a>';
+		$actions[] = '<a href="'.$this->csrf_url('talks/'.$talk_id.'/'.\url_title($title).'/delete').'" class="btn btn-sm btn-outline-danger" data-confirm="'.nf_texte($this->lang('Supprimer cette conversation pour toi ? Elle reste accessible aux autres participants. Tu peux la restaurer pendant 14 jours depuis la corbeille.')).'">'.\icon('far fa-trash-alt').' '.$this->lang('Supprimer').'</a>';
 
 		return $this->view('user/view', [
 			'talk'            => $talk,
@@ -328,6 +345,12 @@ class Index extends Controller_Module
 		$this	->title($this->lang('Inviter dans : %s', $talk['name']))
 				->breadcrumb($this->lang('Mes conversations'), 'talks')
 				->breadcrumb($talk['name'], 'talks/'.$talk_id.'/'.\url_title($title));
+
+		// Inviter, c'est écrire dans la messagerie : muet ou banni de la messagerie (ou du site), l'avis à la place.
+		if ($bloque = $this->moderation->is_blocked_for((int) $this->user->id, 'talks.write'))
+		{
+			return $this->moderation->panneau($bloque, (string) $this->lang('Inviter dans : %s', $talk['name']), 'fas fa-user-plus');
+		}
 
 		// Users non-participants
 		$existing_ids = array_map(function($p){ return (int)$p['user_id']; }, $this->model()->get_participants($talk_id, TRUE));
@@ -378,8 +401,17 @@ class Index extends Controller_Module
 					->body($form->display());
 	}
 
+	/** Une pièce jointe, à qui peut lire sa conversation (Checker::_piece_jointe()). */
+	public function _piece_jointe($chemin, $nom, $type)
+	{
+		nf_servir_piece_jointe($chemin, $nom, $type);
+	}
+
 	public function _leave($talk_id, $title)
 	{
+		// Quitter, archiver, supprimer, désarchiver, restaurer : des liens qui portent le jeton (audit du 2026-10-09).
+		$this->check_csrf('talks');
+
 		$talk = $this->model()->get_conversation($talk_id);
 		if (!$talk)
 		{
@@ -394,6 +426,8 @@ class Index extends Controller_Module
 
 	public function _archive($talk_id, $title)
 	{
+		$this->check_csrf('talks');
+
 		$talk = $this->model()->get_conversation($talk_id);
 		if (!$talk)
 		{
@@ -408,6 +442,8 @@ class Index extends Controller_Module
 
 	public function _unarchive($talk_id, $title)
 	{
+		$this->check_csrf('talks/archives');
+
 		$this->model()->unarchive_for_user($talk_id, $this->user->id);
 		notify($this->lang('Conversation désarchivée'));
 		redirect('talks/'.$talk_id.'/'.\url_title($title));
@@ -415,6 +451,8 @@ class Index extends Controller_Module
 
 	public function _delete($talk_id, $title)
 	{
+		$this->check_csrf('talks');
+
 		// Soft-delete user-side : la conversation reste pour les autres participants,
 		// conservée 14j pour modération unilatérale, restaurable depuis /talks/trash.
 		$is_participant = $this->db	->select('1')
@@ -435,6 +473,8 @@ class Index extends Controller_Module
 
 	public function _restore($talk_id, $title)
 	{
+		$this->check_csrf('talks/trash');
+
 		// Restauration depuis la corbeille (soft-delete annulé) — accessible même si deleted_at NOT NULL.
 		$is_participant = $this->db	->select('deleted_at')
 									->from('nf_talks_participants')
@@ -575,47 +615,5 @@ class Index extends Controller_Module
 			'too_short' => $too_short,
 			'my_convs'  => $my_convs
 		]);
-	}
-
-	public function _report($talk_id, $title, $message_id)
-	{
-		// Le même droit de lecture que la page de la conversation (ligne ~189) : sans `effective_admin()`,
-		// un administrateur voyait une conversation réservée à l'équipe, son bouton, puis un refus (403,
-		// trouvé par check-liens le 2026-09-22).
-		$talk = $this->model()->user_can_access($talk_id, $this->user->id, (bool)$this->access->effective_admin());
-		if (!$talk)
-		{
-			$this->error->unauthorized();
-			return;
-		}
-
-		// Rate-limit signalements (max 5 / heure / user pour éviter abus)
-		$rl_key = 'talks:report:user:'.(int)$this->user->id;
-		$rl_check = $this->rate_limit->check($rl_key);
-		if (!$rl_check['allowed'])
-		{
-			notify($this->lang('Trop de signalements. Réessaye dans %d secondes.', $rl_check['retry_after']), 'danger');
-			redirect('talks/'.$talk_id.'/'.\url_title($title));
-		}
-		$this->rate_limit->hit($rl_key, 5, 3600, 3600);
-
-		// Log dans nf_audit_log (table existante du tier 1 sécurité)
-		$this->db->insert('nf_audit_log', [
-			'user_id'     => (int)$this->user->id,
-			'username'    => $this->user->username,
-			'action'      => 'talks.message.reported',
-			'target_type' => 'talks_message',
-			'target_id'   => (string)(int)$message_id,
-			'details'     => json_encode([
-				'talk_id'    => (int)$talk_id,
-				'message_id' => (int)$message_id,
-				'reporter'   => $this->user->username
-			]),
-			'ip_address'  => $_SERVER['REMOTE_ADDR'] ?? NULL,
-			'success'     => 1
-		]);
-
-		notify($this->lang('Message signalé aux administrateurs. Merci.'));
-		redirect('talks/'.$talk_id.'/'.\url_title($title));
 	}
 }

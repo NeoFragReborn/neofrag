@@ -133,6 +133,29 @@ class Rate_Limit extends Library
 	}
 
 	/**
+	 * L'adresse du client telle que les limites d'essais la comptent : une adresse IPv4 entière, une adresse IPv6
+	 * ramenée à son réseau /64 (audit du 2026-10-09). Un abonné IPv6 dispose de tout un /64 — des milliards
+	 * d'adresses — : compter chacune à part lui rendait tous ses essais à chaque adresse tirée. Une adresse IPv4
+	 * écrite en IPv6 (::ffff:a.b.c.d) compte comme l'adresse IPv4.
+	 */
+	public static function bloc_ip(?string $ip = NULL): string
+	{
+		$ip ??= (string) self::client_ip();
+
+		if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === FALSE || ($binaire = inet_pton($ip)) === FALSE)
+		{
+			return $ip;
+		}
+
+		if (str_starts_with($binaire, str_repeat("\0", 10)."\xff\xff"))
+		{
+			return (string) inet_ntop(substr($binaire, 12));
+		}
+
+		return inet_ntop(substr($binaire, 0, 8).str_repeat("\0", 8)).'/64';
+	}
+
+	/**
 	 * Helper pour récupérer l'IP du client (gère proxy/CDN).
 	 */
 	public static function client_ip()

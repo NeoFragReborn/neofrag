@@ -56,6 +56,48 @@ const HISTORY_TABLE = 'nf_migrations';
 /** Settings dont la valeur est vidée (jamais committer un secret). */
 const SENSITIVE_SETTING = '/(password|passwd|secret|private|api[_-]?key|[_-]key$|token|salt|smtp|stripe|paypal|recaptcha|oauth|webhook|client[_-]?secret)/i';
 
+/**
+ * Les lignes d'addons HORS cœur que le seed garde, et pourquoi. Un module installé plus tard trouve ici ses
+ * réglages, ses droits et ses gabarits d'e-mail par défaut — son install.sql ne crée que ses tables, et le forum
+ * divise par sa pagination dès sa première page. Sans le module, ces lignes sont inertes : la page des e-mails ne
+ * liste que les gabarits des modules installés. check-addon-coupling lit ces raisons (« couplage(x): ») en tête du
+ * seed ; un addon absent de cette liste qui y laisserait des lignes reste « à trancher » (2026-10-09).
+ */
+const COUPLAGES_ACCEPTES = [
+    'events'     => 'ses réglages par défaut servent le jour où le module s\'installe',
+    'forum'      => 'ses réglages, ses droits de lecture et ses gabarits d\'e-mail servent le jour où le module s\'installe',
+    'news'       => 'sa pagination sert le jour où le module s\'installe ; sans lui, la case de la colonne de nebula reste vide',
+    'newsletter' => 'son gabarit de confirmation sert le jour où le module s\'installe',
+    'partners'   => 'son affichage des logos sert le jour où le module s\'installe',
+    'recruits'   => 'ses réglages par défaut servent le jour où le module s\'installe',
+];
+
+/**
+ * Un réglage d'un thème livré à part — du marketplace, ou la vitrine, jamais diffusée — ne va pas dans le seed :
+ * chaque thème pose les siens à son activation (Theme::install()), et ceux de la base vive étaient périmés (les
+ * couleurs 1.x de Blockcraft) ou morts (les réseaux sociaux de Blockcraft et de Granite, que plus rien ne lit).
+ */
+function reglage_de_theme_hors_coeur(string $nom): bool
+{
+    static $prefixes = NULL;
+
+    if ($prefixes === NULL)
+    {
+        $themes   = array_diff(array_map('basename', glob(__DIR__.'/../themes/*', GLOB_ONLYDIR) ?: []), CORE_THEMES);
+        $prefixes = array_map(static fn (string $t): string => $t.'_', $themes);
+    }
+
+    foreach ($prefixes as $prefixe)
+    {
+        if (str_starts_with($nom, $prefixe))
+        {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
 /** Settings forcés à une valeur cœur-safe dans le seed lean (le preset les surcharge). */
 const SETTING_OVERRIDES = [
     'nf_default_theme' => 'nebula', // la vitrine n'est pas distribuée → nebula par défaut
@@ -205,7 +247,13 @@ file_put_contents(SCHEMA_OUT, $out);
 
 // ── install/seed.sql ──────────────────────────────────────────────────────────
 $out  = nf_sql_entete('dump-schema', 'seed d\'installation CŒUR LEAN (Tier 0) — configuration cœur uniquement (aucune donnée membre)');
-$out .= "SET FOREIGN_KEY_CHECKS = 0;\n";
+
+foreach (COUPLAGES_ACCEPTES as $addon => $raison)
+{
+    $out .= "-- couplage({$addon}): {$raison}.\n";
+}
+
+$out .= "\nSET FOREIGN_KEY_CHECKS = 0;\n";
 $out .= "SET NAMES utf8mb4;\n\n";
 
 // Widgets référencés par les dispositions cœur (nebula) : seules ces instances sont gardées.
@@ -225,6 +273,7 @@ foreach (SEED_TABLES as $table)
         // Permissions : on ne garde que les défauts GLOBAUX (scope 0). Les ACL de contenu (scope > 0)
         // ne valent que pour du contenu inexistant en lean ; les presets / l'admin recréent les leurs.
         'nf_role_permissions' => static fn (array $row): bool => (int) $row['scope_id'] === 0,
+        'nf_settings'         => static fn (array $row): bool => !reglage_de_theme_hors_coeur((string) ($row['name'] ?? '')),
         default               => NULL,
     };
 

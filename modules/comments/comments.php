@@ -23,6 +23,14 @@ class Comments extends Module
 		];
 	}
 
+	/** Un commentaire se montre s'il n'est pas supprimé et que le contenu commenté se montre. */
+	public function contenu_visible(string $type, int $id): bool
+	{
+		$commentaire = $type === 'comment' ? $this->db->select('module', 'module_id')->from('nf_comment')->where('id', $id)->where('deleted_at IS NULL')->row() : NULL;
+
+		return is_array($commentaire) && $commentaire && \NF\NeoFrag\Addons\Module::content_visible_of((string) $commentaire['module'], (int) $commentaire['module_id']);
+	}
+
 	/** URL d'un commentaire = celle du contenu commente, ancree sur le fil. */
 	public function content_url($type, $id)
 	{
@@ -62,7 +70,7 @@ class Comments extends Module
 			'title'       => $this->lang('Commentaires'),
 			'description' => $this->lang('Système de commentaires réutilisable par les modules (news, articles, etc.).'),
 			'icon'        => 'far fa-comments',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
@@ -91,7 +99,13 @@ class Comments extends Module
 			$module    = $module->__table;
 		}
 
-		if ($this->user())
+		if ($this->user() && ($bloque = $this->moderation->is_blocked_for((int) $this->user->id, 'comments.write')))
+		{
+			// Une sanction qui interdit de commenter — restriction, muet ou bannissement des commentaires, bannissement du
+			// site — : pas de formulaire, l'avis dit pourquoi. Aucune ne s'appliquait aux commentaires (2026-10-09).
+			$new = $this->moderation->avis($bloque, 'mb-3');
+		}
+		else if ($this->user())
 		{
 			// Loader explicite : $this->module() depuis une classe Module mis-résout le type d'addon
 			// (forward_static_call → get_called_class = la classe appelante). On force le static = Module.
@@ -109,6 +123,13 @@ class Comments extends Module
 											->editor()
 								)
 								->success(function($data, $form) use ($module, $module_id, $notifications, $gamification, $webhooks){
+									// Un lien, quand une restriction les interdit : refusé, le texte reste à corriger.
+									if ($refus = $this->moderation->lien_refuse((int) $this->user->id, $data['comment']))
+									{
+										$form->error($refus['message']);
+										return;
+									}
+
 									// R2.0 — Rate limit anti-spam : 8 commentaires par user / 5 min
 									$rateLimit = new \NF\NeoFrag\Libraries\Rate_Limit($this);
 									$rl_key    = 'comment:user:'.(int)$this->user->id;
@@ -145,6 +166,13 @@ class Comments extends Module
 									}
 
 									$comment->create();
+
+									// Sous shadow ban : le commentaire existe pour son auteur, rien ne l'annonce (audit du 2026-10-09).
+									if ($this->moderation->est_masque((int) $this->user->id))
+									{
+										notify($this->lang('Commentaire envoyé'));
+										refresh();
+									}
 
 									if ($webhooks)
 									{
@@ -238,6 +266,12 @@ class Comments extends Module
 													->where('module', $module)
 													->where('module_id', $module_id)
 													->order_by('IFNULL(parent_id, id) DESC');
+
+			// Les commentaires d'un membre sous shadow ban ne se montrent qu'à lui et aux modérateurs (audit du 2026-10-09).
+			if ($sans_masques = $this->moderation->condition_sans_masques('_.user_id'))
+			{
+				$comments[$module][$module_id]->where($sans_masques);
+			}
 		}
 
 		return $comments[$module][$module_id];

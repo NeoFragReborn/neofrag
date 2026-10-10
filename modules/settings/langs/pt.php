@@ -264,4 +264,7 @@ return [
 	'7aef782b' => 'A medição de audiência configura-se em %s, o captcha em %s.',
 	'bb72749b' => 'Páginas legais',
 	'679383df' => 'O que o site pede aos seus visitantes',
+	'b5cf4695' => 'Contas inativas',
+	'd35683b8' => 'Uma conta sem visitas há este número de anos é eliminada; um e-mail avisa o membro um mês antes, e uma visita anula tudo. Os administradores nunca são eliminados. 0 para nunca eliminar.',
+	'68b7ca29' => 'Indica um número de anos entre 0 e 20.',
 ];

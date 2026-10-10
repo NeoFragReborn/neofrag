@@ -36,6 +36,14 @@ class Index extends Controller_Widget
 				break;
 			}
 
+			// Le contenu commenté doit se montrer à celui qui regarde — publié, de son type, de son album… — : le module
+			// qui le porte en décide (Module::content_visible_of()). Le widget citait des commentaires d'actualités
+			// dépubliées, d'albums ou de types d'événements réservés (audit du 2026-10-09).
+			if (!\NF\NeoFrag\Addons\Module::content_visible_of((string) $row['module'], (int) $row['module_id']))
+			{
+				continue;
+			}
+
 			// Décode les entités puis strip_tags → texte brut propre (le contenu est du HTML assaini).
 			$text = trim(strip_tags(utf8_html_entity_decode((string)$row['content'])));
 

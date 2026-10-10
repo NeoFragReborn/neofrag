@@ -8,14 +8,15 @@ declare(strict_types=1);
  *
  * Pourquoi
  * --------
- * Le même texte vit à trois endroits : le guide, qu'on écrit ; `install/wiki.sql`, que l'installateur
- * charge pour que `/wiki` soit peuplé dès l'installation ; et `install/demo.sql`, qui porte le wiki
- * de la démonstration. Les deux derniers se régénéraient à la main, et rien ne disait quand. Le
- * 2026-09-23, les dix pages de documentation livrées avaient une semaine de retard sur les guides :
- * la page « Créer un widget » enseignait encore `form-group`, une classe de Bootstrap 4.
+ * Le même texte vit à deux endroits : le guide, qu'on écrit, et le wiki du site officiel, où on le lit.
+ * Il vivait aussi dans le produit — `install/wiki.sql`, chargé à chaque installation, et le wiki de la
+ * démonstration —, régénérés à la main sans que rien ne dise quand : le 2026-09-23, la page « Créer un
+ * widget » livrée enseignait encore `form-group`, une classe de Bootstrap 4. Depuis le 2026-10-09, la
+ * documentation ne se livre plus : le wiki d'un site neuf arrive vide.
  *
  * Ce fichier dit, une seule fois, quelles pages existent et comment un guide devient une page :
- * `wiki-docs` s'en sert pour écrire, `check-wiki-docs` pour vérifier.
+ * `wiki-docs` s'en sert pour écrire, `check-wiki-docs` pour vérifier — et pour refuser un fichier livré
+ * qui porterait l'une de ces pages.
  */
 
 require_once __DIR__.'/outil.php';

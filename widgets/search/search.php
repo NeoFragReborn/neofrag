@@ -17,13 +17,13 @@ class Search extends Widget
 			'title'       => $this->lang('Rechercher'),
 			'description' => $this->lang('Champ de recherche compact pour la sidebar.'),
 			'icon'        => 'fas fa-search',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],
-			'requires'    => [],
+			'requires'    => ['search'],
 			'version'     => '1.0',
 		];
 	}

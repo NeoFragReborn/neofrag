@@ -12,9 +12,15 @@ class Activity extends Controller_Module
 {
 	public function activity($user_id, $limit)
 	{
-		$categories = array_filter($this->db->select('category_id')->from('nf_forum_categories')->get(), function($a){
-			return $this->access('forum', 'category_read', $a);
-		});
+		// Un membre sous shadow ban : son activité ne se montre pas aux autres (audit du 2026-10-09).
+		if (in_array((int) $user_id, $this->moderation->auteurs_masques(), TRUE))
+		{
+			return [];
+		}
+
+		// Le droit de lecture ET la réserve VIP (Forum::categories_lisibles()) : le droit seul laissait lire le VIP.
+		$modele     = $this->model('forum');
+		$categories = $modele instanceof \NF\Modules\Forum\Models\Forum ? $modele->categories_lisibles() : [];
 
 		if (!$categories)
 		{

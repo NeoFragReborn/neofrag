@@ -36,4 +36,5 @@ return [
 	'016d7125' => 'Comment system reusable by modules (news, articles, etc.).',
 	'e16ce76b' => 'Comment',
 	'472a9d35' => 'A comment on something I published or follow',
+	'219c2d4e' => 'This comment has been reported: it cannot be deleted until the moderators have reviewed it.',
 ];

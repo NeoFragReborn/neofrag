@@ -17,7 +17,7 @@ class Header extends Widget
 			'title'       => $this->lang('Header'),
 			'description' => $this->lang('En-tête du site avec titre, slogan et logo configurables.'),
 			'icon'        => 'fas fa-heading',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

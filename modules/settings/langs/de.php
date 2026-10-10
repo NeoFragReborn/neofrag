@@ -264,4 +264,7 @@ return [
 	'7aef782b' => 'Die Reichweitenmessung wird unter %s eingestellt, das Captcha unter %s.',
 	'bb72749b' => 'Rechtliche Seiten',
 	'679383df' => 'Was die Website ihre Besucher fragt',
+	'b5cf4695' => 'Inaktive Konten',
+	'd35683b8' => 'Ein Konto ohne Besuch seit dieser Anzahl von Jahren wird gelöscht; eine E-Mail warnt das Mitglied einen Monat vorher, und ein Besuch hebt alles auf. Administratoren werden nie gelöscht. 0, um nie zu löschen.',
+	'68b7ca29' => 'Gib eine Anzahl von Jahren zwischen 0 und 20 an.',
 ];

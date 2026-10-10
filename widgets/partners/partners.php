@@ -17,13 +17,13 @@ class Partners extends Widget
 			'title'       => $this->lang('Partenaires'),
 			'description' => $this->lang('Les logos des partenaires et sponsors, en bandeau défilant ou en colonne, version claire ou foncée selon le fond. Pour un club, une association ou une équipe.'),
 			'icon'        => 'far fa-handshake',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
 			'presets'     => ['gaming'],
-			'requires'    => [],
+			'requires'    => ['partners'],
 			'version'     => '1.0',
 			'depends'     => [
 				'neofrag' => '0.2.0'

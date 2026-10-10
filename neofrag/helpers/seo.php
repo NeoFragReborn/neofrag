@@ -477,6 +477,33 @@ function nf_seo_contenu(string $type, int $id): void
 }
 
 /**
+ * Fait `$faire` dans la langue du membre `$user_id` — celle qu'il a choisie, sinon la langue première du site —, pour
+ * un courriel ou une notification qu'on lui écrit pendant la page d'un autre (un modérateur qui le sanctionne, un membre
+ * qui le mentionne) : ils partaient dans la langue de celui qui agissait (audit du 2026-10-09). Rend ce que rend `$faire`.
+ */
+function nf_dans_la_langue_du_membre(int $user_id, callable $faire): mixed
+{
+	$choisie = $user_id ? NeoFrag()->db->select('a.name')->from('nf_user u')->join('nf_addon a', 'a.id = u.language', 'INNER')->where('u.id', $user_id)->row() : NULL;
+
+	foreach (array_unique(array_filter([is_string($choisie) ? $choisie : '', nf_langue_premiere()])) as $langue)
+	{
+		$fait     = FALSE;
+		$resultat = NeoFrag()->config->dans_la_langue($langue, function () use ($faire, &$fait) {
+			$fait = TRUE;
+
+			return $faire();
+		});
+
+		if ($fait)
+		{
+			return $resultat;
+		}
+	}
+
+	return $faire();
+}
+
+/**
  * La langue première du site : la première dans l'ordre d'affichage des langues (Admin → Langues), la même
  * sur toutes les pages. `config->langs` met la langue de la PAGE en tête (cf. Config) : lu tel quel, il
  * rendait l'allemand sur une page allemande.

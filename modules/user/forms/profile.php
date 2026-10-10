@@ -55,7 +55,18 @@ if (NeoFrag()->moderation->can_change_signature((int) NeoFrag()->user->id))
 		);
 }
 
-$this	->success(function($profile){
+$this	->success(function($profile, $form){
+			// La restriction « Liens externes » vaut aussi pour la citation, la signature, la localisation et le nom (la
+			// signature seulement quand le membre peut la changer : sinon, il ne pourrait plus en retirer le lien).
+			$uid = (int) NeoFrag()->user->id;
+
+			if ($refus = NeoFrag()->moderation->lien_refuse($uid, (string) $profile->first_name, (string) $profile->last_name, (string) $profile->location, (string) $profile->quote,
+				NeoFrag()->moderation->can_change_signature($uid) ? (string) $profile->signature : NULL))
+			{
+				$form->error($refus['message']);
+				return;
+			}
+
 			$profile->commit();
 			notify($this->lang('Profil modifié'));
 			refresh();

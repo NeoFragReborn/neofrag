@@ -46,9 +46,115 @@ function refresh()
 	return NeoFrag()->url->refresh();
 }
 
+/**
+ * Une adresse en lien, son hôte pour texte. Elle vient souvent du navigateur (la page d'où arrive une session, montrée
+ * dans l'administration) : jamais un schéma `javascript:`, et toujours échappée — elle était recopiée telle quelle
+ * (audit du 2026-10-09). Une adresse qui n'est pas sûre reste du texte.
+ */
 function urltolink($url): string
 {
-	return '<a href="'.$url.'">'.parse_url($url, PHP_URL_HOST).'</a>';
+	$url  = html_entity_decode((string) $url, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+	$hote = (string) parse_url($url, PHP_URL_HOST);
+
+	return $hote !== '' && nf_url_sure($url)
+		? '<a href="'.nf_texte($url).'" rel="noopener noreferrer nofollow">'.nf_texte($hote).'</a>'
+		: nf_texte($url);
+}
+
+/**
+ * Un envoi — tout sauf GET, HEAD et OPTIONS — parti d'un AUTRE site, d'après ce que dit le navigateur (audit de sécurité
+ * du 2026-10-09). Les formulaires portent un jeton, mais pas chaque point d'envoi en AJAX, et le cookie de session part
+ * avec la requête : une page piégée faisait agir le membre connecté à son insu.
+ *
+ * Le navigateur le dit par `Sec-Fetch-Site` (tous les navigateurs récents), à défaut par `Origin`. Un sous-domaine voisin
+ * compte comme un autre site, sauf le même nom avec ou sans « www. ». Un client qui n'envoie ni l'un ni l'autre — le bot,
+ * un service de paiement, un outil en ligne de commande — n'est pas un navigateur : il n'est pas concerné.
+ *
+ * @param array<string, mixed>|null $serveur          `$_SERVER` par défaut
+ * @param string                    $origine_du_site  l'origine canonique (site_origin()), acceptée aussi telle quelle
+ */
+function nf_envoi_d_un_autre_site(?array $serveur = NULL, string $origine_du_site = ''): bool
+{
+	$serveur ??= $_SERVER;
+
+	if (in_array(strtoupper((string) ($serveur['REQUEST_METHOD'] ?? 'GET')), ['GET', 'HEAD', 'OPTIONS'], TRUE))
+	{
+		return FALSE;
+	}
+
+	$sans_www = static fn (string $hote): string => (string) preg_replace('#^www\.#', '', strtolower($hote));
+	$origine  = is_string($serveur['HTTP_ORIGIN'] ?? NULL) ? (string) $serveur['HTTP_ORIGIN'] : '';
+
+	// L'origine d'un envoi comparée au site : son hôte (et son port), au « www. » près.
+	$meme_site = static function () use ($origine, $origine_du_site, $serveur, $sans_www): bool {
+		if ($origine === '' || $origine === 'null')
+		{
+			return FALSE;
+		}
+
+		if ($origine_du_site !== '' && strcasecmp(rtrim($origine, '/'), $origine_du_site) === 0)
+		{
+			return TRUE;
+		}
+
+		$partie = parse_url($origine);
+		$hote   = strtolower((string) ($partie['host'] ?? '')).(isset($partie['port']) ? ':'.$partie['port'] : '');
+
+		return $hote !== '' && $sans_www($hote) === $sans_www((string) ($serveur['HTTP_HOST'] ?? ''));
+	};
+
+	switch (strtolower((string) ($serveur['HTTP_SEC_FETCH_SITE'] ?? '')))
+	{
+		case 'same-origin':
+		case 'none':
+			return FALSE;
+
+		case 'cross-site':
+			return TRUE;
+
+		case 'same-site':
+			return !$meme_site();
+	}
+
+	return $origine !== '' && !$meme_site();
+}
+
+/**
+ * Mène le visiteur vers l'adresse qu'un administrateur a enregistrée — une publicité, un lien de l'annuaire, un
+ * téléchargement, un partenaire, un forum-lien. Une adresse au schéma douteux (`javascript:`…) n'est jamais suivie.
+ *
+ * Sur une DÉMONSTRATION, où tout visiteur est administrateur, une adresse extérieure s'affiche sur une page qui dit où
+ * elle mène, au lieu d'y aller (audit de sécurité du 2026-10-09) : le domaine du projet redirigeait sinon vers le site
+ * de n'importe qui — une aubaine pour tromper (hameçonnage).
+ */
+function nf_quitter_le_site(string $adresse, string $sinon = ''): never
+{
+	if ($adresse === '' || !nf_url_sure($adresse))
+	{
+		header('Location: '.url($sinon), TRUE, 302);
+		exit;
+	}
+
+	$hote = strtolower((string) parse_url($adresse, PHP_URL_HOST));
+
+	if (nf_demo() && $hote !== '' && $hote !== strtolower((string) parse_url(site_origin(), PHP_URL_HOST)))
+	{
+		$lien  = nf_texte($adresse);
+		$titre = nf_texte(NeoFrag()->lang('Tu quittes la démonstration'));
+
+		header('Content-Type: text/html; charset=UTF-8');
+		header('X-Robots-Tag: noindex, nofollow');
+		echo '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>'.$titre.'</title><style>body{font-family:-apple-system,sans-serif;max-width:600px;margin:80px auto;padding:24px;color:#333;}a{word-break:break-all;}</style></head><body>'
+			.'<h1>'.$titre.'</h1>'
+			.'<p>'.NeoFrag()->lang('Ce lien mène hors de la démonstration, vers une adresse que n’importe lequel de ses visiteurs a pu enregistrer :').'</p>'
+			.'<p><a href="'.$lien.'" rel="noopener noreferrer nofollow">'.$lien.'</a></p>'
+			.'<p><a href="'.url($sinon).'">'.NeoFrag()->lang('Revenir à la démonstration').'</a></p>'
+			.'</body></html>';
+		exit;
+	}
+
+	header('Location: '.$adresse, TRUE, 302);
+	exit;
 }
 
 // Origine canonique du site (scheme://host, sans slash final). Figée dans config/url.php

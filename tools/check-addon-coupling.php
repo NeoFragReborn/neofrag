@@ -19,6 +19,11 @@ declare(strict_types=1);
  * qu'elle devait protéger (`teams`), et six copies de la même connaissance. Un script jetable ne
  * protège de rien : cet outil-ci le rend permanent et exécutable en CI.
  *
+ * Jusqu'au 2026-10-09, un widget qui lisait les tables de son module HOMONYME n'était pas un couplage :
+ * « livrés et retirés ensemble ». C'était faux — le widget s'envoie seul par « Ajouter », et reste en place
+ * quand son module est désactivé. Douze widgets lisaient ainsi leur module sans le déclarer ; ils le
+ * déclarent, et Widget::modules_manquants() les tait sans lui.
+ *
  * Le 2026-10-04, il a appris à lire ce qui ne passe pas par le code : la BASE livrée (une mise en
  * page qui pose le widget d'un autre addon, un réglage qui désigne un module, les lignes d'un autre
  * addon dans le seed du cœur) et les traductions faites au nom d'un autre addon. Sa première lecture
@@ -81,7 +86,7 @@ declare(strict_types=1);
  *        - tout ce qu'une surcharge de thème fait vers l'addon qu'elle remplace : elle ne s'exécute
  *          qu'avec lui ;
  *        - un widget posé sur les pages de son module homonyme (`forum` sur `forum/*`) : la
- *          disposition ne s'affiche qu'avec le module, qui est livré et retiré avec son widget ;
+ *          disposition ne s'affiche qu'avec le module ;
  *        - un SQL d'install/ hors du socle (SQL_SOCLE) : l'installeur joue toujours le schéma et le
  *          seed, et les autres — contenus, démonstration, documentation — au mieux, sous try/catch ou
  *          si leur table existe.
@@ -199,8 +204,13 @@ const COUPLAGES_VISIBLES = ['disposition', 'reglage', 'donnee'];
  * Une paire tranchée fait baisser le compte — baisser alors ce plafond avec lui ; une paire NOUVELLE
  * au-delà fait échouer. 19 → 18 le 2026-10-06 : Forge 2.0.0 ne pose plus le widget `news`, et ses
  * blocs des matchs, du palmarès et des partenaires ne se posent que si leur module est installé.
+ * 18 → 13 le 2026-10-09 : le compte était déjà descendu à 13 (paires d'extend et des gabarits d'e-mail tranchées
+ * en chemin), le plafond suit. 13 → 0 le même jour : les réglages des thèmes du catalogue quittent le seed
+ * (chaque thème pose les siens à son activation) ; ceux des modules y restent, annotés à leur source
+ * (dump-schema, COUPLAGES_ACCEPTES) — un module installé plus tard en a besoin ; le widget `news` de la
+ * colonne de nebula et de la vitrine est annoté. Plus rien à trancher : tout couplage visible neuf échoue.
  */
-const A_TRANCHER_PLAFOND = 18;
+const A_TRANCHER_PLAFOND = 0;
 
 /**
  * Les réglages dont la VALEUR désigne un addon, et le type de cet addon.
@@ -1417,9 +1427,8 @@ $retenir = static function (string $source, string $addon, string $relatif, arra
     {
         $cible = $cpl['cible_type'] . ':' . $cpl['cible'];
 
-        // Un addon qui se référence lui-même n'est pas un couplage. Un module et son widget
-        // homonyme non plus : ils sont livrés et retirés ensemble par construction.
-        if ($cpl['cible'] === $addon)
+        // Un addon qui se référence lui-même n'est pas un couplage.
+        if ($cible === $source)
         {
             continue;
         }

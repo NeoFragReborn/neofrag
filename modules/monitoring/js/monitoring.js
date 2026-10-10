@@ -137,6 +137,7 @@ NF.ready(function(){
 			});
 
 			fetch('<?php echo url('admin/ajax/monitoring/backup') ?>', {
+				method: 'POST',
 				headers: { 'X-Requested-With': 'XMLHttpRequest' },
 				credentials: 'same-origin',
 				cache: 'no-store'

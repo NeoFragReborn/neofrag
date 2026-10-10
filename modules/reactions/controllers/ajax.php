@@ -14,6 +14,9 @@ class Ajax extends Controller_Module
 {
 	public function _toggle($type, $id)
 	{
+		// En POST seulement (reactions.js) : en GET, un lien posait un « j'aime » au nom du membre (audit du 2026-10-09).
+		$this->exiger_post();
+
 		header('Content-Type: application/json');
 
 		$reaction = (string)($_POST['reaction'] ?? 'love');

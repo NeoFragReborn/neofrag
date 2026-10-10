@@ -21,7 +21,9 @@ class Checker extends Module_Checker
 		$args = func_get_args();
 		$page = array_pop($args);
 
-		if (($group = $this->groups->check_group($args)) && $group['users'])
+		// Un groupe caché ne se liste pas, sauf pour un administrateur : sa page donnait tous ses membres à quiconque en
+		// connaissait l'adresse (audit du 2026-10-09).
+		if (($group = $this->groups->check_group($args)) && $group['users'] && (empty($group['hidden']) || $this->access->effective_admin()))
 		{
 			return [$group['title'], $this->module('user')->collection('user')->where('id', $group['users'])->where('deleted', FALSE)->where('_.id !=', nf_compte_masque())->order_by('username')->paginate($page, 24)];
 		}

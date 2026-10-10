@@ -64,7 +64,7 @@
 										<?php foreach ($msg_attachments as $att): ?>
 											<?php
 												$is_image = strpos((string)$att['mime_type'], 'image/') === 0;
-												$file_url = \url($att['path']);
+												$file_url = \url('talks/piece-jointe/'.(int) $att['attachment_id']);
 												$name_esc = nf_texte($att['name']);
 											?>
 											<?php if ($is_image): ?>

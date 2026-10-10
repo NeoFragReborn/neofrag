@@ -46,7 +46,7 @@ trait Effacement
 			$this->model2('file', $fichier)->delete();
 		}
 
-		foreach (['nf_user_auth', 'nf_session_history', 'nf_user_totp_recovery', 'nf_user_token', 'nf_user_fields_values', 'nf_notifications', 'nf_notifications_preferences', 'nf_users_roles', 'nf_users_groups', 'nf_newsletter_subscribers'] as $table) // couplage: newsletter — table_exists() plus bas : sans le module, rien à effacer
+		foreach (['nf_user_auth', 'nf_session_history', 'nf_user_totp_recovery', 'nf_user_token', 'nf_user_email_change', 'nf_user_inactivite', 'nf_user_fields_values', 'nf_notifications', 'nf_notifications_preferences', 'nf_users_roles', 'nf_users_groups', 'nf_newsletter_subscribers'] as $table) // couplage: newsletter — table_exists() plus bas : sans le module, rien à effacer
 		{
 			if ($this->db->table_exists($table))
 			{

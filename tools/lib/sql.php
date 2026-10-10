@@ -8,8 +8,8 @@ declare(strict_types=1);
  *
  * Pourquoi
  * --------
- * Cinq outils régénèrent des fichiers SQL livrés (`install/schema.sql`, `seed.sql`, `demo.sql`,
- * `wiki.sql`, les `install.sql` des modules) et deux en jouent (`migrate`, `prepare-test-db`). Ils
+ * Quatre outils régénèrent des fichiers SQL du dépôt (`install/schema.sql`, `seed.sql`, `demo.sql`,
+ * `vitrine.sql`, les `install.sql` des modules) et deux en jouent (`migrate`, `prepare-test-db`). Ils
  * recopiaient les mêmes fonctions : les INSERT d'une table, `SHOW CREATE TABLE` sans compteur
  * d'auto-incrément, la collation MariaDB 11 (`uca1400`) ramenée à une collation que MySQL 8 et
  * MariaDB 10.6 connaissent — sans quoi le paquet est ININSTALLABLE sur la plupart des hébergements.

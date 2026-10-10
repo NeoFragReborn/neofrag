@@ -376,6 +376,9 @@ class Admin_Ajax extends Controller_Module
 
 	public function backup()
 	{
+		// En POST seulement (monitoring.js) : un lien suffisait à lancer une sauvegarde complète (audit du 2026-10-09).
+		$this->exiger_post();
+
 		if (nf_demo())
 		{
 			return;
@@ -406,6 +409,9 @@ class Admin_Ajax extends Controller_Module
 	 */
 	public function update()
 	{
+		// En POST seulement (themes/admin/js/update.js) : un lien suffisait à lancer la mise à jour (audit du 2026-10-09).
+		$this->exiger_post();
+
 		if (nf_demo())
 		{
 			return;

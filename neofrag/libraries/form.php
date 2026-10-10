@@ -76,7 +76,7 @@ class Form extends Library
 		return static::$_form;
 	}
 
-	public function add_rules($rules, $values = [])
+	public function add_rules($rules, $values = []): static
 	{
 		if (!is_array($rules))
 		{
@@ -107,7 +107,7 @@ class Form extends Library
 		return $this;
 	}
 
-	public function add_captcha()
+	public function add_captcha(): static
 	{
 		if (!$this->user())
 		{
@@ -117,7 +117,7 @@ class Form extends Library
 		return $this;
 	}
 
-	public function add_back($url)
+	public function add_back($url): static
 	{
 		array_unshift($this->_buttons, [
 			'label'  => NeoFrag()->lang('Retour'),
@@ -137,7 +137,7 @@ class Form extends Library
 	 * une seule fois, plutôt que recopié sur chaque appel. Les écrans dont l'action n'est pas une
 	 * validation (envoyer, supprimer, cloner…) passent leur propre icône en second argument.
 	 */
-	public function add_submit($label, $icon = 'fas fa-check')
+	public function add_submit($label, $icon = 'fas fa-check'): static
 	{
 		$this->_buttons[] = [
 			'type'  => 'submit',
@@ -158,19 +158,19 @@ class Form extends Library
 		return self::_token($id);
 	}
 
-	public function confirm_deletion($title, $message = '')
+	public function confirm_deletion($title, $message = ''): static
 	{
 		$this->_confirm_deletion = [$title, $message];
 		return $this;
 	}
 
-	public function display_required($display)
+	public function display_required($display): static
 	{
 		$this->_display_required = $display;
 		return $this;
 	}
 
-	public function fast_mode()
+	public function fast_mode(): static
 	{
 		$this->_fast_mode        = TRUE;
 		$this->_display_required = FALSE;
@@ -322,6 +322,25 @@ class Form extends Library
 	public function get_errors()
 	{
 		return $this->_errors;
+	}
+
+	/**
+	 * Une erreur posée par le contrôleur après la validation — un lien qu'une sanction refuse, un envoi trop rapproché —,
+	 * affichée sous le champ `$champ` (à défaut, le dernier champ du formulaire). Le formulaire v1 n'en avait pas :
+	 * `->error()` tombait sur la bibliothèque des erreurs, qui rend « Page introuvable » ; c'est ce que voyait jusqu'au
+	 * 2026-10-09 un visiteur arrêté par le frein anti-spam du livre d'or. Le message est un texte ou ce que rend
+	 * `$this->lang()` (un objet qui se lit comme un texte) : typé `string` seul, il faisait planter la page.
+	 */
+	public function error(string|\Stringable $message, string $champ = ''): self
+	{
+		if ($champ === '' || !isset($this->_rules[$champ]))
+		{
+			$champ = (string) array_key_last($this->_rules);
+		}
+
+		$this->_errors[$champ] = (string) $message;
+
+		return $this;
 	}
 
 	public function value($var)
@@ -644,13 +663,13 @@ class Form extends Library
 		return $output;
 	}
 
-	public function save()
+	public function save(): static
 	{
 		static::$_form = NULL;
 		return $this;
 	}
 
-	public function set_id($id)
+	public function set_id($id): static
 	{
 		$this->id = $id;
 		return $this;

@@ -27,7 +27,7 @@
 				<?php endif ?>
 			</td>
 			<td class="text-center">
-				<a class="btn btn-outline-danger btn-sm" href="<?php echo url('forum/topic/unsubscribe/'.$sub['topic_id'].'/'.url_title($sub['title'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Se désabonner') ?>"><?php echo icon('fas fa-bell-slash') ?></a>
+				<a class="btn btn-outline-danger btn-sm" href="<?php echo nf_url_action('forum/topic/unsubscribe/'.$sub['topic_id'].'/'.url_title($sub['title'])) ?>" data-bs-toggle="tooltip" title="<?php echo $this->lang('Se désabonner') ?>"><?php echo icon('fas fa-bell-slash') ?></a>
 			</td>
 		</tr>
 		<?php endforeach ?>

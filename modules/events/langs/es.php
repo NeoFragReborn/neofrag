@@ -160,4 +160,7 @@ return [
 	'8fd9c7ef' => 'Guardar',
 	'992d9fb3' => 'Una invitación a un evento',
 	'c58bcb5d' => 'El recordatorio de un evento en el que participo',
+	'49a80df0' => 'En línea',
+	'48b614a4' => 'Desconectado',
+	'ff8f2a30' => 'Administrador',
 ];

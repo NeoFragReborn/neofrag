@@ -586,7 +586,8 @@ class Admin extends Controller_Module
 					.'<td>'.$user_disp.'</td>'
 					.'<td>'.nf_texte((new \NF\NeoFrag\Libraries\Audit_Log($this))->libelle((string) $row['action'])).'<br><code class="small text-body-secondary">'.nf_texte($row['action']).'</code></td>'
 					.'<td>'.$target.'</td>'
-					.'<td><small>'.nf_texte($row['ip_address'] ?? '-').'</small></td>'
+					// Sur une démonstration, les adresses des visiteurs ne se montrent pas (audit du 2026-10-09).
+					.'<td><small>'.nf_texte(nf_demo() ? '—' : ($row['ip_address'] ?? '-')).'</small></td>'
 					.'<td>'.$badge.'</td>'
 					.'<td>'.$details.'</td>'
 					.'</tr>';
@@ -721,9 +722,14 @@ class Admin extends Controller_Module
 			}
 		}
 
+		// L'historique de modération du membre, et de quoi le sanctionner sans attendre un signalement (2026-10-09).
+		$moderation = $this->access('moderation', 'view_reports')
+			? '<p><a class="btn btn-outline-secondary btn-sm" href="'.url('admin/moderation/users/'.$uid).'">'.icon('fas fa-gavel').' '.$this->lang('Historique de modération et sanctions').'</a></p>'
+			: '';
+
 		return $this->panel()
 					->heading($this->lang('Éditer : %s', $user['username']), 'fas fa-user-edit')
-					->body($this->form()->display())
+					->body($moderation.$this->form()->display())
 					->size('col-12');
 	}
 }

@@ -23,6 +23,28 @@ class Forum extends Module
 		];
 	}
 
+	/** Un message se montre s'il n'est pas supprimé et que sa catégorie est lisible, réserve VIP comprise. */
+	public function contenu_visible(string $type, int $id): bool
+	{
+		$modele = $this->model('forum');
+
+		if ($type !== 'forum-message' || !$modele instanceof \NF\Modules\Forum\Models\Forum)
+		{
+			return FALSE;
+		}
+
+		$categorie = $this->db	->select('IFNULL(f2.parent_id, f.parent_id)')
+								->from('nf_forum_messages m')
+								->join('nf_forum_topics t',  'm.topic_id  = t.topic_id')
+								->join('nf_forum        f',  't.forum_id  = f.forum_id')
+								->join('nf_forum        f2', 'f.parent_id = f2.forum_id AND f.is_subforum = "1"')
+								->where('m.message_id', $id)
+								->where('m.deleted_at IS NULL')
+								->row();
+
+		return is_numeric($categorie) && in_array((int) $categorie, $modele->categories_lisibles(), TRUE);
+	}
+
 	/** URL publique d'un message : ancre sur le message, dans le sujet qui le porte. */
 	public function content_url($type, $id)
 	{
@@ -60,7 +82,7 @@ class Forum extends Module
 			'title'       => $this->lang('Forum'),
 			'description' => $this->lang('Forum communautaire avec catégories, sous-forums, sujets épinglés et permissions.'),
 			'icon'        => 'fas fa-comments',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
@@ -77,6 +99,7 @@ class Forum extends Module
 				'{id}/{url_title}{page}'                   => '_forum',
 				'new/{id}/{url_title}'                     => '_new',
 				'topic/{id}/{url_title}{page}'             => '_topic',
+				'piece-jointe/{id}'                        => '_piece_jointe',
 				'announce/{id}/{url_title}'                => '_topic_announce',
 				'lock/{id}/{url_title}'                    => '_topic_lock',
 				'topic/move/{id}/{url_title}'              => '_topic_move',
@@ -423,14 +446,15 @@ class Forum extends Module
 
 			try
 			{
-				$this->email->template('forum.mention', [
+				// Dans la langue du membre mentionné, pas de celui qui écrit (audit du 2026-10-09).
+				nf_dans_la_langue_du_membre((int) $user['id'], fn () => $this->email->template('forum.mention', [
 								'username'    => $user['username'],
 								'topic_title' => $topic['title'],
 								'topic_url'   => $post_url,
 								'mentioner'   => $topic['mentioner']
 							])
 							->to($user['email'])
-							->send();
+							->send());
 			}
 			catch (\Throwable $e)
 			{
@@ -511,14 +535,15 @@ class Forum extends Module
 
 			try
 			{
-				$this->email->template('forum.subscription_reply', [
+				// Dans la langue de l'abonné, pas de celui qui répond (audit du 2026-10-09).
+				nf_dans_la_langue_du_membre((int) $subscriber['user_id'], fn () => $this->email->template('forum.subscription_reply', [
 								'username'    => $subscriber['username'],
 								'topic_title' => $topic['title'],
 								'topic_url'   => $topic_url,
 								'author'      => $topic['author']
 							])
 							->to($subscriber['email'])
-							->send();
+							->send());
 
 				$notified_user_ids[] = $subscriber['user_id'];
 			}
@@ -613,7 +638,7 @@ class Forum extends Module
 		foreach ($cache[$message_id] as $att)
 		{
 			$is_image = strpos((string)$att['mime_type'], 'image/') === 0;
-			$file_url = \url($att['path']);
+			$file_url = \url('forum/piece-jointe/'.(int) $att['attachment_id']);
 			$name_esc = nf_texte($att['name']);
 			$size_str = \human_size((int)$att['file_size']);
 
@@ -716,9 +741,15 @@ class Forum extends Module
 	 */
 	public function profil_membre($membre): array
 	{
-		$categories = array_values(array_filter((array) $this->db->select('category_id')->from('nf_forum_categories')->get(), function($categorie){
-			return $this->access('forum', 'category_read', $categorie);
-		}));
+		// Un membre sous shadow ban : son onglet ne montre rien aux autres (audit du 2026-10-09).
+		if (in_array((int) $membre->id, $this->moderation->auteurs_masques(), TRUE))
+		{
+			return [];
+		}
+
+		// Le droit de lecture ET la réserve VIP (Forum::categories_lisibles()) : le droit seul laissait lire le VIP.
+		$modele     = $this->model('forum');
+		$categories = $modele instanceof \NF\Modules\Forum\Models\Forum ? $modele->categories_lisibles() : [];
 
 		if (!$categories)
 		{

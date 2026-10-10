@@ -71,4 +71,5 @@ return [
 	'f7232257' => 'Solo el autor de este comentario puede editarlo o eliminarlo mediante la API.',
 	'31a19f58' => 'El Bugtracker no está instalado en este sitio.',
 	'38ce3464' => 'Este rol está vinculado a un grupo del sitio: la sincronización de grupos ya lo da y lo quita.',
+	'fc49b15e' => 'Este autor no tiene derecho a escribir en este foro.',
 ];

@@ -31,7 +31,7 @@ class Index extends Controller_Module
 		if ($this->user())
 		{
 			$actions = $this->panel()
-							->body('<a class="btn btn-light" href="'.url('forum/mark-all-as-read').'" data-bs-toggle="tooltip" title="'.$this->lang('Marquer tous les messages comme étant lus').'">'.icon('far fa-eye').'</a>')
+							->body('<a class="btn btn-light" href="'.$this->csrf_url('forum/mark-all-as-read').'" data-bs-toggle="tooltip" title="'.$this->lang('Marquer tous les messages comme étant lus').'">'.icon('far fa-eye').'</a>')
 							->style('card-transparent text-end');
 
 			$panels->prepend($actions)->append($actions);
@@ -97,7 +97,7 @@ class Index extends Controller_Module
 
 		if ($this->user())
 		{
-			$droite .= '<a class="btn btn-light" href="'.url('forum/mark-all-as-read/'.$forum_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Marquer tous les messages comme étant lus').'">'.icon('far fa-eye').'</a>';
+			$droite .= '<a class="btn btn-light" href="'.$this->csrf_url('forum/mark-all-as-read/'.$forum_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Marquer tous les messages comme étant lus').'">'.icon('far fa-eye').'</a>';
 		}
 
 		$actions = $this	->panel()
@@ -113,9 +113,20 @@ class Index extends Controller_Module
 	{
 		$this	->title($this->lang('Nouveau sujet'))
 				->_breadcrumb($category_id, $forum_id)
-				->breadcrumb()
-				->form()
-				->add_rules([
+				->breadcrumb();
+
+		// Une sanction qui ferme le forum — muet ou bannissement du forum, bannissement du site — : le formulaire n'est
+		// pas construit, et le membre sait pourquoi. Seul le muet était vérifié, et après l'envoi (2026-10-09).
+		if ($bloque = $this->moderation->is_blocked_for((int) $this->user->id, 'forum.message_post'))
+		{
+			return $this->moderation->panneau($bloque, (string) $this->lang('Nouveau sujet'), 'fas fa-pencil-alt');
+		}
+
+		// Sans le droit d'envoyer des fichiers, pas de champ de pièce jointe : le fichier serait enregistré à la
+		// validation du formulaire, avant tout refus.
+		$fichiers = !$this->moderation->is_blocked_for((int) $this->user->id, 'forum.message_attach');
+
+		$this->form()->add_rules([
 					'title' => [
 						'rules' => 'required'
 					],
@@ -123,14 +134,11 @@ class Index extends Controller_Module
 						'type'  => 'editor',
 						'rules' => 'required'
 					],
-					'attachment' => [
-						'type' => 'file'
-					],
 					'prefix' => [
 						'type'   => 'select',
 						'values' => ['' => ''] + array_column($this->_modele_forum()->prefixes(), 'title', 'prefix_id')
 					]
-				]);
+				] + ($fichiers ? ['attachment' => ['type' => 'file']] : []));
 
 		if ($this->access('forum', 'category_announce', $category_id))
 		{
@@ -143,25 +151,27 @@ class Index extends Controller_Module
 
 		if ($this->form()->is_valid($post))
 		{
-			// Phase 4 modération — block si user mute sur forum (ou globally)
-			if ($this->moderation->is_muted((int)$this->user->id, 'forum'))
+			if ($refus = $this->moderation->lien_refuse((int) $this->user->id, $post['title'], $post['message']))
 			{
-				notify($this->moderation->block_message_for_user((int)$this->user->id, 'forum') ?: $this->lang('Tu es actuellement muet sur le forum.'), 'danger');
-				redirect('forum/'.$forum_id.'/'.url_title($title));
+				// Le texte reste dans le formulaire, à corriger ; la pièce jointe déjà enregistrée repart.
+				$this->_jeter_piece_jointe($post);
+				notify($refus['message'], 'danger');
 			}
+			else
+			{
+				$topic_id = $this->model()->add_topic(	$forum_id,
+														$post['title'],
+														$post['message'],
+														!empty($post['announce']) && in_array('on', $post['announce']));
 
-			$topic_id = $this->model()->add_topic(	$forum_id,
-													$post['title'],
-													$post['message'],
-													!empty($post['announce']) && in_array('on', $post['announce']));
+				$this->_attach_to_last_message($topic_id, $post);
 
-			$this->_attach_to_last_message($topic_id, $post);
+				$this->_modele_forum()->set_prefix((int) $topic_id, (int) ($post['prefix'] ?? 0) ?: NULL);
 
-			$this->_modele_forum()->set_prefix((int) $topic_id, (int) ($post['prefix'] ?? 0) ?: NULL);
+				notify($this->lang('Sujet ajouté'));
 
-			notify($this->lang('Sujet ajouté'));
-
-			redirect('forum/topic/'.$topic_id.'/'.url_title($post['title']));
+				redirect('forum/topic/'.$topic_id.'/'.url_title($post['title']));
+			}
 		}
 
 		$panels = $this->array;
@@ -181,7 +191,8 @@ class Index extends Controller_Module
 									'forum_id'    => $forum_id,
 									'category_id' => $category_id,
 									'title'       => $title,
-									'prefixes'    => $this->_modele_forum()->prefixes()
+									'prefixes'    => $this->_modele_forum()->prefixes(),
+									'fichiers'    => $fichiers
 								]), FALSE));
 
 		return $panels;
@@ -306,11 +317,11 @@ class Index extends Controller_Module
 		{
 			if ($is_announce)
 			{
-				$droite .= '<a class="btn btn-light" href="'.url('forum/announce/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Retirer des annonces').'">'.icon('far fa-flag').'</a>';
+				$droite .= '<a class="btn btn-light" href="'.$this->csrf_url('forum/announce/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Retirer des annonces').'">'.icon('far fa-flag').'</a>';
 			}
 			else
 			{
-				$droite .= '<a class="btn btn-light" href="'.url('forum/announce/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Mettre en annonce').'">'.icon('fas fa-flag').'</a>';
+				$droite .= '<a class="btn btn-light" href="'.$this->csrf_url('forum/announce/'.$topic_id.'/'.url_title($title)).'" data-bs-toggle="tooltip" title="'.$this->lang('Mettre en annonce').'">'.icon('fas fa-flag').'</a>';
 			}
 		}
 
@@ -373,44 +384,53 @@ class Index extends Controller_Module
 
 		$panels->append($actions);
 
-		if ($is_last_page && $this->access('forum', 'category_write', $category_id) && !$is_locked)
+		if ($is_last_page && $this->access('forum', 'category_write', $category_id) && !$is_locked
+			&& ($bloque = $this->moderation->is_blocked_for((int) $this->user->id, 'forum.message_post')))
 		{
+			// Une sanction qui ferme le forum : à la place du formulaire de réponse, ce qu'elle interdit et jusqu'à quand.
+			$panels->append($this->moderation->panneau($bloque, (string) $this->lang('Répondre au sujet'), 'far fa-file-alt'));
+		}
+		else if ($is_last_page && $this->access('forum', 'category_write', $category_id) && !$is_locked)
+		{
+			$fichiers = !$this->moderation->is_blocked_for((int) $this->user->id, 'forum.message_attach');
+
 			$this	->form()
 					->add_rules([
 						'message' => [
 							'type'  => 'editor',
 							'rules' => 'required'
-						],
-						'attachment' => [
-							'type' => 'file'
 						]
-					])
+					] + ($fichiers ? ['attachment' => ['type' => 'file']] : []))
 					->add_submit($this->lang('Répondre'), 'fas fa-reply');
+
+			$refus = NULL;
 
 			if ($this->form()->is_valid($post))
 			{
-				// Phase 4 modération — block si user mute sur forum
-				if ($this->moderation->is_muted((int)$this->user->id, 'forum'))
+				if ($refus = $this->moderation->lien_refuse((int) $this->user->id, $post['message']))
 				{
-					notify($this->moderation->block_message_for_user((int)$this->user->id, 'forum') ?: $this->lang('Tu es actuellement muet sur le forum.'), 'danger');
-					redirect('forum/topic/'.$topic_id.'/'.url_title($title));
+					// La réponse reste dans le formulaire, à corriger ; la pièce jointe déjà enregistrée repart.
+					$this->_jeter_piece_jointe($post);
+					notify($refus['message'], 'danger');
 				}
-
-				$reply_to = !empty($_GET['reply_to']) ? (int)$_GET['reply_to'] : NULL;
-				$message_id = $this->model()->add_message($topic_id, $post['message'], $reply_to);
-
-				$this->_attach_file_to_message($message_id, $post);
-
-				//notify('success', $this->lang('Réponse ajoutée avec succès'));
-
-				$page = '';
-
-				if (++$nb_messages > $this->module->pagination->get_items_per_page())
+				else
 				{
-					$page = '/page/'.ceil($nb_messages / $this->module->pagination->get_items_per_page());
-				}
+					$reply_to = !empty($_GET['reply_to']) ? (int)$_GET['reply_to'] : NULL;
+					$message_id = $this->model()->add_message($topic_id, $post['message'], $reply_to);
 
-				redirect('forum/topic/'.$topic_id.'/'.url_title($title).$page.'#'.$message_id);
+					$this->_attach_file_to_message($message_id, $post);
+
+					//notify('success', $this->lang('Réponse ajoutée avec succès'));
+
+					$page = '';
+
+					if (++$nb_messages > $this->module->pagination->get_items_per_page())
+					{
+						$page = '/page/'.ceil($nb_messages / $this->module->pagination->get_items_per_page());
+					}
+
+					redirect('forum/topic/'.$topic_id.'/'.url_title($title).$page.'#'.$message_id);
+				}
 			}
 
 			if ($errors = $this->form()->get_errors())
@@ -424,15 +444,26 @@ class Index extends Controller_Module
 			$panels->append($this	->panel()
 									->heading('<a name="reply"></a>'.$this->lang('Répondre au sujet'), 'far fa-file-alt')
 									->body($this->view('new', [
-										'form_id'  => $this->form()->token()
+										'form_id'  => $this->form()->token(),
+										'post'     => $refus ? $post : NULL,
+										'fichiers' => $fichiers
 									]), FALSE));
 		}
 
 		return $panels;
 	}
 
+	/** Une pièce jointe, après les contrôles de son sujet (Checker::_piece_jointe()). */
+	public function _piece_jointe($chemin, $nom, $type)
+	{
+		nf_servir_piece_jointe($chemin, $nom, $type);
+	}
+
 	public function _subscribe($topic_id, $title)
 	{
+		// Les liens de suivi portent le jeton (views/topic.tpl.php, subscriptions.tpl.php ; audit du 2026-10-09).
+		$this->check_csrf('forum/topic/'.$topic_id.'/'.url_title($title));
+
 		$this->model()->subscribe($topic_id, $this->user->id);
 		notify($this->lang('Tu es maintenant abonné(e) à ce sujet'));
 		redirect('forum/topic/'.$topic_id.'/'.url_title($title));
@@ -440,6 +471,8 @@ class Index extends Controller_Module
 
 	public function _unsubscribe($topic_id, $title)
 	{
+		$this->check_csrf('forum/topic/'.$topic_id.'/'.url_title($title));
+
 		$this->model()->unsubscribe($topic_id, $this->user->id);
 		notify($this->lang('Tu es désabonné(e) de ce sujet'));
 		redirect('forum/topic/'.$topic_id.'/'.url_title($title));
@@ -499,6 +532,15 @@ class Index extends Controller_Module
 		return ($espace = $this->module('user')) instanceof \NF\Modules\User\User ? $espace->espace($liste, 'forum/subscriptions') : $liste;
 	}
 
+	/** La pièce jointe d'un envoi refusé, déjà enregistrée par la validation du formulaire : retirée du disque et de la base. */
+	private function _jeter_piece_jointe($post): void
+	{
+		if (is_object($post['attachment'] ?? NULL) && !empty($post['attachment']->id))
+		{
+			$post['attachment']->delete();
+		}
+	}
+
 	private function _attach_to_last_message($topic_id, $post)
 	{
 		if (empty($post['attachment']))
@@ -535,7 +577,8 @@ class Index extends Controller_Module
 				? mime_content_type($disk_path)
 				: 'application/octet-stream';
 
-		if (!\NF\Modules\Forum\Lib\Forum_Attachment_Rules::is_allowed_mime($mime, $allowed_mimes))
+		// Le type lu dans le fichier, ET son extension : un script étiqueté « texte » passait (nf_piece_jointe_refusee()).
+		if (!\NF\Modules\Forum\Lib\Forum_Attachment_Rules::is_allowed_mime($mime, $allowed_mimes) || nf_piece_jointe_refusee(basename($disk_path)))
 		{
 			$file->delete();
 			notify($this->lang('Type de fichier non autorisé : %s', $mime), 'danger');
@@ -554,6 +597,9 @@ class Index extends Controller_Module
 
 	public function _topic_announce($topic_id, $title, $is_announce, $is_locked)
 	{
+		// Comme le verrou : le lien porte le jeton, sans quoi un lien piégé épinglait ou dépinglait un sujet (audit du 2026-10-09).
+		$this->check_csrf('forum/topic/'.$topic_id.'/'.url_title($title));
+
 		$this->db	->where('topic_id', $topic_id)
 					->update('nf_forum_topics', [
 						'status' => (string)($is_announce ? ($is_locked ? -1 : 0) : ($is_locked ? -2 : 1))
@@ -580,8 +626,14 @@ class Index extends Controller_Module
 		$this	->title($this->lang($is_topic ? 'Édition du sujet' : 'Édition du message'))
 				->_breadcrumb($category_id, $forum_id)
 				->breadcrumb($title, 'forum/topic/'.$topic_id.'/'.url_title($title))
-				->breadcrumb()
-				->form()
+				->breadcrumb();
+
+		if ($bloque = $this->moderation->is_blocked_for((int) $this->user->id, 'forum.message_edit'))
+		{
+			return $this->moderation->panneau($bloque, (string) $this->lang($is_topic ? 'Édition du sujet' : 'Édition du message'), 'fas fa-pencil-alt');
+		}
+
+		$this	->form()
 				->add_rules([
 					'message' => [
 						'type'  => 'editor',
@@ -602,7 +654,9 @@ class Index extends Controller_Module
 			]);
 		}
 
-		if ($this->form()->is_valid($post))
+		$refus = NULL;
+
+		if ($this->form()->is_valid($post) && !($refus = $this->moderation->lien_refuse((int) $this->user->id, $post['title'] ?? NULL, $post['message'])))
 		{
 			if ($is_topic && $title != $post['title'])
 			{
@@ -639,6 +693,10 @@ class Index extends Controller_Module
 			//notify('success', $this->lang('Message modifié avec succès'));
 
 			redirect('forum/topic/'.$topic_id.'/'.url_title($is_topic ? $post['title'] : $title));
+		}
+		else if ($refus)
+		{
+			notify($refus['message'], 'danger');
 		}
 
 		$panels = $this->array;
@@ -680,6 +738,14 @@ class Index extends Controller_Module
 			$delete = TRUE;
 			$is_self_delete = $this->user() && (int)$this->db->select('user_id')->from('nf_forum_messages')->where('message_id', $message_id)->row() === (int)$this->user->id;
 			$reason = $is_self_delete ? 'self' : 'moderation';
+
+			// Un message signalé ne s'efface pas par son auteur tant que la modération ne l'a pas examiné : la preuve partait
+			// avec lui (Moderation::is_message_locked(), qu'aucun code n'appelait — audit du 2026-10-09).
+			if ($is_self_delete && $this->moderation->is_message_locked('forum', (int) $message_id))
+			{
+				notify($this->lang('Ce message est signalé : il ne peut pas être supprimé tant que la modération ne l’a pas examiné.'), 'warning');
+				redirect('forum/topic/'.$topic_id.'/'.url_title($title));
+			}
 
 			if ($is_topic)
 			{
@@ -776,6 +842,8 @@ class Index extends Controller_Module
 
 	public function mark_all_as_read()
 	{
+		$this->check_csrf('forum');
+
 		$this->model()->mark_all_as_read();
 		//notify('success', $this->lang('Tous les messages sont désormais considéré comme étant lus'));
 		redirect('forum');
@@ -783,6 +851,8 @@ class Index extends Controller_Module
 
 	public function _mark_all_as_read($forum_id, $title)
 	{
+		$this->check_csrf('forum/'.$forum_id.'/'.url_title($title));
+
 		foreach (array_merge([$forum_id], $this->db->select('forum_id')->from('nf_forum')->where('parent_id', $forum_id)->where('is_subforum', TRUE)->get()) as $id)
 		{
 			$this->model()->mark_all_as_read($id);

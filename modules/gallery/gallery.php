@@ -29,7 +29,7 @@ class Gallery extends Module
 			'title'       => $this->lang('Galeries'),
 			'description' => $this->lang('Galerie photos en catégories et albums ; chaque album a ses droits de consultation et de publication. Images avec titre, description et commentaires.'),
 			'icon'        => 'far fa-image',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
@@ -161,6 +161,26 @@ class Gallery extends Module
 				]
 			]
 		];
+	}
+
+	/**
+	 * Une image se montre si son album est publié, paru, hors de la corbeille, et que celui qui regarde a le droit de le
+	 * voir (la règle de check_image() et de la page de l'image) — pour qui la cite hors de sa page.
+	 */
+	public function contenu_visible(string $type, int $id): bool
+	{
+		$gallery_id = $type === 'gallery'
+			? $this->db	->select('g.gallery_id')
+						->from('nf_gallery_images i')
+						->join('nf_gallery g', 'i.gallery_id = g.gallery_id')
+						->where('i.image_id', $id)
+						->where('g.deleted_at', NULL)
+						->where('g.published', TRUE)
+						->where('g.date <=', date('Y-m-d H:i:s'))
+						->row()
+			: NULL;
+
+		return is_numeric($gallery_id) && $this->access('gallery', 'gallery_see', (int) $gallery_id);
 	}
 
 	public function comments($image_id)

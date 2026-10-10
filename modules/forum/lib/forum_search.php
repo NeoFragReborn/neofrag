@@ -31,7 +31,12 @@ final class Forum_Search
 
 			if ($tok[0] === '"' && substr($tok, -1) === '"')
 			{
-				$out[] = $tok;
+				// Le mot entre guillemets, nettoyé comme les autres : il partait tel quel dans la requête SQL, et un
+				// visiteur en sortait (antislash + apostrophe), puis lisait la base (audit du 2026-10-09).
+				if (($phrase = preg_replace('/[^\p{L}\p{N}_]/u', '', substr($tok, 1, -1))) !== '')
+				{
+					$out[] = '"'.$phrase.'"';
+				}
 			}
 			else if ($tok[0] === '-' && strlen($tok) > 1)
 			{
@@ -50,9 +55,13 @@ final class Forum_Search
 		return implode(' ', $out);
 	}
 
-	/** Échappe une valeur pour une string literal SQL (doublage des apostrophes). */
+	/**
+	 * Échappe une valeur pour une chaîne SQL, sans connexion : l'antislash doublé, puis l'apostrophe. Le modèle emploie
+	 * l'échappement de la base elle-même (`Db::escape_string()`), qui connaît son jeu de caractères et son sql_mode ;
+	 * celle-ci reste pour la logique pure et ses tests. Elle ne doublait que l'apostrophe : « \' » refermait la chaîne.
+	 */
 	public static function quote(string $s): string
 	{
-		return "'".str_replace("'", "''", $s)."'";
+		return "'".str_replace(['\\', "'"], ['\\\\', "''"], $s)."'";
 	}
 }

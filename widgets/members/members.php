@@ -17,7 +17,7 @@ class Members extends Widget
 			'title'       => $this->lang('Membres'),
 			'description' => $this->lang('Derniers membres inscrits ou membres connectés : leur nombre, ou leur liste avec leur avatar.'),
 			'icon'        => 'fas fa-users',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

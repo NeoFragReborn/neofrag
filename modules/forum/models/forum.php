@@ -570,9 +570,16 @@ class Forum extends Model
 
 		// L'auteur du dernier message, s'il vient de Discord sans compte lié (cf. get_messages).
 		$identites = $this->identites(array_column($forums, 'identity_id'));
+		$masques   = $this->moderation->auteurs_masques();
 
 		foreach ($forums as &$forum)
 		{
+			// Le dernier message d'un auteur sous shadow ban ne se montre pas (audit du 2026-10-09).
+			if ($forum['user_id'] && in_array((int) $forum['user_id'], $masques, TRUE))
+			{
+				$forum = ['last_message_id' => 0, 'user_id' => NULL, 'username' => NULL, 'identity_id' => NULL, 'topic_id' => NULL, 'last_title' => NULL, 'last_message_date' => NULL, 'last_count_messages' => NULL] + $forum;
+			}
+
 			$forum['identity_name'] = !$forum['user_id'] && $forum['identity_id'] ? ($identites[(int) $forum['identity_id']]['nom'] ?? NULL) : NULL;
 			$forum['has_unread']    = $forum['url'] ? FALSE : $this->_has_unread($forum);
 
@@ -614,6 +621,12 @@ class Forum extends Model
 		if ($prefixe)
 		{
 			$this->db->where('t.prefix_id', $prefixe);
+		}
+
+		// Les sujets ouverts par un membre sous shadow ban ne se montrent qu'à lui et aux modérateurs (audit du 2026-10-09).
+		if ($sans_masques = $this->moderation->condition_sans_masques('m1.user_id'))
+		{
+			$this->db->where($sans_masques);
 		}
 
 		$topics = $this->db->select('t.topic_id',
@@ -670,8 +683,16 @@ class Forum extends Model
 		// Les auteurs venus de Discord sans compte lié : le nom de leur identité (cf. get_messages).
 		$identites = $this->identites(array_merge(array_column($topics, 'identity_id'), array_column($topics, 'last_identity_id')));
 
+		$masques = $this->moderation->auteurs_masques();
+
 		foreach ($topics as &$topic)
 		{
+			// Une dernière réponse d'un auteur masqué : le sujet se présente par son premier message.
+			if ($topic['last_user_id'] && in_array((int) $topic['last_user_id'], $masques, TRUE))
+			{
+				$topic = ['last_user_id' => $topic['user_id'], 'last_username' => $topic['username'], 'last_identity_id' => $topic['identity_id'], 'last_message_date' => $topic['date'], 'message' => ''] + $topic;
+			}
+
 			$topic['identity_name']      = !$topic['user_id'] && $topic['identity_id'] ? ($identites[(int) $topic['identity_id']]['nom'] ?? NULL) : NULL;
 			$topic['last_identity_name'] = !$topic['last_user_id'] && $topic['last_identity_id'] ? ($identites[(int) $topic['last_identity_id']]['nom'] ?? NULL) : NULL;
 
@@ -707,6 +728,9 @@ class Forum extends Model
 								->where('topic_id', $topic_id)
 								->order_by('message_id')
 								->get();
+
+		// Les réponses d'un membre sous shadow ban ne se montrent qu'à lui et aux modérateurs (audit du 2026-10-09).
+		$messages = $this->moderation->sans_masques((array) $messages);
 
 		// Les auteurs venus de Discord sans compte lié : leur identité, prête à afficher.
 		$identites = $this->identites(array_column($messages, 'identity_id'));
@@ -761,6 +785,25 @@ class Forum extends Model
 	}
 
 	/**
+	 * La catégorie d'un forum — celle de son forum parent pour un sous-forum —, dont il tient ses droits, et si elle est
+	 * réservée aux VIP. NULL : forum inconnu. Pour qui juge des droits d'un autre que le membre courant : l'API, quand le
+	 * bot Discord écrit au nom d'un auteur, et les permissions des salons Discord reliés (2026-10-09).
+	 *
+	 * @return array{category_id: int, vip_only: bool}|null
+	 */
+	public function categorie_du_forum(int $forum_id): ?array
+	{
+		$ligne = $this->db	->select('IFNULL(f3.parent_id, f.parent_id) AS category_id', 'c.vip_only')
+							->from('nf_forum f')
+							->join('nf_forum f3', 'f3.forum_id = f.parent_id AND f.is_subforum = "1"', 'LEFT')
+							->join('nf_forum_categories c', 'c.category_id = IFNULL(f3.parent_id, f.parent_id)', 'LEFT')
+							->where('f.forum_id', $forum_id)
+							->row(FALSE);
+
+		return is_array($ligne) && $ligne ? ['category_id' => (int) $ligne['category_id'], 'vip_only' => (bool) (int) $ligne['vip_only']] : NULL;
+	}
+
+	/**
 	 * Catégorie verrouillée pour le membre courant ? (VIP requis et non satisfait).
 	 * Les administrateurs effectifs voient tout.
 	 */
@@ -783,13 +826,13 @@ class Forum extends Model
 	}
 
 	/**
-	 * Les forums que celui qui regarde peut lire : ceux des catégories qu'il a le droit de lire et qui ne lui sont
-	 * pas réservées au VIP, sous-forums compris. Pour qui montre le forum ailleurs que dans ses pages — le widget
-	 * « Forum », la frise de la saison — sans en recopier la règle (2026-10-06 ; elle vivait dans le widget).
+	 * Les catégories que celui qui regarde peut lire : le droit de lecture, et pas de réserve VIP qui l'en écarte. La
+	 * recherche, l'onglet « Forum » d'un profil et l'activité d'un membre ne testaient que le droit : les messages d'une
+	 * catégorie réservée au VIP s'y lisaient, en visiteur comme en membre (audit du 2026-10-09).
 	 *
 	 * @return list<int>
 	 */
-	public function forums_lisibles(): array
+	public function categories_lisibles(): array
 	{
 		$categories = [];
 
@@ -798,11 +841,23 @@ class Forum extends Model
 		{
 			if ($this->access('forum', 'category_read', $category_id) && !$this->_vip_locked((int) $category_id))
 			{
-				$categories[] = $category_id;
+				$categories[] = (int) $category_id;
 			}
 		}
 
-		if (!$categories)
+		return $categories;
+	}
+
+	/**
+	 * Les forums que celui qui regarde peut lire : ceux des catégories qu'il a le droit de lire et qui ne lui sont
+	 * pas réservées au VIP, sous-forums compris. Pour qui montre le forum ailleurs que dans ses pages — le widget
+	 * « Forum », la frise de la saison — sans en recopier la règle (2026-10-06 ; elle vivait dans le widget).
+	 *
+	 * @return list<int>
+	 */
+	public function forums_lisibles(): array
+	{
+		if (!($categories = $this->categories_lisibles()))
 		{
 			return [];
 		}
@@ -856,6 +911,12 @@ class Forum extends Model
 		if ($topic && $title == url_title($topic['topic_title']))
 		{
 			if ($this->_vip_locked($topic['category_id']))
+			{
+				return FALSE;
+			}
+
+			// Ouvert par un membre sous shadow ban : introuvable pour les autres (audit du 2026-10-09).
+			if ($topic['topic_user_id'] && in_array((int) $topic['topic_user_id'], $this->moderation->auteurs_masques(), TRUE))
 			{
 				return FALSE;
 			}

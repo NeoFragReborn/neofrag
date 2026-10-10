@@ -20,7 +20,7 @@ class Admin extends Controller_Module
 		$stats         = $this->model()->dashboard_stats();
 		$top_reported  = $this->model()->top_reported_users(10);
 		$top_reporters = $this->model()->top_reporters(10);
-		$recent_reports = $this->moderation->get_pending_reports([], 0, 10);
+		$recent_reports = $this->moderation->get_pending_reports(['status' => 'pending'], 0, 10); // il montrait tous les statuts
 
 		$this->title($this->lang('Modération'))->icon('fas fa-shield-alt');
 
@@ -32,6 +32,12 @@ class Admin extends Controller_Module
 		if ($this->access('moderation', 'manage_settings'))
 		{
 			$this->add_action($this->button($this->lang('Réglages'), 'fas fa-cogs', 'secondary')->url('admin/moderation/settings'));
+		}
+
+		// La liste des adresses IP bannies : aucun lien n'y menait (audit du 2026-10-09).
+		if ($this->access->effective_admin())
+		{
+			$this->add_action($this->button($this->lang('Adresses IP bannies'), 'fas fa-network-wired', 'secondary')->url('admin/moderation/banlist'));
 		}
 
 		return $this->view('admin/dashboard', [
@@ -57,7 +63,7 @@ class Admin extends Controller_Module
 		];
 		$active_filter = array_filter($filter);
 
-		$page_num = is_numeric($page) ? (int)$page : 0;
+		$page_num = (preg_match('#page/(\d+)#', (string) $page, $numero) ? max(0, (int) $numero[1] - 1) : 0); // « page/N » (N dès 1) : `is_numeric('page/2')` laissait toujours la page 1
 		$reports = $this->moderation->get_pending_reports($active_filter, $page_num, 50);
 
 		return $this->view('admin/reports', [
@@ -138,6 +144,7 @@ class Admin extends Controller_Module
 		return $this->view('admin/report_detail', [
 			'report'         => $report,
 			'csrf'           => $this->csrf_token(),
+			'formulaire_sanction' => (string) $this->view('admin/sanction_form', ['action' => url('admin/moderation/reports/'.(int) $report['id'].'/sanction'), 'csrf' => $this->csrf_token()]),
 			'reporter_score' => $reporter_score,
 			'target_history' => $target_history,
 			'show_reporter'  => (bool)$this->access('moderation', 'see_reporter')
@@ -157,7 +164,7 @@ class Admin extends Controller_Module
 			'pending_approval' => !empty($_GET['pending_approval']),
 			'type'             => trim((string)($_GET['type'] ?? ''))
 		];
-		$page_num = is_numeric($page) ? (int)$page : 0;
+		$page_num = (preg_match('#page/(\d+)#', (string) $page, $numero) ? max(0, (int) $numero[1] - 1) : 0); // « page/N » (N dès 1) : `is_numeric('page/2')` laissait toujours la page 1
 		$sanctions = $this->model()->get_sanctions($filter, $page_num, 50);
 
 		return $this->view('admin/sanctions', [
@@ -213,12 +220,26 @@ class Admin extends Controller_Module
 		$active_sanctions = $this->moderation->active_sanctions($user_id);
 		$reporter_score = $this->moderation->reporter_quality_score($user_id);
 
+		// Sanctionner directement, sans signalement, qui en a le droit (2026-10-09) ; jamais soi-même.
+		$peut = (int) $user_id !== (int) $this->user->id && array_filter(array_unique(\NF\Modules\Moderation\Moderation::DROITS_DES_TYPES), fn ($droit) => $this->access('moderation', $droit));
+
 		return $this->view('admin/user_history', [
 			'user'             => $user,
 			'timeline'         => $timeline,
 			'active_sanctions' => $active_sanctions,
-			'reporter_score'   => $reporter_score
+			'reporter_score'   => $reporter_score,
+			'formulaire_sanction' => $peut ? (string) $this->view('admin/sanction_form', ['action' => url('admin/moderation/users/'.(int) $user_id.'/sanction'), 'csrf' => $this->csrf_token()]) : '',
 		]);
+	}
+
+	/** Sanctionner un membre depuis son historique (Moderation::sanctionner()). */
+	public function _user_sanction($user_id)
+	{
+		$this->check_csrf('admin/moderation/users/'.(int) $user_id);
+
+		$issue = $this->module->sanctionner((int) $user_id, $_POST);
+		notify($issue['message'], $issue['ok'] ? 'success' : 'danger');
+		redirect('admin/moderation/users/'.(int) $user_id);
 	}
 
 	public function _settings()
@@ -231,32 +252,15 @@ class Admin extends Controller_Module
 		// Save POST
 		if (!empty($_POST['save_moderation_settings']))
 		{
-			$keys = [
-				'nf_moderation_enabled',
-				'nf_moderation_auto_escalation',
-				'nf_moderation_warning_window_days',
-				'nf_moderation_warning_threshold_mute',
-				'nf_moderation_warning_threshold_ban',
-				'nf_moderation_report_rate_limit_per_hour',
-				'nf_moderation_report_flag_threshold_per_day',
-				'nf_moderation_require_approval_ban_perm',
-				'nf_moderation_require_approval_ban_temp',
-				'nf_moderation_default_mute_duration_seconds',
-				'nf_moderation_default_ban_temp_duration_seconds',
-				'nf_moderation_preserve_content_snapshot'
-			];
-			foreach ($keys as $k)
-			{
-				if (isset($_POST[$k]))
-				{
-					$this->config($k, (string)$_POST[$k]);
-				}
-			}
+			// Un formulaire de réglages sans jeton se soumettait depuis une autre page (audit du 2026-10-09).
+			$this->check_csrf('admin/moderation/settings');
+			$this->module->enregistrer_reglages($_POST);
 			notify($this->lang('Réglages modération sauvegardés.'));
 			redirect('admin/moderation/settings');
 		}
 
 		return $this->view('admin/settings', [
+			'csrf'   => $this->csrf_token(),
 			'config' => $this->config
 		]);
 	}
@@ -267,71 +271,28 @@ class Admin extends Controller_Module
 	{
 		$this->check_csrf('admin/moderation/reports');
 
-		$report = $this->moderation->get_report($id);
-		if (!$report) { notify($this->lang('Signalement introuvable.'), 'danger'); redirect('admin/moderation/reports'); }
-
-		$note = trim((string)($_POST['note'] ?? ''));
-		$this->moderation->update_report_status($id, 'dismissed', (int)$this->user->id, $note);
-		notify($this->lang('Signalement marqué comme dismissed.'));
-		redirect('admin/moderation/reports');
+		$issue = $this->module->classer((int) $id, (string)($_POST['note'] ?? ''));
+		notify($issue['message'], $issue['ok'] ? 'success' : 'danger');
+		redirect('admin/moderation/reports'.($issue['ok'] ? '' : '/'.(int) $id));
 	}
 
 	public function _report_sanction($id)
 	{
 		$this->check_csrf('admin/moderation/reports');
 
-		$report = $this->moderation->get_report($id);
-		if (!$report) { notify($this->lang('Signalement introuvable.'), 'danger'); redirect('admin/moderation/reports'); }
-		if (!$report['target_user_id']) { notify($this->lang('Pas de user cible identifié.'), 'danger'); redirect('admin/moderation/reports/'.$id); }
+		$issue = $this->module->prononcer((int) $id, $_POST);
+		notify($issue['message'], $issue['ok'] ? 'success' : 'danger');
+		redirect('admin/moderation/reports/'.(int) $id);
+	}
 
-		$type = (string)($_POST['type'] ?? '');
-		$valid_types = ['warning','mute','ban_temp','ban_perm','restrict_upload','restrict_links','restrict_avatar','restrict_signature','restrict_comment','shadow_ban'];
-		if (!in_array($type, $valid_types, TRUE))
-		{
-			notify($this->lang('Type de sanction invalide.'), 'danger');
-			redirect('admin/moderation/reports/'.$id);
-		}
+	/** Proposer une médiation depuis un signalement (Moderation::proposer_mediation()). */
+	public function _report_mediation($id)
+	{
+		$this->check_csrf('admin/moderation/reports/'.(int) $id);
 
-		// Vérification permissions selon type
-		$perm_map = [
-			'warning' => 'warn',
-			'mute' => 'mute',
-			'ban_temp' => 'ban_temp',
-			'ban_perm' => 'ban_perm',
-			'restrict_upload' => 'restrict',
-			'restrict_links' => 'restrict',
-			'restrict_avatar' => 'restrict',
-			'restrict_signature' => 'restrict',
-			'restrict_comment' => 'restrict',
-			'shadow_ban' => 'ban_perm'
-		];
-		if (!$this->access('moderation', $perm_map[$type] ?? 'view_reports'))
-		{
-			notify($this->lang('Permission insuffisante pour ce type de sanction.'), 'danger');
-			redirect('admin/moderation/reports/'.$id);
-		}
-
-		$opts = [
-			'scope'             => (string)($_POST['scope'] ?? 'global'),
-			'reason'            => (string)($_POST['reason'] ?? ''),
-			'duration_seconds'  => isset($_POST['duration_seconds']) ? (int)$_POST['duration_seconds'] : NULL,
-			'issued_by'         => (int)$this->user->id,
-			'related_report_id' => (int)$id,
-			'notify_user'       => (int)($_POST['notify_user'] ?? 1)
-		];
-
-		$sanction_id = $this->moderation->sanction((int)$report['target_user_id'], $type, $opts);
-		if (!$sanction_id)
-		{
-			notify($this->lang('Échec de la création de la sanction.'), 'danger');
-			redirect('admin/moderation/reports/'.$id);
-		}
-
-		// Marque le report comme actioned
-		$this->moderation->update_report_status($id, 'actioned', (int)$this->user->id, NULL, $sanction_id);
-
-		notify($this->lang('Sanction appliquée.'));
-		redirect('admin/moderation/reports/'.$id);
+		$issue = $this->module->proposer_mediation((int) $id);
+		notify($issue['message'], $issue['ok'] ? 'success' : 'danger');
+		redirect('admin/moderation/reports/'.(int) $id);
 	}
 
 	public function _sanction_approve($id)
@@ -344,7 +305,7 @@ class Admin extends Controller_Module
 		}
 		else
 		{
-			notify($this->lang('Sanction déjà approuvée ou inexistante.'), 'danger');
+			notify($this->moderation->refus_d_approbation((int) $id, (int)$this->user->id) ?? $this->lang('Sanction déjà approuvée ou inexistante.'), 'danger');
 		}
 		redirect('admin/moderation/sanctions/'.$id);
 	}
@@ -359,13 +320,16 @@ class Admin extends Controller_Module
 			notify($this->lang('Une raison est requise pour révoquer une sanction.'), 'danger');
 			redirect('admin/moderation/sanctions/'.$id);
 		}
-		if ($this->moderation->revoke($id, (int)$this->user->id, $reason))
+		// Le refus se dit (refus_de_levee()) : une sanction qui vous vise, ou trop haut placée.
+		$refus = $this->moderation->refus_de_levee((int) $id, (int)$this->user->id);
+
+		if ($refus === NULL && $this->moderation->revoke($id, (int)$this->user->id, $reason))
 		{
 			notify($this->lang('Sanction levée.'));
 		}
 		else
 		{
-			notify($this->lang('Sanction inexistante ou déjà levée.'), 'danger');
+			notify($refus ?? $this->lang('Sanction inexistante ou déjà levée.'), 'danger');
 		}
 		redirect('admin/moderation/sanctions/'.$id);
 	}
@@ -452,7 +416,29 @@ class Admin extends Controller_Module
 					return;
 				}
 
+				// Sa propre adresse : l'administrateur se bannissait de tout le site, administration comprise.
+				if ($ip === \NF\NeoFrag\Libraries\Rate_Limit::client_ip())
+				{
+					notify($this->lang('C’est ton adresse : tu te bannirais toi-même.'), 'danger');
+					return;
+				}
+
+				// Une échéance lisible et à venir, mise en forme pour la base : un texte libre passait tel quel, et une
+				// date invalide donnait « IP bannie » sans rien enregistrer (audit du 2026-10-09).
 				$expires = trim((string)($data['expires_at'] ?? ''));
+
+				if ($expires !== '')
+				{
+					$echeance = strtotime($expires);
+
+					if ($echeance === FALSE || $echeance <= time())
+					{
+						notify($this->lang('Date d’expiration illisible ou passée.'), 'danger');
+						return;
+					}
+
+					$expires = date('Y-m-d H:i:s', min($echeance, strtotime('2037-12-31 23:59:59')));
+				}
 
 				$exists = $this->db->select('ban_id')->from('nf_ip_banlist')->where('ip', $ip)->row(FALSE);
 				if ($exists)
@@ -461,12 +447,16 @@ class Admin extends Controller_Module
 					redirect('admin/moderation/banlist');
 				}
 
-				$this->db->insert('nf_ip_banlist', [
+				if (!$this->db->insert('nf_ip_banlist', [
 					'ip'         => $ip,
 					'reason'     => $data['reason'] ?: NULL,
 					'banned_by'  => $this->user() ? (int)$this->user->id : NULL,
 					'expires_at' => $expires ?: NULL
-				]);
+				]))
+				{
+					notify($this->lang('L’adresse n’a pas pu être enregistrée.'), 'danger');
+					return;
+				}
 
 				(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('banlist.ip_added', [
 					'ip'      => $ip,

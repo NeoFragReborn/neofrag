@@ -266,4 +266,7 @@ return [
 	'7aef782b' => 'Audience measurement is set in %s, the captcha in %s.',
 	'bb72749b' => 'Legal pages',
 	'679383df' => 'What the site asks its visitors',
+	'b5cf4695' => 'Inactive accounts',
+	'd35683b8' => 'An account with no visit for this number of years is deleted; an email warns its member a month before, and a visit cancels everything. Administrators are never deleted. 0 to never delete.',
+	'68b7ca29' => 'Enter a number of years between 0 and 20.',
 ];

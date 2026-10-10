@@ -166,6 +166,39 @@ final class LiensEtRoutesTest extends TestCase
 		self::assertSame([], $fautes);
 	}
 
+	/**
+	 * Une route n'emploie que les motifs que le cœur connaît (`NeoFrag::$route_patterns`) : un motif inconnu reste écrit
+	 * tel quel dans l'expression, et la route ne répond jamais. Ainsi `admin/{action}/{id}` du livre d'or : approuver,
+	 * rejeter ou supprimer un message menait à une page introuvable (audit du 2026-10-09).
+	 */
+	public function test_les_routes_n_emploient_que_des_motifs_connus(): void
+	{
+		$connus = array_keys(\NF\NeoFrag\NeoFrag::$route_patterns);
+		$fautes = [];
+
+		foreach (glob(self::RACINE.'/modules/*', GLOB_ONLYDIR) ?: [] as $dossier)
+		{
+			$module = basename($dossier);
+
+			if (!is_file($dossier.'/'.$module.'.php') || !preg_match("/'routes'\s*=>\s*\[/", (string) file_get_contents($dossier.'/'.$module.'.php')))
+			{
+				continue;
+			}
+
+			foreach (array_keys(self::routes($module)) as $route)
+			{
+				preg_match_all('/\{([^}]*)\}/', $route, $motifs);
+
+				foreach (array_diff($motifs[1], $connus) as $inconnu)
+				{
+					$fautes[] = $module.' : '.$route.' ({'.$inconnu.'})';
+				}
+			}
+		}
+
+		self::assertSame([], $fautes);
+	}
+
 	public function test_le_widget_newsletter_poste_ou_on_le_lit(): void
 	{
 		$widget = (string) file_get_contents(self::RACINE.'/widgets/newsletter/controllers/index.php');

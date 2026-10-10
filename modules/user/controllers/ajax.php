@@ -45,6 +45,12 @@ class Ajax extends Controller_Module
 			$this->_editeur_reponse(Editeur_Images::statut($refus), ['error' => Editeur_Images::message($refus)]);
 		}
 
+		// Une sanction qui retire l'envoi de fichiers (ou le site entier) ferme aussi l'éditeur.
+		if ($bloque = $this->moderation->is_blocked_for((int) $this->user->id, 'editor.image_upload'))
+		{
+			$this->_editeur_reponse(403, ['error' => $bloque['message']]);
+		}
+
 		// Le débit, par membre : chaque tentative compte, réussie ou non.
 		$limiteur = new Rate_Limit($this);
 		$cles     = [];
@@ -127,7 +133,7 @@ class Ajax extends Controller_Module
 		}
 
 		$limiteur = new Rate_Limit($this);
-		$cle      = 'consentement:'.substr(hash_hmac('sha256', (string) Rate_Limit::client_ip(), $this->crypt->derive('consentement')), 0, 24);
+		$cle      = 'consentement:'.substr(hash_hmac('sha256', Rate_Limit::bloc_ip(), $this->crypt->derive('consentement')), 0, 24);
 
 		if (!$limiteur->check($cle)['allowed'] || $limiteur->hit($cle, 30, 3600, 3600)['locked'])
 		{
@@ -346,8 +352,7 @@ class Ajax extends Controller_Module
 					->success(function($user, $form){
 						// R2.0 — Rate limit anti-bot/spam : 3 inscriptions par IP / 30 min
 						$rateLimit = new \NF\NeoFrag\Libraries\Rate_Limit($this);
-						$ip        = \NF\NeoFrag\Libraries\Rate_Limit::client_ip();
-						$rl_key    = 'register:ip:'.$ip;
+						$rl_key    = 'register:ip:'.\NF\NeoFrag\Libraries\Rate_Limit::bloc_ip();
 						$rl_check  = $rateLimit->check($rl_key);
 						if (!$rl_check['allowed'])
 						{
@@ -407,9 +412,8 @@ class Ajax extends Controller_Module
 					->success(function($data, $form){
 						// R2.0 — Rate limit anti-énumération comptes : 5 demandes par IP / heure, 3 par email / heure
 						$rateLimit  = new \NF\NeoFrag\Libraries\Rate_Limit($this);
-						$ip         = \NF\NeoFrag\Libraries\Rate_Limit::client_ip();
-						$ip_key     = 'lost_password:ip:'.$ip;
-						$mail_key   = 'lost_password:email:'.strtolower($data['email']);
+						$ip_key     = 'lost_password:ip:'.\NF\NeoFrag\Libraries\Rate_Limit::bloc_ip();
+						$mail_key   = 'lost_password:email:'.mb_strtolower(trim((string) $data['email']));
 						$ip_check   = $rateLimit->check($ip_key);
 						$mail_check = $rateLimit->check($mail_key);
 						if (!$ip_check['allowed'] || !$mail_check['allowed'])
@@ -426,31 +430,28 @@ class Ajax extends Controller_Module
 											->where('email', $data['email'])
 											->row();
 
-						if (!$user())
-						{
-							$form->error($this->lang('Addresse email introuvable'));
-						}
-						else
+						// La réponse est la même, que l'adresse ait un compte ou non (audit du 2026-10-09) : « adresse
+						// introuvable » disait à n'importe qui si une adresse est inscrite ici. Un envoi raté se lit
+						// dans le journal d'audit.
+						if ($user())
 						{
 							$sent = $this	->anti_flood()
 											->email
 											->template('user.lost_password', [
 												'username'  => $user->username,
-												'reset_url' => absolute_url('user/lost-password/'.$user->token())
+												'reset_url' => absolute_url('user/lost-password/'.$user->token('mot_de_passe'))
 											])
 											->to($data['email'])
 											->send();
 
-							if ($sent)
+							if (!$sent)
 							{
-								notify($this->lang('Message envoyé'));
-								$this->modal->dispose();
-							}
-							else
-							{
-								$form->error($this->lang('Une erreur s\'est produite lors de l\'envoi du message'));
+								(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('user.lost_password.mail_failed', ['user_id' => (int) $user->id, 'username' => $user->username, 'success' => FALSE]);
 							}
 						}
+
+						notify($this->lang('Si un compte utilise cette adresse, un lien pour choisir un nouveau mot de passe vient d’y partir.'));
+						$this->modal->dispose();
 					})
 					->modal($this->lang('Récupération de mot de passe'), 'fas fa-unlock-alt')
 					->cancel();

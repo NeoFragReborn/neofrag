@@ -60,6 +60,21 @@ trait Admin_Helpers
 	}
 
 	/**
+	 * Une action qui modifie et que le JavaScript du site appelle en POST ne répond plus en GET (audit du 2026-10-09) :
+	 * un lien ou une redirection depuis un autre site la déclenchait chez un membre connecté — le cookie part avec une
+	 * navigation. Un POST venu d'un autre site, lui, est refusé avant toute route (nf_envoi_d_un_autre_site()).
+	 */
+	protected function exiger_post(): void
+	{
+		if (strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')) !== 'POST')
+		{
+			http_response_code(405);
+			header('Allow: POST');
+			exit;
+		}
+	}
+
+	/**
 	 * Rejette la requête si le jeton CSRF (param `_`, GET ou POST) est absent/invalide,
 	 * avec redirection vers $redirect. À appeler en TÊTE de toute action mutante.
 	 */

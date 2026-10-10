@@ -41,7 +41,7 @@ else
 <?php /* Le menu de l'espace membre, le même partout (User::menu_espace(), chantier A) : ses entrées essentielles,
          puis l'administration pour qui y a accès. */ ?>
 <ul class="list-group list-group-flush nf-user-menu">
-	<?php foreach (NeoFrag()->module('user')->menu_compact() as $e): if ($e['url'] === 'user/logout') continue; ?>
+	<?php foreach (NeoFrag()->module('user')->menu_compact() as $e): if (str_starts_with((string) $e['url'], 'user/logout')) continue; ?>
 	<li class="list-group-item">
 		<?php echo icon($e['icone']) ?> <a href="<?php echo url($e['url']) ?>"><?php echo nf_texte($e['titre']) ?></a>
 		<?php if (!empty($e['badge'])): ?><span class="badge text-bg-danger nf-user-menu-badge"><?php echo (int) $e['badge'] ?></span><?php endif ?>

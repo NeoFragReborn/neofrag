@@ -32,9 +32,8 @@ $categories = [
 ];
 
 // Les cookies du site lui-même : nécessaires, ils ne demandent pas d'accord (loi Informatique et Libertés, art. 82).
-$session  = (string) $this->config->nf_cookie_name;
 $propres  = [
-	[$session.', '.$session.'_https', $this->lang('Garde votre connexion et protège les formulaires contre les envois frauduleux.'), $this->lang('Jusqu’à la fermeture du navigateur ; un an avec « Se souvenir de moi »')],
+	[$this->session->nom_du_cookie(), $this->lang('Garde votre connexion et protège les formulaires contre les envois frauduleux.'), $this->lang('Jusqu’à la fermeture du navigateur ; un an avec « Se souvenir de moi »')],
 	[$cookie['nom'],                  $this->lang('Garde les choix que vous faites dans cette fenêtre.'),                                $this->lang('6 mois')],
 	['nf_fuseau',                     $this->lang('Affiche les dates et les heures dans votre fuseau horaire.'),                       $this->lang('1 an')],
 ];

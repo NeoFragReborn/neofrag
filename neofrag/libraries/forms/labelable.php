@@ -112,8 +112,14 @@ abstract class Labelable extends Library
 															->content($label);
 										})
 										->append($input)
-										->append_if($this->_errors && ($display & \NF\NeoFrag\Libraries\Form2::FORM_COMPACT), function(){
-											return $this->label(implode('<br />', $this->_errors), 'fas fa-exclamation-triangle')->attr('class', 'text-danger');
+										// Le message d'erreur, sous le champ et en clair, quel que soit l'affichage : hors du mode
+										// compact, il ne se lisait que dans une bulle ouverte au survol du libellé — un téléphone n'a
+										// pas de survol, et le membre voyait une icône sans savoir pourquoi son envoi était refusé
+										// (0.34, 2026-10-09). La bulle ne porte plus que l'aide du champ.
+										->append_if($this->_errors, function(){
+											return parent	::html()
+															->attr('class', 'nf-field-error form-text text-danger')
+															->content($this->label(implode('<br />', $this->_errors), 'fas fa-exclamation-triangle'));
 										})
 						)
 						->__toString();
@@ -261,9 +267,12 @@ abstract class Labelable extends Library
 
 	protected function _label()
 	{
-		$label = $this->label($this->_title, $this->_errors ? 'fas fa-exclamation-triangle' : $this->_icon);
+		// L'icône d'erreur sur un libellé qui a un titre seulement : sans titre (le captcha), elle restait seule au-dessus
+		// du champ, et le message s'écrit désormais dessous.
+		$label = $this->label($this->_title, $this->_errors && $this->_title ? 'fas fa-exclamation-triangle' : $this->_icon);
 
-		if ($this->_info || $this->_errors)
+		// La bulle, au survol du libellé, ne porte que l'aide du champ : son erreur s'écrit sous le champ (__toString()).
+		if ($this->_info)
 		{
 			$label	->icon_if(!$this->_errors, $icon = 'fas fa-info-circle text-info')
 					->attr('data-bs-toggle',    'popover')
@@ -271,10 +280,7 @@ abstract class Labelable extends Library
 					->attr('data-bs-placement', 'auto')
 					->attr('data-bs-html',      'true')
 					// codage: du HTML posé dans un attribut — le décoder réveillerait les balises qu’il cite
-					->attr('data-bs-content',   utf8_htmlentities(implode('<br /><br />', array_filter([
-						$this->_info   ? $this->label($this->_info, $icon) : '',
-						$this->_errors ? $this->label(implode('<br />', $this->_errors), 'fas fa-exclamation-triangle')->attr('class', 'text-danger') : ''
-					]))));
+					->attr('data-bs-content',   utf8_htmlentities((string) $this->label($this->_info, $icon)));
 		}
 
 		// L'étoile ne se pose que sur un libellé EXISTANT : elle signale qu'un champ nommé est

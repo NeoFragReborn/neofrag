@@ -534,9 +534,9 @@ final class Editeur_Images
 	}
 
 	/**
-	 * Les mêmes réglages, pour la page en cours : un visiteur ou la démonstration reçoivent un refus
-	 * immédiat (l'image est retirée de l'éditeur, le motif s'affiche), un membre l'adresse d'envoi et le
-	 * jeton de sa session. Charge aussi js/editeur-images.js.
+	 * Les mêmes réglages, pour la page en cours : un visiteur, la démonstration ou un membre privé d'envoi
+	 * de fichiers par la modération reçoivent un refus immédiat (l'image est retirée de l'éditeur, le motif
+	 * s'affiche), un membre l'adresse d'envoi et le jeton de sa session. Charge aussi js/editeur-images.js.
 	 */
 	public static function tinymce(): string
 	{
@@ -547,6 +547,12 @@ final class Editeur_Images
 		if (($refus = self::refus_requete((bool) NeoFrag()->user(), nf_demo(), TRUE)) !== NULL)
 		{
 			$reglages['refus'] = self::message($refus);
+		}
+		// Une sanction qui retire l'envoi de fichiers : même refus immédiat, avec ce qu'elle interdit (l'adresse
+		// d'envoi le refuserait de toute façon, cf. Controllers\Ajax::editeur_image()).
+		else if (($bloque = NeoFrag()->moderation->is_blocked_for((int) NeoFrag()->user->id, 'editor.image_upload')) !== NULL)
+		{
+			$reglages['refus'] = $bloque['message'];
 		}
 		else
 		{

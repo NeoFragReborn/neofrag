@@ -17,13 +17,13 @@ class Talks extends Widget
 			'title'       => $this->lang('Discussions'),
 			'description' => $this->lang('La messagerie des membres : leurs messages non lus et leurs conversations, ou les derniers messages d’un salon public, pour les membres connectés.'),
 			'icon'        => 'far fa-comment',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => TRUE,
 			'presets'     => [],
-			'requires'    => [],
+			'requires'    => ['talks'],
 			'version'     => '1.0',
 			'depends'     => [
 				'neofrag' => '0.2.0'

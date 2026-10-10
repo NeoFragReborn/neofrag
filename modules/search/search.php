@@ -17,7 +17,7 @@ class Search extends Module
 			'title'       => $this->lang('Rechercher'),
 			'description' => $this->lang('Moteur de recherche transverse du site.'),
 			'icon'        => 'fas fa-search',
-			'link'        => 'https://neofr.ag',
+			'link'        => 'https://neofrag-reborn.xyz',
 			'author'      => 'Michaël BILCOT & Jérémy VALENTIN <contact@neofrag.com>',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.

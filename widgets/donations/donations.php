@@ -21,7 +21,7 @@ class Donations extends Widget
 			// Decouplage du paquet : cf. tools/check-addon-declarations.php.
 			'core'        => FALSE,
 			'presets'     => ['association'],
-			'requires'    => [],
+			'requires'    => ['donations'],
 			'version'     => '1.0',
 			'link'        => 'https://neofrag-reborn.xyz',
 			'depends'     => ['neofrag' => '0.2.0'],

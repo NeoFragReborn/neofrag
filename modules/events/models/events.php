@@ -87,6 +87,13 @@ class Events extends Model
 			{
 				$this->db->where('m.team_id', $filter_data);
 			}
+
+			// Hors de l'administration, une liste filtrée ne garde que les types que celui qui regarde peut voir : la page
+			// d'une équipe et le widget d'un type rendaient les matchs d'un type réservé (audit du 2026-10-09).
+			if (!$this->url->admin)
+			{
+				$this->db->where('t.type_id', $types ?: [0]);
+			}
 		}
 		else
 		{

@@ -287,6 +287,34 @@ foreach ($etiquettes as $etiquette => $nombre)
     }
 }
 
+// ── Règle 9 : un widget est dans les profils de ses modules ───────────────────
+//
+// Un widget qui déclare un module optionnel dans `requires` ne s'affiche pas sans lui, et l'assistant
+// d'installation l'écarte quand ce module n'est pas retenu. Un profil qui pré-cocherait le widget sans le
+// module l'installerait donc pour rien : une étiquette oubliée d'un côté ou de l'autre (2026-10-09, quand
+// vingt et un widgets ont déclaré leur module). Les modules, eux, ferment leurs dépendances à l'installation.
+foreach ($addons as $cle => $a)
+{
+    if ($a['type'] !== 'widget')
+    {
+        continue;
+    }
+
+    foreach ($a['requires'] ?? [] as $dep)
+    {
+        if (!isset($noms_modules[$dep]) || $noms_modules[$dep]['core'])
+        {
+            continue;
+        }
+
+        if ($sans = array_diff($a['presets'] ?? [], $noms_modules[$dep]['presets'] ?? []))
+        {
+            $erreurs[] = "$cle est pré-coché dans le profil « ".implode(' », « ', $sans)." » sans le module « $dep » "
+                       . "qu'il requiert : l'assistant l'y écarterait.";
+        }
+    }
+}
+
 // ── Compte rendu ──────────────────────────────────────────────────────────────
 $par_categorie = ['cœur' => 0, 'preset' => 0, 'à la carte' => 0];
 foreach ($addons as $a)

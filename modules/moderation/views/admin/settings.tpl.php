@@ -1,15 +1,9 @@
-<form method="post" class="card">
+<?php $csrf = $csrf ?? ''; ?>
+<form method="post" class="card"><input type="hidden" name="_" value="<?php echo $csrf ?>">
 	<div class="card-body">
 		<h5 class="mb-3"><i class="fas fa-cogs"></i> <?php echo $this->lang('Réglages modération') ?></h5>
 
-		<div class="nf-field">
-			<div class="form-check">
-				<input type="checkbox" class="form-check-input" id="nf_moderation_enabled" name="nf_moderation_enabled" value="1"<?php echo $config->nf_moderation_enabled ? ' checked' : '' ?> />
-				<label class="form-check-label" for="nf_moderation_enabled"><?php echo $this->lang('Système de modération activé') ?></label>
-			</div>
-		</div>
-
-		<hr />
+		<?php /* « Système de modération activé » n'était lu par aucun code : retiré (audit du 2026-10-09). */ ?>
 		<h6><i class="fas fa-clock"></i> <?php echo $this->lang('Durées par défaut') ?></h6>
 
 		<div class="row gx-3">
@@ -57,7 +51,7 @@
 			<div class="nf-field col-md-4">
 				<label><?php echo $this->lang('Seuil mute auto') ?></label>
 				<input type="number" class="form-control" name="nf_moderation_warning_threshold_mute" value="<?php echo (int)$config->nf_moderation_warning_threshold_mute ?>" min="1" />
-				<small class="text-muted"><?php echo $this->lang('Nb warnings → mute auto 24h') ?></small>
+				<small class="text-muted"><?php echo $this->lang('Nb warnings → mute auto (durée par défaut)') ?></small>
 			</div>
 			<div class="nf-field col-md-4">
 				<label><?php echo $this->lang('Seuil ban auto') ?></label>
@@ -75,7 +69,7 @@
 				<input type="number" class="form-control" name="nf_moderation_report_rate_limit_per_hour" value="<?php echo (int)$config->nf_moderation_report_rate_limit_per_hour ?>" min="1" />
 			</div>
 			<div class="nf-field col-md-6">
-				<label><?php echo $this->lang('Seuil flag reporter suspect (par jour)') ?></label>
+				<label><?php echo $this->lang('Signalements avant de juger un signaleur') ?></label>
 				<input type="number" class="form-control" name="nf_moderation_report_flag_threshold_per_day" value="<?php echo (int)$config->nf_moderation_report_flag_threshold_per_day ?>" min="1" />
 			</div>
 		</div>

@@ -26,8 +26,7 @@ $this	->compact()
 		)
 		->success(function($data, $form) use ($pending_user_id, $pending_remember){
 			$rateLimit = new \NF\NeoFrag\Libraries\Rate_Limit($this);
-			$ip        = \NF\NeoFrag\Libraries\Rate_Limit::client_ip();
-			$ipKey     = 'totp:ip:'.$ip;
+			$ipKey     = 'totp:ip:'.\NF\NeoFrag\Libraries\Rate_Limit::bloc_ip();
 			$userKey   = 'totp:user:'.$pending_user_id;
 
 			$ipCheck   = $rateLimit->check($ipKey);

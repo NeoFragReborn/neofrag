@@ -18,7 +18,7 @@ declare(strict_types=1);
  *
  * Ce qu'il vérifie
  * ----------------
- * Pour chaque fichier livré (`install/demo.sql`, `seed.sql`, `vitrine.sql`, `wiki.sql`) : dans les
+ * Pour chaque fichier livré (`install/demo.sql`, `seed.sql`, `vitrine.sql`) : dans les
  * `INSERT` ordinaires d'une même table, aucune clé primaire deux fois — sauf si un `DELETE FROM` de
  * toute la table les sépare. Les `INSERT IGNORE` et les `ON DUPLICATE KEY UPDATE` sont écrits pour
  * rencontrer une ligne existante : ils ne comptent pas.
@@ -190,7 +190,7 @@ printf("%d clé(s) primaire(s) lue(s) dans %d fichier(s) de schéma. Épreuve à
 $problemes = 0;
 $inconnues = [];
 
-foreach (['install/demo.sql', 'install/seed.sql', 'install/vitrine.sql', 'install/wiki.sql'] as $relatif)
+foreach (['install/demo.sql', 'install/seed.sql', 'install/vitrine.sql'] as $relatif)
 {
     if (!is_file($chemin = $racine.'/'.$relatif))
     {

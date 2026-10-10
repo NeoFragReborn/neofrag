@@ -56,51 +56,24 @@ class Admin extends Controller_Module
 
 		$actions = '<a class="btn btn-sm btn-primary" href="'.url('admin/talks/add').'">'.icon('fas fa-plus').' '.$this->lang('Créer').'</a>';
 
-		return $this->admin_card('far fa-comment', $this->lang('Liste des discussions'), $this->table()->display(), '', $actions);
-		// Note privacy : seuls les salons publics sont listés ici. Les conversations privées
-		// (direct/group) sont volontairement masquées du panel admin. La gestion des signalements
-		// (talks + MP legacy) sera intégrée au module Signalements unifié de la refonte modération
-		// étendue site-wide (voir task #27). En attendant, /admin/talks/reports reste accessible
-		// par URL directe pour les admins ayant besoin de consulter l'historique.
-	}
-
-	public function _reports($page = '')
-	{
-		$this->subtitle($this->lang('Signalements de messages'));
-
-		// Récupère les signalements depuis nf_audit_log (action talks.message.reported uniquement)
-		$reports = $this->db->select('a.id', 'a.user_id as reporter_id', 'a.action', 'a.details', 'UNIX_TIMESTAMP(a.created_at) as date', 'u.username as reporter_username')
-							->from('nf_audit_log a')
-							->join('nf_user u', 'u.id = a.user_id', 'LEFT')
-							->where('a.action', 'talks.message.reported')
-							->order_by('a.created_at DESC')
-							->limit(100)
-							->get();
-
-		// Enrichir avec les détails du message signalé
-		foreach ($reports as &$r)
+		// Les pièces jointes orphelines (ligne 0.36), montrées puis effacées sur demande — seulement celles qui le sont
+		// encore. Elles viennent de conversations privées : leur nom d'origine n'est pas montré.
+		if (!empty($_POST['purger_orphelins']) && is_array($_POST['purger_orphelins']))
 		{
-			$data = json_decode($r['details'] ?? '', TRUE) ?: [];
-			$r['talk_id']    = $data['talk_id'] ?? 0;
-			$r['message_id'] = $data['message_id'] ?? 0;
-
-			if ($r['message_id'])
-			{
-				$msg = $this->db->select('m.message', 'm.user_id', 't.name as talk_name', 'u.username as author')
-								->from('nf_talks_messages m')
-								->join('nf_talks t', 't.talk_id = m.talk_id')
-								->join('nf_user u',  'u.id = m.user_id', 'LEFT')
-								->where('m.message_id', (int)$r['message_id'])
-								->row();
-				$r['message_text']    = is_array($msg) ? (string) ($msg['message'] ?? '')   : '';
-				$r['message_author']  = is_array($msg) ? (string) ($msg['author'] ?? '')    : '';
-				$r['talk_name']       = is_array($msg) ? (string) ($msg['talk_name'] ?? '') : '';
-			}
+			notify($this->lang('%d fichier(s) orphelin(s) effacé(s).', nf_effacer_orphelins('talks', 'nf_talks_attachments', array_map('strval', $_POST['purger_orphelins']))));
+			refresh();
 		}
-		unset($r);
 
-		return $this->admin_card('fas fa-flag', $this->lang('Signalements de messages'), $this->view('admin/reports', ['reports' => $reports]));
+		$orphelins = nf_fichiers_orphelins('talks', 'nf_talks_attachments');
+
+		return $this->admin_card('far fa-comment', $this->lang('Liste des discussions'), $this->table()->display(), '', $actions)
+			.($orphelins ? $this->admin_card('fas fa-paperclip', $this->lang('Pièces jointes orphelines'), $this->view('admin/orphelins', ['orphelins' => $orphelins])) : '');
+		// Note privacy : seuls les salons publics sont listés ici. Les conversations privées
+		// (direct/group) sont volontairement masquées du panel admin. Un message se signale par la
+		// modération (Modération → Signalements) ; l'ancienne page qui lisait le journal d'audit est
+		// retirée (2026-10-09).
 	}
+
 
 	public function add()
 	{
