@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.2.43');
+define('NEOFRAG_VERSION', '1.2.44');
 
 error_reporting(E_ALL);
 
@@ -19,7 +19,9 @@ if (!is_dir(NEOFRAG_CMS.'/logs') && @mkdir(NEOFRAG_CMS.'/logs', 0775, TRUE))
 	@file_put_contents(NEOFRAG_CMS.'/logs/.htaccess', "Require all denied\n");
 }
 
-ini_set('error_log',       'logs/php.log');
+// Chemin ABSOLU : un chemin relatif se résout contre le dossier courant au moment d'écrire, et en fin de requête,
+// sous PHP-FPM, ce dossier est `/` — les erreurs fatales et celles du filtre de sortie se perdaient (2026-10-08).
+ini_set('error_log',       NEOFRAG_CMS.'/logs/php.log');
 // display_errors OFF par défaut au bootstrap (avant le chargement de config/neofrag.php) : évite de
 // divulguer chemins/structure si une erreur survient tôt. Le core Debug le gère ensuite selon
 // NEOFRAG_DEBUG_BAR (la debug bar affiche les erreurs en dev). Les erreurs restent journalisées.
@@ -270,6 +272,15 @@ $GLOBALS['nf_csp_nonce'] = rtrim(strtr(base64_encode(random_bytes(16)), '+/', '-
 
 ob_start(function($html){
 	$nonce = $GLOBALS['nf_csp_nonce'];
+
+	// Ce filtre tourne à la fin de la requête : sous PHP-FPM (et Apache), le dossier courant y est déjà `/`, et tout ce
+	// que le framework charge par un chemin relatif (config/crypt.php, une bibliothèque, un fichier de langue) échoue.
+	// Le filtre des services tiers en est mort en production le 2026-10-08 — la clé du relais introuvable, la page
+	// partait sans être filtrée — alors que le serveur intégré de PHP, qui garde le dossier, ne le montrait pas.
+	if (defined('NEOFRAG_CMS') && getcwd() !== NEOFRAG_CMS)
+	{
+		@chdir(NEOFRAG_CMS);
+	}
 
 	// Uniquement les réponses HTML : les réponses JSON (modales AJAX) peuvent contenir « <script »
 	// dans leur champ `content` — il ne faut SURTOUT pas y injecter de nonce (ça casserait le JSON).

@@ -10,6 +10,20 @@ Michaël BILCOT & Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.44] — 2026-10-08
+
+Un correctif de la 1.2.43.
+
+### Corrigé
+
+- **Le filtre des services tiers fonctionne sous PHP-FPM et sous Apache.** Il tourne à la fin de la requête, quand le
+  dossier courant n'est plus celui du site : il ne trouvait plus la clé du relais des images, et la page partait sans
+  être filtrée. Les images d'autres sites, que la politique de sécurité refuse désormais, ne s'affichaient pas (les
+  avatars du widget Discord), et une vidéo intégrée se serait chargée sans son avis. Le serveur intégré de PHP, qui
+  garde le dossier, ne le montrait pas.
+- **Le journal des erreurs PHP garde aussi celles de la fin de la requête**, erreurs fatales comprises : son chemin
+  était relatif, et se résolvait alors contre la racine du serveur.
+
 ## [1.2.43] — 2026-10-08
 
 La confidentialité : plus aucun visiteur envoyé chez un tiers sans son accord.

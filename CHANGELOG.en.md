@@ -12,6 +12,20 @@ Michaël BILCOT & Jérémy VALENTIN — an open source project under the LGPLv3 
 
 ---
 
+## [1.2.44] — 2026-10-08
+
+A fix for 1.2.43.
+
+### Fixed
+
+- **The third-party filter works under PHP-FPM and Apache.** It runs at the end of the request, when the current
+  directory is no longer the site's: it could not find the image relay key any more, and the page went out unfiltered.
+  Images from other sites, which the security policy now refuses, did not show (the Discord widget avatars), and an
+  embedded video would have loaded without its notice. PHP's built-in server, which keeps the directory, did not show
+  it.
+- **The PHP error log also keeps errors from the end of the request**, fatal errors included: its path was relative,
+  and then resolved against the server root.
+
 ## [1.2.43] — 2026-10-08
 
 Privacy: no visitor is sent to a third party any more without their consent.
