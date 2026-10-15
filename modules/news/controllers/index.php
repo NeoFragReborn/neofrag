@@ -65,8 +65,10 @@ class Index extends Controller_Module
 
 	public function _news($news_id, $category_id, $user_id, $image_id, $date, $published, $views, $vote, $title, $introduction, $content, $tags, $category_name, $category_title, $image, $category_icon, $username, $admin, $online, $quote, $avatar, $sex)
 	{
-		// Le titre et la description que l'actualité donne aux moteurs, si elle en donne.
+		// Le titre et la description que l'actualité donne aux moteurs, si elle en donne ; ses autres langues annoncées
+		// chacune à l'adresse de SON titre — la même pour toutes y redirigeait (m33).
 		nf_seo_contenu('news', (int) $news_id);
+		nf_seo_traduit_contenu('nf_news_lang', 'news_id', (int) $news_id);
 
 		$this	->title($title)
 				->meta_description(!empty($introduction) ? $introduction : $content)

@@ -13,6 +13,39 @@ Michaël BILCOT and Jérémy VALENTIN — an open source project under the LGPLv
 
 ---
 
+## [1.2.51] — 2026-10-15
+
+### Added
+
+- **Uninstall a module or a widget, and reset a module to zero, from its card.** Until now, a module or a widget
+  could only be disabled. **Uninstall** removes its tables, its data and its files; a module that another addon needs
+  is refused, and the window names them. **Reset to zero** erases a module's data and starts it again as on the day
+  it was installed; its settings, its permissions and the links that lead to it remain. Both take a backup first
+  (the `backups/addons` folder on the server), and the confirmation says how many rows go. Core addons cannot be
+  removed.
+
+### Fixed
+
+- **Marketplace previews stayed the old ones in the browser.** A thumbnail keeps its address from one version to the
+  next: a visitor who had already seen it kept the old one in cache — the drawn thumbnails of 1.2.50 still looked like
+  screenshots. The address now carries the archive's fingerprint.
+- **A Galleries album could not be translated.** In the administration of another language, an album not yet
+  translated was missing from the list, and its edit screen answered "page not found". It now shows there, and its
+  screen opens with empty fields, ready for the translation; the text of the other languages does not move.
+- **Nebula: "Logout" could not be found on news, forum and profile pages.** These pages have no sidebar, so no
+  member area block, and the username at the top only led to "My space". It now opens the account menu, the same as
+  in the other themes: profile, account, messages, administration, logout.
+- **A theme's menu stayed in the language of the administrator who enabled it.** Enabled or reinstalled from an
+  administration in English, a theme wrote "Home", "News"… and every visitor, French ones included, read them that
+  way. Its links are now written in French, the source language, and the navigation shows them in the language of
+  each page. An already installed theme keeps its menu: "Reinstall to defaults" rewrites it.
+- **Search engines know the translations of the content.** Events, awards, recruitment offers, polls, donation
+  campaigns, wiki pages, downloads, the FAQ, links and the shop still called themselves language-less: a single
+  address announced, in French. They now announce the languages they are written in, and a language they are not
+  written in points its canonical to one that is. And the links between languages of news, Blog posts, forums and
+  classified-ad categories led, in the other languages, to a redirect towards the translated title — search engines
+  discard such a link: each now leads to the address of its own title.
+
 ## [1.2.50] — 2026-10-15
 
 ### Added

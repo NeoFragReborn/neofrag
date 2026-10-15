@@ -232,6 +232,23 @@ $journal = $site.'/logs/php.log';
 @mkdir(dirname($journal), 0775, TRUE);
 @file_put_contents($journal, '');
 
+/*
+ * Le site entier à son propriétaire, comme un vrai site. Lancé en root, l'outil écrivait en root les fichiers du paquet
+ * de départ ; le serveur, lui, tourne sous le compte du site (nf_sous_le_compte_du_site()) — la mise à jour ne pouvait
+ * pas réécrire un fichier que l'atelier n'avait pas : « Impossible d'écrire vendor/altcha-org/altcha/CHANGELOG.md »,
+ * 1.2.50 → 1.2.51, et le retour arrière échouait de même (2026-10-15).
+ */
+if (function_exists('posix_geteuid') && posix_geteuid() === 0 && ($uid = @fileowner($site)) !== FALSE && $uid !== 0)
+{
+    // Les dossiers aussi : un dossier créé en root refusait les fichiers que la mise à jour y apporte.
+    exec(sprintf('chown -R %d:%d %s 2>&1', $uid, (int) @filegroup($site), escapeshellarg($site)), $sortie, $code);
+
+    if ($code !== 0)
+    {
+        nf_refus('le site jetable ne revient pas à son propriétaire : '.implode(' ', $sortie));
+    }
+}
+
 $serveur = nf_serveur(nf_port((int) $o['port']), ['NF_OUTIL_SESSION' => nf_session_admin($db)], $site);
 
 // ── 4. Les deux gestes du panneau ───────────────────────────────────────────────────────────

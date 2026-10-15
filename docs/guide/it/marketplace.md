@@ -37,8 +37,12 @@ e inviala.
   del catalogo ed elenca quelle da aggiornare; applicale con un clic (download + SHA-256, file sostituiti, **migrazioni
   di schema in sospeso applicate**). Altrimenti, inviare un nuovo `.zip` tramite *Aggiungi* aggiorna anch'esso (una
   versione superiore sostituisce la vecchia).
-- **Rimuovere**: dalla scheda dell'addon in **Temi & Addons**, **Elimina** (l'addon deve essere disattivato). Le sue
-  tabelle e i suoi dati vengono rimossi.
+- **Rimuovere**: dal menu della sua scheda in **Temi & Addons**. Un modulo o un widget: **Disinstalla** — le sue
+  tabelle, i suoi dati e i suoi file vengono rimossi, dopo un backup fatto subito prima (cartella `backups/addons`
+  del server); un modulo di cui un altro addon ha bisogno viene rifiutato, e la finestra dice quali. Un tema:
+  **Elimina** (non il tema attivo). Gli addon del nucleo non si rimuovono.
+- **Azzera** (un modulo): i suoi dati vengono cancellati e riparte come il giorno della sua installazione; le sue
+  impostazioni, i suoi permessi e i link che vi portano restano. Prima viene fatto un backup delle sue tabelle.
 
 > I **connettori di autenticazione** (Discord, GitHub, Google) fanno parte del **nucleo**: ci sono già, e si
 > configurano nelle impostazioni — non passano dal marketplace.

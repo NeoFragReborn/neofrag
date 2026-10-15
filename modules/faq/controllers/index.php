@@ -7,9 +7,8 @@ class Index extends Controller_Module
 {
 	public function index($groups)
 	{
-		// La page est faite des questions et réponses, qui n'ont pas de langue à elles : sa canonique est
-		// dans la langue première du site.
-		nf_seo_sans_langue();
+		// Annoncée dans les langues où des questions sont écrites ; ailleurs, sa canonique va à la première (m33).
+		nf_seo_traduit(array_keys(nf_textes_ecrits('nf_faq_questions_lang', 'question_id', NULL, 'question')));
 
 		$this	->title($this->lang('FAQ'))
 				->icon('far fa-question-circle')

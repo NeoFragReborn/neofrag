@@ -97,4 +97,13 @@ return [
 	'45002a02' => 'No extension matches.',
 	'79e64a05' => '<b>NeoFrag %s</b> is available (you are using %s): <a href="%s">Monitoring</a> updates it in one click, taking a backup before writing anything.',
 	'62ad9179' => '%d marketplace addon(s) require a newer version of NeoFrag: update your site first.',
+	'99fb3fad' => 'Reset to zero',
+	'8848a6ee' => 'Uninstall',
+	'8acf5e3d' => 'Reset the <b>%s</b> module to zero?<br />Its data is erased (%d row(s)) and it starts again as on the day it was installed. Its settings, its permissions and the links that lead to it remain.<br />A backup of its tables is taken just before, in the backups/addons folder on the server.',
+	'1f4ad2d7' => 'The backup could not be written to the %s folder: check its write permissions and the disk space.',
+	'e7d954d9' => '<b>%s</b> reset to zero. Backup: %s',
+	'125982dc' => 'The <b>%s</b> module cannot be uninstalled: %s need it. Uninstall them first.',
+	'49b5c9a9' => 'Uninstall the <b>%s</b> module?<br />Its data (%d row(s)) and its files are removed. The menu links that lead to it remain: remove them in Menus.<br />A backup of its tables and files is taken just before, in the backups/addons folder on the server.',
+	'3c474181' => '<b>%s</b> uninstalled. Backup: %s',
+	'e431357b' => 'Uninstall the <b>%s</b> widget?<br />Its files are removed; a copy is kept in the backups/addons folder on the server. Where it is placed, it no longer shows — and it comes back if you reinstall it.',
 ];

@@ -95,4 +95,13 @@ return [
 	'45002a02' => 'Nessuna estensione corrisponde.',
 	'79e64a05' => '<b>NeoFrag %s</b> è disponibile (stai usando %s): <a href="%s">Monitoring</a> lo aggiorna con un clic, con un backup prima di scrivere.',
 	'62ad9179' => '%d addon del marketplace richiedono una versione più recente di NeoFrag: aggiorna prima il tuo sito.',
+	'99fb3fad' => 'Azzera',
+	'8848a6ee' => 'Disinstalla',
+	'8acf5e3d' => 'Azzerare il modulo <b>%s</b>?<br />I suoi dati vengono cancellati (%d riga/righe) e riparte come il giorno della sua installazione. Le sue impostazioni, i suoi permessi e i link che vi portano restano.<br />Subito prima viene fatto un backup delle sue tabelle nella cartella backups/addons del server.',
+	'1f4ad2d7' => 'Il backup non è stato scritto nella cartella %s: controlla i permessi di scrittura e lo spazio su disco.',
+	'e7d954d9' => '<b>%s</b> azzerato. Backup: %s',
+	'125982dc' => 'Il modulo <b>%s</b> non può essere disinstallato: %s ne hanno bisogno. Disinstallali prima.',
+	'49b5c9a9' => 'Disinstallare il modulo <b>%s</b>?<br />I suoi dati (%d riga/righe) e i suoi file vengono rimossi. I link di menu che vi portano restano: rimuovili in Menu.<br />Subito prima viene fatto un backup delle sue tabelle e dei suoi file nella cartella backups/addons del server.',
+	'3c474181' => '<b>%s</b> disinstallato. Backup: %s',
+	'e431357b' => 'Disinstallare il widget <b>%s</b>?<br />I suoi file vengono rimossi; una copia resta nella cartella backups/addons del server. Dove è posizionato non viene più mostrato — e ritorna se lo reinstalli.',
 ];

@@ -54,16 +54,20 @@ avec ses versions et ses paquets.
   du site ; statut en direct de plusieurs chaînes Twitch et YouTube, avec lecteur intégré.
 - **API REST et bot Discord** : une API pour que des programmes lisent le site et écrivent sur son forum
   ou son Bugtracker ; le bot Discord s'en sert pour relier un serveur Discord au site — rôles, pseudos,
-  forum et salons Forum, tickets.
+  forum et salons Forum, tickets, sanctions, et les collectifs privés avec leur rôle et leur salon.
 - **Connexion par Discord, GitHub ou Google**, à côté du compte classique.
 
 ### L'apparence et l'administration
 - **Constructeur de menus** multi-niveaux, réutilisables partout.
 - **Éditeur en direct** : les blocs se déplacent et se règlent sur la page elle-même.
-- **Sept thèmes livrés**, dont quatre proposés au catalogue, tous en Bootstrap 5 sans jQuery.
+- **Sept thèmes livrés** — Nebula avec le cœur, six au catalogue —, tous en Bootstrap 5 sans jQuery.
+- **Les couleurs du site** : la police et les couleurs se choisissent dans chaque thème, avec un aperçu en
+  direct sur une vraie page et le refus d'une couleur qui rendrait le texte illisible.
 - **Documentation complète**, utilisateur et développeur, consultable sur le site — ce qui manquait à
   NeoFrag depuis toujours.
-- **Six langues complètes** : français, anglais, espagnol, italien, allemand, portugais.
+- **Six langues complètes** : français, anglais, espagnol, italien, allemand, portugais — l'interface,
+  et aussi le contenu que vous écrivez (actualités, pages, événements, forums, menus, wiki…), qui se
+  traduit langue par langue depuis l'administration.
 - **Les heures dans le fuseau de chacun** : chaque visiteur lit les dates à son heure, et le site a son
   fuseau par défaut.
 - **Une administration repensée** : neuf rubriques, une recherche rapide, la même charte pour tous les
@@ -71,6 +75,8 @@ avec ses versions et ses paquets.
 - **Site installable (PWA)** : il s'installe sur un téléphone comme une application. En option, il garde
   ses images, ses styles et ses scripts pour s'ouvrir plus vite — jamais ses pages, qui restent toujours
   à jour.
+- **Notifications push** : des notifications dans le navigateur, même quand le site est fermé. Chaque
+  membre les active sur ses appareils et choisit, type par type, lesquelles il reçoit.
 
 ### La publication
 - **Le code ouvert** : depuis le 4 octobre 2026, le CMS ([neofrag](https://github.com/NeoFragReborn/neofrag)),
@@ -81,14 +87,6 @@ avec ses versions et ses paquets.
 ---
 
 ## Prévu
-
-### Personnalisation des thèmes
-La **police** se choisit déjà dans les réglages ; viendra le choix des **couleurs**, pour donner au
-site une identité propre. Le vocabulaire de couleurs partagé par tous les thèmes existe déjà.
-
-### Notifications push
-Des notifications dans le navigateur, même quand le site est fermé. Le site est déjà installable comme
-une application.
 
 ### Améliorations continues
 Performances, qualité du code et sécurité, renforcées au fil des versions **sans bouleverser votre

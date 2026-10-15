@@ -13,6 +13,42 @@ Michaël BILCOT y Jérémy VALENTIN — un proyecto de código abierto con licen
 
 ---
 
+## [1.2.51] — 2026-10-15
+
+### Añadido
+
+- **Desinstalar un módulo o un widget, y restablecer un módulo, desde su ficha.** Hasta ahora, un módulo o un
+  widget solo se podía desactivar. **Desinstalar** retira sus tablas, sus datos y sus archivos; un módulo que otro
+  addon necesita se rechaza, y la ventana dice cuáles. **Restablecer** borra los datos de un módulo y lo hace volver a
+  empezar como el día de su instalación; sus ajustes, sus permisos y los enlaces que llevan a él se mantienen. Ambos
+  hacen primero una copia de seguridad (carpeta `backups/addons` del servidor), y la confirmación dice cuántas filas
+  se van. Los addons del núcleo no se retiran.
+
+### Corregido
+
+- **Las vistas previas del marketplace seguían siendo las antiguas en el navegador.** Una miniatura conserva su
+  dirección de una versión a otra: quien ya la había visto conservaba la antigua en caché — las miniaturas dibujadas
+  de la 1.2.50 seguían pareciendo capturas. La dirección lleva ahora la huella del archivo.
+- **Un álbum de las Galerías no se podía traducir.** En la administración de otro idioma, un álbum aún sin
+  traducir faltaba en la lista, y su pantalla de edición respondía «página no encontrada». Ahora aparece, y su
+  pantalla se abre con los campos vacíos, listos para la traducción; el texto de los demás idiomas no cambia.
+- **Nebula: «Cerrar sesión» no se encontraba en las noticias, el foro y los perfiles.** Esas páginas no tienen
+  columna lateral, así que tampoco el bloque del área de miembros, y el nombre de usuario de arriba solo llevaba a «Mi
+  espacio». Ahora abre el menú de la cuenta, el mismo que en los demás temas: perfil, cuenta, mensajes,
+  administración, cerrar sesión.
+- **El menú de un tema se quedaba en el idioma del administrador que lo había activado.** Activado o reinstalado
+  desde una administración en inglés, un tema escribía «Home», «News»… y todos los visitantes, franceses incluidos,
+  lo leían así. Sus enlaces se escriben ahora en francés, el idioma de origen, y la navegación los muestra en el
+  idioma de cada página. Un tema ya instalado conserva su menú: «Reinstalar a los valores predeterminados» lo
+  reescribe.
+- **Los buscadores conocen las traducciones del contenido.** Los eventos, el palmarés, las ofertas de reclutamiento,
+  las encuestas, las campañas de donaciones, las páginas del wiki, las descargas, las FAQ, los enlaces y la tienda se
+  declaraban todavía sin idioma: una sola dirección anunciada, en francés. Ahora anuncian los idiomas en los que
+  están escritos, y un idioma en el que no lo están remite su canónica a uno en el que sí. Y los enlaces entre
+  idiomas de las noticias, las entradas del Blog, los foros y las categorías de anuncios llevaban, en los demás
+  idiomas, a una redirección hacia el título traducido — los buscadores descartan un enlace así: cada uno lleva
+  ahora a la dirección de su propio título.
+
 ## [1.2.50] — 2026-10-15
 
 ### Añadido

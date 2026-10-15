@@ -94,4 +94,13 @@ return [
 	'45002a02' => 'Aucune extension ne correspond.',
 	'79e64a05' => '<b>NeoFrag %s</b> est disponible (tu utilises %s) : <a href="%s">Monitoring</a> le met à jour en un clic, avec une sauvegarde avant d\'écrire.',
 	'62ad9179' => '%d addon(s) du marketplace demandent une version plus récente de NeoFrag : mets d\'abord ton site à jour.',
+	'99fb3fad' => 'Remettre à zéro',
+	'8848a6ee' => 'Désinstaller',
+	'8acf5e3d' => 'Remettre le module <b>%s</b> à zéro ?<br />Ses données sont effacées (%d ligne(s)) et il repart comme au jour de son installation. Ses réglages, ses permissions et les liens qui y mènent restent.<br />Une sauvegarde de ses tables est prise juste avant, dans le dossier backups/addons du serveur.',
+	'1f4ad2d7' => 'La sauvegarde n’a pas pu être écrite dans le dossier %s : vérifiez ses droits d’écriture et l’espace disque.',
+	'e7d954d9' => '<b>%s</b> remis à zéro. Sauvegarde : %s',
+	'125982dc' => 'Le module <b>%s</b> ne peut pas être désinstallé : %s en ont besoin. Désinstallez-les d’abord.',
+	'49b5c9a9' => 'Désinstaller le module <b>%s</b> ?<br />Ses données (%d ligne(s)) et ses fichiers sont retirés. Les liens de menu qui y mènent restent : retirez-les dans Menus.<br />Une sauvegarde de ses tables et de ses fichiers est prise juste avant, dans le dossier backups/addons du serveur.',
+	'3c474181' => '<b>%s</b> désinstallé. Sauvegarde : %s',
+	'e431357b' => 'Désinstaller le widget <b>%s</b> ?<br />Ses fichiers sont retirés ; une copie est gardée dans le dossier backups/addons du serveur. Là où il est placé, il ne s’affiche plus — et revient si vous le réinstallez.',
 ];

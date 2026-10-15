@@ -62,7 +62,12 @@ $labels = [
 			</div>
 			<?php /* L'apercu n'est rendu que s'il existe : une bande vide dirait moins que rien. */ ?>
 			<?php if (!empty($a['preview'])): ?>
-				<?php $ap = $base_url !== '' ? $base_url.'/'.$a['preview'] : $this->url->base.'marketplace/'.$a['preview']; ?>
+				<?php
+				// L'empreinte de l'archive dans l'adresse : l'aperçu garde son nom d'une version à l'autre, et un navigateur
+				// montrait l'ancien tant qu'il l'avait en cache (les vignettes dessinées de la 1.2.50, vues comme des captures).
+				$ap = ($base_url !== '' ? $base_url.'/'.$a['preview'] : $this->url->base.'marketplace/'.$a['preview'])
+					.(!empty($a['sha256']) ? '?v='.substr((string) $a['sha256'], 0, 8) : '');
+				?>
 				<img class="mkt-apercu" src="<?php echo nf_texte($ap) ?>" alt="" loading="lazy" width="640" height="400" />
 			<?php endif ?>
 			<h3 class="mkt-title"><?php echo nf_texte($a['title']) ?></h3>

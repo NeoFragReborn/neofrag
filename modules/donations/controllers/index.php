@@ -48,8 +48,8 @@ class Index extends Controller_Module
 			return;
 		}
 
-		// Une campagne n'a pas de langue à elle : sa canonique est dans la langue première du site.
-		nf_seo_sans_langue();
+		// Annoncée dans les langues où elle est écrite ; son adresse est son nom court, la même partout (m33).
+		nf_seo_traduit_contenu('nf_donations_campaigns_lang', 'campaign_id', (int) $campaign['id'], 'title', FALSE);
 
 		$this	->title($campaign['title'])
 				->icon('fas fa-hand-holding-heart')

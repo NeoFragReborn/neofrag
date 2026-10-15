@@ -26,7 +26,7 @@ class Sitemap extends Controller_Module
 							->order_by('a.date DESC')
 							->get() as $distinction)
 		{
-			$adresses[] = ['adresse' => 'awards/'.$distinction['award_id'].'/'.url_title($distinction['name']), 'sans_langue' => TRUE];
+			$adresses[] = ['adresse' => 'awards/'.$distinction['award_id'].'/'.url_title($distinction['name']), 'langues' => array_keys(nf_textes_ecrits('nf_awards_lang', 'award_id', (int) $distinction['award_id'], 'name'))];
 		}
 
 		// Une rubrique vide n'est pas annoncée aux moteurs : sa page ne dirait que « rien pour l'instant ».

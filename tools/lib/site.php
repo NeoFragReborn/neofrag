@@ -101,6 +101,28 @@ function nf_connexion(): mysqli
 }
 
 /**
+ * Un événement du forum inscrit au fil de l'API (`nf_api_events`), comme le fait le forum quand un membre écrit
+ * (`Forum::add_topic()` → `Api::consigner()`) : c'est ce fil que lit le bot Discord pour recopier un sujet dans le
+ * salon relié à son forum. Un outil qui écrit un sujet directement en base ne passe pas par les événements du forum :
+ * sans cette ligne, le sujet n'arrivait jamais sur Discord — le journal des versions du forum « Changelog », puis les
+ * tutoriels (2026-10-15). Sans le module API (table absente), rien n'est inscrit.
+ *
+ * @param array<string, mixed> $charge  les champs que l'API garde pour ce type (Api::EVENEMENTS)
+ */
+function nf_forum_evenement(mysqli $db, string $type, array $charge): void
+{
+    if (!nf_table_existe($db, 'nf_api_events'))
+    {
+        return;
+    }
+
+    $json = (string) json_encode($charge, JSON_UNESCAPED_UNICODE);
+    $stmt = $db->prepare('INSERT INTO nf_api_events (type, payload) VALUES (?, ?)');
+    $stmt->bind_param('ss', $type, $json);
+    $stmt->execute();
+}
+
+/**
  * Une connexion à la base d'un AUTRE site installé sur la machine — la production, la démonstration —, lue dans son
  * `config/db.php`, en utf8mb4 : pour un outil qui compare ou publie sur ce site (`--site=DOSSIER`). Refuse de juger
  * (code 2) si le dossier n'est pas un site installé ou si sa base est introuvable.

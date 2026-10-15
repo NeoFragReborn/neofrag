@@ -75,6 +75,8 @@ class Nebula extends Theme
 
 	public function install($dispositions = [])
 	{
+		// Les titres des liens s'écrivent dans la langue SOURCE (->source()) : le widget Navigation les traduit à chaque
+		// affichage. Traduits ici, ils restaient dans la langue de l'administrateur qui activait le thème (m34).
 		$dispositions = $this->array();
 
 		// LA BARRE DU HAUT. Le gabarit dessine sa propre barre vitree — logo, menu, boutons de
@@ -95,12 +97,12 @@ class Nebula extends Theme
 									'type'     => 'index',
 									'settings' => serialize([
 										'links'   => [
-											['title' => utf8_htmlentities($this->lang('Accueil')),    'url' => ''],
-											['title' => utf8_htmlentities($this->lang('Actualités')), 'url' => 'news'],
-											['title' => utf8_htmlentities($this->lang('Forum')),      'url' => 'forum'],
-											['title' => utf8_htmlentities($this->lang('Galerie')),    'url' => 'gallery'],
-											['title' => utf8_htmlentities($this->lang('Membres')),    'url' => 'members'],
-											['title' => utf8_htmlentities($this->lang('Contact')),    'url' => 'contact']
+											['title' => utf8_htmlentities($this->lang('Accueil')->source()),    'url' => ''],
+											['title' => utf8_htmlentities($this->lang('Actualités')->source()), 'url' => 'news'],
+											['title' => utf8_htmlentities($this->lang('Forum')->source()),      'url' => 'forum'],
+											['title' => utf8_htmlentities($this->lang('Galerie')->source()),    'url' => 'gallery'],
+											['title' => utf8_htmlentities($this->lang('Membres')->source()),    'url' => 'members'],
+											['title' => utf8_htmlentities($this->lang('Contact')->source()),    'url' => 'contact']
 										]
 									])
 								]))

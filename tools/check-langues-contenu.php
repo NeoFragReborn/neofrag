@@ -52,7 +52,7 @@ require __DIR__.'/lib/outil.php';
 require __DIR__.'/lib/serveur.php';
 
 [$o] = nf_options([
-    'listes'    => 'news,articles,gallery,teams',
+    'listes'    => 'news,articles,gallery,teams,events,awards,recruits,surveys',
     'par-liste' => 2,
     'port'      => 0,
 ]);
@@ -83,7 +83,8 @@ foreach ($listes as $liste)
         continue;
     }
 
-    preg_match_all('#href="(/'.$origine.'/'.preg_quote($liste, '#').'/(?:[a-z]+/)?\d+/[a-z0-9-]+)"#i', (string) $r['corps'], $m);
+    // Pas les filtres d'une liste (par type, par équipe…) : ce sont des listes, sans langue à elles (m33).
+    preg_match_all('#href="(/'.$origine.'/'.preg_quote($liste, '#').'/(?:(?!type/|team/|category/)[a-z]+/)?\d+/[a-z0-9-]+)"#i', (string) $r['corps'], $m);
 
     foreach (array_slice(array_values(array_unique($m[1])), 0, max(1, (int) $o['par-liste'])) as $chemin)
     {

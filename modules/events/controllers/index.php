@@ -14,9 +14,16 @@ class Index extends Controller_Module
 {
 	public function index($events)
 	{
-		// La liste est faite des événements, qui n'ont pas de langue à eux : sa canonique est dans la langue
-		// première du site (et celle de ses filtres, qui passent tous par ici).
-		nf_seo_sans_langue();
+		// La liste annonce les langues où des événements sont écrits (m33). Ses filtres par type ou par équipe portent
+		// un nom traduit dans leur adresse : ceux-là gardent une seule canonique, dans la langue première du site.
+		if (preg_match('#^events/(?:type|team)/#', nf_chemin_public()))
+		{
+			nf_seo_sans_langue();
+		}
+		else
+		{
+			nf_seo_traduit(array_keys(nf_textes_ecrits('nf_events_lang', 'event_id')));
+		}
 
 		// Le compte à rebours des événements à venir (`.nf-countdown`, dans la vue `event`).
 		$this->js('compte-a-rebours');
@@ -124,8 +131,8 @@ class Index extends Controller_Module
 
 	public function _event($event_id, $title, $type_id, $date, $date_end, $description, $private_description, $location, $image_id, $published, $type, $mode_id, $webtv, $website, $mode_title)
 	{
-		// Un événement n'a pas de langue à lui : sa canonique est dans la langue première du site.
-		nf_seo_sans_langue();
+		// Annoncé dans les langues où il est écrit, chacune à l'adresse de son titre (m33).
+		nf_seo_traduit_contenu('nf_events_lang', 'event_id', (int) $event_id);
 
 		$this->js('compte-a-rebours');
 

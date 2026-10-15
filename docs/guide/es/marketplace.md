@@ -36,8 +36,12 @@ envíala.
   catálogo y lista las que hay que actualizar; aplícalas con un clic (descarga + SHA-256, archivos sustituidos,
   **migraciones de esquema pendientes aplicadas**). Si no, enviar un nuevo `.zip` por *Añadir* también actualiza (una
   versión superior sustituye a la antigua).
-- **Retirar**: desde la ficha del addon en **Temas & Addons**, **Eliminar** (el addon debe estar desactivado). Sus tablas
-  y datos se retiran.
+- **Retirar**: desde el menú de su ficha en **Temas & Addons**. Un módulo o un widget: **Desinstalar** — se retiran
+  sus tablas, sus datos y sus archivos, tras una copia de seguridad hecha justo antes (carpeta `backups/addons` del
+  servidor); un módulo que otro addon necesita se rechaza, y la ventana dice cuáles. Un tema: **Eliminar** (no el
+  tema activo). Los addons del núcleo no se retiran.
+- **Restablecer** (un módulo): sus datos se borran y vuelve a empezar como el día de su instalación; sus ajustes,
+  sus permisos y los enlaces que llevan a él se mantienen. Antes se hace una copia de seguridad de sus tablas.
 
 > Los **conectores de autenticación** (Discord, GitHub, Google) forman parte del **núcleo**: ya están, y se configuran en
 > los ajustes — no pasan por el marketplace.

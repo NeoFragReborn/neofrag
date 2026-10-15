@@ -36,8 +36,13 @@ conteúdo não seguro são recusados). É também o caminho de um addon que tenh
   lista as que há que atualizar; aplica-as com um clique (transferência + SHA-256, ficheiros substituídos, **migrações de
   esquema pendentes aplicadas**). Senão, enviar um novo `.zip` por *Adicionar* também atualiza (uma versão superior
   substitui a antiga).
-- **Retirar**: no cartão do addon em **Temas & Addons**, **Eliminar** (o addon tem de estar desativado). As suas tabelas
-  e os seus dados são retirados.
+- **Retirar**: no menu do seu cartão em **Temas & Addons**. Um módulo ou um widget: **Desinstalar** — as suas
+  tabelas, os seus dados e os seus ficheiros são retirados, depois de uma cópia de segurança feita mesmo antes
+  (pasta `backups/addons` do servidor); um módulo de que outro addon precisa é recusado, e a janela diz quais. Um
+  tema: **Eliminar** (não o tema ativo). Os addons do núcleo não se retiram.
+- **Repor a zero** (um módulo): os seus dados são apagados e recomeça como no dia da sua instalação; as suas
+  definições, as suas permissões e as ligações que levam até ele mantêm-se. Antes é feita uma cópia de segurança
+  das suas tabelas.
 
 > Os **conectores de autenticação** (Discord, GitHub, Google) fazem parte do **núcleo**: já lá estão, e configuram-se
 > nas definições — não passam pelo marketplace.

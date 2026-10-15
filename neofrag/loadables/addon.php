@@ -196,8 +196,23 @@ abstract class Addon extends NeoFrag implements \NF\NeoFrag\Loadable
 				'target_id'   => $this->__info['name'],
 			]);
 
+			// Ses migrations s'oublient avec lui : réinstallé plus tard, install.sql porte le schéma, et la ligne de
+			// base se repose sur ce qu'il apporte alors.
+			if ($this->db->table_exists('nf_addon_migrations'))
+			{
+				$this->db->where('type', $this->__addon->type->name)->where('name', $this->__info['name'])->delete('nf_addon_migrations');
+			}
+
+			// Le chemin se calcule avant d'effacer l'inscription, et en absolu : le répertoire courant n'est pas garanti
+			// hors d'une page (une épreuve, la ligne de commande).
+			$dossier = NEOFRAG_CMS.'/'.$this->__addon->type->name.'s/'.$this->__info['name'];
+
 			$this->__addon->delete();
-			dir_remove($this->__addon->type->name.'s/'.$this->__info['name']);
+
+			if (is_dir($dossier))
+			{
+				dir_remove($dossier);
+			}
 		}
 
 		return $this;
@@ -207,6 +222,150 @@ abstract class Addon extends NeoFrag implements \NF\NeoFrag\Loadable
 	{
 		return $this->uninstall(FALSE)
 					->install();
+	}
+
+	/**
+	 * Les tables que l'addon crée, lues dans son install.sql : ce que « Remettre à zéro » vide, et ce que la
+	 * sauvegarde prise avant de le retirer garde. Un widget n'en a en général aucune.
+	 *
+	 * @return list<string>
+	 */
+	public function tables_propres(): array
+	{
+		$file = NEOFRAG_CMS.'/'.$this->__addon->type->name.'s/'.$this->__info['name'].'/install/install.sql';
+
+		if (!is_file($file) || !preg_match_all('/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?`?(nf_[a-z0-9_]+)`?/i', (string) file_get_contents($file), $m))
+		{
+			return [];
+		}
+
+		return array_values(array_unique($m[1]));
+	}
+
+	/**
+	 * Les addons installés qui déclarent avoir besoin de ce module (`requires`) : on ne désinstalle pas un module dont
+	 * un autre se sert — ses pages tomberaient.
+	 *
+	 * @return list<string> leurs titres
+	 */
+	public function dependants(): array
+	{
+		if ($this->__addon->type->name !== 'module')
+		{
+			return [];
+		}
+
+		$titres = [];
+
+		foreach (NeoFrag()->collection('addon')->get() as $autre)
+		{
+			if (($objet = $autre->addon()) && $objet !== $this && in_array($this->__info['name'], array_filter((array) ($objet->info()->requires ?? []), 'is_string'), TRUE))
+			{
+				$titres[] = (string) $objet->info()->title;
+			}
+		}
+
+		return $titres;
+	}
+
+	/**
+	 * Une copie de l'addon avant qu'on le retire ou qu'on le vide : ses tables (structure et données) et, si demandé,
+	 * ses fichiers, dans backups/addons/ — un dossier que l'HTTP refuse comme tout backups/, hors de la liste et de la
+	 * rotation des sauvegardes complètes du Monitoring, qui ne savent restaurer qu'un site entier.
+	 *
+	 * @return string|null le chemin de l'archive, NULL si elle n'a pas pu s'écrire (rien n'est retiré alors)
+	 */
+	public function sauvegarder(bool $avec_fichiers): ?string
+	{
+		$type = $this->__addon->type->name;
+		$name = $this->__info['name'];
+
+		dir_create('backups/addons');
+
+		if (!file_exists('backups/.htaccess'))
+		{
+			@file_put_contents('backups/.htaccess', "Require all denied\n");
+		}
+
+		$base = 'backups/addons/'.date('YmdHis').'-'.bin2hex(random_bytes(8)).'-'.$type.'-'.$name;
+		$zip  = new \ZipArchive;
+
+		if ($zip->open($base.'.zip', \ZipArchive::CREATE) !== TRUE)
+		{
+			return NULL;
+		}
+
+		$vide   = TRUE;
+		$tables = array_values(array_intersect($this->tables_propres(), (array) $this->db->tables()));
+
+		if ($tables)
+		{
+			if (($flux = @fopen($base.'.sql', 'w+b')) === FALSE)
+			{
+				$zip->close();
+				@unlink($base.'.zip');
+				return NULL;
+			}
+
+			// skip_*() puis tables() : SEULEMENT ces tables, structure et données — sans les skip_*(), tables() les EXCLUT.
+			// dump() ferme lui-même le flux.
+			(new \NF\NeoFrag\Libraries\Mysqldump($this))->skip_data()->skip_structure()->tables($tables)->dump($flux);
+			$zip->addFile($base.'.sql', $name.'.sql');
+			$vide = FALSE;
+		}
+
+		if ($avec_fichiers)
+		{
+			foreach (array_keys(dir_scan([$type.'s/'.$name])) as $chemin)
+			{
+				$zip->addFile($chemin);
+				$vide = FALSE;
+			}
+		}
+
+		// Rien à garder (aucune table en base, aucun fichier) : une archive vide ne s'écrirait pas — un témoin à son nom.
+		if ($vide)
+		{
+			$zip->addFromString($type.'-'.$name.'.vide', '');
+		}
+
+		$ecrit = $zip->close();
+		@unlink($base.'.sql');
+
+		if (!$ecrit || !is_file($base.'.zip') || !filesize($base.'.zip'))
+		{
+			@unlink($base.'.zip');
+			return NULL;
+		}
+
+		return $base.'.zip';
+	}
+
+	/**
+	 * Remet un module comme au jour de son installation : ses tables effacées (uninstall.sql) puis recréées
+	 * (install.sql, avec ses données de départ). Ses réglages, ses permissions, son état et sa place dans les menus
+	 * restent. La sauvegarde se prend AVANT (sauvegarder()) : cette méthode efface.
+	 */
+	public function remettre_a_zero()
+	{
+		if (nf_demo())
+		{
+			return $this;
+		}
+
+		$file = NEOFRAG_CMS.'/'.$this->__addon->type->name.'s/'.$this->__info['name'].'/install/uninstall.sql';
+
+		if (is_file($file) && ($sql = file_get_contents($file)) !== FALSE && trim($sql) !== '' && ($error = $this->db->import($sql)) !== TRUE)
+		{
+			throw new \RuntimeException('[addon.remettre_a_zero] '.$this->__addon->type->name.'/'.$this->__info['name'].': '.$error);
+		}
+
+		(new \NF\NeoFrag\Libraries\Audit_Log($this))->log('addon.reset', [
+			'target_type' => $this->__addon->type->name,
+			'target_id'   => $this->__info['name'],
+		]);
+
+		return $this->install();
 	}
 
 	/**

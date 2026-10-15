@@ -73,8 +73,8 @@ class Index extends Controller_Module
 
 	public function _recruit($recruit_id, $title, $introduction, $description, $requierments, $date, $user_id, $size, $role, $icon, $date_end, $closed, $team_id, $image_id, $username, $avatar, $sex, $candidacies, $candidacies_pending, $candidacies_accepted, $candidacies_declined, $team_name)
 	{
-		// Une offre n'a pas de langue à elle : sa canonique est dans la langue première du site.
-		nf_seo_sans_langue();
+		// Annoncée dans les langues où elle est écrite, chacune à l'adresse de son titre (m33).
+		nf_seo_traduit_contenu('nf_recruits_lang', 'recruit_id', (int) $recruit_id);
 
 		$this->title($title);
 

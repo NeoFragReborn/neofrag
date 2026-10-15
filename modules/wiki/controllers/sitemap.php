@@ -21,9 +21,9 @@ class Sitemap extends Controller_Module
 		$adresses = [];
 		$derniere = NULL;
 
-		foreach ($this->db->select('slug', 'updated_at')->from('nf_wiki_pages')->where('published', '1')->order_by('sort_order', 'id')->get() as $page)
+		foreach ($this->db->select('id', 'slug', 'updated_at')->from('nf_wiki_pages')->where('published', '1')->order_by('sort_order', 'id')->get() as $page)
 		{
-			$adresses[] = ['adresse' => 'wiki/'.$page['slug'], 'date' => $page['updated_at'], 'sans_langue' => TRUE];
+			$adresses[] = ['adresse' => 'wiki/'.$page['slug'], 'date' => $page['updated_at'], 'langues' => array_keys(nf_textes_ecrits('nf_wiki_pages_lang', 'page_id', (int) $page['id']))];
 			$derniere   = max($derniere, (string) $page['updated_at']);
 		}
 
@@ -33,7 +33,7 @@ class Sitemap extends Controller_Module
 			return [];
 		}
 
-		array_unshift($adresses, ['adresse' => 'wiki', 'date' => $derniere, 'sans_langue' => TRUE]);
+		array_unshift($adresses, ['adresse' => 'wiki', 'date' => $derniere, 'langues' => array_keys(nf_textes_ecrits('nf_wiki_pages_lang', 'page_id'))]);
 
 		return $adresses;
 	}

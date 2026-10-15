@@ -8,10 +8,10 @@ class Index extends Controller_Module
 {
 	public function index($pages)
 	{
-		// Comme ses pages : l'accueil du wiki se déclare dans la langue première du site. Sa table des matières est la
-		// même dans chaque langue tant que les pages n'y sont pas traduites — six canoniques d'un même texte, que
-		// check-seo a relevées après m32 (2026-10-16).
-		nf_seo_sans_langue();
+		// Comme ses pages : l'accueil du wiki n'est annoncé que dans les langues où des pages sont écrites. Annoncé dans
+		// toutes, sa table des matières faisait six canoniques d'un même texte, que check-seo a relevées après m32
+		// (2026-10-14) ; une langue sans page écrite renvoie sa canonique vers la première qui en a (m33).
+		nf_seo_traduit(array_keys(nf_textes_ecrits('nf_wiki_pages_lang', 'page_id')));
 
 		$this->title('Wiki')->icon('fas fa-book')->breadcrumb();
 
@@ -64,10 +64,10 @@ class Index extends Controller_Module
 
 	public function _page($page)
 	{
-		// Le titre et la description que la page donne aux moteurs, si elle en donne. Une page du wiki n'a
-		// pas de langue à elle : sa canonique est dans la langue première du site.
+		// Le titre et la description que la page donne aux moteurs, si elle en donne ; annoncée dans les langues où elle
+		// est écrite, à son adresse, la même partout (m33).
 		nf_seo_contenu('wiki', (int) $page['id']);
-		nf_seo_sans_langue();
+		nf_seo_traduit_contenu('nf_wiki_pages_lang', 'page_id', (int) $page['id'], 'title', FALSE);
 
 		$this->title($page['title'])->icon('fas fa-book')->breadcrumb();
 

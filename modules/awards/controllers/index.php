@@ -72,8 +72,8 @@ class Index extends Controller_Module
 
 	public function _award($award_id, $team_id, $date, $location, $name, $platform, $game_id, $ranking, $participants, $description, $image_id, $team_name, $team_title, $game_name, $game_title)
 	{
-		// Une distinction n'a pas de langue à elle : sa canonique est dans la langue première du site.
-		nf_seo_sans_langue();
+		// Annoncée dans les langues où elle est écrite, chacune à l'adresse de son nom (m33).
+		nf_seo_traduit_contenu('nf_awards_lang', 'award_id', (int) $award_id, 'name');
 
 		return $this->css('awards')
 					->array

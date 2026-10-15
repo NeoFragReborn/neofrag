@@ -33,7 +33,32 @@ class Widget extends Controller
 					}])
 					->set('disable', [$this->lang('Désactiver'), 'fas fa-times', 'muted', TRUE, function($addon){
 						return $addon->is_deactivatable() && $addon->is_enabled();
+					}])
+					->set('delete', [$this->lang('Désinstaller'), 'fas fa-trash', 'danger', TRUE, function($addon){
+						return $addon->is_removable();
 					}]);
+	}
+
+	public function delete($addon)
+	{
+		return $this->modal($this->lang('Désinstaller'), 'fas fa-trash')
+					->body($this->lang('Désinstaller le widget <b>%s</b> ?<br />Ses fichiers sont retirés ; une copie est gardée dans le dossier backups/addons du serveur. Là où il est placé, il ne s’affiche plus — et revient si vous le réinstallez.', $addon->info()->title))
+					->submit($this->lang('Désinstaller'), 'danger')
+					->cancel()
+					->callback(function() use ($addon){
+						$titre = $addon->info()->title;
+
+						if (($sauvegarde = $addon->sauvegarder(TRUE)) === NULL)
+						{
+							notify($this->lang('La sauvegarde n’a pas pu être écrite dans le dossier %s : vérifiez ses droits d’écriture et l’espace disque.', 'backups'), 'danger');
+							return refresh();
+						}
+
+						$addon->uninstall();
+
+						notify($this->lang('<b>%s</b> désinstallé. Sauvegarde : %s', $titre, basename($sauvegarde)));
+						refresh();
+					});
 	}
 
 	public function enable($addon)

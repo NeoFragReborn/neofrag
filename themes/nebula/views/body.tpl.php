@@ -31,7 +31,14 @@ $is_admin = $logged && $this->access->effective_admin();
 				<?php /* La cloche des notifications, comme dans les autres thèmes : l'espace membre l'annonce « en haut de
 				        chaque page », et Nebula n'en avait pas (relevé sur la démo le 2026-10-08). */ ?>
 				<?php if ($notifications = $this->module('notifications')): ?><ul class="nb-cloche"><?php echo $notifications->bell() ?></ul><?php endif ?>
-				<a class="nb-btn nb-btn-ghost" href="<?php echo url('user') ?>"><i class="fas fa-user-astronaut"></i> <span><?php echo nf_texte($this->user->username) ?></span></a>
+				<?php /* Le menu de l'espace membre, le même que dans les six autres thèmes et la vitrine (User::menu_deroulant(),
+				        déconnexion comprise). Le pseudo menait seulement à « Mon espace » : sur les actualités, le forum et les
+				        profils, où Nebula n'a pas de colonne, un membre ne trouvait plus « Se déconnecter » (revue de la
+				        démo connectée, 2026-10-15). */ ?>
+				<div class="dropdown nb-compte">
+					<a class="nb-btn nb-btn-ghost dropdown-toggle" href="<?php echo url('user') ?>" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user-astronaut"></i> <span><?php echo nf_texte($this->user->username) ?></span></a>
+					<div class="dropdown-menu dropdown-menu-end"><?php echo $this->module('user')->menu_deroulant() ?></div>
+				</div>
 				<?php if ($is_admin): ?><a class="nb-btn nb-btn-primary" href="<?php echo url('admin') ?>"><i class="fas fa-gauge-high"></i> <span><?php echo $this->lang('Admin') ?></span></a><?php endif ?>
 			<?php else: ?>
 				<?php /* Masqué quand les inscriptions sont fermées : la route répond 404 par conception. */ ?>

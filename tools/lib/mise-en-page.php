@@ -139,13 +139,29 @@ function nf_mep_piloter(string $node, string $base, array $pages, array $largeur
     $resultat = nf_temp('mise-en-page-resultat.json');
     @unlink($resultat);
 
-    file_put_contents($travail, (string) json_encode([
+    /*
+     * Un résultat qui ne s'efface pas appartient à un autre compte (un passage en root, puis un en www-data : /tmp
+     * ne laisse effacer que ses propres fichiers). Le pilote ne pouvait alors pas l'écrire, et l'outil relisait
+     * le VIEUX verdict comme s'il venait d'être mesuré — « 21 pages en 0 s », et les défauts d'un passage du 10/10
+     * corrigés depuis (2026-10-15). On refuse plutôt que de rendre un verdict qui n'a pas été mesuré.
+     */
+    if (is_file($resultat))
+    {
+        nf_refus("un résultat d'un passage précédent ne s'efface pas ({$resultat}, sans doute à un autre compte) : l'effacer, ou lancer l'outil sous ce compte-là");
+    }
+
+    $ecrit = @file_put_contents($travail, (string) json_encode([
         'base' => rtrim($base, '/'), 'pages' => $pages, 'largeurs' => $largeurs,
         'hauteur' => 900, 'parallele' => $parallele, 'delai' => 120,
         'bandeau' => (int) ($options['bandeau'] ?? 0), 'largeursBandeau' => nf_mep_largeurs_bandeau($largeurs),
         'cookies' => $options['cookies'] ?? [], 'stockage' => (object) ($options['stockage'] ?? []),
         'connexion' => $options['connexion'] ?? NULL,
     ]));
+
+    if ($ecrit === FALSE)
+    {
+        nf_refus("impossible d'écrire la commande du pilote ({$travail}, sans doute à un autre compte) : l'effacer, ou lancer l'outil sous ce compte-là");
+    }
 
     $sortie = nf_temp('mise-en-page-pilote.log');
     $code   = 0;

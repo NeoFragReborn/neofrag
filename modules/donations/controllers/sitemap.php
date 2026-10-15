@@ -19,9 +19,9 @@ class Sitemap extends Controller_Module
 	{
 		$adresses = [];
 
-		foreach ($this->db->select('name', 'updated_at')->from('nf_donations_campaigns')->where('status', 'active')->get() as $campagne)
+		foreach ($this->db->select('id', 'name', 'updated_at')->from('nf_donations_campaigns')->where('status', 'active')->get() as $campagne)
 		{
-			$adresses[] = ['adresse' => 'donations/'.$campagne['name'], 'date' => $campagne['updated_at'], 'sans_langue' => TRUE];
+			$adresses[] = ['adresse' => 'donations/'.$campagne['name'], 'date' => $campagne['updated_at'], 'langues' => array_keys(nf_textes_ecrits('nf_donations_campaigns_lang', 'campaign_id', (int) $campagne['id']))];
 		}
 
 		// Une campagne seule : la page des dons y redirige. Aucune : elle ne dirait que « rien pour

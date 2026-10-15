@@ -13,6 +13,40 @@ Michaël BILCOT e Jérémy VALENTIN — un progetto open source con licenza LGPL
 
 ---
 
+## [1.2.51] — 2026-10-15
+
+### Aggiunto
+
+- **Disinstallare un modulo o un widget, e azzerare un modulo, dalla sua scheda.** Finora un modulo o un widget si
+  poteva solo disattivare. **Disinstalla** rimuove le sue tabelle, i suoi dati e i suoi file; un modulo di cui un
+  altro addon ha bisogno viene rifiutato, e la finestra dice quali. **Azzera** cancella i dati di un modulo e lo fa
+  ripartire come il giorno della sua installazione; le sue impostazioni, i suoi permessi e i link che vi portano
+  restano. Entrambi fanno prima un backup (cartella `backups/addons` del server), e la conferma dice quante righe se ne
+  vanno. Gli addon del nucleo non si rimuovono.
+
+### Corretto
+
+- **Le anteprime del marketplace restavano le vecchie nel browser.** Una miniatura mantiene il suo indirizzo da una
+  versione all'altra: chi l'aveva già vista teneva la vecchia in cache — le miniature disegnate della 1.2.50
+  sembravano ancora schermate. L'indirizzo porta ora l'impronta dell'archivio.
+- **Un album delle Gallerie non si poteva tradurre.** Nell'amministrazione di un'altra lingua, un album non ancora
+  tradotto mancava dall'elenco, e la sua schermata di modifica rispondeva «pagina non trovata». Ora vi compare, e la
+  sua schermata si apre con i campi vuoti, pronti per la traduzione; il testo delle altre lingue non cambia.
+- **Nebula: «Disconnetti» introvabile nelle notizie, nel forum e nei profili.** Queste pagine non hanno colonna laterale,
+  quindi nemmeno il blocco dell'area membri, e il nome utente in alto portava solo a «Il mio spazio». Ora apre il
+  menu dell'account, lo stesso degli altri temi: profilo, account, messaggi, amministrazione, disconnetti.
+- **Il menu di un tema restava nella lingua dell'amministratore che l'aveva attivato.** Attivato o reinstallato da
+  un'amministrazione in inglese, un tema scriveva «Home», «News»… e tutti i visitatori, francesi compresi, lo
+  leggevano così. I suoi link ora si scrivono in francese, la lingua di partenza, e la navigazione li mostra nella
+  lingua di ogni pagina. Un tema già installato conserva il suo menu: «Reinstalla i valori predefiniti» lo riscrive.
+- **I motori di ricerca conoscono le traduzioni dei contenuti.** Gli eventi, il palmarès, le offerte di
+  reclutamento, i sondaggi, le campagne di donazione, le pagine del wiki, i download, le FAQ, i link e il negozio si
+  dichiaravano ancora senza lingua: un solo indirizzo annunciato, in francese. Ora annunciano le lingue in cui sono
+  scritti, e una lingua in cui non lo sono rimanda la sua canonica a una in cui lo sono. E i link tra le lingue
+  delle notizie, degli articoli del Blog, dei forum e delle categorie di annunci portavano, nelle altre lingue, a un
+  reindirizzamento verso il titolo tradotto — i motori scartano un link del genere: ognuno porta ora all'indirizzo
+  del proprio titolo.
+
 ## [1.2.50] — 2026-10-15
 
 ### Aggiunto

@@ -95,4 +95,13 @@ return [
 	'45002a02' => 'Ninguna extensión coincide.',
 	'79e64a05' => '<b>NeoFrag %s</b> está disponible (usas %s): <a href="%s">Monitoring</a> lo actualiza con un clic, con una copia de seguridad antes de escribir nada.',
 	'62ad9179' => '%d addon(s) del marketplace requieren una versión más reciente de NeoFrag: actualiza primero tu sitio.',
+	'99fb3fad' => 'Restablecer',
+	'8848a6ee' => 'Desinstalar',
+	'8acf5e3d' => '¿Restablecer el módulo <b>%s</b>?<br />Sus datos se borran (%d fila(s)) y vuelve a empezar como el día de su instalación. Sus ajustes, sus permisos y los enlaces que llevan a él se mantienen.<br />Justo antes se hace una copia de seguridad de sus tablas en la carpeta backups/addons del servidor.',
+	'1f4ad2d7' => 'No se ha podido escribir la copia de seguridad en la carpeta %s: comprueba sus permisos de escritura y el espacio en disco.',
+	'e7d954d9' => '<b>%s</b> restablecido. Copia de seguridad: %s',
+	'125982dc' => 'El módulo <b>%s</b> no se puede desinstalar: %s lo necesitan. Desinstálelos primero.',
+	'49b5c9a9' => '¿Desinstalar el módulo <b>%s</b>?<br />Se eliminan sus datos (%d fila(s)) y sus archivos. Los enlaces de menú que llevan a él se mantienen: elimínelos en Menús.<br />Justo antes se hace una copia de seguridad de sus tablas y archivos en la carpeta backups/addons del servidor.',
+	'3c474181' => '<b>%s</b> desinstalado. Copia de seguridad: %s',
+	'e431357b' => '¿Desinstalar el widget <b>%s</b>?<br />Se eliminan sus archivos; se guarda una copia en la carpeta backups/addons del servidor. Donde está colocado, deja de mostrarse — y vuelve si lo reinstala.',
 ];

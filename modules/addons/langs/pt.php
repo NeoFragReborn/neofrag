@@ -95,4 +95,13 @@ return [
 	'45002a02' => 'Nenhuma extensão corresponde.',
 	'79e64a05' => '<b>NeoFrag %s</b> está disponível (estás a usar %s): <a href="%s">Monitoring</a> atualiza-o com um clique, com uma cópia de segurança antes de escrever.',
 	'62ad9179' => '%d addon(s) do marketplace exigem uma versão mais recente do NeoFrag: atualiza primeiro o teu site.',
+	'99fb3fad' => 'Repor a zero',
+	'8848a6ee' => 'Desinstalar',
+	'8acf5e3d' => 'Repor o módulo <b>%s</b> a zero?<br />Os seus dados são apagados (%d linha(s)) e recomeça como no dia da sua instalação. As suas definições, as suas permissões e as ligações que levam até ele mantêm-se.<br />Mesmo antes é feita uma cópia de segurança das suas tabelas na pasta backups/addons do servidor.',
+	'1f4ad2d7' => 'Não foi possível escrever a cópia de segurança na pasta %s: verifique as permissões de escrita e o espaço em disco.',
+	'e7d954d9' => '<b>%s</b> reposto a zero. Cópia de segurança: %s',
+	'125982dc' => 'O módulo <b>%s</b> não pode ser desinstalado: %s precisam dele. Desinstale-os primeiro.',
+	'49b5c9a9' => 'Desinstalar o módulo <b>%s</b>?<br />Os seus dados (%d linha(s)) e os seus ficheiros são removidos. As ligações de menu que levam até ele mantêm-se: remova-as em Menus.<br />Mesmo antes é feita uma cópia de segurança das suas tabelas e ficheiros na pasta backups/addons do servidor.',
+	'3c474181' => '<b>%s</b> desinstalado. Cópia de segurança: %s',
+	'e431357b' => 'Desinstalar o widget <b>%s</b>?<br />Os seus ficheiros são removidos; uma cópia fica na pasta backups/addons do servidor. Onde está colocado, deixa de ser mostrado — e volta se o reinstalar.',
 ];

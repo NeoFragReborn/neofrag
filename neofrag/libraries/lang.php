@@ -67,6 +67,17 @@ class Lang extends Library
 		return static::$_objects[$caller][$key];
 	}
 
+	/**
+	 * Le texte SOURCE, en français, sans le traduire : pour un texte qu'on écrit en base et qu'un widget traduit à chaque
+	 * affichage — les liens qu'un thème pose à son installation. Traduits à l'écriture, ils restaient dans la langue de
+	 * l'administrateur qui activait le thème : « Home » pour tous les visiteurs (m34, 2026-10-15). L'appel reste
+	 * `lang('…')`, que les contrôles des traductions voient.
+	 */
+	public function source(): string
+	{
+		return (string) $this->_name;
+	}
+
 	public function __toString()
 	{
 		if ($this->_locale === NULL)

@@ -37,8 +37,12 @@ est validé : les archives au contenu non sûr sont refusées). C'est aussi le c
   addon à celle du catalogue et liste celles à mettre à jour ; applique-les en un clic (téléchargement +
   SHA-256, fichiers remplacés, **migrations de schéma en attente appliquées**). Sinon, envoyer un nouveau
   `.zip` via *Ajouter* met aussi à jour (une version supérieure remplace l'ancienne).
-- **Retirer** : depuis la fiche de l'addon dans **Thèmes & Addons**, **Supprimer** (l'addon doit être
-  désactivé). Ses tables et données sont retirées.
+- **Retirer** : depuis le menu de sa carte dans **Thèmes & Addons**. Un module ou un widget :
+  **Désinstaller** — ses tables, ses données et ses fichiers sont retirés, après une sauvegarde prise juste avant
+  (dossier `backups/addons` du serveur) ; un module dont un autre addon a besoin est refusé, et la fenêtre dit
+  lesquels. Un thème : **Supprimer** (pas le thème actif). Les addons du cœur ne se retirent pas.
+- **Remettre à zéro** (un module) : ses données sont effacées et il repart comme au jour de son installation ;
+  ses réglages, ses permissions et les liens qui y mènent restent. Une sauvegarde de ses tables est prise avant.
 
 > Les **connecteurs d'authentification** (Discord, GitHub, Google) font partie du **cœur** : ils sont
 > déjà présents, à configurer dans les réglages — ils ne passent pas par le marketplace.

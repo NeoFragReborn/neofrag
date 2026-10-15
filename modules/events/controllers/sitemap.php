@@ -37,7 +37,7 @@ class Sitemap extends Controller_Module
 				continue;
 			}
 
-			$adresses[] = ['adresse' => 'events/'.$evenement['event_id'].'/'.url_title($evenement['title']), 'date' => $evenement['publish_date'] ?: NULL, 'sans_langue' => TRUE];
+			$adresses[] = ['adresse' => 'events/'.$evenement['event_id'].'/'.url_title($evenement['title']), 'date' => $evenement['publish_date'] ?: NULL, 'langues' => array_keys(nf_textes_ecrits('nf_events_lang', 'event_id', (int) $evenement['event_id']))];
 		}
 
 		// Une rubrique vide n'est pas annoncée aux moteurs : sa page ne dirait que « rien pour l'instant ».
@@ -46,7 +46,7 @@ class Sitemap extends Controller_Module
 			return [];
 		}
 
-		array_unshift($adresses, ['adresse' => 'events', 'sans_langue' => TRUE]);
+		array_unshift($adresses, ['adresse' => 'events', 'langues' => array_keys(nf_textes_ecrits('nf_events_lang', 'event_id'))]);
 
 		return $adresses;
 	}

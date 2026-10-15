@@ -95,4 +95,13 @@ return [
 	'45002a02' => 'Keine Erweiterung entspricht.',
 	'79e64a05' => '<b>NeoFrag %s</b> ist verfügbar (du verwendest %s): <a href="%s">Monitoring</a> aktualisiert es mit einem Klick und legt vorher eine Sicherung an.',
 	'62ad9179' => '%d Marketplace-Addon(s) benötigen eine neuere Version von NeoFrag: Aktualisiere zuerst deine Website.',
+	'99fb3fad' => 'Zurücksetzen',
+	'8848a6ee' => 'Deinstallieren',
+	'8acf5e3d' => 'Das Modul <b>%s</b> zurücksetzen?<br />Seine Daten werden gelöscht (%d Zeile(n)) und es beginnt wie am Tag seiner Installation. Seine Einstellungen, seine Berechtigungen und die Links, die dorthin führen, bleiben.<br />Unmittelbar davor wird eine Sicherung seiner Tabellen im Ordner backups/addons auf dem Server angelegt.',
+	'1f4ad2d7' => 'Die Sicherung konnte nicht in den Ordner %s geschrieben werden: Prüfen Sie seine Schreibrechte und den Speicherplatz.',
+	'e7d954d9' => '<b>%s</b> zurückgesetzt. Sicherung: %s',
+	'125982dc' => 'Das Modul <b>%s</b> kann nicht deinstalliert werden: %s benötigen es. Deinstallieren Sie diese zuerst.',
+	'49b5c9a9' => 'Das Modul <b>%s</b> deinstallieren?<br />Seine Daten (%d Zeile(n)) und seine Dateien werden entfernt. Die Menülinks, die dorthin führen, bleiben: Entfernen Sie sie unter Menüs.<br />Unmittelbar davor wird eine Sicherung seiner Tabellen und Dateien im Ordner backups/addons auf dem Server angelegt.',
+	'3c474181' => '<b>%s</b> deinstalliert. Sicherung: %s',
+	'e431357b' => 'Das Widget <b>%s</b> deinstallieren?<br />Seine Dateien werden entfernt; eine Kopie bleibt im Ordner backups/addons auf dem Server. Wo es platziert ist, wird es nicht mehr angezeigt — und kehrt zurück, wenn Sie es neu installieren.',
 ];

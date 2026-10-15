@@ -510,12 +510,7 @@ function nf_dans_la_langue_du_membre(int $user_id, callable $faire): mixed
  */
 function nf_langue_premiere(): string
 {
-	$config  = NeoFrag()->config;
-	$langues = array_values(array_filter((array) ($config->langs ?: [$config->lang]), 'is_object'));
-
-	usort($langues, static fn ($a, $b): int => strnatcmp((string) $a->settings()->order, (string) $b->settings()->order) ?: strcmp((string) $a->info()->name, (string) $b->info()->name));
-
-	return $langues ? (string) $langues[0]->info()->name : '';
+	return nf_langues_ordonnees()[0] ?? '';
 }
 
 /**
@@ -534,6 +529,148 @@ function nf_seo_sans_langue(): void
 		NeoFrag()->output->data->set('module', 'langue_canonique', $langue);
 		NeoFrag()->output->data->set('module', 'langues_du_contenu', [$langue]);
 	}
+}
+
+/**
+ * Les langues du site dans l'ordre de leur affichage (Admin → Langues) : l'ordre de préférence quand un contenu n'est
+ * pas écrit dans la langue de la page. `config->langs` met la langue de la PAGE en tête : lu tel quel, il changeait
+ * d'une page à l'autre.
+ *
+ * @return list<string>
+ */
+function nf_langues_ordonnees(): array
+{
+	$config  = NeoFrag()->config;
+	$langues = array_values(array_filter((array) ($config->langs ?: [$config->lang]), 'is_object'));
+
+	usort($langues, static fn ($a, $b): int => strnatcmp((string) $a->settings()->order, (string) $b->settings()->order) ?: strcmp((string) $a->info()->name, (string) $b->info()->name));
+
+	return array_map(static fn ($l): string => (string) $l->info()->name, $langues);
+}
+
+/**
+ * Ce qu'une table de traductions a d'écrit, langue par langue : [langue => texte de `$colonne`], seulement les langues
+ * que le site sert et où ce texte n'est pas vide, dans l'ordre des langues du site. Pour un contenu (`$id`), ou pour
+ * toute la table (`$id` NULL : [langue => ''] pour chaque langue où au moins un contenu est écrit — ce qu'une liste a
+ * à montrer). Lue une fois par table et par requête.
+ *
+ * @return array<string, string>
+ */
+function nf_textes_ecrits(string $table, string $cle, ?int $id = NULL, string $colonne = 'title'): array
+{
+	static $lu = [];
+
+	$memo = $table.'|'.$cle.'|'.$colonne;
+
+	if (!isset($lu[$memo]))
+	{
+		$lu[$memo] = [];
+		$db        = NeoFrag()->db;
+
+		if ($db->table_exists($table))
+		{
+			foreach ((array) $db->standalone(static fn ($db) => $db->select($cle.' AS contenu', 'lang', $colonne.' AS texte')->from($table)->get()) as $ligne)
+			{
+				if (trim((string) $ligne['texte']) !== '')
+				{
+					$lu[$memo][(int) $ligne['contenu']][(string) $ligne['lang']] = (string) $ligne['texte'];
+				}
+			}
+		}
+	}
+
+	$textes = [];
+
+	foreach (nf_langues_ordonnees() as $langue)
+	{
+		if ($id !== NULL)
+		{
+			if (isset($lu[$memo][$id][$langue]))
+			{
+				$textes[$langue] = $lu[$memo][$id][$langue];
+			}
+		}
+		else
+		{
+			foreach ($lu[$memo] as $par_langue)
+			{
+				if (isset($par_langue[$langue]))
+				{
+					$textes[$langue] = '';
+					break;
+				}
+			}
+		}
+	}
+
+	return $textes;
+}
+
+/**
+ * La page sert un contenu TRADUIT : `hreflang` n'annonce que les langues où il est écrit, chacune à SON adresse, et la
+ * canonique est la langue de la page si le contenu y est écrit — sinon la première où il l'est, puisqu'il est servi
+ * ici en repli (m33, 2026-10-15). Le pendant de nf_seo_sans_langue() pour les contenus qui ont leurs traductions ;
+ * rien d'écrit nulle part, et c'en est un.
+ *
+ * `$chemins` donne l'adresse du contenu dans chaque langue quand elle porte son titre (`events/12/<titre>`) : la même
+ * adresse pour toutes menait, dans les autres langues, à une redirection vers le bon titre — un `hreflang` vers une
+ * redirection, que les moteurs écartent (relevé sur les actualités de la démo le 2026-10-15).
+ *
+ * @param list<string>          $langues
+ * @param array<string, string> $chemins langue => chemin, sans la langue
+ */
+function nf_seo_traduit(array $langues, array $chemins = []): void
+{
+	if (!$langues)
+	{
+		nf_seo_sans_langue();
+		return;
+	}
+
+	$donnees  = NeoFrag()->output->data;
+	$courante = is_object($langue = NeoFrag()->config->lang) ? (string) $langue->info()->name : '';
+
+	$donnees->set('module', 'langues_du_contenu', array_values($langues));
+
+	if ($chemins)
+	{
+		$donnees->set('module', 'chemins_par_langue', $chemins);
+	}
+
+	if (!in_array($courante, $langues, TRUE))
+	{
+		$donnees->set('module', 'langue_canonique', $langues[0]);
+	}
+}
+
+/**
+ * Le cas courant de nf_seo_traduit() : un contenu que sa table de traductions dit écrit dans telle et telle langue. Quand
+ * son adresse porte son titre (`news/12/<titre>`, `blog/4/<titre>`, `forum/2/<nom>/page/2`), l'adresse de chaque langue
+ * est celle de la page, ce titre remplacé par celui de la langue : le segment de l'adresse qui est le titre d'une des
+ * langues. `$titre_dans_adresse` à FALSE quand l'adresse est un nom court (une campagne, une page du wiki) : c'est alors
+ * celle de la page dans toutes — un nom court qui ressemble au titre d'une langue y aurait été remplacé.
+ */
+function nf_seo_traduit_contenu(string $table, string $cle, int $id, string $colonne = 'title', bool $titre_dans_adresse = TRUE): void
+{
+	$textes   = nf_textes_ecrits($table, $cle, $id, $colonne);
+	$segments = explode('/', nf_chemin_public());
+	$titres   = array_map('url_title', $textes);
+	$chemins  = [];
+
+	foreach ($titre_dans_adresse ? $segments : [] as $i => $segment)
+	{
+		if ($segment !== '' && in_array($segment, $titres, TRUE))
+		{
+			foreach ($titres as $langue => $titre)
+			{
+				$chemins[$langue] = implode('/', array_replace($segments, [$i => $titre]));
+			}
+
+			break;
+		}
+	}
+
+	nf_seo_traduit(array_keys($textes), $chemins);
 }
 
 /**
@@ -556,7 +693,8 @@ function nf_seo_bouton(string $type, int $id): string
  * référencement (Paramètres → Référencement) : les deux voient exactement les mêmes pages.
  *
  * Une entrée marquée `sans_langue` — un contenu qui n'a pas de langue à lui, cf. nf_seo_sans_langue() —
- * ne figure qu'au plan de la langue première du site, celle de sa canonique.
+ * ne figure qu'au plan de la langue première du site, celle de sa canonique. Une entrée qui porte `langues` — un
+ * contenu traduit, cf. nf_seo_traduit() — ne figure qu'au plan de ces langues-là.
  *
  * @return array{adresses: list<array{loc: string, lastmod: ?string}>, modules: array<string, int>}
  */
@@ -581,7 +719,8 @@ function nf_seo_plan(): array
 		{
 			foreach ((array) $controleur->sitemap() as $entree)
 			{
-				if ($premiere || empty($entree['sans_langue']))
+				// `langues` : un contenu traduit, annoncé seulement dans les langues où il est écrit (m33).
+				if (isset($entree['langues']) ? ($courante === '' || in_array($courante, (array) $entree['langues'], TRUE)) : ($premiere || empty($entree['sans_langue'])))
 				{
 					$entrees[] = ['module' => $nom] + (array) $entree;
 				}

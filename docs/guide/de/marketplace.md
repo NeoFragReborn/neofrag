@@ -37,8 +37,13 @@ geschrieben hast: Zippe seinen Ordner und lade ihn hoch.
   Katalogs und listet die zu aktualisierenden; wende sie mit einem Klick an (Download + SHA-256, Dateien ersetzt,
   **ausstehende Schema-Migrationen angewendet**). Sonst aktualisiert auch das Hochladen eines neuen `.zip` über
   *Hinzufügen* (eine höhere Version ersetzt die alte).
-- **Entfernen**: auf der Karte des Addons unter **Themes & Addons**, **Löschen** (das Addon muss deaktiviert sein).
-  Seine Tabellen und Daten werden entfernt.
+- **Entfernen**: im Menü seiner Karte unter **Themes & Addons**. Ein Modul oder ein Widget: **Deinstallieren** —
+  seine Tabellen, seine Daten und seine Dateien werden entfernt, nach einer unmittelbar davor angelegten Sicherung
+  (Ordner `backups/addons` auf dem Server); ein Modul, das ein anderes Addon benötigt, wird abgelehnt, und das
+  Fenster nennt sie. Ein Theme: **Löschen** (nicht das aktive Theme). Addons des Kerns lassen sich nicht entfernen.
+- **Zurücksetzen** (ein Modul): seine Daten werden gelöscht und es beginnt wie am Tag seiner Installation; seine
+  Einstellungen, seine Berechtigungen und die Links, die dorthin führen, bleiben. Vorher wird eine Sicherung
+  seiner Tabellen angelegt.
 
 > Die **Authentifizierungs-Connectoren** (Discord, GitHub, Google) gehören zum **Kern**: Sie sind schon da und werden in
 > den Einstellungen eingerichtet — sie gehen nicht über den Marketplace.

@@ -42,6 +42,9 @@ class Index extends Controller_Module
 
 	public function _forum($forum_id, $title, $category_id, $subforums, $announces, $topics, $prefixe = 0)
 	{
+		// Le forum annoncé dans les langues où son nom est écrit, chacune à l'adresse de SON nom (m33).
+		nf_seo_traduit_contenu('nf_forum_lang', 'forum_id', (int) $forum_id);
+
 		$prefixes = $this->_modele_forum()->prefixes();
 		$this	->title($title)
 				->_breadcrumb($category_id, $forum_id);

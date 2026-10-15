@@ -561,8 +561,11 @@ function nf_formulaire(string $html, string $champ_attendu): ?array
 
             $valeur = '';
 
+            // L'option choisie, même quand sa valeur est vide (« Police du thème ») : la prendre pour « rien de choisi »
+            // renvoyait la première option non vide, et un formulaire réenvoyé tel quel changeait ce réglage (2026-10-15,
+            // la police de la vitrine passée à Inter en allumant le push ; aussitôt remise).
             if (preg_match('#<option\b([^>]*\bselected\b[^>]*)>#i', $liste[2], $o)
-                && preg_match('/value="([^"]*)"/i', $o[1], $v) && $v[1] !== '')
+                && preg_match('/value="([^"]*)"/i', $o[1], $v))
             {
                 $valeur = html_entity_decode($v[1], ENT_QUOTES, 'UTF-8');
             }

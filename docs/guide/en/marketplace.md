@@ -37,8 +37,12 @@ and upload it.
   catalogue's and lists those to update; apply them in one click (download + SHA-256, files replaced,
   **pending schema migrations applied**). Otherwise, uploading a new `.zip` through *Add* also updates (a higher
   version replaces the old one).
-- **Remove**: from the addon's card in **Themes & Addons**, **Delete** (the addon must be disabled). Its tables
-  and data are removed.
+- **Remove**: from its card's menu in **Themes & Addons**. A module or a widget: **Uninstall** — its tables, its
+  data and its files are removed, after a backup taken just before (the `backups/addons` folder on the server); a
+  module that another addon needs is refused, and the window names them. A theme: **Delete** (not the active
+  theme). Core addons cannot be removed.
+- **Reset to zero** (a module): its data is erased and it starts again as on the day it was installed; its
+  settings, its permissions and the links that lead to it remain. A backup of its tables is taken first.
 
 > The **authentication connectors** (Discord, GitHub, Google) are part of the **core**: they are already there,
 > to be configured in the settings — they do not go through the marketplace.

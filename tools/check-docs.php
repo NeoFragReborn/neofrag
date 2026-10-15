@@ -303,6 +303,27 @@ if (array_sum($offert) > 0 && is_file($roadmap = $root.'/ROADMAP.md'))
     }
 }
 
+// Les textes d'annonce (fiches des annuaires, messages Discord et réseaux) recopient les mêmes chiffres : la 1.2.50
+// ajoutait un module (Collectifs), et ils disaient encore 35 le jour de sa publication (relevé en relisant le tableau,
+// 2026-10-15).
+if (array_sum($offert) > 0)
+{
+    foreach (nf_fichiers(['Annonce NeoFrag Reborn'], ['md']) as $relatif => $texte)
+    {
+        $verifie++;
+        preg_match_all('/(\d+)\s+modules?,\s*(\d+)\s+widgets?,?\s*(?:et|and)?\s*(\d+)\s+th[eè]mes?/u', (string) file_get_contents($texte), $chiffres, PREG_SET_ORDER);
+
+        foreach ($chiffres as $m)
+        {
+            if ([(int) $m[1], (int) $m[2], (int) $m[3]] !== [$offert['module'], $offert['widget'], $offert['theme']])
+            {
+                $erreurs[] = sprintf('%s — annonce %d modules, %d widgets et %d thèmes ; le catalogue marketplace en offre %d, %d et %d',
+                    $relatif, (int) $m[1], (int) $m[2], (int) $m[3], $offert['module'], $offert['widget'], $offert['theme']);
+            }
+        }
+    }
+}
+
 // ══ 2. Les renvois entre documents, ancres comprises ════════════════════════════════════════════
 
 /**

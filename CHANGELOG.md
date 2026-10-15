@@ -11,6 +11,41 @@ Michaël BILCOT et Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.51] — 2026-10-15
+
+### Ajouté
+
+- **Désinstaller un module ou un widget, et remettre un module à zéro, depuis sa carte.** Jusqu'ici, un module ou
+  un widget se désactivait seulement. **Désinstaller** retire ses tables, ses données et ses fichiers ; un module dont
+  un autre addon a besoin est refusé, et la fenêtre dit lesquels. **Remettre à zéro** efface les données d'un module
+  et le fait repartir comme au jour de son installation ; ses réglages, ses permissions et les liens qui y mènent
+  restent. Les deux prennent d'abord une sauvegarde (dossier `backups/addons` du serveur), et la confirmation dit
+  combien de lignes partent. Les addons du cœur ne se retirent pas.
+
+### Corrigé
+
+- **Les aperçus du marketplace restaient les anciens dans le navigateur.** Une vignette garde son adresse d'une
+  version à l'autre : un visiteur qui l'avait déjà vue gardait l'ancienne en cache — les vignettes dessinées de la
+  1.2.50 paraissaient encore en captures. L'adresse porte désormais l'empreinte de l'archive.
+- **Un album des Galeries ne se traduisait pas.** Dans l'administration d'une autre langue, un album pas encore
+  traduit manquait à la liste, et son écran d'édition répondait « page introuvable ». Il y paraît maintenant, et son
+  écran s'ouvre avec ses champs vides, prêts pour la traduction ; le texte des autres langues ne bouge pas.
+- **Nebula : « Déconnexion » introuvable sur les actualités, le forum et les profils.** Ces pages n'ont pas de
+  colonne, donc pas le bloc de l'espace membre, et le pseudo en haut menait seulement à « Mon espace ». Il ouvre
+  maintenant le menu du compte, le même que dans les autres thèmes : profil, compte, messagerie, administration,
+  déconnexion.
+- **Le menu d'un thème restait dans la langue de l'administrateur qui l'avait activé.** Activé ou réinstallé depuis
+  une administration en anglais, un thème écrivait « Home », « News »… et tous les visiteurs, français compris, les
+  lisaient ainsi. Ses liens s'écrivent maintenant en français, la langue source, et la navigation les montre dans la
+  langue de chaque page. Un thème déjà installé garde son menu : « Réinstaller par défaut » le réécrit.
+- **Les moteurs de recherche connaissent les traductions du contenu.** Les événements, le palmarès, les offres de
+  recrutement, les sondages, les campagnes de dons, les pages du wiki, les téléchargements, la FAQ, les liens et la
+  boutique se disaient encore sans langue : une seule adresse annoncée, en français. Ils annoncent maintenant les
+  langues où ils sont écrits, et une langue où ils ne le sont pas renvoie sa canonique vers celle qui l'est. Et les
+  liens entre langues des actualités, des billets du Blog, des forums et des rubriques d'annonces menaient, dans les
+  autres langues, à une redirection vers le titre traduit — les moteurs écartent un tel lien : chacun mène
+  maintenant à l'adresse de son titre.
+
 ## [1.2.50] — 2026-10-15
 
 ### Ajouté

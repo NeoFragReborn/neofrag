@@ -14,16 +14,29 @@ class Gallery extends Model
 	public function get_gallery($category_id = FALSE)
 	{
 		$this->db	->select('g.*', 'gl.title', 'gl.description', 'g.image_id as image', 'c.icon_id as category_icon', 'c.name as category_name', 'cl.title as category_title', 'COUNT(DISTINCT gi.image_id) as images')
-					->from('nf_gallery g')
-					->join('nf_gallery_lang gl',            'g.gallery_id  = gl.gallery_id')
-					->join('nf_gallery_categories c',       'g.category_id = c.category_id')
+					->from('nf_gallery g');
+
+		/*
+		 * Côté public, la liste est dans la langue DEMANDÉE, comme les actualités. Dans l'administration, elle montre
+		 * tout, avec la meilleure traduction du titre : sinon un album pas encore traduit dans la langue où l'on
+		 * travaille est INVISIBLE, et on ne peut pas l'ouvrir pour le traduire (m30, 2026-10-15).
+		 */
+		if ($this->url->admin)
+		{
+			$this->db->join_lang('nf_gallery_lang gl', 'gallery_id', 'g.gallery_id');
+		}
+		else
+		{
+			$this->db->join('nf_gallery_lang gl', 'g.gallery_id = gl.gallery_id')->where('gl.lang', $this->config->lang->info()->name);
+		}
+
+		$this->db	->join('nf_gallery_categories c',       'g.category_id = c.category_id')
 					->join_lang('nf_gallery_categories_lang cl', 'category_id', 'c.category_id')
 					// LEFT : cette table ne sert qu'au COMPTAGE des images. En jointure stricte, un
 					// album VIDE disparaissait de la liste — la page annonçait « Aucun album »
 					// alors que trois existaient et étaient publiés. Un album sans image doit
 					// s'afficher avec 0 image, pas s'effacer.
 					->join('nf_gallery_images gi',          'g.gallery_id  = gi.gallery_id', 'LEFT')
-					->where('gl.lang', $this->config->lang->info()->name)
 					->where('g.deleted_at', NULL)
 					->group_by('g.gallery_id')
 					->order_by('g.gallery_id DESC');
@@ -51,14 +64,21 @@ class Gallery extends Model
 			$lang = $this->langue_du_contenu('nf_gallery_lang', 'gallery_id', $gallery_id);
 		}
 
+		/*
+		 * Dans l'administration, la traduction est jointe à GAUCHE, sur la langue demandée EXACTEMENT : un album pas
+		 * encore traduit dans cette langue s'ouvre quand même, ses champs vides, et on l'écrit. Avec la jointure
+		 * stricte, l'écran répondait 404 (m30). Jamais de repli ici : proposer le français dans l'écran allemand
+		 * reviendrait à l'y recopier au premier enregistrement.
+		 */
+		$exacte = preg_match('/^[a-z]{2}$/', (string) $lang) ? (string) $lang : 'fr';
+
 		$this->db	->select('g.*', 'gl.title', 'gl.description', 'c.name as category_name', 'cl.title as category_title', 'c.image_id as category_image', 'c.icon_id as category_icon')
 					->from('nf_gallery g')
-					->join('nf_gallery_lang gl',            'g.gallery_id  = gl.gallery_id')
+					->join('nf_gallery_lang gl',            'g.gallery_id  = gl.gallery_id AND gl.lang = "'.$exacte.'"', $this->url->admin ? 'LEFT' : '')
 					->join('nf_gallery_categories c',       'g.category_id = c.category_id')
 					->join_lang('nf_gallery_categories_lang cl', 'category_id', 'c.category_id', $lang)
 					->where('g.gallery_id', $gallery_id)
 					->where('g.name', $name)
-					->where('gl.lang', $lang)
 					->where('g.deleted_at', NULL);
 
 		if (!$this->url->admin)

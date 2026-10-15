@@ -13,6 +13,43 @@ Michaël BILCOT und Jérémy VALENTIN — ein Open-Source-Projekt unter der Lize
 
 ---
 
+## [1.2.51] — 2026-10-15
+
+### Hinzugefügt
+
+- **Ein Modul oder ein Widget deinstallieren und ein Modul zurücksetzen, direkt auf seiner Karte.** Bisher ließ
+  sich ein Modul oder ein Widget nur deaktivieren. **Deinstallieren** entfernt seine Tabellen, seine Daten und seine
+  Dateien; ein Modul, das ein anderes Addon benötigt, wird abgelehnt, und das Fenster nennt sie. **Zurücksetzen**
+  löscht die Daten eines Moduls und lässt es wie am Tag seiner Installation neu beginnen; seine Einstellungen, seine
+  Berechtigungen und die Links, die dorthin führen, bleiben. Beide legen zuerst eine Sicherung an (Ordner
+  `backups/addons` auf dem Server), und die Bestätigung nennt die Zahl der Zeilen, die verloren gehen. Addons des
+  Kerns lassen sich nicht entfernen.
+
+### Behoben
+
+- **Die Vorschaubilder des Marketplace blieben im Browser die alten.** Ein Vorschaubild behält seine Adresse von einer
+  Version zur nächsten: Wer es schon gesehen hatte, behielt das alte im Cache — die gezeichneten Vorschaubilder der
+  1.2.50 sahen noch wie Bildschirmfotos aus. Die Adresse trägt jetzt den Fingerabdruck des Archivs.
+- **Ein Album der Galerien ließ sich nicht übersetzen.** In der Verwaltung einer anderen Sprache fehlte ein noch
+  nicht übersetztes Album in der Liste, und seine Bearbeitungsseite antwortete „Seite nicht gefunden“. Es erscheint
+  jetzt dort, und seine Seite öffnet sich mit leeren Feldern, bereit für die Übersetzung; der Text der anderen
+  Sprachen bleibt unverändert.
+- **Nebula: „Abmelden“ war auf den News-, Forum- und Profilseiten nicht zu finden.** Diese Seiten haben keine
+  Seitenleiste, also keinen Mitgliederbereich, und der Benutzername oben führte nur zu „Mein Bereich“. Er öffnet jetzt
+  das Kontomenü, dasselbe wie in den anderen Themes: Profil, Konto, Nachrichten, Verwaltung, Abmelden.
+- **Das Menü eines Themes blieb in der Sprache des Administrators, der es aktiviert hatte.** Aus einer englischen
+  Verwaltung aktiviert oder neu installiert, schrieb ein Theme „Home“, „News“… und alle Besucher, auch die
+  französischen, lasen es so. Seine Links werden jetzt auf Französisch, der Ausgangssprache, geschrieben, und die
+  Navigation zeigt sie in der Sprache jeder Seite. Ein bereits installiertes Theme behält sein Menü:
+  „Standardeinstellungen wiederherstellen“ schreibt es neu.
+- **Suchmaschinen kennen die Übersetzungen der Inhalte.** Veranstaltungen, Auszeichnungen, Stellenangebote, Umfragen,
+  Spendenkampagnen, Wiki-Seiten, Downloads, die FAQ, Links und der Shop gaben sich noch als sprachlos aus: eine
+  einzige angekündigte Adresse, auf Französisch. Sie kündigen jetzt die Sprachen an, in denen sie geschrieben sind,
+  und eine Sprache, in der sie es nicht sind, verweist ihren Canonical auf eine, in der sie es sind. Und die Links
+  zwischen den Sprachen von News, Blogbeiträgen, Foren und Kleinanzeigen-Rubriken führten in den anderen Sprachen zu
+  einer Weiterleitung auf den übersetzten Titel — Suchmaschinen verwerfen einen solchen Link: Jeder führt jetzt zur
+  Adresse seines eigenen Titels.
+
 ## [1.2.50] — 2026-10-15
 
 ### Hinzugefügt

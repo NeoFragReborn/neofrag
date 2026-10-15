@@ -64,13 +64,16 @@ $nf_origin       = site_origin();
 $nf_chemin       = nf_chemin_public();
 $nf_langues_page = (array) ($this->output->data->get('module', 'langues_du_contenu') ?: []);
 $nf_langue_page  = (string) ($this->output->data->get('module', 'langue_servie') ?: $this->output->data->get('module', 'langue_canonique') ?: $this->config->lang->info()->name);
-$nf_canonical    = nf_seo_adresse($nf_origin, $this->url->base, $nf_langue_page, $nf_chemin);
+// L'adresse du contenu dans chaque langue, quand elle porte son titre (nf_seo_traduit(), m33) ; sinon celle de la page.
+$nf_chemins      = (array) ($this->output->data->get('module', 'chemins_par_langue') ?: []);
+$nf_chemin_en    = static fn (string $langue): string => (string) ($nf_chemins[$langue] ?? $nf_chemin);
+$nf_canonical    = nf_seo_adresse($nf_origin, $this->url->base, $nf_langue_page, $nf_chemin_en($nf_langue_page));
 $nf_accueil      = $nf_chemin === '';
 ?>
 <?php if (count($this->config->langs) > 1): ?>
 <?php foreach ($this->config->langs as $lang): ?>
 <?php if (!$nf_langues_page || in_array($lang->info()->name, $nf_langues_page, TRUE)): ?>
-<link rel="alternate" hreflang="<?php echo $lang->info()->name ?>" href="<?php echo nf_texte(nf_seo_adresse($nf_origin, $this->url->base, $lang->info()->name, $nf_chemin)) ?>">
+<link rel="alternate" hreflang="<?php echo $lang->info()->name ?>" href="<?php echo nf_texte(nf_seo_adresse($nf_origin, $this->url->base, $lang->info()->name, $nf_chemin_en($lang->info()->name))) ?>">
 <?php endif ?>
 <?php endforeach ?>
 <?php if (!$nf_langues_page): ?>

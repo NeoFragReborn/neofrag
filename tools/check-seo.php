@@ -23,7 +23,8 @@ declare(strict_types=1);
  *      chaque plan ne porte que des adresses complètes, sur l'origine du site, chacune une fois, et
  *      aucune page qui n'a rien à faire dans un moteur (recherche, profils, administration) ;
  *   3. un échantillon des adresses de chaque plan (`--max`) RÉPOND 200 sans redirection, n'est pas en
- *      `noindex`, et se déclare canonique sur l'adresse même du plan ; le même chemin, échantillonné dans
+ *      `noindex`, et se déclare canonique sur l'adresse même du plan ; les autres langues qu'il annonce en
+ *      `hreflang` répondent 200 elles aussi, sans redirection ; le même chemin, échantillonné dans
  *      chaque langue, n'y porte pas le même texte (un sujet du forum annoncé dans six plans, six fois
  *      canonique : Google en retenait une autre — Search Console de la vitrine, 2026-10-07) ;
  *   4. l'accueil de chaque langue : un titre sans répétition, une description de 50 à 160 caractères
@@ -298,6 +299,8 @@ foreach ($plans as $plan)
  * disait tout juste, faute de comparer les langues entre elles.
  */
 $pas = max(1, (int) ceil(max(array_map('count', $listes ?: [[]])) / max(1, (int) $o['max'])));
+$vues      = [];
+$annoncees = [];
 
 foreach ($listes as $plan => $liste)
 {
@@ -319,6 +322,13 @@ foreach ($listes as $plan => $liste)
         }
 
         $e = $entete($page['corps']);
+        $vues[$adresse] = TRUE;
+
+        // Les autres langues que la page annonce : relues plus bas, chacune une fois.
+        foreach (array_diff_key($e['alternates'], ['x-default' => 1]) as $href)
+        {
+            $annoncees[$href] ??= $adresse;
+        }
 
         if (str_contains($e['robots'], 'noindex'))
         {
@@ -339,6 +349,29 @@ foreach ($listes as $plan => $liste)
         {
             $empreintes[$chemin($adresse)][$adresse] = $propres($page['corps'], $chrome);
         }
+    }
+}
+
+/*
+ * Un `hreflang` mène à la page de cette langue, qui RÉPOND : pas à une redirection. Une adresse qui porte le titre du
+ * contenu, annoncée telle quelle dans les autres langues, y redirigeait vers le titre traduit — les moteurs écartent
+ * un tel lien. Vu sur les actualités de la démo le 2026-10-15 ; ni ce contrôle ni check-langues-contenu, qui
+ * suivaient les redirections, ne le voyaient (m33).
+ */
+foreach ($annoncees as $href => $page_origine)
+{
+    if (isset($vues[$href]))
+    {
+        continue;
+    }
+
+    $cible = nf_http($locale($href), ['suivre' => 0]);
+    $vues[$href] = TRUE;
+
+    if ($cible['code'] !== 200)
+    {
+        $ecarts[] = sprintf('%s annonce en hreflang %s, qui répond %s%s', $page_origine, $href, $cible['code'] ?: 'rien',
+            !empty($cible['entetes']['location']) ? ' vers '.$cible['entetes']['location'] : '');
     }
 }
 
