@@ -11,6 +11,15 @@ Michaël BILCOT et Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.52] — 2026-10-15
+
+### Corrigé
+
+- **Les pages du forum se déclaraient canoniques dans une autre langue.** Un forum garde un nom par défaut pour les
+  langues où il n'est pas traduit ; la 1.2.51 ne regardait que ses traductions, et une page du forum dans la langue
+  du nom par défaut renvoyait les moteurs vers une autre langue, à une adresse qui redirigeait. Chaque forum est de
+  nouveau annoncé dans toutes les langues, chacune à l'adresse de son nom.
+
 ## [1.2.51] — 2026-10-15
 
 ### Ajouté

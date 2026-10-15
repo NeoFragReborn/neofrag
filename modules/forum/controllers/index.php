@@ -42,8 +42,19 @@ class Index extends Controller_Module
 
 	public function _forum($forum_id, $title, $category_id, $subforums, $announces, $topics, $prefixe = 0)
 	{
-		// Le forum annoncé dans les langues où son nom est écrit, chacune à l'adresse de SON nom (m33).
-		nf_seo_traduit_contenu('nf_forum_lang', 'forum_id', (int) $forum_id);
+		// Un forum existe dans toutes les langues : sous son nom traduit, sinon sous son nom par défaut (Forum::titre_forum()).
+		// Chaque langue est annoncée à l'adresse de SON nom (m33) — sur la vitrine, le français n'a pas de ligne de
+		// traduction : c'est le nom par défaut, et une page française renvoyée vers l'anglaise aurait menti.
+		$defaut      = (string) $this->db->select('title')->from('nf_forum')->where('forum_id', (int) $forum_id)->row();
+		$traductions = nf_textes_ecrits('nf_forum_lang', 'forum_id', (int) $forum_id);
+		$titres      = [];
+
+		foreach (nf_langues_ordonnees() as $langue)
+		{
+			$titres[$langue] = $traductions[$langue] ?? $defaut;
+		}
+
+		nf_seo_traduit_titres(array_filter($titres, 'strlen'));
 
 		$prefixes = $this->_modele_forum()->prefixes();
 		$this	->title($title)

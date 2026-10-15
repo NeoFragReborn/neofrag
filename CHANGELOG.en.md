@@ -13,6 +13,15 @@ Michaël BILCOT and Jérémy VALENTIN — an open source project under the LGPLv
 
 ---
 
+## [1.2.52] — 2026-10-15
+
+### Fixed
+
+- **Forum pages declared their canonical in another language.** A forum keeps a default name for the languages it is
+  not translated into; 1.2.51 only looked at its translations, and a forum page in the language of the default name
+  sent search engines to another language, at an address that redirected. Each forum is again announced in every
+  language, each at the address of its own name.
+
 ## [1.2.51] — 2026-10-15
 
 ### Added

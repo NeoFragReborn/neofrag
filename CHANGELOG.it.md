@@ -13,6 +13,15 @@ Michaël BILCOT e Jérémy VALENTIN — un progetto open source con licenza LGPL
 
 ---
 
+## [1.2.52] — 2026-10-15
+
+### Corretto
+
+- **Le pagine del forum dichiaravano la loro canonica in un'altra lingua.** Un forum conserva un nome predefinito
+  per le lingue in cui non è tradotto; la 1.2.51 guardava solo le sue traduzioni, e una pagina del forum nella
+  lingua del nome predefinito mandava i motori in un'altra lingua, a un indirizzo che reindirizzava. Ogni forum è di
+  nuovo annunciato in tutte le lingue, ciascuna all'indirizzo del proprio nome.
+
 ## [1.2.51] — 2026-10-15
 
 ### Aggiunto

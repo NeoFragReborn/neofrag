@@ -645,23 +645,35 @@ function nf_seo_traduit(array $langues, array $chemins = []): void
 
 /**
  * Le cas courant de nf_seo_traduit() : un contenu que sa table de traductions dit écrit dans telle et telle langue. Quand
- * son adresse porte son titre (`news/12/<titre>`, `blog/4/<titre>`, `forum/2/<nom>/page/2`), l'adresse de chaque langue
- * est celle de la page, ce titre remplacé par celui de la langue : le segment de l'adresse qui est le titre d'une des
- * langues. `$titre_dans_adresse` à FALSE quand l'adresse est un nom court (une campagne, une page du wiki) : c'est alors
- * celle de la page dans toutes — un nom court qui ressemble au titre d'une langue y aurait été remplacé.
+ * son adresse porte son titre (`news/12/<titre>`, `blog/4/<titre>`), l'adresse de chaque langue est celle de la page, ce
+ * titre remplacé par celui de la langue (nf_seo_traduit_titres()). `$titre_dans_adresse` à FALSE quand l'adresse est un
+ * nom court (une campagne, une page du wiki) : c'est alors celle de la page dans toutes.
  */
 function nf_seo_traduit_contenu(string $table, string $cle, int $id, string $colonne = 'title', bool $titre_dans_adresse = TRUE): void
 {
-	$textes   = nf_textes_ecrits($table, $cle, $id, $colonne);
+	nf_seo_traduit_titres(nf_textes_ecrits($table, $cle, $id, $colonne), $titre_dans_adresse);
+}
+
+/**
+ * Un contenu dont on connaît le titre dans chaque langue où il existe ([langue => titre]) : c'est le cas d'un forum, qui
+ * garde un titre par défaut pour les langues où il n'est pas traduit — il existe donc dans toutes. L'adresse de chaque
+ * langue est celle de la page, le segment qui est le titre d'une des langues remplacé par celui de la langue
+ * (`forum/2/<nom>/page/2`) ; sans `$titre_dans_adresse`, c'est l'adresse de la page dans toutes — un nom court qui
+ * ressemble au titre d'une langue y aurait été remplacé.
+ *
+ * @param array<string, string> $titres
+ */
+function nf_seo_traduit_titres(array $titres, bool $titre_dans_adresse = TRUE): void
+{
 	$segments = explode('/', nf_chemin_public());
-	$titres   = array_map('url_title', $textes);
+	$adresses = array_map('url_title', $titres);
 	$chemins  = [];
 
 	foreach ($titre_dans_adresse ? $segments : [] as $i => $segment)
 	{
-		if ($segment !== '' && in_array($segment, $titres, TRUE))
+		if ($segment !== '' && in_array($segment, $adresses, TRUE))
 		{
-			foreach ($titres as $langue => $titre)
+			foreach ($adresses as $langue => $titre)
 			{
 				$chemins[$langue] = implode('/', array_replace($segments, [$i => $titre]));
 			}
@@ -670,7 +682,7 @@ function nf_seo_traduit_contenu(string $table, string $cle, int $id, string $col
 		}
 	}
 
-	nf_seo_traduit(array_keys($textes), $chemins);
+	nf_seo_traduit(array_keys($titres), $chemins);
 }
 
 /**

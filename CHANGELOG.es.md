@@ -13,6 +13,15 @@ Michaël BILCOT y Jérémy VALENTIN — un proyecto de código abierto con licen
 
 ---
 
+## [1.2.52] — 2026-10-15
+
+### Corregido
+
+- **Las páginas del foro declaraban su canónica en otro idioma.** Un foro conserva un nombre por defecto para los
+  idiomas a los que no está traducido; la 1.2.51 solo miraba sus traducciones, y una página del foro en el idioma del
+  nombre por defecto enviaba a los buscadores a otro idioma, a una dirección que redirigía. Cada foro vuelve a
+  anunciarse en todos los idiomas, cada uno en la dirección de su propio nombre.
+
 ## [1.2.51] — 2026-10-15
 
 ### Añadido

@@ -13,6 +13,15 @@ Michaël BILCOT e Jérémy VALENTIN — um projeto de código aberto com licenç
 
 ---
 
+## [1.2.52] — 2026-10-15
+
+### Corrigido
+
+- **As páginas do fórum declaravam a sua canónica noutra língua.** Um fórum mantém um nome por omissão para as
+  línguas para as quais não está traduzido; a 1.2.51 só olhava para as suas traduções, e uma página do fórum na
+  língua do nome por omissão enviava os motores para outra língua, para um endereço que redirecionava. Cada fórum
+  volta a ser anunciado em todas as línguas, cada uma no endereço do seu próprio nome.
+
 ## [1.2.51] — 2026-10-15
 
 ### Adicionado

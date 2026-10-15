@@ -13,6 +13,15 @@ Michaël BILCOT und Jérémy VALENTIN — ein Open-Source-Projekt unter der Lize
 
 ---
 
+## [1.2.52] — 2026-10-15
+
+### Behoben
+
+- **Forenseiten erklärten ihren Canonical in einer anderen Sprache.** Ein Forum behält einen Standardnamen für die
+  Sprachen, in die es nicht übersetzt ist; die 1.2.51 sah nur seine Übersetzungen an, und eine Forenseite in der
+  Sprache des Standardnamens schickte Suchmaschinen in eine andere Sprache, an eine Adresse, die weiterleitete. Jedes
+  Forum wird wieder in allen Sprachen angekündigt, jede unter der Adresse ihres eigenen Namens.
+
 ## [1.2.51] — 2026-10-15
 
 ### Hinzugefügt
