@@ -51,10 +51,7 @@ class Admin_Ajax extends Controller_Module
 					}
 					else
 					{
-						$a->widget_id($this->db->insert('nf_widgets', $this->db	->select('widget', 'type', 'title', 'settings')
-																				->from('nf_widgets')
-																				->where('widget_id', $a->widget_id())
-																				->row()));
+						$a->widget_id($this->model()->copier_widget((int) $a->widget_id()));
 					}
 
 					return $a;
@@ -147,11 +144,12 @@ class Admin_Ajax extends Controller_Module
 	public function widget_add($disposition_id, $disposition, $row_id, $col_id, $title, $widget_name, $type, $settings)
 	{
 		$widget_id = $this->db	->insert('nf_widgets', [
-									'title'    => $title ? utf8_htmlentities($title) : NULL,
 									'widget'   => $widget_name,
 									'type'     => $type,
 									'settings' => $this->widget($widget_name)->get_settings($type, $settings ?: [])
 								]);
+
+		$this->model()->ecrire_titre((int) $widget_id, $title ? utf8_htmlentities($title) : '');
 
 		$disposition[$row_id][$col_id]->append($widget = $this->widget($widget_id));
 
@@ -201,11 +199,12 @@ class Admin_Ajax extends Controller_Module
 
 		$this->db	->where('widget_id', $id)
 					->update('nf_widgets', [
-						'title'    => $title ? utf8_htmlentities($title) : NULL,
 						'widget'   => $widget,
 						'type'     => $type,
 						'settings' => $settings
 					]);
+
+		$this->model()->ecrire_titre((int) $id, $title ? utf8_htmlentities($title) : '');
 
 		return $disposition[$row_id][$col_id][$widget_id]->id($widget_id);
 	}

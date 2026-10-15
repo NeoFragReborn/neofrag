@@ -89,4 +89,19 @@ final class FormEchappementTest extends HeadlessTestCase
 		$this->assertStringNotContainsString('<b>x', $html);
 		$this->assertStringContainsString('<option value="a&quot;&gt;&lt;b&gt;x" selected="selected">', $html);
 	}
+
+	/**
+	 * « Aucune règle » écrit comme une chaîne vide — `'rules' => $requis ? 'required' : ''`, ce qu'écrit le
+	 * formulaire de candidature pour une question facultative — restait une chaîne, que l'affichage passait à
+	 * in_array() : TypeError, page 500 (2026-10-15).
+	 */
+	public function test_une_chaine_de_regles_vide_veut_dire_aucune_regle(): void
+	{
+		$html = $this->formulaire([
+			'facultative' => ['label' => 'Facultative', 'type' => 'text', 'rules' => ''],
+		]);
+
+		$this->assertStringContainsString('Facultative', $html);
+		$this->assertStringNotContainsString('<em>*</em>', $html, 'une question facultative ne porte pas d\'astérisque');
+	}
 }

@@ -44,4 +44,5 @@ return [
 	'25de8e0d' => 'Gestion des slides du widget slider en page d\'accueil. Ajoute/modifie images, titres, sous-titres, liens et ordre.',
 	'303f1e65' => 'Gérer les slides',
 	'287e1fcc' => 'Le lien doit être une adresse web (http ou https) ou une page du site.',
+	'7d58e538' => 'Écrit pour %s. Change la langue de l\'administration pour traduire cette vue ; les autres langues gardent leur texte.',
 ];

@@ -224,7 +224,7 @@ class Admin extends Controller_Module
 					]
 				])
 				->pagination(FALSE)
-				->data($this->db->select('tu.user_id', 'u.username', 'r.title')->from('nf_teams_users tu')->join('nf_user u', 'u.id = tu.user_id AND u.deleted = "0"', 'INNER')->join('nf_teams_roles r', 'r.role_id = tu.role_id')->where('tu.team_id', $team_id)->order_by('r.title', 'u.username')->get())
+				->data($this->db->select('tu.user_id', 'u.username', 'rl.title')->from('nf_teams_users tu')->join('nf_user u', 'u.id = tu.user_id AND u.deleted = "0"', 'INNER')->join('nf_teams_roles r', 'r.role_id = tu.role_id')->join_lang('nf_teams_roles_lang rl', 'role_id', 'r.role_id', NULL, 'LEFT')->where('tu.team_id', $team_id)->order_by('rl.title', 'u.username')->get())
 				->no_data($this->lang('Il n\'y a pas encore de joueur dans cette équipe'));
 
 		return $this->row(
@@ -289,10 +289,15 @@ class Admin extends Controller_Module
 
 	public function _roles_edit($role_id, $title)
 	{
+		// L'écran d'édition montre le nom de la langue OÙ L'ON TRAVAILLE, et non le repli (m32,
+		// 2026-10-15) : sinon on croirait corriger ce que voient tous les visiteurs. Vide tant que
+		// rien n'y est écrit ; le sous-titre, lui, garde le nom lu.
+		$ecrit = $this->model('roles')->titre_dans((int) $role_id, (string) $this->config->lang->info()->name);
+
 		$this	->subtitle($this->lang('Rôle %s', $title))
 				->form()
 				->add_rules('roles', [
-					'title' => $title
+					'title' => (string) $ecrit
 				])
 				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/teams');

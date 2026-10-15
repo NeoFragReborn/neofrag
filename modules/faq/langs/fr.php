@@ -59,4 +59,6 @@ return [
 	'50d3b0b0' => 'Réponse',
 	'b2656c03' => 'Éditer catégorie : %s',
 	'fe1ca089' => 'Foire aux questions catégorisée affichée en accordéon Bootstrap.',
+	'262fe079' => 'Écrit pour %s. Change la langue de l\'administration pour traduire cette question ; les autres langues gardent leur texte.',
+	'40698b8f' => 'Écrit pour %s. Change la langue de l\'administration pour traduire cette catégorie ; les autres langues gardent leur texte.',
 ];

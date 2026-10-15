@@ -47,8 +47,14 @@ function nf_banc_widget(mysqli $db, string $theme, string $widget, string $type,
 {
     $reglages = $json === NULL ? 'NULL' : "'".$db->real_escape_string($json)."'";
 
-    $db->query("INSERT INTO `nf_widgets` (`widget`, `type`, `title`, `settings`) VALUES ('"
-        .$db->real_escape_string($widget)."', '".$db->real_escape_string($type)."', NULL, ".$reglages.")");
+    // Pas de titre : il vit dans `nf_widgets_lang` depuis m32, et le widget prend alors le sien. L'insertion
+    // nommait encore la colonne partie, échouait en silence, et la page ne montrait aucun widget posé (2026-10-15).
+    if (!$db->query("INSERT INTO `nf_widgets` (`widget`, `type`, `settings`) VALUES ('"
+        .$db->real_escape_string($widget)."', '".$db->real_escape_string($type)."', ".$reglages.")"))
+    {
+        nf_refus("le banc ne peut pas poser le widget {$widget}/{$type} : ".$db->error);
+    }
+
     $id = (int) $db->insert_id;
 
     $disposition = '[{"style":"row-default","cols":[{"size":'.($taille === NULL ? 'null' : (string) json_encode($taille)).',"widgets":[{"id":'.$id.',"style":'.($style === NULL ? 'null' : (string) json_encode($style)).',"size":null}]}]}]';

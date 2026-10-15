@@ -188,4 +188,9 @@ return [
 	'602bea83' => 'Mi opinión sobre esta candidatura',
 	'350c98af' => 'Oferta %s',
 	'8fd9c7ef' => 'Guardar',
+	'bcb37883' => 'Escrito para %s. Cambia el idioma de la administración para traducir las preguntas; los demás idiomas conservan su texto.',
+	'174101d1' => 'Editar o traducir este campo',
+	'f3754670' => 'Campo modificado.',
+	'2173f759' => 'Editar el campo',
+	'a3a36296' => 'Escrito para %s. Cambia el idioma de la administración para traducir esta oferta; los demás idiomas conservan su texto.',
 ];

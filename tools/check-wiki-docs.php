@@ -24,6 +24,9 @@ declare(strict_types=1);
  * - `install/wiki.sql` n'existe plus, et aucun autre `install/*.sql` livré ne porte une page de documentation (les
  *   slugs de tools/lib/wiki.php) ; `install/vitrine.sql`, propre au site officiel et jamais livré, est hors du jugement ;
  * - aucune page convertie ne renvoie hors du wiki par un chemin relatif : le site n'a pas `docs/` ;
+ * - chaque renvoi vers une section (`admin#…`, `#…`) mène à un titre de la page visée, dans sa langue : le wiki
+ *   pose ses ancres sur les titres de niveau 2 à 4 (Wiki_Ancres), et les guides écrivent les leurs comme GitHub.
+ *   Avant m19, `admin#le-référencement` ou `framework#tables--table2` ne menaient nulle part ;
  * - avec `--site`, chaque page de documentation du site porte le titre et le contenu de son guide, converti exactement
  *   comme `wiki-docs` le convertit.
  *
@@ -87,7 +90,15 @@ foreach (glob(nf_racine().'/install/*.sql') ?: [] as $fichier)
 }
 
 // ── Une page du wiki ne renvoie jamais hors du wiki par un chemin relatif ────
-foreach ($attendu as $slug => $page)
+$traductions = [];
+
+foreach (NF_WIKI_LANGUES as $langue)
+{
+    $traductions[$langue] = nf_wiki_attendu_traduit($langue);
+}
+
+foreach (array_merge([$attendu], array_values($traductions)) as $jeu)
+foreach ($jeu as $slug => $page)
 {
     if (preg_match_all('/href="(\.\.\/[^"]*)"/', $page['content'], $morts))
     {
@@ -96,16 +107,52 @@ foreach ($attendu as $slug => $page)
     }
 }
 
+// ── Un renvoi vers une section mène à un titre de la page visée ──────────────
+$renvois = 0;
+
+foreach (['fr' => $attendu] + $traductions as $langue => $jeu)
+{
+    $ids = array_map(static fn (array $page): array => NF\Modules\Wiki\Lib\Wiki_Ancres::ids($page['content']), $jeu);
+
+    foreach ($jeu as $slug => $page)
+    {
+        if (!preg_match_all('/href="([a-z0-9-]*)#([^"]+)"/', $page['content'], $liens, PREG_SET_ORDER))
+        {
+            continue;
+        }
+
+        foreach ($liens as [, $cible, $ancre])
+        {
+            $cible = $cible === '' ? $slug : $cible;
+
+            if (!isset($jeu[$cible]))
+            {
+                continue;
+            }
+
+            $renvois++;
+            $ancre = rawurldecode(html_entity_decode($ancre, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+
+            if (!in_array($ancre, $ids[$cible], TRUE))
+            {
+                printf("  ✗ %-18s %-18s renvoi vers %s#%s, titre introuvable dans le wiki (%s)\n", 'docs/guide', $slug, $cible, $ancre, $langue);
+                $ecarts++;
+            }
+        }
+    }
+}
+
 // ── Le wiki d'un site en service ─────────────────────────────────────────────
 foreach ((array) $o['site'] as $dossier)
+foreach (['fr' => $attendu] + $traductions as $langue => $jeu)
 {
-    $pages = wiki_du_site((string) $dossier);
+    $pages = wiki_du_site((string) $dossier, $langue);
 
-    foreach ($attendu as $slug => $page)
+    foreach ($jeu as $slug => $page)
     {
         if (!isset($pages[$slug]))
         {
-            printf("  ✗ %-18s %-18s page absente\n", $dossier, $slug);
+            printf("  ✗ %-18s %-18s page absente (%s)\n", $dossier, $slug, $langue);
             $ecarts++;
             continue;
         }
@@ -124,7 +171,7 @@ foreach ((array) $o['site'] as $dossier)
 
         if ($raisons)
         {
-            printf("  ✗ %-18s %-18s %s\n", $dossier, $slug, implode(' ; ', $raisons));
+            printf("  ✗ %-18s %-18s %s (%s)\n", $dossier, $slug, implode(' ; ', $raisons), $langue);
             $ecarts++;
         }
     }
@@ -137,7 +184,7 @@ if ($ecarts)
     nf_echec("{$ecarts} écart(s) : documentation livrée, ou wiki d'un site en retard sur docs/guide/");
 }
 
-nf_ok(sprintf('%d fichier(s) livré(s) sans documentation%s', $livres,
+nf_ok(sprintf('%d fichier(s) livré(s) sans documentation ; %d renvoi(s) vers une section, tous menant à leur titre%s', $livres, $renvois,
     $o['site'] ? ' ; '.count($attendu).' page(s) identiques aux guides dans '.implode(', ', (array) $o['site']) : ''));
 
 /**
@@ -145,33 +192,16 @@ nf_ok(sprintf('%d fichier(s) livré(s) sans documentation%s', $livres,
  *
  * @return array<string, array{title: string, content: string}>
  */
-function wiki_du_site(string $dossier): array
+function wiki_du_site(string $dossier, string $langue = 'fr'): array
 {
-    $db = [];
-
-    if (!is_file($fichier = rtrim($dossier, '/').'/config/db.php'))
-    {
-        nf_refus("{$dossier} : pas de config/db.php — est-ce un site installé ?");
-    }
-
-    require $fichier;
-    $cfg = is_array($db[0] ?? NULL) ? $db[0] : [];
-
-    $base = nf_connexion_admin([
-        'hostname' => (string) ($cfg['hostname'] ?? '127.0.0.1'),
-        'port'     => (int) ($cfg['port'] ?? 3306),
-        'username' => (string) ($cfg['username'] ?? ''),
-        'password' => (string) ($cfg['password'] ?? ''),
-    ], 'du site '.$dossier);
-
-    if (!$base->select_db((string) ($cfg['database'] ?? '')))
-    {
-        nf_refus("{$dossier} : base « ".($cfg['database'] ?? '')." » introuvable");
-    }
-
-    $base->set_charset('utf8mb4');
+    $base     = nf_connexion_site($dossier);
     $pages    = [];
-    $resultat = $base->query('SELECT slug, title, content FROM nf_wiki_pages');
+    // Depuis m32 (2026-10-15), le titre et le texte vivent dans `nf_wiki_pages_lang` : les guides sont la version
+    // FRANÇAISE. Un site pas encore mis à jour les porte encore dans `nf_wiki_pages`.
+    $traduit  = ($t = $base->query("SHOW TABLES LIKE 'nf_wiki_pages_lang'")) instanceof mysqli_result && $t->num_rows > 0;
+    $resultat = $base->query($traduit
+        ? "SELECT p.slug, l.title, l.content FROM nf_wiki_pages p JOIN nf_wiki_pages_lang l ON l.page_id = p.id AND l.lang = '".$base->real_escape_string($langue)."'"
+        : 'SELECT slug, title, content FROM nf_wiki_pages');
 
     if (!$resultat instanceof mysqli_result)
     {

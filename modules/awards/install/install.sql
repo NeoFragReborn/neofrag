@@ -10,10 +10,7 @@ CREATE TABLE IF NOT EXISTS `nf_awards` (
   `team_id` int(11) unsigned DEFAULT NULL,
   `game_id` int(11) unsigned NOT NULL,
   `image_id` int(11) unsigned DEFAULT NULL,
-  `name` varchar(100) NOT NULL,
-  `location` varchar(100) NOT NULL,
   `date` date NOT NULL,
-  `description` mediumtext NOT NULL,
   `platform` varchar(100) NOT NULL,
   `ranking` int(11) unsigned NOT NULL,
   `participants` int(11) unsigned NOT NULL,
@@ -24,6 +21,19 @@ CREATE TABLE IF NOT EXISTS `nf_awards` (
   CONSTRAINT `nf_awards_ibfk_1` FOREIGN KEY (`team_id`) REFERENCES `nf_teams` (`team_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_awards_ibfk_2` FOREIGN KEY (`game_id`) REFERENCES `nf_games` (`game_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_awards_ibfk_3` FOREIGN KEY (`image_id`) REFERENCES `nf_file` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Le nom, le lieu et le récit d'un titre, une ligne par langue (m31, 2026-10-15) : un site en six langues les
+-- montrait dans une seule. Les pages servent la meilleure traduction (`Db::join_lang()`).
+CREATE TABLE IF NOT EXISTS `nf_awards_lang` (
+  `award_id` int(11) unsigned NOT NULL,
+  `lang` varchar(5) NOT NULL,
+  `name` varchar(100) NOT NULL DEFAULT '',
+  `location` varchar(100) NOT NULL DEFAULT '',
+  `description` mediumtext DEFAULT NULL,
+  PRIMARY KEY (`award_id`,`lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `nf_awards_lang_ibfk_1` FOREIGN KEY (`award_id`) REFERENCES `nf_awards` (`award_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

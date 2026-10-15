@@ -78,4 +78,5 @@ return [
 	'4306ff8f' => 'Other place',
 	'ff8ae8a6' => 'No ranking',
 	'8fd9c7ef' => 'Save',
+	'6873a0dd' => 'Written for %s. Switch the admin language to translate this title; the other languages keep their text.',
 ];

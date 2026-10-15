@@ -32,6 +32,7 @@ use NF\NeoFrag\Core;
  * @property mixed $nf_smtp_username
  * @property mixed $nf_smtp_password
  * @property mixed $nf_smtp_secure
+ * @property mixed $nf_discord_guild_id
  * @property mixed $nf_default_page
  * @property mixed $nf_default_theme
  * @property mixed $nf_description
@@ -96,6 +97,18 @@ use NF\NeoFrag\Core;
  * Réglages du cœur lus par les modules (marketplace, dons, réseaux sociaux, supervision,
  * traduction, version) :
  * @property mixed $nf_donations_paypal_email
+ * @property mixed $nf_donations_paypal_ipn
+ * @property mixed $nf_donations_paypal_sandbox
+ * @property mixed $nf_donations_kofi_token
+ * @property mixed $nf_donations_kofi_campaign
+ * @property mixed $nf_donations_helloasso_client_id
+ * @property mixed $nf_donations_helloasso_secret
+ * @property mixed $nf_donations_helloasso_sandbox
+ * @property mixed $nf_donations_helloasso_campaign
+ * @property mixed $nf_donations_helloasso_days
+ * @property mixed $nf_donations_tipeeestream_key
+ * @property mixed $nf_donations_tipeeestream_campaign
+ * @property mixed $nf_donations_tipeeestream_since
  * @property mixed $nf_marketplace_url
  * @property mixed $nf_monitoring_check_url
  * @property mixed $nf_registration_validation
@@ -108,6 +121,9 @@ use NF\NeoFrag\Core;
  * @property mixed $nf_theme_epoch
  * @property mixed $nf_translate_api
  * @property mixed $nf_pwa
+ * @property mixed $nf_push
+ * @property mixed $nf_push_vapid_publique
+ * @property mixed $nf_push_vapid_privee
  * @property mixed $nf_version
  * @property mixed $nf_migrations_version
  * @property mixed $articles_per_page

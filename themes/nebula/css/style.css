@@ -1,7 +1,7 @@
 <?php
 /* =========================================================================
    Vitrine — NeoFrag Reborn — feuille de style (template PHP servi par NeoFrag)
-   Palette FIXE dark navy + teal (pas de config, indépendant de forge).
+   Palette dark navy + teal, RÉGLABLE depuis la configuration du thème (d10, 2026-10-15 : accent, fond, texte).
    DA moderne 2026 : glassmorphism, accent néon teal, coins arrondis.
    ======================================================================== */
 
@@ -9,9 +9,9 @@ $accent_default = '#2dd4bf';   /* teal */
 $bg_default     = '#070a10';   /* navy quasi-noir */
 $text_default   = '#e7eef6';
 
-$accent      = $accent_default;
-$bg_color    = $bg_default;
-$text_color  = $text_default;
+$accent      = $this->config->nebula_theme_color      ?: $accent_default;
+$bg_color    = $this->config->nebula_background_color ?: $bg_default;
+$text_color  = $this->config->nebula_text_color       ?: $text_default;
 $bg_image    = '';
 $header_img  = '';
 $bg_repeat   = 'no-repeat';
@@ -22,9 +22,9 @@ $header_repeat = 'no-repeat';
 $header_attach = 'scroll';
 $header_pos    = 'center top';
 
-$accent_is_custom = FALSE;
-$bg_is_custom     = FALSE;
-$text_is_custom   = FALSE;
+$accent_is_custom = (strtolower($accent) !== $accent_default);
+$bg_is_custom     = (strtolower($bg_color) !== $bg_default);
+$text_is_custom   = (strtolower($text_color) !== $text_default);
 ?>
 
 /* =========================================================================

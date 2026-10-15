@@ -86,11 +86,9 @@ class Categories extends Model
 						'name'     => url_title($title)
 					]);
 
-		$this->db	->where('category_id', $category_id)
-					->where('lang', $this->config->lang->info()->name)
-					->update('nf_news_categories_lang', [
-						'title'        => $title
-					]);
+		$this->db->ecrire_lang('nf_news_categories_lang',
+			['category_id' => $category_id, 'lang' => $this->config->lang->info()->name],
+			['title' => $title]);
 	}
 
 	public function delete_category($category_id)

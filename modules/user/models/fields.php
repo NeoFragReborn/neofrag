@@ -39,23 +39,28 @@ class Fields extends Model
 	 */
 	public function get_fields(bool $publics_seulement = FALSE): array
 	{
-		$requete = $this->db->select('field_id', 'name', 'label', 'description', 'type', 'options', 'required', 'public', 'sort_order')
-							->from('nf_user_fields');
+		// Le libellé et l'explication vivent dans `nf_user_fields_lang` depuis m32 (2026-10-15) ; la
+		// liste d'options, elle, reste commune : une option est enregistrée telle quelle dans la
+		// réponse du membre, la traduire rendrait sa réponse introuvable.
+		$requete = $this->db->select('f.field_id', 'f.name', 'fl.label', 'fl.description', 'f.type', 'f.options', 'f.required', 'f.public', 'f.sort_order')
+							->from('nf_user_fields f')
+							->join_lang('nf_user_fields_lang fl', 'field_id', 'f.field_id', NULL, 'LEFT');
 
 		if ($publics_seulement)
 		{
-			$requete->where('public', TRUE);
+			$requete->where('f.public', TRUE);
 		}
 
-		return $requete->order_by('sort_order ASC, field_id ASC')->get();
+		return $requete->order_by('f.sort_order ASC, f.field_id ASC')->get();
 	}
 
 	/** @return array<string, mixed>|null */
 	public function get_field($field_id)
 	{
-		return $this->db->select('field_id', 'name', 'label', 'description', 'type', 'options', 'required', 'public', 'sort_order')
-						->from('nf_user_fields')
-						->where('field_id', (int) $field_id)
+		return $this->db->select('f.field_id', 'f.name', 'fl.label', 'fl.description', 'f.type', 'f.options', 'f.required', 'f.public', 'f.sort_order')
+						->from('nf_user_fields f')
+						->join_lang('nf_user_fields_lang fl', 'field_id', 'f.field_id', NULL, 'LEFT')
+						->where('f.field_id', (int) $field_id)
 						->row();
 	}
 
@@ -123,16 +128,38 @@ class Fields extends Model
 		$nom   = $this->nom_disponible($label);
 		$ordre = $this->dernier_ordre();
 
-		return (int) $this->db->insert('nf_user_fields', [
+		$field_id = (int) $this->db->insert('nf_user_fields', [
 			'name'        => $nom,
-			'label'       => $label,
-			'description' => $description,
 			'type'        => in_array($type, self::TYPES, TRUE) ? $type : 'text',
 			'options'     => in_array($type, self::TYPES_A_OPTIONS, TRUE) ? implode("\n", self::options_en_tableau($options)) : NULL,
 			'required'    => $required ? 1 : 0,
 			'public'      => $public ? 1 : 0,
 			'sort_order'  => $ordre + 1,
 		]);
+
+		$this->ecrire_texte($field_id, $label, $description);
+
+		return $field_id;
+	}
+
+	/** Le texte TEL QU'IL EST ÉCRIT dans une langue, sans repli : c'est ce que l'administration édite. */
+	public function texte_dans(int $field_id, string $langue): ?array
+	{
+		$ligne = $this->db	->select('label', 'description')
+							->from('nf_user_fields_lang')
+							->where('field_id', $field_id)
+							->where('lang', $langue)
+							->row();
+
+		return is_array($ligne) && $ligne ? $ligne : NULL;
+	}
+
+	/** Écrit le texte dans une langue ; `ecrire_lang` CRÉE la ligne quand elle manque (leçon de m30). */
+	public function ecrire_texte(int $field_id, string $label, string $description = '', ?string $langue = NULL): void
+	{
+		$this->db->ecrire_lang('nf_user_fields_lang',
+			['field_id' => $field_id, 'lang' => (string) ($langue ?: $this->config->lang->info()->name)],
+			['label' => $label, 'description' => $description]);
 	}
 
 	/** Le nom technique n'est jamais touché : il relie la définition aux valeurs déjà saisies. */
@@ -140,13 +167,13 @@ class Fields extends Model
 	{
 		$this->db	->where('field_id', (int) $field_id)
 					->update('nf_user_fields', [
-						'label'       => $label,
-						'description' => $description,
 						'type'        => in_array($type, self::TYPES, TRUE) ? $type : 'text',
 						'options'     => in_array($type, self::TYPES_A_OPTIONS, TRUE) ? implode("\n", self::options_en_tableau($options)) : NULL,
 						'required'    => $required ? 1 : 0,
 						'public'      => $public ? 1 : 0,
 					]);
+
+		$this->ecrire_texte((int) $field_id, $label, $description);
 	}
 
 	/** Les valeurs partent avec, par la contrainte de clé étrangère. */
@@ -192,9 +219,12 @@ class Fields extends Model
 	 */
 	public function get_public_values($user_id): array
 	{
-		$lignes = $this->db	->select('f.label', 'f.type', 'v.value')
+		// Le libellé vit dans `nf_user_fields_lang` depuis m32 : lu ici dans `nf_user_fields`, la requête échouait, et
+		// le profil public de tout membre répondait 500 (trouvé par la batterie en navigateur, 2026-10-16).
+		$lignes = (array) $this->db	->select('fl.label', 'f.type', 'v.value')
 							->from('nf_user_fields_values v')
 							->join('nf_user_fields f', 'f.field_id = v.field_id')
+							->join_lang('nf_user_fields_lang fl', 'field_id', 'f.field_id', NULL, 'LEFT')
 							->where('v.user_id', (int) $user_id)
 							->where('f.public', TRUE)
 							->order_by('f.sort_order ASC, f.field_id ASC')

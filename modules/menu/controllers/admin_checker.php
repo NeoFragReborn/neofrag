@@ -44,13 +44,13 @@ class Admin_Checker extends Module_Checker
 
 	public function _item_edit($id, $title)
 	{
-		$it = NeoFrag()->db->select('*')->from('nf_menus_items')->where('item_id', $id)->row();
+		$it = $this->model()->get_item($id);
 		return $it ? [$it] : NULL;
 	}
 
 	public function _item_delete($id, $title)
 	{
-		$it = NeoFrag()->db->select('*')->from('nf_menus_items')->where('item_id', $id)->row();
+		$it = $this->model()->get_item($id);
 		return $it ? [$it] : NULL;
 	}
 }

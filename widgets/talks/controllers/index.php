@@ -105,12 +105,13 @@ class Index extends Controller_Widget
 	{
 		$this->css('salon');
 
-		$salon = $this->db	->select('talk_id', 'name')
-							->from('nf_talks')
-							->where('talk_id', (int) ($settings['talk_id'] ?? 0))
-							->where('type', 'public')
-							->where('audience', 'all')
-							->where('deleted_at', NULL)
+		$salon = $this->db	->select('t.talk_id', 'COALESCE(tl.name, t.name) AS name')
+							->from('nf_talks t')
+							->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
+							->where('t.talk_id', (int) ($settings['talk_id'] ?? 0))
+							->where('t.type', 'public')
+							->where('t.audience', 'all')
+							->where('t.deleted_at', NULL)
 							->row();
 
 		if (!$salon)

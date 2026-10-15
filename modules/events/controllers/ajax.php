@@ -21,8 +21,9 @@ class Ajax extends Controller_Module
 		$start = substr(str_replace('T', ' ', (string)($_GET['start'] ?? '')), 0, 19);
 		$end   = substr(str_replace('T', ' ', (string)($_GET['end']   ?? '')), 0, 19);
 
-		foreach ($this->db	->select('e.event_id as id', 'e.title', 't.color', 't.icon', 'e.date as start', 'e.date_end as end')
+		foreach ($this->db	->select('e.event_id as id', 'el.title', 't.color', 't.icon', 'e.date as start', 'e.date_end as end')
 							->from('nf_events e')
+							->join_lang('nf_events_lang el', 'event_id', 'e.event_id', NULL, 'LEFT')
 							->join('nf_events_types t', 'e.type_id = t.type_id')
 							->where('(date >=',    $start, 'AND', 'date <=',     $end, 'OR')
 							->where('date_end >=', $start, 'AND', 'date_end <=', $end, 'OR')

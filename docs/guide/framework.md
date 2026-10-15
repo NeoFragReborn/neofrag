@@ -124,7 +124,7 @@ main** doit le vérifier elle-même : `csrf_url()`, `check_csrf()`, `csrf_token(
 hors d'un contrôleur, le même jeton se lit par `nf_jeton_csrf()`.
 
 **L'éditeur riche** — le type `editor` en `form()`, `form_textarea()->editor()` en `form2()` — est
-TinyMCE 7, auto-hébergé ; le HTML qui en sort passe par `sanitize_html()`. Une image **collée ou glissée**
+TinyMCE 8, auto-hébergé ; le HTML qui en sort passe par `sanitize_html()`. Une image **collée ou glissée**
 y est envoyée au site (`ajax/user/editeur-image` : membre connecté, jeton de session, débit borné), puis
 insérée par son adresse définitive. Le site lit son vrai type dans ses octets (JPEG, PNG, GIF, WebP),
 refuse un fichier qui porte du code, borne le poids (5 Mo) et les dimensions, la **ré-encode** — plus de
@@ -172,6 +172,41 @@ return [
 - **Ne traduis jamais du contenu de la base** (un titre écrit par l'administrateur) : `lang()` le
   cherche en vain et journalise un avertissement à chaque visite. Emballe-le dans
   `$this->no_translate(...)`.
+
+### Le contenu traduit : `join_lang()` et `ecrire_lang()`
+
+Le **contenu** d'un module (un titre, une description) se traduit autrement : il vit dans une table
+`<table>_lang`, une ligne par langue, et ce qui n'a pas de langue (une date, une image, un prix) reste dans
+la table principale.
+
+```sql
+CREATE TABLE IF NOT EXISTS nf_notes_lang (
+    note_id INT UNSIGNED NOT NULL,
+    lang    VARCHAR(5)   NOT NULL,
+    title   VARCHAR(255) NOT NULL DEFAULT '',
+    PRIMARY KEY (note_id, lang)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+- **Lire** : `join_lang()` joint la **meilleure** traduction — celle de la langue demandée, sinon le
+  français, sinon la première écrite. Un contenu écrit dans une seule langue reste ainsi visible dans les
+  autres, au lieu de disparaître comme avec une jointure filtrée sur la langue.
+
+  ```php
+  $this->db->select('n.id', 'nl.title')->from('nf_notes n')->join_lang('nf_notes_lang nl', 'note_id', 'n.id')->get();
+  ```
+
+- **Écrire** : `ecrire_lang()` crée la ligne quand elle manque — un `update()` filtré sur la langue
+  n'écrivait rien la première fois qu'on traduisait, et le texte saisi était perdu. Donne toutes les
+  colonnes obligatoires de la table.
+
+  ```php
+  $this->db->ecrire_lang('nf_notes_lang', ['note_id' => $id, 'lang' => $langue], ['title' => $titre]);
+  ```
+
+- **L'écran d'édition** écrit dans la langue de l'administration, et le dit sous le champ (« Écrit pour
+  %s… ») : on traduit en changeant de langue. Ce que voit l'administrateur et le visiteur :
+  [Un site en plusieurs langues](multilingue.md).
 
 ## Dates et fuseaux horaires
 
@@ -238,7 +273,7 @@ sensibles), `File_Jail` (chemins d'upload), `Moderation`, TOTP pour la double au
 **Une adresse saisie par quelqu'un et placée dans un `href` ou un `src`** passe par
 `nf_url_sure($url)` : elle rend `FALSE` pour un schéma autre que `http`, `https`, `mailto`, `tel` ou
 `geo` — un `javascript:` s'exécuterait au clic avec les droits de celui qui clique. Une adresse relative
-passe. `htmlspecialchars()` n'y suffit pas : il échappe les guillemets, pas le schéma. `url()` rend
+passe. `nf_texte()` n'y suffit pas : il échappe les guillemets, pas le schéma. `url()` rend
 `#` pour une adresse absolue refusée.
 
 ### Le site de démonstration
@@ -275,7 +310,7 @@ actifs pour toute la requête.
 
 - `url('forum/42')` — construit une URL routée (préfixe de langue inclus).
 - `notify('Message')` — notification à l'écran après redirection.
-- `htmlspecialchars(...)` / `sanitize_html(...)` — échappement / nettoyage anti-XSS.
+- `nf_texte(...)` / `sanitize_html(...)` — échappement / nettoyage anti-XSS.
 - `nf_url_sure($url)` — une adresse saisie peut-elle aller dans un lien (cf. Sécurité).
 - `nf_date_heure($valeur)` / `nf_date($valeur)` — une date de la base, à montrer (cf. Dates).
 - `nf_demo()` — vrai sur le site de démonstration.

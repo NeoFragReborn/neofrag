@@ -13,5 +13,6 @@ return [
 	'740e0f68' => 'Tout marquer comme lu',
 	'd57997fd' => 'Voir tout',
 	'3c69968d' => 'Suivre',
-	'ef7de58b' => 'Suivi'
+	'ef7de58b' => 'Suivi',
+	'c323fad6' => 'Les notifications arrivent bien sur cet appareil.',
 ];

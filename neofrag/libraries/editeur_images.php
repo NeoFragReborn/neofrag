@@ -712,8 +712,14 @@ final class Editeur_Images
 		return self::options_tinymce($reglages).self::langue_tinymce((string) NeoFrag()->config->lang->info()->name);
 	}
 
-	/** La traduction de l'interface de TinyMCE livrée pour chaque langue du site (js/tinymce/langs, tinymce-i18n). */
-	const LANGUES_TINYMCE = ['fr' => 'fr_FR', 'de' => 'de', 'es' => 'es', 'it' => 'it', 'pt' => 'pt_PT'];
+	/**
+	 * La traduction de l'interface de TinyMCE livrée pour chaque langue du site (js/tinymce/langs, tinymce-i18n).
+	 *
+	 * TinyMCE 8 nomme ses paquets avec un TIRET (`fr-FR`), là où la 7 employait un tiret bas (`fr_FR`) : le nom
+	 * donné ici est AUSSI celui du fichier chargé, donc se tromper laisse l'éditeur en anglais, sans un mot
+	 * (2026-10-15).
+	 */
+	const LANGUES_TINYMCE = ['fr' => 'fr-FR', 'de' => 'de', 'es' => 'es', 'it' => 'it', 'pt' => 'pt-PT'];
 
 	/**
 	 * L'interface de l'éditeur dans la langue de la page : elle était en anglais partout, aucune traduction n'étant

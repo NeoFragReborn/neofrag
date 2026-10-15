@@ -72,4 +72,5 @@ return [
 	'f3581855' => 'Ergebnis',
 	'21ba1da3' => 'Eine Seite pro Team: Spiel, Vorstellung, Spieler und Rollen, Ergebnisse und Rekrutierung je nach installierten Modulen. Für eine Gilde oder ein E-Sport-Team.',
 	'8fd9c7ef' => 'Speichern',
+	'a71c1200' => 'Für %s geschrieben. Wechsle die Sprache der Verwaltung, um diese Rolle zu übersetzen; die anderen Sprachen behalten ihren Text.',
 ];

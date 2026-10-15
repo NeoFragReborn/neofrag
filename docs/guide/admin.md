@@ -12,7 +12,7 @@ L'administration se trouve sous **/admin**. Elle adopte la charte NeoFrag Reborn
   | Rubrique | Modules |
   |---|---|
   | *Contenu* | Pages, Blog, Actualités, Slider, Citations, Recettes, Menus |
-  | *Communauté* | Forum, Discussion, Commentaires, Livre d'or, Emojis |
+  | *Communauté* | Forum, Collectifs, Discussion, Commentaires, Livre d'or, Emojis |
   | *Animation* | Calendrier, Sondages, Gamification, Petites annonces |
   | *Gaming* | Événements, Équipes, Jeux / Cartes, Recrutements, Palmarès, Partenaires |
   | *Savoir* | Wiki, FAQ, Dictionnaire, Téléchargements, Annuaire de liens, Carte des lieux |
@@ -37,13 +37,16 @@ L'administration se trouve sous **/admin**. Elle adopte la charte NeoFrag Reborn
 | Publier une actu / un article / une page | *Contenu* → le module concerné |
 | Ranger les billets du Blog en catégories et en séries (un billet en plusieurs parties) | *Contenu → Blog*, boutons « Catégories » et « Séries » ; la série et le rang d'un billet se choisissent dans son formulaire |
 | Gérer le forum et les commentaires ; la modération | *Communauté* ; *Support → Modération* |
+| Créer une équipe privée — une rédaction, une équipe de modération — avec sa section du forum et son salon Discord | *Communauté → Collectifs* — voir [Les collectifs](#les-collectifs) |
+| Encaisser les cotisations, suivre les adhérents | *Monétisation → Paiements* — voir [Les cotisations](#les-cotisations) |
+| Relier Ko-fi, HelloAsso, TipeeeStream ou PayPal aux campagnes de dons | *Monétisation → Dons*, carte « Services reliés » — voir [Les dons reliés](#les-dons-reliés) |
 | Créer les préfixes de sujet du forum (« Question », « Tutoriel »…), choisir l'icône d'un forum | *Communauté → Forum*, bouton « Préfixes » ; l'icône dans le formulaire du forum |
 | Gérer membres, groupes, sessions | *Système → Utilisateurs* |
 | Régler qui peut faire quoi | *Système → Permissions (matrice)* — grille rôle × action (vert = autorisé, gris = défaut, rouge = jamais) |
 | Changer le thème / installer un addon | *Système → Thèmes & Addons* |
 | Réglages du site (nom, accueil, inscriptions, sécurité, copyright) | *Système → Paramètres* |
 | Composer les pages à la souris | *Système → Éditeur en direct* |
-| Relier le site à un serveur Discord : rôles, pseudos, forum ↔ salon Forum, Bugtracker, rôles temporaires | *Diffusion → Discord* — voir [Le bot Discord](bot-discord.md) |
+| Relier le site à un serveur Discord : rôles, pseudos, forum ↔ salon Forum, Bugtracker, rôles temporaires, sanctions | *Diffusion → Discord* — voir [Le bot Discord](bot-discord.md) |
 | Sauvegardes, mises à jour, état du site | *Système → Monitoring* |
 | Lire les erreurs du site, retrouver celle qu'un visiteur a signalée | *Système → Monitoring → Journal des erreurs* |
 | Relire les actions sensibles (réglages, addons, comptes, clés d'API) | *Système → Utilisateurs → Journal d'audit* |
@@ -118,6 +121,70 @@ aux groupes depuis *Système*.
 2. Sur sa colonne de la **matrice**, coche les actions voulues (modérer le forum, gérer les
    commentaires…) → **vert = autorisé**.
 3. Dans *Système → Utilisateurs*, édite un membre et **assigne-lui ce rôle** : il hérite aussitôt de ces accès.
+
+### Les collectifs
+
+Un **collectif** réunit des membres autour d'un projet, à l'abri des autres : une rédaction, une équipe de
+modération, un groupe de créateurs. Ce n'est pas une équipe de jeu (*Gaming → Équipes*, qui se montre au public) :
+tout ce qu'un collectif reçoit lui est réservé.
+
+*Communauté → Collectifs → Nouveau collectif* : son nom, sa description, et son **chef** (un pseudo). Le site crée
+d'un coup :
+
+- une **section privée du forum** — une catégorie et son forum « Discussions » —, que seuls ses membres lisent et où
+  seuls ils écrivent ;
+- deux **rôles** du site, *Collectif « nom »* et *… — modération*, que le module donne et retire lui-même : ne les
+  attribue pas à la main ;
+- si la case *Discord* est cochée et le bot allumé (fonctionnalité *Collectifs*), un **rôle et un salon privé** sur
+  le serveur — voir [Le bot Discord](bot-discord.md#les-collectifs).
+
+Le chef gère ensuite ses membres depuis la page du collectif (*Mes collectifs*, dans l'espace membre), sans être
+administrateur du site. Les rangs :
+
+| Rang | Peut |
+|---|---|
+| Chef | ajouter des membres, nommer administrateurs et modérateurs, retirer quiconque est sous lui |
+| Administrateur | ajouter des membres, nommer des modérateurs, retirer modérateurs et membres |
+| Modérateur | modérer la section du forum (modifier, supprimer, épingler, verrouiller) |
+| Membre | lire et écrire dans la section |
+
+Le chef ne se nomme que dans l'administration : un nouveau chef y remplace l'ancien, qui reste administrateur du
+collectif. Supprimer un collectif retire à ses membres son espace ; sa section du forum et son salon Discord
+**restent**, visibles des seuls administrateurs — ce qui s'y est écrit ne se perd pas, supprime-les à la main si
+tu veux.
+
+### Les cotisations
+
+*Monétisation → Paiements*. Une cotisation rend un membre **adhérent** pour une durée : il reçoit le rôle
+**« Adhérent »** — ouvre-lui ce que tu veux dans *Système → Permissions* (une section du forum, des pages) — et fait
+partie du groupe **« Adhérents »** (son badge, et un rôle sur Discord si tu le relies). Deux façons d'encaisser :
+
+- **en ligne**, par Stripe : un lot de type *Adhésion (jours)* (« Cotisation annuelle », 365 jours) que le membre paie
+  sur la page *Paiements* ;
+- **autrement** (espèces, chèque, virement) : la carte *Adhérents* → *Enregistrer une cotisation* (pseudo, durée).
+
+Une nouvelle cotisation prolonge l'adhésion depuis son échéance. Sept jours avant, la tâche planifiée prévient le
+membre (une notification) ; à l'échéance, elle lui retire le rôle. *Mettre fin à l'adhésion* l'arrête tout de suite
+(une erreur de saisie, un remboursement). Les cotisations n'ont pas besoin de la Gamification — les points et le
+VIP, si.
+
+### Les dons reliés
+
+*Monétisation → Dons*, carte **« Services reliés »** : un don fait sur l'un de ces services s'enregistre de lui-même
+dans la campagne choisie, **une seule fois**, même si le service prévient deux fois. Les clés sont rangées
+chiffrées et ne se relisent pas.
+
+| Service | Ce qu'il faut | Comment le site vérifie |
+|---|---|---|
+| **Ko-fi** | sur Ko-fi, *More → API → Webhooks* : l'adresse affichée dans la carte, et le jeton de vérification | le jeton, que seul le site connaît |
+| **HelloAsso** | dans l'espace de l'association, *Mon compte → Intégrations et API* : l'identifiant et le secret du client, et l'adresse de notification affichée | il relit la commande par l'API d'HelloAsso : la notification seule ne fait pas foi |
+| **TipeeeStream** | la clé d'API du compte | rien à vérifier : le site va lire les dons lui-même, à chaque tâche planifiée, depuis le jour où la clé est enregistrée |
+| **PayPal** | la case *Enregistrer les dons d'eux-mêmes* | PayPal confirme chaque notification, et l'argent doit être allé à l'adresse PayPal de la campagne |
+
+Une **adhésion** payée sur HelloAsso rend adhérent, pour la durée réglée, le membre du site qui a la même adresse
+(module Paiements). Les donateurs d'HelloAsso et de PayPal ne paraissent pas sur la page de la campagne — ils n'y ont
+pas consenti — ; ceux de Ko-fi et de TipeeeStream qui l'ont voulu, si. Le total compte tous les dons. Pour essayer
+sans argent réel : les cases *bac à sable* d'HelloAsso et de PayPal.
 
 ## Réglages essentiels
 
@@ -216,3 +283,22 @@ Une heure saisie dans un formulaire (le début d'un événement, la réouverture
 se comprend dans le fuseau de celui qui la saisit. Une date seule — un anniversaire, une journée
 entière au calendrier — ne change jamais de jour. La grille d'une webradio est écrite à l'heure du
 site.
+
+### Les notifications push
+
+Un membre peut recevoir ses notifications dans son navigateur, **même site fermé** — un message de forum,
+une réaction, un rappel d'événement. Pour le proposer, coche **Paramètres → Préférences générales →
+Notifications push**. Le site doit être servi en **https**, et le serveur savoir chiffrer (OpenSSL avec
+la courbe P-256, et cURL : c'est le cas de presque tous les hébergements ; sinon, la case reste
+décochée et le site le dit).
+
+Rien n'arrive à personne tant qu'il ne l'a pas demandé : chaque membre l'active **appareil par
+appareil**, dans **Mon compte → Préférences de notifications → Cet appareil**, et son navigateur lui
+demande son accord. Il y choisit aussi, type par type, ce qu'il reçoit ainsi, et peut s'envoyer un
+essai.
+
+Ce qu'il faut savoir, et dire dans ta **politique de confidentialité** : le navigateur passe par son
+service de push — Google pour Chrome et Edge, Mozilla pour Firefox, Apple pour Safari. Le site y garde
+l'adresse d'abonnement de chaque appareil tant que le membre ne coupe pas le push (ou ne supprime pas
+son compte). Le message est chiffré pour ce seul navigateur : le service le transporte sans pouvoir le
+lire.

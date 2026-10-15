@@ -72,4 +72,5 @@ return [
 	'f3581855' => 'Resultado',
 	'21ba1da3' => 'Una página por equipo: juego, presentación, jugadores y roles, resultados y reclutamiento según los módulos instalados. Para un clan o un equipo de eSports.',
 	'8fd9c7ef' => 'Guardar',
+	'a71c1200' => 'Escrito para %s. Cambia el idioma de la administración para traducir este rol; los demás idiomas conservan su texto.',
 ];

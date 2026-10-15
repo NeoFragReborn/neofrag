@@ -29,7 +29,7 @@ class Index extends Controller_Widget
 		if (!empty($recruits))
 		{
 			return $this->panel()
-						->heading('Offres de recrutement')
+						->heading($this->lang('Offres de recrutement'))
 						->body($this->view('index', [
 							'recruits' => $recruits
 						]), FALSE)

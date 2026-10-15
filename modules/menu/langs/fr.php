@@ -39,4 +39,5 @@ return [
 	'b2341c75' => 'Éditer l\'item',
 	'96d5c170' => 'Constructeur de menus nommés réutilisables (items hiérarchiques) pour la navigation.',
 	'85111a17' => 'Gérer les menus',
+	'bff00c60' => 'Écrit pour %s. Change la langue de l\'administration pour traduire ce lien ; les autres langues gardent leur texte.',
 ];

@@ -40,11 +40,7 @@ class Groups extends Model
 		{
 			$group['name'] = url_title($title);
 
-			$this->db	->where('group_id', $group_id)
-						->update('nf_groups_lang', [
-							'lang'  => $lang,
-							'title' => $title
-						]);
+			$this->db->ecrire_lang('nf_groups_lang', ['group_id' => $group_id, 'lang' => $lang], ['title' => $title]);
 		}
 
 		$this->db	->where('group_id', $group_id)

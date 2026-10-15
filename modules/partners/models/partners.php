@@ -63,12 +63,14 @@ class Partners extends Model
 						'code'       => $code
 					]);
 
-		$this->db	->where('partner_id', $partner_id)
-					->where('lang', $this->config->lang->info()->name)
-					->update('nf_partners_lang', [
-						'title'       => $title,
-						'description' => $description
-					]);
+		// `replace` et non `update` : la première fois qu'on décrit un partenaire dans une langue, sa ligne n'existe
+		// pas — un `update` n'aurait rien écrit, sans un mot, et le texte saisi serait perdu (2026-10-14).
+		$this->db->replace('nf_partners_lang', [
+			'partner_id'  => $partner_id,
+			'lang'        => $this->config->lang->info()->name,
+			'title'       => $title,
+			'description' => $description
+		]);
 	}
 
 	public function delete_partner($partner_id)

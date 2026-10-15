@@ -177,6 +177,20 @@ foreach ($routes as $chemin => $module)
         continue;
     }
 
+    /*
+     * Un FRAGMENT de fenêtre n'est pas une sous-page : la confirmation de suppression d'un contenu se
+     * déclare `ajax()` dans son contrôleur et rend le contenu d'une modale — un titre, un message, deux
+     * boutons —, sans enveloppe de page, donc sans fil d'Ariane ni retour, et c'est ainsi qu'elle doit
+     * être. On ne la jugeait pas jusqu'ici parce que l'adresse d'épreuve, au titre approximatif, rendait
+     * 404 ; depuis que l'administration ouvre ses pages quel que soit le titre de l'adresse (2026-10-14),
+     * elle répond, et le contrôle l'a prise pour une page sans retour.
+     */
+    if (!str_contains($reponse['corps'], '</html>'))
+    {
+        $muettes[] = sprintf('%s : fragment de fenêtre (modale), pas une page%s', $chemin, $suffixe);
+        continue;
+    }
+
     // Trois arrivées trahissent un point d'ACTION plutôt qu'une page : l'accueil du module, celui de
     // l'administration, ou le site public (« voir le site comme ce membre » active le mode aperçu
     // puis renvoie à l'accueil). Juger la page d'arrivée serait un faux verdict.

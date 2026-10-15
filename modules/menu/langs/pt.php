@@ -36,4 +36,5 @@ return [
 	'8fd9c7ef' => 'Guardar',
 	'4a818505' => 'item|itens',
 	'4678bb10' => 'Novo item',
+	'bff00c60' => 'Escrito para %s. Muda a língua da administração para traduzir esta ligação; as outras línguas mantêm o seu texto.',
 ];

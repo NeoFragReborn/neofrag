@@ -128,6 +128,9 @@ class Admin_Ajax extends Controller_Module
 												file_put_contents($file, $content);
 												dir_copy($dir, $type.'s/'.$name);
 
+												// Le code neuf doit être celui que la requête suivante exécute (cache d'opcodes).
+												\NF\NeoFrag\Installer::opcache_oublier($type.'s/'.$name);
+
 												if (!NeoFrag()->collection('addon')->where('name', $name)->where('type_id', $type_id = NeoFrag()->collection('addon_type')->where('name', $type)->row()->id)->row()->id)
 												{
 													NeoFrag()	->model2('addon')
@@ -141,7 +144,12 @@ class Admin_Ajax extends Controller_Module
 
 												if ($addon = NeoFrag()->$type($name))
 												{
-													$addon->reset();
+													// Une version plus récente d'un addon installé se MET À JOUR, comme par le marketplace :
+													// update() rejoue install.sql et exécute les migrations en attente. reset() ne sert qu'à une
+													// première installation. Il les marquait jouées sans les exécuter — le schéma restait
+													// celui d'avant —, et, pour un thème, effaçait ses dispositions et leurs widgets pour
+													// reposer celles d'origine : la mise en page de l'administrateur était perdue (2026-10-15).
+													empty($update) ? $addon->reset() : $addon->update();
 
 													return [
 														'success' => (string) (empty($update)
@@ -223,7 +231,7 @@ class Admin_Ajax extends Controller_Module
 						}
 					})
 					->submit($this->lang('Ajouter'))
-					->modal('Ajouter', 'fas fa-plus')
+					->modal($this->lang('Ajouter'), 'fas fa-plus')
 					->cancel();
 	}
 
@@ -417,7 +425,7 @@ class Admin_Ajax extends Controller_Module
 
 		if ($catalog === NULL)
 		{
-			return $this->modal('Mises à jour', 'fas fa-arrow-up')
+			return $this->modal($this->lang('Mises à jour'), 'fas fa-arrow-up')
 						->body('<div class="alert alert-warning" style="margin:0">'.$this->lang('Marketplace injoignable : impossible de vérifier les mises à jour.').'</div>')
 						->close();
 		}
@@ -492,7 +500,7 @@ class Admin_Ajax extends Controller_Module
 
 		if (!$available)
 		{
-			return $this->modal('Mises à jour', 'fas fa-arrow-up')
+			return $this->modal($this->lang('Mises à jour'), 'fas fa-arrow-up')
 						->body($core_notice.'<div class="alert alert-info" style="margin:0">'.$this->lang('Tous vos addons sont à jour.').'</div>')
 						->close();
 		}
@@ -556,7 +564,7 @@ class Admin_Ajax extends Controller_Module
 						$this->modal->dispose();
 					})
 					->submit($this->lang('Mettre à jour'))
-					->modal('Mises à jour', 'fas fa-arrow-up')
+					->modal($this->lang('Mises à jour'), 'fas fa-arrow-up')
 					->cancel();
 	}
 

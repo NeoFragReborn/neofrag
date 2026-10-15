@@ -41,15 +41,15 @@ const CONTENT_TABLES = [
     'nf_forum_categories', 'nf_forum', 'nf_forum_url', 'nf_forum_topics', 'nf_forum_messages',
     'nf_gallery_categories', 'nf_gallery_categories_lang', 'nf_gallery', 'nf_gallery_lang', 'nf_gallery_images',
     'nf_games', 'nf_games_lang', 'nf_teams', 'nf_teams_lang', 'nf_teams_users',
-    'nf_events_types', 'nf_events', 'nf_awards',
+    'nf_events_types', 'nf_events_types_lang', 'nf_events', 'nf_events_lang', 'nf_awards', 'nf_awards_lang',
     'nf_comment', 'nf_reactions',
-    'nf_faq_categories', 'nf_faq_questions',
-    'nf_downloads_categories', 'nf_downloads', 'nf_links_categories', 'nf_links',
+    'nf_faq_categories', 'nf_faq_questions', 'nf_faq_categories_lang', 'nf_faq_questions_lang',
+    'nf_downloads_categories', 'nf_downloads', 'nf_downloads_categories_lang', 'nf_downloads_lang', 'nf_links_categories', 'nf_links', 'nf_links_categories_lang', 'nf_links_lang',
     'nf_partners', 'nf_partners_lang', 'nf_guestbook',
-    'nf_surveys', 'nf_surveys_options', 'nf_surveys_votes', 'nf_classifieds',
-    'nf_recruits', 'nf_recruits_fields', 'nf_calendar_events',
-    'nf_bug_tickets', 'nf_bug_comments', 'nf_donations_campaigns', 'nf_donations',
-    'nf_ads', 'nf_newsletter_subscribers',
+    'nf_surveys', 'nf_surveys_options', 'nf_surveys_lang', 'nf_surveys_options_lang', 'nf_surveys_votes', 'nf_classifieds', 'nf_classifieds_categories', 'nf_classifieds_categories_lang',
+    'nf_recruits', 'nf_recruits_lang', 'nf_recruits_fields', 'nf_recruits_fields_lang', 'nf_calendar_events',
+    'nf_bug_tickets', 'nf_bug_comments', 'nf_donations_campaigns', 'nf_donations_campaigns_lang', 'nf_donations',
+    'nf_ads', 'nf_ads_lang', 'nf_newsletter_subscribers',
 
     // ── Ajouté le 2026-09-16, quand l'administration de la démo est passée de LECTURE SEULE à
     // « le contenu est modifiable ». Le critère de cette liste est exactement celui du verrou
@@ -58,8 +58,8 @@ const CONTENT_TABLES = [
     'nf_events_matches', 'nf_events_matches_opponents', 'nf_events_matches_rounds',
     'nf_events_participants',
     'nf_pages', 'nf_pages_lang', 'nf_pages_instances',
-    'nf_menus', 'nf_menus_items',
-    'nf_custom_emojis', 'nf_slider_slides',
+    'nf_menus', 'nf_menus_items', 'nf_menus_items_lang',
+    'nf_custom_emojis', 'nf_slider_slides', 'nf_slider_slides_lang',
 
     // ── Ajouté le 2026-09-23 : les modules installés sur la démo le 2026-09-22 pour les vignettes de
     // la place de marché. Leur contenu avait été ajouté À LA MAIN à l'instantané ; la première
@@ -69,14 +69,14 @@ const CONTENT_TABLES = [
     'nf_places_categories', 'nf_places',
     'nf_quotes_categories', 'nf_quotes',
     'nf_recipes_categories', 'nf_recipes',
-    'nf_webradio_shows',
+    'nf_webradio_shows', 'nf_webradio_shows_lang',
     // `nf_media` n'y est PAS, et le module `media` est verrouillé : il efface ses fichiers lui-même.
     // Partout ailleurs, sur une démonstration, File::delete() ne supprime plus rien — ni le fichier
     // ni sa ligne `nf_file`, que l'instantané ne porte pas (audit du 2026-10-02 : la galerie, qu'on
     // disait ne supprimer « que la ligne », effaçait bel et bien le fichier).
-    'nf_talks', 'nf_talks_messages', 'nf_talks_participants', 'nf_talks_attachments',
+    'nf_talks', 'nf_talks_lang', 'nf_talks_messages', 'nf_talks_participants', 'nf_talks_attachments',
     'nf_revisions',
-    'nf_wiki_pages', 'nf_wiki_revisions',
+    'nf_wiki_pages', 'nf_wiki_pages_lang', 'nf_wiki_revisions',
 
     // ── Ajouté le 2026-10-02, après l'audit de sécurité de la démo : des tables que les modules
     // OUVERTS écrivent, et que l'instantané ne rétablissait pas. Un rôle d'équipe renommé ou une
@@ -84,7 +84,7 @@ const CONTENT_TABLES = [
     // points d'une publication s'accumulaient ; créer une galerie ou une page écrit des permissions.
     // Les préférences de notifications (chantier A, étape A4, 2026-10-05) : le compte partagé peut tout
     // couper, et la démonstration ne recevrait plus rien, pour tous ses visiteurs.
-    'nf_games_maps', 'nf_games_modes', 'nf_teams_roles',
+    'nf_games_maps', 'nf_games_maps_lang', 'nf_games_modes', 'nf_games_modes_lang', 'nf_teams_roles', 'nf_teams_roles_lang',
     'nf_articles_series', 'nf_articles_series_lang',
     'nf_notifications', 'nf_notifications_preferences', 'nf_points_log',
     'nf_role_permissions',
@@ -93,7 +93,7 @@ const CONTENT_TABLES = [
 
     // Les MISES EN PAGE, par sûreté : l'éditeur en direct, seul à les écrire, est verrouillé sur la
     // démonstration (un widget HTML écrit par un visiteur exécuterait son script chez tous les autres).
-    'nf_dispositions', 'nf_widgets',
+    'nf_dispositions', 'nf_widgets', 'nf_widgets_lang',
 ];
 
 $db       = nf_connexion();

@@ -105,12 +105,12 @@ class Update extends \NF\NeoFrag\Actions\Update
 								->append(
 									$this	->form2('profile', $user->profile())
 											->panel()
-											->title('Profil', 'fas fa-pencil-alt')
+											->title($this->lang('Profil'), 'fas fa-pencil-alt')
 								)
 								->append(
 									$this	->form2('profile_socials', $user->profile())
 											->panel()
-											->title('Liens', 'fas fa-globe')
+											->title($this->lang('Liens'), 'fas fa-globe')
 								)
 					)
 					->append(

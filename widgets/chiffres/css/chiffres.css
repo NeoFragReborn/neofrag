@@ -12,12 +12,15 @@
 	text-align: center;
 }
 
+/* La hauteur de ligne contient l'encre du nombre : plus courte que l'aire de contenu de la police, elle laisse les
+   glyphes déborder sur le nom qui suit — invisible dans la police par défaut, visible dès qu'un thème pose sa police
+   d'affichage (même défaut que la case de la date du calendrier, démo 1.2.49). */
 .nf-chiffre-valeur {
 	display: block;
 	color: var(--nf-accent-text, var(--nf-accent));
 	font-size: 34px;
 	font-variant-numeric: tabular-nums;
-	line-height: 1.05;
+	line-height: 1.2;
 }
 
 .nf-chiffre-libelle {

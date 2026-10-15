@@ -175,8 +175,9 @@ class Index extends Controller_Module
 			return NULL;
 		}
 
-		$recruits = $this->db	->select('r.*', 'COUNT(DISTINCT rc.candidacy_id) as candidacies', 'COUNT(DISTINCT CASE WHEN rc.status = \'1\' THEN rc.candidacy_id END) as candidacies_pending', 'COUNT(DISTINCT CASE WHEN rc.status = \'2\' THEN rc.candidacy_id END) as candidacies_accepted', 'COUNT(DISTINCT CASE WHEN rc.status = \'3\' THEN rc.candidacy_id END) as candidacies_declined')
+		$recruits = $this->db	->select('r.*', 'rl.title', 'rl.introduction', 'rl.description', 'rl.requierments', 'COUNT(DISTINCT rc.candidacy_id) as candidacies', 'COUNT(DISTINCT CASE WHEN rc.status = \'1\' THEN rc.candidacy_id END) as candidacies_pending', 'COUNT(DISTINCT CASE WHEN rc.status = \'2\' THEN rc.candidacy_id END) as candidacies_accepted', 'COUNT(DISTINCT CASE WHEN rc.status = \'3\' THEN rc.candidacy_id END) as candidacies_declined')
 								->from('nf_recruits r')
+								->join_lang('nf_recruits_lang rl', 'recruit_id', 'r.recruit_id', NULL, 'LEFT')
 								// LEFT : voir modules/recruits/models/recruits.php.
 								->join('nf_recruits_candidacies rc', 'rc.recruit_id = r.recruit_id', 'LEFT')
 								->group_by('r.recruit_id')

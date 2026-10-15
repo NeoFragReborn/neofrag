@@ -66,7 +66,7 @@ class Admin extends Controller_Module
 
 	public function help($controller, $method)
 	{
-		return $this->modal('Aide', 'far fa-life-ring')
+		return $this->modal($this->lang('Aide'), 'far fa-life-ring')
 					->large()
 					->body(call_user_func([$controller, $method]))
 					->close();

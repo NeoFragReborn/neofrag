@@ -152,6 +152,20 @@ class Admin_Checker extends Module_Checker
 		}
 	}
 
+	public function _field_edit($field_id, $title)
+	{
+		if (!$this->is_authorized('modify_recruit'))
+		{
+			$this->error->unauthorized();
+		}
+
+		// Le titre de l'adresse est celui de l'OFFRE : il sert au retour vers ses questions.
+		if (($field = $this->model()->get_field($field_id)) && ($recruit = $this->model()->check_recruit((int) $field['recruit_id'], $title)))
+		{
+			return [(int) $field['field_id'], (int) $field['recruit_id'], (string) $recruit['title']];
+		}
+	}
+
 	public function _field_delete($field_id, $title)
 	{
 		if (!$this->is_authorized('modify_recruit'))

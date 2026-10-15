@@ -1,6 +1,6 @@
 # Composants — NeoFrag Reborn
 
-Inventaire des **62 modules · 42 widgets · 8 thèmes distribués**. L'architecture du framework est dans
+Inventaire des **63 modules · 42 widgets · 8 thèmes distribués**. L'architecture du framework est dans
 [architecture.md](architecture.md).
 La pile gamification/boutique/monétisation a sa doc dédiée : [gamification.md](gamification.md).
 
@@ -35,7 +35,7 @@ obligatoire, `core` / `presets` / `requires`, + souvent un tableau `types` de va
 réglages, cf. `tools/check-widget-reglages.php`), `views/*.tpl.php`, `langs/`. Les feuilles n'emploient
 que le vocabulaire `--nf-*` que tous les thèmes définissent (`tools/check-css-variables.php`).
 
-## 62 modules (par domaine)
+## 63 modules (par domaine)
 
 **Système & core (21)** — `access` (RBAC : rôles/permissions, audit log) · `addons` (install/activation) ·
 `admin` (dashboard back-office) · `user` (inscription, login 2FA, profil, RGPD, export membres CSV/JSON) ·
@@ -67,18 +67,20 @@ publique et écran d'administration avec recherche, filtre et tri.
 **Gaming (6)** — `teams` · `games` (jeux/maps/modes) · `events` (tournois/matchs/rounds) · `recruits`
 (recrutement + formulaire personnalisable) · `awards` · `partners`.
 
-**Communauté & communication (13)** — `talks` (chat + MP unifiés : `public`/`group`/`direct`) ·
+**Communauté & communication (14)** — `talks` (chat + MP unifiés : `public`/`group`/`direct`) ·
 `members` (liste/profils, façade sur `user`) · `forum` (catégories, sujets, messages, recherche FT,
 mentions, PJ, modération) · `moderation` (signalements, sanctions, banlist IP) · `contact` (formulaire
-+ rate-limit + captcha) · `newsletter` · `bugtracker` · `donations` (campagnes PayPal) · `surveys`
++ rate-limit + captcha) · `newsletter` · `bugtracker` · `donations` (campagnes ; dons PayPal, Ko-fi, HelloAsso, TipeeeStream enregistrés d'eux-mêmes) · `surveys`
 (sondages) · `live_editor` (éditeur visuel de layouts) · `notifications` (cloche + abonnements
 contenu/catégorie) · `reactions` (likes polymorphes : commentaires/articles/news/forum) ·
-`classifieds` (petites annonces membres : offres/demandes, contact vendeur, modération optionnelle).
+`classifieds` (petites annonces membres : offres/demandes, contact vendeur, modération optionnelle) ·
+`collectives` (équipes privées : une section du forum réservée, deux rôles du site posés par le module, un rôle et
+un salon sur Discord par le bot ; un chef et des rangs qui gèrent les membres sans être administrateurs).
 
 **Monétisation & engagement (4)** — `gamification` (karma/réputation + points + VIP, barème configurable) ·
 `shop` (boutique découplée : grades/cosmétiques/perks/VIP/merch, paiement en points) · `ads` (régie
-publicitaire, masquée pour les membres no_ads/VIP) · `payments` (Stripe : recharge de points + packs VIP,
-webhook signé). Détail : [gamification.md](gamification.md).
+publicitaire, masquée pour les membres no_ads/VIP) · `payments` (Stripe : recharge de points, packs VIP et
+cotisations — le rôle « Adhérent » à durée —, webhook signé). Détail : [gamification.md](gamification.md).
 
 ## 42 widgets
 

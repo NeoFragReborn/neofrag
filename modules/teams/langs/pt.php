@@ -25,7 +25,7 @@ return [
 	'4707d45b' => 'Função %s',
 	'49cf2272' => 'Admin',
 	'4cc427a7' => 'equipa adicionada',
-	'514e6bc4' => 'Por favor escolha um arquivo de imagem',
+	'514e6bc4' => 'Escolhe um ficheiro de imagem',
 	'5c6aceb9' => 'Funções',
 	'648572c3' => 'Adicionar',
 	'6ddb4279' => 'Editar função',
@@ -59,9 +59,9 @@ return [
 	'f6f08efc' => 'Apresentação',
 	'faddacf3' => 'Jogador',
 	'52c9bbab' => 'Modificar',
-	'8d9ef7a4' => 'Excluir',
+	'8d9ef7a4' => 'Eliminar',
 	'78ee8be4' => 'Modificar um cargo',
-	'dc7fea54' => 'Excluir um cargo',
+	'dc7fea54' => 'Eliminar um cargo',
 	// i18n 2026-06-11 (code strings)
 	'25e975ef' => 'Esta equipa está a recrutar — Candidatar-se',
 	'49a80df0' => 'Online',
@@ -72,4 +72,5 @@ return [
 	'f3581855' => 'Resultado',
 	'21ba1da3' => 'Uma página por equipa: jogo, apresentação, jogadores e funções, resultados e recrutamento consoante os módulos instalados. Para uma guilda ou uma equipa de eSports.',
 	'8fd9c7ef' => 'Guardar',
+	'a71c1200' => 'Escrito para %s. Muda a língua da administração para traduzir esta função; as outras línguas mantêm o seu texto.',
 ];

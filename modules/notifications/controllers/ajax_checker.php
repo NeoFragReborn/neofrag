@@ -37,6 +37,35 @@ class Ajax_Checker extends Module_Checker
 		return [];
 	}
 
+	/** Le push (d11) : un membre connecté, en POST, sur un site qui l'a ouvert. */
+	public function _push_abonner()
+	{
+		return $this->_push();
+	}
+
+	public function _push_desabonner()
+	{
+		return $this->_push();
+	}
+
+	public function _push_essai()
+	{
+		return $this->_push();
+	}
+
+	private function _push()
+	{
+		if (!$this->user())
+		{
+			$this->error->unauthorized();
+			return;
+		}
+
+		$this->ajax();
+
+		return [];
+	}
+
 	public function _subscribe($type, $id)
 	{
 		if (!$this->user())

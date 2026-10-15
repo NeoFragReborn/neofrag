@@ -249,7 +249,9 @@ if (!is_file($site.'/cache/monitoring/version.json'))
 }
 
 echo "Mise à jour par le bouton…\n";
-$reponse = nf_http($serveur->base.'/fr/admin/ajax/monitoring/update.json', ['ajax' => TRUE, 'timeout' => 900]);
+// En POST, comme le bouton (themes/admin/js/update.js) : depuis la 1.2.48, la mise à jour refuse un simple lien (405),
+// et l'outil, resté en GET, a vu la répétition de la 1.2.49 échouer sur un bouton pourtant juste (2026-10-10).
+$reponse = nf_http($serveur->base.'/fr/admin/ajax/monitoring/update.json', ['post' => [], 'ajax' => TRUE, 'timeout' => 900]);
 $flux    = trim($reponse['corps']);
 
 $echecs = [];

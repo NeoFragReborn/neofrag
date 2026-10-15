@@ -70,7 +70,7 @@ return [
 	'a939fb96' => 'All messages are now marked as read',
 	'ab2b6b9e' => 'Statistics',
 	'aba2bfff' => 'Delete topic',
-	'ae5f6892' => 'Are you sure you want to delete the forum <b>%s</b>? <br/> All posts will be also deleted.',
+	'ae5f6892' => 'Are you sure you want to delete the forum <b>%s</b>? <br/> All posts will also be deleted.',
 	'b61a61bb' => 'Delete message',
 	'b6bd307f' => 'message',
 	'b7d3e5ee' => 'Visitor',

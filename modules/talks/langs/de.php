@@ -141,4 +141,6 @@ return [
 	'92641492' => 'Markierte Dateien löschen',
 	'970a684e' => 'Dateiendung abgelehnt',
 	'4c523dac' => 'Diese Nachricht wurde gemeldet: Sie kann nicht gelöscht werden, bevor die Moderation sie geprüft hat.',
+	'db202fcf' => 'Für %s geschrieben. Wechsle die Sprache der Verwaltung, um diesen Raum zu übersetzen; die anderen Sprachen behalten ihren Text.',
+	'eb78cff1' => 'Beschreibung',
 ];

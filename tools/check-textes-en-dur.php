@@ -51,13 +51,32 @@ require __DIR__.'/lib/depot.php';
 
 [$o, $cibles] = nf_options(['resume' => FALSE, 'detail' => FALSE]);
 
-/** Les appels dont l'argument est traduit, ou n'est pas destiné à l'interface. */
+/**
+ * Les appels dont l'argument est traduit, ou n'est pas destiné à l'interface.
+ *
+ * `lang()` reçoit le texte SOURCE : c'est là que le français a sa place. Les autres ne sont là
+ * que parce qu'ils ne s'adressent pas à un œil humain.
+ */
 const APPELS_EXEMPTS = [
-    // traduits
-    'lang', 'title', 'heading', 'tooltip', 'label', 'modal', 'popover', 'placeholder', 'info',
+    // la source d'une traduction
+    'lang',
     // pour la machine
     'preg_match', 'preg_match_all', 'preg_replace', 'preg_replace_callback', 'preg_split', 'define',
 ];
+
+/**
+ * Les méthodes qui traduisent leur argument — MAIS seulement sur un CHAMP de formulaire.
+ *
+ * `Labelable::title()` (un champ) appelle `lang()` ; `Label::title()`, `Panel::title()`,
+ * `Panel::heading()`, `Modal::__invoke()` et `Label::label()` NE LE FONT PAS. Les ranger tous
+ * ensemble dans les exemptions était une supposition, et elle cachait trente et un titres d'écran
+ * écrits en français en dur, servis tels quels aux six langues (2026-10-15). On regarde donc qui
+ * reçoit l'appel, en remontant la chaîne jusqu'à un constructeur de champ.
+ */
+const APPELS_DE_CHAMP = ['title', 'placeholder', 'info'];
+
+/** Ce qui, au bout de la chaîne, prouve qu'on est sur un champ de formulaire. */
+const CONSTRUCTEURS_DE_CHAMP = ['form2', 'form_captcha'];
 
 /**
  * Les appels qui s'adressent au DÉVELOPPEUR : tout ce qui est écrit dedans, même à travers un
@@ -273,6 +292,111 @@ function voisin(array $jetons, int $i, int $pas): mixed
 }
 
 /**
+ * L'appel dont le jeton $i est un argument : l'index de son NOM.
+ *
+ * @return array{0: int, 1: string}
+ */
+function appel_englobant(array $jetons, int $i): array
+{
+    $profondeur = 0;
+
+    for ($j = $i - 1; $j >= 0; $j--)
+    {
+        if ($jetons[$j] === ')')
+        {
+            $profondeur++;
+        }
+        else if ($jetons[$j] === '(')
+        {
+            if ($profondeur === 0)
+            {
+                [$k, $nom] = voisin($jetons, $j, -1);
+
+                return is_array($nom) && $nom[0] === T_STRING ? [$k, $nom[1]] : [-1, ''];
+            }
+
+            $profondeur--;
+        }
+    }
+
+    return [-1, ''];
+}
+
+/**
+ * Le maillon précédent de la chaîne : `$this->form_text('x')->title(…)` rend « form_text ».
+ */
+function maillon_precedent(array $jetons, int $k): array
+{
+    [$j, $fleche] = voisin($jetons, $k, -1);
+
+    if (!is_array($fleche) || $fleche[0] !== T_OBJECT_OPERATOR)
+    {
+        return [-1, ''];
+    }
+
+    [$m, $jeton] = voisin($jetons, $j, -1);
+
+    if ($jeton !== ')')
+    {
+        return is_array($jeton) && $jeton[0] === T_STRING ? [$m, $jeton[1]] : [-1, ''];
+    }
+
+    // Le maillon précédent est un appel : on remonte à sa parenthèse ouvrante.
+    $profondeur = 1;
+
+    for ($n = $m - 1; $n >= 0; $n--)
+    {
+        if ($jetons[$n] === ')')
+        {
+            $profondeur++;
+        }
+        else if ($jetons[$n] === '(')
+        {
+            if (--$profondeur === 0)
+            {
+                [$o, $nom] = voisin($jetons, $n, -1);
+
+                return is_array($nom) && $nom[0] === T_STRING ? [$o, $nom[1]] : [-1, ''];
+            }
+        }
+    }
+
+    return [-1, ''];
+}
+
+/**
+ * L'appel nommé par le jeton $k porte-t-il sur un CHAMP de formulaire ?
+ *
+ * On remonte la chaîne tant qu'elle n'est faite que de méthodes de champ (`->title()->info()`),
+ * et l'on s'arrête au premier maillon qui tranche : `form_text` (un champ, donc traduit) ou
+ * `panel` (un panneau, donc PAS traduit).
+ */
+function sur_un_champ(array $jetons, int $k): bool
+{
+    for ($tours = 0; $tours < 12; $tours++)
+    {
+        [$k, $nom] = maillon_precedent($jetons, $k);
+
+        if ($k < 0)
+        {
+            return FALSE;
+        }
+
+        if (str_starts_with($nom, 'form_') || in_array($nom, CONSTRUCTEURS_DE_CHAMP, TRUE))
+        {
+            return TRUE;
+        }
+
+        if (!in_array($nom, APPELS_DE_CHAMP, TRUE) && !in_array($nom, ['rule', 'required', 'addon', 'size', 'data', 'value'], TRUE))
+        {
+            return FALSE;
+        }
+    }
+
+    return FALSE;
+}
+
+/**
  * Les textes français d'un fichier PHP (gabarits compris).
  *
  * @return list<array{0: int, 1: string}>  ligne, texte nettoyé
@@ -361,6 +485,17 @@ function textes_php(string $source): array
         if (in_array($appel, APPELS_EXEMPTS, TRUE) || str_ends_with($appel, 'exception') || array_intersect($pile, APPELS_DEVELOPPEUR))
         {
             continue;
+        }
+
+        // `->title()` sur un CHAMP traduit ; sur un panneau ou un bouton, non (voir APPELS_DE_CHAMP).
+        if (in_array($appel, APPELS_DE_CHAMP, TRUE))
+        {
+            [$k_appel] = appel_englobant($jetons, $i);
+
+            if ($k_appel >= 0 && sur_un_champ($jetons, $k_appel))
+            {
+                continue;
+            }
         }
 
         // Une clé de tableau n'est pas affichée ; la valeur d'une clé d'identité non plus.

@@ -61,4 +61,6 @@ return [
 	'ae4f5e0e' => 'Kategorie|Kategorien',
 	'b2656c03' => 'Kategorie bearbeiten: %s',
 	'fe1ca089' => 'Nach Kategorien geordnete häufige Fragen, als Bootstrap-Akkordeon angezeigt.',
+	'262fe079' => 'Für %s geschrieben. Wechsle die Sprache der Verwaltung, um diese Frage zu übersetzen; die anderen Sprachen behalten ihren Text.',
+	'40698b8f' => 'Für %s geschrieben. Wechsle die Sprache der Verwaltung, um diese Kategorie zu übersetzen; die anderen Sprachen behalten ihren Text.',
 ];

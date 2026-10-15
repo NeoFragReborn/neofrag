@@ -5,6 +5,8 @@
 SET FOREIGN_KEY_CHECKS = 0;
 SET NAMES utf8mb4;
 
+DROP TABLE IF EXISTS `nf_faq_questions_lang`;
+DROP TABLE IF EXISTS `nf_faq_categories_lang`;
 DROP TABLE IF EXISTS `nf_faq_questions`;
 DROP TABLE IF EXISTS `nf_faq_categories`;
 

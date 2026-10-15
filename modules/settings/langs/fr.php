@@ -48,7 +48,7 @@ return [
 	'63dc6393' => 'Réouverture',
 	'6a41f36b' => 'Centré',
 	'6b0653a3' => 'Titre du message',
-	'2d5db53a' => 'Remplace la police de tous les thèmes. Les polices sont servies par Google Fonts ; « %s » n\'appelle aucun service extérieur.',
+	'1657202e' => 'Remplace la police de tous les thèmes. Toutes sont servies par le site lui-même : aucun visiteur n\'est envoyé chez un service extérieur.',
 	'6bc79f62' => 'Auteur du message',
 	'72d181ea' => 'Préférences générales sauvegardées avec succès',
 	'74adcc7d' => 'Le site est momentanément indisponible, le temps d’une mise à jour. Merci de revenir dans quelques instants.',
@@ -267,4 +267,8 @@ return [
 	'68b7ca29' => 'Indiquez un nombre d’années entre 0 et 20.',
 	'bfeaf8bc' => 'Les adresses à rediriger : le relevé des %s, dans le Monitoring.',
 	'9339febd' => 'pages introuvables',
+	'920189e5' => 'Notifications push',
+	'f5ca4bbd' => 'Proposer aux membres de recevoir leurs notifications dans le navigateur, même site fermé',
+	'3db3c569' => 'Chaque membre l’active sur ses appareils, dans ses préférences de notifications, et choisit ce qu’il reçoit. Le site doit être servi en https.',
+	'a3e9a037' => 'Les notifications push restent éteintes : ce serveur ne sait pas les chiffrer (OpenSSL avec la courbe P-256 et cURL sont nécessaires).',
 ];

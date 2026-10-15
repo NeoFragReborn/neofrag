@@ -10,7 +10,8 @@ $rules = [
 		'label'       => $this->lang('Intitulé de l\'offre'),
 		'value'       => $this->form()->value('title'),
 		'type'        => 'text',
-		'rules'       => 'required'
+		'rules'       => 'required',
+		'description' => $this->lang('Écrit pour %s. Change la langue de l\'administration pour traduire cette offre ; les autres langues gardent leur texte.', $this->config->lang->info()->title)
 	],
 	'team_id' => [
 		'label'       => $this->lang('Associer à l\'équipe'),

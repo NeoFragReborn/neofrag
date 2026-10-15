@@ -48,7 +48,7 @@ return [
 	'aec4768e' => ' image (square format min. %dpx and max. %d MB)',
 	'b549a383' => 'on',
 	'b7d3e5ee' => 'Visitor',
-	'bba7c0a4' => 'Are you sure you want to delete <b>%s</b>? <br /> All comments related to this news will be also deleted.',
+	'bba7c0a4' => 'Are you sure you want to delete <b>%s</b>? <br /> All comments on this news item will also be deleted.',
 	'c00cf454' => ' image (max. %d MB)',
 	'c18f1b3c' => 'Comments',
 	'c5db4c8a' => 'Delete confirmation',

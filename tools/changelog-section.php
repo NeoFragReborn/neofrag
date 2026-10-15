@@ -163,10 +163,19 @@ function changelog_section_matches(string $selector, string $id): bool
 
     if ($sel === 'unreleased' || $sel === 'non-publie' || $sel === 'non publié' || $sel === 'non-publié')
     {
-        // « Non publié », insensible aux accents/casse — « Unreleased » dans CHANGELOG.en.md.
-        $id = changelog_section_ascii(strtolower($id));
+        // « Non publié », insensible aux accents/casse — « Unreleased » dans CHANGELOG.en.md, et la même section
+        // dans les quatre autres traductions (d09).
+        $id = changelog_section_ascii(mb_strtolower($id));
 
-        return str_starts_with($id, 'non publ') || str_starts_with($id, 'unreleased');
+        foreach (['non publ', 'unreleased', 'unveroffentlicht', 'sin publicar', 'non pubblicato', 'nao publicado'] as $nom)
+        {
+            if (str_starts_with($id, $nom))
+            {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
     }
 
     if ($sel === 'latest')
@@ -199,7 +208,7 @@ function changelog_section_trim(array $lines): string
 /** Translittère grossièrement en ASCII pour comparer « publié » ≈ « publie ». */
 function changelog_section_ascii(string $s): string
 {
-    return strtr($s, ['é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e', 'à' => 'a', 'ç' => 'c']);
+    return strtr($s, ['é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e', 'à' => 'a', 'ç' => 'c', 'ö' => 'o', 'ã' => 'a']);
 }
 
 /** Convertit une section Markdown en HTML (GFM) via le helper du projet, ou null si vendor/ absent. */

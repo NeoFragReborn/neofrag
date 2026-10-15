@@ -85,7 +85,7 @@ class Admin extends Controller_Module
 
 		if ($this->form()->is_valid($post))
 		{
-			$this->model()->add_talk($post['title']);
+			$this->model()->add_talk($post['title'], $post['description'] ?? '');
 
 			notify($this->lang('Discussion ajoutée avec succès'));
 
@@ -97,17 +97,22 @@ class Admin extends Controller_Module
 
 	public function _edit($talk_id, $title)
 	{
+		// L'en-tête montre le nom LU ; le formulaire, le texte TEL QU'IL EST ÉCRIT dans la langue de l'administration
+		// (vide si rien n'y est écrit) : on traduit un salon en changeant de langue (m32, 2026-10-15).
+		$ecrit = $this->model()->texte_dans((int) $talk_id, (string) $this->config->lang->info()->name);
+
 		$this	->subtitle($title)
 				->form()
 				->add_rules('talks', [
-					'title' => $title
+					'title'       => $ecrit['name'],
+					'description' => $ecrit['description']
 				])
 				->add_submit($this->lang('Enregistrer'))
 				->add_back('admin/talks');
 
 		if ($this->form()->is_valid($post))
 		{
-			$this->model()->edit_talk($talk_id, $post['title']);
+			$this->model()->edit_talk($talk_id, $post['title'], $post['description'] ?? '');
 
 			notify($this->lang('Discussion éditée avec succès'));
 

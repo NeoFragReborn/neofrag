@@ -10,7 +10,7 @@ return [
 	'2939c77c' => 'Palmarés',
 	'3f641885' => 'Ver todas as nossas estatísticas',
 	'459cfb21' => 'Edição do palmarés',
-	'514e6bc4' => 'Por favor escolha um arquivo de imagem',
+	'514e6bc4' => 'Escolhe um ficheiro de imagem',
 	'5642008b' => 'l, j \d\e F \d\e Y',
 	'5c3d97d6' => 'Sem prêmios ainda',
 	'648572c3' => 'Adicionar',
@@ -32,7 +32,7 @@ return [
 	'f342c1c7' => 'Lista de palmarés',
 	'766f341e' => 'O palmarés das equipas: classificação obtida, número de equipas, data, local, jogo e plataforma de cada competição, com os pódios contados por equipa e por jogo.',
 	'52c9bbab' => 'Modificar',
-	'8d9ef7a4' => 'Excluir',
+	'8d9ef7a4' => 'Eliminar',
 	// i18n 2026-06-11 (code strings)
 	'abc845df' => 'palmarés',
 	'46ef5764' => 'Recompensas',
@@ -78,4 +78,5 @@ return [
 	'4306ff8f' => 'Outro lugar',
 	'ff8ae8a6' => 'Nenhuma classificação',
 	'8fd9c7ef' => 'Guardar',
+	'6873a0dd' => 'Escrito para %s. Muda a língua da administração para traduzir este título; as outras línguas mantêm o seu texto.',
 ];

@@ -139,4 +139,6 @@ return [
 	'92641492' => 'Effacer les fichiers cochés',
 	'970a684e' => 'extension refusée',
 	'4c523dac' => 'Ce message est signalé : il ne peut pas être supprimé tant que la modération ne l’a pas examiné.',
+	'db202fcf' => 'Écrit pour %s. Change la langue de l\'administration pour traduire ce salon ; les autres langues gardent leur texte.',
+	'eb78cff1' => 'Description',
 ];

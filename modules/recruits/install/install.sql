@@ -7,10 +7,6 @@ SET NAMES utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `nf_recruits` (
   `recruit_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) NOT NULL,
-  `introduction` mediumtext NOT NULL,
-  `description` mediumtext NOT NULL,
-  `requierments` mediumtext NOT NULL,
   `date` timestamp NOT NULL DEFAULT current_timestamp(),
   `user_id` int(11) unsigned NOT NULL,
   `size` int(11) NOT NULL,
@@ -32,7 +28,6 @@ CREATE TABLE IF NOT EXISTS `nf_recruits` (
 CREATE TABLE IF NOT EXISTS `nf_recruits_fields` (
   `field_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `recruit_id` int(11) unsigned NOT NULL,
-  `label` varchar(200) NOT NULL,
   `type` enum('text','textarea') NOT NULL DEFAULT 'text',
   `required` tinyint(1) NOT NULL DEFAULT 0,
   `sort_order` smallint(5) unsigned NOT NULL DEFAULT 0,
@@ -73,6 +68,27 @@ CREATE TABLE IF NOT EXISTS `nf_recruits_candidacies_votes` (
   KEY `user_id` (`user_id`),
   CONSTRAINT `nf_recruits_candidacies_votes_ibfk_1` FOREIGN KEY (`candidacy_id`) REFERENCES `nf_recruits_candidacies` (`candidacy_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_recruits_candidacies_votes_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `nf_recruits_lang` (
+  `recruit_id` int(11) unsigned NOT NULL,
+  `lang` varchar(5) NOT NULL,
+  `title` varchar(100) NOT NULL DEFAULT '',
+  `introduction` mediumtext DEFAULT NULL,
+  `description` mediumtext DEFAULT NULL,
+  `requierments` mediumtext DEFAULT NULL,
+  PRIMARY KEY (`recruit_id`,`lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `nf_recruits_lang_ibfk_1` FOREIGN KEY (`recruit_id`) REFERENCES `nf_recruits` (`recruit_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `nf_recruits_fields_lang` (
+  `field_id` int(11) unsigned NOT NULL,
+  `lang` varchar(5) NOT NULL,
+  `label` varchar(200) NOT NULL DEFAULT '',
+  PRIMARY KEY (`field_id`,`lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `nf_recruits_fields_lang_ibfk_1` FOREIGN KEY (`field_id`) REFERENCES `nf_recruits_fields` (`field_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

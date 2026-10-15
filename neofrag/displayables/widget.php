@@ -93,8 +93,12 @@ class Widget extends Displayable
 
 	private function _render(): string
 	{
-		$widget_data = NeoFrag()->db->from('nf_widgets')
-									->where('widget_id', $this->_widget)
+		// Le titre donné à un widget vit dans `nf_widgets_lang` depuis m32 (2026-10-15) : la meilleure langue. Un titre
+		// vide écrit pour une langue veut dire « le titre du widget », traduit.
+		$widget_data = NeoFrag()->db->select('w.widget_id', 'w.widget', 'w.type', 'wl.title', 'w.settings')
+									->from('nf_widgets w')
+									->join_lang('nf_widgets_lang wl', 'widget_id', 'w.widget_id', NULL, 'LEFT')
+									->where('w.widget_id', $this->_widget)
 									->row();
 
 		if ($widget_data && ($widget = NeoFrag()->widget($widget_data['widget'])) && $widget->is_enabled())

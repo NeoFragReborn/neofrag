@@ -101,6 +101,40 @@ function nf_connexion(): mysqli
 }
 
 /**
+ * Une connexion à la base d'un AUTRE site installé sur la machine — la production, la démonstration —, lue dans son
+ * `config/db.php`, en utf8mb4 : pour un outil qui compare ou publie sur ce site (`--site=DOSSIER`). Refuse de juger
+ * (code 2) si le dossier n'est pas un site installé ou si sa base est introuvable.
+ */
+function nf_connexion_site(string $dossier): mysqli
+{
+    $db = [];
+
+    if (!is_file($fichier = rtrim($dossier, '/').'/config/db.php'))
+    {
+        nf_refus("{$dossier} : pas de config/db.php — est-ce un site installé ?");
+    }
+
+    require $fichier;
+    $cfg = is_array($db[0] ?? NULL) ? $db[0] : [];
+
+    $base = nf_connexion_admin([
+        'hostname' => (string) ($cfg['hostname'] ?? '127.0.0.1'),
+        'port'     => (int) ($cfg['port'] ?? 3306),
+        'username' => (string) ($cfg['username'] ?? ''),
+        'password' => (string) ($cfg['password'] ?? ''),
+    ], 'du site '.$dossier);
+
+    if (!$base->select_db((string) ($cfg['database'] ?? '')))
+    {
+        nf_refus("{$dossier} : base « ".($cfg['database'] ?? '')." » introuvable");
+    }
+
+    $base->set_charset('utf8mb4');
+
+    return $base;
+}
+
+/**
  * Une connexion au SERVEUR de base de données, sans base sélectionnée, avec des identifiants
  * donnés : pour les outils qui créent ou détruisent des bases (jetables d'épreuve, base de test).
  * Refuse de juger si la connexion échoue.

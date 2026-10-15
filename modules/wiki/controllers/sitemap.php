@@ -33,7 +33,7 @@ class Sitemap extends Controller_Module
 			return [];
 		}
 
-		array_unshift($adresses, ['adresse' => 'wiki', 'date' => $derniere]);
+		array_unshift($adresses, ['adresse' => 'wiki', 'date' => $derniere, 'sans_langue' => TRUE]);
 
 		return $adresses;
 	}

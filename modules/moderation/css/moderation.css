@@ -5,6 +5,16 @@
  * Sélecteurs sans wrapper `.module-moderation` : les classes `nf-*` sont
  * suffisamment spécifiques pour ne pas conflicter ailleurs. */
 
+/*
+ * POURQUOI UNE COUCHE (`@layer`). Ce repli est servi APRÈS la feuille du thème : une règle de même spécificité y
+ * gagnait, et le thème d'administration perdait les siennes — les cartes de la page Modération n'avaient donc pas
+ * l'allure des cartes de toutes les autres pages (relevé le 2026-10-13, 30 déclarations dans ce cas). Une règle
+ * posée dans une couche perd contre une règle sans couche, quel que soit l'ordre de chargement : le repli ne sert
+ * plus que là où le thème ne dit rien, ce qu'il a toujours voulu dire.
+ */
+@layer nf-repli {
+
+
 .nf-stats-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -109,4 +119,5 @@
 .forum-message:hover .nf-report-btn,
 li:hover > .nf-report-btn {
 	opacity: 0.85;
+}
 }

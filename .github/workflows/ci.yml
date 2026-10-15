@@ -177,6 +177,21 @@ jobs:
       - name: Garde variables CSS (employées ↔ définies par tous les thèmes)
         if: ${{ !cancelled() }}
         run: php tools/check-css-variables.php
+      # Même famille, troisième cause : la feuille d'un widget est servie APRÈS celle du thème. À
+      # égalité de spécificité, l'addon gagne, et la règle d'identité du thème ne s'applique JAMAIS —
+      # feuille valide, écran présentable, dessin voulu jamais servi. Pulse l'a fait pour quatre
+      # widgets (2026-10-13) ; Extend, Forge et le Monitoring suivaient (2026-10-15).
+      - name: Garde cascade (aucune règle de thème écrasée par un addon)
+        if: ${{ !cancelled() }}
+        run: php tools/check-cascade.php
+      # Une dépendance ne devient pas dangereuse d'un coup : elle dérive. Le 2026-10-15, TinyMCE
+      # était DEUX majeures en arrière (support de la 7.9 fini le 14 novembre, faille XSS du greffon
+      # media corrigée en 8.9.3) et Font Awesome une. Ce contrôle-ci ne va pas sur le réseau : il
+      # refuse quand la dernière confrontation à l'amont date de plus de 90 jours. La confrontation
+      # elle-même se lance à la main (`--en-ligne`).
+      - name: Garde versions tierces (l'amont regardé il y a moins de 90 jours)
+        if: ${{ !cancelled() }}
+        run: php tools/check-versions-tierces.php
       # Même famille de silence, autre cause : Bootstrap 5 a SUPPRIMÉ ou redéfini des classes de
       # Bootstrap 3 et 4. Une vue qui les emploie encore ne casse pas, elle s'affiche de travers — et
       # rien ne le signale. Depuis le 2026-09-23, le balisage est entièrement migré, et le contrôle
@@ -225,6 +240,16 @@ jobs:
       - name: Garde suppressions par le constructeur de requêtes (la table est nommée)
         if: ${{ !cancelled() }}
         run: php tools/check-db-delete.php
+      # Db::query() pose la requete, le get() suivant l'envoie. Posee seule, elle partait a la place de la
+      # lecture suivante : chaque mise a jour d'un addon rejouait toutes ses migrations (2026-10-15).
+      - name: Garde requêtes écrites à la main (elles partent dans leur instruction)
+        if: ${{ !cancelled() }}
+        run: php tools/check-db-query.php
+      # Une installation neuve ne joue pas les migrations : une colonne qu'elles retirent doit quitter install.sql
+      # aussi, sinon chaque creation echoue sur un site neuf (sept colonnes oubliees, banc de la 1.2.50).
+      - name: Garde colonnes retirées (absentes du schéma d'une installation neuve)
+        if: ${{ !cancelled() }}
+        run: php tools/check-colonnes-retirees.php
       # Le site de démonstration ouvre son administration aux visiteurs. Ce qu'ils peuvent modifier
       # doit être exactement ce que la remise à zéro sait défaire — sans quoi la démo se dégrade
       # définitivement, une visite après l'autre.

@@ -165,4 +165,6 @@ return [
 	'e981b5d1' => 'Estándar',
 	'bb9aea01' => 'Partido',
 	'cbf0a999' => 'Número de eventos por página',
+	'f30ac578' => 'Escrito para %s. Cambia el idioma de la administración para traducir esta cita; los demás idiomas conservan su texto.',
+	'4e5e9cce' => 'Escrito para %s. Cambia el idioma de la administración para traducir este tipo; los demás idiomas conservan su texto.',
 ];

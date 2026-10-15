@@ -36,4 +36,5 @@ return [
 	'8fd9c7ef' => 'Salva',
 	'4a818505' => 'articolo|articoli',
 	'4678bb10' => 'Nuovo articolo',
+	'bff00c60' => 'Scritto per %s. Cambia la lingua dell\'amministrazione per tradurre questo link; le altre lingue mantengono il loro testo.',
 ];

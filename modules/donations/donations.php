@@ -14,7 +14,7 @@ class Donations extends Module
 	{
 		return [
 			'title'       => $this->lang('Dons'),
-			'description' => $this->lang('Système de campagnes de dons avec objectif, barre de progression, liste de donateurs et bouton PayPal.'),
+			'description' => $this->lang('Campagnes de dons avec objectif, barre de progression et liste de donateurs. Les dons faits par PayPal, Ko-fi, HelloAsso ou TipeeeStream s’enregistrent d’eux-mêmes.'),
 			'icon'        => 'fas fa-hand-holding-heart',
 			'author'      => 'HiddenBlob (Donation v3), d’après majiid — portage NeoFrag Reborn',
 			'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
@@ -28,6 +28,7 @@ class Donations extends Module
 			'depends'     => ['neofrag' => '0.2.0'],
 			'routes'      => [
 				''                              => 'index',
+				'webhook/{url_title}'           => '_webhook',
 				'{url_title}'                   => '_campaign',
 				'admin'                         => 'index',
 				'admin/edit/{id}'               => '_edit',

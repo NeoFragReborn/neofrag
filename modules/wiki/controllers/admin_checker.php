@@ -14,15 +14,16 @@ class Admin_Checker extends Module_Checker
 			'status' => isset($_GET['status']) && in_array($_GET['status'], ['published', 'draft'], TRUE) ? $_GET['status'] : ''
 		];
 
-		$db = NeoFrag()->db	->select('p.*', 'u.username', 'COUNT(r.id) AS nb_revisions')
+		$db = NeoFrag()->db	->select('p.*', 'wl.title', 'u.username', 'COUNT(r.id) AS nb_revisions')
 							->from('nf_wiki_pages p')
+							->join_lang('nf_wiki_pages_lang wl', 'page_id', 'p.id', NULL, 'LEFT')
 							->join('nf_user u', 'p.user_id = u.id', 'LEFT')
 							->join('nf_wiki_revisions r', 'p.id = r.page_id', 'LEFT');
 
 		if ($filters['q'] !== '')
 		{
 			$like = '%'.$filters['q'].'%';
-			$db->where('p.title LIKE', $like, 'OR', 'p.slug LIKE', $like);
+			$db->where('wl.title LIKE', $like, 'OR', 'p.slug LIKE', $like);
 		}
 		if ($filters['status'] === 'published')
 		{
@@ -34,7 +35,7 @@ class Admin_Checker extends Module_Checker
 		}
 
 		$pages = $db	->group_by('p.id')
-						->order_by('p.parent_id ASC, p.sort_order ASC, p.title ASC')
+						->order_by('p.parent_id ASC, p.sort_order ASC, wl.title ASC')
 						->limit(self::SEARCH_CAP)
 						->get();
 
@@ -65,12 +66,12 @@ class Admin_Checker extends Module_Checker
 	public function _add() { return [NULL]; }
 	public function _edit($slug)
 	{
-		$p = NeoFrag()->db->select('*')->from('nf_wiki_pages')->where('slug', $slug)->row();
+		$p = NeoFrag()->db->select('p.*', 'wl.title')->from('nf_wiki_pages p')->join_lang('nf_wiki_pages_lang wl', 'page_id', 'p.id', NULL, 'LEFT')->where('p.slug', $slug)->row();
 		return $p ? [$p] : NULL;
 	}
 	public function _delete($slug)
 	{
-		$p = NeoFrag()->db->select('id', 'slug', 'title')->from('nf_wiki_pages')->where('slug', $slug)->row();
+		$p = NeoFrag()->db->select('p.id', 'p.slug', 'wl.title')->from('nf_wiki_pages p')->join_lang('nf_wiki_pages_lang wl', 'page_id', 'p.id', NULL, 'LEFT')->where('p.slug', $slug)->row();
 		return $p ? [$p] : NULL;
 	}
 }

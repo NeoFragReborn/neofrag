@@ -150,6 +150,11 @@ class Admin extends Controller_Module
 		$is_new = $item === NULL;
 		$this->title($is_new ? $this->lang('Nouvel item') : $this->lang('Éditer : %s', $item['title']))->icon('fas fa-list')->breadcrumb();
 
+		// L'en-tête montre le titre LU ; le champ, le titre TEL QU'IL EST ÉCRIT dans la langue de l'administration
+		// (vide si rien n'y est écrit) : on traduit un lien en changeant de langue (m32, 2026-10-15).
+		$langue = (string) $this->config->lang->info()->name;
+		$ecrit  = $is_new ? '' : $this->model()->titre_dans((int) $item['item_id'], $langue);
+
 		// Parents possibles = items racine du menu (sauf l'item édité lui-même).
 		$parents = ['' => $this->lang('— Racine —')];
 		foreach ($this->model()->get_items($menu['menu_id']) as $it)
@@ -162,7 +167,8 @@ class Admin extends Controller_Module
 
 		$this->form()
 			 ->add_rules([
-				'title'     => ['label' => $this->lang('Titre'),       'type' => 'text',   'value' => $is_new ? '' : $item['title'], 'rules' => 'required'],
+				'title'     => ['label' => $this->lang('Titre'),       'type' => 'text',   'value' => $ecrit, 'rules' => 'required',
+				                'description' => $this->lang('Écrit pour %s. Change la langue de l\'administration pour traduire ce lien ; les autres langues gardent leur texte.', $this->config->lang->info()->title)],
 				'url'       => ['label' => $this->lang('Lien (URL ou route, ex. forum)'), 'type' => 'text', 'value' => $is_new ? '' : $item['url']],
 				'icon'      => ['label' => $this->lang('Icône (classe Font Awesome, ex. fas fa-home)'), 'type' => 'text', 'value' => $is_new ? '' : $item['icon']],
 				'parent_id' => ['label' => $this->lang('Sous-menu de'), 'type' => 'select', 'values' => $parents, 'value' => $is_new ? '' : (string)$item['parent_id']],
@@ -176,15 +182,16 @@ class Admin extends Controller_Module
 			$data = [
 				'menu_id'   => (int)$menu['menu_id'],
 				'parent_id' => $post['parent_id'] !== '' ? (int)$post['parent_id'] : NULL,
-				'title'     => $post['title'],
 				'url'       => $post['url'] ?? '',
 				'icon'      => $post['icon'] ?? '',
 				'target'    => $post['target'] === '_blank' ? '_blank' : '',
 				'position'  => (int)$post['position']
 			];
 
-			if ($is_new) NeoFrag()->db->insert('nf_menus_items', $data);
-			else         NeoFrag()->db->where('item_id', $item['item_id'])->update('nf_menus_items', $data);
+			if ($is_new) $item_id = (int) NeoFrag()->db->insert('nf_menus_items', $data);
+			else         NeoFrag()->db->where('item_id', $item_id = (int) $item['item_id'])->update('nf_menus_items', $data);
+
+			$this->model()->ecrire_titre($item_id, (string) $post['title'], $langue);
 
 			notify($is_new ? $this->lang('Item ajouté.') : $this->lang('Item modifié.'));
 			redirect('admin/menu/edit/'.$menu['menu_id'].'/'.url_title($menu['title']));

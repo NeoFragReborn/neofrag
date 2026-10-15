@@ -24,7 +24,7 @@ modules/notes/
 │   └── index.tpl.php
 ├── css/                      # optionnel
 ├── images/
-│   └── thumbnail.jpg         # sa vignette, 960 × 600 — une capture de sa page
+│   └── thumbnail.jpg         # sa vignette, 960 × 600 — une carte : son icône, son nom, ce qu'il fait
 ├── js/                       # optionnel — vanilla, jamais jQuery
 └── langs/
     └── fr.php                # traductions (optionnel)
@@ -49,6 +49,7 @@ class Notes extends Module
             'author'      => 'Ton Nom',
             'license'     => 'LGPLv3',
             'version'     => '1.0.0',
+            'depends'     => ['neofrag' => '1.2.50'],   // le cœur qu'il demande au moins — sans lui, « Ajouter » refuse l'archive
             'admin'       => TRUE,                   // expose une page d'administration
 
             // Déclarations de découplage — OBLIGATOIRES (la CI refuse un addon muet).
@@ -176,15 +177,15 @@ ou un panneau via `$this->panel()->title()->body($html)` pour du HTML construit 
         <div class="alert alert-info"><?php echo $this->lang('Aucune note.') ?></div>
     <?php else: foreach ($notes as $n): ?>
         <article class="note">
-            <h3><?php echo htmlspecialchars($n['title']) ?></h3>
-            <p><?php echo htmlspecialchars($n['body']) ?></p>
+            <h3><?php echo nf_texte($n['title']) ?></h3>
+            <p><?php echo nf_texte($n['body']) ?></p>
         </article>
     <?php endforeach; endif ?>
 </div>
 ```
 
 Les variables passées à `view()` sont disponibles directement. **Échappe toujours** ce qui vient de la
-base (`htmlspecialchars`) ; pour du HTML riche saisi par un membre, `sanitize_html()` (HTMLPurifier). Une
+base (`nf_texte()`) ; pour du HTML riche saisi par un membre, `sanitize_html()` (HTMLPurifier). Une
 **adresse** saisie qui finit dans un `href` passe en plus par `nf_url_sure()`, qui refuse `javascript:`
 et les autres schémas exécutables (cf. [Le framework](framework.md#sécurité--ce-qui-existe-déjà)).
 
@@ -214,6 +215,9 @@ CREATE TABLE IF NOT EXISTS nf_notes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
+> **Un contenu qui se traduit** (un titre, une description) vit dans une table `<table>_lang`, une ligne par
+> langue, lue par `join_lang()` et écrite par `ecrire_lang()` : [Le framework](framework.md#le-contenu-traduit--join_lang-et-ecrire_lang).
+
 > **Pas de tables propres ? Pas de `install.sql`.** Un module qui réutilise des tables du cœur (par
 > exemple `nf_file` via `model2('file')`) s'installe sans toucher au schéma.
 
@@ -231,15 +235,19 @@ ALTER TABLE nf_notes ADD COLUMN pinned TINYINT(1) NOT NULL DEFAULT 0;
 
 - Nom = **préfixe daté** (`AAAA_MM_JJ_description`), exécution dans l'ordre.
 - Suivi dans `nf_addon_migrations` : chaque migration ne s'exécute **qu'une fois**.
-- À l'installation neuve (`install.sql` porte déjà le schéma à jour), les migrations sont
-  **baselinées** — marquées sans être jouées. À la mise à jour (marketplace → « Mises à jour »),
-  seules les nouvelles sont **exécutées** (`Addon::update()`). Un module livré avec le cœur reçoit les
-  siennes au premier passage du code neuf (`nf_migrations_du_code()`, cf. [le framework](framework.md#migrations)).
-- Règle d'or : une migration pour une vraie évolution d'un schéma **déjà livré** ; une nouvelle table
-  va dans `install.sql`, jamais dans une migration.
-- Sur le site de démonstration, une mise à jour d'addon lancée depuis l'administration ne joue rien
-  (`Addon::migrate()` sort quand `nf_demo()` est vrai) ; les migrations arrivées avec un code neuf s'y
-  appliquent comme ailleurs.
+- À l'installation neuve (`install.sql` porte déjà le schéma à jour), les migrations sont **baselinées** — marquées sans
+  être jouées. À la mise à jour (marketplace → « Mises à jour », ou une archive envoyée par « Ajouter »), seules les
+  nouvelles sont **exécutées** (`Addon::update()`). Un module livré avec le cœur reçoit les siennes au premier passage
+  du code neuf (`nf_migrations_du_code()`, cf. [le framework](framework.md#migrations)).
+- Règle d'or : une migration pour une vraie évolution d'un schéma **déjà livré** ; une nouvelle table va dans
+  `install.sql`, jamais dans une migration — **sauf** si le module est déjà installé sur des sites : la nouvelle table
+  va alors dans les deux, `CREATE TABLE IF NOT EXISTS` dans la migration.
+- Une mise à jour par le marketplace ou par une archive rejoue `install.sql` **avant** les migrations : un site qui
+  saute des versions reçoit les tables de la dernière, puis joue les anciennes migrations sur elles. Une migration qui
+  écrit des données vise donc le schéma du dernier `install.sql`, et se réécrit quand il change — un site qui l'a déjà
+  jouée la reconnaît à son nom et ne la rejoue pas. Pour la même raison, ne renomme jamais une migration.
+- Sur le site de démonstration, une mise à jour d'addon lancée depuis l'administration ne joue rien (`Addon::migrate()`
+  sort quand `nf_demo()` est vrai) ; les migrations arrivées avec un code neuf s'y appliquent comme ailleurs.
 
 Le dossier `migrations/` **à la racine** du projet est réservé aux évolutions transverses du cœur.
 
@@ -532,7 +540,7 @@ les joue tous.
    **Ajouter (ZIP)**. Pour le publier au catalogue du marketplace du projet, il doit avoir
    `'core' => FALSE` et pas de `'distributed' => FALSE` ; `tools/package-addons.php` zippe et
    inscrit tous les addons optionnels dans `marketplace/catalog.json` avec leur empreinte SHA-256.
-4. Sa vignette, avant le packaging : `php tools/capturer-apercus.php --type=module --nom=notes` photographie
-   sa page publique, découpée sur le contenu du module, ou à défaut sa page d'administration. Si la page
-   montre des clés, des identifiants ou des comptes, fais la photo sur un site d'essai garni de données
-   d'exemple. Format et contrôles : [Créer un thème, § 5](create-a-theme.md).
+4. Sa vignette, avant le packaging : une **carte** dessinée à partir de son `__info()` — son icône, son nom et
+   sa description en français —, lisible à toute taille, même quand le module n'a rien à montrer :
+   `php tools/vignettes-cartes.php --nom=notes --sortie=/tmp/cartes` pour la regarder, puis `--poser` pour
+   la mettre en place. Format et contrôles : [Créer un thème, § 5](create-a-theme.md).

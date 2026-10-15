@@ -61,4 +61,6 @@ return [
 	'ae4f5e0e' => 'categoria|categorie',
 	'b2656c03' => 'Modifica categoria: %s',
 	'fe1ca089' => 'Domande frequenti suddivise per categoria, mostrate come accordion Bootstrap.',
+	'262fe079' => 'Scritto per %s. Cambia la lingua dell\'amministrazione per tradurre questa domanda; le altre lingue mantengono il loro testo.',
+	'40698b8f' => 'Scritto per %s. Cambia la lingua dell\'amministrazione per tradurre questa categoria; le altre lingue mantengono il loro testo.',
 ];

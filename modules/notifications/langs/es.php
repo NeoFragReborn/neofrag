@@ -10,4 +10,5 @@ return [
 	'd57997fd' => 'Ver todo',
 	'3c69968d' => 'Seguir',
 	'ef7de58b' => 'Siguiendo',
+	'c323fad6' => 'Las notificaciones llegan bien a este dispositivo.',
 ];

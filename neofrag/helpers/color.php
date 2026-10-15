@@ -194,3 +194,50 @@ function couleur_lisible_sur(string $fond, string $clair = '#ffffff', string $so
 
 	return couleur_contraste($fond, $clair) >= couleur_contraste($fond, $sombre) ? $clair : $sombre;
 }
+
+/**
+ * Un rapport de contraste écrit dans la langue de la page : « 2,3 » en français, « 2.3 » en anglais.
+ */
+function couleur_rapport(float $rapport): string
+{
+	$config = function_exists('NeoFrag') ? NeoFrag()->config : NULL;
+	$langue = $config && isset($config->lang) && is_object($config->lang) ? (string) $config->lang->info()->name : 'en';
+
+	return number_format($rapport, 1, $langue === 'en' ? '.' : ',', '');
+}
+
+/**
+ * Refuse une couleur de thème qui ne se lira pas sur son fond (WCAG 2.1, niveau AA).
+ *
+ * Les six thèmes qui laissent choisir leurs couleurs s'en servent dans le `check` de leur
+ * formulaire : rien n'avertissait jusqu'ici qu'un accent trop pâle rend les liens illisibles, et
+ * le site ne redevenait lisible qu'en retrouvant soi-même la couleur d'avant. Le seuil n'est pas
+ * le même pour tout : 4,5 pour du TEXTE, 3 pour un élément d'interface (bouton, liseré, icône),
+ * comme la norme le distingue.
+ *
+ * Une couleur que l'on ne sait pas lire (un nom CSS, une variable) n'est pas jugée : mieux vaut
+ * laisser passer que refuser à tort.
+ *
+ * @return string|true  Le message à afficher sous le champ, ou TRUE si la couleur convient.
+ */
+function couleur_refus_si_illisible(string $couleur, string $fond, float $minimum = 4.5)
+{
+	if (couleur_luminance($couleur) < 0 || couleur_luminance($fond) < 0)
+	{
+		return TRUE;
+	}
+
+	$mesure = couleur_contraste($couleur, $fond);
+
+	// Une tolérance d'un centième : 4,49 arrondi à 4,5 passerait pour un refus incompréhensible.
+	if ($mesure + 0.01 >= $minimum)
+	{
+		return TRUE;
+	}
+
+	return NeoFrag()->lang(
+		'Cette couleur ne se détache pas assez du fond du thème : %s pour 1, quand il en faut %s. Choisis-la plus foncée ou plus claire, ou change la couleur de fond.',
+		couleur_rapport($mesure),
+		couleur_rapport($minimum)
+	);
+}

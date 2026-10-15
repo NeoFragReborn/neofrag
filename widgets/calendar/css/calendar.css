@@ -93,10 +93,15 @@
 	align-items: start;
 }
 
+/* Les trois lignes ne se touchent jamais, quelle que soit la police du thème : un écart de rangée, et une hauteur de
+   ligne qui contient l'encre du quantième. Une hauteur de ligne plus courte que l'aire de contenu de la police laisse
+   les glyphes DÉBORDER de leur ligne — invisible dans la police par défaut, mais la police d'affichage d'un thème a
+   presque toujours des métriques plus hautes : Pulse posait « Lun. » sur « 12 » (démo 1.2.49, Bricolage Grotesque). */
 .nf-prochain-date {
 	display: grid;
 	place-items: center;
 	align-content: center;
+	row-gap: 4px;
 	width: 78px;
 	min-height: 84px;
 	padding: 6px 4px;
@@ -117,7 +122,7 @@
 .nf-prochain-quantieme {
 	font-size: 34px;
 	font-weight: 700;
-	line-height: 1;
+	line-height: 1.2;
 }
 
 .nf-prochain-titre {

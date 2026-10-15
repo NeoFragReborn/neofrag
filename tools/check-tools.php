@@ -26,7 +26,9 @@ declare(strict_types=1);
  *      session — cela vit dans `tools/lib/`, une fois ;
  *   4. le VERDICT : un contrôle `check-*` conclut par `nf_ok()`, et refuse par `nf_echec()` ou
  *      `nf_refus()` ;
- *   5. les PORTS : tout outil qui sert le site a son port réservé dans `NF_PORTS` ;
+ *   5. les PORTS : tout outil qui sert le site a son port réservé dans `NF_PORTS` — un outil interne,
+ *      que cette table publique ne peut pas nommer (règle 10), déclare le sien, `const NF_PORT_PROPRE`,
+ *      distinct de tous les autres ;
  *   6. le CATALOGUE et la BIBLIOTHÈQUE : `tools/README.md` liste chaque outil et chaque fichier de
  *      `tools/lib/`, et rien d'autre — ses deux tables sont produites depuis les en-têtes
  *      (`--catalogue`), et doivent être à jour (`--ecrire` les met à jour). La table de la
@@ -128,6 +130,9 @@ foreach ($fichiers as $relatif => $chemin)
 
 $internes = array_filter($diffusions, static fn (array $d): bool => $d['valeur'] === 'interne');
 
+/** Les ports que déclarent les outils internes (règle 5) : port => outil. */
+$ports_propres = [];
+
 // ── Règle 1, pour la bibliothèque : chaque fichier se présente par `<nom> — <résumé>` ──────────
 $bibliotheque = [];
 
@@ -217,10 +222,24 @@ foreach (nf_fichiers(['tools'], ['php']) as $relatif => $chemin)
         $anomalies[] = [$relatif, 'termine par exit("message") — le code de sortie serait zéro ; refuser par nf_refus() ou nf_echec()'];
     }
 
-    // Règle 5 : un port réservé pour qui sert le site.
+    // Règle 5 : un port réservé pour qui sert le site. Un outil interne ne peut pas figurer dans `NF_PORTS`, que la
+    // copie publique porte et qui ne doit pas le nommer : il déclare le sien, distinct de la table et des autres.
     if (str_contains($code, 'nf_serveur(') && !array_key_exists($nom, NF_PORTS))
     {
-        $anomalies[] = [$relatif, 'sert le site sans port réservé dans NF_PORTS (tools/lib/outil.php)'];
+        $propre = preg_match('/\bconst\s+NF_PORT_PROPRE\s*=\s*(\d+)\s*;/', $code, $p) ? (int) $p[1] : 0;
+
+        if (!isset($internes[$relatif]) || $propre === 0)
+        {
+            $anomalies[] = [$relatif, 'sert le site sans port réservé dans NF_PORTS (tools/lib/outil.php)'.(isset($internes[$relatif]) ? ' ni `const NF_PORT_PROPRE` (outil interne)' : '')];
+        }
+        elseif (in_array($propre, NF_PORTS, TRUE) || isset($ports_propres[$propre]))
+        {
+            $anomalies[] = [$relatif, "son port propre ({$propre}) est déjà pris".(isset($ports_propres[$propre]) ? ' par '.$ports_propres[$propre] : ' dans NF_PORTS')];
+        }
+        else
+        {
+            $ports_propres[$propre] = $relatif;
+        }
     }
 }
 

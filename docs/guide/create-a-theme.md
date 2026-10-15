@@ -44,6 +44,7 @@ class Aurora extends Theme
             'author'      => 'Ton Nom',
             'license'     => 'LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>',
             'version'     => '1.0.0',
+            'depends'     => ['neofrag' => '1.2.50'],   // le cœur qu'il demande au moins — sans lui, « Ajouter » refuse l'archive
 
             // Déclarations de découplage — OBLIGATOIRES.
             'core'        => FALSE,
@@ -102,7 +103,7 @@ Le `body.tpl.php` est le HTML de la page. Il **rend les régions** par leur nom 
 
 ```php
 <nav class="au-nav">
-    <a href="<?php echo url('') ?>"><?php echo htmlspecialchars($this->config->nf_name) ?></a>
+    <a href="<?php echo url('') ?>"><?php echo nf_texte($this->config->nf_name) ?></a>
     <?php echo $this->output->region('header') ?>
 </nav>
 
@@ -132,6 +133,9 @@ Si tu proposes aux visiteurs de changer de thème, écris `<?php echo nf_selecte
 de page : le cœur rend le menu des thèmes installés (hors `admin`) et retient le choix dans un cookie propre
 au site. Il ne s'affiche que s'il y a plus d'un thème public, et que l'administrateur n'a pas fermé le
 choix (**Préférences générales → Choix du thème**).
+
+Pour la langue, `<?php echo nf_selecteur_langue() ?>` rend de même le menu des langues du site, quand il en a
+plusieurs : un vrai formulaire, qui ramène le visiteur sur la même page, dans la langue choisie.
 
 Écris aussi `<?php echo nf_liens_legaux() ?>` dans ton pied de page, à côté de « Propulsé par » : le cœur
 rend les liens vers les mentions légales et la politique de confidentialité, quand leurs pages sont publiées
@@ -215,7 +219,7 @@ suivie dans `nf_addon_migrations`, jouée à la mise à jour). Exemple réel :
 ou sombre). Les feuilles des modules et des widgets n'emploient que ce vocabulaire ; une variable qu'un
 thème oublie retombe sur un repli — des **blocs blancs** en thème sombre sont apparus ainsi.
 `tools/check-css-variables.php` refuse toute variable employée par un module ou un widget que **tous**
-les thèmes ne définissent pas. Le vocabulaire complet — vingt-six jetons — avec des valeurs **d'exemple**
+les thèmes ne définissent pas. Le vocabulaire complet — vingt-sept jetons — avec des valeurs **d'exemple**
 (Nebula, lui, fait pointer chacun vers sa palette privée `--fg-*`, ce qui lui permet d'avoir un mode
 clair et un mode sombre en ne changeant que celle-ci) :
 
@@ -238,6 +242,7 @@ clair et un mode sombre en ne changeant que celle-ci) :
     --nf-danger-soft: rgba(239,68,68,.18);
     /* formes */
     --nf-radius: 14px;  --nf-radius-sm: 8px;
+    --nf-font-display: "Space Grotesk", system-ui, sans-serif;
 }
 ```
 
@@ -257,6 +262,35 @@ Deux pièges mesurés sur les thèmes livrés :
   concaténation. Un thème doit employer les noms de Bootstrap 5 : `float-end`, `text-start`, `g-0`,
   `ms-2`, `bg-danger-subtle text-danger-emphasis`. Pour teinter ces couleurs à ta charte, redéfinis
   les variables de Bootstrap (`--bs-danger-text-emphasis`…) plutôt que les classes.
+
+### Les couleurs réglables
+
+Un thème laisse choisir trois couleurs — l'accent, le fond, le texte — par sa page de configuration, avec un
+**aperçu en direct** sur une vraie page du site et le **refus d'une couleur illisible**. Le cœur fait tout ; le
+thème déclare ses couleurs d'origine dans `controllers/admin.php` :
+
+```php
+class Admin extends Controller
+{
+    const COULEURS = ['theme_color' => '#2dd4bf', 'background_color' => '#070a10', 'text_color' => '#e7eef6'];
+
+    public function index()
+    {
+        return nf_reglage_couleurs($this, $this->__caller, self::COULEURS);
+    }
+}
+```
+
+Sa feuille est alors un **gabarit PHP** qui lit les réglages `<thème>_theme_color`, `<thème>_background_color`
+et `<thème>_text_color`, avec les mêmes valeurs d'origine en repli :
+
+```php
+<?php $accent = $this->config->aurora_theme_color ?: '#2dd4bf'; ?>
+:root { --nf-accent: <?php echo $accent ?>; }
+```
+
+Un thème qui a déjà sa page de configuration y ajoute seulement l'aperçu, sous ses sélecteurs :
+`nf_apercu_couleurs($this->__caller, [...couleurs d'origine])`. Exemple réel : `themes/nebula/`.
 
 ### Le socle commun des thèmes — `css/nf-socle-themes.css` (facultatif)
 
@@ -284,6 +318,7 @@ charge le socle sans définir chacun des jetons qu'il emploie :
     --nf-success-soft: rgba(34,197,94,.12);  --nf-warning-soft: rgba(245,158,11,.12);  --nf-info-soft: rgba(56,189,248,.12);
     --nf-link: var(--nf-accent-text);  --nf-link-hover: var(--nf-accent);
     --nf-font-mono: "JetBrains Mono", ui-monospace, monospace;
+    --nf-font: "Inter", system-ui, sans-serif;
 }
 ```
 
@@ -314,7 +349,9 @@ php tools/capturer-apercus.php --type=theme --nom=aurora --basculer-theme
 
 `check-vignettes` refuse ensuite un addon sans vignette, une vignette hors format et deux vignettes
 identiques ; `check-marketplace` refuse une entrée du catalogue sans aperçu. Le format et les quelques
-exemptions motivées vivent dans `tools/lib/vignettes.php`. Modules et widgets suivent la même règle.
+exemptions motivées vivent dans `tools/lib/vignettes.php`. Modules et widgets suivent le même format, mais
+leur vignette est une carte dessinée (`tools/vignettes-cartes.php`), pas une photo : un module sans données
+ne montrerait qu'un cadre vide, alors qu'un thème se montre.
 
 ## 6. Installer, activer, éprouver
 

@@ -63,8 +63,9 @@ class Talks extends Module
 				return;
 			}
 
-			$talk = $this->db->select('t.name', 't.type', 'u.username as author')
+			$talk = $this->db->select('COALESCE(tl.name, t.name) AS name', 't.type', 'u.username as author')
 							 ->from('nf_talks t')
+							 ->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
 							 ->join('nf_user u', 'u.id = '.(int)$payload['user_id'])
 							 ->where('t.talk_id', (int)$payload['talk_id'])
 							 ->row();
@@ -135,8 +136,9 @@ class Talks extends Module
 			}
 
 			$talk = $this->db
-				->select('t.name', 'u.username as author')
+				->select('COALESCE(tl.name, t.name) AS name', 'u.username as author')
 				->from('nf_talks t')
+				->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
 				->join('nf_user u', 'u.id = '.(int)$payload['user_id'])
 				->where('t.talk_id', (int)$payload['talk_id'])
 				->row();
@@ -239,10 +241,10 @@ class Talks extends Module
 			],
 			'talk' => [
 				'get_all' => function(){
-					return NeoFrag()->db->select('talk_id', 'name')->from('nf_talks')->where('talk_id >', 1)->get();
+					return NeoFrag()->db->select('t.talk_id', 'COALESCE(tl.name, t.name) AS name')->from('nf_talks t')->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')->where('t.talk_id >', 1)->get();
 				},
 				'check'   => function($talk_id){
-					if ($talk_id > 1 && ($talk = NeoFrag()->db->select('name')->from('nf_talks')->where('talk_id', $talk_id)->row()) !== [])
+					if ($talk_id > 1 && ($talk = NeoFrag()->db->select('COALESCE(tl.name, t.name) AS name')->from('nf_talks t')->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')->where('t.talk_id', $talk_id)->row()) !== [])
 					{
 						return $talk;
 					}

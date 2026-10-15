@@ -74,4 +74,5 @@ return [
 	'f3581855' => 'Score',
 	'21ba1da3' => 'One page per team: game, description, players and roles, results and recruitment depending on the modules installed. For a guild or an esports team.',
 	'8fd9c7ef' => 'Save',
+	'a71c1200' => 'Written for %s. Switch the admin language to translate this role; the other languages keep their text.',
 ];

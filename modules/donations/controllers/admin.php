@@ -36,7 +36,77 @@ class Admin extends Controller_Module
 
 		return $this->admin_card('fas fa-bullseye', $this->lang('Campagnes de dons'), $corps,
 			$campaigns ? count($campaigns).' '.$this->lang(count($campaigns) > 1 ? 'campagnes' : 'campagne') : '',
-			$this->admin_create('admin/donations/new', $this->lang('Nouvelle campagne')));
+			$this->admin_create('admin/donations/new', $this->lang('Nouvelle campagne')))
+			.$this->_services($campaigns);
+	}
+
+	/**
+	 * Les services reliés (m16, 2026-10-16) : un don fait sur Ko-fi, HelloAsso, TipeeeStream ou par le bouton PayPal
+	 * s'enregistre de lui-même dans la campagne choisie. Les clés se rangent chiffrées et ne se relisent pas : un champ
+	 * vide garde celle qui est enregistrée.
+	 */
+	private function _services(array $campagnes): string
+	{
+		$choix  = [0 => $this->lang('Aucune — le service n’est pas relié')];
+
+		foreach ($campagnes as $c)
+		{
+			$choix[(int) $c['id']] = $c['title'] ?: $c['name'];
+		}
+
+		$garde  = fn (string $reglage): string => $this->config->{$reglage} ? ' '.$this->lang('Une clé est enregistrée, chiffrée. Laissez vide pour la garder.') : '';
+		// Les libellés arrivent traduits (`lang()` rend un objet qui s'écrit en texte) : les fermetures ne les typent pas.
+		$secret = fn ($libelle, string $reglage, $aide): array => ['label' => $libelle, 'type' => 'password', 'value' => '', 'description' => $aide.$garde($reglage)];
+		$coche  = fn (string $reglage, $libelle): array => ['type' => 'checkbox', 'checked' => ['on' => (bool) $this->config->{$reglage}], 'values' => ['on' => $libelle]];
+
+		$form = $this->form()
+			->add_rules([
+				'kofi_token'          => $secret($this->lang('Ko-fi — jeton de vérification'), 'nf_donations_kofi_token', $this->lang('Sur Ko-fi : Plus → API → Webhooks. Adresse du webhook : %s ; le jeton est affiché sous « Advanced ».', '<code>'.absolute_url('donations/webhook/kofi').'</code>')),
+				'kofi_campaign'       => ['label' => $this->lang('Ko-fi — campagne'), 'type' => 'select', 'values' => $choix, 'value' => (int) $this->config->nf_donations_kofi_campaign],
+				'helloasso_client_id' => ['label' => $this->lang('HelloAsso — identifiant du client'), 'value' => (string) $this->config->nf_donations_helloasso_client_id, 'description' => $this->lang('Dans l’espace de l’association : Mon compte → Intégrations et API. Adresse de notification à y donner : %s.', '<code>'.absolute_url('donations/webhook/helloasso').'</code>')],
+				'helloasso_secret'    => $secret($this->lang('HelloAsso — secret du client'), 'nf_donations_helloasso_secret', ''),
+				'helloasso_sandbox'   => $coche('nf_donations_helloasso_sandbox', $this->lang('HelloAsso — bac à sable (essais)')),
+				'helloasso_campaign'  => ['label' => $this->lang('HelloAsso — campagne des dons'), 'type' => 'select', 'values' => $choix, 'value' => (int) $this->config->nf_donations_helloasso_campaign],
+				'helloasso_days'      => ['label' => $this->lang('HelloAsso — durée d’une adhésion (jours)'), 'type' => 'number', 'value' => (int) $this->config->nf_donations_helloasso_days, 'description' => $this->lang('Une adhésion payée sur HelloAsso rend adhérent sur le site le membre qui a la même adresse (module Paiements). 0 : pas d’adhésion.')],
+				'tipeeestream_key'    => $secret($this->lang('TipeeeStream — clé d’API'), 'nf_donations_tipeeestream_key', $this->lang('Sur TipeeeStream : Paramètres → API. Les dons sont relevés par la tâche planifiée, à partir du jour où la clé est enregistrée.')),
+				'tipeeestream_campaign' => ['label' => $this->lang('TipeeeStream — campagne'), 'type' => 'select', 'values' => $choix, 'value' => (int) $this->config->nf_donations_tipeeestream_campaign],
+				'paypal_ipn'          => $coche('nf_donations_paypal_ipn', $this->lang('PayPal — enregistrer les dons d’eux-mêmes (notification instantanée)')),
+				'paypal_sandbox'      => $coche('nf_donations_paypal_sandbox', $this->lang('PayPal — bac à sable (essais)')),
+			])
+			->add_submit($this->lang('Enregistrer'))
+			->save();
+
+		if ($form->is_valid($post))
+		{
+			foreach (['kofi_token' => 'nf_donations_kofi_token', 'helloasso_secret' => 'nf_donations_helloasso_secret', 'tipeeestream_key' => 'nf_donations_tipeeestream_key'] as $champ => $reglage)
+			{
+				if (trim((string) ($post[$champ] ?? '')) !== '')
+				{
+					// Relier TipeeeStream ne réimporte pas son historique : les dons comptent à partir d'aujourd'hui.
+					if ($reglage === 'nf_donations_tipeeestream_key' && !$this->config->nf_donations_tipeeestream_key)
+					{
+						$this->config('nf_donations_tipeeestream_since', time(), 'int');
+					}
+
+					$this->config($reglage, $this->crypt->encrypt_secret(trim((string) $post[$champ])));
+				}
+			}
+
+			foreach (['kofi_campaign', 'helloasso_campaign', 'tipeeestream_campaign', 'helloasso_days'] as $champ)
+			{
+				$this->config('nf_donations_'.$champ, max(0, (int) ($post[$champ] ?? 0)), 'int');
+			}
+
+			$this	->config('nf_donations_helloasso_client_id', mb_substr(trim((string) ($post['helloasso_client_id'] ?? '')), 0, 100))
+					->config('nf_donations_helloasso_sandbox', in_array('on', (array) ($post['helloasso_sandbox'] ?? []), TRUE), 'bool')
+					->config('nf_donations_paypal_ipn', in_array('on', (array) ($post['paypal_ipn'] ?? []), TRUE), 'bool')
+					->config('nf_donations_paypal_sandbox', in_array('on', (array) ($post['paypal_sandbox'] ?? []), TRUE), 'bool');
+
+			notify($this->lang('Services reliés enregistrés'));
+			redirect('admin/donations');
+		}
+
+		return $this->admin_card('fas fa-plug', $this->lang('Services reliés'), '<p class="text-muted">'.$this->lang('Un don fait sur l’un de ces services s’enregistre de lui-même dans la campagne choisie, une seule fois. Les donateurs n’y apparaissent pas publiquement, sauf ceux de Ko-fi et de TipeeeStream qui l’ont voulu ; le total, lui, compte tous les dons.').'</p>'.$form->display());
 	}
 
 	public function _new()
@@ -54,6 +124,14 @@ class Admin extends Controller_Module
 		$campaign = $id ? $this->model()->get_campaign($id) : NULL;
 		if ($id && !$campaign) { $this->error(404); return; }
 
+		$langue = (string) $this->config->lang->info()->name;
+
+		if ($campaign)
+		{
+			// Le texte TEL QU'IL EST ÉCRIT dans la langue de l'administration (vide si rien n'y est encore écrit).
+			$campaign = array_merge($campaign, $this->model()->texte_dans((int)$campaign['id'], $langue));
+		}
+
 		$this	->subtitle($id ? $this->lang('Modifier la campagne') : $this->lang('Nouvelle campagne'))
 				->icon('fas fa-bullseye')
 				->css('donations');
@@ -70,7 +148,8 @@ class Admin extends Controller_Module
 				'title' => [
 					'label' => $this->lang('Titre'),
 					'value' => $campaign['title'] ?? '',
-					'rules' => 'required'
+					'rules' => 'required',
+					'description' => $this->lang('Écrit pour %s. Change la langue de l\'administration pour traduire cette campagne ; les autres langues gardent leur texte.', $this->config->lang->info()->title)
 				],
 				'description' => [
 					'label' => $this->lang('Description'),
@@ -128,7 +207,7 @@ class Admin extends Controller_Module
 
 			if (!$post['deadline']) $post['deadline'] = NULL;
 
-			$saved_id = $this->model()->save_campaign($post, $id);
+			$saved_id = $this->model()->save_campaign($post, $id, $langue);
 			notify($this->lang($id ? 'Campagne modifiée' : 'Campagne créée'));
 			redirect('admin/donations');
 		}

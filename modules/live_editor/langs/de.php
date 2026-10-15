@@ -69,4 +69,5 @@ return [
 	'66a08d25' => 'Seiten der Website',
 	'bc74124e' => 'Seite suchen',
 	'cdf72ea5' => 'Keine Seite entspricht.',
+	'6d88f17e' => 'Für %s geschrieben. Wechsle die Sprache der Verwaltung, um diesen Titel zu übersetzen; die anderen Sprachen behalten ihren.',
 ];

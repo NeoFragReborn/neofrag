@@ -61,7 +61,62 @@ class Live_Editor extends Model
 		// plus le champ : c'était un reliquat de l'ancien format dont la sortie n'était jamais lue
 		// (widget_settings l'ignore ; widget_update le réencode via get_settings) → code mort retiré,
 		// plus aucun serialize() runtime des settings widget.
-		return $this->db->from('nf_widgets')->where('widget_id', $widget_id)->row() ?: FALSE;
+		//
+		// L'ORDRE des clés compte : widget_settings() et widget_update() reçoivent ces valeurs à leur place. Le titre
+		// est celui ÉCRIT dans la langue de l'administration (vide si rien n'y est écrit) : on traduit un titre en
+		// changeant de langue (m32, 2026-10-15).
+		$widget = $this->db->select('widget_id', 'widget', 'type', 'settings')->from('nf_widgets')->where('widget_id', $widget_id)->row();
+
+		if (!$widget)
+		{
+			return FALSE;
+		}
+
+		$titre = $this->db	->select('title')
+							->from('nf_widgets_lang')
+							->where('widget_id', (int) $widget_id)
+							->where('lang', (string) $this->config->lang->info()->name)
+							->row();
+
+		return [
+			'widget_id' => $widget['widget_id'],
+			'widget'    => $widget['widget'],
+			'type'      => $widget['type'],
+			'title'     => is_string($titre) ? $titre : '',
+			'settings'  => $widget['settings']
+		];
+	}
+
+	/**
+	 * Le titre donné à un widget, dans la langue de l'administration. Un titre vide n'est écrit que si le widget en a
+	 * déjà dans une autre langue : il y veut dire « le titre du widget, traduit », et non « le titre français ».
+	 */
+	public function ecrire_titre(int $widget_id, string $titre): void
+	{
+		if ($titre === '' && $this->db->from('nf_widgets_lang')->where('widget_id', $widget_id)->empty())
+		{
+			return;
+		}
+
+		$this->db->ecrire_lang('nf_widgets_lang',
+			['widget_id' => $widget_id, 'lang' => (string) $this->config->lang->info()->name],
+			['title' => $titre]);
+	}
+
+	/** Une disposition copiée (d'une page à une autre) emporte ses widgets, et leurs titres dans toutes les langues. */
+	public function copier_widget(int $widget_id): int
+	{
+		$copie = (int) $this->db->insert('nf_widgets', $this->db	->select('widget', 'type', 'settings')
+																->from('nf_widgets')
+																->where('widget_id', $widget_id)
+																->row());
+
+		foreach ($this->db->select('lang', 'title')->from('nf_widgets_lang')->where('widget_id', $widget_id)->get() as $ligne)
+		{
+			$this->db->insert('nf_widgets_lang', ['widget_id' => $copie, 'lang' => $ligne['lang'], 'title' => $ligne['title']]);
+		}
+
+		return $copie;
 	}
 
 	/**

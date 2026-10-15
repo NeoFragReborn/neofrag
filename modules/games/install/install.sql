@@ -33,7 +33,6 @@ CREATE TABLE IF NOT EXISTS `nf_games_maps` (
   `map_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `game_id` int(11) unsigned NOT NULL,
   `image_id` int(11) unsigned DEFAULT NULL,
-  `title` varchar(100) NOT NULL,
   PRIMARY KEY (`map_id`),
   KEY `game_id` (`game_id`),
   KEY `image_id` (`image_id`),
@@ -44,10 +43,27 @@ CREATE TABLE IF NOT EXISTS `nf_games_maps` (
 CREATE TABLE IF NOT EXISTS `nf_games_modes` (
   `mode_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `game_id` int(11) unsigned NOT NULL,
-  `title` varchar(100) NOT NULL,
   PRIMARY KEY (`mode_id`),
   KEY `game_id` (`game_id`),
   CONSTRAINT `nf_games_modes_ibfk_1` FOREIGN KEY (`game_id`) REFERENCES `nf_games` (`game_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `nf_games_maps_lang` (
+  `map_id` int(11) unsigned NOT NULL,
+  `lang` varchar(5) NOT NULL,
+  `title` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`map_id`,`lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `nf_games_maps_lang_ibfk_1` FOREIGN KEY (`map_id`) REFERENCES `nf_games_maps` (`map_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `nf_games_modes_lang` (
+  `mode_id` int(11) unsigned NOT NULL,
+  `lang` varchar(5) NOT NULL,
+  `title` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`mode_id`,`lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `nf_games_modes_lang_ibfk_1` FOREIGN KEY (`mode_id`) REFERENCES `nf_games_modes` (`mode_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

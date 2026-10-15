@@ -24,11 +24,11 @@ CREATE TABLE IF NOT EXISTS `nf_partners` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `nf_partners_lang` (
-  `partner_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `partner_id` int(11) unsigned NOT NULL,
   `lang` varchar(5) NOT NULL,
   `title` varchar(100) NOT NULL,
   `description` mediumtext NOT NULL,
-  PRIMARY KEY (`partner_id`),
+  PRIMARY KEY (`partner_id`,`lang`),
   KEY `lang` (`lang`),
   CONSTRAINT `nf_partners_lang_ibfk_1` FOREIGN KEY (`partner_id`) REFERENCES `nf_partners` (`partner_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -69,6 +69,7 @@ function nf_compte_masque(): int
 const NF_DEMO_MODULES_VERROUILLES = [
 	'access',      // rôles et leurs attributions (nf_roles, nf_users_roles) — non restaurés par l'instantané
 	'addons',      // installe/désinstalle : écrit des fichiers
+	'collectives', // pose des rôles et leurs attributions (nf_roles, nf_users_roles), comme `access` : non restaurés
 	'api',         // des clés d'accès au site pour des programmes extérieurs
 	'discord',     // la clé d'un bot, et des actions sur un vrai serveur Discord (mise en place, rôles)
 	'emails',      // envoi de courrier

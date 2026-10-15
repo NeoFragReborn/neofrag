@@ -39,6 +39,7 @@ class Recruits extends Module
 				'admin{pages}'                            => 'index',
 				'admin/pending' => 'pending',
 				'admin/fields/delete/{id}/{url_title}' => '_field_delete',
+				'admin/fields/edit/{id}/{url_title}'   => '_field_edit',
 				'admin/fields/{id}/{url_title}'        => '_fields',
 				'admin/{id}/{url_title}'                  => '_edit',
 				'admin/delete/{id}/{url_title}'           => '_delete',
@@ -140,10 +141,10 @@ class Recruits extends Module
 					return array_map(fn($ligne) => [
 						'recruit_id' => $ligne['recruit_id'],
 						'title'      => (string) $this->lang('Offre %s', $ligne['title'])
-					], NeoFrag()->db->select('recruit_id', 'title')->from('nf_recruits')->get());
+					], NeoFrag()->db->select('r.recruit_id', 'rl.title')->from('nf_recruits r')->join_lang('nf_recruits_lang rl', 'recruit_id', 'r.recruit_id', NULL, 'LEFT')->get());
 				},
 				'check' => function($recruit_id){
-					if (($recruit = NeoFrag()->db->select('title')->from('nf_recruits')->where('recruit_id', $recruit_id)->row()) !== [])
+					if (($recruit = NeoFrag()->db->select('rl.title')->from('nf_recruits r')->join_lang('nf_recruits_lang rl', 'recruit_id', 'r.recruit_id', NULL, 'LEFT')->where('r.recruit_id', $recruit_id)->row()) !== [])
 					{
 						return (string) $this->lang('Offre %s', $recruit);
 					}

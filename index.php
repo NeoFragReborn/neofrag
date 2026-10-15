@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.2.49');
+define('NEOFRAG_VERSION', '1.2.50');
 
 error_reporting(E_ALL);
 
@@ -145,7 +145,6 @@ foreach ([
 			'color',
 			'consentement',
 			'countries',
-			'debug',
 			'file',
 			'dir',
 			'erreurs',

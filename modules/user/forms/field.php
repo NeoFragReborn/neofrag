@@ -27,6 +27,8 @@ $types = [
 $rules = [
 	'label' => [
 		'label' => $this->lang('Libellé'),
+		// Le libellé d'un champ s'écrit dans la langue où l'on travaille (m32, 2026-10-15) : on le dit.
+		'description' => $this->lang('Écrit pour %s. Change la langue de l\'administration pour traduire ce champ ; les autres langues gardent leur texte. La liste d\'options, elle, reste commune : une option est enregistrée telle quelle dans la réponse du membre.', $this->config->lang->info()->title),
 		'value' => $this->form()->value('label'),
 		'rules' => 'required'
 	],

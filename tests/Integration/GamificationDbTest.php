@@ -75,7 +75,7 @@ final class GamificationDbTest extends IntegrationTestCase
 		$buyer  = $this->createUser('buyer');
 		$other  = $this->createUser('other');
 
-		$this->exec("INSERT INTO nf_shop_items (title, price, type, payload) VALUES ('Test Item', 100, 'perk', 'k')");
+		$this->exec("INSERT INTO nf_shop_items (price, type, payload) VALUES (100, 'perk', 'k')");
 		$item = (int) self::$pdo->insert_id;
 
 		$this->exec("INSERT INTO nf_shop_purchases (user_id, item_id, price_paid) VALUES (?, ?, 100)", [$buyer, $item]);
@@ -98,7 +98,7 @@ final class GamificationDbTest extends IntegrationTestCase
 		$this->exec("INSERT INTO nf_points_log (user_id, amount, type) VALUES (?, 5, 'comment')", [$uid]);
 		$this->exec("INSERT INTO nf_vip (user_id, expires_at) VALUES (?, ?)", [$uid, date('Y-m-d H:i:s', time() + 86400)]);
 
-		$this->exec("INSERT INTO nf_shop_items (title, price, type, payload) VALUES ('Cascade Item', 1, 'perk', 'k')");
+		$this->exec("INSERT INTO nf_shop_items (price, type, payload) VALUES (1, 'perk', 'k')");
 		$item = (int) self::$pdo->insert_id;
 		$this->exec("INSERT INTO nf_shop_purchases (user_id, item_id, price_paid) VALUES (?, ?, 1)", [$uid, $item]);
 

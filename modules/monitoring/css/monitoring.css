@@ -27,44 +27,57 @@
 	margin: 0;
 }
 
-/* Heart icon central : couleur + animation conditionnelle selon parent .panel-monitoring.bg-X */
-span.monitoring-icon-status {
-	border: 3px solid currentColor;
-	border-radius: 50%;
-	color: var(--nf-muted, #aaa);
-	display: inline-block;
-	margin: 20px auto;
-	font-size: 53px;
-	padding: 14px 16px;
-	opacity: .85;
-	transition: color 0.3s ease, border-color 0.3s ease;
+/* Le temoin de sante, en REPLI. Sa couleur selon l'etat, elle, reste hors couche (plus bas) : c'est une
+   information, pas un dessin. Le theme d'administration pose un rond de 84 px au bord fin et au glyphe de
+   28 px ; servies apres lui, ces valeurs-ci (3 px de bord, 53 px de glyphe, 14 px de marge interieure) le
+   debordaient sans que rien ne le dise (m29, 2026-10-15). */
+@layer nf-repli {
+	span.monitoring-icon-status {
+		border: 3px solid currentColor;
+		border-radius: 50%;
+		color: var(--nf-muted, #aaa);
+		display: inline-block;
+		margin: 20px auto;
+		font-size: 53px;
+		padding: 14px 16px;
+		opacity: .85;
+		transition: color 0.3s ease, border-color 0.3s ease;
+	}
 }
 .panel-monitoring.nf-sante-ok  span.monitoring-icon-status { color: var(--bs-success-text-emphasis, var(--nf-success, #28a745)); }
 .panel-monitoring.nf-sante-alerte span.monitoring-icon-status { color: var(--bs-warning-text-emphasis, var(--nf-warning, #ff9800)); }
 .panel-monitoring.nf-sante-erreur    span.monitoring-icon-status { color: var(--bs-danger-text-emphasis, var(--nf-danger, #dc3545)); }
 
-.beat-slow {
-	animation: beat .75s infinite alternate;
-}
+/* Le battement du témoin de santé, en REPLI : le thème d'administration a le sien (`nf-beat`, plus doux, et
+   coloré selon l'état). Posé dans une couche, ce repli perd contre lui et ne sert que dans un thème qui ne dit
+   rien — avant, servi après la feuille du thème, il l'écrasait (2026-10-13). */
+@layer nf-repli {
+	.beat-slow {
+		animation: beat .75s infinite alternate;
+	}
 
-.beat-medium {
-	animation: beat .5s infinite alternate;
-}
+	.beat-medium {
+		animation: beat .5s infinite alternate;
+	}
 
-.beat-fast {
-	animation: beat .2s infinite alternate;
-}
+	.beat-fast {
+		animation: beat .2s infinite alternate;
+	}
 
-@keyframes beat {
-	to {
-		opacity: 1;
-		transform: scale(1.20);
+	@keyframes beat {
+		to {
+			opacity: 1;
+			transform: scale(1.20);
+		}
 	}
 }
 
-.monitoring-legend {
-	text-align: center;
-	padding-bottom: 5px;
+/* La legende, en REPLI elle aussi : le theme d'administration lui donne son propre interligne. */
+@layer nf-repli {
+	.monitoring-legend {
+		text-align: center;
+		padding-bottom: 5px;
+	}
 }
 
 .monitoring-legend h3 {

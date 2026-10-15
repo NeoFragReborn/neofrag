@@ -66,7 +66,7 @@ return [
 	'afb8cdcc' => 'Delete image',
 	'b616bbdc' => 'Preview',
 	'b8f54eba' => 'There are no images',
-	'ba7fde75' => 'Are you sure you want to delete the album <b>%s</b>? <br /> All images associated with this album will be also deleted.',
+	'ba7fde75' => 'Are you sure you want to delete the album <b>%s</b>? <br /> All images in this album will also be deleted.',
 	'c00cf454' => ' image (max. %d MB)',
 	'c5db4c8a' => 'Delete confirmation',
 	'c627cc86' => 'Exit',

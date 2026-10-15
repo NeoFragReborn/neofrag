@@ -18,7 +18,7 @@ class Sitemap extends Controller_Module
 	{
 		$adresses = [['adresse' => 'recruits']];
 
-		foreach ($this->db->select('recruit_id', 'title', 'date')->from('nf_recruits')->where('closed', '0')->order_by('date DESC')->get() as $offre)
+		foreach ($this->db->select('r.recruit_id', 'rl.title', 'r.date')->from('nf_recruits r')->join_lang('nf_recruits_lang rl', 'recruit_id', 'r.recruit_id', NULL, 'LEFT')->where('r.closed', '0')->order_by('r.date DESC')->get() as $offre)
 		{
 			$adresses[] = ['adresse' => 'recruits/'.$offre['recruit_id'].'/'.url_title($offre['title']), 'date' => $offre['date'], 'sans_langue' => TRUE];
 		}

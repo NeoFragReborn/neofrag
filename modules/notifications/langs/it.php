@@ -10,4 +10,5 @@ return [
 	'd57997fd' => 'Vedi tutto',
 	'3c69968d' => 'Segui',
 	'ef7de58b' => 'Seguito',
+	'c323fad6' => 'Le notifiche arrivano su questo dispositivo.',
 ];

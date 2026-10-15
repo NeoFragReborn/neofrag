@@ -89,6 +89,12 @@ function requete(string $url, string $bocal, ?array $post = NULL, int $delai = 4
         $commande .= ' --data-urlencode '.escapeshellarg($nom.'='.$valeur);
     }
 
+    // Un POST sans champ reste un POST : curl, sans --data, enverrait un GET.
+    if ($post === [])
+    {
+        $commande .= " --data ''";
+    }
+
     $reponse = (string) shell_exec($commande.' '.escapeshellarg($url).' 2>/dev/null');
 
     if ($o['trace'])
@@ -214,7 +220,9 @@ if (is_file($racine.'/config/webmaster.php'))
 // ── 4. La VRAIE sauvegarde, par son endpoint d'administration ──────────────
 $avant = glob($racine.'/backups/*.zip') ?: [];
 
-requete($base.'/fr/admin/ajax/monitoring/backup', $bocal, NULL, 600);
+// En POST, comme le bouton : depuis la 1.2.48, la sauvegarde refuse un simple lien (405) — relevé le 2026-10-10, en
+// corrigeant la même faute dans check-mise-a-jour.
+requete($base.'/fr/admin/ajax/monitoring/backup', $bocal, [], 600);
 
 $apres   = glob($racine.'/backups/*.zip') ?: [];
 $nouveau = array_values(array_diff($apres, $avant));

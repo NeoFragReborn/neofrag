@@ -18,7 +18,13 @@ class Sitemap extends Controller_Module
 	{
 		$adresses = [['adresse' => 'awards']];
 
-		foreach ($this->db->select('award_id', 'name')->from('nf_awards')->order_by('date DESC')->get() as $distinction)
+		// Le nom vit dans `nf_awards_lang` depuis m31 : le lire dans `nf_awards` rendait NULL, et le
+		// plan du site tombait en avertissement PHP à chaque passage (trouvé par check-liens, 2026-10-15).
+		foreach ($this->db	->select('a.award_id', 'al.name')
+							->from('nf_awards a')
+							->join_lang('nf_awards_lang al', 'award_id', 'a.award_id', NULL, 'LEFT')
+							->order_by('a.date DESC')
+							->get() as $distinction)
 		{
 			$adresses[] = ['adresse' => 'awards/'.$distinction['award_id'].'/'.url_title($distinction['name']), 'sans_langue' => TRUE];
 		}

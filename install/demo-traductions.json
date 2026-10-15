@@ -1,0 +1,2254 @@
+{
+  "_lisez-moi": "Les traductions du contenu d'exemple de la démonstration : une entrée par table de traduction, chaque contenu repéré par son titre FRANÇAIS (et non par un numéro — un contenu renommé ou disparu est simplement ignoré), puis une entrée par langue. tools/seed-demo.php les pose (REPLACE : rejouable), install/demo.sql en porte le résultat. Le français vient du contenu lui-même ; pour le forum, dont les titres vivent dans nf_forum et nf_forum_categories, la ligne française est posée aussi.",
+  "nf_news_lang": {
+    "Bienvenue sur NeoFrag Reborn": {
+      "en": {
+        "title": "Welcome to NeoFrag Reborn",
+        "introduction": "The community's new website is live!",
+        "content": "<p>We are delighted to welcome you to our new platform, powered by <strong>NeoFrag Reborn</strong>. Forum, news, galleries, tournaments: it's all here. Sign up and join the adventure!</p>"
+      },
+      "de": {
+        "title": "Willkommen bei NeoFrag Reborn",
+        "introduction": "Die neue Website der Gemeinschaft ist online!",
+        "content": "<p>Wir freuen uns, euch auf unserer neuen Plattform zu begrüßen, betrieben mit <strong>NeoFrag Reborn</strong>. Forum, Neuigkeiten, Galerien, Turniere: alles ist da. Meldet euch an und seid dabei!</p>"
+      },
+      "es": {
+        "title": "Bienvenido a NeoFrag Reborn",
+        "introduction": "¡La nueva web de la comunidad ya está en línea!",
+        "content": "<p>Nos alegra darte la bienvenida a nuestra nueva plataforma, impulsada por <strong>NeoFrag Reborn</strong>. Foro, noticias, galerías, torneos: está todo. ¡Regístrate y únete a la aventura!</p>"
+      },
+      "it": {
+        "title": "Benvenuto su NeoFrag Reborn",
+        "introduction": "Il nuovo sito della comunità è online!",
+        "content": "<p>Siamo felici di accoglierti sulla nostra nuova piattaforma, basata su <strong>NeoFrag Reborn</strong>. Forum, notizie, gallerie, tornei: c’è tutto. Iscriviti e unisciti all’avventura!</p>"
+      },
+      "pt": {
+        "title": "Bem-vindo ao NeoFrag Reborn",
+        "introduction": "O novo site da comunidade está online!",
+        "content": "<p>Temos muito gosto em receber-te na nossa nova plataforma, assente no <strong>NeoFrag Reborn</strong>. Fórum, notícias, galerias, torneios: está tudo cá. Regista-te e junta-te à aventura!</p>"
+      }
+    },
+    "Victoire en finale du tournoi régional": {
+      "en": {
+        "title": "Victory in the regional tournament final",
+        "introduction": "Our main team wins the grand final 3-1.",
+        "content": "<p>After a flawless run, our players lifted the regional tournament trophy. Congratulations to the whole team on this performance!</p><p>Next goal: the national qualifiers.</p>"
+      },
+      "de": {
+        "title": "Sieg im Finale des Regionalturniers",
+        "introduction": "Unser Hauptteam gewinnt das große Finale mit 3:1.",
+        "content": "<p>Nach einem makellosen Turnierverlauf haben unsere Spieler die Trophäe des Regionalturniers geholt. Glückwunsch an das ganze Team zu dieser Leistung!</p><p>Nächstes Ziel: die nationale Qualifikation.</p>"
+      },
+      "es": {
+        "title": "Victoria en la final del torneo regional",
+        "introduction": "Nuestro equipo principal se impone 3-1 en la gran final.",
+        "content": "<p>Tras un recorrido impecable, nuestros jugadores levantaron el trofeo del torneo regional. ¡Enhorabuena a todo el equipo por esta actuación!</p><p>Próximo objetivo: la clasificación nacional.</p>"
+      },
+      "it": {
+        "title": "Vittoria nella finale del torneo regionale",
+        "introduction": "La nostra squadra principale si impone 3-1 in finale.",
+        "content": "<p>Dopo un percorso senza errori, i nostri giocatori hanno alzato il trofeo del torneo regionale. Complimenti a tutta la squadra per questa prestazione!</p><p>Prossimo obiettivo: le qualificazioni nazionali.</p>"
+      },
+      "pt": {
+        "title": "Vitória na final do torneio regional",
+        "introduction": "A nossa equipa principal vence a grande final por 3-1.",
+        "content": "<p>Depois de um percurso impecável, os nossos jogadores levantaram o troféu do torneio regional. Parabéns a toda a equipa por esta exibição!</p><p>Próximo objetivo: o apuramento nacional.</p>"
+      }
+    },
+    "Soirée communautaire ce vendredi": {
+      "en": {
+        "title": "Community night this Friday",
+        "introduction": "Join us for a relaxed evening on the server.",
+        "content": "<p>This Friday at 9 pm, we all meet up for fun, friendly games. Beginners welcome!</p>"
+      },
+      "de": {
+        "title": "Community-Abend an diesem Freitag",
+        "introduction": "Komm zu einem entspannten Abend auf dem Server.",
+        "content": "<p>Diesen Freitag um 21 Uhr treffen wir uns alle zu lockeren, geselligen Runden. Anfänger sind willkommen!</p>"
+      },
+      "es": {
+        "title": "Noche comunitaria este viernes",
+        "introduction": "Acompáñanos a una velada distendida en el servidor.",
+        "content": "<p>Este viernes a las 21:00 nos juntamos todos para echar unas partidas divertidas y distendidas. ¡Principiantes bienvenidos!</p>"
+      },
+      "it": {
+        "title": "Serata della comunità questo venerdì",
+        "introduction": "Raggiungici per una serata in relax sul server.",
+        "content": "<p>Questo venerdì alle 21 ci troviamo tutti per partite divertenti e in allegria. Principianti benvenuti!</p>"
+      },
+      "pt": {
+        "title": "Noite da comunidade esta sexta-feira",
+        "introduction": "Junta-te a nós para um serão descontraído no servidor.",
+        "content": "<p>Esta sexta-feira às 21h juntamo-nos todos para umas partidas divertidas e descontraídas. Principiantes bem-vindos!</p>"
+      }
+    },
+    "Nouveau partenariat matériel": {
+      "en": {
+        "title": "New hardware partnership",
+        "introduction": "Exclusive discounts for our members.",
+        "content": "<p>Thanks to our new partner, enjoy discounts on gaming gear. Details in the members' area.</p>"
+      },
+      "de": {
+        "title": "Neue Hardware-Partnerschaft",
+        "introduction": "Exklusive Rabatte für unsere Mitglieder.",
+        "content": "<p>Dank unseres neuen Partners gibt es Rabatte auf Gaming-Hardware. Einzelheiten im Mitgliederbereich.</p>"
+      },
+      "es": {
+        "title": "Nuevo acuerdo de material",
+        "introduction": "Descuentos exclusivos para nuestros miembros.",
+        "content": "<p>Gracias a nuestro nuevo socio, disfruta de descuentos en material gaming. Los detalles, en el área de miembros.</p>"
+      },
+      "it": {
+        "title": "Nuova partnership hardware",
+        "introduction": "Sconti esclusivi per i nostri membri.",
+        "content": "<p>Grazie al nostro nuovo partner, approfitta degli sconti sull’hardware da gioco. I dettagli nell’area membri.</p>"
+      },
+      "pt": {
+        "title": "Nova parceria de material",
+        "introduction": "Descontos exclusivos para os nossos membros.",
+        "content": "<p>Graças ao nosso novo parceiro, aproveita descontos em material gaming. Os detalhes na área de membros.</p>"
+      }
+    },
+    "Calendrier des matchs du mois": {
+      "en": {
+        "title": "This month's match schedule",
+        "introduction": "All the competitive dates not to miss.",
+        "content": "<p>The schedule of upcoming matches is out. Come and cheer on your teams!</p>"
+      },
+      "de": {
+        "title": "Spielplan des Monats",
+        "introduction": "Alle Wettkampftermine, die man nicht verpassen darf.",
+        "content": "<p>Der Spielplan der nächsten Partien ist da. Kommt vorbei und feuert eure Teams an!</p>"
+      },
+      "es": {
+        "title": "Calendario de partidos del mes",
+        "introduction": "Todas las citas competitivas que no te puedes perder.",
+        "content": "<p>Ya está disponible el calendario de los próximos partidos. ¡Ven a animar a tus equipos!</p>"
+      },
+      "it": {
+        "title": "Calendario delle partite del mese",
+        "introduction": "Tutti gli appuntamenti competitivi da non perdere.",
+        "content": "<p>Il calendario delle prossime partite è disponibile. Vieni a tifare per le tue squadre!</p>"
+      },
+      "pt": {
+        "title": "Calendário dos jogos do mês",
+        "introduction": "Todos os encontros competitivos a não perder.",
+        "content": "<p>O calendário dos próximos jogos já está disponível. Vem apoiar as tuas equipas!</p>"
+      }
+    },
+    "Concours de montage vidéo": {
+      "en": {
+        "title": "Video editing contest",
+        "introduction": "Show off your best highlights and earn points.",
+        "content": "<p>Enter our editing contest: the best videos will be rewarded with shop points.</p>"
+      },
+      "de": {
+        "title": "Videoschnitt-Wettbewerb",
+        "introduction": "Zeig deine besten Highlights und sammle Punkte.",
+        "content": "<p>Mach mit bei unserem Schnittwettbewerb: die besten Videos werden mit Shop-Punkten belohnt.</p>"
+      },
+      "es": {
+        "title": "Concurso de edición de vídeo",
+        "introduction": "Enseña tus mejores jugadas y gana puntos.",
+        "content": "<p>Participa en nuestro concurso de edición: los mejores vídeos se premiarán con puntos de la tienda.</p>"
+      },
+      "it": {
+        "title": "Concorso di montaggio video",
+        "introduction": "Mostra i tuoi highlight migliori e guadagna punti.",
+        "content": "<p>Partecipa al nostro concorso di montaggio: i video migliori saranno premiati con punti negozio.</p>"
+      },
+      "pt": {
+        "title": "Concurso de edição de vídeo",
+        "introduction": "Mostra os teus melhores momentos e ganha pontos.",
+        "content": "<p>Participa no nosso concurso de edição: os melhores vídeos serão recompensados com pontos da loja.</p>"
+      }
+    }
+  },
+  "nf_articles_lang": {
+    "Bien débuter en compétitif": {
+      "en": {
+        "title": "Getting started in competitive play",
+        "excerpt": "Our tips to improve quickly.",
+        "content": "<h2>The basics</h2><p>Master your aim and positioning first. Consistency beats flashy plays.</p><h2>Team spirit</h2><p>Communication is the key to victory.</p>"
+      },
+      "de": {
+        "title": "Gut starten im Wettkampf",
+        "excerpt": "Unsere Tipps, um schnell besser zu werden.",
+        "content": "<h2>Die Grundlagen</h2><p>Beherrsche zuerst Zielen und Positionierung. Beständigkeit schlägt spektakuläre Aktionen.</p><h2>Teamgeist</h2><p>Kommunikation ist der Schlüssel zum Sieg.</p>"
+      },
+      "es": {
+        "title": "Empezar bien en competitivo",
+        "excerpt": "Nuestros consejos para progresar rápido.",
+        "content": "<h2>Lo básico</h2><p>Domina primero la puntería y la colocación. La constancia vale más que las jugadas vistosas.</p><h2>Espíritu de equipo</h2><p>La comunicación es la clave de la victoria.</p>"
+      },
+      "it": {
+        "title": "Iniziare bene nel competitivo",
+        "excerpt": "I nostri consigli per migliorare in fretta.",
+        "content": "<h2>Le basi</h2><p>Padroneggia prima la mira e il posizionamento. La costanza vale più delle giocate appariscenti.</p><h2>Spirito di squadra</h2><p>La comunicazione è la chiave della vittoria.</p>"
+      },
+      "pt": {
+        "title": "Começar bem no competitivo",
+        "excerpt": "Os nossos conselhos para evoluir depressa.",
+        "content": "<h2>As bases</h2><p>Domina primeiro a mira e o posicionamento. A regularidade vale mais do que as jogadas vistosas.</p><h2>Espírito de equipa</h2><p>A comunicação é a chave da vitória.</p>"
+      }
+    },
+    "Optimiser sa configuration": {
+      "en": {
+        "title": "Optimising your setup",
+        "excerpt": "Settings and gear for a top-notch setup.",
+        "content": "<p>A good setup isn't everything, but it helps. Here are our recommended settings and peripherals.</p>"
+      },
+      "de": {
+        "title": "Das eigene Setup optimieren",
+        "excerpt": "Einstellungen und Hardware für ein Top-Setup.",
+        "content": "<p>Ein gutes Setup ist nicht alles, aber es hilft. Hier unsere Empfehlungen zu Einstellungen und Peripherie.</p>"
+      },
+      "es": {
+        "title": "Optimizar tu configuración",
+        "excerpt": "Ajustes y material para un setup de primera.",
+        "content": "<p>Un buen setup no lo es todo, pero ayuda. Estas son nuestras recomendaciones de ajustes y periféricos.</p>"
+      },
+      "it": {
+        "title": "Ottimizzare la propria configurazione",
+        "excerpt": "Impostazioni e hardware per un setup al top.",
+        "content": "<p>Un buon setup non fa tutto, ma aiuta. Ecco i nostri consigli su impostazioni e periferiche.</p>"
+      },
+      "pt": {
+        "title": "Otimizar a tua configuração",
+        "excerpt": "Definições e material para um setup de topo.",
+        "content": "<p>Um bom setup não faz tudo, mas ajuda. Aqui ficam as nossas recomendações de definições e periféricos.</p>"
+      }
+    },
+    "Notre avis sur le dernier patch": {
+      "en": {
+        "title": "Our take on the latest patch",
+        "excerpt": "What changes for the competitive meta.",
+        "content": "<p>The latest patch reshuffles the deck. An analysis of the nerfs, buffs and their impact on the meta.</p>"
+      },
+      "de": {
+        "title": "Unsere Meinung zum letzten Patch",
+        "excerpt": "Was sich für die Wettkampf-Meta ändert.",
+        "content": "<p>Der letzte Patch mischt die Karten neu. Eine Analyse der Nerfs, Buffs und ihrer Wirkung auf die Meta.</p>"
+      },
+      "es": {
+        "title": "Nuestra opinión sobre el último parche",
+        "excerpt": "Lo que cambia para el meta competitivo.",
+        "content": "<p>El último parche vuelve a repartir las cartas. Análisis de los nerfs, los buffs y su impacto en el meta.</p>"
+      },
+      "it": {
+        "title": "Il nostro parere sull’ultima patch",
+        "excerpt": "Cosa cambia per il meta competitivo.",
+        "content": "<p>L’ultima patch rimescola le carte. Analisi di nerf, buff e del loro impatto sul meta.</p>"
+      },
+      "pt": {
+        "title": "A nossa opinião sobre o último patch",
+        "excerpt": "O que muda para o meta competitivo.",
+        "content": "<p>O último patch baralha as cartas. Análise dos nerfs, dos buffs e do seu impacto no meta.</p>"
+      }
+    },
+    "Casque gaming : le comparatif": {
+      "en": {
+        "title": "Gaming headsets: the comparison",
+        "excerpt": "We tested the current models for you.",
+        "content": "<p>Comfort, sound, microphone: our full comparison to help you pick the right headset.</p>"
+      },
+      "de": {
+        "title": "Gaming-Headsets: der Vergleich",
+        "excerpt": "Wir haben die aktuellen Modelle für euch getestet.",
+        "content": "<p>Komfort, Klang, Mikrofon: unser ausführlicher Vergleich, damit ihr das richtige Headset findet.</p>"
+      },
+      "es": {
+        "title": "Auriculares gaming: el comparativo",
+        "excerpt": "Hemos probado por ti los modelos del momento.",
+        "content": "<p>Comodidad, sonido, micrófono: nuestro comparativo completo para elegir bien los auriculares.</p>"
+      },
+      "it": {
+        "title": "Cuffie da gaming: il confronto",
+        "excerpt": "Abbiamo provato per voi i modelli del momento.",
+        "content": "<p>Comfort, audio, microfono: il nostro confronto completo per scegliere le cuffie giuste.</p>"
+      },
+      "pt": {
+        "title": "Auscultadores gaming: o comparativo",
+        "excerpt": "Testámos por ti os modelos do momento.",
+        "content": "<p>Conforto, som, microfone: o nosso comparativo completo para escolheres os auscultadores certos.</p>"
+      }
+    }
+  },
+  "nf_pages_lang": {
+    "À propos de la communauté": {
+      "en": {
+        "title": "About the community",
+        "subtitle": "Who we are",
+        "content": "<p>Founded in 2019 around Counter-Strike, our community now brings together a hundred or so players across four games. People come for the level and stay for the atmosphere.</p><p>Three competitive teams, weekly practice sessions, an annual LAN — and a Discord server open to everyone.</p>"
+      },
+      "de": {
+        "title": "Über die Gemeinschaft",
+        "subtitle": "Wer wir sind",
+        "content": "<p>2019 rund um Counter-Strike gegründet, versammelt unsere Gemeinschaft heute rund hundert Spielerinnen und Spieler in vier Spielen. Man kommt wegen des Niveaus und bleibt wegen der Stimmung.</p><p>Drei Wettkampfteams, wöchentliches Training, eine jährliche LAN – und ein Discord-Server, der allen offensteht.</p>"
+      },
+      "es": {
+        "title": "Sobre la comunidad",
+        "subtitle": "Quiénes somos",
+        "content": "<p>Fundada en 2019 en torno a Counter-Strike, nuestra comunidad reúne hoy a un centenar de jugadores en cuatro juegos. Se viene por el nivel y se queda uno por el ambiente.</p><p>Tres equipos competitivos, entrenamientos semanales, una LAN anual y un servidor de Discord abierto a todo el mundo.</p>"
+      },
+      "it": {
+        "title": "La comunità",
+        "subtitle": "Chi siamo",
+        "content": "<p>Fondata nel 2019 attorno a Counter-Strike, la nostra comunità riunisce oggi un centinaio di giocatori su quattro giochi. Si arriva per il livello e si resta per l’atmosfera.</p><p>Tre squadre competitive, allenamenti settimanali, una LAN annuale e un server Discord aperto a tutti.</p>"
+      },
+      "pt": {
+        "title": "Sobre a comunidade",
+        "subtitle": "Quem somos",
+        "content": "<p>Fundada em 2019 à volta do Counter-Strike, a nossa comunidade reúne hoje uma centena de jogadores em quatro jogos. Vem-se pelo nível e fica-se pelo ambiente.</p><p>Três equipas competitivas, treinos semanais, uma LAN anual e um servidor de Discord aberto a todos.</p>"
+      }
+    },
+    "Règlement intérieur": {
+      "en": {
+        "title": "House rules",
+        "subtitle": "What we expect from everyone",
+        "content": "<p>Respect above all: no insults, no discriminatory remarks, no cheating. A breach is first met with a warning, then with an exclusion.</p><ul><li>Microphone recommended in practice, mandatory in official matches.</li><li>Let us know if you will be absent, at least 24 hours in advance.</li><li>Staff settle disputes; their decisions are public.</li></ul>"
+      },
+      "de": {
+        "title": "Hausordnung",
+        "subtitle": "Was wir von allen erwarten",
+        "content": "<p>Respekt vor allem: keine Beleidigungen, keine diskriminierenden Äußerungen, kein Cheaten. Ein Verstoß wird zuerst verwarnt, danach ausgeschlossen.</p><ul><li>Mikrofon im Training empfohlen, im offiziellen Match Pflicht.</li><li>Abwesenheit mindestens 24 Stunden vorher ankündigen.</li><li>Das Staff entscheidet bei Streitfällen; seine Entscheidungen sind öffentlich.</li></ul>"
+      },
+      "es": {
+        "title": "Normas internas",
+        "subtitle": "Lo que esperamos de cada uno",
+        "content": "<p>Respeto ante todo: nada de insultos, ni comentarios discriminatorios, ni trampas. Una falta se resuelve primero con un aviso y después con una expulsión.</p><ul><li>Micrófono recomendado en los entrenamientos y obligatorio en partido oficial.</li><li>Avisa de tus ausencias con al menos 24 horas de antelación.</li><li>El staff resuelve los conflictos; sus decisiones son públicas.</li></ul>"
+      },
+      "it": {
+        "title": "Regolamento interno",
+        "subtitle": "Cosa chiediamo a ciascuno",
+        "content": "<p>Rispetto prima di tutto: niente insulti, niente frasi discriminatorie, niente trucchi. Una mancanza si risolve prima con un avvertimento, poi con l’esclusione.</p><ul><li>Microfono consigliato in allenamento, obbligatorio in partita ufficiale.</li><li>Avvisa in caso di assenza, almeno 24 ore prima.</li><li>Lo staff decide sulle controversie; le sue decisioni sono pubbliche.</li></ul>"
+      },
+      "pt": {
+        "title": "Regulamento interno",
+        "subtitle": "O que esperamos de cada um",
+        "content": "<p>Respeito acima de tudo: nada de insultos, de comentários discriminatórios ou de batota. Uma falta resolve-se primeiro com um aviso e depois com a exclusão.</p><ul><li>Microfone aconselhado nos treinos, obrigatório em jogo oficial.</li><li>Avisa em caso de ausência, com pelo menos 24 horas de antecedência.</li><li>O staff decide os litígios; as suas decisões são públicas.</li></ul>"
+      }
+    },
+    "Nous rejoindre": {
+      "en": {
+        "title": "Join us",
+        "subtitle": "How to apply",
+        "content": "<p>Open recruitments are listed in the dedicated section. You can also introduce yourself on the forum: we look at every unsolicited application.</p>"
+      },
+      "de": {
+        "title": "Mach mit",
+        "subtitle": "So bewirbst du dich",
+        "content": "<p>Die offenen Rekrutierungen stehen im eigenen Bereich. Du kannst dich auch im Forum vorstellen: wir sehen uns jede Initiativbewerbung an.</p>"
+      },
+      "es": {
+        "title": "Únete",
+        "subtitle": "Cómo presentar tu candidatura",
+        "content": "<p>Los reclutamientos abiertos están en la sección dedicada. También puedes presentarte en el foro: miramos todas las candidaturas espontáneas.</p>"
+      },
+      "it": {
+        "title": "Unisciti a noi",
+        "subtitle": "Come candidarsi",
+        "content": "<p>I reclutamenti aperti sono elencati nella sezione dedicata. Puoi anche presentarti sul forum: guardiamo tutte le candidature spontanee.</p>"
+      },
+      "pt": {
+        "title": "Junta-te a nós",
+        "subtitle": "Como candidatar-te",
+        "content": "<p>Os recrutamentos abertos estão na secção dedicada. Também te podes apresentar no fórum: vemos todas as candidaturas espontâneas.</p>"
+      }
+    },
+    "Nos partenaires": {
+      "en": {
+        "title": "Our partners",
+        "subtitle": "They support us",
+        "content": "<p>Three partners support us with hosting, hardware and video branding. Their backing funds our trips to LAN events.</p>"
+      },
+      "de": {
+        "title": "Unsere Partner",
+        "subtitle": "Sie unterstützen uns",
+        "content": "<p>Drei Partner begleiten uns bei Hosting, Hardware und Videogestaltung. Ihre Unterstützung finanziert unsere Fahrten zu LAN-Events.</p>"
+      },
+      "es": {
+        "title": "Nuestros socios",
+        "subtitle": "Nos apoyan",
+        "content": "<p>Tres socios nos acompañan en el alojamiento, el material y la imagen de vídeo. Su apoyo financia nuestros desplazamientos a las LAN.</p>"
+      },
+      "it": {
+        "title": "I nostri partner",
+        "subtitle": "Ci sostengono",
+        "content": "<p>Tre partner ci affiancano su hosting, hardware e grafica video. Il loro sostegno finanzia le nostre trasferte alle LAN.</p>"
+      },
+      "pt": {
+        "title": "Os nossos parceiros",
+        "subtitle": "Apoiam-nos",
+        "content": "<p>Três parceiros acompanham-nos no alojamento, no material e na imagem de vídeo. O seu apoio financia as nossas deslocações às LAN.</p>"
+      }
+    }
+  },
+  "nf_news_categories_lang": {
+    "Annonces": {
+      "en": {
+        "title": "Announcements"
+      },
+      "de": {
+        "title": "Ankündigungen"
+      },
+      "es": {
+        "title": "Anuncios"
+      },
+      "it": {
+        "title": "Annunci"
+      },
+      "pt": {
+        "title": "Anúncios"
+      }
+    },
+    "Compétition": {
+      "en": {
+        "title": "Competition"
+      },
+      "de": {
+        "title": "Wettkampf"
+      },
+      "es": {
+        "title": "Competición"
+      },
+      "it": {
+        "title": "Competizione"
+      },
+      "pt": {
+        "title": "Competição"
+      }
+    },
+    "Communauté": {
+      "en": {
+        "title": "Community"
+      },
+      "de": {
+        "title": "Gemeinschaft"
+      },
+      "es": {
+        "title": "Comunidad"
+      },
+      "it": {
+        "title": "Comunità"
+      },
+      "pt": {
+        "title": "Comunidade"
+      }
+    }
+  },
+  "nf_articles_categories_lang": {
+    "Guides": {
+      "en": {
+        "title": "Guides"
+      },
+      "de": {
+        "title": "Ratgeber"
+      },
+      "es": {
+        "title": "Guías"
+      },
+      "it": {
+        "title": "Guide"
+      },
+      "pt": {
+        "title": "Guias"
+      }
+    },
+    "Tests": {
+      "en": {
+        "title": "Reviews"
+      },
+      "de": {
+        "title": "Tests"
+      },
+      "es": {
+        "title": "Análisis"
+      },
+      "it": {
+        "title": "Recensioni"
+      },
+      "pt": {
+        "title": "Análises"
+      }
+    }
+  },
+  "nf_gallery_lang": {
+    "LAN d'été 2025": {
+      "en": {
+        "title": "Summer LAN 2025",
+        "description": "The best moments of our annual LAN."
+      },
+      "de": {
+        "title": "Sommer-LAN 2025",
+        "description": "Die besten Momente unserer jährlichen LAN."
+      },
+      "es": {
+        "title": "LAN de verano 2025",
+        "description": "Los mejores momentos de nuestra LAN anual."
+      },
+      "it": {
+        "title": "LAN estiva 2025",
+        "description": "I momenti migliori della nostra LAN annuale."
+      },
+      "pt": {
+        "title": "LAN de verão 2025",
+        "description": "Os melhores momentos da nossa LAN anual."
+      }
+    },
+    "Finale régionale": {
+      "en": {
+        "title": "Regional final",
+        "description": "Our victory in pictures."
+      },
+      "de": {
+        "title": "Regionalfinale",
+        "description": "Unser Sieg in Bildern."
+      },
+      "es": {
+        "title": "Final regional",
+        "description": "Nuestra victoria en imágenes."
+      },
+      "it": {
+        "title": "Finale regionale",
+        "description": "La nostra vittoria per immagini."
+      },
+      "pt": {
+        "title": "Final regional",
+        "description": "A nossa vitória em imagens."
+      }
+    },
+    "Best of du mois": {
+      "en": {
+        "title": "Best of the month",
+        "description": "A compilation of the finest plays."
+      },
+      "de": {
+        "title": "Best of des Monats",
+        "description": "Eine Sammlung der schönsten Spielzüge."
+      },
+      "es": {
+        "title": "Lo mejor del mes",
+        "description": "Una recopilación de las mejores jugadas."
+      },
+      "it": {
+        "title": "Il meglio del mese",
+        "description": "Una raccolta delle azioni più belle."
+      },
+      "pt": {
+        "title": "O melhor do mês",
+        "description": "Uma compilação das melhores jogadas."
+      }
+    }
+  },
+  "nf_gallery_categories_lang": {
+    "Événements": {
+      "en": {
+        "title": "Events"
+      },
+      "de": {
+        "title": "Veranstaltungen"
+      },
+      "es": {
+        "title": "Eventos"
+      },
+      "it": {
+        "title": "Eventi"
+      },
+      "pt": {
+        "title": "Eventos"
+      }
+    },
+    "Highlights": {
+      "en": {
+        "title": "Highlights"
+      },
+      "de": {
+        "title": "Highlights"
+      },
+      "es": {
+        "title": "Highlights"
+      },
+      "it": {
+        "title": "Highlights"
+      },
+      "pt": {
+        "title": "Highlights"
+      }
+    }
+  },
+  "nf_teams_lang": {
+    "Équipe principale CS2": {
+      "en": {
+        "title": "Main CS2 team",
+        "description": "Our competitive CS2 roster."
+      },
+      "de": {
+        "title": "CS2-Hauptteam",
+        "description": "Unser Wettkampf-Roster in CS2."
+      },
+      "es": {
+        "title": "Equipo principal de CS2",
+        "description": "Nuestro róster competitivo en CS2."
+      },
+      "it": {
+        "title": "Squadra principale CS2",
+        "description": "Il nostro roster competitivo su CS2."
+      },
+      "pt": {
+        "title": "Equipa principal de CS2",
+        "description": "O nosso plantel competitivo em CS2."
+      }
+    },
+    "Roster Valorant": {
+      "en": {
+        "title": "Valorant roster",
+        "description": "Five players, one goal: the top."
+      },
+      "de": {
+        "title": "Valorant-Roster",
+        "description": "Fünf Spieler, ein Ziel: ganz nach oben."
+      },
+      "es": {
+        "title": "Róster de Valorant",
+        "description": "Cinco jugadores, un objetivo: lo más alto."
+      },
+      "it": {
+        "title": "Roster Valorant",
+        "description": "Cinque giocatori, un obiettivo: la vetta."
+      },
+      "pt": {
+        "title": "Plantel de Valorant",
+        "description": "Cinco jogadores, um objetivo: o topo."
+      }
+    },
+    "Équipe LoL": {
+      "en": {
+        "title": "LoL team",
+        "description": "The Rift had better watch out."
+      },
+      "de": {
+        "title": "LoL-Team",
+        "description": "Die Kluft kann sich warm anziehen."
+      },
+      "es": {
+        "title": "Equipo de LoL",
+        "description": "La Grieta que se ande con cuidado."
+      },
+      "it": {
+        "title": "Squadra LoL",
+        "description": "La Landa può tremare."
+      },
+      "pt": {
+        "title": "Equipa de LoL",
+        "description": "A Fenda que se cuide."
+      }
+    }
+  },
+  "nf_partners_lang": {
+    "GamerGear": {
+      "en": {
+        "title": "GamerGear",
+        "description": "Official gaming hardware partner."
+      },
+      "de": {
+        "title": "GamerGear",
+        "description": "Offizieller Partner für Gaming-Hardware."
+      },
+      "es": {
+        "title": "GamerGear",
+        "description": "Socio oficial de material gaming."
+      },
+      "it": {
+        "title": "GamerGear",
+        "description": "Partner ufficiale per l’hardware da gioco."
+      },
+      "pt": {
+        "title": "GamerGear",
+        "description": "Parceiro oficial de material gaming."
+      }
+    },
+    "EnergyDrink": {
+      "en": {
+        "title": "EnergyDrink",
+        "description": "The fuel of our players."
+      },
+      "de": {
+        "title": "EnergyDrink",
+        "description": "Der Treibstoff unserer Spieler."
+      },
+      "es": {
+        "title": "EnergyDrink",
+        "description": "El combustible de nuestros jugadores."
+      },
+      "it": {
+        "title": "EnergyDrink",
+        "description": "Il carburante dei nostri giocatori."
+      },
+      "pt": {
+        "title": "EnergyDrink",
+        "description": "O combustível dos nossos jogadores."
+      }
+    },
+    "HostPro": {
+      "en": {
+        "title": "HostPro",
+        "description": "High-performance game servers."
+      },
+      "de": {
+        "title": "HostPro",
+        "description": "Hochleistungs-Gameserver."
+      },
+      "es": {
+        "title": "HostPro",
+        "description": "Servidores de juego de alto rendimiento."
+      },
+      "it": {
+        "title": "HostPro",
+        "description": "Server di gioco ad alte prestazioni."
+      },
+      "pt": {
+        "title": "HostPro",
+        "description": "Servidores de jogo de alto desempenho."
+      }
+    }
+  },
+  "nf_games_lang": {
+    "Counter-Strike 2": {
+      "en": {
+        "title": "Counter-Strike 2"
+      },
+      "de": {
+        "title": "Counter-Strike 2"
+      },
+      "es": {
+        "title": "Counter-Strike 2"
+      },
+      "it": {
+        "title": "Counter-Strike 2"
+      },
+      "pt": {
+        "title": "Counter-Strike 2"
+      }
+    },
+    "Valorant": {
+      "en": {
+        "title": "Valorant"
+      },
+      "de": {
+        "title": "Valorant"
+      },
+      "es": {
+        "title": "Valorant"
+      },
+      "it": {
+        "title": "Valorant"
+      },
+      "pt": {
+        "title": "Valorant"
+      }
+    },
+    "League of Legends": {
+      "en": {
+        "title": "League of Legends"
+      },
+      "de": {
+        "title": "League of Legends"
+      },
+      "es": {
+        "title": "League of Legends"
+      },
+      "it": {
+        "title": "League of Legends"
+      },
+      "pt": {
+        "title": "League of Legends"
+      }
+    },
+    "Rocket League": {
+      "en": {
+        "title": "Rocket League"
+      },
+      "de": {
+        "title": "Rocket League"
+      },
+      "es": {
+        "title": "Rocket League"
+      },
+      "it": {
+        "title": "Rocket League"
+      },
+      "pt": {
+        "title": "Rocket League"
+      }
+    }
+  },
+  "nf_forum_categories_lang": {
+    "Communauté": {
+      "en": {
+        "title": "Community"
+      },
+      "de": {
+        "title": "Gemeinschaft"
+      },
+      "es": {
+        "title": "Comunidad"
+      },
+      "it": {
+        "title": "Comunità"
+      },
+      "pt": {
+        "title": "Comunidade"
+      }
+    },
+    "Jeux & Compétition": {
+      "en": {
+        "title": "Games & competition"
+      },
+      "de": {
+        "title": "Spiele & Wettkampf"
+      },
+      "es": {
+        "title": "Juegos y competición"
+      },
+      "it": {
+        "title": "Giochi e competizione"
+      },
+      "pt": {
+        "title": "Jogos e competição"
+      }
+    }
+  },
+  "nf_forum_lang": {
+    "Présentations": {
+      "en": {
+        "title": "Introductions",
+        "description": "Introduce yourself to the community"
+      },
+      "de": {
+        "title": "Vorstellungen",
+        "description": "Stell dich der Gemeinschaft vor"
+      },
+      "es": {
+        "title": "Presentaciones",
+        "description": "Preséntate a la comunidad"
+      },
+      "it": {
+        "title": "Presentazioni",
+        "description": "Presentati alla comunità"
+      },
+      "pt": {
+        "title": "Apresentações",
+        "description": "Apresenta-te à comunidade"
+      }
+    },
+    "Discussions générales": {
+      "en": {
+        "title": "General discussion",
+        "description": "To talk about anything and everything"
+      },
+      "de": {
+        "title": "Allgemeine Diskussionen",
+        "description": "Für alles und nichts"
+      },
+      "es": {
+        "title": "Charla general",
+        "description": "Para hablar de todo un poco"
+      },
+      "it": {
+        "title": "Discussioni generali",
+        "description": "Per parlare di tutto e di niente"
+      },
+      "pt": {
+        "title": "Conversa geral",
+        "description": "Para falar de tudo um pouco"
+      }
+    },
+    "Stratégies": {
+      "en": {
+        "title": "Strategies",
+        "description": "Share your tactics"
+      },
+      "de": {
+        "title": "Strategien",
+        "description": "Teilt eure Taktiken"
+      },
+      "es": {
+        "title": "Estrategias",
+        "description": "Comparte tus tácticas"
+      },
+      "it": {
+        "title": "Strategie",
+        "description": "Condividi le tue tattiche"
+      },
+      "pt": {
+        "title": "Estratégias",
+        "description": "Partilha as tuas táticas"
+      }
+    },
+    "Recherche d'équipe": {
+      "en": {
+        "title": "Looking for a team",
+        "description": "Find teammates"
+      },
+      "de": {
+        "title": "Teamsuche",
+        "description": "Findet Mitspieler"
+      },
+      "es": {
+        "title": "Busco equipo",
+        "description": "Encuentra compañeros"
+      },
+      "it": {
+        "title": "Cerco squadra",
+        "description": "Trova compagni di squadra"
+      },
+      "pt": {
+        "title": "Procuro equipa",
+        "description": "Encontra colegas de equipa"
+      }
+    }
+  },
+  "nf_slider_slides_lang": {
+    "Bienvenue sur la démo": {
+      "en": {
+        "title": "Welcome to the demo",
+        "caption": "Every section is filled in: have a look around."
+      },
+      "de": {
+        "title": "Willkommen in der Demo",
+        "caption": "Alle Bereiche sind gefüllt: sieh dich frei um."
+      },
+      "es": {
+        "title": "Bienvenido a la demo",
+        "caption": "Todas las secciones están llenas: navega a tu aire."
+      },
+      "it": {
+        "title": "Benvenuto nella demo",
+        "caption": "Tutte le sezioni sono popolate: esplora liberamente."
+      },
+      "pt": {
+        "title": "Bem-vindo à demonstração",
+        "caption": "Todas as secções estão preenchidas: navega à vontade."
+      }
+    },
+    "LAN d'été 2025": {
+      "en": {
+        "title": "Summer LAN 2025",
+        "caption": "The photos are in the gallery."
+      },
+      "de": {
+        "title": "Sommer-LAN 2025",
+        "caption": "Die Fotos findest du in der Galerie."
+      },
+      "es": {
+        "title": "LAN de verano 2025",
+        "caption": "Encuentra las fotos en la galería."
+      },
+      "it": {
+        "title": "LAN estiva 2025",
+        "caption": "Trovi le foto nella galleria."
+      },
+      "pt": {
+        "title": "LAN de verão 2025",
+        "caption": "Encontra as fotos na galeria."
+      }
+    },
+    "Recrutement ouvert": {
+      "en": {
+        "title": "Recruiting now",
+        "caption": "Two spots open on CS2 and Valorant."
+      },
+      "de": {
+        "title": "Wir rekrutieren",
+        "caption": "Zwei Plätze frei in CS2 und Valorant."
+      },
+      "es": {
+        "title": "Reclutamiento abierto",
+        "caption": "Dos plazas libres en CS2 y Valorant."
+      },
+      "it": {
+        "title": "Reclutamento aperto",
+        "caption": "Due posti liberi su CS2 e Valorant."
+      },
+      "pt": {
+        "title": "Recrutamento aberto",
+        "caption": "Duas vagas em CS2 e Valorant."
+      }
+    }
+  },
+  "nf_awards_lang": {
+    "Tournoi régional 2025": {
+      "en": {
+        "name": "Regional tournament 2025",
+        "location": "Lyon"
+      },
+      "de": {
+        "name": "Regionalturnier 2025",
+        "location": "Lyon"
+      },
+      "es": {
+        "name": "Torneo regional 2025",
+        "location": "Lyon"
+      },
+      "it": {
+        "name": "Torneo regionale 2025",
+        "location": "Lione"
+      },
+      "pt": {
+        "name": "Torneio regional 2025",
+        "location": "Lião"
+      }
+    },
+    "Coupe d'hiver": {
+      "en": {
+        "name": "Winter cup",
+        "location": "Online"
+      },
+      "de": {
+        "name": "Winterpokal",
+        "location": "Online"
+      },
+      "es": {
+        "name": "Copa de invierno",
+        "location": "En línea"
+      },
+      "it": {
+        "name": "Coppa invernale",
+        "location": "Online"
+      },
+      "pt": {
+        "name": "Taça de inverno",
+        "location": "Online"
+      }
+    },
+    "Ligue communautaire": {
+      "en": {
+        "name": "Community league",
+        "location": "Online"
+      },
+      "de": {
+        "name": "Community-Liga",
+        "location": "Online"
+      },
+      "es": {
+        "name": "Liga comunitaria",
+        "location": "En línea"
+      },
+      "it": {
+        "name": "Lega della comunità",
+        "location": "Online"
+      },
+      "pt": {
+        "name": "Liga da comunidade",
+        "location": "Online"
+      }
+    }
+  },
+  "nf_events_lang": {
+    "Tournoi régional CS2": {
+      "en": {
+        "title": "CS2 regional tournament",
+        "description": "Qualifiers open to all levels.",
+        "location": "Online"
+      },
+      "de": {
+        "title": "CS2-Regionalturnier",
+        "description": "Qualifikation für alle Spielstärken offen.",
+        "location": "Online"
+      },
+      "es": {
+        "title": "Torneo regional de CS2",
+        "description": "Clasificatorios abiertos a todos los niveles.",
+        "location": "En línea"
+      },
+      "it": {
+        "title": "Torneo regionale CS2",
+        "description": "Qualificazioni aperte a tutti i livelli.",
+        "location": "Online"
+      },
+      "pt": {
+        "title": "Torneio regional de CS2",
+        "description": "Apuramentos abertos a todos os níveis.",
+        "location": "Online"
+      }
+    },
+    "Coupe Valorant communautaire": {
+      "en": {
+        "title": "Community Valorant cup",
+        "description": "Double elimination, best of three.",
+        "location": "Discord"
+      },
+      "de": {
+        "title": "Community-Valorant-Pokal",
+        "description": "Doppel-K.-o.-System, Best of Three.",
+        "location": "Discord"
+      },
+      "es": {
+        "title": "Copa Valorant de la comunidad",
+        "description": "Doble eliminación, al mejor de tres.",
+        "location": "Discord"
+      },
+      "it": {
+        "title": "Coppa Valorant della comunità",
+        "description": "Doppia eliminazione, al meglio delle tre.",
+        "location": "Discord"
+      },
+      "pt": {
+        "title": "Taça Valorant da comunidade",
+        "description": "Dupla eliminação, à melhor de três.",
+        "location": "Discord"
+      }
+    },
+    "Entraînement hebdo LoL": {
+      "en": {
+        "title": "Weekly LoL practice",
+        "description": "Scrims and game reviews.",
+        "location": "Summoner's Rift"
+      },
+      "de": {
+        "title": "Wöchentliches LoL-Training",
+        "description": "Scrims und Spielanalysen.",
+        "location": "Die Kluft der Beschwörer"
+      },
+      "es": {
+        "title": "Entrenamiento semanal de LoL",
+        "description": "Scrims y análisis de partidas.",
+        "location": "Grieta del Invocador"
+      },
+      "it": {
+        "title": "Allenamento settimanale LoL",
+        "description": "Scrim e analisi delle partite.",
+        "location": "Landa degli Evocatori"
+      },
+      "pt": {
+        "title": "Treino semanal de LoL",
+        "description": "Scrims e análise de jogos.",
+        "location": "Fenda do Invocador"
+      }
+    }
+  },
+  "nf_downloads_categories_lang": {
+    "Ressources": {
+      "en": {
+        "title": "Resources",
+        "description": "Configs, wallpapers and tools."
+      },
+      "de": {
+        "title": "Ressourcen",
+        "description": "Konfigurationen, Hintergrundbilder und Werkzeuge."
+      },
+      "es": {
+        "title": "Recursos",
+        "description": "Configuraciones, fondos de pantalla y herramientas."
+      },
+      "it": {
+        "title": "Risorse",
+        "description": "Configurazioni, sfondi e strumenti."
+      },
+      "pt": {
+        "title": "Recursos",
+        "description": "Configurações, fundos de ecrã e ferramentas."
+      }
+    }
+  },
+  "nf_downloads_lang": {
+    "Pack de fonds d'écran": {
+      "en": {
+        "title": "Wallpaper pack",
+        "description": "A selection of wallpapers in the team's colours."
+      },
+      "de": {
+        "title": "Hintergrundbild-Paket",
+        "description": "Eine Auswahl an Wallpapern in den Farben des Teams."
+      },
+      "es": {
+        "title": "Pack de fondos de pantalla",
+        "description": "Una selección de fondos con los colores del equipo."
+      },
+      "it": {
+        "title": "Pacchetto di sfondi",
+        "description": "Una selezione di sfondi con i colori del team."
+      },
+      "pt": {
+        "title": "Pacote de fundos de ecrã",
+        "description": "Uma selecção de fundos com as cores da equipa."
+      }
+    },
+    "Config CS2 recommandée": {
+      "en": {
+        "title": "Recommended CS2 config",
+        "description": "Our shared configuration file."
+      },
+      "de": {
+        "title": "Empfohlene CS2-Konfiguration",
+        "description": "Unsere gemeinsame Konfigurationsdatei."
+      },
+      "es": {
+        "title": "Configuración de CS2 recomendada",
+        "description": "Nuestro archivo de configuración compartido."
+      },
+      "it": {
+        "title": "Configurazione CS2 consigliata",
+        "description": "Il nostro file di configurazione condiviso."
+      },
+      "pt": {
+        "title": "Configuração de CS2 recomendada",
+        "description": "O nosso ficheiro de configuração partilhado."
+      }
+    }
+  },
+  "nf_links_categories_lang": {
+    "Liens utiles": {
+      "en": {
+        "title": "Useful links"
+      },
+      "de": {
+        "title": "Nützliche Links"
+      },
+      "es": {
+        "title": "Enlaces útiles"
+      },
+      "it": {
+        "title": "Link utili"
+      },
+      "pt": {
+        "title": "Ligações úteis"
+      }
+    }
+  },
+  "nf_links_lang": {
+    "Notre Discord": {
+      "en": {
+        "title": "Our Discord",
+        "description": "Join the community's voice server."
+      },
+      "de": {
+        "title": "Unser Discord",
+        "description": "Tritt dem Sprachserver der Community bei."
+      },
+      "es": {
+        "title": "Nuestro Discord",
+        "description": "Únete al servidor de voz de la comunidad."
+      },
+      "it": {
+        "title": "Il nostro Discord",
+        "description": "Unisciti al server vocale della comunità."
+      },
+      "pt": {
+        "title": "O nosso Discord",
+        "description": "Junta-te ao servidor de voz da comunidade."
+      }
+    },
+    "Chaîne Twitch": {
+      "en": {
+        "title": "Twitch channel",
+        "description": "Follow our streams and tournaments."
+      },
+      "de": {
+        "title": "Twitch-Kanal",
+        "description": "Verfolge unsere Streams und Turniere."
+      },
+      "es": {
+        "title": "Canal de Twitch",
+        "description": "Sigue nuestros directos y torneos."
+      },
+      "it": {
+        "title": "Canale Twitch",
+        "description": "Segui le nostre dirette e i tornei."
+      },
+      "pt": {
+        "title": "Canal de Twitch",
+        "description": "Segue as nossas transmissões e torneios."
+      }
+    },
+    "NeoFrag Reborn": {
+      "en": {
+        "title": "NeoFrag Reborn",
+        "description": "The CMS that powers this site."
+      },
+      "de": {
+        "title": "NeoFrag Reborn",
+        "description": "Das CMS, das diese Seite antreibt."
+      },
+      "es": {
+        "title": "NeoFrag Reborn",
+        "description": "El CMS que impulsa este sitio."
+      },
+      "it": {
+        "title": "NeoFrag Reborn",
+        "description": "Il CMS che fa funzionare questo sito."
+      },
+      "pt": {
+        "title": "NeoFrag Reborn",
+        "description": "O CMS que move este site."
+      }
+    }
+  },
+  "nf_faq_categories_lang": {
+    "Général": {
+      "en": {
+        "title": "General"
+      },
+      "de": {
+        "title": "Allgemein"
+      },
+      "es": {
+        "title": "General"
+      },
+      "it": {
+        "title": "Generale"
+      },
+      "pt": {
+        "title": "Geral"
+      }
+    }
+  },
+  "nf_faq_questions_lang": {
+    "Comment rejoindre la communauté ?": {
+      "en": {
+        "question": "How do I join the community?",
+        "answer": "Sign up for free, then introduce yourself on the forum."
+      },
+      "de": {
+        "question": "Wie trete ich der Community bei?",
+        "answer": "Melde dich kostenlos an und stelle dich im Forum vor."
+      },
+      "es": {
+        "question": "¿Cómo me uno a la comunidad?",
+        "answer": "Regístrate gratis y luego preséntate en el foro."
+      },
+      "it": {
+        "question": "Come posso unirmi alla comunità ?",
+        "answer": "Iscriviti gratuitamente, poi presentati sul forum."
+      },
+      "pt": {
+        "question": "Como me junto à comunidade?",
+        "answer": "Regista-te gratuitamente e apresenta-te no fórum."
+      }
+    },
+    "Le site est-il gratuit ?": {
+      "en": {
+        "question": "Is the site free?",
+        "answer": "Yes, NeoFrag Reborn is 100% free and open source."
+      },
+      "de": {
+        "question": "Ist die Seite kostenlos?",
+        "answer": "Ja, NeoFrag Reborn ist zu 100 % kostenlos und quelloffen."
+      },
+      "es": {
+        "question": "¿El sitio es gratuito?",
+        "answer": "Sí, NeoFrag Reborn es 100% gratuito y de código abierto."
+      },
+      "it": {
+        "question": "Il sito è gratuito ?",
+        "answer": "Sì, NeoFrag Reborn è 100% gratuito e open source."
+      },
+      "pt": {
+        "question": "O site é gratuito?",
+        "answer": "Sim, o NeoFrag Reborn é 100% gratuito e de código aberto."
+      }
+    },
+    "Comment gagner des points ?": {
+      "en": {
+        "question": "How do I earn points?",
+        "answer": "By taking part: posting, commenting, reacting and contributing."
+      },
+      "de": {
+        "question": "Wie verdiene ich Punkte?",
+        "answer": "Durch Mitmachen: posten, kommentieren, reagieren und beitragen."
+      },
+      "es": {
+        "question": "¿Cómo gano puntos?",
+        "answer": "Participando: publicar, comentar, reaccionar y contribuir."
+      },
+      "it": {
+        "question": "Come si guadagnano punti ?",
+        "answer": "Partecipando: pubblicare, commentare, reagire e contribuire."
+      },
+      "pt": {
+        "question": "Como ganho pontos?",
+        "answer": "Participando: publicar, comentar, reagir e contribuir."
+      }
+    }
+  },
+  "nf_surveys_lang": {
+    "Quel jeu pour le prochain tournoi ?": {
+      "en": {
+        "title": "Which game for the next tournament?",
+        "description": "Vote for the game of our next event."
+      },
+      "de": {
+        "title": "Welches Spiel für das nächste Turnier?",
+        "description": "Stimme für das Spiel unseres nächsten Events ab."
+      },
+      "es": {
+        "title": "¿Qué juego para el próximo torneo?",
+        "description": "Vota por el juego de nuestro próximo evento."
+      },
+      "it": {
+        "title": "Quale gioco per il prossimo torneo?",
+        "description": "Vota il gioco del nostro prossimo evento."
+      },
+      "pt": {
+        "title": "Que jogo para o próximo torneio?",
+        "description": "Vota no jogo do nosso próximo evento."
+      }
+    }
+  },
+  "nf_events_types_lang": {
+    "Tournoi": {
+      "en": {
+        "title": "Tournament"
+      },
+      "de": {
+        "title": "Turnier"
+      },
+      "es": {
+        "title": "Torneo"
+      },
+      "it": {
+        "title": "Torneo"
+      },
+      "pt": {
+        "title": "Torneio"
+      }
+    },
+    "Entraînement": {
+      "en": {
+        "title": "Practice"
+      },
+      "de": {
+        "title": "Training"
+      },
+      "es": {
+        "title": "Entrenamiento"
+      },
+      "it": {
+        "title": "Allenamento"
+      },
+      "pt": {
+        "title": "Treino"
+      }
+    }
+  },
+  "nf_teams_roles_lang": {
+    "Capitaine": {
+      "en": {
+        "title": "Captain"
+      },
+      "de": {
+        "title": "Kapitän"
+      },
+      "es": {
+        "title": "Capitán"
+      },
+      "it": {
+        "title": "Capitano"
+      },
+      "pt": {
+        "title": "Capitão"
+      }
+    },
+    "Titulaire": {
+      "en": {
+        "title": "Starter"
+      },
+      "de": {
+        "title": "Stammspieler"
+      },
+      "es": {
+        "title": "Titular"
+      },
+      "it": {
+        "title": "Titolare"
+      },
+      "pt": {
+        "title": "Titular"
+      }
+    },
+    "Remplaçant": {
+      "en": {
+        "title": "Substitute"
+      },
+      "de": {
+        "title": "Ersatzspieler"
+      },
+      "es": {
+        "title": "Suplente"
+      },
+      "it": {
+        "title": "Riserva"
+      },
+      "pt": {
+        "title": "Suplente"
+      }
+    },
+    "Coach": {
+      "en": {
+        "title": "Coach"
+      },
+      "de": {
+        "title": "Coach"
+      },
+      "es": {
+        "title": "Entrenador"
+      },
+      "it": {
+        "title": "Allenatore"
+      },
+      "pt": {
+        "title": "Treinador"
+      }
+    }
+  },
+  "nf_classifieds_categories_lang": {
+    "Matériel": {
+      "en": {
+        "title": "Hardware"
+      },
+      "de": {
+        "title": "Hardware"
+      },
+      "es": {
+        "title": "Material"
+      },
+      "it": {
+        "title": "Attrezzatura"
+      },
+      "pt": {
+        "title": "Material"
+      }
+    }
+  },
+  "nf_games_modes_lang": {
+    "Compétitif 5v5": {
+      "en": {
+        "title": "Competitive 5v5"
+      },
+      "de": {
+        "title": "Wettkampf 5v5"
+      },
+      "es": {
+        "title": "Competitivo 5c5"
+      },
+      "it": {
+        "title": "Competitivo 5v5"
+      },
+      "pt": {
+        "title": "Competitivo 5v5"
+      }
+    },
+    "Faille classée 5v5": {
+      "en": {
+        "title": "Ranked Summoner’s Rift 5v5"
+      },
+      "de": {
+        "title": "Gewertete Kluft 5v5"
+      },
+      "es": {
+        "title": "Grieta clasificatoria 5c5"
+      },
+      "it": {
+        "title": "Landa classificata 5v5"
+      },
+      "pt": {
+        "title": "Fenda classificada 5v5"
+      }
+    },
+    "Duo 2v2": {
+      "en": {
+        "title": "Duos 2v2"
+      },
+      "de": {
+        "title": "Duo 2v2"
+      },
+      "es": {
+        "title": "Dúos 2c2"
+      },
+      "it": {
+        "title": "Duo 2v2"
+      },
+      "pt": {
+        "title": "Duplas 2v2"
+      }
+    },
+    "Standard 3v3": {
+      "en": {
+        "title": "Standard 3v3"
+      },
+      "de": {
+        "title": "Standard 3v3"
+      },
+      "es": {
+        "title": "Estándar 3c3"
+      },
+      "it": {
+        "title": "Standard 3v3"
+      },
+      "pt": {
+        "title": "Padrão 3v3"
+      }
+    },
+    "Wingman 2v2": {
+      "en": {
+        "title": "Wingman 2v2"
+      },
+      "de": {
+        "title": "Wingman 2v2"
+      },
+      "es": {
+        "title": "Wingman 2c2"
+      },
+      "it": {
+        "title": "Wingman 2v2"
+      },
+      "pt": {
+        "title": "Wingman 2v2"
+      }
+    },
+    "Premier": {
+      "en": {
+        "title": "Premier"
+      },
+      "de": {
+        "title": "Premier"
+      },
+      "es": {
+        "title": "Premier"
+      },
+      "it": {
+        "title": "Premier"
+      },
+      "pt": {
+        "title": "Premier"
+      }
+    },
+    "Swiftplay": {
+      "en": {
+        "title": "Swiftplay"
+      },
+      "de": {
+        "title": "Swiftplay"
+      },
+      "es": {
+        "title": "Swiftplay"
+      },
+      "it": {
+        "title": "Swiftplay"
+      },
+      "pt": {
+        "title": "Swiftplay"
+      }
+    },
+    "ARAM": {
+      "en": {
+        "title": "ARAM"
+      },
+      "de": {
+        "title": "ARAM"
+      },
+      "es": {
+        "title": "ARAM"
+      },
+      "it": {
+        "title": "ARAM"
+      },
+      "pt": {
+        "title": "ARAM"
+      }
+    }
+  },
+  "nf_webradio_shows_lang": {
+    "Le réveil du serveur": {
+      "en": {
+        "title": "The server wake-up",
+        "description": "The community news and the morning playlist."
+      },
+      "de": {
+        "title": "Der Server wacht auf",
+        "description": "Die Neuigkeiten der Community und die Morgen-Playlist."
+      },
+      "es": {
+        "title": "El despertar del servidor",
+        "description": "Las noticias de la comunidad y la lista de la mañana."
+      },
+      "it": {
+        "title": "La sveglia del server",
+        "description": "Le novità della comunità e la playlist del mattino."
+      },
+      "pt": {
+        "title": "O despertar do servidor",
+        "description": "As notícias da comunidade e a playlist da manhã."
+      }
+    },
+    "Débrief des scrims": {
+      "en": {
+        "title": "Scrims debrief",
+        "description": "A look back at the week’s practice, with the players."
+      },
+      "de": {
+        "title": "Scrim-Nachbesprechung",
+        "description": "Rückblick auf das Training der Woche, mit den Spielern."
+      },
+      "es": {
+        "title": "Análisis de los scrims",
+        "description": "Repaso a los entrenamientos de la semana, con los jugadores."
+      },
+      "it": {
+        "title": "Debriefing degli scrim",
+        "description": "Uno sguardo agli allenamenti della settimana, con i giocatori."
+      },
+      "pt": {
+        "title": "Análise dos scrims",
+        "description": "Revisão dos treinos da semana, com os jogadores."
+      }
+    },
+    "Nuit blanche": {
+      "en": {
+        "title": "All-nighter",
+        "description": "Music and talk until dawn, during the LAN parties."
+      },
+      "de": {
+        "title": "Durchmachen",
+        "description": "Musik und Gespräche bis zum Morgengrauen, während der LANs."
+      },
+      "es": {
+        "title": "Noche en blanco",
+        "description": "Música y charla hasta el amanecer, durante las LAN."
+      },
+      "it": {
+        "title": "Notte in bianco",
+        "description": "Musica e chiacchiere fino all’alba, durante le LAN."
+      },
+      "pt": {
+        "title": "Noite em claro",
+        "description": "Música e conversa até de manhã, durante as LAN."
+      }
+    }
+  },
+  "nf_recruits_lang": {
+    "Recrutement CS2 - Joueur AWP": {
+      "en": {
+        "title": "CS2 recruitment - AWP player",
+        "introduction": "Our CS2 team is looking for a sniper.",
+        "description": "You master the AWP and want a serious team? Apply!",
+        "requierments": "Faceit level 7+, available 3 evenings a week, microphone required."
+      },
+      "de": {
+        "title": "CS2-Rekrutierung - AWP-Spieler",
+        "introduction": "Unser CS2-Team sucht einen Sniper.",
+        "description": "Du beherrschst die AWP und suchst ein ernsthaftes Team? Bewirb dich!",
+        "requierments": "Faceit-Level 7+, an 3 Abenden pro Woche verfügbar, Mikrofon Pflicht."
+      },
+      "es": {
+        "title": "Reclutamiento CS2 - Jugador AWP",
+        "introduction": "Nuestro equipo de CS2 busca un francotirador.",
+        "description": "¿Dominas la AWP y buscas un equipo serio? ¡Postúlate!",
+        "requierments": "Nivel Faceit 7+, disponible 3 noches por semana, micrófono obligatorio."
+      },
+      "it": {
+        "title": "Reclutamento CS2 - Giocatore AWP",
+        "introduction": "La nostra squadra di CS2 cerca un cecchino.",
+        "description": "Padroneggi l’AWP e cerchi una squadra seria? Candidati!",
+        "requierments": "Livello Faceit 7+, disponibile 3 sere a settimana, microfono obbligatorio."
+      },
+      "pt": {
+        "title": "Recrutamento CS2 - Jogador AWP",
+        "introduction": "A nossa equipa de CS2 procura um sniper.",
+        "description": "Dominas a AWP e procuras uma equipa séria? Candidata-te!",
+        "requierments": "Nível Faceit 7+, disponível 3 noites por semana, microfone obrigatório."
+      }
+    },
+    "Recrutement Valorant - Support": {
+      "en": {
+        "title": "Valorant recruitment - Support",
+        "introduction": "We are looking for a support/initiator player.",
+        "description": "Join our Valorant roster under construction.",
+        "requierments": "Immortal+, good communication, team spirit."
+      },
+      "de": {
+        "title": "Valorant-Rekrutierung - Support",
+        "introduction": "Wir suchen einen Support-/Initiator-Spieler.",
+        "description": "Komm in unser Valorant-Roster im Aufbau.",
+        "requierments": "Immortal+, gute Kommunikation, Teamgeist."
+      },
+      "es": {
+        "title": "Reclutamiento Valorant - Apoyo",
+        "introduction": "Buscamos un jugador de apoyo/iniciador.",
+        "description": "Únete a nuestro roster de Valorant en construcción.",
+        "requierments": "Immortal+, buena comunicación, espíritu de equipo."
+      },
+      "it": {
+        "title": "Reclutamento Valorant - Supporto",
+        "introduction": "Cerchiamo un giocatore di supporto/iniziatore.",
+        "description": "Unisciti al nostro roster di Valorant in costruzione.",
+        "requierments": "Immortal+, buona comunicazione, spirito di squadra."
+      },
+      "pt": {
+        "title": "Recrutamento Valorant - Suporte",
+        "introduction": "Procuramos um jogador de suporte/iniciador.",
+        "description": "Junta-te ao nosso roster de Valorant em construção.",
+        "requierments": "Immortal+, boa comunicação, espírito de equipa."
+      }
+    }
+  },
+  "nf_recruits_fields_lang": {
+    "Quel est ton pseudo en jeu ?": {
+      "en": {
+        "label": "What is your in-game name?"
+      },
+      "de": {
+        "label": "Wie lautet dein Spielername?"
+      },
+      "es": {
+        "label": "¿Cuál es tu nombre en el juego?"
+      },
+      "it": {
+        "label": "Qual è il tuo nickname in gioco?"
+      },
+      "pt": {
+        "label": "Qual é o teu nome no jogo?"
+      }
+    },
+    "Quelles sont tes disponibilités en soirée ?": {
+      "en": {
+        "label": "When are you available in the evenings?"
+      },
+      "de": {
+        "label": "Wann bist du abends verfügbar?"
+      },
+      "es": {
+        "label": "¿Qué disponibilidad tienes por las noches?"
+      },
+      "it": {
+        "label": "Quali sono le tue disponibilità serali?"
+      },
+      "pt": {
+        "label": "Qual é a tua disponibilidade à noite?"
+      }
+    },
+    "Décris une situation où tu as pris le lead.": {
+      "en": {
+        "label": "Describe a situation where you took the lead."
+      },
+      "de": {
+        "label": "Beschreibe eine Situation, in der du die Führung übernommen hast."
+      },
+      "es": {
+        "label": "Describe una situación en la que tomaste la iniciativa."
+      },
+      "it": {
+        "label": "Descrivi una situazione in cui hai preso il comando."
+      },
+      "pt": {
+        "label": "Descreve uma situação em que assumiste a liderança."
+      }
+    }
+  },
+  "nf_donations_campaigns_lang": {
+    "Financement du serveur 2025": {
+      "en": {
+        "title": "Server funding 2025",
+        "description": "Help us fund the hosting of our game servers."
+      },
+      "de": {
+        "title": "Serverfinanzierung 2025",
+        "description": "Helft uns, das Hosting unserer Spieleserver zu finanzieren."
+      },
+      "es": {
+        "title": "Financiación del servidor 2025",
+        "description": "Ayúdanos a financiar el alojamiento de nuestros servidores de juego."
+      },
+      "it": {
+        "title": "Finanziamento del server 2025",
+        "description": "Aiutaci a finanziare l’hosting dei nostri server di gioco."
+      },
+      "pt": {
+        "title": "Financiamento do servidor 2025",
+        "description": "Ajuda-nos a financiar o alojamento dos nossos servidores de jogo."
+      }
+    }
+  },
+  "nf_ads_lang": {
+    "Bannière partenaire": {
+      "en": {
+        "title": "Partner banner"
+      },
+      "de": {
+        "title": "Partnerbanner"
+      },
+      "es": {
+        "title": "Banner de socio"
+      },
+      "it": {
+        "title": "Banner partner"
+      },
+      "pt": {
+        "title": "Banner de parceiro"
+      }
+    }
+  },
+  "nf_shop_items_lang": {
+    "Pseudo coloré": {
+      "en": {
+        "title": "Coloured username",
+        "description": "Your username in colour on the forum for 30 days."
+      },
+      "de": {
+        "title": "Farbiger Name",
+        "description": "Dein Name in Farbe im Forum, 30 Tage lang."
+      },
+      "es": {
+        "title": "Apodo de color",
+        "description": "Tu apodo en color en el foro durante 30 días."
+      },
+      "it": {
+        "title": "Nickname colorato",
+        "description": "Il tuo nickname a colori sul forum per 30 giorni."
+      },
+      "pt": {
+        "title": "Nome colorido",
+        "description": "O teu nome a cores no fórum durante 30 dias."
+      }
+    },
+    "Badge Soutien": {
+      "en": {
+        "title": "Supporter badge",
+        "description": "A discreet badge on your profile, for good."
+      },
+      "de": {
+        "title": "Unterstützer-Abzeichen",
+        "description": "Ein dezentes Abzeichen auf deinem Profil, dauerhaft."
+      },
+      "es": {
+        "title": "Insignia de apoyo",
+        "description": "Una insignia discreta en tu perfil, para siempre."
+      },
+      "it": {
+        "title": "Badge Sostenitore",
+        "description": "Un badge discreto sul tuo profilo, per sempre."
+      },
+      "pt": {
+        "title": "Distintivo de apoio",
+        "description": "Um distintivo discreto no teu perfil, para sempre."
+      }
+    },
+    "Accès VIP 1 mois": {
+      "en": {
+        "title": "VIP access 1 month",
+        "description": "Private rooms and priority for scrims."
+      },
+      "de": {
+        "title": "VIP-Zugang 1 Monat",
+        "description": "Private Räume und Vorrang bei Scrims."
+      },
+      "es": {
+        "title": "Acceso VIP 1 mes",
+        "description": "Salas privadas y prioridad en los scrims."
+      },
+      "it": {
+        "title": "Accesso VIP 1 mese",
+        "description": "Stanze private e priorità negli scrim."
+      },
+      "pt": {
+        "title": "Acesso VIP 1 mês",
+        "description": "Salas privadas e prioridade nos scrims."
+      }
+    },
+    "Signature étendue": {
+      "en": {
+        "title": "Extended signature",
+        "description": "A 6-line signature instead of 3."
+      },
+      "de": {
+        "title": "Erweiterte Signatur",
+        "description": "Signatur mit 6 statt 3 Zeilen."
+      },
+      "es": {
+        "title": "Firma ampliada",
+        "description": "Firma de 6 líneas en lugar de 3."
+      },
+      "it": {
+        "title": "Firma estesa",
+        "description": "Firma di 6 righe invece di 3."
+      },
+      "pt": {
+        "title": "Assinatura alargada",
+        "description": "Assinatura de 6 linhas em vez de 3."
+      }
+    }
+  },
+  "nf_menus_items_lang": {
+    "À propos": {
+      "en": {
+        "title": "About"
+      },
+      "de": {
+        "title": "Über uns"
+      },
+      "es": {
+        "title": "Acerca de"
+      },
+      "it": {
+        "title": "Chi siamo"
+      },
+      "pt": {
+        "title": "Sobre nós"
+      }
+    },
+    "Règlement": {
+      "en": {
+        "title": "Rules"
+      },
+      "de": {
+        "title": "Regeln"
+      },
+      "es": {
+        "title": "Reglamento"
+      },
+      "it": {
+        "title": "Regolamento"
+      },
+      "pt": {
+        "title": "Regulamento"
+      }
+    },
+    "Nous rejoindre": {
+      "en": {
+        "title": "Join us"
+      },
+      "de": {
+        "title": "Mitmachen"
+      },
+      "es": {
+        "title": "Únete"
+      },
+      "it": {
+        "title": "Unisciti a noi"
+      },
+      "pt": {
+        "title": "Junta-te a nós"
+      }
+    },
+    "Nos partenaires": {
+      "en": {
+        "title": "Our partners"
+      },
+      "de": {
+        "title": "Unsere Partner"
+      },
+      "es": {
+        "title": "Nuestros socios"
+      },
+      "it": {
+        "title": "I nostri partner"
+      },
+      "pt": {
+        "title": "Os nossos parceiros"
+      }
+    }
+  },
+  "nf_talks_lang": {
+    "Salon général": {
+      "en": {
+        "name": "General lounge",
+        "description": "The room open to all members."
+      },
+      "de": {
+        "name": "Allgemeiner Raum",
+        "description": "Der Raum für alle Mitglieder."
+      },
+      "es": {
+        "name": "Sala general",
+        "description": "La sala abierta a todos los miembros."
+      },
+      "it": {
+        "name": "Stanza generale",
+        "description": "La stanza aperta a tutti i membri."
+      },
+      "pt": {
+        "name": "Sala geral",
+        "description": "A sala aberta a todos os membros."
+      }
+    },
+    "Staff": {
+      "en": {
+        "name": "Staff",
+        "description": "Internal staff coordination."
+      },
+      "de": {
+        "name": "Staff",
+        "description": "Interne Abstimmung des Staffs."
+      },
+      "es": {
+        "name": "Staff",
+        "description": "Coordinación interna del staff."
+      },
+      "it": {
+        "name": "Staff",
+        "description": "Coordinamento interno dello staff."
+      },
+      "pt": {
+        "name": "Staff",
+        "description": "Coordenação interna do staff."
+      }
+    }
+  },
+  "nf_wiki_pages_lang": {
+    "Bienvenue sur le wiki": {
+      "en": {
+        "title": "Welcome to the wiki",
+        "content": "<p>This wiki gathers the community's knowledge: the rules, guides to get started and our game strategies. Everyone can read it; the team keeps it up to date.</p>\n<h2>Where to start</h2>\n<ul>\n<li>Read the <strong>rules</strong>, in the “The community” section.</li>\n<li>Find out how to <strong>join a team</strong>.</li>\n<li>Brush up on the <strong>CS2 basics</strong> before your first practice.</li>\n</ul>\n<h2>Suggest a page</h2>\n<p>An idea for a guide? Suggest it on the forum, in “General discussion”: an approved page lands here, and its history keeps every version.</p>"
+      },
+      "de": {
+        "title": "Willkommen im Wiki",
+        "content": "<p>Dieses Wiki sammelt das Wissen der Community: die Regeln, Anleitungen für den Einstieg und unsere Spielstrategien. Jeder kann es lesen; das Team hält es aktuell.</p>\n<h2>Wo anfangen</h2>\n<ul>\n<li>Die <strong>Regeln</strong> lesen, in der Rubrik „Die Community“.</li>\n<li>Erfahren, wie man <strong>einem Team beitritt</strong>.</li>\n<li>Die <strong>CS2-Grundlagen</strong> vor dem ersten Training auffrischen.</li>\n</ul>\n<h2>Eine Seite vorschlagen</h2>\n<p>Eine Idee für eine Anleitung? Schlag sie im Forum vor, unter „Allgemeine Diskussionen“: Eine angenommene Seite landet hier, und ihr Verlauf bewahrt jede Version.</p>"
+      },
+      "es": {
+        "title": "Bienvenido a la wiki",
+        "content": "<p>Esta wiki reúne el saber de la comunidad: el reglamento, las guías para empezar con buen pie y nuestras estrategias de juego. Todo el mundo puede leerla; el equipo la mantiene al día.</p>\n<h2>Por dónde empezar</h2>\n<ul>\n<li>Leer el <strong>reglamento</strong>, en la sección «La comunidad».</li>\n<li>Descubrir cómo <strong>unirse a un equipo</strong>.</li>\n<li>Repasar los <strong>fundamentos de CS2</strong> antes de tu primer entrenamiento.</li>\n</ul>\n<h2>Proponer una página</h2>\n<p>¿Una idea de guía? Propónla en el foro, en «Discusiones generales»: una página aprobada llega aquí, y su historial guarda cada versión.</p>"
+      },
+      "it": {
+        "title": "Benvenuti nel wiki",
+        "content": "<p>Questo wiki raccoglie il sapere della comunità: il regolamento, le guide per iniziare bene e le nostre strategie di gioco. Tutti possono leggerlo; il team lo tiene aggiornato.</p>\n<h2>Da dove cominciare</h2>\n<ul>\n<li>Leggere il <strong>regolamento</strong>, nella sezione «La comunità».</li>\n<li>Scoprire come <strong>entrare in una squadra</strong>.</li>\n<li>Ripassare le <strong>basi di CS2</strong> prima del primo allenamento.</li>\n</ul>\n<h2>Proporre una pagina</h2>\n<p>Un’idea per una guida? Proponila sul forum, in «Discussioni generali»: una pagina approvata arriva qui, e la sua cronologia conserva ogni versione.</p>"
+      },
+      "pt": {
+        "title": "Bem-vindo à wiki",
+        "content": "<p>Esta wiki reúne o saber da comunidade: o regulamento, os guias para começar bem e as nossas estratégias de jogo. Todos a podem ler; a equipa mantém-na atualizada.</p>\n<h2>Por onde começar</h2>\n<ul>\n<li>Ler o <strong>regulamento</strong>, na secção «A comunidade».</li>\n<li>Descobrir como <strong>entrar numa equipa</strong>.</li>\n<li>Rever as <strong>bases de CS2</strong> antes do primeiro treino.</li>\n</ul>\n<h2>Propor uma página</h2>\n<p>Uma ideia de guia? Propõe-na no fórum, em «Discussões gerais»: uma página aprovada chega aqui, e o seu histórico guarda cada versão.</p>"
+      }
+    },
+    "La communauté": {
+      "en": {
+        "title": "The community",
+        "content": "<p>The house rules, and everything you need to know to find your place among us.</p>"
+      },
+      "de": {
+        "title": "Die Community",
+        "content": "<p>Die Regeln des Miteinanders und alles, was du wissen musst, um deinen Platz bei uns zu finden.</p>"
+      },
+      "es": {
+        "title": "La comunidad",
+        "content": "<p>Las normas de convivencia, y todo lo que hay que saber para encontrar tu lugar entre nosotros.</p>"
+      },
+      "it": {
+        "title": "La comunità",
+        "content": "<p>Le regole di convivenza, e tutto ciò che serve sapere per trovare il proprio posto tra noi.</p>"
+      },
+      "pt": {
+        "title": "A comunidade",
+        "content": "<p>As regras de convivência, e tudo o que precisas de saber para encontrar o teu lugar entre nós.</p>"
+      }
+    },
+    "Règlement": {
+      "en": {
+        "title": "Rules",
+        "content": "<p>These rules apply to the website, the forum and the Discord server.</p>\n<h2>The rules</h2>\n<ol>\n<li><strong>Respect</strong>: no insults, harassment or discriminatory remarks.</li>\n<li><strong>Fair play</strong>: cheating and bug exploits are forbidden, in matches as in practice.</li>\n<li><strong>No spam</strong>: no advertising, no repeated messages, no dubious links.</li>\n<li><strong>Every topic in its place</strong>: each forum has its theme; announcements are reserved for the team.</li>\n</ol>\n<h2>Sanctions</h2>\n<p>Depending on severity: a warning, a temporary ban, then a permanent ban. A sanction can be appealed to a moderator, by private message.</p>"
+      },
+      "de": {
+        "title": "Regeln",
+        "content": "<p>Diese Regeln gelten für die Website, das Forum und den Discord-Server.</p>\n<h2>Die Regeln</h2>\n<ol>\n<li><strong>Respekt</strong>: keine Beleidigungen, keine Belästigung, keine diskriminierenden Äußerungen.</li>\n<li><strong>Fairplay</strong>: Cheaten und das Ausnutzen von Bugs sind verboten, im Match wie im Training.</li>\n<li><strong>Kein Spam</strong>: keine Werbung, keine wiederholten Nachrichten, keine zweifelhaften Links.</li>\n<li><strong>Jedes Thema an seinem Platz</strong>: Jedes Forum hat sein Thema; Ankündigungen sind dem Team vorbehalten.</li>\n</ol>\n<h2>Die Sanktionen</h2>\n<p>Je nach Schwere: eine Verwarnung, ein vorübergehender Ausschluss, dann ein Bann. Gegen eine Sanktion kann man bei einem Moderator per Privatnachricht Einspruch einlegen.</p>"
+      },
+      "es": {
+        "title": "Reglamento",
+        "content": "<p>Este reglamento se aplica al sitio, al foro y al servidor de Discord.</p>\n<h2>Las normas</h2>\n<ol>\n<li><strong>Respeto</strong>: nada de insultos, acoso ni comentarios discriminatorios.</li>\n<li><strong>Juego limpio</strong>: las trampas y el aprovechamiento de bugs están prohibidos, tanto en partida como en entrenamiento.</li>\n<li><strong>Nada de spam</strong>: ni publicidad, ni mensajes repetidos, ni enlaces dudosos.</li>\n<li><strong>Cada tema en su sitio</strong>: cada foro tiene su temática; los anuncios están reservados al equipo.</li>\n</ol>\n<h2>Las sanciones</h2>\n<p>Según la gravedad: una advertencia, una expulsión temporal y después un baneo. Una sanción se puede recurrir ante un moderador, por mensaje privado.</p>"
+      },
+      "it": {
+        "title": "Regolamento",
+        "content": "<p>Questo regolamento vale per il sito, il forum e il server Discord.</p>\n<h2>Le regole</h2>\n<ol>\n<li><strong>Rispetto</strong>: niente insulti, molestie o commenti discriminatori.</li>\n<li><strong>Fair play</strong>: barare e sfruttare i bug è vietato, in partita come in allenamento.</li>\n<li><strong>Niente spam</strong>: né pubblicità, né messaggi ripetuti, né link sospetti.</li>\n<li><strong>Ogni argomento al suo posto</strong>: ogni forum ha il suo tema; gli annunci sono riservati al team.</li>\n</ol>\n<h2>Le sanzioni</h2>\n<p>A seconda della gravità: un avvertimento, un’esclusione temporanea, poi un ban. Una sanzione si contesta presso un moderatore, con un messaggio privato.</p>"
+      },
+      "pt": {
+        "title": "Regulamento",
+        "content": "<p>Este regulamento aplica-se ao site, ao fórum e ao servidor Discord.</p>\n<h2>As regras</h2>\n<ol>\n<li><strong>Respeito</strong>: nada de insultos, assédio ou comentários discriminatórios.</li>\n<li><strong>Fair-play</strong>: a batota e a exploração de bugs são proibidas, tanto em jogo como no treino.</li>\n<li><strong>Nada de spam</strong>: nem publicidade, nem mensagens repetidas, nem ligações duvidosas.</li>\n<li><strong>Cada tema no seu lugar</strong>: cada fórum tem o seu tema; os anúncios são reservados à equipa.</li>\n</ol>\n<h2>As sanções</h2>\n<p>Consoante a gravidade: um aviso, uma exclusão temporária e depois um banimento. Uma sanção contesta-se junto de um moderador, por mensagem privada.</p>"
+      }
+    },
+    "Rejoindre une équipe": {
+      "en": {
+        "title": "Join a team",
+        "content": "<p>Our teams recruit regularly. Here is how an application works.</p>\n<h2>The steps</h2>\n<ol>\n<li>Browse the offers on the <strong>Recruitment</strong> page and pick a position.</li>\n<li>Send your application from the offer: your game, your role, your availability.</li>\n<li>A captain offers you a <strong>trial</strong>: a practice session with the team.</li>\n<li>After the trial, the answer arrives by private message.</li>\n</ol>\n<h2>What we expect</h2>\n<ul>\n<li>regular attendance at practice;</li>\n<li>a microphone, and Discord;</li>\n<li>the will to improve together.</li>\n</ul>"
+      },
+      "de": {
+        "title": "Einem Team beitreten",
+        "content": "<p>Unsere Teams suchen regelmäßig Verstärkung. So läuft eine Bewerbung ab.</p>\n<h2>Die Schritte</h2>\n<ol>\n<li>Sieh dir die Angebote auf der Seite <strong>Rekrutierung</strong> an und wähle eine Position.</li>\n<li>Schicke deine Bewerbung über das Angebot: dein Spiel, deine Rolle, deine Verfügbarkeit.</li>\n<li>Ein Kapitän schlägt dir ein <strong>Probetraining</strong> mit dem Team vor.</li>\n<li>Nach dem Probetraining kommt die Antwort per Privatnachricht.</li>\n</ol>\n<h2>Was wir erwarten</h2>\n<ul>\n<li>Regelmäßigkeit beim Training;</li>\n<li>ein Mikrofon, und Discord;</li>\n<li>die Lust, gemeinsam besser zu werden.</li>\n</ul>"
+      },
+      "es": {
+        "title": "Unirse a un equipo",
+        "content": "<p>Nuestros equipos reclutan con regularidad. Así funciona una candidatura.</p>\n<h2>Los pasos</h2>\n<ol>\n<li>Consulta las ofertas de la página <strong>Reclutamiento</strong> y elige un puesto.</li>\n<li>Envía tu candidatura desde la oferta: tu juego, tu rol, tu disponibilidad.</li>\n<li>Un capitán te propone una <strong>prueba</strong>: un entrenamiento con el equipo.</li>\n<li>Tras la prueba, la respuesta llega por mensaje privado.</li>\n</ol>\n<h2>Lo que esperamos</h2>\n<ul>\n<li>regularidad en los entrenamientos;</li>\n<li>un micrófono, y Discord;</li>\n<li>ganas de mejorar juntos.</li>\n</ul>"
+      },
+      "it": {
+        "title": "Entrare in una squadra",
+        "content": "<p>Le nostre squadre reclutano regolarmente. Ecco come funziona una candidatura.</p>\n<h2>Le tappe</h2>\n<ol>\n<li>Consulta le offerte della pagina <strong>Reclutamento</strong> e scegli un ruolo.</li>\n<li>Invia la tua candidatura dall’offerta: il tuo gioco, il tuo ruolo, le tue disponibilità.</li>\n<li>Un capitano ti propone una <strong>prova</strong>: un allenamento con la squadra.</li>\n<li>Dopo la prova, la risposta arriva per messaggio privato.</li>\n</ol>\n<h2>Cosa ci aspettiamo</h2>\n<ul>\n<li>costanza negli allenamenti;</li>\n<li>un microfono, e Discord;</li>\n<li>la voglia di migliorare insieme.</li>\n</ul>"
+      },
+      "pt": {
+        "title": "Entrar numa equipa",
+        "content": "<p>As nossas equipas recrutam regularmente. Eis como decorre uma candidatura.</p>\n<h2>As etapas</h2>\n<ol>\n<li>Consulta as ofertas da página <strong>Recrutamento</strong> e escolhe uma posição.</li>\n<li>Envia a tua candidatura a partir da oferta: o teu jogo, o teu papel, a tua disponibilidade.</li>\n<li>Um capitão propõe-te um <strong>teste</strong>: um treino com a equipa.</li>\n<li>Após o teste, a resposta chega por mensagem privada.</li>\n</ol>\n<h2>O que esperamos</h2>\n<ul>\n<li>regularidade nos treinos;</li>\n<li>um microfone, e Discord;</li>\n<li>vontade de evoluir em conjunto.</li>\n</ul>"
+      }
+    },
+    "Jeux et stratégies": {
+      "en": {
+        "title": "Games and strategies",
+        "content": "<p>Our teams' guides: the basics to know, and how we organise our events.</p>"
+      },
+      "de": {
+        "title": "Spiele und Strategien",
+        "content": "<p>Die Anleitungen unserer Teams: die Grundlagen, die man kennen sollte, und die Organisation unserer Events.</p>"
+      },
+      "es": {
+        "title": "Juegos y estrategias",
+        "content": "<p>Las guías de nuestros equipos: lo básico que hay que saber, y la organización de nuestros eventos.</p>"
+      },
+      "it": {
+        "title": "Giochi e strategie",
+        "content": "<p>Le guide delle nostre squadre: le basi da conoscere, e l’organizzazione dei nostri eventi.</p>"
+      },
+      "pt": {
+        "title": "Jogos e estratégias",
+        "content": "<p>Os guias das nossas equipas: as bases a conhecer, e a organização dos nossos eventos.</p>"
+      }
+    },
+    "Stratégies CS2 : les bases": {
+      "en": {
+        "title": "CS2 strategies: the basics",
+        "content": "<p>The principles our players apply on every map.</p>\n<h2>The economy</h2>\n<ul>\n<li>Buy together: an eco round is played by all five.</li>\n<li>After a lost pistol round, set up the next one rather than forcing.</li>\n</ul>\n<h2>Communication</h2>\n<ul>\n<li>Call what you see, not what you assume: “two B, one hurt”.</li>\n<li>Only one player leads the round.</li>\n</ul>\n<h2>Our map pool</h2>\n<p>Mirage, Inferno, Nuke and Ancient. Each map has its topic in the “Strategies” forum.</p>"
+      },
+      "de": {
+        "title": "CS2-Strategien: die Grundlagen",
+        "content": "<p>Die Prinzipien, die unsere Spieler auf allen Maps anwenden.</p>\n<h2>Die Economy</h2>\n<ul>\n<li>Kauft gemeinsam: Eine Eco-Runde spielt man zu fünft.</li>\n<li>Nach einer verlorenen Pistolenrunde die nächste vorbereiten, statt zu forcen.</li>\n</ul>\n<h2>Die Kommunikation</h2>\n<ul>\n<li>Sagt an, was ihr seht, nicht was ihr vermutet: „zwei auf B, einer angeschlagen“.</li>\n<li>Nur ein Spieler führt die Runde.</li>\n</ul>\n<h2>Unser Map-Pool</h2>\n<p>Mirage, Inferno, Nuke und Ancient. Jede Map hat ihr Thema im Forum „Strategien“.</p>"
+      },
+      "es": {
+        "title": "Estrategias de CS2: lo básico",
+        "content": "<p>Los principios que nuestros jugadores aplican en todos los mapas.</p>\n<h2>La economía</h2>\n<ul>\n<li>Comprad juntos: una ronda de ahorro se juega entre los cinco.</li>\n<li>Tras perder la ronda de pistolas, preparad la siguiente en lugar de forzar.</li>\n</ul>\n<h2>La comunicación</h2>\n<ul>\n<li>Cantad lo que veis, no lo que suponéis: «dos en B, uno tocado».</li>\n<li>Un solo jugador dirige la ronda.</li>\n</ul>\n<h2>Los mapas de nuestro pool</h2>\n<p>Mirage, Inferno, Nuke y Ancient. Cada mapa tiene su tema en el foro «Estrategias».</p>"
+      },
+      "it": {
+        "title": "Strategie CS2: le basi",
+        "content": "<p>I principi che i nostri giocatori applicano su tutte le mappe.</p>\n<h2>L’economia</h2>\n<ul>\n<li>Comprate insieme: un round di eco si gioca in cinque.</li>\n<li>Dopo un round di pistole perso, preparate il successivo invece di forzare.</li>\n</ul>\n<h2>La comunicazione</h2>\n<ul>\n<li>Chiamate ciò che vedete, non ciò che supponete: «due in B, uno ferito».</li>\n<li>Un solo giocatore guida il round.</li>\n</ul>\n<h2>Le mappe del nostro pool</h2>\n<p>Mirage, Inferno, Nuke e Ancient. Ogni mappa ha il suo argomento nel forum «Strategie».</p>"
+      },
+      "pt": {
+        "title": "Estratégias de CS2: as bases",
+        "content": "<p>Os princípios que os nossos jogadores aplicam em todos os mapas.</p>\n<h2>A economia</h2>\n<ul>\n<li>Comprem juntos: uma ronda de poupança joga-se a cinco.</li>\n<li>Depois de perder a ronda de pistolas, preparem a seguinte em vez de forçar.</li>\n</ul>\n<h2>A comunicação</h2>\n<ul>\n<li>Anunciem o que veem, não o que supõem: «dois no B, um ferido».</li>\n<li>Um só jogador lidera a ronda.</li>\n</ul>\n<h2>Os mapas do nosso pool</h2>\n<p>Mirage, Inferno, Nuke e Ancient. Cada mapa tem o seu tópico no fórum «Estratégias».</p>"
+      }
+    },
+    "Organiser un tournoi": {
+      "en": {
+        "title": "Organise a tournament",
+        "content": "<p>The volunteers’ guide to our community tournaments.</p>\n<h2>Before</h2>\n<ul>\n<li>Create the event in the <strong>calendar</strong>, with the tournament rules.</li>\n<li>Open registrations, then announce them on Discord.</li>\n</ul>\n<h2>During</h2>\n<ul>\n<li>One referee per match, reachable on Discord.</li>\n<li>Enter the scores as the matches go.</li>\n</ul>\n<h2>After</h2>\n<p>Publish the results, and a news item with the best plays.</p>"
+      },
+      "de": {
+        "title": "Ein Turnier organisieren",
+        "content": "<p>Der Leitfaden für Freiwillige bei unseren Community-Turnieren.</p>\n<h2>Vorher</h2>\n<ul>\n<li>Lege das Event im <strong>Kalender</strong> an, mit dem Turnierreglement.</li>\n<li>Öffne die Anmeldungen und kündige sie auf Discord an.</li>\n</ul>\n<h2>Währenddessen</h2>\n<ul>\n<li>Ein Schiedsrichter pro Match, auf Discord erreichbar.</li>\n<li>Trage die Ergebnisse im Laufe der Matches ein.</li>\n</ul>\n<h2>Danach</h2>\n<p>Veröffentliche die Platzierungen und eine Neuigkeit mit den schönsten Aktionen.</p>"
+      },
+      "es": {
+        "title": "Organizar un torneo",
+        "content": "<p>La guía de los voluntarios para nuestros torneos comunitarios.</p>\n<h2>Antes</h2>\n<ul>\n<li>Crea el evento en el <strong>calendario</strong>, con el reglamento del torneo.</li>\n<li>Abre las inscripciones y anúncialas en Discord.</li>\n</ul>\n<h2>Durante</h2>\n<ul>\n<li>Un árbitro por partida, localizable en Discord.</li>\n<li>Introduce los resultados a medida que avanzan las partidas.</li>\n</ul>\n<h2>Después</h2>\n<p>Publica el palmarés, y una noticia con las mejores jugadas.</p>"
+      },
+      "it": {
+        "title": "Organizzare un torneo",
+        "content": "<p>La guida dei volontari per i nostri tornei della comunità.</p>\n<h2>Prima</h2>\n<ul>\n<li>Crea l’evento nel <strong>calendario</strong>, con il regolamento del torneo.</li>\n<li>Apri le iscrizioni, poi annunciale su Discord.</li>\n</ul>\n<h2>Durante</h2>\n<ul>\n<li>Un arbitro per partita, raggiungibile su Discord.</li>\n<li>Inserisci i punteggi man mano che le partite si svolgono.</li>\n</ul>\n<h2>Dopo</h2>\n<p>Pubblica il palmarès, e una notizia con le azioni più belle.</p>"
+      },
+      "pt": {
+        "title": "Organizar um torneio",
+        "content": "<p>O guia dos voluntários para os nossos torneios comunitários.</p>\n<h2>Antes</h2>\n<ul>\n<li>Cria o evento no <strong>calendário</strong>, com o regulamento do torneio.</li>\n<li>Abre as inscrições e anuncia-as no Discord.</li>\n</ul>\n<h2>Durante</h2>\n<ul>\n<li>Um árbitro por jogo, contactável no Discord.</li>\n<li>Regista os resultados à medida que os jogos decorrem.</li>\n</ul>\n<h2>Depois</h2>\n<p>Publica o palmarés, e uma notícia com as melhores jogadas.</p>"
+      }
+    }
+  }
+}

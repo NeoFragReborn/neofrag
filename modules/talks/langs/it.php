@@ -141,4 +141,6 @@ return [
 	'92641492' => 'Elimina i file selezionati',
 	'970a684e' => 'estensione rifiutata',
 	'4c523dac' => 'Questo messaggio è stato segnalato: non può essere eliminato finché la moderazione non lo ha esaminato.',
+	'db202fcf' => 'Scritto per %s. Cambia la lingua dell\'amministrazione per tradurre questa stanza; le altre lingue mantengono il loro testo.',
+	'eb78cff1' => 'Descrizione',
 ];

@@ -10,6 +10,9 @@ DROP TABLE IF EXISTS `nf_events_matches_opponents`;
 DROP TABLE IF EXISTS `nf_events_matches`;
 DROP TABLE IF EXISTS `nf_events_participants`;
 DROP TABLE IF EXISTS `nf_events_types`;
+DROP TABLE IF EXISTS `nf_events_lang`;
 DROP TABLE IF EXISTS `nf_events`;
+
+DROP TABLE IF EXISTS `nf_events_types_lang`;
 
 SET FOREIGN_KEY_CHECKS = 1;

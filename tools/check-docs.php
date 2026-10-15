@@ -57,14 +57,15 @@ $verifie = 0;
 
 /** Tous les documents Markdown du dépôt qui comptent : la racine, .github/ et docs/. */
 $documents = array_merge(
-    array_filter([$root.'/README.md', $root.'/CHANGELOG.md', $root.'/CHANGELOG.en.md', $root.'/ROADMAP.md', $root.'/config/README.md', $root.'/tools/README.md'], 'is_file'),
+    // Le journal et ses traductions (`CHANGELOG.<langue>.md` : l'anglais depuis le 2026-10-04, quatre autres avec d09).
+    array_filter(array_merge([$root.'/README.md', $root.'/CHANGELOG.md'], glob($root.'/CHANGELOG.*.md') ?: [], [$root.'/ROADMAP.md', $root.'/config/README.md', $root.'/tools/README.md']), 'is_file'),
     array_values(nf_fichiers(['.github', 'docs'], ['md']))
 );
 
 sort($documents);
 
 /** Les documents VIVANTS : tout sauf les archives et le CHANGELOG, qui racontent le passé. */
-$vivants = array_filter($documents, static fn (string $d): bool => !str_contains($d, '/docs/internal/archive/') && !str_ends_with($d, '/CHANGELOG.md') && !str_ends_with($d, '/CHANGELOG.en.md'));
+$vivants = array_filter($documents, static fn (string $d): bool => !str_contains($d, '/docs/internal/archive/') && !preg_match('~/CHANGELOG(?:\.[a-z]{2})?\.md$~', $d));
 
 $rel = static fn (string $chemin): string => nf_relatif($chemin);
 

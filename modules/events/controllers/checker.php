@@ -54,7 +54,11 @@ class Checker extends Module_Checker
 	{
 		// Un type qui n'existe pas, ou qu'on n'a pas le droit de voir, n'a pas de page (elle répondait 200, vide) ; un
 		// titre qui n'est pas le bon mène au bon (m06).
-		$type = nf_titre_lu($this->db->select('title')->from('nf_events_types')->where('type_id', (int) $type_id)->row());
+		$type = nf_titre_lu($this->db	->select('tl.title')
+										->from('nf_events_types t')
+										->join_lang('nf_events_types_lang tl', 'type_id', 't.type_id', NULL, 'LEFT')
+										->where('t.type_id', (int) $type_id)
+										->row());
 
 		if ($type === '' || !$this->access('events', 'access_events_type', (int) $type_id))
 		{
@@ -92,7 +96,11 @@ class Checker extends Module_Checker
 	{
 		// Vérifié avec son VRAI titre (publication, droit de voir son type) ; l'adresse au mauvais titre mène à la bonne
 		// au lieu de répondre 404 (m06).
-		$titre = nf_titre_lu($this->db->select('title')->from('nf_events')->where('event_id', (int) $event_id)->row());
+		$titre = nf_titre_lu($this->db	->select('el.title')
+										->from('nf_events e')
+										->join_lang('nf_events_lang el', 'event_id', 'e.event_id', NULL, 'LEFT')
+										->where('e.event_id', (int) $event_id)
+										->row());
 
 		if ($titre !== '' && ($event = $this->model()->check_event($event_id, url_title($titre))))
 		{

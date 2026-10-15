@@ -70,4 +70,5 @@ return [
 	'f3581855' => 'Score',
 	'21ba1da3' => 'Une page par équipe : jeu, présentation, joueurs et rôles, résultats et recrutement selon les modules installés. Pour une guilde ou une équipe eSport.',
 	'8fd9c7ef' => 'Enregistrer',
+	'a71c1200' => 'Écrit pour %s. Change la langue de l\'administration pour traduire ce rôle ; les autres langues gardent leur texte.',
 ];

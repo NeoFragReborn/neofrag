@@ -237,10 +237,18 @@ CREATE TABLE `nf_widgets` (
   `widget_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `widget` varchar(100) NOT NULL,
   `type` varchar(100) NOT NULL,
-  `title` varchar(100) DEFAULT NULL,
   `settings` mediumtext DEFAULT NULL,
   PRIMARY KEY (`widget_id`),
   KEY `widget_name` (`widget`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `nf_widgets_lang` (
+  `widget_id` int(11) unsigned NOT NULL,
+  `lang`      varchar(5) NOT NULL,
+  `title`     varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`widget_id`, `lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `fk_widgets_lang_widget` FOREIGN KEY (`widget_id`) REFERENCES `nf_widgets` (`widget_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `nf_pages`;
@@ -293,7 +301,6 @@ CREATE TABLE `nf_menus_items` (
   `item_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `menu_id` int(11) unsigned NOT NULL,
   `parent_id` int(11) unsigned DEFAULT NULL,
-  `title` varchar(128) NOT NULL,
   `url` varchar(255) NOT NULL DEFAULT '',
   `icon` varchar(64) NOT NULL DEFAULT '',
   `target` varchar(10) NOT NULL DEFAULT '',
@@ -301,6 +308,15 @@ CREATE TABLE `nf_menus_items` (
   PRIMARY KEY (`item_id`),
   KEY `idx_menu` (`menu_id`,`parent_id`,`position`),
   CONSTRAINT `fk_menus_items_menu` FOREIGN KEY (`menu_id`) REFERENCES `nf_menus` (`menu_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `nf_menus_items_lang` (
+  `item_id` int(11) unsigned NOT NULL,
+  `lang`    varchar(5) NOT NULL,
+  `title`   varchar(128) NOT NULL DEFAULT '',
+  PRIMARY KEY (`item_id`, `lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `fk_menus_items_lang_item` FOREIGN KEY (`item_id`) REFERENCES `nf_menus_items` (`item_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `nf_comment`;
@@ -377,8 +393,26 @@ CREATE TABLE `nf_notifications_preferences` (
   `type` varchar(50) NOT NULL,
   `site` tinyint(1) unsigned NOT NULL DEFAULT 1,
   `email` tinyint(1) unsigned NOT NULL DEFAULT 1,
+  `push` tinyint(1) unsigned NOT NULL DEFAULT 1,
   PRIMARY KEY (`user_id`,`type`),
   CONSTRAINT `nf_notifications_preferences_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `nf_push_abonnements`;
+CREATE TABLE `nf_push_abonnements` (
+  `id`         int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id`    int(11) unsigned NOT NULL,
+  `endpoint`   varchar(1000) NOT NULL,
+  `empreinte`  char(64) NOT NULL,
+  `p256dh`     varchar(120) NOT NULL,
+  `auth`       varchar(40) NOT NULL,
+  `appareil`   varchar(190) NOT NULL DEFAULT '',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `used_at`    timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `empreinte` (`empreinte`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `fk_push_abonnements_user` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `nf_subscriptions`;
@@ -413,6 +447,7 @@ CREATE TABLE `nf_sanctions` (
   `revoke_reason` text DEFAULT NULL,
   `related_report_id` bigint(20) unsigned DEFAULT NULL,
   `notify_user` tinyint(1) unsigned NOT NULL DEFAULT 1,
+  `origine` varchar(16) NOT NULL DEFAULT 'site',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_sanctions_active` (`user_id`,`type`,`expires_at`,`revoked_at`),
@@ -485,6 +520,16 @@ CREATE TABLE `nf_talks` (
   KEY `idx_creator` (`creator_id`),
   KEY `idx_talks_audience` (`audience`),
   CONSTRAINT `nf_talks_creator_fk` FOREIGN KEY (`creator_id`) REFERENCES `nf_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `nf_talks_lang` (
+  `talk_id`     int(11) unsigned NOT NULL,
+  `lang`        varchar(5) NOT NULL,
+  `name`        varchar(150) NOT NULL DEFAULT '',
+  `description` varchar(500) NOT NULL DEFAULT '',
+  PRIMARY KEY (`talk_id`, `lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `fk_talks_lang_talk` FOREIGN KEY (`talk_id`) REFERENCES `nf_talks` (`talk_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `nf_talks_participants`;
@@ -576,8 +621,6 @@ DROP TABLE IF EXISTS `nf_slider_slides`;
 CREATE TABLE `nf_slider_slides` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `image_url` varchar(500) NOT NULL DEFAULT '',
-  `title` varchar(200) NOT NULL DEFAULT '',
-  `caption` mediumtext DEFAULT NULL,
   `link` varchar(500) NOT NULL DEFAULT '',
   `sort_order` int(11) NOT NULL DEFAULT 0,
   `active` tinyint(1) NOT NULL DEFAULT 1,
@@ -585,6 +628,17 @@ CREATE TABLE `nf_slider_slides` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_active_sort` (`active`,`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `nf_slider_slides_lang`;
+CREATE TABLE `nf_slider_slides_lang` (
+  `slide_id` int(10) unsigned NOT NULL,
+  `lang` varchar(5) NOT NULL,
+  `title` varchar(200) NOT NULL DEFAULT '',
+  `caption` mediumtext DEFAULT NULL,
+  PRIMARY KEY (`slide_id`,`lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `nf_slider_slides_lang_ibfk_1` FOREIGN KEY (`slide_id`) REFERENCES `nf_slider_slides` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `nf_statistics`;
@@ -788,6 +842,7 @@ CREATE TABLE `nf_log_i18n` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `nf_user_fields_values`;
+DROP TABLE IF EXISTS `nf_user_fields_lang`;
 DROP TABLE IF EXISTS `nf_user_fields`;
 -- Champs de profil definis par l'administrateur. Le profil fixe de nf_user_profile
 -- couvre l'etat civil et les reseaux ; ces deux tables laissent une communaute ajouter ce qui lui
@@ -795,8 +850,6 @@ DROP TABLE IF EXISTS `nf_user_fields`;
 CREATE TABLE `nf_user_fields` (
   `field_id`    int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name`        varchar(64) NOT NULL,
-  `label`       varchar(200) NOT NULL,
-  `description` varchar(255) NOT NULL DEFAULT '',
   `type`        enum('text','textarea','select','radio','checkbox','url','number','date') NOT NULL DEFAULT 'text',
   `options`     mediumtext DEFAULT NULL,
   `required`    tinyint(1) NOT NULL DEFAULT 0,
@@ -804,6 +857,18 @@ CREATE TABLE `nf_user_fields` (
   `sort_order`  smallint(5) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`field_id`),
   UNIQUE KEY `uniq_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Le libelle et l'explication d'un champ, langue par langue (m32, 2026-10-15). La liste d'OPTIONS,
+-- elle, reste commune : une option est enregistree telle quelle dans la reponse du membre.
+CREATE TABLE `nf_user_fields_lang` (
+  `field_id`    int(11) unsigned NOT NULL,
+  `lang`        varchar(5) NOT NULL,
+  `label`       varchar(200) NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`field_id`, `lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `fk_user_fields_lang_field` FOREIGN KEY (`field_id`) REFERENCES `nf_user_fields` (`field_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `nf_user_fields_values` (
@@ -1028,7 +1093,38 @@ INSERT INTO `nf_migrations` (`id`, `name`, `batch`, `applied_at`) VALUES
 
 -- Le relevé des pages introuvables : nf_pages_introuvables ci-dessus.
 -- Cf. migrations/2026_10_10_pages_introuvables.
-('66', '2026_10_10_pages_introuvables', '54', '2026-10-10 00:00:00');
+('66', '2026_10_10_pages_introuvables', '54', '2026-10-10 00:00:00'),
+
+-- Le diaporama se traduit : nf_slider_slides_lang ci-dessus, et nf_slider_slides sans title ni caption.
+-- Cf. migrations/2026_10_13_diaporama_par_langue.
+('67', '2026_10_13_diaporama_par_langue', '55', '2026-10-13 00:00:00'),
+
+-- Les champs de profil se traduisent : nf_user_fields_lang ci-dessus, et nf_user_fields sans label ni
+-- description. La liste d'OPTIONS reste commune (une option est la réponse enregistrée du membre).
+-- Cf. migrations/2026_10_15_champs_profil_par_langue.
+('68', '2026_10_15_champs_profil_par_langue', '56', '2026-10-15 00:00:00'),
+
+-- Les liens des menus se traduisent : nf_menus_items_lang ci-dessus, et nf_menus_items sans title. Le NOM d'un
+-- menu reste commun (seule l'administration le voit).
+-- Cf. migrations/2026_10_15_liens_de_menu_par_langue.
+('69', '2026_10_15_liens_de_menu_par_langue', '57', '2026-10-15 00:00:00'),
+
+-- Les salons PUBLICS se traduisent : nf_talks_lang ci-dessus. nf_talks garde name et description — le texte des
+-- conversations des membres, et celui d'un salon public en secours.
+-- Cf. migrations/2026_10_15_salons_publics_par_langue.
+('70', '2026_10_15_salons_publics_par_langue', '58', '2026-10-15 00:00:00'),
+
+-- Le titre donné à un widget se traduit : nf_widgets_lang ci-dessus, et nf_widgets sans title.
+-- Cf. migrations/2026_10_15_titres_widgets_par_langue.
+('71', '2026_10_15_titres_widgets_par_langue', '59', '2026-10-15 00:00:00'),
+
+-- Les notifications push : la colonne `push` de nf_notifications_preferences, et nf_push_abonnements ci-dessus.
+-- Cf. migrations/2026_10_16_notifications_push.
+('72', '2026_10_16_notifications_push', '60', '2026-10-16 00:00:00'),
+
+-- Les sanctions reliées à Discord : la colonne `origine` de nf_sanctions (site ou discord).
+-- Cf. migrations/2026_10_16_sanctions_discord.
+('73', '2026_10_16_sanctions_discord', '61', '2026-10-16 00:00:00');
 
 
 SET FOREIGN_KEY_CHECKS = 1;

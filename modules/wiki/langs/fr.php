@@ -65,4 +65,5 @@ return [
 	'8d0eda24' => 'Comparaison : %s',
 	'd298327d' => 'Gérer les pages du wiki',
 	'032adbed' => 'Lire la page',
+	'91913cac' => 'Écrit pour %s. Change la langue de l\'administration pour traduire cette page ; les autres langues gardent leur texte, et leur historique.',
 ];

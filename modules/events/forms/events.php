@@ -8,6 +8,9 @@ declare(strict_types=1);
 $rules = [
 	'title' => [
 		'label'       => $this->lang('Titre'),
+		// Le texte d'un rendez-vous s'écrit dans la langue où l'on travaille (m31, 2026-10-15) : on le dit,
+		// sinon on croit corriger ce que voient tous les visiteurs.
+		'description' => $this->lang('Écrit pour %s. Change la langue de l\'administration pour traduire ce rendez-vous ; les autres langues gardent leur texte.', $this->config->lang->info()->title),
 		'value'       => $this->form()->value('title'),
 		'type'        => 'text',
 		'rules'       => 'required'

@@ -76,4 +76,5 @@ return [
 	'4306ff8f' => 'Autre place',
 	'ff8ae8a6' => 'Aucun classement',
 	'8fd9c7ef' => 'Enregistrer',
+	'6873a0dd' => 'Écrit pour %s. Change la langue de l\'administration pour traduire ce titre ; les autres langues gardent leur texte.',
 ];

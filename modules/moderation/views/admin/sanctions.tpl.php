@@ -59,7 +59,7 @@
 					<td><small title="<?php echo nf_date_heure($s['created_at']) ?>"><?php echo time_span(strtotime($s['created_at'])) ?></small></td>
 					<td><span class="badge <?php echo badge_class(strpos($s['type'], 'ban') !== FALSE ? 'danger' : (strpos($s['type'], 'restrict') !== FALSE ? 'warning' : (strpos($s['type'], 'mute') !== FALSE ? 'secondary' : 'info'))) ?>"><?php echo nf_texte($this->module('moderation')->libelle('sanction', $s['type'])) ?></span><br><small class="text-muted"><?php echo nf_texte($this->module('moderation')->libelle('portee', $s['scope'])) ?></small></td>
 					<td><a href="<?php echo url($_modbase.'/users/'.(int)$s['user_id']) ?>">@<?php echo nf_texte($s['user_username']) ?></a></td>
-					<td><small><?php echo !empty($s['issuer_username']) ? nf_texte($s['issuer_username']) : '<i>'.$this->lang('Escalade automatique').'</i>' ?></small></td>
+					<td><small><?php echo !empty($s['issuer_username']) ? nf_texte($s['issuer_username']) : '<i>'.$this->lang('Escalade automatique').'</i>' ?></small><?php if (($s['origine'] ?? 'site') === 'discord'): ?> <span class="badge text-bg-secondary" title="<?php echo $this->lang('Prononcée sur Discord, rapportée par le bot') ?>"><?php echo icon('fab fa-discord') ?> Discord</span><?php endif ?></td>
 					<td>
 						<?php if (empty($s['expires_at'])): ?>
 							<span class="badge text-bg-dark"><?php echo $this->lang('Permanent') ?></span>

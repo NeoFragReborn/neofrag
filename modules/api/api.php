@@ -52,6 +52,14 @@ class Api extends Module
 		// Un compte Discord lié ou délié (connexion par Discord, « Mes comptes liés », `/forum account`).
 		'user.discord.linked'   => ['user_id', 'discord_id'],
 		'user.discord.unlinked' => ['user_id', 'discord_id'],
+		// Les sanctions qui passent sur Discord (m03b) : muet et bannissements de tout le site, d'un membre relié. Ce ne sont
+		// pas les `moderation.sanction.*` du site, qui valent pour TOUTE sanction (un shadow ban compris) : la modération
+		// inscrit celles-ci elle-même, triées (Moderation::_vers_discord()).
+		'discord.sanction.created'  => ['sanction_id', 'user_id', 'discord_id', 'type', 'expires_at', 'origine'],
+		'discord.sanction.approved' => ['sanction_id', 'user_id', 'discord_id', 'type', 'expires_at', 'origine'],
+		'discord.sanction.revoked'  => ['sanction_id', 'user_id', 'discord_id', 'type', 'expires_at', 'origine'],
+		// Un collectif quitte Discord (supprimé, ou son salon décoché) : le bot supprime son rôle (m15, bot v3).
+		'discord.collective.removed' => ['collective_id', 'role_id', 'channel_id'],
 	];
 
 	/** Durée de vie d'un événement dans le journal, en jours. */

@@ -41,8 +41,10 @@ class Index extends Controller_Widget
 	{
 		if (isset($settings['type_id']) && $settings['type_id'] != 0)
 		{
-			$type = $this->db	->from('nf_events_types')
-								->where('type_id', $settings['type_id'])
+			$type = $this->db	->select('t.*', 'tl.title')
+								->from('nf_events_types t')
+								->join_lang('nf_events_types_lang tl', 'type_id', 't.type_id', NULL, 'LEFT')
+								->where('t.type_id', $settings['type_id'])
 								->row();
 
 			$label  = $this->label($this->no_translate($type['title']), $type['icon'], $type['color']); // titre saisi en base

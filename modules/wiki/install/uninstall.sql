@@ -5,6 +5,7 @@
 SET FOREIGN_KEY_CHECKS = 0;
 SET NAMES utf8mb4;
 
+DROP TABLE IF EXISTS `nf_wiki_pages_lang`;
 DROP TABLE IF EXISTS `nf_wiki_revisions`;
 DROP TABLE IF EXISTS `nf_wiki_pages`;
 

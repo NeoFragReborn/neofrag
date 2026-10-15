@@ -22,7 +22,7 @@ return [
 	'69ed7dfe' => 'Smartphone',
 	'6f1831f7' => 'Voltar ao layout comum',
 	'82551be6' => 'Widget',
-	'8d9ef7a4' => 'Excluir',
+	'8d9ef7a4' => 'Eliminar',
 	'93acd0a8' => 'Colunas',
 	'aab95b9f' => 'Linhas',
 	'b548300f' => 'Carregando...',
@@ -69,4 +69,5 @@ return [
 	'66a08d25' => 'Páginas do site',
 	'bc74124e' => 'Procurar uma página',
 	'cdf72ea5' => 'Nenhuma página corresponde.',
+	'6d88f17e' => 'Escrito para %s. Muda a língua da administração para traduzir este título; as outras línguas mantêm o seu.',
 ];

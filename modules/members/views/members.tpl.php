@@ -33,7 +33,7 @@
 					<?php if ($this->user->id != $member->id): ?>
 						<?php echo $this->button()->label('Contacter')->icon('far fa-envelope')->color('dark btn-sm')->url('talks/new?type=direct&user='.urlencode($member->username)) ?>
 					<?php else: ?>
-						<?php echo $this->button()->label('Gérer mon compte')->icon('fas fa-cog')->color('primary btn-sm')->url('user') ?>
+						<?php echo $this->button()->label($this->lang('Gérer mon compte'))->icon('fas fa-cog')->color('primary btn-sm')->url('user') ?>
 					<?php endif ?>
 				</div>
 				<?php endif ?>

@@ -41,14 +41,27 @@ class News extends Model
 
 		$this->db	->select('n.*', 'nl.title', 'nl.introduction', 'nl.content', 'nl.tags', 'IFNULL(n.image_id, c.image_id) as image', 'c.icon_id as category_icon', 'c.name as category_name', 'cl.title as category_title', 'u.id as user_id', 'u.username', 'up.avatar', 'up.sex')
 					->from('nf_news n')
-					->join('nf_news_lang nl',            'n.news_id     = nl.news_id')
 					->join('nf_news_categories c',       'n.category_id = c.category_id')
 					->join_lang('nf_news_categories_lang cl', 'category_id', 'c.category_id', $lang)
 					->join('nf_user u',                  'n.user_id     = u.id AND u.deleted = "0"')
 					->join('nf_user_profile up',         'up.id         = u.id')
-					->where('nl.lang', $lang)
 					->where('n.deleted_at', NULL)
 					->order_by('n.date DESC');
+
+		/*
+		 * Côté public, la liste est dans la langue DEMANDÉE : une actualité écrite en allemand n'a rien à faire
+		 * dans la liste française. Dans l'administration, c'est l'inverse : la liste doit tout montrer, sinon un
+		 * contenu pas encore traduit dans la langue où l'on travaille est INVISIBLE, et on ne peut pas l'ouvrir
+		 * pour le traduire — c'est ce qui arrivait (2026-10-14). On y sert la meilleure traduction du titre.
+		 */
+		if ($this->url->admin)
+		{
+			$this->db->join_lang('nf_news_lang nl', 'news_id', 'n.news_id', $lang);
+		}
+		else
+		{
+			$this->db->join('nf_news_lang nl', 'n.news_id = nl.news_id')->where('nl.lang', $lang);
+		}
 
 		if (!empty($filter) && !empty($filter_data))
 		{
@@ -97,9 +110,18 @@ class News extends Model
 			$lang = $this->langue_du_contenu('nf_news_lang', 'news_id', $news_id);
 		}
 
+		/*
+		 * Dans l'administration, la ligne de traduction est jointe à GAUCHE, sur la langue demandée EXACTEMENT :
+		 * une actualité qu'on n'a pas encore traduite dans cette langue s'ouvre quand même, ses champs de texte
+		 * vides, et on l'écrit. Avec la jointure stricte, l'écran répondait 404 : on voyait l'actualité dans la
+		 * liste, et on ne pouvait pas la traduire (2026-10-14). Jamais de repli ici : proposer la version
+		 * française dans l'écran allemand reviendrait à l'y recopier au premier enregistrement.
+		 */
+		$exacte = preg_match('/^[a-z]{2}$/', (string) $lang) ? (string) $lang : 'fr';
+
 		$this->db	->select('n.news_id', 'n.category_id', 'u.id as user_id', 'n.image_id', 'n.date', 'n.published', 'n.views', 'n.vote', 'nl.title', 'nl.introduction', 'nl.content', 'nl.tags', 'c.name as category_name', 'cl.title as category_title', 'IFNULL(n.image_id, c.image_id) as image', 'c.icon_id as category_icon', 'u.username', 'u.admin', 'MAX(s.last_activity) > DATE_SUB(NOW(), INTERVAL 5 MINUTE) as online', 'up.quote', 'up.avatar', 'up.sex')
 						->from('nf_news n')
-						->join('nf_news_lang nl',            'n.news_id     = nl.news_id')
+						->join('nf_news_lang nl',            'n.news_id     = nl.news_id AND nl.lang = "'.$exacte.'"', $this->url->admin ? 'LEFT' : '')
 						->join('nf_news_categories c',       'n.category_id = c.category_id')
 						->join_lang('nf_news_categories_lang cl', 'category_id', 'c.category_id', $lang)
 						->join('nf_user u',                  'u.id          = n.user_id AND u.deleted = "0"')
@@ -112,7 +134,6 @@ class News extends Model
 						// et « Continuer à lire » ne menait nulle part.
 						->join('nf_session        s',        'u.id          = s.user_id', 'LEFT')
 						->where('n.news_id', $news_id)
-						->where('nl.lang', $lang)
 						->where('n.deleted_at', NULL);
 
 		if (!$this->url->admin)
@@ -132,7 +153,9 @@ class News extends Model
 			nf_bon_titre((string) $title, (string) $news['title'], 'news/'.(int) $news_id);
 		}
 
-		if ($news && url_title($news['title']) == $title)
+		// Dans l'administration, le titre de l'adresse ne juge de rien : on y arrive par la liste, et le titre peut
+		// n'exister que dans une autre langue — c'est justement le cas qu'on vient traduire.
+		if ($news && !empty($news['news_id']) && ($this->url->admin || url_title((string) $news['title']) == $title))
 		{
 			return $news;
 		}
@@ -173,14 +196,12 @@ class News extends Model
 						'published'   => $published
 					], $date ? ['date' => $date] : []));
 
-		$this->db	->where('news_id', $news_id)
-					->where('lang', $lang)
-					->update('nf_news_lang', [
-						'title'        => $title,
-						'introduction' => $introduction,
-						'content'      => $content,
-						'tags'         => $this->_tags($tags)
-					]);
+		$this->db->ecrire_lang('nf_news_lang', ['news_id' => $news_id, 'lang' => $lang], [
+			'title'        => $title,
+			'introduction' => $introduction,
+			'content'      => $content,
+			'tags'         => $this->_tags($tags)
+		]);
 	}
 
 	// Soft-delete : l'actualité part à la corbeille (restaurable), elle n'est pas effacée.

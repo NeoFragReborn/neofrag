@@ -72,4 +72,5 @@ return [
 	'f3581855' => 'Punteggio',
 	'21ba1da3' => 'Una pagina per squadra: gioco, presentazione, giocatori e ruoli, risultati e reclutamento in base ai moduli installati. Per una gilda o un team eSport.',
 	'8fd9c7ef' => 'Salva',
+	'a71c1200' => 'Scritto per %s. Cambia la lingua dell\'amministrazione per tradurre questo ruolo; le altre lingue mantengono il loro testo.',
 ];

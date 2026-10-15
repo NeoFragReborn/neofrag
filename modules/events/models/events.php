@@ -29,15 +29,17 @@ class Events extends Model
 		// Le mode de jeu d'un match n'existe qu'avec le module Jeux (m17) : sans lui, sa table est absente.
 		$jeux = \NF\Modules\Events\Models\Matches::possibles();
 
-		$this->db	->select('e.event_id', 'e.title', 'e.type_id', 'e.date', 'e.date_end', 'e.description', 'e.private_description', 'e.location', 'e.image_id', 'e.published', 'e.publish_date', 'e.series_id', 't.type', 'm.mode_id', 'm.webtv', 'm.website', $jeux ? 'gm.title as mode_title' : 'NULL as mode_title')
+		$this->db	->select('e.event_id', 'el.title', 'e.type_id', 'e.date', 'e.date_end', 'el.description', 'el.private_description', 'el.location', 'e.image_id', 'e.published', 'e.publish_date', 'e.series_id', 't.type', 'm.mode_id', 'm.webtv', 'm.website', $jeux ? 'gml.title as mode_title' : 'NULL as mode_title')
 					->from('nf_events e')
+					->join_lang('nf_events_lang el', 'event_id', 'e.event_id', NULL, 'LEFT')
 					->join('nf_events_types t',        'e.type_id = t.type_id')
 					->join('nf_events_participants p', 'e.event_id = p.event_id', 'LEFT')
 					->join('nf_events_matches m', 'e.event_id = m.event_id', 'LEFT');
 
 		if ($jeux)
 		{
-			$this->db->join('nf_games_modes gm', 'm.mode_id = gm.mode_id', 'LEFT');
+			$this->db	->join('nf_games_modes gm', 'm.mode_id = gm.mode_id', 'LEFT')
+						->join_lang('nf_games_modes_lang gml', 'mode_id', 'gm.mode_id', NULL, 'LEFT');
 		}
 
 		$this->db	->where('e.event_id', $event_id)
@@ -61,9 +63,11 @@ class Events extends Model
 	{
 		$types = array_keys($this->model('types')->get_types());
 
-		$this->db	->select('e.event_id', 'e.title', 'e.type_id', 't.title as type_title', 't.type', 't.color', 't.icon', 'e.date', 'e.date_end', 'e.description', 'e.private_description', 'e.location', 'e.image_id', 'e.published', 'e.publish_date', 'e.series_id', 'u.id as user_id', 'u.username', 'COUNT(mr.round_id) as nb_rounds', 'm.webtv', 'm.website')
+		$this->db	->select('e.event_id', 'el.title', 'e.type_id', 'tl.title as type_title', 't.type', 't.color', 't.icon', 'e.date', 'e.date_end', 'el.description', 'el.private_description', 'el.location', 'e.image_id', 'e.published', 'e.publish_date', 'e.series_id', 'u.id as user_id', 'u.username', 'COUNT(mr.round_id) as nb_rounds', 'm.webtv', 'm.website')
 					->from('nf_events e')
+					->join_lang('nf_events_lang el', 'event_id', 'e.event_id', NULL, 'LEFT')
 					->join('nf_events_types t',           'e.type_id = t.type_id')
+					->join_lang('nf_events_types_lang tl', 'type_id', 't.type_id', NULL, 'LEFT')
 					->join('nf_events_participants p',    'e.event_id = p.event_id', 'LEFT')
 					->join('nf_user u',                   'u.id = e.user_id', 'LEFT')
 					->join('nf_events_matches m',         'e.event_id = m.event_id', 'LEFT')
@@ -120,38 +124,74 @@ class Events extends Model
 						->get();
 	}
 
+	/*
+	 * Le titre, le texte, la note des inscrits et le lieu vivent dans `nf_events_lang`, une ligne par langue
+	 * (m31, 2026-10-15). `join_lang()` sert la MEILLEURE : la langue demandée, sinon le français, sinon la
+	 * première écrite — un rendez-vous décrit dans une seule langue reste annoncé dans les cinq autres, au
+	 * lieu de disparaître du calendrier. Jointure GAUCHE : un événement sans aucun texte garde sa date.
+	 */
 	public function add($title, $type_id, $date, $date_end, $description, $private_description, $location, $image_id, $published, $publish_date = '')
 	{
-		return $this->db->insert('nf_events', [
+		$event_id = $this->db->insert('nf_events', [
 			'user_id'             => $this->user->id,
-			'title'               => $title,
 			'type_id'             => $type_id,
 			'date'                => $date,
 			'date_end'            => $date_end ?: NULL,
-			'description'         => $description,
-			'private_description' => $private_description,
-			'location'            => $location,
 			'image_id'            => $image_id,
 			'published'           => $published,
 			'publish_date'        => $publish_date ?: NULL
 		]);
+
+		$this->ecrire_texte((int) $event_id, $title, $description, $private_description, $location);
+
+		return $event_id;
 	}
 
 	public function edit($event_id, $title, $type_id, $date, $date_end, $description, $private_description, $location, $image_id, $published, $publish_date = '')
 	{
 		$this->db	->where('event_id', $event_id)
 					->update('nf_events', [
-						'title'               => $title,
 						'type_id'             => $type_id,
 						'date'                => $date,
 						'date_end'            => $date_end ?: NULL,
-						'description'         => $description,
-						'private_description' => $private_description,
-						'location'            => $location,
 						'image_id'            => $image_id,
 						'published'           => $published,
 						'publish_date'        => $publish_date ?: NULL
 					]);
+
+		$this->ecrire_texte((int) $event_id, $title, $description, $private_description, $location);
+	}
+
+	/**
+	 * Le texte d'un rendez-vous DANS LA LANGUE OÙ L'ON TRAVAILLE. `ecrire_lang()` crée la ligne si elle
+	 * manque : la première fois qu'on décrit un événement dans une langue, un `update` n'aurait rien écrit
+	 * et le texte saisi serait perdu (m30).
+	 */
+	public function ecrire_texte(int $event_id, string $title, string $description, string $private_description, string $location, ?string $langue = NULL): void
+	{
+		$this->db->ecrire_lang('nf_events_lang', ['event_id' => $event_id, 'lang' => (string) ($langue ?: $this->config->lang->info()->name)], [
+			'title'               => $title,
+			'description'         => $description,
+			'private_description' => $private_description,
+			'location'            => $location
+		]);
+	}
+
+	/**
+	 * Le texte tel qu'il est écrit DANS UNE LANGUE, sans repli : c'est ce que l'administration édite — sinon
+	 * on proposerait la version française à corriger dans l'écran allemand, et on l'écrirait en allemand.
+	 *
+	 * @return array{title: string, description: string, private_description: string, location: string}|null
+	 */
+	public function texte_dans(int $event_id, string $langue): ?array
+	{
+		$ligne = $this->db	->select('title', 'description', 'private_description', 'location')
+							->from('nf_events_lang')
+							->where('event_id', $event_id)
+							->where('lang', $langue)
+							->row();
+
+		return is_array($ligne) && $ligne ? $ligne : NULL;
 	}
 
 	public function delete($event_id)
@@ -238,13 +278,14 @@ class Events extends Model
 		$deadline = date('Y-m-d H:i:s', strtotime('+'.$hours.' hours'));
 		$count    = 0;
 
-		foreach ($this->db	->select('event_id', 'title')
-							->from('nf_events')
-							->where('published', '1')
-							->where('reminder_sent_at', NULL)
-							->where('date >', $now)
-							->where('date <=', $deadline)
-							->order_by('date ASC')
+		foreach ($this->db	->select('e.event_id', 'el.title')
+							->from('nf_events e')
+							->join_lang('nf_events_lang el', 'event_id', 'e.event_id', NULL, 'LEFT')
+							->where('e.published', '1')
+							->where('e.reminder_sent_at', NULL)
+							->where('e.date >', $now)
+							->where('e.date <=', $deadline)
+							->order_by('e.date ASC')
 							->limit($limit)
 							->get(FALSE) as $event)
 		{

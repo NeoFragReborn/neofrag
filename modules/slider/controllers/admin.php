@@ -58,6 +58,15 @@ class Admin extends Controller_Module
 			return;
 		}
 
+		/*
+		 * Le titre et la légende s'écrivent DANS LA LANGUE OÙ L'ON TRAVAILLE (m22, 2026-10-13), comme une page, une
+		 * équipe ou une catégorie. Le formulaire montre donc la traduction de CETTE langue, pas le repli : proposer la
+		 * version française dans l'écran anglais revenait à l'y recopier au premier enregistrement.
+		 */
+		$langue = $this->config->lang->info();
+		$texte  = $id ? $this->model()->get_slide_lang($id, $langue->name) : NULL;
+		$dit    = $this->lang('Écrit pour %s. Change la langue de l\'administration pour traduire cette vue ; les autres langues gardent leur texte.', $langue->title);
+
 		$this	->subtitle($id ? $this->lang('Modifier la slide') : $this->lang('Nouvelle slide'))
 				->icon('fas fa-image')
 				->breadcrumb($this->lang('Slides'), 'admin/slider');
@@ -83,12 +92,12 @@ class Admin extends Controller_Module
 				],
 				'title' => [
 					'label' => $this->lang('Titre'),
-					'value' => $slide['title'] ?? '',
-					'description' => $this->lang('Affiché en gras au-dessus du sous-titre.')
+					'value' => $texte['title'] ?? '',
+					'description' => $this->lang('Affiché en gras au-dessus du sous-titre.').' '.$dit
 				],
 				'caption' => [
 					'label' => $this->lang('Sous-titre / texte'),
-					'value' => $slide['caption'] ?? '',
+					'value' => $texte['caption'] ?? '',
 					'type'  => 'textarea'
 				],
 				'link' => [

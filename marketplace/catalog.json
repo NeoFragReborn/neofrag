@@ -1,9 +1,9 @@
 {
     "schema": 1,
     "project": "NeoFrag Reborn",
-    "base_version": "1.2.48",
-    "generated_at": "2026-10-09T20:04:51+00:00",
-    "count": 67,
+    "base_version": "1.2.50",
+    "generated_at": "2026-10-15T10:27:51+00:00",
+    "count": 68,
     "addons": [
         {
             "type": "module",
@@ -39,10 +39,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/ads.zip",
             "preview": "modules/ads.jpg",
-            "size": 31126,
-            "sha256": "6bdbdef23e5ca4836c78a0b77f12f196f1cfa3020e93b784cc4c767fe2e17511",
+            "size": 72967,
+            "sha256": "af66894bfbb2a967109108124600e892b11ceedc980511bc65bf366e8eea52c1",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -84,10 +84,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/api.zip",
             "preview": "modules/api.jpg",
-            "size": 95541,
-            "sha256": "7f820c9dae483525bfdcb7926c5a41dd8e67fa6e2ae38950e830c01bf32e9d2b",
+            "size": 104319,
+            "sha256": "a20d7d7d4e0db98f9daacec9cfa7c10adebe00ddf307c725a2ee61080eaa9dbe",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -127,10 +127,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/articles.zip",
             "preview": "modules/articles.jpg",
-            "size": 88986,
-            "sha256": "54acbdc1f9f83f0a15173358b3988ddc68129b55ca4973a6bf1da3f5a8d50047",
+            "size": 110131,
+            "sha256": "0c85de2913b44652428a161b9e953c22cc9637222eace0b7fb2baf035771ba02",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -172,10 +172,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/awards.zip",
             "preview": "modules/awards.jpg",
-            "size": 47899,
-            "sha256": "8651c27e14e30f9c9a1d0981da6a91804aa0c794daf74184416d404f3694f787",
+            "size": 92734,
+            "sha256": "1500f191f86a4c240b5ee156d3273e3a7941d0c98c17a89d5c255e2d369a53a9",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "teams",
                     "games"
@@ -220,10 +220,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/bugtracker.zip",
             "preview": "modules/bugtracker.jpg",
-            "size": 59586,
-            "sha256": "7ca248d69b6a3444ca5e9acca17b5fb16cf53b337cb69d004489acb21f75338b",
+            "size": 85059,
+            "sha256": "f8c9c5ef5f0a71914617114f431f596ea977b99cf65695c2ea26d53f89780909",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -263,10 +263,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/calendar.zip",
             "preview": "modules/calendar.jpg",
-            "size": 38078,
-            "sha256": "81053cae4d9a68158dfd58d13ac6f2da3b22a11bbe6066d601296bdfb0ccfcbe",
+            "size": 85655,
+            "sha256": "e7355dbb0d8b8f847302232235b2b1440dffc820bebe87eb50222028fd95f112",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -308,10 +308,53 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/classifieds.zip",
             "preview": "modules/classifieds.jpg",
-            "size": 48690,
-            "sha256": "ad6f5bbd8557e0e350f0afe20b66a5076af92d2b2abdd9da7dacf98d220e5884",
+            "size": 88133,
+            "sha256": "93fe8205b572b5200d6151139914b2f58581f3392d8bcd3dbad0793cb539dea8",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
+                "addons": []
+            },
+            "provides_widgets": [],
+            "install": "zip"
+        },
+        {
+            "type": "module",
+            "name": "collectives",
+            "tier": 1,
+            "category": "identite",
+            "title": "Collectifs",
+            "description": "Des équipes privées : chacune a sa section du forum, son rôle et son salon sur Discord, et un chef qui gère ses membres sans être administrateur.",
+            "i18n": {
+                "en": {
+                    "title": "Collectives",
+                    "description": "Private teams: each has its own forum section, its role and channel on Discord, and a leader who manages its members without being an administrator."
+                },
+                "de": {
+                    "title": "Kollektive",
+                    "description": "Private Teams: Jedes hat seinen eigenen Forenbereich, seine Rolle und seinen Kanal auf Discord und einen Leiter, der seine Mitglieder verwaltet, ohne Administrator zu sein."
+                },
+                "es": {
+                    "title": "Colectivos",
+                    "description": "Equipos privados: cada uno tiene su sección del foro, su rol y su canal en Discord, y un jefe que gestiona a sus miembros sin ser administrador."
+                },
+                "it": {
+                    "title": "Collettivi",
+                    "description": "Squadre private: ognuna ha la sua sezione del forum, il suo ruolo e il suo canale su Discord, e un capo che gestisce i membri senza essere amministratore."
+                },
+                "pt": {
+                    "title": "Coletivos",
+                    "description": "Equipas privadas: cada uma tem a sua secção do fórum, o seu cargo e o seu canal no Discord, e um chefe que gere os seus membros sem ser administrador."
+                }
+            },
+            "version": "1.0",
+            "author": "NeoFrag Reborn",
+            "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
+            "file": "modules/collectives.zip",
+            "preview": "modules/collectives.jpg",
+            "size": 89343,
+            "sha256": "851903b5e82af43b64dc99f3a420aad9b8c4fe2bf21cdf072b49bef5d6c6321d",
+            "requires": {
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -351,10 +394,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/discord.zip",
             "preview": "modules/discord.jpg",
-            "size": 155452,
-            "sha256": "4e061d35ec01d879b05059b28fc3ad46ec09d68de8eff6dc660f9d258710c338",
+            "size": 167652,
+            "sha256": "8ecbf6594cf33c1feb78e7324e492013d3d11d7217ffe5184c6262e37ef74672",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "api"
                 ]
@@ -368,27 +411,27 @@
             "tier": 1,
             "category": "monetisation",
             "title": "Dons",
-            "description": "Système de campagnes de dons avec objectif, barre de progression, liste de donateurs et bouton PayPal.",
+            "description": "Campagnes de dons avec objectif, barre de progression et liste de donateurs. Les dons faits par PayPal, Ko-fi, HelloAsso ou TipeeeStream s’enregistrent d’eux-mêmes.",
             "i18n": {
                 "en": {
                     "title": "Donations",
-                    "description": "Donation campaign system with goal, progress bar, donor list and PayPal button."
+                    "description": "Donation campaigns with a goal, a progress bar and a donor list. Donations made through PayPal, Ko-fi, HelloAsso or TipeeeStream are recorded automatically."
                 },
                 "de": {
                     "title": "Spenden",
-                    "description": "Spendenkampagnen-System mit Ziel, Fortschrittsbalken, Spenderliste und PayPal-Button."
+                    "description": "Spendenkampagnen mit Ziel, Fortschrittsbalken und Spenderliste. Spenden über PayPal, Ko-fi, HelloAsso oder TipeeeStream werden automatisch erfasst."
                 },
                 "es": {
                     "title": "Donaciones",
-                    "description": "Sistema de campañas de donación con objetivo, barra de progreso, lista de donantes y botón de PayPal."
+                    "description": "Campañas de donaciones con objetivo, barra de progreso y lista de donantes. Las donaciones hechas por PayPal, Ko-fi, HelloAsso o TipeeeStream se registran solas."
                 },
                 "it": {
                     "title": "Donazioni",
-                    "description": "Sistema di campagne di donazione con obiettivo, barra di progresso, elenco di donatori e pulsante PayPal."
+                    "description": "Campagne di donazione con obiettivo, barra di avanzamento ed elenco dei donatori. Le donazioni fatte tramite PayPal, Ko-fi, HelloAsso o TipeeeStream si registrano da sole."
                 },
                 "pt": {
                     "title": "Doações",
-                    "description": "Sistema de campanhas de doação com objetivo, barra de progresso, lista de doadores e botão PayPal."
+                    "description": "Campanhas de donativos com objetivo, barra de progresso e lista de doadores. Os donativos feitos por PayPal, Ko-fi, HelloAsso ou TipeeeStream registam-se sozinhos."
                 }
             },
             "version": "1.0",
@@ -396,10 +439,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/donations.zip",
             "preview": "modules/donations.jpg",
-            "size": 61489,
-            "sha256": "29f57dfe34578124fdbc406a12d665066d70df6361e5f3dd6ece8c1cd61f68fa",
+            "size": 98308,
+            "sha256": "f6cc7782cf156283ce5827d56805a5a638ba1b05bbaa3ed7a68a4cf04d2c217d",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -433,7 +476,7 @@
                 },
                 "pt": {
                     "title": "Transferências",
-                    "description": "Biblioteca de arquivos para download com categorias, versão e contador."
+                    "description": "Biblioteca de ficheiros para descarregar, com categorias, versão e contador."
                 }
             },
             "version": "1.0",
@@ -441,10 +484,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/downloads.zip",
             "preview": "modules/downloads.jpg",
-            "size": 49600,
-            "sha256": "919a170679ba682a057f1f9e8b52200523acbe52cf5b727026ab4bd2f67d8f52",
+            "size": 81560,
+            "sha256": "0168fe156c0563576b2f78db8bfdfbcb7a2061094844a03236dbd55014cdb25a",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -486,10 +529,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/emojis.zip",
             "preview": "modules/emojis.jpg",
-            "size": 30507,
-            "sha256": "d6e14c3e84176120f606e66ebdd7727d68676c621132418e793bb0183a09a22a",
+            "size": 62699,
+            "sha256": "a93bc857f933368b904cda19ab2b29cd28b0711d1d87085fe4304ed1b6165774",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -501,27 +544,27 @@
             "tier": 1,
             "category": "identite",
             "title": "Événements",
-            "description": "Événements et matchs d'une guilde ou d'une équipe eSport : invitations avec réponse présent, absent ou peut-être, scores par manche, récurrence, rappels.",
+            "description": "Les événements d'une communauté : invitations avec réponse présent, absent ou peut-être, récurrence, rappels ; et, avec les modules Jeux et Équipes, les matchs et leurs scores par manche.",
             "i18n": {
                 "en": {
                     "title": "Events",
-                    "description": "Events and matches for a guild or an esports team: invitations answered present, absent or maybe, scores per round, recurrence, reminders."
+                    "description": "A community's events: invitations answered present, absent or maybe, recurrence, reminders; and, with the Games and Teams modules, matches and their scores per round."
                 },
                 "de": {
                     "title": "Events",
-                    "description": "Termine und Matches einer Gilde oder eines E-Sport-Teams: Einladungen mit Antwort anwesend, abwesend oder vielleicht, Ergebnisse pro Runde, Wiederholung, Erinnerungen."
+                    "description": "Die Veranstaltungen einer Community: Einladungen mit der Antwort anwesend, abwesend oder vielleicht, Wiederholung, Erinnerungen; und mit den Modulen Spiele und Teams die Matches und ihre Ergebnisse pro Runde."
                 },
                 "es": {
                     "title": "Eventos",
-                    "description": "Eventos y partidos de un clan o de un equipo de eSports: invitaciones con respuesta presente, ausente o quizás, marcadores por manga, recurrencia, recordatorios."
+                    "description": "Los eventos de una comunidad: invitaciones con respuesta presente, ausente o quizás, repetición, recordatorios; y, con los módulos Juegos y Equipos, los partidos y sus marcadores por ronda."
                 },
                 "it": {
                     "title": "Eventi",
-                    "description": "Eventi e partite di una gilda o di un team eSport: inviti con risposta presente, assente o forse, punteggi per round, ricorrenza, promemoria."
+                    "description": "Gli eventi di una comunità: inviti con risposta presente, assente o forse, ricorrenza, promemoria; e, con i moduli Giochi e Squadre, le partite e i loro punteggi per round."
                 },
                 "pt": {
                     "title": "Eventos",
-                    "description": "Eventos e jogos de uma guilda ou de uma equipa de eSports: convites com resposta presente, ausente ou talvez, resultados por manga, recorrência, lembretes."
+                    "description": "Os eventos de uma comunidade: convites com resposta presente, ausente ou talvez, recorrência, lembretes; e, com os módulos Jogos e Equipas, as partidas e as suas pontuações por ronda."
                 }
             },
             "version": "1.0",
@@ -529,14 +572,11 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/events.zip",
             "preview": "modules/events.jpg",
-            "size": 195243,
-            "sha256": "f797bb33723a51679fdae53d8696646417abf972444036724d911ae5cf6b2232",
+            "size": 232496,
+            "sha256": "2116d85461c80a36f54dda96184f0f0dc4fa38fbea6d612100982219cef599f5",
             "requires": {
-                "base": ">=1.2.48",
-                "addons": [
-                    "games",
-                    "teams"
-                ]
+                "base": ">=1.2.50",
+                "addons": []
             },
             "provides_widgets": [
                 "events"
@@ -577,10 +617,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/faq.zip",
             "preview": "modules/faq.jpg",
-            "size": 33201,
-            "sha256": "7be36610a5c9dd2580f864c138faeca3e5c52d98cf2380d3580f174417e33bca",
+            "size": 70362,
+            "sha256": "efd69b994ac632dbbe3fa9917feb48bef8c303c2009c061030678b7ac8dce417",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -620,10 +660,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/feeds.zip",
             "preview": "modules/feeds.jpg",
-            "size": 28828,
-            "sha256": "05f24156b60d2999ac074790faa9432d62ecad67e0bcf0a50c27221e0d4620fe",
+            "size": 67651,
+            "sha256": "6c9931479d67c13b6a5f811db1e96bb2662dac6dd7a26c0209ba34c7a84093b5",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "news",
                     "articles"
@@ -666,10 +706,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/forum.zip",
             "preview": "modules/forum.jpg",
-            "size": 159143,
-            "sha256": "cd8d2a6e8df03fc20c22c2dcfe9b5d2c747ae906d87b02eea801719850af3f01",
+            "size": 186353,
+            "sha256": "de1ae37bcc81c432a3f33f4d952c7022c6d0922a3a5d1e1247401ee7ab1d07c3",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -711,10 +751,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/gallery.zip",
             "preview": "modules/gallery.jpg",
-            "size": 94870,
-            "sha256": "822dc43bb199ea28963f6f05bc5274e8c6f6a3f24ece5f752d4f6bd1e2f8afab",
+            "size": 119614,
+            "sha256": "075a4082ae0d1fd523760fcc79697caf58538f027a1a3d3c062e69a391cee547",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -756,10 +796,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/games.zip",
             "preview": "modules/games.jpg",
-            "size": 62915,
-            "sha256": "0a49e53fc58c4d0b28d7e3aa1e2ee91c1db255fbd0b263008931dc43fa8f5aa1",
+            "size": 86021,
+            "sha256": "ecfd708bd280ca6d86a0772898c1f368e2ddde68908c979d39b5aaec3be76658",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -799,10 +839,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/gamification.zip",
             "preview": "modules/gamification.jpg",
-            "size": 41976,
-            "sha256": "f8cee3c18b492d3d529deb78646732083ccd86829c553c1f742af4233862563c",
+            "size": 72768,
+            "sha256": "5ede345793dd68924982b231a02b78946ee7f935f848bae6c84133a9420fae69",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -842,10 +882,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/glossary.zip",
             "preview": "modules/glossary.jpg",
-            "size": 56218,
-            "sha256": "b861ff6f7ce884c6051708b265ff0190aa61c5f0c94b75ac7ec1c89a077a84af",
+            "size": 74303,
+            "sha256": "d06c6dd65ef712e2b3668c40eddc2b90078df3ca7b49573a36a64ae764e1b002",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -885,10 +925,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/guestbook.zip",
             "preview": "modules/guestbook.jpg",
-            "size": 28332,
-            "sha256": "9b34552df34b25e0a0bac66257b2c9af397a22df5c7b323bf1d40cdfb25e632c",
+            "size": 80781,
+            "sha256": "222ee9500e7446be6ec1cb82cac8d745947ee3c1d54502b11102a973a36da431",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -930,10 +970,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/links.zip",
             "preview": "modules/links.jpg",
-            "size": 38138,
-            "sha256": "57a34d39afee251d1aaea24aefa334ea91522dbc6fae30906647f8b78f9a7605",
+            "size": 79578,
+            "sha256": "d2cfb8eea73ae7a928c5f19ae6d0fa49c0316127740934931b8d28e56a2fc5de",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -975,10 +1015,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/news.zip",
             "preview": "modules/news.jpg",
-            "size": 76802,
-            "sha256": "d5f21d94988f4c8e2f8a9a61369653ede32f753f5db819aa9d27fa9a70711827",
+            "size": 105180,
+            "sha256": "da4527d1dad9d822ba4ec40b3166a85d35c8a94924dd294ca86d459b40ca8ce7",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -1020,10 +1060,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/newsletter.zip",
             "preview": "modules/newsletter.jpg",
-            "size": 62140,
-            "sha256": "f6b0a73d66ef93c1a0b75a8839bf7da4a14b19cbb06948da3f8ea916ca5df971",
+            "size": 89830,
+            "sha256": "9263cc6d86b1d85bc52e4f3652ce1a3077eb76e2b5a085da823d4b5a23dc3125",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -1065,10 +1105,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/partners.zip",
             "preview": "modules/partners.jpg",
-            "size": 46666,
-            "sha256": "8d1b98acfd6367e346f59293151fd2c2a0b4edb15d9874f9710f38c1b953889f",
+            "size": 84436,
+            "sha256": "516205a72c5cd2e80885a4470968be8b604cddf33b8ef80b90786aad67cc4be9",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -1079,7 +1119,7 @@
         {
             "type": "module",
             "name": "payments",
-            "tier": 2,
+            "tier": 1,
             "category": "monetisation",
             "title": "Paiements",
             "description": "Packs de points ou de jours VIP (module Gamification) payés via Stripe Checkout, crédités après confirmation signée de Stripe, une seule fois par paiement.",
@@ -1110,13 +1150,11 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/payments.zip",
             "preview": "modules/payments.jpg",
-            "size": 48913,
-            "sha256": "19ec496b7d63635016ed247f939fc6f1c3349df7de0caa36ddecd731ee52d560",
+            "size": 95566,
+            "sha256": "04f54a843074f4379edb848aabdad7b2f625d9eb1ae197ffdefb8d973c1b360b",
             "requires": {
-                "base": ">=1.2.48",
-                "addons": [
-                    "gamification"
-                ]
+                "base": ">=1.2.50",
+                "addons": []
             },
             "provides_widgets": [],
             "install": "zip"
@@ -1155,10 +1193,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/places.zip",
             "preview": "modules/places.jpg",
-            "size": 178824,
-            "sha256": "f6a8a31400532092feed26f617701b3420a632344731771009e0d73dc30e6cf4",
+            "size": 131048,
+            "sha256": "e14f59d7bd7a9fd3d2270879787ed77fc2e8318f720af44c5fc32c8ba97142e0",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1198,10 +1236,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/quotes.zip",
             "preview": "modules/quotes.jpg",
-            "size": 60691,
-            "sha256": "636275551fd2bd1942f01bc8bdd88e5dbe30a1f4a2bbac01e30b30c482d4d0c2",
+            "size": 69645,
+            "sha256": "799d1cd6b9a17bbd09cc02184043d966c37355daea1b7daabb2693f30e2fcdd8",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1241,10 +1279,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/recipes.zip",
             "preview": "modules/recipes.jpg",
-            "size": 53826,
-            "sha256": "5d5ddf63c45b21df676759030883f17c00b3fb5761ebf6fcb166567995bb164a",
+            "size": 74498,
+            "sha256": "3ca01031e955bf81c7735df38edf52736c73ab44ceae778c6bdd4fbd04009104",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1284,10 +1322,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/recruits.zip",
             "preview": "modules/recruits.jpg",
-            "size": 75406,
-            "sha256": "640f6c1d6d1d33b118a5211346219b17d61f14bcf2ed7cb5ee4b40f770fd1c1f",
+            "size": 121007,
+            "sha256": "44747f493305174de6e64cdfe48f2a2e0593c63f3b25c3dd4504f825cbabaec9",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "teams",
                     "games"
@@ -1332,10 +1370,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/sandbox.zip",
             "preview": "modules/sandbox.jpg",
-            "size": 50343,
-            "sha256": "80b680a3dab102a5d02ac7c7dcdb6141d3e10daf0c673f72ddf45bfd4e0b8f2f",
+            "size": 69855,
+            "sha256": "fa10ed838a840f6d9249e83421726420cb2bb64be3c3120ab1a89dcad3d4c912",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1375,10 +1413,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/shop.zip",
             "preview": "modules/shop.jpg",
-            "size": 46892,
-            "sha256": "b61ddc71c3011a3a688cc51c018b27fd1b82d46b27ada9dab9ff7c438043e5d4",
+            "size": 75899,
+            "sha256": "7b874759f22da34abd2baa1cfacc0f1b5889d30799e0eabee673212354824939",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1418,10 +1456,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/surveys.zip",
             "preview": "modules/surveys.jpg",
-            "size": 49717,
-            "sha256": "3d7fed54f754437028bdce657902f69197bc109bdf2ffadfb5fcdd38628930c3",
+            "size": 81927,
+            "sha256": "24ea0d09c1510e523e9c4a43fe9499ec6d0720927aff61b94a7d886f0784d127",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [
@@ -1463,10 +1501,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/teams.zip",
             "preview": "modules/teams.jpg",
-            "size": 57456,
-            "sha256": "aa4728fee393ee8def62fe7c68adffd2a2f94d9752f9ab77ac3060c615dbd59f",
+            "size": 93333,
+            "sha256": "99c8fbbecb43f34b070de244b57aba8ae1295c08f66262951ba2adc55356cf06",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "games"
                 ]
@@ -1510,10 +1548,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/webradio.zip",
             "preview": "modules/webradio.jpg",
-            "size": 63159,
-            "sha256": "54ca3f08529c4f23356fe47b3da5fc047dce78d5a0def36d4f80f8d9df8693b5",
+            "size": 84550,
+            "sha256": "a12c79f8d1db6cd20101b53ceee9871706457c8333fc4209a6a017c3b5091b18",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1553,10 +1591,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "modules/wiki.zip",
             "preview": "modules/wiki.jpg",
-            "size": 39497,
-            "sha256": "7cc91e81af598182f6487cfae945d4838085c3488becc2ee52be5915c066e24e",
+            "size": 80458,
+            "sha256": "f9016a68eef9a2ab97249e60672af7fd11cee456507231b348c68f54fae1e911",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1571,7 +1609,7 @@
             "description": "Thème « Blockcraft », le site d’un serveur de jeu de blocs : un paysage en blocs en tête, le nom du serveur dans le ciel et son adresse à copier, la navigation en barre d’objets (collée en bas de l’écran au téléphone), des blocs à coins carrés, le forum en coffres, l’espace membre en écran du personnage, un pied en roche ; titres Jersey 10, texte Rubik, nuit étoilée au choix du visiteur ; couleurs, adresse du serveur, image de fond et logo réglables.",
             "i18n": {
                 "en": {
-                    "description": "“Blockcraft” theme, the website of a block-game server: a block landscape on top, the server name in the sky with its address to copy, navigation as an item hotbar (pinned to the bottom of the screen on phones), square-cornered blocks, the forum as chests, the member area as the character screen, a stone footer; Jersey 10 headings, Rubik text, a starry night at the visitor’s choice; adjustable colours, server address, background image and logo."
+                    "description": "“Blockcraft” theme, the website of a block-game server: a block landscape on top, the server name in the sky with its address to copy, navigation as an item hotbar (pinned to the bottom of the screen on phones), square-cornered blocks, the forum as chests, the member area as the character screen, a stone footer; Jersey 10 headings, Rubik text, a starry night at the visitor’s choice; adjustable colors, server address, background image and logo."
                 },
                 "de": {
                     "description": "Theme „Blockcraft“, die Website eines Blockspiel-Servers: oben eine Landschaft aus Blöcken, der Servername am Himmel mit seiner Adresse zum Kopieren, die Navigation als Schnellleiste (auf dem Handy unten am Bildschirm), Blöcke mit eckigen Kanten, das Forum in Truhen, der Mitgliederbereich als Charakterbildschirm, eine Fußzeile aus Stein; Überschriften in Jersey 10, Text in Rubik, Sternennacht nach Wahl des Besuchers; Farben, Serveradresse, Hintergrundbild und Logo einstellbar."
@@ -1591,10 +1629,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/blockcraft.zip",
             "preview": "themes/blockcraft.jpg",
-            "size": 166675,
-            "sha256": "227039e519448eab16f59efa71bb42ac6c313a05f6e96eb37ba09352f374bc05",
+            "size": 166968,
+            "sha256": "dcaf5da3bd3f29711cd142ab836745ceb7fde4978e5a7708ab018bc8fd98797e",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1629,10 +1667,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/chronique.zip",
             "preview": "themes/chronique.jpg",
-            "size": 79323,
-            "sha256": "fc85ce937a7d4d72c78b40e2020a87378274711f48c35d20a0501e263f3e9cc3",
+            "size": 79747,
+            "sha256": "612d1e2c32b7361e139dbfcff66a01d90b5979d5c9f54dfa2d3f545caab46b41",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1647,7 +1685,7 @@
             "description": "Thème « Extend », le site comme le lanceur d’un jeu en ligne : une barre d’onglets, une grande vitrine sur l’accueil, les membres en ligne et la discussion toujours ouverts à droite, une barre d’état en bas (serveur de jeu, salon vocal, langue) ; au téléphone, les onglets en bas de l’écran. Bleu acier sur fond marine, nuit par défaut ; logo, image de la vitrine, fond et couleurs réglables.",
             "i18n": {
                 "en": {
-                    "description": "“Extend” theme, the website as an online game launcher: a tab bar, a large showcase on the home page, online members and the chat always open on the right, a status bar at the bottom (game server, voice channel, language); on phones, the tabs at the bottom of the screen. Steel blue on navy, night by default; adjustable logo, showcase image, background and colours."
+                    "description": "“Extend” theme, the website as an online game launcher: a tab bar, a large showcase on the home page, online members and the chat always open on the right, a status bar at the bottom (game server, voice channel, language); on phones, the tabs at the bottom of the screen. Steel blue on navy, night by default; adjustable logo, showcase image, background and colors."
                 },
                 "de": {
                     "description": "Theme „Extend“, die Website als Launcher eines Online-Spiels: eine Tableiste, eine große Vitrine auf der Startseite, die Online-Mitglieder und der Chat immer rechts geöffnet, eine Statusleiste unten (Spielserver, Sprachkanal, Sprache); auf dem Handy die Tabs unten am Bildschirm. Stahlblau auf Marineblau, standardmäßig Nachtmodus; Logo, Vitrinenbild, Hintergrund und Farben einstellbar."
@@ -1667,10 +1705,10 @@
             "license": "Creative Commons CC BY-NC-SA 4.0 <https://creativecommons.org/licenses/by-nc-sa/4.0/>",
             "file": "themes/extend.zip",
             "preview": "themes/extend.jpg",
-            "size": 101843,
-            "sha256": "e4ae144368f924044a0888cea9416da2f9d9167975a7a8dabbe6451e48ce6d92",
+            "size": 102508,
+            "sha256": "2fe044baa1219d579012428a3ab520a15ec1645eac701f218ffb5b2d16ee7525",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1685,7 +1723,7 @@
             "description": "Thème « Coulée », pour les clans compétitifs : la navigation dans un rail d’acier sur le côté (une barre d’onglets en bas au téléphone), un foyer de lave où montent des braises en haut de l’accueil, des plaques aux coins coupés qui rougeoient au survol ; titres Rajdhani, mode jour au choix du visiteur ; couleurs, images, logo et braises réglables.",
             "i18n": {
                 "en": {
-                    "description": "“Coulée” theme, for competitive clans: navigation in a steel rail on the side (a tab bar at the bottom on phones), a lava hearth where embers rise at the top of the home page, cut-corner plates that glow on hover; Rajdhani headings, day mode at the visitor’s choice; adjustable colours, images, logo and embers."
+                    "description": "“Coulée” theme, for competitive clans: navigation in a steel rail on the side (a tab bar at the bottom on phones), a lava hearth where embers rise at the top of the home page, cut-corner plates that glow on hover; Rajdhani headings, day mode at the visitor’s choice; adjustable colors, images, logo and embers."
                 },
                 "de": {
                     "description": "Theme „Coulée“ für kompetitive Clans: die Navigation in einer Stahlleiste an der Seite (eine Registerleiste unten auf dem Handy), eine Lava-Feuerstelle oben auf der Startseite, in der Glut aufsteigt, Platten mit abgeschrägten Ecken, die beim Überfahren glühen; Rajdhani-Überschriften, Tagmodus nach Wahl des Besuchers; Farben, Bilder, Logo und Glut einstellbar."
@@ -1705,10 +1743,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/forge.zip",
             "preview": "themes/forge.jpg",
-            "size": 113969,
-            "sha256": "b83dfafa373ad30fd9594af972908561dff75d71b2908f3c739bc3c02e954ca3",
+            "size": 114943,
+            "sha256": "6c25797e79b7e1b03258a5a8a3279a08acfd92a13107c2378446e204642bd38b",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1743,10 +1781,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/granite.zip",
             "preview": "themes/granite.jpg",
-            "size": 122108,
-            "sha256": "bb93184cd40560703cf298ccc9b582beeb0e081dae0a4c693813b147cd5738a8",
+            "size": 122476,
+            "sha256": "0d965108ad6fa7bf297f34f35afb92b68d667a84df452d5a6d7aa1b78561de22",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1761,7 +1799,7 @@
             "description": "Thème « Pulse », la maison commune des associations, des clubs et des communautés : une barre claire et l’appel « Adhérer » toujours en vue, un accueil en mosaïque de dalles (le prochain rendez-vous, le site en chiffres, les actualités, l’agenda, le sondage, les photos…), le forum en cartes, un pied sombre où bat le point du plan ; titres Bricolage Grotesque, texte Manrope, nuit « ardoise » au choix du visiteur ; couleurs, image d’accueil, logo et appel à adhérer réglables.",
             "i18n": {
                 "en": {
-                    "description": "“Pulse” theme, the shared home of associations, clubs and communities: a light bar with the “Join” call always in sight, a home page as a mosaic of tiles (the next event, the site in figures, news, calendar, poll, photos…), the forum as cards, a dark footer where the dot of the map beats; Bricolage Grotesque headings, Manrope text, “slate” night mode at the visitor’s choice; colours, home image, logo and join call adjustable."
+                    "description": "“Pulse” theme, the shared home of associations, clubs and communities: a light bar with the “Join” call always in sight, a home page as a mosaic of tiles (the next event, the site in figures, news, calendar, poll, photos…), the forum as cards, a dark footer where the dot of the map beats; Bricolage Grotesque headings, Manrope text, “slate” night mode at the visitor’s choice; colors, home image, logo and join call adjustable."
                 },
                 "de": {
                     "description": "Theme „Pulse“, das gemeinsame Haus von Vereinen, Clubs und Gemeinschaften: eine helle Leiste mit dem Aufruf „Beitreten“ stets im Blick, eine Startseite als Kachelmosaik (der nächste Termin, die Website in Zahlen, Neuigkeiten, Kalender, Umfrage, Fotos…), das Forum in Karten, eine dunkle Fußzeile, in der der Punkt der Karte pulsiert; Überschriften in Bricolage Grotesque, Text in Manrope, Nachtmodus „Schiefer“ nach Wahl des Besuchers; Farben, Startbild, Logo und Beitrittsaufruf einstellbar."
@@ -1781,10 +1819,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "themes/pulse.zip",
             "preview": "themes/pulse.jpg",
-            "size": 93383,
-            "sha256": "1f25ea4b9602744914bc3765cd717d7306a131fedb76c04290bc605dc557a8e3",
+            "size": 94023,
+            "sha256": "011665909a672250909010fb7b1221178ceb0b8a56155671cddda607a157defa",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1824,10 +1862,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/about.zip",
             "preview": "widgets/about.jpg",
-            "size": 32746,
-            "sha256": "5e2623790b6650b09919574f5621a6a95d4f090eb333b4a81126f5d1b715e75d",
+            "size": 72966,
+            "sha256": "3fd1fcb3918f49132c331d774c8cee45490d6e1fae0f6d564b9ee1d9c2182088",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1867,10 +1905,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/ads.zip",
             "preview": "widgets/ads.jpg",
-            "size": 22274,
-            "sha256": "ef49a54b8d34b65c16a612bfa4136dae0c26e025aa3170591c5f4272ae7975b4",
+            "size": 62509,
+            "sha256": "6c63a356c154213cf7ff50e27fa5627ef550d45b49894d906c5949f20a3e9cda",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "ads"
                 ]
@@ -1912,10 +1950,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/articles.zip",
             "preview": "widgets/articles.jpg",
-            "size": 37396,
-            "sha256": "0cd9b3d9a146d15b94bbbc1c4a179b330f09e0137da78f2d6127572341956c3a",
+            "size": 66659,
+            "sha256": "321f2c04ba22383777cbdad43e1546f1abe508e142d6b94aa47c406505f0f775",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "articles"
                 ]
@@ -1957,10 +1995,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/awards.zip",
             "preview": "widgets/awards.jpg",
-            "size": 20335,
-            "sha256": "cf155c15246f08449e67068f971d1b0099c5ea42f89530e1e72faac9b8464923",
+            "size": 69706,
+            "sha256": "4f645c8d34f32ae8e129f38547a0b6678594f2f75abfb2d778040c2a9d035f02",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "awards"
                 ]
@@ -1978,7 +2016,7 @@
             "i18n": {
                 "en": {
                     "title": "Calendar",
-                    "description": "The calendar’s upcoming events, with their date and colour; the current week, its event days marked and the next event; or the next event highlighted, its date in large print; a link leads to the full calendar."
+                    "description": "The calendar’s upcoming events, with their date and color; the current week, its event days marked and the next event; or the next event highlighted, its date in large print; a link leads to the full calendar."
                 },
                 "de": {
                     "title": "Kalender",
@@ -2002,10 +2040,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/calendar.zip",
             "preview": "widgets/calendar.jpg",
-            "size": 34474,
-            "sha256": "683d6740283cd4d525ab20eb7341652e5cdc467320d07a52cc63580908f47883",
+            "size": 79877,
+            "sha256": "2cef10036d50c47fe916b333f28933339b7e104ae2778e6f05586cffedc7a368",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "calendar"
                 ]
@@ -2047,10 +2085,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/chiffres.zip",
             "preview": "widgets/chiffres.jpg",
-            "size": 28739,
-            "sha256": "30d99fa37b1a9eaada965a8638339160458229829a987bb9de3da33553a7a260",
+            "size": 79952,
+            "sha256": "7e261126ae93e75c7ce385e13265278256947f9a2909294b7a8510958236d32d",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2090,10 +2128,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/donations.zip",
             "preview": "widgets/donations.jpg",
-            "size": 29760,
-            "sha256": "6f1bca37903cba60bbe4896104a0c640dbbbe647e81dd5cc5c2372e28849154f",
+            "size": 77618,
+            "sha256": "d08cbc8b868ddd7630c266be4098ed0c9257a5b4453090e6b8ffa4f753c31802",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "donations"
                 ]
@@ -2135,10 +2173,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/downloads.zip",
             "preview": "widgets/downloads.jpg",
-            "size": 33384,
-            "sha256": "9a69a04a92b48638ae25db1942376f386ec36aee766829457f7d24828007ade4",
+            "size": 69956,
+            "sha256": "1f9d9e472e829ad24e692364db28af3e3fe6f2a20fbc68810f591b5c3bc893cc",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "downloads"
                 ]
@@ -2180,10 +2218,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/events.zip",
             "preview": "widgets/events.jpg",
-            "size": 34860,
-            "sha256": "1dacbea29808c55d8fd323bd86ed69a354cb6b3610cf0dc94cbaf88be3cc5359",
+            "size": 80565,
+            "sha256": "8725af9b3730fcbc25aef6d4d7f6c3121f68e86dd9a59e62095cacf83951f79e",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "events"
                 ]
@@ -2225,10 +2263,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/forum.zip",
             "preview": "widgets/forum.jpg",
-            "size": 43921,
-            "sha256": "19cf6636e12536c56d8ec6f4be1ff6ee8776401847c1f79c4f12d7ac0d885f8e",
+            "size": 72479,
+            "sha256": "d47e28f9bfb27b3ce27edf8cf6b37300611e9c69417ecba1c7984d63afa149c8",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "forum"
                 ]
@@ -2270,10 +2308,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/frise.zip",
             "preview": "widgets/frise.jpg",
-            "size": 50749,
-            "sha256": "28685245aa9b2ee4fd90047e4737dea17de9d9d5f2af9b6c1835e6f93066278d",
+            "size": 81338,
+            "sha256": "1724549f0d2acdef152ebec1833fb1adf33a676075c00c3e28fbf366344187e6",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2313,10 +2351,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/gallery.zip",
             "preview": "widgets/gallery.jpg",
-            "size": 31604,
-            "sha256": "c70013c0e05d511dc13705b063e943e75f02f084587820d4fd80a14cad1d9803",
+            "size": 79634,
+            "sha256": "0fa743af8ace97e791281ff4e851062e49da50d1d95d82769321f4a6eb7405aa",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "gallery"
                 ]
@@ -2358,10 +2396,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/gameserver.zip",
             "preview": "widgets/gameserver.jpg",
-            "size": 44609,
-            "sha256": "3111d23f0edb876e28ea9622044e196c212c055245a917de9ae4915c9992deab",
+            "size": 85768,
+            "sha256": "cb81b7017a201e3287fa70e142f396e74d7ad8f4daa57f06a891dbe5cb75a922",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2401,10 +2439,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/guestbook.zip",
             "preview": "widgets/guestbook.jpg",
-            "size": 29069,
-            "sha256": "75ae3032a5528e3f93ef4ee0a0f94823addcb4d0ceab7b232a6e4369af0b9317",
+            "size": 68332,
+            "sha256": "e2fc73827c7a8e1d811b7fa5490eaa52dd07c6136e4625c78153ab62d32f9ab6",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "guestbook"
                 ]
@@ -2446,10 +2484,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/links.zip",
             "preview": "widgets/links.jpg",
-            "size": 23778,
-            "sha256": "27c04b9d98dd9b62ee92afd55c503704221e0f20895504a7b6663eac8a1e006b",
+            "size": 65556,
+            "sha256": "50c36ccb67f4554c08195cd3cceb1dbacc5ed087bff94b48eeb4faa635bde7d7",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "links"
                 ]
@@ -2491,10 +2529,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/news.zip",
             "preview": "widgets/news.jpg",
-            "size": 26659,
-            "sha256": "fb0b9262ac9b1446ebc8ef7278ea55f7495b8b4ab21f1ae124733117bf4d31dd",
+            "size": 68563,
+            "sha256": "5e02ac4540353d6b82569ffab1b904fd732c3fe5601611cc93615d0436e49e09",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "news"
                 ]
@@ -2536,10 +2574,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/newsletter.zip",
             "preview": "widgets/newsletter.jpg",
-            "size": 28439,
-            "sha256": "53d521f4bc654f2cfa6c9519324c2607615fd9a9bccbe8892e83579a9aa8461c",
+            "size": 69124,
+            "sha256": "40d5eb875fde3cd131e78fdfb3bf5e88f3039ac6eb5efbcbe253acd0e3189434",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "newsletter"
                 ]
@@ -2581,10 +2619,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/partners.zip",
             "preview": "widgets/partners.jpg",
-            "size": 24233,
-            "sha256": "24ab7cf5181446bcb3e6e11a111732eb025b1852e8654276c901d300720f54f6",
+            "size": 75617,
+            "sha256": "6e9a669f4d70bb808ecf5f7a809b115802808989bfec551be2c424b224241605",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "partners"
                 ]
@@ -2626,10 +2664,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/recruits.zip",
             "preview": "widgets/recruits.jpg",
-            "size": 36095,
-            "sha256": "1b3c11adb6f8b6c6ea1c3b5cc7342f08d3971cd2d8a12840e29d2ab80cff3c04",
+            "size": 75179,
+            "sha256": "0c0f055255500536e8c5fa199388efc2bfcc3d8b96a98802a8a59c5bf3c9c4ac",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "recruits",
                     "teams"
@@ -2672,10 +2710,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/rss.zip",
             "preview": "widgets/rss.jpg",
-            "size": 56545,
-            "sha256": "d1adf41aa41439c086283d425cafcf1fc02ada7cdf2a798a44a2d4e8a32a2aa8",
+            "size": 75324,
+            "sha256": "4aa008a89a36d0ad9d6f7fe7a6e742ebe53a309fbada6171c3fd00c89204358d",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2715,10 +2753,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/seasonal.zip",
             "preview": "widgets/seasonal.jpg",
-            "size": 46386,
-            "sha256": "2212a2e67d6262d4fcd48911e96e9d32d7910e0d01b0678248dc5d6e1fadbe55",
+            "size": 71476,
+            "sha256": "50e8aa6478a7e22ae7439bd86b70ffd9f18926e91a961d8a61689b614d130299",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2758,10 +2796,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/steam.zip",
             "preview": "widgets/steam.jpg",
-            "size": 39762,
-            "sha256": "eebfd16e93f496695fbe8baf7230269d4aab6bbf89f1be51bfd46e14ef9c73ce",
+            "size": 69603,
+            "sha256": "1edcb6d128ac737bd5d14a83aac738e6b0ee0bbf1fad5efe5035f98eb670e9eb",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2801,10 +2839,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/surveys.zip",
             "preview": "widgets/surveys.jpg",
-            "size": 27360,
-            "sha256": "13b53a82950732be32ec8f3a18a0725f701e95ecfee04496f1df2c15aa2f02db",
+            "size": 66782,
+            "sha256": "619e32991c5d8b650d381bdaeaaef3839f3734bc89e041dfa077526e42349987",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "surveys"
                 ]
@@ -2846,10 +2884,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/teams.zip",
             "preview": "widgets/teams.jpg",
-            "size": 26564,
-            "sha256": "b815d2245faf6ce64a6bc0788ed81714bc6ddc811d9b5dec3550bb7736cc1b00",
+            "size": 68830,
+            "sha256": "a5e8010757478d6836f1ef812ba247a28cdbd09dcd2019ada912406bbf975386",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": [
                     "teams"
                 ]
@@ -2891,10 +2929,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/teamspeak.zip",
             "preview": "widgets/teamspeak.jpg",
-            "size": 44636,
-            "sha256": "12141e3c9dddc7ebf22f765fb27203c47d18eb3a8390f937c5248be51133d135",
+            "size": 80544,
+            "sha256": "75803f8e0053df736e771cb72d6af6494a7496f071be987ecbd51094561f2bf8",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2934,10 +2972,10 @@
             "license": "LGPLv3 <https://www.gnu.org/licenses/lgpl-3.0.html>",
             "file": "widgets/twitch.zip",
             "preview": "widgets/twitch.jpg",
-            "size": 53246,
-            "sha256": "e85970eb6d38cbe5a25ac69d2f7b998ba8fe48b4de4ec1f61c2603853ef197b6",
+            "size": 85882,
+            "sha256": "b1489fde8e5ec3079bf94471f302ad2381d8031a8c5774e3c925d49f076945e0",
             "requires": {
-                "base": ">=1.2.48",
+                "base": ">=1.2.50",
                 "addons": []
             },
             "provides_widgets": [],

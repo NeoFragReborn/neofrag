@@ -10,23 +10,43 @@ use NF\NeoFrag\Loadables\Model;
 
 class Slider extends Model
 {
-	public function get_slides($only_active = FALSE)
+	/*
+	 * Le titre et la légende d'une vue vivent dans `nf_slider_slides_lang`, une ligne par langue (m22, 2026-10-13).
+	 * `join_lang()` sert la MEILLEURE : celle de la langue demandée, sinon le français, sinon la première écrite —
+	 * une vue traduite dans une seule langue reste visible dans les cinq autres, au lieu de disparaître.
+	 */
+	public function get_slides($only_active = FALSE, $langue = NULL)
 	{
 		if ($only_active)
 		{
-			$this->db->where('active', 1);
+			$this->db->where('s.active', 1);
 		}
-		return $this->db->select('id', 'image_url', 'title', 'caption', 'link', 'sort_order', 'active', 'UNIX_TIMESTAMP(created_at) as created_at', 'UNIX_TIMESTAMP(updated_at) as updated_at')
-						->from('nf_slider_slides')
-						->order_by('sort_order', 'id')
+		return $this->db->select('s.id', 's.image_url', 'l.title', 'l.caption', 's.link', 's.sort_order', 's.active', 'UNIX_TIMESTAMP(s.created_at) as created_at', 'UNIX_TIMESTAMP(s.updated_at) as updated_at')
+						->from('nf_slider_slides s')
+						->join_lang('nf_slider_slides_lang l', 'slide_id', 's.id', $langue, 'LEFT')
+						->order_by('s.sort_order', 's.id')
 						->get();
 	}
 
 	public function get_slide($id)
 	{
-		return $this->db->select('id', 'image_url', 'title', 'caption', 'link', 'sort_order', 'active')
-						->from('nf_slider_slides')
-						->where('id', (int)$id)
+		return $this->db->select('s.id', 's.image_url', 'l.title', 'l.caption', 's.link', 's.sort_order', 's.active')
+						->from('nf_slider_slides s')
+						->join_lang('nf_slider_slides_lang l', 'slide_id', 's.id', NULL, 'LEFT')
+						->where('s.id', (int)$id)
+						->row();
+	}
+
+	/*
+	 * La vue telle qu'elle est écrite DANS UNE LANGUE, sans repli : c'est ce que l'administration édite — sinon on
+	 * proposerait la traduction française à corriger dans le formulaire anglais, et on l'écrirait en anglais.
+	 */
+	public function get_slide_lang($id, $langue)
+	{
+		return $this->db->select('title', 'caption')
+						->from('nf_slider_slides_lang')
+						->where('slide_id', (int)$id)
+						->where('lang', $langue)
 						->row();
 	}
 
@@ -36,20 +56,36 @@ class Slider extends Model
 		$max = $this->db->select('MAX(sort_order)')->from('nf_slider_slides')->row();
 		$next = is_array($max) ? 0 : ((int)$max + 1);
 
-		return $this->db->insert('nf_slider_slides', [
+		$id = $this->db->insert('nf_slider_slides', [
 			'image_url' => (string)($data['image_url'] ?? ''),
-			'title'     => (string)($data['title']     ?? ''),
-			'caption'   => (string)($data['caption']   ?? ''),
 			'link'      => (string)($data['link']      ?? ''),
 			'active'    => !empty($data['active']) ? 1 : 0,
 			'sort_order'=> $next
+		]);
+
+		$this->set_slide_lang($id, (string)($data['title'] ?? ''), (string)($data['caption'] ?? ''));
+
+		return $id;
+	}
+
+	/*
+	 * Le texte de la vue dans la langue où l'on travaille. `replace()` et non `update()` : la première fois qu'on
+	 * traduit une vue dans une langue, sa ligne n'existe pas — un `update` n'aurait rien écrit, en silence.
+	 */
+	public function set_slide_lang($id, $title, $caption, $langue = NULL)
+	{
+		$this->db->replace('nf_slider_slides_lang', [
+			'slide_id' => (int)$id,
+			'lang'     => (string)($langue ?: $this->config->lang->info()->name),
+			'title'    => (string)$title,
+			'caption'  => (string)$caption
 		]);
 	}
 
 	public function update_slide($id, $data)
 	{
 		$update = [];
-		foreach (['image_url', 'title', 'caption', 'link'] as $k)
+		foreach (['image_url', 'link'] as $k)
 		{
 			if (array_key_exists($k, $data))
 			{
@@ -61,13 +97,24 @@ class Slider extends Model
 			$update['active'] = !empty($data['active']) ? 1 : 0;
 		}
 
-		if (empty($update))
+		$texte = array_key_exists('title', $data) || array_key_exists('caption', $data);
+
+		if (empty($update) && !$texte)
 		{
 			return FALSE;
 		}
 
-		$this->db	->where('id', (int)$id)
-					->update('nf_slider_slides', $update);
+		if ($update)
+		{
+			$this->db	->where('id', (int)$id)
+						->update('nf_slider_slides', $update);
+		}
+
+		if ($texte)
+		{
+			$this->set_slide_lang($id, (string)($data['title'] ?? ''), (string)($data['caption'] ?? ''));
+		}
+
 		return TRUE;
 	}
 

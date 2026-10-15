@@ -48,7 +48,7 @@ return [
 	'63dc6393' => 'Reapertura',
 	'6a41f36b' => 'Centrado',
 	'6b0653a3' => 'Título del mensaje',
-	'2d5db53a' => 'Sustituye la fuente de todos los temas. Las fuentes las sirve Google Fonts; « %s » no llama a ningún servicio externo.',
+	'1657202e' => 'Sustituye la fuente de todos los temas. Todas las sirve el propio sitio: ningún visitante se envía a un servicio externo.',
 	'6bc79f62' => 'Autor del mensaje',
 	'72d181ea' => 'Preferencias generales guardadas con éxito',
 	'74adcc7d' => 'El sitio no está disponible temporalmente mientras lo actualizamos. Vuelve dentro de unos instantes.',
@@ -269,4 +269,8 @@ return [
 	'68b7ca29' => 'Indica un número de años entre 0 y 20.',
 	'bfeaf8bc' => 'Las direcciones que redirigir: la lista de %s, en Monitoring.',
 	'9339febd' => 'páginas no encontradas',
+	'920189e5' => 'Notificaciones push',
+	'f5ca4bbd' => 'Ofrecer a los miembros recibir sus notificaciones en el navegador, incluso con el sitio cerrado',
+	'3db3c569' => 'Cada miembro lo activa en sus dispositivos, en sus preferencias de notificaciones, y elige lo que recibe. El sitio debe servirse en https.',
+	'a3e9a037' => 'Las notificaciones push siguen desactivadas: este servidor no sabe cifrarlas (se necesitan OpenSSL con la curva P-256 y cURL).',
 ];

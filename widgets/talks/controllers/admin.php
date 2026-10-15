@@ -14,7 +14,7 @@ class Admin extends Controller
 	public function index($settings = [])
 	{
 		return $this->view('admin', [
-			'talks'    => $this->db->select('talk_id', 'name')->from('nf_talks')->get(),
+			'talks'    => $this->db->select('t.talk_id', 'COALESCE(tl.name, t.name) AS name')->from('nf_talks t')->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')->get(),
 			'settings' => $settings
 		]);
 	}
@@ -26,11 +26,12 @@ class Admin extends Controller
 	public function salon($settings = [])
 	{
 		return $this->view('admin', [
-			'talks'    => $this->db	->select('talk_id', 'name')
-									->from('nf_talks')
-									->where('type', 'public')
-									->where('audience', 'all')
-									->where('deleted_at', NULL)
+			'talks'    => $this->db	->select('t.talk_id', 'COALESCE(tl.name, t.name) AS name')
+									->from('nf_talks t')
+									->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
+									->where('t.type', 'public')
+									->where('t.audience', 'all')
+									->where('t.deleted_at', NULL)
 									->order_by('name')
 									->get(),
 			'settings' => $settings

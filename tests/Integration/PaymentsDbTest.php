@@ -26,7 +26,7 @@ final class PaymentsDbTest extends IntegrationTestCase
 
 	public function test_payment_pack_kinds(): void
 	{
-		$this->exec("INSERT INTO nf_payment_packs (kind, label, units, price_cents) VALUES ('vip', 'VIP itest', 30, 500)");
+		$this->exec("INSERT INTO nf_payment_packs (kind, units, price_cents) VALUES ('vip', 30, 500)");
 		$id = (int) self::$pdo->insert_id;
 
 		$row = $this->exec("SELECT kind, units, price_cents FROM nf_payment_packs WHERE id = ?", [$id])->get_result()->fetch_assoc();

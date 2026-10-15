@@ -21,7 +21,7 @@ widgets/hello/
 ├── css/
 │   └── hello.css             # styles (optionnel)
 ├── images/
-│   └── thumbnail.jpg         # sa vignette, 960 × 600 — photographiée, pas dessinée
+│   └── thumbnail.jpg         # sa vignette, 960 × 600 — une carte : son icône, son nom, ce qu'il fait
 └── js/
     └── hello.js              # optionnel — vanilla, jamais jQuery
 ```
@@ -45,6 +45,7 @@ class Hello extends Widget
             'author'      => 'Ton Nom',
             'license'     => 'LGPLv3',
             'version'     => '1.0.0',
+            'depends'     => ['neofrag' => '1.2.50'],   // le cœur qu'il demande au moins — sans lui, « Ajouter » refuse l'archive
 
             // Déclarations de découplage — OBLIGATOIRES (la CI refuse un addon muet).
             'core'        => FALSE,
@@ -103,12 +104,16 @@ motif standard. Un widget à plusieurs `types` a une méthode par type.
 ```php
 <div class="hello-widget">
     <i class="fas fa-hand-spock"></i>
-    <span><?php echo htmlspecialchars($message) ?></span>
+    <span><?php echo nf_texte($message) ?></span>
 </div>
 ```
 
-**Échappe toujours** ce qui vient d'un réglage ou de la base (`htmlspecialchars`). Un titre écrit par un
+**Échappe toujours** ce qui vient d'un réglage ou de la base (`nf_texte()`). Un titre écrit par un
 membre posé en `innerHTML` côté JS deviendrait une injection stockée, servie à tous.
+
+`nf_texte()` décode puis échappe : un texte que le site a enregistré codé (« `&eacute;` ») s'affiche juste, là
+où `htmlspecialchars()` le coderait une seconde fois — le visiteur lirait « `&eacute;` ». `check-double-codage`
+refuse `htmlspecialchars()` dans le produit.
 
 ## 4. Le CSS — `css/hello.css` (optionnel)
 
@@ -122,7 +127,7 @@ membre posé en `innerHTML` côté JS deviendrait une injection stockée, servie
 `--nf-border`, `--nf-border-strong`, `--nf-text`, `--nf-text-strong`, `--nf-text-soft`,
 `--nf-text-muted`, `--nf-muted`, `--nf-muted-2`, `--nf-accent`, `--nf-accent-soft`,
 `--nf-accent-strong`, `--nf-accent-text`, `--nf-on-accent`, `--nf-success`, `--nf-info`,
-`--nf-warning`, `--nf-danger`, `--nf-danger-soft`, `--nf-radius`, `--nf-radius-sm`.
+`--nf-warning`, `--nf-danger`, `--nf-danger-soft`, `--nf-radius`, `--nf-radius-sm`, `--nf-font-display`.
 
 Une variable qu'un thème ne définirait pas retomberait sur son repli — c'est ainsi que des **blocs
 blancs** sont apparus en thème sombre. `tools/check-css-variables.php` refuse toute variable employée
@@ -165,7 +170,7 @@ pour tous les formulaires.
     <label for="settings-message" class="col-12 col-lg-4 col-form-label"><?php echo $this->lang('Message') ?></label>
     <div class="col-12 col-lg-8">
         <input class="form-control" type="text" name="settings[message]" id="settings-message"
-               value="<?php echo htmlspecialchars($message) ?>">
+               value="<?php echo nf_texte($message) ?>">
     </div>
 </div>
 ```
@@ -229,9 +234,8 @@ réel complet : `widgets/about/controllers/checker.php`.
    différents.
 4. Pour le distribuer : zippe le dossier (`widgets/hello/` à la racine de l'archive) — il s'installe via
    **Ajouter (ZIP)** — ou laisse `tools/package-addons.php` l'inscrire au catalogue du marketplace.
-5. Sa vignette : `php tools/capturer-apercus.php --type=widget --nom=hello`, sur un site d'essai peuplé.
-   Le widget y est photographié là où il est posé, ou seul sur la page de contact le temps de la photo ;
-   s'il ne rend rien sans réglages, donne-lui des réglages d'exemple dans la table `REGLAGES` de l'outil.
+5. Sa vignette : une **carte** dessinée à partir de son `__info()`, comme celle d'un module :
+   `php tools/vignettes-cartes.php --nom=hello --sortie=/tmp/cartes` pour la regarder, puis `--poser`.
    Format et contrôles : [Créer un thème, § 5](create-a-theme.md).
 
 `tools/check-widget-contract.php` interroge réellement chaque couple widget/type pour vérifier qu'aucun

@@ -61,4 +61,6 @@ return [
 	'ae4f5e0e' => 'categoria|categorias',
 	'b2656c03' => 'Editar categoria: %s',
 	'fe1ca089' => 'Perguntas frequentes por categorias apresentadas em acordeão Bootstrap.',
+	'262fe079' => 'Escrito para %s. Muda a língua da administração para traduzir esta pergunta; as outras línguas mantêm o seu texto.',
+	'40698b8f' => 'Escrito para %s. Muda a língua da administração para traduzir esta categoria; as outras línguas mantêm o seu texto.',
 ];

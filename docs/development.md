@@ -121,6 +121,8 @@ bibliothèque commune des outils sont dans [tools/README.md](../tools/README.md)
 | Un compteur (vues, clics) qui fait avancer la date de modification d'une ligne dont la colonne suit `ON UPDATE current_timestamp` | `check-db-compteurs` |
 | Une liste que le checker découpe en pages, rendue sans ses liens de pages : les éléments suivants sont inatteignables | `check-pagination` |
 | Une suppression `->delete()` sans sa table, qui lève une `ArgumentCountError` | `check-db-delete` |
+| Une requête posée par `->query('…')` sans le `get()` qui l'envoie : elle ne part pas, puis part à la place de la requête suivante | `check-db-query` |
+| Une colonne qu'une migration retire, restée dans `install.sql` : sur une installation neuve, elle reste obligatoire et chaque création échoue | `check-colonnes-retirees` |
 | Un bouton d'administration hors de la charte : « modifier » coloré, « supprimer » sans contour rouge ni corbeille, un bouton plein dans une ligne | `check-actions-admin` |
 | Un module qui touche à la configuration laissé ouvert sur la démonstration, ou verrouillé alors que la remise à zéro ne le rétablit pas | `check-demo-lock` (les déclarations) ; `check-demo-ecriture` (l'épreuve : il essaie d'écrire, connecté en `demo`) |
 | Un secret — clé, mot de passe, jeton, dans les réglages du site ou d'un widget — qui partirait dans `install/demo.sql`, publié avec le dépôt ; une liste d'exclusion qui nomme un réglage inventé | `check-demo-lock` (la liste et le motif dans `tools/lib/demo.php`, confrontés au code et au fichier produit) |

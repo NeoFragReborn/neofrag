@@ -33,7 +33,6 @@ CREATE TABLE IF NOT EXISTS `nf_teams_lang` (
 
 CREATE TABLE IF NOT EXISTS `nf_teams_roles` (
   `role_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(100) NOT NULL,
   `order` smallint(6) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -48,6 +47,15 @@ CREATE TABLE IF NOT EXISTS `nf_teams_users` (
   CONSTRAINT `nf_teams_users_ibfk_1` FOREIGN KEY (`team_id`) REFERENCES `nf_teams` (`team_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_teams_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `nf_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `nf_teams_users_ibfk_3` FOREIGN KEY (`role_id`) REFERENCES `nf_teams_roles` (`role_id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `nf_teams_roles_lang` (
+  `role_id` int(11) unsigned NOT NULL,
+  `lang` varchar(5) NOT NULL,
+  `title` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`role_id`,`lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `nf_teams_roles_lang_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `nf_teams_roles` (`role_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

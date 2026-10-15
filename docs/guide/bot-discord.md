@@ -13,7 +13,10 @@ s'allument une à une :
 - **Bugtracker** — chaque ticket devient un fil, son type et son statut en étiquettes ; `/bug` et
   `/idee` ouvrent un ticket depuis Discord ;
 - **rôles temporaires** — la commande `/role` : donner un rôle pour un temps limité, que le bot retire
-  à la fin.
+  à la fin ;
+- **sanctions reliées** — le muet et les bannissements du site s'appliquent sur Discord, et ceux d'un
+  modérateur relié peuvent passer au site ;
+- **collectifs** — chaque collectif du site reçoit un rôle et un salon privé, que seuls ses membres voient.
 
 Il se **règle entièrement depuis l'administration** du site : sa clé, son serveur, ses
 fonctionnalités et leurs réglages, l'interrupteur marche / pause, le redémarrage, les
@@ -122,7 +125,7 @@ et se reconnecte tout seul ; la machine n'est pas touchée.
 *Discord → Fonctionnalités* liste ce que le bot sait faire — il les déclare lui-même à chaque signe de
 vie : une fonctionnalité ajoutée au bot y apparaît sans rien toucher au site. Chacune s'**allume** ou
 s'**éteint**, et ses **réglages** s'y changent ; le bot applique le changement dans la minute, sans
-redémarrer. Le Bugtracker et les rôles temporaires sont éteints au départ.
+redémarrer. Le Bugtracker, les rôles temporaires, les sanctions reliées et les collectifs sont éteints au départ.
 
 ### La mise en place du serveur
 
@@ -268,6 +271,54 @@ site (la synchronisation des groupes les gère), et — comme Discord le fait po
 placé au-dessus du bot, ou au niveau de celui qui le donne ou au-dessus. La durée est plafonnée par le
 réglage *Durée maximale* (90 jours par défaut, un an au plus).
 
+## Les sanctions reliées
+
+Éteinte par défaut : *Discord → Fonctionnalités → Sanctions reliées*. Deux sens, chacun son réglage.
+
+**Du site vers Discord** (*Appliquer sur Discord le muet et les bannissements*, allumé avec la fonctionnalité) : une
+sanction de **tout le site** suit le compte Discord relié du membre.
+
+| Sur le site | Sur Discord |
+|---|---|
+| Muet | une exclusion temporaire jusqu'à l'échéance — renouvelée par le bot au-delà des 28 jours que Discord permet |
+| Bannissement temporaire | un bannissement, levé par le bot à l'échéance |
+| Bannissement définitif | un bannissement |
+
+Un avertissement, une restriction, un shadow ban (il doit rester invisible) et la sanction d'un seul module (le
+forum, les salons…) ne passent jamais. Une sanction qui attend sa validation passe quand elle est validée. Levée sur
+le site, elle est levée sur Discord — le bot ne retire que ce qu'il a posé (sa raison porte « NeoFrag #numéro ») ou
+ce qui venait de Discord. Il relit les sanctions en cours au démarrage, puis toutes les dix minutes : une échéance
+passée pendant qu'il était arrêté se rattrape.
+
+**De Discord vers le site** (*Rapporter au site les sanctions prononcées sur Discord*, éteint par défaut) : un
+bannissement ou une exclusion posés sur Discord passent au site si le modérateur est une personne dont le compte
+Discord est relié à un compte du site qui a ce droit-là — *modérer* pour une exclusion (un muet sur le site),
+*bannir définitivement* pour un bannissement —, et si le membre sanctionné a relié le sien. Le site la rejuge comme
+s'il l'avait prononcée chez lui (hiérarchie, validation) ; sinon elle reste sur Discord, et le journal du bot dit
+pourquoi. Une sanction venue de Discord se lève sur Discord (débannir, retirer l'exclusion) ou sur le site ; une
+sanction du site ne se lève que sur le site.
+
+Le lien d'invitation ne donne pas ces droits au bot : ajoute-les à son rôle — *Bannir des membres* et *Exclure
+temporairement des membres* pour le premier sens, *Voir les logs du serveur* pour le second. Le bot dit dans son
+journal ce qui lui manque. Discord refuse de sanctionner le propriétaire du serveur et un membre placé au-dessus du
+rôle du bot.
+
+## Les collectifs
+
+Éteinte par défaut : *Discord → Fonctionnalités → Collectifs*. Chaque collectif du site dont la case *Discord* est
+cochée ([Les collectifs](admin.md#les-collectifs)) reçoit sur le serveur :
+
+- un **rôle**, nommé comme lui — c'est le groupe du collectif, relié à ce rôle : la fonctionnalité *Rôles et
+  pseudos* le donne à ses membres qui ont relié leur compte, et le retire à qui en sort ;
+- un **salon texte** dans la catégorie *Collectifs* (le nom se règle ; le bot la crée), fermé à `@everyone`,
+  ouvert à ce rôle.
+
+Le bot crée ce qui manque à son démarrage, quand la configuration change (un collectif créé ou renommé), et toutes
+les cinq minutes : un rôle ou un salon supprimé à la main revient, un collectif renommé se renomme. Un collectif
+supprimé, ou dont la case est décochée : le bot supprime son rôle, et son salon **reste**, que seuls les
+administrateurs du serveur voient. Il faut au rôle du bot *Gérer les rôles* et *Gérer les salons* (dans le lien
+d'invitation), et le rôle du bot au-dessus de ceux qu'il crée.
+
 ## Sécurité
 
 - Sur la machine du bot : l'adresse du site et sa clé d'accès, rien d'autre.
@@ -275,6 +326,9 @@ réglage *Durée maximale* (90 jours par défaut, un an au plus).
   a le droit `discord:bot` peut la lire — celle que l'administration crée pour le bot, révocable à
   tout moment.
 - Le bot ne mentionne jamais personne : un message recopié ne peut pas notifier `@everyone`.
+- Il n'a pas besoin d'« Administrateur », et le lien d'invitation ne le demande pas. S'il l'a quand même (un rôle
+  donné à la main), il le dit dans son journal à chaque démarrage : retire-le — un bot administrateur dont la clé
+  fuit ouvre tout le serveur. Il dit aussi les permissions du lien d'invitation qui manquent à son rôle.
 - Ce qui arrive de Discord — un nom de fil, un pseudo, un commentaire — est rangé sur le site comme ce
   qu'on y écrit soi-même : il s'affiche, il ne s'exécute pas.
 

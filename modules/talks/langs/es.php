@@ -141,4 +141,6 @@ return [
 	'92641492' => 'Eliminar los archivos marcados',
 	'970a684e' => 'extensión rechazada',
 	'4c523dac' => 'Este mensaje ha sido denunciado: no se puede eliminar hasta que la moderación lo haya revisado.',
+	'db202fcf' => 'Escrito para %s. Cambia el idioma de la administración para traducir esta sala; los demás idiomas conservan su texto.',
+	'eb78cff1' => 'Descripción',
 ];

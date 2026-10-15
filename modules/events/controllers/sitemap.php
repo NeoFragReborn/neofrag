@@ -20,7 +20,10 @@ class Sitemap extends Controller_Module
 		$adresses = [];
 		$types    = [];
 
-		foreach ($this->db->select('event_id', 'type_id', 'title', 'date', 'publish_date')->from('nf_events')->where('published', '1')->order_by('date DESC')->get() as $evenement)
+		foreach ($this->db->select('e.event_id', 'e.type_id', 'el.title', 'e.date', 'e.publish_date')
+							->from('nf_events e')
+							->join_lang('nf_events_lang el', 'event_id', 'e.event_id', NULL, 'LEFT')
+							->where('e.published', '1')->order_by('e.date DESC')->get() as $evenement)
 		{
 			if (!empty($evenement['publish_date']) && strtotime((string) $evenement['publish_date']) > time())
 			{

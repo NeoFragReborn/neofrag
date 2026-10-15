@@ -10,4 +10,7 @@ DROP TABLE IF EXISTS `nf_games_maps`;
 DROP TABLE IF EXISTS `nf_games_lang`;
 DROP TABLE IF EXISTS `nf_games`;
 
+DROP TABLE IF EXISTS `nf_games_maps_lang`;
+DROP TABLE IF EXISTS `nf_games_modes_lang`;
+
 SET FOREIGN_KEY_CHECKS = 1;

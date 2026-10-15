@@ -11,6 +11,243 @@ Michaël BILCOT et Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.50] — 2026-10-15
+
+### Ajouté
+
+- **Un thème affiche le choix de la langue en une ligne** : `nf_selecteur_langue()`, à côté de
+  `nf_selecteur_theme()` et de `nf_liens_legaux()`. Les thèmes livrés en recopiaient chacun le formulaire.
+- **La documentation et le journal des versions, dans les six langues.** Les guides du wiki — installation, premiers
+  pas, administration, marketplace, site multilingue, bot Discord, framework, création d'un thème, d'un module ou d'un
+  widget — n'existaient qu'en français et en anglais : ils s'écrivent désormais aussi en allemand, en espagnol, en
+  italien et en portugais, avec les libellés exacts que l'écran affiche dans chaque langue, et le wiki les sert dans la
+  langue du visiteur. Le journal des versions suit : la page « Journal des versions » du wiki et les billets du Blog se
+  lisent dans les six langues. Le français reste la référence ; un test refuse une traduction qui sauterait une
+  version ou la daterait autrement.
+- **Les vignettes des modules et des widgets, refaites.** Dans *Thèmes & addons* et sur la place de marché, l'aperçu
+  d'une extension était une photo de l'extension à l'œuvre — illisible quand elle n'avait aucune donnée à montrer :
+  un cadre, un titre, des lignes. Chaque module et chaque widget reçoit désormais une carte dessinée, à l'image des
+  visuels du projet : son icône, son nom et ce qu'il fait, lisibles à toute taille. Les thèmes, eux, gardent la photo
+  de leur page d'accueil : un thème se montre.
+- **Les bibliothèques embarquées à jour, et un garde-fou pour qu'elles le restent.** L'éditeur de texte passe en
+  TinyMCE 8 (la ligne 7 perdait son support le 14 novembre, et la 8.9.3 corrigeait une faille de son greffon
+  « media ») et les icônes en Font Awesome 7 — les 363 icônes employées par le site ont été confrontées à la
+  nouvelle collection avant de poser, aucune ne manque. Les polices en double (.ttf) partent : la 7 ne sert plus
+  que le format moderne, soit 715 Ko de moins dans le paquet. Surtout, un contrôle neuf veille : il ne crie pas à
+  chaque publication de l'amont, mais refuse quand les versions livrées n'ont pas été confrontées au registre
+  depuis plus de trois mois. Une dépendance ne devient pas dangereuse d'un coup : elle dérive, et c'est la dérive
+  qui est maintenant visible.
+- **Les notifications push.** Un membre peut recevoir ses notifications dans son navigateur, même site fermé : un
+  message du forum, une réaction, un rappel d'événement. L'administrateur le propose (Paramètres → Préférences
+  générales → Notifications push) ; chaque membre l'active ensuite appareil par appareil, dans ses préférences de
+  notifications, choisit type par type ce qu'il reçoit ainsi, et peut s'envoyer un essai. Sans bibliothèque ajoutée :
+  le message est chiffré pour ce seul navigateur (RFC 8291) et signé au nom du site (VAPID, RFC 8292) — le service de
+  push du navigateur le transporte sans pouvoir le lire. Le serveur n'écrit qu'aux services de push connus (Google,
+  Mozilla, Apple, Microsoft), jamais à une adresse qu'un membre aurait inventée.
+- **Nebula et la vitrine ont leur page de couleurs, et les huit thèmes un aperçu en direct.** Accent, fond, texte :
+  la palette de Nebula et celle de la vitrine étaient écrites dans leur feuille ; elles se règlent désormais comme
+  celles des six autres thèmes, avec le même refus d'une couleur illisible. Et sous les sélecteurs de chaque thème, une
+  vraie page du site — l'accueil, les actualités ou le forum — prend les couleurs à mesure qu'on les choisit, sans rien
+  enregistrer, avec les contrastes mesurés en direct : on voit le résultat avant de cliquer sur « Enregistrer ».
+- **Les liens des menus, les salons publics, le titre donné à un widget et les pages du wiki se traduisent.** Avec
+  eux, plus aucun texte qu'écrit l'exploitant n'est sans langue. Une page du wiki garde un historique PAR LANGUE :
+  traduire en italien n'archive rien de la version française, et l'historique italien ne montre que ses révisions.
+  Une conversation entre membres, elle, garde un seul nom pour tous ses participants — seuls les salons publics se
+  traduisent. La page « Journal des versions » du wiki existe désormais aussi en anglais.
+- **La boutique, les dons, les publicités, les packs de paiement et le recrutement se traduisent.** Le nom et la
+  description d'un article de la boutique, le titre et la description d'une campagne de dons, le titre d'une
+  publicité, le libellé d'un pack, et une offre de recrutement entière — son titre, son accroche, sa description,
+  ses prérequis et les questions de son formulaire de candidature — s'écrivent désormais langue par langue. Les
+  questions n'avaient pas d'écran pour être modifiées (on ne pouvait que les ajouter ou les supprimer) : un crayon
+  les ouvre, et c'est là qu'on les traduit. Restent communs ce qui n'est pas du texte : le prix, le stock, l'adresse
+  d'une campagne, le code d'une régie, le rôle donné dans l'équipe — et les réponses des candidats, qui gardent la
+  question telle qu'ils l'ont lue.
+- **Les modes de jeu, les cartes, les émissions de la webradio et les champs de profil se traduisent.** « Compétitif
+  5v5 » devient « Competitive 5v5 » pour un visiteur anglais, « Le réveil du serveur » devient « The server
+  wake-up », et le libellé d'un champ de profil s'écrit dans chaque langue. Un nom de carte reste un nom propre,
+  mais il s'écrit lui aussi par langue, pour qui veut traduire « Faille de l'invocateur ». Un choix est fait, et
+  il est dit dans l'écran : la LISTE D'OPTIONS d'un champ de profil reste commune — une option est enregistrée
+  telle quelle dans la réponse du membre, et la traduire rendrait les réponses déjà données introuvables.
+- **Les types de rendez-vous, les rôles d'équipe et les rubriques de petites annonces se traduisent.** « Tournoi »,
+  « Capitaine », « Matériel » : trois noms courts que l'exploitant écrit, et qu'un site en six langues montrait
+  dans une seule. Ils s'écrivent désormais langue par langue, et le visiteur les voit dans la sienne partout où
+  ils apparaissent — la liste des événements et leurs fiches, le calendrier, l'effectif d'une équipe, l'annuaire
+  des petites annonces, et les écrans de l'administration.
+- **Un sondage se modifie sans perdre ses votes — et il se traduit.** Jusqu'ici, enregistrer un sondage effaçait
+  toutes ses réponses pour les recréer, et tous les VOTES avec : corriger une virgule dans la question coûtait le
+  sondage entier (l'écran le disait, ce qui ne le rendait pas moins coûteux). Désormais une réponse garde ses
+  votes tant qu'elle reste dans la liste — corrigée, déplacée ou traduite ; seule une réponse RETIRÉE perd les
+  siens, et l'écran le dit en les comptant. C'est ce qui permet enfin de traduire un sondage : la question, sa
+  description et le libellé de chaque réponse s'écrivent langue par langue, et écrire la version italienne ne
+  touche plus à la française.
+- **Les téléchargements, les liens utiles et la FAQ se traduisent.** Le titre et la description d'un fichier ou d'un lien, la question et sa
+  réponse, et les titres de leurs rubriques, n'avaient pas de langue : un site en six langues les montrait dans une seule — on
+  le voyait sur la démonstration en anglais, qui annonçait « Pack de fonds d'écran » et « Chaîne Twitch ». Ils
+  s'écrivent désormais langue par langue, comme les actualités ou les événements : l'écran d'édition ouvre la
+  langue où l'on travaille et dit laquelle, et le visiteur les voit dans sa langue — dans la bibliothèque, dans
+  l'annuaire de liens, dans les widgets et dans les blocs. Ce qui n'a pas de langue (l'adresse, la taille, le
+  type, la version, les compteurs) reste commun, et ce qui n'est écrit que dans une langue reste visible dans les
+  cinq autres.
+- **Une couleur de thème qui rendrait le site illisible est refusée.** Les six thèmes qui laissent choisir leur
+  accent, leur couleur de texte et leur couleur de fond acceptaient n'importe quoi : un accent presque identique au
+  fond, et les liens et les boutons disparaissaient ; un texte trop pâle, et la page ne se lisait plus. Rien ne
+  l'annonçait, et il fallait retrouver soi-même la couleur d'avant. Chaque couleur est désormais mesurée contre les
+  deux autres — celles qui sont enregistrées, puisque les deux formulaires s'enregistrent séparément — et refusée
+  avec son chiffre quand elle ne se détache pas assez : 4,5 pour 1 pour du texte, 3 pour 1 pour un accent, comme la
+  norme d'accessibilité le demande. Les couleurs d'origine des neuf thèmes passent toutes.
+- **Les bibliothèques embarquées remises à jour.** L'éditeur de texte (TinyMCE 7.6.1 → 7.9.3, qui embarque un
+  nettoyeur de HTML plus récent), les graphiques des statistiques (Chart.js 4.4.7 → 4.5.1) et les listes
+  déroulantes (Tom Select 2.6.1 → 2.6.2). Les trois autres — Bootstrap, flatpickr, Sortable — étaient déjà à la
+  dernière version publiée. Les traductions de l'éditeur, corrigées à la main, sont conservées.
+- **Trente et un titres d'écran parlaient français dans les six langues.** « Mises à jour », « Nouvelle carte »,
+  « Mon avis sur la candidature », « Gérer mon compte », « Partenaires », « Offres de recrutement »… : les titres
+  de panneaux, de fenêtres et de boutons ne passaient pas par les traductions, et s'affichaient en français quelle
+  que soit la langue du site. Leur traduction existait pourtant déjà, dans les six langues : seul le passage
+  manquait. Le contrôle qui veille sur les textes en dur les laissait passer parce qu'il supposait ces titres
+  traduits par le produit — ce que seules les étiquettes de FORMULAIRE font réellement ; il sait désormais
+  distinguer les deux.
+- **Trois écrans retrouvent le dessin de leur thème.** La feuille d'un widget est servie après celle du thème :
+  quand les deux disaient la même chose avec la même force, c'est le widget qui gagnait, et le thème dessinait
+  dans le vide — écran présentable, dessin voulu jamais servi, rien pour le dire. Le panneau de droite d'*Extend*
+  (qui est en ligne, le salon) et ses grands chiffres reprennent sa police et ses couleurs ; les onglets du profil
+  de *Forge* redeviennent carrés, soulignés et en capitales, comme chez ses thèmes frères ; et le témoin de santé
+  du *Monitoring* tient enfin dans son rond, au lieu d'en déborder. Un contrôle refuse désormais toute
+  déclaration de thème qui ne pourrait jamais s'appliquer.
+- **Les événements se traduisent.** Le titre d'un rendez-vous, sa description, sa description privée et son lieu
+  n'avaient pas de langue : un site en six langues les montrait dans une seule. Ils s'écrivent désormais langue par
+  langue — l'écran d'édition ouvre la langue où l'on travaille, et dit laquelle. Le visiteur voit un événement dans
+  sa langue partout où il apparaît : la liste, la fiche, le calendrier, les rappels par courriel, le plan du site et
+  le widget. Ce qui n'a pas de langue (les dates, le type, l'image, l'auteur, les participants) reste commun ; un
+  événement écrit dans une seule langue reste visible dans les cinq autres.
+- **Le palmarès se traduit.** Le nom d'un titre remporté, le lieu et son récit n'avaient pas de langue : un site en
+  six langues les montrait dans une seule. Ils s'écrivent désormais langue par langue, comme le reste — l'écran
+  d'édition ouvre la langue où l'on travaille, et dit laquelle. Ce qui n'a pas de langue (la date, le rang, le nombre
+  de participants, la plate-forme, l'équipe, le jeu) reste commun.
+- **Le diaporama se traduit.** Le titre et la légende d'une vue n'avaient pas de langue : un site en six langues les
+  montrait dans une seule. Ils s'écrivent désormais langue par langue, comme une page ou une catégorie —
+  l'administration écrit dans la langue où elle travaille, et le dit au-dessus du champ. Le visiteur voit la vue dans
+  sa langue ; une vue traduite dans une seule langue reste visible dans les cinq autres (le texte de la langue
+  demandée, sinon le français, sinon la première écrite), et une vue sans aucun texte garde son image. Rien ne se perd
+  à la mise à jour : le texte d'aujourd'hui est recopié dans toutes les langues installées, puisque c'est ce que tout
+  visiteur voit aujourd'hui.
+- **Les sanctions du site suivent le membre sur Discord.** Avec le bot 0.3.0 et sa fonctionnalité *Sanctions
+  reliées* (éteinte au départ), le muet et les bannissements de tout le site s'appliquent au compte Discord relié du
+  membre — une exclusion temporaire pour le muet, un bannissement pour un bannissement —, et sont levés sur Discord
+  quand on les lève sur le site. Un avertissement, une restriction ou un shadow ban ne passent jamais. Dans l'autre
+  sens, et seulement si on l'allume : un modérateur dont le compte Discord est relié à un compte du site qui en a le
+  droit peut bannir ou exclure sur Discord, et le site reçoit la sanction et la rejuge comme si elle était prononcée
+  chez lui. La liste des sanctions dit désormais d'où chacune vient.
+- **Les collectifs.** Un nouveau module réunit des membres autour d'un projet, à l'abri des autres : une rédaction,
+  une équipe de modération, un groupe de créateurs. Créé dans l'administration (*Communauté → Collectifs*), un
+  collectif reçoit d'un coup une section privée du forum, que seuls ses membres lisent, et — avec le bot 0.3.0 et sa
+  fonctionnalité *Collectifs* — un rôle et un salon privé sur Discord. Son chef ajoute ses membres et leur donne un
+  rang (administrateur, modérateur, membre) depuis la page du collectif, sans être administrateur du site ; les
+  modérateurs modèrent sa section. Supprimé, un collectif garde sa section et son salon, réservés aux
+  administrateurs : rien de ce qui s'y est écrit ne se perd.
+- **Les cotisations.** Une association encaisse ses cotisations sur le site : un membre paie en ligne (Stripe) — ou
+  l'administration enregistre une cotisation payée en espèces ou par chèque — et devient **adhérent** pour la durée
+  choisie. Il reçoit le rôle « Adhérent », que l'on ouvre à ce qu'on veut (une section du forum réservée, des pages),
+  et le badge du groupe « Adhérents ». Sept jours avant l'échéance, il est prévenu ; à l'échéance, le rôle lui est
+  retiré. Les cotisations n'ont pas besoin du module Gamification, que les paiements demandaient jusqu'ici.
+- **Les dons faits ailleurs s'enregistrent d'eux-mêmes.** Ko-fi, HelloAsso, TipeeeStream, et le bouton PayPal des
+  campagnes : chaque don arrive dans la campagne choisie, une seule fois, et la barre de progression avance sans
+  saisie. Rien ne s'enregistre sans preuve — le jeton de Ko-fi, la commande relue chez HelloAsso, la confirmation de
+  PayPal. Une adhésion payée sur HelloAsso rend adhérent le membre du site qui a la même adresse. Les noms des
+  donateurs d'HelloAsso et de PayPal ne s'affichent pas publiquement.
+
+### Sécurité
+
+- **Le bot Discord signale qu'il est administrateur du serveur.** Il n'en a pas besoin — le lien d'invitation ne le
+  demande pas —, mais un rôle donné à la main pouvait le lui accorder, et un bot administrateur dont la clé fuit ouvre
+  tout le serveur. À chaque arrivée sur le serveur, le journal du bot, que montre l'administration, le dit, et nomme
+  les permissions qui manquent à son rôle.
+- **Le lien de « /forum account link » ne reliait pas toujours le bon compte.** Qui recevait ce lien de quelqu'un
+  d'autre reliait le compte Discord de cet autre au SIEN de compte du site — et comme un compte relié permet de se
+  connecter, celui qui avait envoyé le lien pouvait ensuite entrer dans le compte de sa victime. La liaison se
+  confirme désormais auprès de Discord : le site compare l'identifiant que Discord lui rend à celui que le lien
+  nomme, et ne relie rien s'ils diffèrent. Un avertissement remplaçait cette garde ; il ne suffisait pas.
+
+### Corrigé
+
+- **Le réglage « Police du site » disait les polices servies par Google Fonts.** Elles le sont par le site lui-même
+  depuis qu'aucun visiteur n'est plus envoyé chez Google : la description le dit maintenant.
+- **Une mise à jour d'addon rejouait toutes ses migrations.** La lecture des migrations déjà faites revenait
+  toujours vide : à chaque mise à jour d'un module, d'un widget ou d'un thème — par le marketplace ou par une archive
+  —, toutes ses migrations étaient rejouées, et celles qui écrivent des données les écrivaient une seconde fois. Seules
+  les nouvelles le sont désormais. `check-db-query` garde la forme qui causait le défaut : une requête préparée sans
+  être envoyée.
+- **Le compte à rebours des événements à venir restait vide.** Son script vivait dans un thème retiré : la liste des
+  événements et la page d'un événement montraient un sablier à côté de rien, dans tous les thèmes. Il vit maintenant
+  avec le module, et écrit le temps qui reste dans la langue de la page (« 11j 7h 22min », « 11d 7h 22m »).
+- **Juste après une mise à jour, le site pouvait encore servir l'ancien code.** Le cache de PHP (OPcache) garde le
+  code compilé d'un fichier tant qu'il ne le revérifie pas : deux secondes en général, et jusqu'au redémarrage de PHP
+  chez les hébergeurs qui coupent cette vérification. La mise à jour du cœur, celle d'un addon par le marketplace et
+  l'envoi d'une archive par « Ajouter » ne l'en avertissaient pas : une page d'un module mis à jour répondait « page
+  introuvable » le temps que ses nouvelles adresses soient relues, et un site pouvait tourner sur un mélange d'ancien
+  et de nouveau code. Les trois préviennent désormais le cache de chaque fichier qu'ils écrivent.
+- **Mettre à jour un addon en envoyant son archive sautait ses migrations — et effaçait la mise en page d'un
+  thème.** « Ajouter », dans *Thèmes & addons*, réinstallait l'addon au lieu de le mettre à jour : les changements de
+  sa base de données étaient marqués faits sans être faits, et un thème perdait toutes ses dispositions et leurs
+  widgets, remplacés par sa mise en page d'origine. Une archive plus récente se met désormais à jour comme par le
+  marketplace : sa base suit, et la mise en page reste celle de l'administrateur.
+- **Dans l'éditeur en direct de Nebula, les aperçus des styles étaient ceux de Forge** : orange sur brun. Ils
+  prennent désormais les couleurs de Nebula, celles que l'administrateur a choisies. Même correction pour la
+  vitrine.
+- **Un widget de navigation qui affichait un menu en gardait une copie figée.** Il recopiait les liens du menu au
+  moment où on l'enregistrait, et oubliait même lequel était choisi : un lien ajouté ou renommé ensuite n'arrivait
+  jamais dans la navigation. Le menu est désormais relu à chaque affichage, dans la langue de la page.
+- **Un lien vers une section d'une page du wiki menait en haut de la page.** Seuls les titres de premier rang
+  portaient une ancre : un lien vers un sous-titre ne trouvait rien, et la documentation, qui renvoie souvent à une
+  section précise (« voir Le référencement »), lâchait son lecteur au début de la page, dans toutes les langues. Les
+  sous-titres ont désormais leur ancre, et chaque renvoi de la documentation mène au titre qu'il nomme.
+- **Une page du wiki rangée sous l'une de ses propres sous-pages disparaissait du sommaire**, avec toute sa
+  rubrique : l'écran proposait les sous-pages comme page parente. Elles ne le sont plus, et une telle boucle envoyée
+  quand même est refusée.
+- **Le formulaire de candidature répondait « Erreur 500 » dès qu'une offre posait une question facultative.** Une
+  règle « aucune » écrite comme un texte vide n'était pas comprise par la bibliothèque de formulaires, et toute la
+  page tombait. Trouvé en éprouvant la traduction des questions.
+- **Le widget *Recrutement* cachait les offres sans candidature** — c'est-à-dire toute offre qui vient d'ouvrir. Le
+  module avait été corrigé ; le widget, non.
+- **Une confirmation de suppression ouverte en pleine page ne montrait rien.** Dans l'administration, suivre un lien
+  « Supprimer » dans un nouvel onglet — ou sans JavaScript — menait à une page vide : ni message, ni bouton, ni
+  retour. Elle affiche désormais ce qu'elle supprime, le bouton qui le fait et un retour au module.
+- **La page Modération et le Monitoring n'avaient pas l'allure du reste de l'administration.** Leurs cartes de
+  chiffres, leurs en-têtes et le battement du témoin de santé venaient d'une feuille de secours — prévue pour les
+  sites qui affichent ces écrans hors de l'administration — qui, servie en dernier, écrasait le thème. Le secours ne
+  sert plus que là où le thème ne dit rien.
+- **En portugais, un compte ne pouvait pas être supprimé.** L'écran demandait de recopier « EXCLUIR » et le site
+  attendait « ELIMINAR » : la confirmation échouait à tous les coups. Les cinq autres langues étaient justes. Un
+  contrôle refuse désormais qu'une consigne cite un mot différent de celui que le site attend.
+- **Le portugais mêlait le Brésil et le Portugal.** Quatre-vingts tournures relues : *usuário* devient *utilizador*,
+  *senha* devient *palavra-passe*, *excluir* devient *eliminar*, *registro* devient *registo*, *arquivo* devient
+  *ficheiro* quand il s'agit d'un fichier — et reste *arquivo* quand il s'agit d'une archive.
+- **Quelques tournures d'anglais maladroites** : « All posts will be also deleted » devient « will also be deleted »,
+  dans les quatre messages de suppression où elle traînait.
+- **Traduire un contenu pour la première fois : le texte était perdu, sans un mot.** Écrire une actualité en
+  français, passer l'administration en anglais, la traduire et enregistrer : rien n'était gardé. La ligne de cette
+  langue n'existait pas encore, et l'enregistrement ne touchait aucune ligne — en silence. Cela valait pour les
+  actualités, les billets, les pages, les catégories, les galeries, les jeux, les équipes, les groupes et les
+  partenaires. La traduction crée désormais sa ligne.
+- **Un contenu pas encore traduit était introuvable dans l'administration de cette langue.** La liste des actualités,
+  des billets et des pages ne montrait que ce qui existait dans la langue où l'on travaille : le reste était
+  invisible, donc impossible à ouvrir pour le traduire. Les listes montrent tout, avec le titre de la meilleure
+  traduction, et l'écran d'édition s'ouvre avec ses champs vides, prêts pour la traduction.
+- **Renommer un groupe écrasait toutes ses traductions.** L'enregistrement ne visait aucune langue en particulier :
+  il écrivait le même titre sur toutes les lignes du groupe — et échouait dès que le site en avait plus d'une.
+- **Un partenaire ne pouvait avoir qu'une seule langue.** La table des traductions du module *Partenaires* avait pour
+  clé le seul numéro du partenaire : la deuxième langue était refusée ou écrasait la première. Elle porte désormais
+  une ligne par langue, comme les seize autres tables de traduction, et décrire un partenaire dans une nouvelle langue
+  crée sa ligne au lieu de ne rien écrire.
+- **Le prochain rendez-vous : le nom du jour collé au quantième.** Dans la case de date du widget *Le prochain
+  rendez-vous*, les trois lignes — le jour, le quantième, le mois — se touchaient, et se chevauchaient dès qu'un
+  thème posait sa police d'affichage : les chiffres débordaient d'une hauteur de ligne plus courte que leur encre.
+  Les trois lignes gardent désormais leur écart dans les sept thèmes, de jour comme de nuit. Même correction pour les
+  grands nombres du widget *Le site en chiffres*.
+- **Pulse dessine enfin ses widgets.** Le thème prévoyait sa propre allure pour la case de date du calendrier, les
+  nombres du *site en chiffres*, la semaine et les vignettes de la galerie : aucune ne s'affichait, la feuille du
+  widget étant servie après celle du thème et l'emportant à égalité. La dalle de Pulse (coins arrondis, grands
+  chiffres, ardoise) apparaît maintenant comme la maquette la montrait.
+
 ## [1.2.49] — 2026-10-10
 
 Un gros lot : une adresse au mauvais titre mène à la bonne, le relevé des pages introuvables, l'éditeur de texte dans
@@ -1484,8 +1721,8 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
   « Paramètres enregistrés ») et non plus des identifiants techniques (`monitoring.debogage.allume`).
 - **La page Commentaires de l'administration** affichait du code à la place de la date de chaque
   commentaire.
-- **Un titre accentué** (« journ&amp;eacute;e ») ne s'affiche plus en code dans l'en-tête des cartes
-  de l'administration.
+- **Un titre accentué** ne montre plus ses accents en code HTML dans l'en-tête des cartes de
+  l'administration.
 - **En mode sombre**, les textes colorés de l'administration (alertes, pastilles, messages de réussite
   en vert) restaient sombres sur fond sombre, presque illisibles.
 - **Les dates de la modération** (sanctions, signalements, historique d'un membre), **de la corbeille,
@@ -1542,8 +1779,8 @@ qu'à qui veut ces fichiers ; la 0.2.0 continue de fonctionner.
   gestionnaire de fichiers écrivaient leurs heures sans conversion ; l'émission « en direct » de la
   webradio se lisait à l'heure du serveur.
 - **Le calendrier** : le début et la fin d'un événement se choisissent dans un sélecteur de date, et
-  non plus dans un champ texte au format « YYYY-MM-DD HH:MM:SS » ; un titre accentué ne s'affiche plus
-  « journ&amp;eacute;e » ; la description mise en forme ne montre plus ses balises ; l'export agenda
+  non plus dans un champ texte au format « YYYY-MM-DD HH:MM:SS » ; un titre accentué ne montre plus
+  ses accents en code HTML ; la description mise en forme ne montre plus ses balises ; l'export agenda
   reçoit un texte propre.
 - **Les listes avec recherche** disent « Aucun résultat » dans la langue du site, et non « No results
   found ».
@@ -1645,11 +1882,11 @@ permission Discord « Gérer les salons » : réinvitez un bot invité avec la 1
 
 ### Corrigé
 
-- **Les accents du Bugtracker** s'affichaient « r&eacute;agit » sur la page d'un ticket ouvert par le
+- **Les accents du Bugtracker** s'affichaient `r&eacute;agit` sur la page d'un ticket ouvert par le
   formulaire, et la recherche « Déjà signalé ? » ne trouvait aucun mot accentué. Les textes que l'API
   rend — pseudos, titres, descriptions, commentaires — sont aussi en clair : le bot Discord les
-  recopiait encodés. Les aperçus de partage d'un lien (Discord compris) ne montrent plus
-  « &amp;eacute; ».
+  recopiait encodés. Les aperçus de partage d'un lien (Discord compris) ne montrent plus leurs accents
+  en code HTML.
 - **Bugtracker** : choisir le statut « Doublon » sans numéro de ticket valable gardait l'ancien
   statut en annonçant « Ticket mis à jour » ; le message dit maintenant ce qui n'a pas été appliqué.
 - **Bot Discord : supprimer sur Discord la copie d'un message du site n'efface plus l'original.** Quand le

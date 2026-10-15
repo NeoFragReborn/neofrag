@@ -100,21 +100,49 @@ class Admin extends Controller_Module
 		$is_new = $p === NULL;
 		$this->title($is_new ? $this->lang('Nouvelle page wiki') : $this->lang('Éditer : %s', $p['title']))->icon('fas fa-book')->breadcrumb();
 
-		// Possibles parents (toutes les pages sauf celle-ci pour éviter cycles)
-		$query = NeoFrag()->db->select('id', 'title')->from('nf_wiki_pages');
-		if (!$is_new) { $query->where('id <>', $p['id']); }
-		$parents = $query->order_by('title ASC')->get();
+		// Possibles parents : toutes les pages, sauf celle-ci ET SES SOUS-PAGES. Ranger une page sous l'une de ses
+		// propres sous-pages faisait une boucle, et toute la rubrique disparaissait du sommaire (relevé le 2026-10-15).
+		$parents = NeoFrag()->db->select('p.id', 'p.parent_id', 'wl.title')->from('nf_wiki_pages p')->join_lang('nf_wiki_pages_lang wl', 'page_id', 'p.id', NULL, 'LEFT')->order_by('wl.title ASC')->get();
+
+		if (!$is_new)
+		{
+			$exclues = [(int) $p['id'] => TRUE];
+
+			do
+			{
+				$avant = count($exclues);
+
+				foreach ($parents as $par)
+				{
+					if ($par['parent_id'] !== NULL && isset($exclues[(int) $par['parent_id']]))
+					{
+						$exclues[(int) $par['id']] = TRUE;
+					}
+				}
+			}
+			while (count($exclues) > $avant);
+
+			$parents = array_filter($parents, static fn (array $par): bool => !isset($exclues[(int) $par['id']]));
+		}
+
+		// Le titre et le texte TELS QU'ILS SONT ÉCRITS dans la langue de l'administration, vides si rien n'y est encore
+		// écrit (m32, 2026-10-15) : on traduit une page en changeant de langue. L'en-tête garde le titre LU.
+		$langue = (string) $this->config->lang->info()->name;
+		$ecrit  = $is_new ? NULL : NeoFrag()->db->select('title', 'content')->from('nf_wiki_pages_lang')->where('page_id', (int) $p['id'])->where('lang', $langue)->row();
+		// row() rend un tableau VIDE quand rien n'est écrit dans cette langue : ce n'est pas une version à archiver.
+		$ecrit  = is_array($ecrit) && $ecrit !== [] ? $ecrit : NULL;
 		$parents_array = ['' => '— '.$this->lang('Aucun (racine)').' —'];
 		foreach ($parents as $par) { $parents_array[$par['id']] = $par['title']; }
 
 		$this->form()
 			 ->add_rules([
-				'title'        => ['label' => $this->lang('Titre'), 'type' => 'text', 'value' => $is_new ? '' : $p['title'], 'rules' => 'required'],
+				'title'        => ['label' => $this->lang('Titre'), 'type' => 'text', 'value' => (string) ($ecrit['title'] ?? ''), 'rules' => 'required',
+				                   'description' => $this->lang('Écrit pour %s. Change la langue de l\'administration pour traduire cette page ; les autres langues gardent leur texte, et leur historique.', $this->config->lang->info()->title)],
 				'slug'         => ['label' => $this->lang('Slug (URL)'), 'type' => 'text', 'value' => $is_new ? '' : $p['slug'], 'rules' => 'required',
 				                    'description' => $this->lang('Identifiant URL unique. Ex : %s', '<code>installation</code>, <code>guide-debutant</code>')],
 				'parent_id'    => ['label' => $this->lang('Page parente'), 'type' => 'select', 'values' => $parents_array, 'value' => $is_new ? '' : ($p['parent_id'] ?? '')],
 				'sort_order'   => ['label' => $this->lang('Ordre de tri'), 'type' => 'text', 'value' => $is_new ? '0' : $p['sort_order']],
-				'content'      => ['label' => $this->lang('Contenu'), 'type' => 'editor', 'value' => $is_new ? '' : $p['content'], 'rules' => 'required'],
+				'content'      => ['label' => $this->lang('Contenu'), 'type' => 'editor', 'value' => (string) ($ecrit['content'] ?? ''), 'rules' => 'required'],
 				'edit_comment' => ['label' => $this->lang('Commentaire de modification (optionnel)'), 'type' => 'text', 'value' => '',
 				                    'description' => $this->lang('Décris brièvement ce qui change. Stocké dans l\'historique.')],
 				'published'    => ['label' => $this->lang('Publier'), 'type' => 'checkbox', 'value' => ['1'], 'values' => ['1' => $this->lang('Page publiée')], 'checked' => ['1' => ($is_new || !empty($p['published']))]]
@@ -127,9 +155,8 @@ class Admin extends Controller_Module
 
 			$data = [
 				'slug'       => $slug,
-				'title'      => $post['title'],
-				'content'    => $post['content'],
-				'parent_id'  => $post['parent_id'] !== '' ? (int)$post['parent_id'] : NULL,
+				// Une page parente hors de la liste proposée (une sous-page, envoyée à la main) n'est pas reçue : la boucle.
+				'parent_id'  => $post['parent_id'] !== '' && isset($parents_array[$post['parent_id']]) ? (int)$post['parent_id'] : NULL,
 				'sort_order' => (int)$post['sort_order'],
 				'published'  => in_array('1', $post['published'] ?? []) ? 1 : 0
 			];
@@ -144,14 +171,19 @@ class Admin extends Controller_Module
 			{
 				$page_id = (int)$p['id'];
 
-				// Stocker l'ancienne version comme révision avant update
-				NeoFrag()->db->insert('nf_wiki_revisions', [
-					'page_id'  => $page_id,
-					'content'  => $p['content'],
-					'title'    => $p['title'],
-					'user_id'  => $this->user->id,
-					'comment'  => $post['edit_comment'] ?? ''
-				]);
+				// Stocker l'ancienne version comme révision avant update — celle de CETTE langue, avec sa langue. Une
+				// première traduction n'a pas d'ancienne version : rien à archiver.
+				if ($ecrit !== NULL)
+				{
+					NeoFrag()->db->insert('nf_wiki_revisions', [
+						'page_id'  => $page_id,
+						'lang'     => $langue,
+						'content'  => (string) $ecrit['content'],
+						'title'    => (string) $ecrit['title'],
+						'user_id'  => $this->user->id,
+						'comment'  => $post['edit_comment'] ?? ''
+					]);
+				}
 
 				$data['user_id'] = $this->user->id;
 				NeoFrag()->db->where('id', $page_id)->update('nf_wiki_pages', $data);
@@ -162,6 +194,10 @@ class Admin extends Controller_Module
 					nf_redirection_ajouter('wiki/'.$p['slug'], 'wiki/'.$slug);
 				}
 			}
+
+			// `ecrire_lang` CRÉE la ligne quand elle manque (leçon de m30).
+			NeoFrag()->db->ecrire_lang('nf_wiki_pages_lang', ['page_id' => $page_id, 'lang' => $langue],
+				['title' => $post['title'], 'content' => $post['content']]);
 
 			notify($is_new ? $this->lang('Page créée.') : $this->lang('Page modifiée. Ancienne version archivée dans l\'historique.'));
 			redirect('admin/wiki');

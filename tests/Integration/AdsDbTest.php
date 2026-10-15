@@ -15,7 +15,7 @@ final class AdsDbTest extends IntegrationTestCase
 		$other = $this->createUser('other');
 
 		// Item perk 'no_ads' acheté par buyer.
-		$this->exec("INSERT INTO nf_shop_items (title, price, type, payload) VALUES ('Sans-Pub', 500, 'perk', 'no_ads')");
+		$this->exec("INSERT INTO nf_shop_items (price, type, payload) VALUES (500, 'perk', 'no_ads')");
 		$item = (int) self::$pdo->insert_id;
 		$this->exec("INSERT INTO nf_shop_purchases (user_id, item_id, price_paid) VALUES (?, ?, 500)", [$buyer, $item]);
 
@@ -33,10 +33,10 @@ final class AdsDbTest extends IntegrationTestCase
 		$future = date('Y-m-d H:i:s', $now + 7 * 86400);
 		$past   = date('Y-m-d H:i:s', $now - 7 * 86400);
 
-		$this->exec("INSERT INTO nf_ads (title, placement, format, active, starts_at, ends_at) VALUES ('Now', 'itest_slot', 'html', 1, NULL, NULL)");
-		$this->exec("INSERT INTO nf_ads (title, placement, format, active, starts_at, ends_at) VALUES ('Future', 'itest_slot', 'html', 1, ?, NULL)", [$future]);
-		$this->exec("INSERT INTO nf_ads (title, placement, format, active, starts_at, ends_at) VALUES ('Expired', 'itest_slot', 'html', 1, NULL, ?)", [$past]);
-		$this->exec("INSERT INTO nf_ads (title, placement, format, active, starts_at, ends_at) VALUES ('Inactive', 'itest_slot', 'html', 0, NULL, NULL)");
+		$this->exec("INSERT INTO nf_ads (placement, format, active, starts_at, ends_at) VALUES ('itest_slot', 'html', 1, NULL, NULL)");
+		$this->exec("INSERT INTO nf_ads (placement, format, active, starts_at, ends_at) VALUES ('itest_slot', 'html', 1, ?, NULL)", [$future]);
+		$this->exec("INSERT INTO nf_ads (placement, format, active, starts_at, ends_at) VALUES ('itest_slot', 'html', 1, NULL, ?)", [$past]);
+		$this->exec("INSERT INTO nf_ads (placement, format, active, starts_at, ends_at) VALUES ('itest_slot', 'html', 0, NULL, NULL)");
 
 		// Sélection active + fenêtre de dates (la logique de render(), filtrage côté requête ici).
 		$servable = (int) $this->scalar(

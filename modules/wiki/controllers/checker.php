@@ -7,18 +7,21 @@ class Checker extends Module_Checker
 {
 	public function index()
 	{
-		$pages = NeoFrag()->db	->select('id', 'slug', 'title', 'parent_id')
-								->from('nf_wiki_pages')
-								->where('published', '1')
-								->order_by('parent_id ASC, sort_order ASC, title ASC')
+		// Le titre et le texte d'une page se traduisent (m32, 2026-10-15) : la meilleure langue.
+		$pages = NeoFrag()->db	->select('p.id', 'p.slug', 'wl.title', 'p.parent_id')
+								->from('nf_wiki_pages p')
+								->join_lang('nf_wiki_pages_lang wl', 'page_id', 'p.id', NULL, 'LEFT')
+								->where('p.published', '1')
+								->order_by('p.parent_id ASC, p.sort_order ASC, wl.title ASC')
 								->get();
 		return [$pages];
 	}
 
 	public function _page($slug)
 	{
-		$page = NeoFrag()->db	->select('p.*', 'u.id AS author_id', 'u.username', 'UNIX_TIMESTAMP(p.updated_at) AS updated_ts')
+		$page = NeoFrag()->db	->select('p.*', 'wl.title', 'wl.content', 'u.id AS author_id', 'u.username', 'UNIX_TIMESTAMP(p.updated_at) AS updated_ts')
 								->from('nf_wiki_pages p')
+								->join_lang('nf_wiki_pages_lang wl', 'page_id', 'p.id', NULL, 'LEFT')
 								->join('nf_user u', 'p.user_id = u.id', 'LEFT')
 								->where('p.slug', $slug)
 								->where('p.published', '1')
@@ -43,13 +46,16 @@ class Checker extends Module_Checker
 	 */
 	public function _history($slug)
 	{
-		$page = NeoFrag()->db->select('id', 'slug', 'title')->from('nf_wiki_pages')->where('slug', $slug)->where('published', '1')->row();
+		$page = NeoFrag()->db->select('p.id', 'p.slug', 'wl.title')->from('nf_wiki_pages p')->join_lang('nf_wiki_pages_lang wl', 'page_id', 'p.id', NULL, 'LEFT')->where('p.slug', $slug)->where('p.published', '1')->row();
 		if (empty($page)) return;
 
+		// L'historique d'une langue : ses révisions, et celles d'avant que le wiki ait des langues (lang NULL).
+		$langue    = (string) $this->config->lang->info()->name;
 		$revisions = NeoFrag()->db	->select('r.id', 'r.title', 'r.comment', 'UNIX_TIMESTAMP(r.created_at) AS ts', 'u.id AS user_id', 'u.username')
 									->from('nf_wiki_revisions r')
 									->join('nf_user u', 'r.user_id = u.id', 'LEFT')
 									->where('r.page_id', $page['id'])
+									->where('r.lang', NULL, 'OR', 'r.lang', $langue)
 									->order_by('r.created_at DESC')
 									->get();
 
@@ -72,7 +78,7 @@ class Checker extends Module_Checker
 	public function _diff($id, $id2 = NULL)
 	{
 		$revision = function($rid){
-			return NeoFrag()->db	->select('r.id', 'r.page_id', 'r.title', 'r.content', 'r.comment', 'UNIX_TIMESTAMP(r.created_at) AS ts', 'u.id AS user_id', 'u.username')
+			return NeoFrag()->db	->select('r.id', 'r.page_id', 'r.lang', 'r.title', 'r.content', 'r.comment', 'UNIX_TIMESTAMP(r.created_at) AS ts', 'u.id AS user_id', 'u.username')
 									->from('nf_wiki_revisions r')
 									->join('nf_user u', 'r.user_id = u.id', 'LEFT')
 									->where('r.id', (int)$rid)
@@ -86,8 +92,10 @@ class Checker extends Module_Checker
 			return;
 		}
 
-		$page = NeoFrag()->db	->select('p.id', 'p.slug', 'p.title', 'p.content', 'UNIX_TIMESTAMP(p.updated_at) AS ts', 'u.id AS author_id', 'u.username')
+		// La version actuelle DANS LA LANGUE de la révision comparée (la meilleure, pour une révision sans langue).
+		$page = NeoFrag()->db	->select('p.id', 'p.slug', 'wl.title', 'wl.content', 'UNIX_TIMESTAMP(p.updated_at) AS ts', 'u.id AS author_id', 'u.username')
 								->from('nf_wiki_pages p')
+								->join_lang('nf_wiki_pages_lang wl', 'page_id', 'p.id', ($a['lang'] ?? NULL) ?: NULL, 'LEFT')
 								->join('nf_user u', 'p.user_id = u.id', 'LEFT')
 								->where('p.id', (int)$a['page_id'])
 								->where('p.published', '1')

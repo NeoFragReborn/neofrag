@@ -69,4 +69,5 @@ return [
 	'66a08d25' => 'Pages du site',
 	'bc74124e' => 'Rechercher une page',
 	'cdf72ea5' => 'Aucune page ne correspond.',
+	'6d88f17e' => 'Écrit pour %s. Change la langue de l\'administration pour traduire ce titre ; les autres langues gardent le leur.',
 ];

@@ -10,4 +10,5 @@ return [
 	'd57997fd' => 'Alle anzeigen',
 	'3c69968d' => 'Folgen',
 	'ef7de58b' => 'Folge ich',
+	'c323fad6' => 'Benachrichtigungen kommen auf diesem Gerät an.',
 ];

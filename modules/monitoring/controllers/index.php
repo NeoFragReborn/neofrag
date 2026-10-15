@@ -93,6 +93,22 @@ class Index extends Controller_Module
 			$report[] = 'events: '.(int)$emodel->send_due_reminders().' reminded';
 		}
 
+		// Cotisations : un rappel avant l'échéance, et le rôle « Adhérent » retiré à qui l'a passée.
+		// couplage: payments — module('payments') rend NULL sans le module, et `instanceof` ne charge rien.
+		if (($payments = $this->module('payments')) instanceof \NF\Modules\Payments\Payments)
+		{
+			$r        = $payments->echeances();
+			$report[] = 'adhesions: '.$r['rappels'].' reminded, '.$r['fins'].' ended';
+		}
+
+		// Dons : TipeeeStream ne prévient pas le site, on relève ses dons.
+		// couplage: donations — module('donations') rend NULL sans le module, et `instanceof` ne charge rien.
+		if (($dons = $this->module('donations')) && ($dmodele = $dons->model('donations')) instanceof \NF\Modules\Donations\Models\Donations)
+		{
+			$n        = $dmodele->relever_tipeeestream();
+			$report[] = 'tipeeestream: '.($n === NULL ? 'unreachable' : $n.' new');
+		}
+
 		// Calendrier : même chose pour les événements suivis.
 		if ($calendar = $this->module('calendar'))
 		{

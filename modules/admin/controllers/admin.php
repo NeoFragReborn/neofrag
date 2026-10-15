@@ -146,12 +146,13 @@ class Admin extends Controller_Module
 	private function _render_staff_chatbox()
 	{
 		// Récupère le salon staff (audience='staff', type='public') ; si aucun, on saute le rendu.
-		$staff_talk = $this->db	->select('talk_id', 'name')
-								->from('nf_talks')
-								->where('type', 'public')
-								->where('audience', 'staff')
-								->where('deleted_at', NULL)
-								->order_by('talk_id')
+		$staff_talk = $this->db	->select('t.talk_id', 'COALESCE(tl.name, t.name) AS name')
+								->from('nf_talks t')
+								->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
+								->where('t.type', 'public')
+								->where('t.audience', 'staff')
+								->where('t.deleted_at', NULL)
+								->order_by('t.talk_id')
 								->row();
 		if (!is_array($staff_talk) || empty($staff_talk['talk_id']))
 		{

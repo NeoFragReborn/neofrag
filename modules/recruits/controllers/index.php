@@ -345,7 +345,7 @@ class Index extends Controller_Module
 	{
 		return $this->array
 					->append($this	->panel()
-									->heading('Statut de ma candidature', 'fas fa-reply')
+									->heading($this->lang('Statut de ma candidature'), 'fas fa-reply')
 									->body($this->view('candidacy-status', [
 										'status'     => $status,
 										'reply_text' => bbcode($reply_text)

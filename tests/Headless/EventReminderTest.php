@@ -31,18 +31,29 @@ final class EventReminderTest extends HeadlessTestCase
 	private function makeEvent(string $date, string $published = '1'): int
 	{
 		$uid = $this->createUser('org');
-		$tid = (int) $this->db()->insert('nf_events_types', ['type' => 0, 'title' => 'T', 'color' => '#000', 'icon' => 'fa']);
+		// Le nom d'un type vit dans `nf_events_types_lang` depuis m32 (2026-10-15) : l'écrire dans
+		// `nf_events_types` ferait échouer l'insertion, et le rappel n'aurait plus d'événement à trouver.
+		$tid = (int) $this->db()->insert('nf_events_types', ['type' => 0, 'color' => '#000', 'icon' => 'fa']);
+		$this->db()->insert('nf_events_types_lang', ['type_id' => $tid, 'lang' => 'fr', 'title' => 'T']);
 
-		return (int) $this->db()->insert('nf_events', [
-			'type_id'             => $tid,
-			'user_id'             => $uid,
+		// Le texte d'un rendez-vous vit dans `nf_events_lang` depuis m31 : une ligne par langue.
+		$event_id = (int) $this->db()->insert('nf_events', [
+			'type_id'   => $tid,
+			'user_id'   => $uid,
+			'date'      => $date,
+			'published' => $published,
+		]);
+
+		$this->db()->insert('nf_events_lang', [
+			'event_id'            => $event_id,
+			'lang'                => 'fr',
 			'title'               => 'Tournoi',
 			'description'         => '',
 			'private_description' => '',
 			'location'            => '',
-			'date'                => $date,
-			'published'           => $published,
 		]);
+
+		return $event_id;
 	}
 
 	public function test_due_event_is_claimed_within_window(): void

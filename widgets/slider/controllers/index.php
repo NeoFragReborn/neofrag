@@ -16,12 +16,15 @@ class Index extends Controller_Widget
 		// Le widget lit les slides depuis la table nf_slider_slides (gérée via le module slider).
 		$slides = [];
 
+		// Le titre et la légende viennent de la table des traductions (m22, 2026-10-13) : la langue de la page, sinon
+		// le français, sinon la première écrite. Jointure GAUCHE : une vue sans aucune traduction garde son image.
 		if ($this->db->tables() && in_array('nf_slider_slides', $this->db->tables()))
 		{
-			$slides = $this->db	->select('image_url', 'title', 'caption', 'link', 'active')
-								->from('nf_slider_slides')
-								->where('active', 1)
-								->order_by('sort_order', 'id')
+			$slides = $this->db	->select('s.image_url', 'l.title', 'l.caption', 's.link', 's.active')
+								->from('nf_slider_slides s')
+								->join_lang('nf_slider_slides_lang l', 'slide_id', 's.id', NULL, 'LEFT')
+								->where('s.active', 1)
+								->order_by('s.sort_order', 's.id')
 								->get();
 		}
 

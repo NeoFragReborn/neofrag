@@ -162,4 +162,6 @@ return [
 	'e981b5d1' => 'Standard',
 	'bb9aea01' => 'Match',
 	'cbf0a999' => 'Nombre d\'événements par page',
+	'f30ac578' => 'Écrit pour %s. Change la langue de l\'administration pour traduire ce rendez-vous ; les autres langues gardent leur texte.',
+	'4e5e9cce' => 'Écrit pour %s. Change la langue de l\'administration pour traduire ce type ; les autres langues gardent leur texte.',
 ];

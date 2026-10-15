@@ -34,7 +34,7 @@ class Ajax extends Controller_Module
 			}
 		}
 
-		return $this->modal('Choisissez un forum pour déplacer')
+		return $this->modal($this->lang('Choisissez un forum pour déplacer'))
 					->body($this->view('move', [
 						'topic_id'   => $topic_id,
 						'current'    => $forum_id,

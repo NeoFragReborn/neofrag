@@ -13,12 +13,24 @@ class Pages extends Model
 {
 	public function get_pages()
 	{
-		return $this->db->select('p.page_id', 'p.name', 'p.published', 'p.date', 'pl.title', 'pl.subtitle')
-						->from('nf_pages p')
-						->join('nf_pages_lang pl', 'p.page_id = pl.page_id')
-						->where('pl.lang', $this->config->lang->info()->name)
-						->order_by('pl.title ASC')
-						->get();
+		$langue = $this->config->lang->info()->name;
+
+		$this->db	->select('p.page_id', 'p.name', 'p.published', 'p.date', 'pl.title', 'pl.subtitle')
+					->from('nf_pages p')
+					->order_by('pl.title ASC');
+
+		// La liste de l'administration montre TOUTES les pages, y compris celles qui n'existent pas encore dans
+		// la langue où l'on travaille : sinon on ne peut pas les ouvrir pour les traduire (2026-10-14).
+		if ($this->url->admin)
+		{
+			$this->db->join_lang('nf_pages_lang pl', 'page_id', 'p.page_id', $langue);
+		}
+		else
+		{
+			$this->db->join('nf_pages_lang pl', 'p.page_id = pl.page_id')->where('pl.lang', $langue);
+		}
+
+		return $this->db->get();
 	}
 
 	/**
@@ -274,44 +286,21 @@ class Pages extends Model
 
 		$page_extra = $date ? ['date' => $date] : [];
 
-		if (!$this->db	->from('nf_pages p')
-						->join('nf_pages_lang l', 'p.page_id = l.page_id')
-						->where('p.page_id', $page_id)
-						->where('l.lang', $lang)
-						->empty())
-		{
-			$this->db	->where('page_id', $page_id)
-						->where('lang', $lang)
-						->update('nf_pages_lang', [
-							'title'    => $title,
-							'subtitle' => $subtitle,
-							'content'  => $content
-						]);
+		// Les pages savaient déjà écrire une traduction qui n'existait pas encore : elles le faisaient par un
+		// `empty()` puis deux branches qui ne différaient que par l'INSERT ou l'UPDATE, et répétaient la mise à
+		// jour de `nf_pages`. `ecrire_lang()` fait les deux en une écriture (2026-10-14).
+		$this->db->ecrire_lang('nf_pages_lang', ['page_id' => $page_id, 'lang' => $lang], [
+			'title'    => $title,
+			'subtitle' => $subtitle,
+			'content'  => $content
+		]);
 
-			$this->db	->where('page_id', $page_id)
-						->update('nf_pages', array_merge([
-							'name'           => $name ?: url_title($title),
-							'published'      => $published,
-							'layout'         => $layout
-						], $page_extra));
-		}
-		else
-		{
-			$this->db	->insert('nf_pages_lang', [
-							'page_id'  => $page_id,
-							'lang'     => $lang,
-							'title'    => $title,
-							'subtitle' => $subtitle,
-							'content'  => $content
-						]);
-
-			$this->db	->where('page_id', $page_id)
-						->update('nf_pages', array_merge([
-							'name'           => $name ?: url_title($title),
-							'published'      => $published,
-							'layout'         => $layout
-						], $page_extra));
-		}
+		$this->db	->where('page_id', $page_id)
+					->update('nf_pages', array_merge([
+						'name'           => $name ?: url_title($title),
+						'published'      => $published,
+						'layout'         => $layout
+					], $page_extra));
 	}
 
 	public function delete_page($page_id)

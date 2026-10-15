@@ -24,6 +24,11 @@ declare(strict_types=1);
  * Il ne touche JAMAIS la base du site : il crée une base séparée, dont le nom porte le suffixe
  * `_test`, et n'accepte pas de travailler sur celle que config/db.php désigne.
  *
+ * Et il la REFAIT à chaque passage : ses tables sont effacées avant que le schéma soit chargé. Le schéma
+ * se charge par `CREATE TABLE IF NOT EXISTS`, qui laisse une table existante dans sa forme d'avant : après
+ * un changement de schéma, la base de l'atelier gardait l'ancienne, et cinq tests échouaient là — pas en
+ * CI, qui part d'une base neuve (2026-10-15, des colonnes de texte parties dans des tables de traduction).
+ *
  * Usage
  * -----
  *   php tools/prepare-test-db.php                    utilise config/db.php pour se connecter
@@ -130,6 +135,29 @@ if (!$admin->query(sprintf('USE `%s`', $nom)))
 {
     nf_refus("sélection de la base : {$admin->error}");
 }
+
+// Repartir de zéro (voir l'en-tête). Une base de test ne garde rien qui compte : chaque test tourne dans une
+// transaction annulée.
+$admin->query('SET FOREIGN_KEY_CHECKS = 0');
+
+$existantes = $admin->query('SHOW FULL TABLES');
+
+if (!$existantes instanceof mysqli_result)
+{
+    nf_refus("liste des tables : {$admin->error}");
+}
+
+foreach ($existantes->fetch_all() as [$table, $genre])
+{
+    $sql = ($genre === 'VIEW' ? 'DROP VIEW' : 'DROP TABLE').' IF EXISTS `'.str_replace('`', '``', (string) $table).'`';
+
+    if (!$admin->query($sql))
+    {
+        nf_refus("effacement de « $table » : {$admin->error}");
+    }
+}
+
+$admin->query('SET FOREIGN_KEY_CHECKS = 1');
 
 $schema = nf_racine().'/install/schema.sql';
 

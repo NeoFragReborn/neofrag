@@ -46,4 +46,5 @@ return [
 	'eb6693d4' => 'Deaktivieren',
 	'52c9bbab' => 'Bearbeiten',
 	'287e1fcc' => 'Der Link muss eine Webadresse (http oder https) oder eine Seite der Website sein.',
+	'7d58e538' => 'Für %s geschrieben. Wechsle die Sprache der Verwaltung, um diese Folie zu übersetzen; die anderen Sprachen behalten ihren Text.',
 ];

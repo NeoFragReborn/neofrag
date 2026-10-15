@@ -88,7 +88,7 @@ class Theme extends Controller
 
 	public function reset($theme)
 	{
-		return $this->modal('Réinstaller par défaut', 'fas fa-sync')
+		return $this->modal($this->lang('Réinstaller par défaut'), 'fas fa-sync')
 					->body($this->lang('Êtes-vous sûr(e) de vouloir réinstaller le thème <b>%s</b> ?<br />Toutes les dispositions et configurations de widgets seront perdues.', $theme->info()->title))
 					->submit($this->lang('Réinstaller'), 'warning')
 					->cancel()
@@ -101,7 +101,7 @@ class Theme extends Controller
 
 	public function delete($theme)
 	{
-		return $this->modal('Supprimer le thème', 'fas fa-trash')
+		return $this->modal($this->lang('Supprimer le thème'), 'fas fa-trash')
 					->body($this->lang('Supprimer définitivement le thème <b>%s</b> ?<br />Ses dispositions, sa configuration et ses fichiers seront retirés. Cette action est irréversible.', $theme->info()->title))
 					->submit($this->lang('Supprimer'), 'danger')
 					->cancel()

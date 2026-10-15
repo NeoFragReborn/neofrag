@@ -46,4 +46,5 @@ return [
 	'eb6693d4' => 'Desativar',
 	'52c9bbab' => 'Modificar',
 	'287e1fcc' => 'A ligação deve ser um endereço web (http ou https) ou uma página do site.',
+	'7d58e538' => 'Escrito para %s. Muda a língua da administração para traduzir este diapositivo; as outras línguas mantêm o seu texto.',
 ];

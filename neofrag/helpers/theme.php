@@ -158,7 +158,7 @@ function nf_rubriques_admin(): array
 
 	return [
 		'contenu'      => ['title' => (string) $nf->lang('Contenu'),        'icon' => 'fas fa-bullhorn',     'modules' => ['pages', 'articles', 'news', 'slider', 'quotes', 'recipes', 'menu', 'marketplace', 'search']],
-		'communaute'   => ['title' => (string) $nf->lang('Communauté'),     'icon' => 'fas fa-users',        'modules' => ['forum', 'talks', 'comments', 'guestbook', 'emojis', 'members', 'user', 'notifications']],
+		'communaute'   => ['title' => (string) $nf->lang('Communauté'),     'icon' => 'fas fa-users',        'modules' => ['forum', 'collectives', 'talks', 'comments', 'guestbook', 'emojis', 'members', 'user', 'notifications']],
 		'animation'    => ['title' => (string) $nf->lang('Animation'),      'icon' => 'fas fa-calendar-alt', 'modules' => ['calendar', 'surveys', 'gamification', 'classifieds']],
 		'gaming'       => ['title' => (string) $nf->lang('Gaming'),         'icon' => 'fas fa-gamepad',      'modules' => ['events', 'teams', 'games', 'recruits', 'awards', 'partners']],
 		'savoir'       => ['title' => (string) $nf->lang('Savoir'),         'icon' => 'fas fa-book',         'modules' => ['wiki', 'faq', 'glossary', 'downloads', 'links', 'places']],
@@ -237,6 +237,42 @@ function nf_pages_legales(): array
 }
 
 /**
+ * Le menu « langue » du pied de page, ou rien quand le site n'a qu'une langue. Les thèmes l'affichent par
+ * `<?php echo nf_selecteur_langue() ?>`, la classe de son bouton au besoin (`nf_selecteur_langue('btn btn-sm btn-dark')`).
+ *
+ * Un VRAI formulaire, comme celui que les thèmes livrés écrivent chacun : il marche sans JavaScript, et le serveur
+ * ramène le visiteur sur la même page, dans la langue choisie (`ajax/settings/languages`). Sept thèmes en
+ * recopiaient les douze lignes ; un thème neuf n'a plus à le faire (2026-10-15).
+ */
+function nf_selecteur_langue(string $bouton = 'btn btn-sm btn-light'): string
+{
+	$nf      = NeoFrag();
+	$langues = (array) $nf->config->langs;
+
+	if (count($langues) < 2 || !is_object($nf->config->lang))
+	{
+		return '';
+	}
+
+	$courante = $nf->config->lang->info();
+	$entrees  = '';
+
+	foreach ($langues as $langue)
+	{
+		$info     = $langue->info();
+		$entrees .= '<button type="submit" name="language" value="'.nf_texte($info->name).'" class="dropdown-item'.($info->name === $courante->name ? ' active' : '').'">'
+			.$info->icon.' '.nf_texte($info->title).'</button>';
+	}
+
+	return '<form method="post" action="'.url('ajax/settings/languages').'" class="nf-selecteur-langue dropup">'
+		.'<input type="hidden" name="url" value="'.nf_texte($nf->url->base.trim($courante->name.'/'.nf_chemin_public(), '/').$nf->url->query).'">'
+		.'<button class="'.nf_texte($bouton).' dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="'.nf_texte((string) $nf->lang('Choisir ma langue')).'">'
+		.$courante->icon.' '.strtoupper((string) $courante->name).'</button>'
+		.'<div class="dropdown-menu dropdown-menu-end">'.$entrees.'</div>'
+		.'</form>';
+}
+
+/**
  * Les liens légaux du pied de page : les mentions légales et la politique de confidentialité si leurs pages
  * sont publiées, et « Gérer mes cookies », toujours — retirer son accord doit être aussi simple que de le
  * donner (RGPD, art. 7.3), depuis n'importe quelle page. Les thèmes l'affichent par
@@ -261,4 +297,153 @@ function nf_liens_legaux(): string
 	$liens[] = '<a href="#nf-consentement" data-nf-consentement-ouvrir>'.$nf->lang('Gérer mes cookies').'</a>';
 
 	return '<span class="nf-liens-legaux">'.implode(' · ', $liens).'</span>';
+}
+
+/**
+ * Les trois couleurs qu'un thème laisse choisir — accent, fond, texte —, sous les noms que portent ses réglages
+ * (`<thème>_theme_color`, `<thème>_background_color`, `<thème>_text_color`) et les champs de ses formulaires.
+ */
+const NF_COULEURS_DE_THEME = ['theme_color', 'background_color', 'text_color'];
+
+/**
+ * L'APERÇU des couleurs d'un thème, sur une vraie page du site, à côté des sélecteurs (d10, 2026-10-15).
+ *
+ * Choisir une couleur voulait dire l'enregistrer, puis aller regarder le site. L'aperçu charge une page publique
+ * dans le thème configuré (`?apercu_theme=`, réservé à un administrateur, cf. Output) et, à chaque couleur changée,
+ * remplace la feuille du thème par celle que le serveur génère avec les couleurs NON ENREGISTRÉES
+ * (nf_apercu_couleurs_feuille()) : c'est exactement ce que donnerait l'enregistrement, teintes dérivées comprises.
+ * Les rapports de contraste s'affichent en même temps, avec les seuils du contrôle à l'enregistrement.
+ *
+ * @param array<string, string> $defauts les couleurs d'origine du thème, pour les champs encore vides
+ */
+function nf_apercu_couleurs($theme, array $defauts): string
+{
+	$nf  = NeoFrag();
+	$nom = (string) $theme->info()->name;
+
+	$nf->js('apercu-couleurs');
+
+	$pages = '';
+
+	foreach (['' => $nf->lang('Accueil'), 'news' => $nf->lang('Actualités'), 'forum' => $nf->lang('Forum')] as $adresse => $titre)
+	{
+		$pages .= '<option value="'.nf_texte(url($adresse).'?apercu_theme='.$nom).'">'.$titre.'</option>';
+	}
+
+	return '<div class="nf-apercu-couleurs card mt-3"'
+		.' data-feuille="'.nf_texte((string) parse_url(path('style.css', 'css', $theme), PHP_URL_PATH)).'"'
+		.' data-defauts="'.nf_texte((string) json_encode($defauts)).'"'
+		.' data-seuil-texte="4.5" data-seuil-accent="3"'
+		.' data-libelle-texte="'.nf_texte($nf->lang('Texte sur le fond')).'"'
+		.' data-libelle-accent="'.nf_texte($nf->lang('Accent sur le fond')).'"'
+		.' data-libelle-requis="'.nf_texte($nf->lang('%s requis')).'">'
+		.'<div class="card-header d-flex flex-wrap align-items-center gap-2">'
+			.'<strong class="me-auto">'.icon('fas fa-eye').' '.$nf->lang('Aperçu sur une vraie page').'</strong>'
+			.'<select class="form-select form-select-sm w-auto nf-apercu-page" aria-label="'.nf_texte($nf->lang('Page de l’aperçu')).'">'.$pages.'</select>'
+		.'</div>'
+		.'<div class="card-body">'
+			.'<p class="nf-apercu-ratios small mb-2" aria-live="polite"></p>'
+			.'<iframe class="nf-apercu-cadre w-100 border rounded" style="height:480px" loading="lazy" title="'.nf_texte($nf->lang('Aperçu des couleurs')).'"></iframe>'
+			.'<p class="text-muted small mb-0 mt-2">'.$nf->lang('Les couleurs s’appliquent ici dès que tu les changes ; rien n’est enregistré tant que tu n’as pas cliqué sur « Enregistrer ».').'</p>'
+		.'</div>'
+	.'</div>';
+}
+
+/**
+ * La feuille d'un thème générée avec des couleurs NON ENREGISTRÉES, pour l'aperçu (nf_apercu_couleurs()) : une
+ * requête `themes/<thème>/css/style.css?apercu=1&theme_color=%23…` pose ces couleurs dans la configuration EN
+ * MÉMOIRE (rien n'est écrit en base), le temps que le gabarit de la feuille les lise.
+ *
+ * Ouvert à tous, sans danger : une feuille aux couleurs choisies n'est qu'une feuille, propre à cette adresse —
+ * aucun réglage n'en sort. Seul un code hexadécimal est reçu.
+ *
+ * @return bool TRUE quand des couleurs d'aperçu ont été posées (la réponse ne doit alors pas être gardée en cache)
+ */
+function nf_apercu_couleurs_feuille(string $fichier): bool
+{
+	if (empty($_GET['apercu']) || !preg_match('#(?:^|/)themes/([a-z0-9_]+)/css/style\.css$#', $fichier, $m))
+	{
+		return FALSE;
+	}
+
+	$posees = FALSE;
+
+	foreach (NF_COULEURS_DE_THEME as $cle)
+	{
+		$valeur = $_GET[$cle] ?? NULL;
+
+		if (is_string($valeur) && preg_match('/^#[0-9a-f]{6}$/i', $valeur))
+		{
+			NeoFrag()->config->{$m[1].'_'.$cle} = strtolower($valeur);
+			$posees = TRUE;
+		}
+	}
+
+	return $posees;
+}
+
+/**
+ * La page de configuration des couleurs d'un thème qui n'en avait pas (Nebula, la vitrine : d10, 2026-10-15) : un
+ * formulaire de trois couleurs, chacune refusée si elle ne se lit pas sur le fond (les seuils de
+ * couleur_refus_si_illisible()), et l'aperçu.
+ *
+ * @param array<string, string> $defauts les couleurs d'origine : `theme_color`, `background_color`, `text_color`
+ */
+function nf_reglage_couleurs($controleur, $theme, array $defauts): string
+{
+	$nf     = NeoFrag();
+	$nom    = (string) $theme->info()->name;
+	$valeur = static fn (string $cle): string => (string) ($nf->config->{$nom.'_'.$cle} ?: $defauts[$cle]);
+
+	$form = $controleur->form()
+		->add_rules([
+			'theme_color' => [
+				'label'       => $nf->lang('Couleur d\'accent'),
+				'value'       => $valeur('theme_color'),
+				'type'        => 'colorpicker',
+				'rules'       => 'required',
+				'size'        => 'col-3',
+				'description' => $nf->lang('Liens, boutons, rubrique active.'),
+				'check'       => static fn ($couleur, $post) => couleur_refus_si_illisible((string) $couleur, (string) ($post['background_color'] ?? $defauts['background_color']), 3.0)
+			],
+			'background_color' => [
+				'label' => $nf->lang('Couleur de fond'),
+				'value' => $valeur('background_color'),
+				'type'  => 'colorpicker',
+				'rules' => 'required',
+				'size'  => 'col-3'
+			],
+			'text_color' => [
+				'label'       => $nf->lang('Couleur du texte'),
+				'value'       => $valeur('text_color'),
+				'type'        => 'colorpicker',
+				'rules'       => 'required',
+				'size'        => 'col-3',
+				'check'       => static fn ($couleur, $post) => couleur_refus_si_illisible((string) $couleur, (string) ($post['background_color'] ?? $defauts['background_color']))
+			]
+		])
+		->add_submit($nf->lang('Enregistrer'))
+		->save();
+
+	$post = [];
+
+	if ($form->is_valid($post))
+	{
+		foreach (NF_COULEURS_DE_THEME as $cle)
+		{
+			$controleur->config($nom.'_'.$cle, strtolower((string) $post[$cle]));
+		}
+
+		$controleur->config('nf_version_css', time());
+
+		notify($nf->lang('Couleurs enregistrées.'));
+		redirect($nf->url->location);
+	}
+
+	return $controleur->panel()
+				->heading($theme->info()->title.' — '.$nf->lang('Couleurs'), 'fas fa-palette')
+				->body('<p class="text-muted">'.$nf->lang('Les couleurs d’origine du thème : accent %s, fond %s, texte %s.', '<code>'.$defauts['theme_color'].'</code>', '<code>'.$defauts['background_color'].'</code>', '<code>'.$defauts['text_color'].'</code>').'</p>'
+					.$form->display()
+					.nf_apercu_couleurs($theme, $defauts))
+				->__toString();
 }

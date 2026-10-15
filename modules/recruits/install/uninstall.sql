@@ -10,4 +10,7 @@ DROP TABLE IF EXISTS `nf_recruits_candidacies`;
 DROP TABLE IF EXISTS `nf_recruits_fields`;
 DROP TABLE IF EXISTS `nf_recruits`;
 
+DROP TABLE IF EXISTS `nf_recruits_lang`;
+DROP TABLE IF EXISTS `nf_recruits_fields_lang`;
+
 SET FOREIGN_KEY_CHECKS = 1;

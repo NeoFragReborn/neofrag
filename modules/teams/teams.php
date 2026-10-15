@@ -120,11 +120,13 @@ class Teams extends Module
 	 */
 	public function profil_membre($membre): array
 	{
-		$equipes = (array) $this->db	->select('t.team_id', 't.name', 'tl.title', 't.icon_id', 'r.title AS role', 'gl.title AS jeu')
+		// Le nom d'un rôle vit dans nf_teams_roles_lang depuis m32 : la meilleure traduction.
+		$equipes = (array) $this->db	->select('t.team_id', 't.name', 'tl.title', 't.icon_id', 'rl.title AS role', 'gl.title AS jeu')
 										->from('nf_teams_users tu')
 										->join('nf_teams t', 't.team_id = tu.team_id', 'INNER')
 										->join_lang('nf_teams_lang tl', 'team_id', 't.team_id')
 										->join('nf_teams_roles r', 'r.role_id = tu.role_id')
+										->join_lang('nf_teams_roles_lang rl', 'role_id', 'r.role_id', NULL, 'LEFT')
 										->join_lang('nf_games_lang gl', 'game_id', 't.game_id')
 										->where('tu.user_id', (int) $membre->id)
 										->order_by('t.order', 't.team_id')

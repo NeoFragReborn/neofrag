@@ -352,4 +352,5 @@ return [
 	'6abee40f' => 'If you decline, nothing changes for you: your report stays anonymous and the moderators handle it as usual.',
 	'2b7e2332' => 'I accept the mediation',
 	'9886e305' => 'I decline',
+	'6b56cd18' => 'Issued on Discord, reported by the bot',
 ];

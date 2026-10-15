@@ -51,7 +51,7 @@ class Index extends Controller_Widget
 		if (!empty($partners))
 		{
 			return $this->panel()
-						->heading('Partenaires')
+						->heading($this->lang('Partenaires'))
 						->body($this->view('column', [
 							'partners'      => $partners,
 							'display_style' => $settings['display_style'] ?? 'light'

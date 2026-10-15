@@ -30,7 +30,7 @@ return [
 	'79987719' => 'inscrição newsletter pendente|inscrições newsletter pendentes',
 	'808644e3' => 'Cache',
 	'5e910685' => 'bug crítico|bugs críticos',
-	'73e22355' => 'Imagem, arquivo, vídeo',
+	'73e22355' => 'Imagem, ficheiro, vídeo',
 	'87117dca' => 'Mensagem|Mensagens',
 	'8d45e21b' => 'Versão NeoFrag',
 	'93d4184a' => 'Web designer',

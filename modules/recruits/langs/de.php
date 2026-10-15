@@ -188,4 +188,9 @@ return [
 	'602bea83' => 'Meine Meinung zu dieser Bewerbung',
 	'350c98af' => 'Angebot %s',
 	'8fd9c7ef' => 'Speichern',
+	'bcb37883' => 'Für %s geschrieben. Wechsle die Sprache der Verwaltung, um die Fragen zu übersetzen; die anderen Sprachen behalten ihren Text.',
+	'174101d1' => 'Dieses Feld bearbeiten oder übersetzen',
+	'f3754670' => 'Feld geändert.',
+	'2173f759' => 'Feld bearbeiten',
+	'a3a36296' => 'Für %s geschrieben. Wechsle die Sprache der Verwaltung, um dieses Angebot zu übersetzen; die anderen Sprachen behalten ihren Text.',
 ];

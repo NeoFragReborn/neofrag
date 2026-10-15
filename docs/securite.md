@@ -27,6 +27,9 @@ privé, et quelles versions reçoivent des correctifs.
   Le mot de passe est redemandé avant d'activer ou de couper la double authentification, de lier un
   service (Discord, GitHub, Google), de changer d'adresse ou de mot de passe et de supprimer son compte ;
   cinq erreurs bloquent cette confirmation un quart d'heure.
+- **Comptes Discord reliés** : relier un compte Discord à son compte du site se confirme AUPRÈS DE DISCORD —
+  le site compare l'identifiant que Discord lui rend à celui que le lien nomme. Le lien que donne la commande
+  `/forum account link` ne suffit pas : il ne fait que proposer la liaison.
 - **Mot de passe changé** : les autres sessions sont fermées, et les liens en attente tombent — une
   nouvelle adresse pas encore confirmée, un lien « mot de passe oublié ».
 - **Comptes devinables** : « mot de passe oublié » répond la même chose qu'une adresse ait un compte ou

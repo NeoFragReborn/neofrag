@@ -89,11 +89,9 @@ class Games extends Model
 						'name'      => url_title($title)
 					]);
 
-		$this->db	->where('game_id', $game_id)
-					->where('lang', $this->config->lang->info()->name)
-					->update('nf_games_lang', [
-						'title'     => $title
-					]);
+		$this->db->ecrire_lang('nf_games_lang',
+			['game_id' => $game_id, 'lang' => $this->config->lang->info()->name],
+			['title' => $title]);
 	}
 
 	public function delete_game($game_id)

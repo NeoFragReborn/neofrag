@@ -292,7 +292,7 @@ class Ajax extends Controller_Module
 
 		if (!$authenticators->empty())
 		{
-			return $this->modal('Connexion rapide', 'fas fa-user-circle')
+			return $this->modal($this->lang('Connexion rapide'), 'fas fa-user-circle')
 						->large()
 						->body($this->view('authenticators', [
 							'authenticators' => $authenticators

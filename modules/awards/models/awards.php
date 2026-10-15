@@ -19,10 +19,17 @@ class Awards extends Model
 						->get();
 	}
 
+	/*
+	 * Le nom, le lieu et le récit d'un titre vivent dans `nf_awards_lang`, une ligne par langue (m31,
+	 * 2026-10-15). `join_lang()` sert la MEILLEURE : la langue demandée, sinon le français, sinon la
+	 * première écrite — un titre décrit dans une seule langue reste lisible dans les cinq autres, au
+	 * lieu de disparaître du palmarès.
+	 */
 	public function get_awards($filter = '', $filter_data = '')
 	{
-		$this->db	->select('a.*', 't.team_id', 't.name as team_name', 'tl.title as team_title', 'g.game_id', 'g.name as game_name', 'gl.title as game_title')
+		$this->db	->select('a.*', 'al.name', 'al.location', 'al.description', 't.team_id', 't.name as team_name', 'tl.title as team_title', 'g.game_id', 'g.name as game_name', 'gl.title as game_title')
 					->from('nf_awards a')
+					->join_lang('nf_awards_lang al', 'award_id', 'a.award_id', NULL, 'LEFT')
 					->join('nf_teams t', 'a.team_id = t.team_id')
 					->join_lang('nf_teams_lang tl', 'team_id', 't.team_id')
 					->join('nf_games g', 'a.game_id = g.game_id')
@@ -75,8 +82,9 @@ class Awards extends Model
 
 	public function check_awards($award_id, $name)
 	{
-		return $this->db->select('a.*', 't.team_id', 't.name as team_name', 'tl.title as team_title', 'g.game_id', 'g.name as game_name', 'gl.title as game_title')
+		return $this->db->select('a.*', 'al.name', 'al.location', 'al.description', 't.team_id', 't.name as team_name', 'tl.title as team_title', 'g.game_id', 'g.name as game_name', 'gl.title as game_title')
 						->from('nf_awards a')
+						->join_lang('nf_awards_lang al', 'award_id', 'a.award_id', NULL, 'LEFT')
 						->join('nf_teams t', 'a.team_id = t.team_id')
 						->join_lang('nf_teams_lang tl', 'team_id', 't.team_id')
 						->join('nf_games g', 'a.game_id = g.game_id')
@@ -183,18 +191,19 @@ class Awards extends Model
 
 	public function add_awards($date, $team_id, $game_id, $platform, $location, $name, $ranking, $participants, $description, $image_id)
 	{
-		$this->db->insert('nf_awards', [
+		$award_id = $this->db->insert('nf_awards', [
 			'team_id'      => $team_id,
 			'date'         => $date,
-			'location'     => $location,
-			'name'         => $name,
 			'platform'     => $platform,
 			'game_id'      => $game_id,
 			'ranking'      => $ranking,
 			'participants' => $participants,
-			'description'  => $description,
 			'image_id'     => $image_id
 		]);
+
+		$this->_ecrire_texte((int) $award_id, $name, $location, $description);
+
+		return $award_id;
 	}
 
 	public function edit_awards($award_id, $date, $team_id, $game_id, $platform, $location, $name, $ranking, $participants, $description, $image_id)
@@ -203,15 +212,44 @@ class Awards extends Model
 					->update('nf_awards', [
 						'team_id'      => $team_id,
 						'date'         => $date,
-						'location'     => $location,
-						'name'         => $name,
 						'platform'     => $platform,
 						'game_id'      => $game_id,
 						'ranking'      => $ranking,
 						'participants' => $participants,
-						'description'  => $description,
 						'image_id'     => $image_id
 					]);
+
+		$this->_ecrire_texte((int) $award_id, $name, $location, $description);
+	}
+
+	/**
+	 * Le texte d'un titre DANS LA LANGUE OÙ L'ON TRAVAILLE. `ecrire_lang()` crée la ligne si elle manque :
+	 * la première fois qu'on décrit un titre dans une langue, un `update` n'aurait rien écrit (m30).
+	 */
+	private function _ecrire_texte(int $award_id, string $name, string $location, string $description): void
+	{
+		$this->db->ecrire_lang('nf_awards_lang', ['award_id' => $award_id, 'lang' => (string) $this->config->lang->info()->name], [
+			'name'        => $name,
+			'location'    => $location,
+			'description' => $description
+		]);
+	}
+
+	/**
+	 * Le texte tel qu'il est écrit DANS UNE LANGUE, sans repli : c'est ce que l'administration édite — sinon
+	 * on proposerait la version française à corriger dans l'écran anglais, et on l'écrirait en anglais.
+	 *
+	 * @return array{name: string, location: string, description: string}|null
+	 */
+	public function texte_dans(int $award_id, string $langue): ?array
+	{
+		$ligne = $this->db	->select('name', 'location', 'description')
+							->from('nf_awards_lang')
+							->where('award_id', $award_id)
+							->where('lang', $langue)
+							->row();
+
+		return is_array($ligne) && $ligne ? $ligne : NULL;
 	}
 
 	public function delete_awards($award_id)

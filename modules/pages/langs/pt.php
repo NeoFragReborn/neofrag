@@ -32,7 +32,7 @@ return [
 	'd103c7e9' => 'Adicionar página',
 	'e1b5ca71' => 'Páginas',
 	'52c9bbab' => 'Modificar',
-	'8d9ef7a4' => 'Excluir',
+	'8d9ef7a4' => 'Eliminar',
 	// i18n 2026-06-11 (code strings)
 	'fffae9b2' => 'Blocos de módulo injetáveis — cola o código no conteúdo:',
 	'a858201f' => 'Páginas disponíveis',

@@ -108,12 +108,10 @@ class Gallery extends Model
 						'published'   => $published
 					], $date ? ['date' => $date] : []));
 
-		$this->db	->where('gallery_id', $gallery_id)
-					->where('lang', $lang)
-					->update('nf_gallery_lang', [
-						'title'       => $title,
-						'description' => $description
-					]);
+		$this->db->ecrire_lang('nf_gallery_lang', ['gallery_id' => $gallery_id, 'lang' => $lang], [
+			'title'       => $title,
+			'description' => $description
+		]);
 	}
 
 	// Soft-delete : la galerie part à la corbeille (restaurable), fichiers conservés.
@@ -310,11 +308,9 @@ class Gallery extends Model
 						'name'     => url_title($title)
 					]);
 
-		$this->db	->where('category_id', $category_id)
-					->where('lang', $this->config->lang->info()->name)
-					->update('nf_gallery_categories_lang', [
-						'title' => $title
-					]);
+		$this->db->ecrire_lang('nf_gallery_categories_lang',
+			['category_id' => $category_id, 'lang' => $this->config->lang->info()->name],
+			['title' => $title]);
 	}
 
 	public function delete_category($category_id)

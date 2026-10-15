@@ -346,4 +346,5 @@ return [
 	'6abee40f' => 'Wenn du ablehnst, ändert sich für dich nichts: Deine Meldung bleibt anonym, und die Moderation bearbeitet sie wie gewohnt.',
 	'2b7e2332' => 'Ich nehme die Schlichtung an',
 	'9886e305' => 'Ich lehne ab',
+	'6b56cd18' => 'Auf Discord verhängt, vom Bot gemeldet',
 ];

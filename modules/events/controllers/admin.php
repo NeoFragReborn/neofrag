@@ -407,7 +407,10 @@ class Admin extends Controller_Module
 
 			$maps = [];
 
-			foreach ($this->db->select('*')->from('nf_games_maps')->get() as $map)
+			foreach ($this->db	->select('m.map_id', 'ml.title')
+								->from('nf_games_maps m')
+								->join_lang('nf_games_maps_lang ml', 'map_id', 'm.map_id', NULL, 'LEFT')
+								->get() as $map)
 			{
 				$maps[$map['map_id']] = $map['title'];
 			}
@@ -575,7 +578,7 @@ class Admin extends Controller_Module
 		}
 
 		$panel = $this		->panel()
-							->heading('Éditer l\'événement', 'fas fa-align-left')
+							->heading($this->lang('Éditer l\'événement'), 'fas fa-align-left')
 							->body($form_default->display());
 
 		if ($type == 1 && \NF\Modules\Events\Models\Matches::possibles())//Matches (m17 : avec les modules Jeux et Équipes)
@@ -597,19 +600,20 @@ class Admin extends Controller_Module
 						]
 					])
 					->pagination(FALSE)
-					->data($rounds = $this->db	->select('r.round_id', 'm.title', 'r.score1', 'r.score2')
+					->data($rounds = $this->db	->select('r.round_id', 'ml.title', 'r.score1', 'r.score2')
 												->from('nf_events_matches_rounds r')
 												->join('nf_games_maps m', 'm.map_id = r.map_id')
+												->join_lang('nf_games_maps_lang ml', 'map_id', 'm.map_id', NULL, 'LEFT')
 												->where('r.event_id', $event_id)
 												->order_by('r.round_id')
 												->get())
 					->no_data($this->lang('Aucune manche renseignée'));
 
-			$modal_opponent = $this	->modal('Ajouter un adversaire', 'fas fa-plus')
+			$modal_opponent = $this	->modal($this->lang('Ajouter un adversaire'), 'fas fa-plus')
 									->body($form_opponent->display())
 									->open_if($form_opponent->get_errors());
 
-			$modal_round    = $this	->modal('Ajouter une manche', 'fas fa-plus')
+			$modal_round    = $this	->modal($this->lang('Ajouter une manche'), 'fas fa-plus')
 									->body($form_round->display())
 									->open_if($form_round->get_errors());
 
@@ -713,11 +717,15 @@ class Admin extends Controller_Module
 
 	public function _types_edit($type_id, $type, $title, $color, $icon)
 	{
+		// L'écran d'édition montre le nom de la langue OÙ L'ON TRAVAILLE, et non le repli (m32,
+		// 2026-10-15) ; le sous-titre, lui, garde le nom lu.
+		$ecrit = $this->model('types')->titre_dans((int) $type_id, (string) $this->config->lang->info()->name);
+
 		$this	->subtitle($this->lang('Type %s', $title))
 				->form()
 				->add_rules('types', [
 					'type'  => $type,
-					'title' => $title,
+					'title' => (string) $ecrit,
 					'color' => $color,
 					'icon'  => $icon
 				])

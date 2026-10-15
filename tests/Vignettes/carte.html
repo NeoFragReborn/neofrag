@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<!--
+  vignette-carte.html — le gabarit d'une vignette d'addon : l'habillage, les places, les tailles.
+
+  Diffusion : publique
+
+  Rempli et photographié par tools/vignettes-cartes.php. L'habillage est celui des visuels de
+  partage du projet : ardoise profonde, grille fine, lueur turquoise, marque en haut à gauche.
+  Les polices et la marque sont posées À CÔTÉ de ce fichier par l'outil : aucune adresse réseau.
+-->
+<style>
+@font-face { font-family: 'Manrope'; font-weight: 400; src: url('manrope-400.woff2') format('woff2'); }
+@font-face { font-family: 'Manrope'; font-weight: 800; src: url('manrope-800.woff2') format('woff2'); }
+@font-face { font-family: 'FA Solid';   font-weight: 900; src: url('fa-solid.woff2') format('woff2'); }
+@font-face { font-family: 'FA Regular'; font-weight: 400; src: url('fa-regular.woff2') format('woff2'); }
+@font-face { font-family: 'FA Brands';  font-weight: 400; src: url('fa-brands.woff2') format('woff2'); }
+
+:root {
+  --ardoise:  #0a1419;
+  --ardoise2: #0e2730;
+  --turquoise:#2fd6c4;
+  --encre:    #ffffff;
+  --doux:     #9fb4bd;
+  --trait:    rgba(47, 214, 196, .14);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 1600px; height: 1000px;
+  font-family: 'Manrope', system-ui, sans-serif;
+  color: var(--encre);
+  background:
+    radial-gradient(120% 90% at 86% 12%, rgba(47, 214, 196, .20) 0%, transparent 55%),
+    radial-gradient(90% 80% at 8% 92%, rgba(47, 214, 196, .10) 0%, transparent 60%),
+    linear-gradient(145deg, var(--ardoise) 0%, var(--ardoise2) 100%);
+  overflow: hidden;
+}
+
+/* La grille fine, comme sur les visuels de partage. */
+.grille {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(var(--trait) 1px, transparent 1px), linear-gradient(90deg, var(--trait) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(120% 100% at 50% 40%, #000 35%, transparent 85%);
+}
+
+.carte { position: relative; height: 100%; padding: 76px 88px; display: flex; flex-direction: column; }
+
+/* ── La marque ─────────────────────────────────────────────────────────────── */
+.marque { display: flex; align-items: center; gap: 22px; }
+.marque img { width: 72px; height: 72px; border-radius: 18px; }
+.marque .nom { font-weight: 800; font-size: 40px; letter-spacing: -.01em; }
+.marque .reborn { color: var(--turquoise); font-weight: 800; font-size: 20px; letter-spacing: .34em; margin-left: 10px; }
+
+.famille {
+  margin-left: auto; align-self: center;
+  padding: 12px 26px; border: 2px solid var(--trait); border-radius: 999px;
+  color: var(--turquoise); font-weight: 800; font-size: 24px; letter-spacing: .08em; text-transform: uppercase;
+}
+
+/* ── Le cœur de la carte ───────────────────────────────────────────────────── */
+.corps { flex: 1; display: flex; align-items: center; gap: 56px; min-height: 0; }
+
+.icone {
+  flex: none;
+  width: 212px; height: 212px; border-radius: 48px;
+  display: grid; place-items: center;
+  background: linear-gradient(150deg, rgba(47, 214, 196, .18), rgba(47, 214, 196, .05));
+  border: 2px solid var(--trait);
+  color: var(--turquoise);
+  font-family: {{FAMILLE}}; font-weight: {{POIDS}}; font-size: 108px; line-height: 1;
+}
+
+.texte { min-width: 0; }
+.titre { font-weight: 800; font-size: 76px; line-height: 1.04; letter-spacing: -.02em; text-wrap: balance; }
+.description {
+  margin-top: 22px; color: var(--doux); font-size: 31px; line-height: 1.42;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* ── Le pied ───────────────────────────────────────────────────────────────── */
+.pied { display: flex; align-items: center; gap: 18px; }
+.pastille { padding: 12px 26px; border: 2px solid var(--trait); border-radius: 999px; color: var(--doux); font-size: 24px; font-weight: 400; }
+.adresse { margin-left: auto; color: var(--turquoise); font-weight: 800; font-size: 26px; letter-spacing: .01em; }
+</style>
+</head>
+<body>
+<div class="grille"></div>
+<div class="carte">
+  <header class="marque">
+    <img src="marque.png" alt="">
+    <span class="nom">NeoFrag</span><span class="reborn">REBORN</span>
+    <span class="famille">{{ETIQUETTE}}</span>
+  </header>
+
+  <main class="corps">
+    <div class="icone">{{GLYPHE}}</div>
+    <div class="texte">
+      <h1 class="titre">{{TITRE}}</h1>
+      <p class="description">{{TEXTE}}</p>
+    </div>
+  </main>
+
+  <footer class="pied">
+    {{APPOINT}}
+    <span class="adresse">neofrag-reborn.xyz</span>
+  </footer>
+</div>
+</body>
+</html>

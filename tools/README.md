@@ -37,12 +37,15 @@ Joués par défaut par `check-all`. Ils lisent les sources, sans base ni serveur
 | [`check-addon-declarations`](check-addon-declarations.php) | chaque addon déclare `core`, `presets` et `requires`, et le cœur ne dépend jamais d'un optionnel. | `php tools/check-addon-declarations.php` |
 | [`check-addon-name`](check-addon-name.php) | aucune lecture `->name` sur un addon chargé : elle rend FALSE en silence, le nom est dans `info()->name`. | `php tools/check-addon-name.php` |
 | [`check-assets`](check-assets.php) | deux fichiers d'asset homonymes dont l'un masque l'autre, et les cartes de source absentes. | `php tools/check-assets.php` |
+| [`check-cascade`](check-cascade.php) | une déclaration de thème qui ne peut JAMAIS s'appliquer est refusée. | `php tools/check-cascade.php` |
 | [`check-classes-bs4`](check-classes-bs4.php) | aucun legs de Bootstrap 3 ou 4 : classes disparues, attributs `data-*` sans `bs`, classes fabriquées par concaténation. | `php tools/check-classes-bs4.php` |
 | [`check-colles`](check-colles.php) | tout ce qui colle en haut de l'écran se cale sous les bandeaux du haut de page. | `php tools/check-colles.php` |
+| [`check-colonnes-retirees`](check-colonnes-retirees.php) | une colonne qu'une migration retire n'est plus dans le schéma d'une installation neuve. | `php tools/check-colonnes-retirees.php` |
 | [`check-css-variables`](check-css-variables.php) | toute variable CSS qu'un module ou un widget emploie est définie par tous les thèmes. | `php tools/check-css-variables.php` |
 | [`check-db-colonne`](check-db-colonne.php) | une requête à UNE colonne rend des valeurs, pas des lignes : aucune n'est lue comme un tableau. | `php tools/check-db-colonne.php` |
 | [`check-db-compteurs`](check-db-compteurs.php) | un compteur (vues, clics) ne fait pas avancer la date de modification de sa ligne. | `php tools/check-db-compteurs.php` |
 | [`check-db-delete`](check-db-delete.php) | une suppression par le constructeur de requêtes nomme sa table : `->delete('nf_…')`, jamais `->delete()`. | `php tools/check-db-delete.php` |
+| [`check-db-query`](check-db-query.php) | une requête écrite à la main par le constructeur de requêtes part dans la même instruction : `->execute('…')`, ou `->query('…')` suivi de ce qui la lit. | `php tools/check-db-query.php` |
 | [`check-demo-lock`](check-demo-lock.php) | le verrou de la démonstration et sa remise à zéro se répondent, et l'instantané publié n'emporte aucun secret. | `php tools/check-demo-lock.php` |
 | [`check-docs`](check-docs.php) | la documentation respecte ses règles : chiffres justes, renvois vivants, rien d'orphelin ni de recopié. | `php tools/check-docs.php` |
 | [`check-double-codage`](check-double-codage.php) | un texte se pose dans une page par nf_texte(), qui décode puis échappe : jamais codé deux fois. | `php tools/check-double-codage.php` |
@@ -60,6 +63,7 @@ Joués par défaut par `check-all`. Ils lisent les sources, sans base ni serveur
 | [`check-textes-en-dur`](check-textes-en-dur.php) | aucun texte d'interface écrit en dur en français : tout passe par les traductions. | `php tools/check-textes-en-dur.php` |
 | [`check-theme-zones`](check-theme-zones.php) | toute zone qu'un thème déclare est rendue par ses gabarits. | `php tools/check-theme-zones.php` |
 | [`check-tools`](check-tools.php) | les outils de `tools/` respectent leurs propres conventions. | `php tools/check-tools.php` |
+| [`check-versions-tierces`](check-versions-tierces.php) | les bibliothèques embarquées sont confrontées à l'amont, et pas dans six mois. | `php tools/check-versions-tierces.php` |
 | [`check-vignettes`](check-vignettes.php) | chaque addon a sa vignette, au bon format, ou une exemption écrite qui dit pourquoi. | `php tools/check-vignettes.php` |
 | [`check-widget-reglages`](check-widget-reglages.php) | aucun checker de widget ne lit un réglage sans valeur de repli. | `php tools/check-widget-reglages.php` |
 | [`check-wiki-docs`](check-wiki-docs.php) | la documentation ne se livre pas, et le wiki d'un site en service dit ce que disent les guides. | `php tools/check-wiki-docs.php` |
@@ -133,6 +137,7 @@ Ils agissent — construire, publier, régénérer, installer — plutôt qu'ils
 | [`prepare-test-db`](prepare-test-db.php) | prépare la base de données des tests d'intégration. | `php tools/prepare-test-db.php` |
 | [`seed-demo`](seed-demo.php) | peuple un site de données de DÉMO réalistes (gaming/communauté). | `php tools/seed-demo.php` |
 | [`stan-baseline`](stan-baseline.php) | régénère la liste d'exceptions de PHPStan, et refuse d'y geler une erreur neuve. | `php tools/stan-baseline.php` |
+| [`vignettes-cartes`](vignettes-cartes.php) | la vignette d'un addon dessinée comme une carte : son nom, son icône, ce qu'il fait. | `php tools/vignettes-cartes.php --sortie=/tmp/cartes` |
 | [`wiki-docs`](wiki-docs.php) | transfère docs/guide/*.md dans le wiki du site de ce dossier, d'où le site officiel se recopie. | `php tools/wiki-docs.php` |
 <!-- catalogue:fin -->
 
@@ -200,6 +205,7 @@ Engendrée elle aussi par `check-tools`, depuis la première ligne de chaque fic
 |---|---|---|
 | [`addons-manifest.php`](lib/addons-manifest.php) | les trois tiers d'addons (cœur, identité, à la carte), dérivés des déclarations. | — |
 | [`banc.php`](lib/banc.php) | poser un widget sur une page le temps d'une mesure, puis tout remettre. | `nf_banc_widget()`, `nf_banc_zone_contenu()` |
+| [`cascade.php`](lib/cascade.php) | lire des feuilles CSS et dire qui gagne, sans rendre de page. | `nf_cascade_regles()`, `nf_cascade_specificite()`, `nf_cascade_dernier_bloc()`, `nf_cascade_classes()`, `nf_cascade_etats()`, `nf_cascade_attributs()`, `NF_CASCADE_FORMES`, `nf_cascade_touche()`, `nf_cascade_conflit()`, `nf_cascade_couvre()` |
 | [`demo.php`](lib/demo.php) | ce que l'instantané de la démonstration ne porte jamais, et les droits qu'il rétablit. | `NF_DEMO_REGLAGES_EXCLUS`, `NF_DEMO_MOTIF_SECRET`, `NF_DEMO_REGLAGES_PUBLICS`, `NF_DEMO_DROITS`, `nf_demo_reglages_widget()` |
 | [`depot.php`](lib/depot.php) | parcourir les fichiers du dépôt, toujours avec les mêmes exclusions. | `NF_EXCLUS`, `NF_DOSSIERS_PRODUIT`, `NF_DOSSIERS_JS`, `nf_fichiers()`, `nf_parcourir()`, `nf_supprimer()`, `nf_relatif()`, `nf_addons()`, `nf_themes_publics()`, `nf_extensions_absentes()`, `nf_exiger_assemblage()` |
 | [`entetes.php`](lib/entetes.php) | ce que l'en-tête d'un outil déclare : sa famille, son usage, sa batterie, sa diffusion. | `NF_FAMILLES`, `NF_DIFFUSIONS`, `nf_diffusion()`, `nf_resume()`, `nf_entete_outil()` |
@@ -214,12 +220,12 @@ Engendrée elle aussi par `check-tools`, depuis la première ligne de chaque fic
 | [`profils.php`](lib/profils.php) | ce qu'un site installé selon un profil doit servir, et le vérifier en le frappant. | `NF_ROUTES_COEUR`, `NF_ROUTES_MODULES`, `nf_frapper_profil()`, `nf_tables_hors_profil()` |
 | [`routeur-outil.php`](lib/routeur-outil.php) | le routeur du serveur intégré quand c'est un OUTIL qui sert le site. | — |
 | [`serveur.php`](lib/serveur.php) | servir le site avec le serveur intégré de PHP, et lui parler en HTTP. | `NF_AGENT`, `nf_sous_le_compte_du_site()`, `nf_rendre_au_proprietaire()`, `nf_serveur()`, `nf_encoder_adresse()`, `nf_http()`, `nf_statut()`, `nf_formulaire()`, `nf_balisage()` |
-| [`site.php`](lib/site.php) | l'installation sur laquelle l'outil travaille : sa base, ses réglages, un administrateur. | `nf_config_db()`, `nf_connexion()`, `nf_connexion_admin()`, `nf_scalar()`, `nf_colonne()`, `nf_table_existe()`, `nf_type_id()`, `nf_reglage()`, `nf_reglage_poser()`, `nf_reglage_temporaire()`, `nf_themes_installes()`, `nf_premier_admin()`, `nf_session_admin()`, `nf_session_membre()`, `nf_session_ouvrir()`, `nf_session_fermer()`, `nf_mode_demo()`, `nf_theme_temporaire()` |
+| [`site.php`](lib/site.php) | l'installation sur laquelle l'outil travaille : sa base, ses réglages, un administrateur. | `nf_config_db()`, `nf_connexion()`, `nf_connexion_site()`, `nf_connexion_admin()`, `nf_scalar()`, `nf_colonne()`, `nf_table_existe()`, `nf_type_id()`, `nf_reglage()`, `nf_reglage_poser()`, `nf_reglage_temporaire()`, `nf_themes_installes()`, `nf_premier_admin()`, `nf_session_admin()`, `nf_session_membre()`, `nf_session_ouvrir()`, `nf_session_fermer()`, `nf_mode_demo()`, `nf_theme_temporaire()` |
 | [`sql.php`](lib/sql.php) | produire et jouer du SQL depuis la base vive. | `nf_sql_entete()`, `nf_sql_tables()`, `nf_sql_show_create()`, `nf_sql_commentaires_de_colonnes()`, `nf_sql_reposer_commentaires()`, `nf_sql_collation_portable()`, `nf_sql_inserts()`, `nf_sql_upserts()`, `nf_sql_lignes()`, `nf_sql_jouer()`, `nf_sql_jouer_fichier()`, `nf_sql_tuples()`, `nf_sql_valeur()` |
 | [`table-map.php`](lib/table-map.php) | quelle table appartient à quel module, pour le SQL embarqué de chaque module. | — |
 | [`vierge.php`](lib/vierge.php) | une installation NEUVE, sans contenu, montée le temps d'un outil, puis détruite. | `nf_site_vierge()` |
 | [`vignettes.php`](lib/vignettes.php) | le format des vignettes d'addons, et la liste motivée de ceux qui n'en ont pas. | `NF_VIGNETTE_LARGEUR`, `NF_VIGNETTE_HAUTEUR`, `NF_VIGNETTE_POIDS_MAX`, `NF_VIGNETTES_EXEMPTEES`, `nf_vignette_defaut()` |
-| [`wiki.php`](lib/wiki.php) | la documentation publique : des guides Markdown (`docs/guide/`) aux pages du module wiki. | `nf_wiki_sections()`, `nf_wiki_convertir()`, `nf_wiki_attendu()` |
+| [`wiki.php`](lib/wiki.php) | la documentation publique : des guides Markdown (`docs/guide/`) aux pages du module wiki. | `NF_WIKI_LANGUES`, `nf_wiki_sections()`, `nf_wiki_convertir()`, `nf_wiki_ancre_github()`, `nf_wiki_ancres_du_guide()`, `nf_wiki_ancres_du_fichier()`, `nf_wiki_ancre_vers()`, `nf_wiki_attendu()`, `nf_wiki_attendu_traduit()` |
 <!-- bibliotheque:fin -->
 
 Chaque fonction est documentée dans son fichier, avec le défaut qui l'a fait naître.

@@ -121,15 +121,19 @@ class Admin extends Controller_Module
 
 	public function _edit($recruit_id, $title, $introduction, $description, $requierments, $date, $user_id, $size, $role, $icon, $date_end, $closed, $team_id, $image_id, $username, $avatar, $sex, $total_candidacies, $candidacies_pending, $candidacies_accepted, $candidacies_declined, $team_name)
 	{
+		// L'en-tête montre le titre LU ; le formulaire, le texte TEL QU'IL EST ÉCRIT dans la langue de l'administration
+		// (vide si rien n'y est écrit) : on traduit une offre en changeant de langue (m32, 2026-10-15).
+		$ecrit = $this->model()->texte_dans((int) $recruit_id, (string) $this->config->lang->info()->name);
+
 		$this	->subtitle($title)
 				->js('knob')
 				->form()
 				->add_rules('recruit', [
 					'teams'        => $this->model()->get_teams_list(),
-					'title'        => $title,
-					'introduction' => $introduction,
-					'description'  => $description,
-					'requierments' => $requierments,
+					'title'        => $ecrit['title'],
+					'introduction' => $ecrit['introduction'],
+					'description'  => $ecrit['description'],
+					'requierments' => $ecrit['requierments'],
 					'size'         => $size,
 					'role'         => $role,
 					'icon'         => $icon,
@@ -288,7 +292,7 @@ class Admin extends Controller_Module
 
 		return $this->array
 					->append($this	->panel()
-									->heading('Liste des candidatures en attentes', 'fab fa-black-tie')
+									->heading($this->lang('Liste des candidatures en attentes'), 'fab fa-black-tie')
 									->body($candidacies_pending)
 									->size('col-12 col-lg-8')
 					)
@@ -535,9 +539,12 @@ class Admin extends Controller_Module
 					}
 					else
 					{
-						$role_id = $this->db->insert('nf_teams_roles', [
-							'title' => $role
-						]);
+						// Le nom d'un rôle vit dans nf_teams_roles_lang depuis m32 : le rôle n'a plus que son ordre, et son nom
+						// s'écrit dans la langue de l'administration, comme depuis l'écran des rôles. L'écrire dans
+						// nf_teams_roles faisait échouer l'acceptation d'une candidature sur un rôle encore inconnu (2026-10-15).
+						$role_id = (int) $this->db->insert('nf_teams_roles', ['order' => 0]);
+
+						$this->db->ecrire_lang('nf_teams_roles_lang', ['role_id' => $role_id, 'lang' => (string) $this->config->lang->info()->name], ['title' => (string) $role]);
 
 						$this->db->insert('nf_teams_users', [
 							'team_id' => $team_id,
@@ -681,7 +688,7 @@ class Admin extends Controller_Module
 							'votes'  => $votes
 						])),
 				$this	->panel()
-						->heading('Mon avis sur la candidature', 'far fa-star')
+						->heading($this->lang('Mon avis sur la candidature'), 'far fa-star')
 						->body($this->is_authorized('candidacy_vote') ? $vote_form->display() : '<span class="text-red">'.$this->lang('Vous n\'êtes pas autorisé à déposer votre avis.').'</span>')
 						->size('col-12 col-lg-5')
 			)
@@ -771,7 +778,8 @@ class Admin extends Controller_Module
 				->subtitle($title)
 				->form()
 				->add_rules([
-					'label'    => ['label' => $this->lang('Libellé de la question'), 'type' => 'text', 'rules' => 'required'],
+					'label'    => ['label' => $this->lang('Libellé de la question'), 'type' => 'text', 'rules' => 'required',
+					               'description' => $this->lang('Écrit pour %s. Change la langue de l\'administration pour traduire les questions ; les autres langues gardent leur texte.', $this->config->lang->info()->title)],
 					'type'     => ['label' => $this->lang('Type de champ'), 'type' => 'select', 'values' => ['text' => $this->lang('Texte court'), 'textarea' => $this->lang('Texte long')], 'value' => 'text'],
 					'required' => ['label' => $this->lang('Obligatoire'), 'type' => 'checkbox', 'values' => ['1' => $this->lang('Réponse obligatoire')]]
 				])
@@ -802,7 +810,10 @@ class Admin extends Controller_Module
 
 				$list .= '<li class="list-group-item d-flex justify-content-between align-items-center">'
 						.'<span>'.nf_texte($f['label']).' <small class="text-muted">('.$meta.')</small></span>'
-						.'<a href="'.$this->csrf_url('admin/recruits/fields/delete/'.$f['field_id'].'/'.url_title($title)).'" class="btn btn-sm btn-outline-danger" data-confirm="'.nf_texte($this->lang('Supprimer ce champ ?')).'">'.icon('far fa-trash-alt').'</a>'
+						.'<span class="text-nowrap">'
+							.'<a href="'.url('admin/recruits/fields/edit/'.$f['field_id'].'/'.url_title($title)).'" class="btn btn-sm btn-outline-secondary me-1" title="'.nf_texte($this->lang('Modifier ou traduire ce champ')).'">'.icon('fas fa-pen').'</a>'
+							.'<a href="'.$this->csrf_url('admin/recruits/fields/delete/'.$f['field_id'].'/'.url_title($title)).'" class="btn btn-sm btn-outline-danger" data-confirm="'.nf_texte($this->lang('Supprimer ce champ ?')).'">'.icon('far fa-trash-alt').'</a>'
+						.'</span>'
 						.'</li>';
 			}
 
@@ -812,6 +823,41 @@ class Admin extends Controller_Module
 		return $this->panel()
 					->heading($this->lang('Personnaliser le formulaire').' — '.nf_texte($title), 'fas fa-sliders-h')
 					->body($list.'<hr />'.$this->form()->display())
+					->size('col-12');
+	}
+
+	/*
+	 * Modifier — et surtout TRADUIRE — une question (m32, 2026-10-15). On ne pouvait qu'en ajouter ou en supprimer :
+	 * une fois son libellé dans une table de traductions, il fallait un endroit où l'écrire dans une autre langue.
+	 */
+	public function _field_edit($field_id, $recruit_id, $title)
+	{
+		$langue = (string) $this->config->lang->info()->name;
+		$champ  = $this->model()->champ_dans((int) $field_id, $langue);
+		$retour = 'admin/recruits/fields/'.$recruit_id.'/'.url_title($title);
+
+		$this	->title($this->lang('Personnaliser le formulaire'))
+				->subtitle($title)
+				->form()
+				->add_rules([
+					'label'    => ['label' => $this->lang('Libellé de la question'), 'type' => 'text', 'value' => $champ['label'], 'rules' => 'required',
+					               'description' => $this->lang('Écrit pour %s. Change la langue de l\'administration pour traduire les questions ; les autres langues gardent leur texte.', $this->config->lang->info()->title)],
+					'type'     => ['label' => $this->lang('Type de champ'), 'type' => 'select', 'values' => ['text' => $this->lang('Texte court'), 'textarea' => $this->lang('Texte long')], 'value' => $champ['type']],
+					'required' => ['label' => $this->lang('Obligatoire'), 'type' => 'checkbox', 'values' => ['1' => $this->lang('Réponse obligatoire')], 'checked' => ['1' => $champ['required']]]
+				])
+				->add_back($retour)
+				->add_submit($this->lang('Enregistrer'));
+
+		if ($this->form()->is_valid($post))
+		{
+			$this->model()->edit_field((int) $field_id, (string) $post['label'], (string) $post['type'], in_array('1', $post['required'] ?? []), $langue);
+			notify($this->lang('Champ modifié.'));
+			redirect($retour);
+		}
+
+		return $this->panel()
+					->heading($this->lang('Modifier le champ').' — '.nf_texte($title), 'fas fa-sliders-h')
+					->body($this->form()->display())
 					->size('col-12');
 	}
 

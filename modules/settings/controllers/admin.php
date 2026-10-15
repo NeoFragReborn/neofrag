@@ -218,7 +218,7 @@ class Admin extends Controller_Module
 					],
 					'font' => [
 						'label'       => $this->lang('Police du site'),
-						'description' => $this->lang('Remplace la police de tous les thèmes. Les polices sont servies par Google Fonts ; « %s » ne fait appel à aucun service extérieur.', $this->lang('Police du thème')),
+						'description' => $this->lang('Remplace la police de tous les thèmes. Toutes sont servies par le site lui-même : aucun visiteur n\'est envoyé chez un service extérieur.'),
 						'values'      => ['' => $this->lang('Police du thème')] + polices_disponibles(),
 						'value'       => $this->config->nf_font,
 						'type'        => 'select'
@@ -291,6 +291,15 @@ class Admin extends Controller_Module
 						'values'      => ['on' => $this->lang('Garder les images, les styles et les scripts dans le navigateur des visiteurs')],
 						'checked'     => ['on' => (bool) $this->config->nf_pwa],
 						'description' => $this->lang('Les pages, elles, ne sont jamais gardées : un déploiement se voit tout de suite. Décocher désinstalle réellement chez les visiteurs, à leur prochaine visite.')
+					],
+					// Les notifications push (d11, 2026-10-16) : le membre les active lui-même, appareil par appareil,
+					// depuis ses préférences de notifications ; ce réglage ne fait que le lui proposer.
+					'push' => [
+						'label'       => $this->lang('Notifications push'),
+						'type'        => 'checkbox',
+						'values'      => ['on' => $this->lang('Proposer aux membres de recevoir leurs notifications dans le navigateur, même site fermé')],
+						'checked'     => ['on' => (bool) $this->config->nf_push],
+						'description' => $this->lang('Chaque membre l’active sur ses appareils, dans ses préférences de notifications, et choisit ce qu’il reçoit. Le site doit être servi en https.')
 					]
 				])
 				->add_submit($this->lang('Valider'))
@@ -300,7 +309,7 @@ class Admin extends Controller_Module
 		{
 			foreach ($post as $var => $value)
 			{
-				if ($var === 'pwa' || $var === 'theme_visiteur' || ($var === 'timezone' && !nf_fuseau_ouvrir($value)))
+				if ($var === 'pwa' || $var === 'push' || $var === 'theme_visiteur' || ($var === 'timezone' && !nf_fuseau_ouvrir($value)))
 				{
 					continue;
 				}
@@ -311,6 +320,23 @@ class Admin extends Controller_Module
 			// Hors de la boucle : une case DÉCOCHÉE n'arrive pas dans le POST, et la boucle ne
 			// l'éteindrait donc jamais. C'est l'extinction qui compte le plus ici.
 			$this->config('nf_pwa', empty($post['pwa']) ? '0' : '1', 'bool');
+
+			// Le push demande au serveur de chiffrer et de signer (OpenSSL, courbe P-256) : sans quoi il reste éteint, et
+			// on le dit. Ses clés (VAPID) sont créées à la première ouverture, une fois pour toutes.
+			$push = !empty($post['push']);
+
+			if ($push)
+			{
+				require_once NEOFRAG_CMS.'/neofrag/helpers/push.php';
+
+				if (nf_push_cles() === NULL)
+				{
+					$push = FALSE;
+					notify($this->lang('Les notifications push restent éteintes : ce serveur ne sait pas les chiffrer (OpenSSL avec la courbe P-256 et cURL sont nécessaires).'), 'danger');
+				}
+			}
+
+			$this->config('nf_push', $push ? '1' : '0', 'bool');
 			$this->config('nf_theme_visiteur', empty($post['theme_visiteur']) ? '0' : '1', 'bool');
 
 			$this->_audit('general');

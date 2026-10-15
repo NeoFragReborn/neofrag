@@ -13,5 +13,6 @@ return [
 	'740e0f68' => 'Mark all as read',
 	'd57997fd' => 'See all',
 	'3c69968d' => 'Follow',
-	'ef7de58b' => 'Following'
+	'ef7de58b' => 'Following',
+	'c323fad6' => 'Notifications do reach this device.',
 ];

@@ -219,21 +219,21 @@ INSERT INTO `nf_role_permissions` (`role_id`, `permission`, `scope_id`, `authori
 ('5', 'moderation.ban_temp', '0', 'allow');
 
 -- nf_groups_roles : aucune donnée.
-INSERT INTO `nf_widgets` (`widget_id`, `widget`, `type`, `title`, `settings`) VALUES
-('133', 'navigation', 'index', NULL, '{\"links\":[{\"title\":\"Accueil\",\"url\":\"\"},{\"title\":\"Actualit&eacute;s\",\"url\":\"news\"},{\"title\":\"Forum\",\"url\":\"forum\"},{\"title\":\"Galerie\",\"url\":\"gallery\"},{\"title\":\"Membres\",\"url\":\"members\"},{\"title\":\"Contact\",\"url\":\"contact\"}]}'),
-('134', 'slider', 'index', NULL, NULL),
-('135', 'module', 'index', NULL, NULL),
-('136', 'user', 'index', NULL, NULL),
-('137', 'members', 'online', NULL, NULL),
-('138', 'news', 'categories', NULL, NULL),
-('139', 'breadcrumb', 'index', NULL, NULL),
-('140', 'module', 'index', NULL, NULL),
-('141', 'breadcrumb', 'index', NULL, NULL),
-('142', 'module', 'index', NULL, NULL),
-('143', 'breadcrumb', 'index', NULL, NULL),
-('144', 'module', 'index', NULL, NULL),
-('145', 'forum', 'statistics', NULL, NULL),
-('146', 'forum', 'activity', NULL, NULL);
+INSERT INTO `nf_widgets` (`widget_id`, `widget`, `type`, `settings`) VALUES
+('133', 'navigation', 'index', '{\"links\":[{\"title\":\"Accueil\",\"url\":\"\"},{\"title\":\"Actualit&eacute;s\",\"url\":\"news\"},{\"title\":\"Forum\",\"url\":\"forum\"},{\"title\":\"Galerie\",\"url\":\"gallery\"},{\"title\":\"Membres\",\"url\":\"members\"},{\"title\":\"Contact\",\"url\":\"contact\"}]}'),
+('134', 'slider', 'index', NULL),
+('135', 'module', 'index', NULL),
+('136', 'user', 'index', NULL),
+('137', 'members', 'online', NULL),
+('138', 'news', 'categories', NULL),
+('139', 'breadcrumb', 'index', NULL),
+('140', 'module', 'index', NULL),
+('141', 'breadcrumb', 'index', NULL),
+('142', 'module', 'index', NULL),
+('143', 'breadcrumb', 'index', NULL),
+('144', 'module', 'index', NULL),
+('145', 'forum', 'statistics', NULL),
+('146', 'forum', 'activity', NULL);
 
 INSERT INTO `nf_dispositions` (`disposition_id`, `theme`, `page`, `zone`, `disposition`) VALUES
 ('82', 'nebula', '*', '0', '[]'),

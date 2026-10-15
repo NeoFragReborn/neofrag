@@ -78,4 +78,5 @@ return [
 	'4306ff8f' => 'Altra posizione',
 	'ff8ae8a6' => 'Nessuna classifica',
 	'8fd9c7ef' => 'Salva',
+	'6873a0dd' => 'Scritto per %s. Cambia la lingua dell\'amministrazione per tradurre questo titolo; le altre lingue mantengono il loro testo.',
 ];

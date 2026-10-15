@@ -30,7 +30,7 @@ class Checker extends Module_Checker
 	{
 		// Vérifiée avec son VRAI titre (une offre fermée reste introuvable) ; l'adresse au mauvais titre mène à la bonne
 		// au lieu de répondre 404 (m06).
-		$titre = nf_titre_lu($this->db->select('title')->from('nf_recruits')->where('recruit_id', (int) $recruit_id)->row());
+		$titre = nf_titre_lu($this->db->select('rl.title')->from('nf_recruits r')->join_lang('nf_recruits_lang rl', 'recruit_id', 'r.recruit_id', NULL, 'LEFT')->where('r.recruit_id', (int) $recruit_id)->row());
 
 		if ($titre !== '' && ($recruit = $this->model()->check_recruit($recruit_id, url_title($titre))))
 		{

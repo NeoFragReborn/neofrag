@@ -13,8 +13,10 @@ class Events extends Model
 {
 	public function check_event($event_id)
 	{
-		$this->db	->select('e.event_id', 'e.title', 'e.type_id', 'e.date', 'e.date_end', 'e.description', 'e.private_description', 'e.location', 'e.image_id', 'e.published', 't.type', 'm.webtv', 'm.website')
+		// Le texte vient de la table des traductions (m31) : la langue de la page, sinon le français.
+		$this->db	->select('e.event_id', 'el.title', 'e.type_id', 'e.date', 'e.date_end', 'el.description', 'el.private_description', 'el.location', 'e.image_id', 'e.published', 't.type', 'm.webtv', 'm.website')
 					->from('nf_events e')
+					->join_lang('nf_events_lang el', 'event_id', 'e.event_id', NULL, 'LEFT')
 					->join('nf_events_types t',        'e.type_id = t.type_id')
 					->join('nf_events_participants p', 'e.event_id = p.event_id')
 					->join('nf_events_matches m', 'e.event_id = m.event_id')
@@ -40,9 +42,12 @@ class Events extends Model
 	{
 		$types = array_keys($this->module('events')->model('types')->get_types());
 
-		$this->db	->select('e.event_id', 'e.title', 'e.type_id', 't.title as type_title', 't.type', 't.color', 't.icon', 'e.date', 'e.date_end', 'e.description', 'e.private_description', 'e.location', 'e.image_id', 'e.published', 'u.id as user_id', 'u.username', 'COUNT(mr.round_id) as nb_rounds', 'm.webtv', 'm.website')
+		// Le nom d'un type vit dans nf_events_types_lang depuis m32 : la meilleure traduction.
+		$this->db	->select('e.event_id', 'el.title', 'e.type_id', 'tl.title as type_title', 't.type', 't.color', 't.icon', 'e.date', 'e.date_end', 'el.description', 'el.private_description', 'el.location', 'e.image_id', 'e.published', 'u.id as user_id', 'u.username', 'COUNT(mr.round_id) as nb_rounds', 'm.webtv', 'm.website')
 					->from('nf_events e')
+					->join_lang('nf_events_lang el', 'event_id', 'e.event_id', NULL, 'LEFT')
 					->join('nf_events_types t',           'e.type_id = t.type_id')
+					->join_lang('nf_events_types_lang tl', 'type_id', 't.type_id', NULL, 'LEFT')
 					->join('nf_events_participants p',    'e.event_id = p.event_id')
 					->join('nf_user u',                   'u.id = e.user_id')
 					->join('nf_events_matches m',         'e.event_id = m.event_id')
@@ -100,12 +105,15 @@ class Events extends Model
 		{
 			$types = [];
 
-			foreach (	$this->db	->select('t.*', 'COUNT(e.event_id) as nb_events')
+			// Le nom d'un type vit dans nf_events_types_lang depuis m32 : la meilleure traduction. Trié par t.title, le
+			// bloc des types tombait en erreur SQL sur tout site en 1.2.50 (trouvé avant sa sortie, 2026-10-15).
+			foreach (	$this->db	->select('t.*', 'tl.title', 'COUNT(e.event_id) as nb_events')
 									->from('nf_events_types t')
+									->join_lang('nf_events_types_lang tl', 'type_id', 't.type_id', NULL, 'LEFT')
 									->join('nf_events e', 't.type_id = e.type_id')
 									->where('e.published', TRUE)
 									->where('(e.publish_date IS NULL OR e.publish_date <= NOW())')
-									->order_by('t.title')
+									->order_by('tl.title')
 									->group_by('t.type_id')
 									->get()
 			as $type)

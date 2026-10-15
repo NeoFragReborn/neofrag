@@ -78,4 +78,5 @@ return [
 	'4306ff8f' => 'Otro puesto',
 	'ff8ae8a6' => 'Ninguna clasificación',
 	'8fd9c7ef' => 'Guardar',
+	'6873a0dd' => 'Escrito para %s. Cambia el idioma de la administración para traducir este título; los demás idiomas conservan su texto.',
 ];

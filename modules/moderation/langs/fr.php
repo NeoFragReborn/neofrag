@@ -350,4 +350,5 @@ return [
 	'6abee40f' => 'Si tu refuses, rien ne change pour toi : ton signalement reste anonyme et la modération le traite comme d’habitude.',
 	'2b7e2332' => 'J’accepte la médiation',
 	'9886e305' => 'Je refuse',
+	'6b56cd18' => 'Prononcée sur Discord, rapportée par le bot',
 ];

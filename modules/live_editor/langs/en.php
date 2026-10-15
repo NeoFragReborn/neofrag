@@ -71,4 +71,5 @@ return [
 	'66a08d25' => 'Site pages',
 	'bc74124e' => 'Search for a page',
 	'cdf72ea5' => 'No page matches.',
+	'6d88f17e' => 'Written for %s. Switch the admin language to translate this title; the other languages keep theirs.',
 ];

@@ -50,7 +50,7 @@ return [
 	'63dc6393' => 'Reopening',
 	'6a41f36b' => 'Centered',
 	'6b0653a3' => 'Message title',
-	'2d5db53a' => 'Overrides the font of every theme. Fonts are served by Google Fonts; “%s” calls no external service.',
+	'1657202e' => 'Overrides the font of every theme. All of them are served by the site itself: no visitor is sent to an outside service.',
 	'6bc79f62' => 'Message author',
 	'72d181ea' => 'General preferences saved successfully',
 	'74adcc7d' => 'The site is temporarily unavailable while we update it. Please come back in a few moments.',
@@ -271,4 +271,8 @@ return [
 	'68b7ca29' => 'Enter a number of years between 0 and 20.',
 	'bfeaf8bc' => 'Addresses to redirect: the list of %s, in Monitoring.',
 	'9339febd' => 'pages not found',
+	'920189e5' => 'Push notifications',
+	'f5ca4bbd' => 'Offer members to receive their notifications in the browser, even with the site closed',
+	'3db3c569' => 'Each member turns it on for their devices, in their notification preferences, and chooses what they receive. The site must be served over https.',
+	'a3e9a037' => 'Push notifications stay off: this server cannot encrypt them (OpenSSL with the P-256 curve and cURL are required).',
 ];

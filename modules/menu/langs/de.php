@@ -36,4 +36,5 @@ return [
 	'8fd9c7ef' => 'Speichern',
 	'4a818505' => 'Artikel|Artikel',
 	'4678bb10' => 'Neuer Artikel',
+	'bff00c60' => 'Für %s geschrieben. Wechsle die Sprache der Verwaltung, um diesen Link zu übersetzen; die anderen Sprachen behalten ihren Text.',
 ];

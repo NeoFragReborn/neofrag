@@ -58,11 +58,12 @@ class Teams extends Model
 
 	public function get_players($team_id)
 	{
-		return $this->db->select('u.id as user_id', 'u.username', 'u.admin', 'up.avatar', 'up.sex', 'MAX(s.last_activity) > DATE_SUB(NOW(), INTERVAL 5 MINUTE) as online', 'r.title')
+		return $this->db->select('u.id as user_id', 'u.username', 'u.admin', 'up.avatar', 'up.sex', 'MAX(s.last_activity) > DATE_SUB(NOW(), INTERVAL 5 MINUTE) as online', 'rl.title')
 						->from('nf_teams_users    tu')
 						->join('nf_user           u',  'tu.user_id = u.id AND u.deleted = "0"', 'INNER')
 						->join('nf_user_profile up', 'u.id         = up.id')
 						->join('nf_teams_roles    r',  'r.role_id  = tu.role_id')
+						->join_lang('nf_teams_roles_lang rl', 'role_id', 'r.role_id', NULL, 'LEFT')
 						// LEFT : voir news.php. En stricte, un joueur sans session ouverte
 						// disparaissait de l'effectif de son equipe.
 						->join('nf_session        s',  'u.id       = s.user_id', 'LEFT')
@@ -118,12 +119,10 @@ class Teams extends Model
 						'name'     => url_title($title)
 					]);
 
-		$this->db	->where('team_id', $team_id)
-					->where('lang', $this->config->lang->info()->name)
-					->update('nf_teams_lang', [
-						'title'       => $title,
-						'description' => $description
-					]);
+		$this->db->ecrire_lang('nf_teams_lang', ['team_id' => $team_id, 'lang' => $this->config->lang->info()->name], [
+			'title'       => $title,
+			'description' => $description
+		]);
 	}
 
 	public function delete_team($team_id)

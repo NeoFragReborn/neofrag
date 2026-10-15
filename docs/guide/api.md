@@ -102,6 +102,11 @@ n'est pas installé. Elles servent au bot de NeoFrag Reborn ; un autre programme
 | `GET /api/v1/discord/timed-roles?discord_id=…&due=1` | Les rôles temporaires en cours — ceux d'un membre, ou arrivés à échéance avec `due=1` : `timed_roles`, chacun `timed_id`, `discord_id`, `username`, `role_id`, `expires_at` (horodatage Unix), `given_by`, `given_by_name`, `reason` |
 | `POST /api/v1/discord/timed-roles` | Donne ou prolonge un rôle temporaire : `discord_id`, `username`, `role_id`, `duration` (secondes, de 60 à un an), `given_by`, `given_by_name`, `reason` ; 409 `role_mapped` pour un rôle relié à un groupe du site |
 | `DELETE /api/v1/discord/timed-roles/{id}` | Retire un rôle temporaire de la liste |
+| `GET /api/v1/discord/sanctions` | Les sanctions qui valent en ce moment sur Discord — muet et bannissements de tout le site, effectifs, d'un membre relié : `sanctions`, chacune `sanction_id`, `user_id`, `discord_id`, `type` (`mute`, `ban_temp`, `ban_perm`), `expires_at` (horodatage Unix, ou `null`), `origine` (`site` ou `discord`) |
+| `POST /api/v1/discord/sanctions` | Rapporte une sanction prononcée sur Discord : `type`, `executor_discord_id`, `target_discord_id`, `duration_seconds`, `reason` ; rend 201 `sanction_id`, `requires_approval`. Refus : 422 `invalid_type`, 403 `executor_unlinked`, 404 `target_unlinked`, 403 `forbidden` (le modérateur n'a pas ce droit sur le site), 403 `refused` (hiérarchie, soi-même) |
+| `POST /api/v1/discord/sanctions/{id}/revoke` | Lève une sanction venue de Discord : `executor_discord_id` ; 404 `not_found`, 409 `site_sanction` (elle se lève sur le site), 403 `forbidden` |
+| `GET /api/v1/discord/collectives` | Les collectifs qui veulent leur espace sur Discord : `collectives`, chacun `collective_id`, `name`, `group_key` (la clé de son groupe), `role_id` et `channel_id` (ou `null` tant qu'ils n'existent pas) |
+| `POST /api/v1/discord/collectives/{id}` | Le rôle ou le salon que le bot vient de créer : `role_id`, `channel_id` — le rôle devient la correspondance du groupe du collectif ; 404 `not_found`, 422 `invalid_id` |
 
 ## Écrire sur le forum
 
@@ -206,6 +211,8 @@ reste des événements à lire tout de suite. Les événements restent **30 jour
 | `bugtracker.comment.created`, `.edited`, `.deleted` | `comment_id`, `ticket_id` (et `user_id` à la création) |
 | `user.groups.changed` | `user_id` — relire le membre pour ses groupes à jour |
 | `user.discord.linked`, `user.discord.unlinked` | `user_id`, `discord_id` — un compte Discord vient d'être lié ou délié |
+| `discord.collective.removed` | `collective_id`, `role_id`, `channel_id` — un collectif quitte Discord (supprimé, ou sa case décochée) : son rôle est à supprimer |
+| `discord.sanction.created`, `.approved`, `.revoked` | `sanction_id`, `user_id`, `discord_id`, `type`, `expires_at`, `origine` — un muet ou un bannissement de tout le site, d'un membre relié, vient de prendre effet (prononcé, ou validé) ou d'être levé |
 
 Un événement ne porte que des **identifiants** : le contenu se lit par les adresses ci-dessus, au
 moment voulu (un message supprimé entre-temps rend `deleted: true`). `source` dit d'où vient le

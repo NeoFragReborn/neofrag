@@ -8,7 +8,7 @@ Un **module** est une fonctionnalité complète : le forum, les actualités, la 
 boutique… Chaque module apporte ses **pages publiques**, son **interface d'administration**, ses
 **données** (tables) et ses **permissions**.
 
-Le paquet livre **62 modules**, mais tu ne les installes pas tous : à l'installation, un **profil de
+Le paquet livre **63 modules**, mais tu ne les installes pas tous : à l'installation, un **profil de
 site** — *Complet*, *Gaming / eSport*, *Communauté*, *Association / club* ou *Cœur seul* — pré-coche ce qui correspond, et tu
 peux décocher module par module. Ce qu'un module réclame est ajouté automatiquement (le palmarès a
 besoin des équipes). Les modules du **cœur** (comptes, permissions, paramètres, pages, outils…) sont
@@ -22,7 +22,7 @@ absent répondent par un **404 propre**, jamais par une erreur.
 
 Un **widget** est un petit bloc réutilisable : le menu de navigation, l'espace membre, les derniers
 commentaires, un compte à rebours, un lecteur Twitch… Un même widget peut être placé plusieurs fois, à
-des endroits différents, avec des réglages différents. Le paquet en livre **38**.
+des endroits différents, avec des réglages différents. Le paquet en livre **42 widgets**.
 
 Les widgets se posent dans les **régions** du thème via l'**éditeur en direct** : un assistant en
 quatre étapes (widget, type, titre, configuration), du glisser-déposer pour les déplacer.
@@ -86,7 +86,7 @@ prochains matchs…) dans la colonne latérale de l'accueil. Tout se règle dans
 une ligne de code**.
 
 Pour une association ou un club : choisis le profil **Association / club** — actualités, forum,
-galeries, calendrier, dons, newsletter, wiki et FAQ, sans l'attirail esport. Les membres, les pages et
+galeries, calendrier, collectifs, dons et cotisations, newsletter, wiki et FAQ, sans l'attirail esport. Les membres, les pages et
 le formulaire de contact sont toujours là ; les équipes, s'il en faut, s'ajoutent d'un clic.
 
 ## Surcharge sans forker

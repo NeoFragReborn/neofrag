@@ -8,4 +8,6 @@ SET NAMES utf8mb4;
 DROP TABLE IF EXISTS `nf_donations`;
 DROP TABLE IF EXISTS `nf_donations_campaigns`;
 
+DROP TABLE IF EXISTS `nf_donations_campaigns_lang`;
+
 SET FOREIGN_KEY_CHECKS = 1;

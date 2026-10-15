@@ -46,4 +46,5 @@ return [
 	'eb6693d4' => 'Disattiva',
 	'52c9bbab' => 'Modifica',
 	'287e1fcc' => 'Il link deve essere un indirizzo web (http o https) o una pagina del sito.',
+	'7d58e538' => 'Scritto per %s. Cambia la lingua dell\'amministrazione per tradurre questa diapositiva; le altre lingue mantengono il loro testo.',
 ];

@@ -88,6 +88,7 @@
 			       value="<?php echo nf_texte($title) ?>"
 			       placeholder="<?php echo $this->lang('Titre par défaut') ?>">
 			<p class="nf-le-wiz-aide"><?php echo $this->lang('Laissez vide pour garder le titre par défaut du widget.') ?></p>
+			<p class="nf-le-wiz-aide"><?php echo $this->lang('Écrit pour %s. Change la langue de l\'administration pour traduire ce titre ; les autres langues gardent le leur.', nf_texte((string) $this->config->lang->info()->title)) ?></p>
 		</section>
 
 		<section class="nf-le-wiz-panel" data-panel="settings" role="tabpanel" hidden>

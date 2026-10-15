@@ -46,4 +46,5 @@ return [
 	'eb6693d4' => 'Disable',
 	'52c9bbab' => 'Edit',
 	'287e1fcc' => 'The link must be a web address (http or https) or a page of the site.',
+	'7d58e538' => 'Written for %s. Switch the admin language to translate this slide; the other languages keep their text.',
 ];

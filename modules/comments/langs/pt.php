@@ -6,7 +6,7 @@ declare(strict_types=1);
  */
 
 return [
-	'0a66646d' => 'Você deve estar logado para postar um comentário',
+	'0a66646d' => 'Tens de ter sessão iniciada para publicar um comentário',
 	'31e493e3' => 'Não há comentários',
 	'570a8b49' => 'Comentário enviado',
 	'64b6ab5b' => 'Ver comentários',

@@ -18,7 +18,7 @@ return [
 	'a12fa829' => 'Gaming',
 	'fbe41572' => 'Outros módulos',
 	'1c33c293' => 'Configurações',
-	'd5428aed' => 'Usuários',
+	'd5428aed' => 'Utilizadores',
 	'ab7143b8' => 'Permissões',
 	'ed9c4499' => 'Temas & addons',
 	'34b76d4d' => 'Editor ao vivo',

@@ -504,6 +504,74 @@ foreach ($domaines as $nom => $dossier)
 }
 
 /*
+ * ── Le mot à RECOPIER ───────────────────────────────────────────────────────────
+ * Une consigne qui demande de recopier un mot — « Tape "SUPPRIMER" pour confirmer » — ne vaut que si le mot cité
+ * est bien celui que le site attend. Le français cite « SUPPRIMER », et c'est la valeur d'une autre entrée du même
+ * domaine, celle que le contrôleur compare à la saisie. Si la traduction cite un mot et en attend un autre, le geste
+ * est IMPOSSIBLE dans cette langue : le portugais demandait de taper « EXCLUIR » et attendait « ELIMINAR » — on ne
+ * pouvait pas supprimer son compte en portugais (relevé le 2026-10-14, cinq langues sur six étaient justes).
+ *
+ * La règle ne s'applique qu'aux consignes dont le FRANÇAIS cite un mot tout en majuscules qui est lui-même la
+ * valeur d'une entrée du domaine : ailleurs, un mot en majuscules entre guillemets n'engage à rien.
+ */
+$mots_a_recopier = 0;
+
+foreach ($domaines as $nom => $dossier)
+{
+    $source = nf_langue_valeurs($dossier.'/langs/fr.php');
+    $majuscules = [];
+
+    foreach ($source as $cle => $valeur)
+    {
+        if (preg_match('/^\p{Lu}{4,}$/u', $valeur))
+        {
+            $majuscules[$cle] = $valeur;
+        }
+    }
+
+    if (!$majuscules)
+    {
+        continue;
+    }
+
+    foreach ($source as $cle => $francais)
+    {
+        if (!preg_match_all('/[«"“]\s*(\p{Lu}{4,})\s*[»"”]/u', $francais, $cites))
+        {
+            continue;
+        }
+
+        foreach ($cites[1] as $mot)
+        {
+            $cle_mot = array_search($mot, $majuscules, TRUE);
+
+            if ($cle_mot === FALSE)
+            {
+                continue;
+            }
+
+            foreach (array_diff(LANGUES, ['fr']) as $langue)
+            {
+                $traduit = nf_langue_valeurs($dossier.'/langs/'.$langue.'.php');
+
+                if (!isset($traduit[$cle], $traduit[$cle_mot]))
+                {
+                    continue;
+                }
+
+                $mots_a_recopier++;
+
+                if (!preg_match_all('/[«"“]\s*(\p{Lu}{4,})\s*[»"”]/u', $traduit[$cle], $siens) || !in_array($traduit[$cle_mot], $siens[1], TRUE))
+                {
+                    $erreurs[] = sprintf('le mot à recopier ne correspond pas : %s/langs/%s.php, %s cite « %s », et le site attend « %s » (%s)',
+                        nf_relatif($dossier), $langue, $cle, implode(' / ', $siens[1] ?? []) ?: 'aucun mot', $traduit[$cle_mot], $cle_mot);
+                }
+            }
+        }
+    }
+}
+
+/*
  * ── La traduction RECOPIÉE du français ──────────────────────────────────────────
  * Un texte qui a l'air français (accent, petit mot) et dont la « traduction » est le texte même.
  * Quelques mots s'écrivent pareil dans une autre langue : ils sont déclarés ici.
@@ -693,5 +761,5 @@ if ($total_manquantes || $erreurs)
         !empty($manquantes['fr']) ? ' — ajouter les clés françaises avec --fix' : ''));
 }
 
-nf_ok(sprintf('%s complète(s), formats de date alignés, %d pluriel(s) avec leurs arguments',
-    $o['toutes'] ? 'les six langues' : 'langue « '.$o['lang'].' »', $pluriels_examines));
+nf_ok(sprintf('%s complète(s), formats de date alignés, %d pluriel(s) avec leurs arguments, %d mot(s) à recopier vérifié(s)',
+    $o['toutes'] ? 'les six langues' : 'langue « '.$o['lang'].' »', $pluriels_examines, $mots_a_recopier));

@@ -8,17 +8,21 @@ use NF\Modules\Payments\Payments;
 
 /**
  * Le module Paiements vend des points et des jours de VIP, que seul le module Gamification sait
- * créditer. Il ne le déclarait pas, et sans lui `fulfill()` enregistrait le paiement comme traité
- * puis ne créditait rien : l'argent était encaissé, le membre ne recevait rien (2026-10-04).
+ * créditer. Sans lui, `fulfill()` enregistrait le paiement comme traité puis ne créditait rien :
+ * l'argent était encaissé, le membre ne recevait rien (2026-10-04). Paiements a d'abord requis
+ * Gamification ; depuis les cotisations (m16), il ne la requiert plus — une association n'a pas à
+ * installer des points pour encaisser —, et ce sont les lots de points et de VIP qui ne se vendent pas
+ * sans elle.
  */
 final class PaiementsGamificationTest extends TestCase
 {
-	public function test_la_dependance_est_declaree(): void
+	public function test_sans_gamification_seules_les_cotisations_se_vendent(): void
 	{
-		$source = (string) file_get_contents(__DIR__.'/../../modules/payments/payments.php');
+		$paiements = (new \ReflectionClass(PaiementsSansGamification::class))->newInstanceWithoutConstructor();
 
-		self::assertSame(1, preg_match("/'requires'\s*=>\s*\[([^\]]*)\]/", $source, $m));
-		self::assertStringContainsString("'gamification'", $m[1]);
+		self::assertFalse($paiements->vente_possible('points'));
+		self::assertFalse($paiements->vente_possible('vip'));
+		self::assertTrue($paiements->vente_possible('adhesion'));
 	}
 
 	/**
@@ -39,17 +43,22 @@ final class PaiementsGamificationTest extends TestCase
 		$racine = __DIR__.'/../../modules/payments';
 
 		self::assertStringContainsString('vente_possible()', (string) file_get_contents($racine.'/controllers/index.php'), 'la page publique');
-		self::assertStringContainsString('vente_possible()', (string) file_get_contents($racine.'/controllers/ajax.php'), 'la création de la session Stripe');
+		self::assertStringContainsString("vente_possible(\$pack['kind'])", (string) file_get_contents($racine.'/controllers/ajax.php'), 'la création de la session Stripe');
 		self::assertStringContainsString('->gamification()', (string) file_get_contents($racine.'/controllers/index.php'), 'le webhook');
 		self::assertStringContainsString('http_response_code(503)', (string) file_get_contents($racine.'/controllers/index.php'), 'Stripe représentera l\'événement');
 	}
 }
 
-/** Le module Paiements, sur un site où Gamification manque. */
+/** Le module Paiements, Stripe configuré, sur un site où Gamification manque. */
 final class PaiementsSansGamification extends Payments
 {
 	public function gamification()
 	{
 		return NULL;
+	}
+
+	public function is_configured()
+	{
+		return TRUE;
 	}
 }

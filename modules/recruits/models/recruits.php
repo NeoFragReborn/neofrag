@@ -13,8 +13,9 @@ class Recruits extends Model
 {
 	public function get_recruits()
 	{
-		$this->db	->select('r.*', 'u.id as user_id', 'u.username', 'up.avatar', 'up.sex', 'COUNT(DISTINCT rc.candidacy_id) as candidacies', 'COUNT(DISTINCT CASE WHEN rc.status = \'1\' THEN rc.candidacy_id END) as candidacies_pending', 'COUNT(DISTINCT CASE WHEN rc.status = \'2\' THEN rc.candidacy_id END) as candidacies_accepted', 'COUNT(DISTINCT CASE WHEN rc.status = \'3\' THEN rc.candidacy_id END) as candidacies_declined', 'tl.title as team_name')
+		$this->db	->select('r.*', 'rl.title', 'rl.introduction', 'rl.description', 'rl.requierments', 'u.id as user_id', 'u.username', 'up.avatar', 'up.sex', 'COUNT(DISTINCT rc.candidacy_id) as candidacies', 'COUNT(DISTINCT CASE WHEN rc.status = \'1\' THEN rc.candidacy_id END) as candidacies_pending', 'COUNT(DISTINCT CASE WHEN rc.status = \'2\' THEN rc.candidacy_id END) as candidacies_accepted', 'COUNT(DISTINCT CASE WHEN rc.status = \'3\' THEN rc.candidacy_id END) as candidacies_declined', 'tl.title as team_name')
 					->from('nf_recruits r')
+					->join_lang('nf_recruits_lang rl', 'recruit_id', 'r.recruit_id', NULL, 'LEFT')
 					->join('nf_user u',                  'r.user_id     = u.id')
 					->join('nf_user_profile up',         'up.id         = u.id')
 					// LEFT : ne sert qu'a COMPTER les candidatures. En stricte, un recrutement SANS
@@ -34,8 +35,9 @@ class Recruits extends Model
 
 	public function check_recruit($recruit_id, $title)
 	{
-		$this->db	->select('r.*', 'u.id as user_id', 'u.username', 'up.avatar', 'up.sex', 'COUNT(DISTINCT rc.candidacy_id) as candidacies', 'COUNT(DISTINCT CASE WHEN rc.status = \'1\' THEN rc.candidacy_id END) as candidacies_pending', 'COUNT(DISTINCT CASE WHEN rc.status = \'2\' THEN rc.candidacy_id END) as candidacies_accepted', 'COUNT(DISTINCT CASE WHEN rc.status = \'3\' THEN rc.candidacy_id END) as candidacies_declined', 'tl.title as team_name')
+		$this->db	->select('r.*', 'rl.title', 'rl.introduction', 'rl.description', 'rl.requierments', 'u.id as user_id', 'u.username', 'up.avatar', 'up.sex', 'COUNT(DISTINCT rc.candidacy_id) as candidacies', 'COUNT(DISTINCT CASE WHEN rc.status = \'1\' THEN rc.candidacy_id END) as candidacies_pending', 'COUNT(DISTINCT CASE WHEN rc.status = \'2\' THEN rc.candidacy_id END) as candidacies_accepted', 'COUNT(DISTINCT CASE WHEN rc.status = \'3\' THEN rc.candidacy_id END) as candidacies_declined', 'tl.title as team_name')
 					->from('nf_recruits r')
+					->join_lang('nf_recruits_lang rl', 'recruit_id', 'r.recruit_id', NULL, 'LEFT')
 					->join('nf_user u',                  'r.user_id     = u.id')
 					->join('nf_user_profile up',         'up.id         = u.id')
 					// LEFT : ne sert qu'a COMPTER les candidatures. En stricte, un recrutement SANS
@@ -65,10 +67,6 @@ class Recruits extends Model
 	public function add_recruits($title, $introduction, $description, $requierments, $size, $role, $icon, $date_end, $closed, $team_id, $image_id)
 	{
 		$recruit_id = $this->db->insert('nf_recruits', [
-			'title'        => $title,
-			'introduction' => $introduction,
-			'description'  => $description,
-			'requierments' => $requierments,
 			'user_id'      => $this->user->id,
 			'size'         => $size,
 			'role'         => $role,
@@ -79,7 +77,42 @@ class Recruits extends Model
 			'image_id'     => $image_id ?: NULL
 		]);
 
+		$this->ecrire_texte((int) $recruit_id, $title, $introduction, $description, $requierments);
+
 		$this->access->init('recruits', 'recruit', $recruit_id);
+	}
+
+	/*
+	 * Le titre, l'accroche, la description et les prérequis d'une offre se traduisent (m32, 2026-10-15). Les lectures
+	 * servent la meilleure traduction (la langue demandée, sinon le français, sinon la première écrite) ; l'écran
+	 * d'édition ouvre le texte TEL QU'IL EST ÉCRIT dans la langue de l'administration, vide si rien n'y est écrit.
+	 */
+	public function texte_dans(int $recruit_id, string $langue): array
+	{
+		$ecrit = $this->db	->select('title', 'introduction', 'description', 'requierments')
+							->from('nf_recruits_lang')
+							->where('recruit_id', $recruit_id)
+							->where('lang', $langue)
+							->row();
+
+		return [
+			'title'        => is_array($ecrit) ? (string) ($ecrit['title'] ?? '') : '',
+			'introduction' => is_array($ecrit) ? (string) ($ecrit['introduction'] ?? '') : '',
+			'description'  => is_array($ecrit) ? (string) ($ecrit['description'] ?? '') : '',
+			'requierments' => is_array($ecrit) ? (string) ($ecrit['requierments'] ?? '') : ''
+		];
+	}
+
+	/** `ecrire_lang` CRÉE la ligne quand elle manque (leçon de m30). */
+	public function ecrire_texte(int $recruit_id, $title, $introduction, $description, $requierments, ?string $langue = NULL): void
+	{
+		$this->db->ecrire_lang('nf_recruits_lang',
+			['recruit_id' => $recruit_id, 'lang' => (string) ($langue ?: $this->config->lang->info()->name)], [
+				'title'        => (string) $title,
+				'introduction' => (string) $introduction,
+				'description'  => (string) $description,
+				'requierments' => (string) $requierments
+			]);
 	}
 
 	public function get_teams_list()
@@ -104,10 +137,6 @@ class Recruits extends Model
 	{
 		$this->db	->where('recruit_id', $recruit_id)
 					->update('nf_recruits', [
-						'title' => $title,
-						'introduction' => $introduction,
-						'description'  => $description,
-						'requierments' => $requierments,
 						'size'         => $size,
 						'role'         => $role,
 						'icon'         => $icon,
@@ -116,6 +145,8 @@ class Recruits extends Model
 						'team_id'      => $team_id ?: NULL,
 						'image_id'     => $image_id ?: NULL
 					]);
+
+		$this->ecrire_texte((int) $recruit_id, $title, $introduction, $description, $requierments);
 	}
 
 	public function delete_recruit($recruit_id)
@@ -128,9 +159,10 @@ class Recruits extends Model
 
 	public function get_candidacies($recruit_id = '', $status = '')
 	{
-		$this->db	->select('rc.*', 'u.id as user_id', 'u.username', 'up.avatar', 'up.sex', 'r.title')
+		$this->db	->select('rc.*', 'u.id as user_id', 'u.username', 'up.avatar', 'up.sex', 'rl.title')
 					->from('nf_recruits_candidacies rc')
 					->join('nf_recruits r',      'rc.recruit_id = r.recruit_id')
+					->join_lang('nf_recruits_lang rl', 'recruit_id', 'r.recruit_id', NULL, 'LEFT')
 					->join('nf_user u',          'rc.user_id    = u.id')
 					->join('nf_user_profile up', 'up.id         = u.id')
 					->order_by('rc.date DESC');
@@ -167,21 +199,59 @@ class Recruits extends Model
 
 	// ---- Personnalisation du formulaire : champs custom par offre ----
 
+	// Le libellé d'une question se traduit (m32, 2026-10-15) ; son type, son obligation et son ordre sont communs. Les
+	// RÉPONSES d'un candidat gardent le libellé qu'il a lu : elles n'ont jamais eu de langue.
 	public function get_fields($recruit_id)
 	{
-		return $this->db	->select('field_id', 'recruit_id', 'label', 'type', 'required', 'sort_order')
-							->from('nf_recruits_fields')
-							->where('recruit_id', (int)$recruit_id)
-							->order_by('sort_order ASC, field_id ASC')
+		return $this->db	->select('f.field_id', 'f.recruit_id', 'fl.label', 'f.type', 'f.required', 'f.sort_order')
+							->from('nf_recruits_fields f')
+							->join_lang('nf_recruits_fields_lang fl', 'field_id', 'f.field_id', NULL, 'LEFT')
+							->where('f.recruit_id', (int)$recruit_id)
+							->order_by('f.sort_order ASC, f.field_id ASC')
 							->get();
 	}
 
 	public function get_field($field_id)
 	{
-		return $this->db	->select('field_id', 'recruit_id', 'label')
-							->from('nf_recruits_fields')
-							->where('field_id', (int)$field_id)
+		return $this->db	->select('f.field_id', 'f.recruit_id', 'fl.label')
+							->from('nf_recruits_fields f')
+							->join_lang('nf_recruits_fields_lang fl', 'field_id', 'f.field_id', NULL, 'LEFT')
+							->where('f.field_id', (int)$field_id)
 							->row();
+	}
+
+	/** Une question, son libellé TEL QU'IL EST ÉCRIT dans une langue (vide si rien n'y est écrit) : ce qu'on édite. */
+	public function champ_dans(int $field_id, string $langue): array
+	{
+		$champ = $this->db	->select('type', 'required')
+							->from('nf_recruits_fields')
+							->where('field_id', $field_id)
+							->row();
+
+		$label = $this->db	->select('label')
+							->from('nf_recruits_fields_lang')
+							->where('field_id', $field_id)
+							->where('lang', $langue)
+							->row();
+
+		return [
+			'type'     => is_array($champ) ? (string) $champ['type'] : 'text',
+			'required' => is_array($champ) && !empty($champ['required']),
+			'label'    => is_string($label) ? $label : ''
+		];
+	}
+
+	public function edit_field(int $field_id, string $label, string $type, bool $required, ?string $langue = NULL): void
+	{
+		$this->db	->where('field_id', $field_id)
+					->update('nf_recruits_fields', [
+						'type'     => in_array($type, ['text', 'textarea'], TRUE) ? $type : 'text',
+						'required' => $required ? 1 : 0
+					]);
+
+		$this->db->ecrire_lang('nf_recruits_fields_lang',
+			['field_id' => $field_id, 'lang' => (string) ($langue ?: $this->config->lang->info()->name)],
+			['label' => $label]);
 	}
 
 	public function add_field($recruit_id, $label, $type, $required)
@@ -191,13 +261,18 @@ class Recruits extends Model
 							->where('recruit_id', (int)$recruit_id)
 							->row();
 
-		return $this->db->insert('nf_recruits_fields', [
+		$field_id = (int) $this->db->insert('nf_recruits_fields', [
 			'recruit_id' => (int)$recruit_id,
-			'label'      => $label,
 			'type'       => in_array($type, ['text', 'textarea'], TRUE) ? $type : 'text',
 			'required'   => $required ? 1 : 0,
 			'sort_order' => (int)$row['m'] + 1
 		]);
+
+		$this->db->ecrire_lang('nf_recruits_fields_lang',
+			['field_id' => $field_id, 'lang' => (string) $this->config->lang->info()->name],
+			['label' => $label]);
+
+		return $field_id;
 	}
 
 	public function delete_field($field_id, $recruit_id)
@@ -237,9 +312,10 @@ class Recruits extends Model
 
 	public function check_candidacy($candidacy_id, $title)
 	{
-		$candidacy = $this->db	->select('rc.*', 'r.recruit_id', 'r.title', 'r.icon', 'r.role', 'r.team_id', 'tl.title as team_name', 'u.username', 'up.avatar', 'up.sex')
+		$candidacy = $this->db	->select('rc.*', 'r.recruit_id', 'rl.title', 'r.icon', 'r.role', 'r.team_id', 'tl.title as team_name', 'u.username', 'up.avatar', 'up.sex')
 								->from('nf_recruits_candidacies rc')
 								->join('nf_recruits r',        'rc.recruit_id = r.recruit_id')
+								->join_lang('nf_recruits_lang rl', 'recruit_id', 'r.recruit_id', NULL, 'LEFT')
 								->join_lang('nf_teams_lang tl', 'team_id', 'r.team_id')
 								->join('nf_user u',            'rc.user_id    = u.id')
 								->join('nf_user_profile up',   'up.id         = u.id')
@@ -271,12 +347,13 @@ class Recruits extends Model
 
 	public function postulated($user_id, $recruit_id, $title)
 	{
-		$candidacy = $this->db	->select('rc.candidacy_id', 'rc.recruit_id', 'rc.date', 'rc.user_id', 'rc.status', 'r.title')
+		$candidacy = $this->db	->select('rc.candidacy_id', 'rc.recruit_id', 'rc.date', 'rc.user_id', 'rc.status', 'rl.title')
 								->from('nf_recruits_candidacies rc')
 								->join('nf_recruits r', 'rc.recruit_id = r.recruit_id')
+								->join_lang('nf_recruits_lang rl', 'recruit_id', 'r.recruit_id', NULL, 'LEFT')
 								->where('rc.user_id', $user_id)
 								->where('rc.recruit_id', $recruit_id)
-								->where('r.title', $title);
+								->where('rl.title', $title);
 
 		$candidacy = $this->db->row();
 
@@ -332,9 +409,13 @@ class Recruits extends Model
 
 	public function check_role($title)
 	{
-		$role = $this->db	->select('role_id', 'title')
-							->from('nf_teams_roles')
-							->where('title', $title)
+		// Le nom d'un rôle vit dans `nf_teams_roles_lang` depuis m32 : on le cherche dans TOUTES les
+		// langues, sinon une candidature ouverte en anglais ne retrouverait pas son rôle.
+		$role = $this->db	->select('r.role_id', 'rl.title')
+							->from('nf_teams_roles r')
+							->join('nf_teams_roles_lang rl', 'rl.role_id = r.role_id')
+							->where('rl.title', $title)
+							->group_by('r.role_id')
 							->row();
 
 		if ($role && $title == $role['title'])

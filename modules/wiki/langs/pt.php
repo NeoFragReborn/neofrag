@@ -16,8 +16,8 @@ return [
 	'0070e5d9' => 'Publicada',
 	'32795d48' => 'Rascunho',
 	'86c33902' => 'Editar',
-	'c90a715a' => 'Excluir esta página? As revisões também serão perdidas.',
-	'8d9ef7a4' => 'Excluir',
+	'c90a715a' => 'Eliminar esta página? As revisões também serão perdidas.',
+	'8d9ef7a4' => 'Eliminar',
 	'6bd5ed80' => 'Páginas colaborativas com histórico de revisões automático.',
 	// i18n 2026-06-11
 	'd3a89139' => 'Nenhuma página corresponde a estes critérios.',
@@ -78,4 +78,5 @@ return [
 	'8d0eda24' => 'Comparação: %s',
 	'd298327d' => 'Gerir as páginas do wiki',
 	'032adbed' => 'Ler a página',
+	'91913cac' => 'Escrito para %s. Muda a língua da administração para traduzir esta página; as outras línguas mantêm o seu texto, e o seu histórico.',
 ];

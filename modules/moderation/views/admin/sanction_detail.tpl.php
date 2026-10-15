@@ -26,7 +26,7 @@ $is_active   = !$is_revoked && !$is_pending && !$is_expired;
 			<dd class="col-sm-9"><a href="<?php echo url($_modbase.'/users/'.(int)$sanction['user_id']) ?>">@<?php echo nf_texte($sanction['user_username']) ?></a></dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('Émise par') ?></dt>
-			<dd class="col-sm-9"><?php echo !empty($sanction['issuer_username']) ? '@'.nf_texte($sanction['issuer_username']) : '<i>'.$this->lang('Escalade automatique').'</i>' ?> <small class="text-muted">(<?php echo nf_date_heure($sanction['created_at']) ?>)</small></dd>
+			<dd class="col-sm-9"><?php echo !empty($sanction['issuer_username']) ? '@'.nf_texte($sanction['issuer_username']) : '<i>'.$this->lang('Escalade automatique').'</i>' ?><?php if (($sanction['origine'] ?? 'site') === 'discord'): ?> <span class="badge text-bg-secondary"><?php echo icon('fab fa-discord') ?> <?php echo $this->lang('Prononcée sur Discord, rapportée par le bot') ?></span><?php endif ?> <small class="text-muted">(<?php echo nf_date_heure($sanction['created_at']) ?>)</small></dd>
 
 			<dt class="col-sm-3"><?php echo $this->lang('Démarre le') ?></dt>
 			<dd class="col-sm-9"><?php echo nf_date_heure($sanction['starts_at']) ?></dd>

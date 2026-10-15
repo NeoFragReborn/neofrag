@@ -38,6 +38,9 @@ class Notifications extends Module
 				'ajax/read/{id}'                   => '_read',
 				'ajax/read-all'                    => '_read_all',
 				'ajax/subscribe/{url_title}/{id}'  => '_subscribe',
+				'ajax/push/abonner'                => '_push_abonner',
+				'ajax/push/desabonner'             => '_push_desabonner',
+				'ajax/push/essai'                  => '_push_essai',
 			]
 		];
 	}
@@ -82,8 +85,9 @@ class Notifications extends Module
 	private ?array $_types = NULL;
 
 	/**
-	 * Le membre veut-il recevoir ce type de notification, sur ce canal (`site` : la cloche, `email`) ? Sans réglage
-	 * de sa part, oui : il reçoit tout, comme avant les préférences.
+	 * Le membre veut-il recevoir ce type de notification, sur ce canal (`site` : la cloche, `email`, `push` : son
+	 * navigateur, d11) ? Sans réglage de sa part, oui : il reçoit tout, comme avant les préférences — et pour le push,
+	 * rien ne part de toute façon tant qu'il ne l'a pas activé sur un appareil.
 	 */
 	public function veut(int $user_id, string $type, string $canal = 'site'): bool
 	{
@@ -95,9 +99,9 @@ class Notifications extends Module
 
 			if ($user_id && $this->db->table_exists('nf_notifications_preferences'))
 			{
-				foreach ((array) $this->db->select('type', 'site', 'email')->from('nf_notifications_preferences')->where('user_id', $user_id)->get() as $ligne)
+				foreach ((array) $this->db->select('*')->from('nf_notifications_preferences')->where('user_id', $user_id)->get() as $ligne)
 				{
-					$preferences[$user_id][(string) $ligne['type']] = ['site' => (bool) $ligne['site'], 'email' => (bool) $ligne['email']];
+					$preferences[$user_id][(string) $ligne['type']] = ['site' => (bool) $ligne['site'], 'email' => (bool) $ligne['email'], 'push' => (bool) ($ligne['push'] ?? TRUE)];
 				}
 			}
 		}
@@ -116,6 +120,13 @@ class Notifications extends Module
 			return NULL;
 		}
 
+		// Le push part à la fin de la requête, la page déjà rendue (d11) : un message pour chaque navigateur où le
+		// membre l'a activé, s'il veut ce type-là sur ce canal.
+		if ($this->veut($user_id, (string) $type, 'push'))
+		{
+			$this->mettre_en_file($user_id, (string) $type, (string) $title, (string) $url);
+		}
+
 		// Ce que le membre a choisi de ne plus recevoir sur le site (préférences, chantier A, étape A4).
 		if (!$this->veut($user_id, (string) $type, 'site'))
 		{
@@ -129,6 +140,151 @@ class Notifications extends Module
 			'title'    => mb_substr((string)$title, 0, 255),
 			'url'      => mb_substr((string)$url, 0, 255)
 		]);
+	}
+
+	/* ------------------------------------------------------------------ Le push (d11, 2026-10-16) */
+
+	/** Le push est-il ouvert sur ce site : le réglage, et un serveur qui sait chiffrer et envoyer. */
+	public function push_actif(): bool
+	{
+		if (!$this->config->nf_push || !$this->db->table_exists('nf_push_abonnements'))
+		{
+			return FALSE;
+		}
+
+		require_once NEOFRAG_CMS.'/neofrag/helpers/push.php';
+
+		return nf_push_possible();
+	}
+
+	/** Les navigateurs où un membre a activé le push. @return list<array<string, mixed>> */
+	public function abonnements(int $user_id): array
+	{
+		return $user_id && $this->db->table_exists('nf_push_abonnements')
+			? (array) $this->db->select('id', 'endpoint', 'p256dh', 'auth', 'appareil', 'created_at', 'used_at')->from('nf_push_abonnements')->where('user_id', $user_id)->order_by('created_at DESC')->get(FALSE)
+			: [];
+	}
+
+	/**
+	 * Retient (ou rafraîchit) l'abonnement d'un navigateur. L'adresse n'est reçue que si elle désigne un service de push
+	 * connu (nf_push_adresse_recue()) : le serveur y écrira. Un même navigateur ne s'abonne qu'une fois ; s'il passe
+	 * d'un compte à l'autre, l'abonnement suit le dernier.
+	 */
+	public function abonner(int $user_id, string $adresse, string $p256dh, string $auth, string $appareil = ''): bool
+	{
+		if (!$this->push_actif() || !$user_id || !nf_push_adresse_recue($adresse)
+			|| strlen(nf_push_b64u_decoder($p256dh)) !== 65 || strlen(nf_push_b64u_decoder($auth)) !== 16)
+		{
+			return FALSE;
+		}
+
+		$empreinte = hash('sha256', $adresse);
+
+		$this->db->where('empreinte', $empreinte)->delete('nf_push_abonnements');
+		$this->db->insert('nf_push_abonnements', [
+			'user_id'   => $user_id,
+			'endpoint'  => mb_substr($adresse, 0, 1000),
+			'empreinte' => $empreinte,
+			'p256dh'    => $p256dh,
+			'auth'      => $auth,
+			'appareil'  => mb_substr($appareil, 0, 190)
+		]);
+
+		return TRUE;
+	}
+
+	public function desabonner(int $user_id, string $adresse): void
+	{
+		$this->db	->where('user_id', $user_id)
+					->where('empreinte', hash('sha256', $adresse))
+					->delete('nf_push_abonnements');
+	}
+
+	/** @var list<array{user_id: int, type: string, titre: string, adresse: string}> les messages de cette requête */
+	private static array $_file = [];
+
+	private function mettre_en_file(int $user_id, string $type, string $titre, string $adresse): void
+	{
+		if (!$this->push_actif() || !$this->db->select('id')->from('nf_push_abonnements')->where('user_id', $user_id)->row())
+		{
+			return;
+		}
+
+		if (!self::$_file)
+		{
+			register_shutdown_function([$this, 'envoyer_la_file']);
+		}
+
+		self::$_file[] = ['user_id' => $user_id, 'type' => $type, 'titre' => $titre, 'adresse' => $adresse];
+	}
+
+	/**
+	 * Envoie les messages de la requête, une fois la page partie : le membre qui a écrit n'attend pas les services de
+	 * push des autres. Bornée : cinquante envois au plus par requête. Un abonnement que le service déclare disparu
+	 * (404, 410) est oublié.
+	 */
+	public function envoyer_la_file(): void
+	{
+		$file        = self::$_file;
+		self::$_file = [];
+
+		if (!$file)
+		{
+			return;
+		}
+
+		if (function_exists('fastcgi_finish_request'))
+		{
+			fastcgi_finish_request();
+		}
+
+		$envois = 0;
+
+		foreach ($file as $message)
+		{
+			foreach ($this->abonnements($message['user_id']) as $abonnement)
+			{
+				if (++$envois > 50)
+				{
+					return;
+				}
+
+				$this->envoyer($abonnement, $this->message($message['type'], $message['titre'], $message['adresse']));
+			}
+		}
+	}
+
+	/** Le message d'une notification, tel que le navigateur l'affiche : le nom du site, la phrase, l'adresse. */
+	public function message(string $type, string $titre, string $adresse): array
+	{
+		$adresse = preg_match('#^https?://#i', $adresse) ? $adresse : absolute_url(ltrim($adresse, '/'));
+		$icone   = favicon_url();
+		$icone   = preg_match('#^https?://#i', $icone) ? $icone : site_origin().'/'.ltrim($icone, '/');
+
+		return [
+			'title' => html_entity_decode((string) ($this->config->nf_name ?: 'NeoFrag'), ENT_QUOTES, 'UTF-8'),
+			'body'  => html_entity_decode(strip_tags($titre), ENT_QUOTES, 'UTF-8'),
+			'url'   => $adresse,
+			'icon'  => $icone,
+			'tag'   => mb_substr($type.':'.$adresse, 0, 120)
+		];
+	}
+
+	/** Un envoi, et ce qu'il apprend sur l'abonnement. Rend le code du service de push. */
+	public function envoyer(array $abonnement, array $message): int
+	{
+		$code = nf_push_envoyer($abonnement, $message);
+
+		if (in_array($code, [404, 410], TRUE))
+		{
+			$this->db->where('id', (int) $abonnement['id'])->delete('nf_push_abonnements');
+		}
+		else if ($code >= 200 && $code < 300)
+		{
+			$this->db->where('id', (int) $abonnement['id'])->update('nf_push_abonnements', 'used_at = CURRENT_TIMESTAMP');
+		}
+
+		return $code;
 	}
 
 	/** Comme push() mais ignore si une notif non-lue identique (user, type, url) existe déjà (anti-spam). */

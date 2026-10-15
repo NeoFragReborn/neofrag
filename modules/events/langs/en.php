@@ -165,4 +165,6 @@ return [
 	'e981b5d1' => 'Standard',
 	'bb9aea01' => 'Match',
 	'cbf0a999' => 'Number of events per page',
+	'f30ac578' => 'Written for %s. Switch the admin language to translate this event; the other languages keep their text.',
+	'4e5e9cce' => 'Written for %s. Switch the admin language to translate this type; the other languages keep their text.',
 ];

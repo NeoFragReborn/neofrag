@@ -136,6 +136,8 @@ class Index extends Controller_Module
 
 		$types         = $notifications->types();
 		$user_id       = (int) $this->user->id;
+		$push          = $notifications->push_actif();
+		$appareil      = '';
 		$site          = array_column($types, 'titre', 'type');
 		$email         = array_column(array_filter($types, fn ($t) => !empty($t['email'])), 'titre', 'type');
 		$recus         = fn (array $choix, string $canal) => array_values(array_filter(array_keys($choix), fn ($type) => $notifications->veut($user_id, (string) $type, $canal)));
@@ -168,9 +170,56 @@ class Index extends Controller_Module
 				);
 			}
 
-			$panneau = $formulaire	->success(function($data) use ($types, $user_id, $notifications){
+			// Le push (d11) : dans le navigateur, même site fermé — sur les appareils où le membre l'a activé.
+			if ($push)
+			{
+				$formulaire->rule($this	->form_checkbox('push')
+										->title($this->lang('Sur mes appareils'))
+										->info($this->lang('Dans le navigateur, même site fermé, sur les appareils où tu l’as activé ci-dessus.'))
+										->data($site)
+										->inline(FALSE)
+										->value($recus($site, 'push'))
+				);
+
+				$cles     = nf_push_cles();
+				$nombre   = count($notifications->abonnements($user_id));
+				$libelles = [
+					'impossible' => (string) $this->lang('Ce navigateur ne sait pas recevoir de notifications push.'),
+					'refuse'     => (string) $this->lang('Tu as refusé les notifications pour ce site dans ton navigateur : c’est dans ses réglages que tu peux les rouvrir.'),
+					'inactif'    => (string) $this->lang('Le push n’est pas activé sur cet appareil.'),
+					'actif'      => (string) $this->lang('Le push est activé sur cet appareil.'),
+					'essai'      => (string) $this->lang('Envoyé : la notification d’essai doit apparaître dans quelques secondes.'),
+					'erreur'     => (string) $this->lang('Cela n’a pas fonctionné. Réessaie dans un instant.'),
+					'perime'     => (string) $this->lang('Le service de push de ton navigateur ne reconnaît plus cet appareil : il est désabonné, réactive-le.'),
+					'appareils'  => (string) $this->lang('Appareils où le push est activé : %d'),
+				];
+
+				$notifications->js('push');
+
+				$appareil = $this	->panel()
+									->heading($this->lang('Cet appareil'), 'fas fa-mobile-screen')
+									->body('<div class="nf-push"'
+										.' data-cle="'.nf_texte((string) ($cles['publique'] ?? '')).'"'
+										.' data-worker="'.nf_texte($this->url->base.'service-worker.js').'"'
+										.' data-abonner="'.nf_texte(url('ajax/notifications/push/abonner')).'"'
+										.' data-desabonner="'.nf_texte(url('ajax/notifications/push/desabonner')).'"'
+										.' data-essai="'.nf_texte(url('ajax/notifications/push/essai')).'"'
+										.' data-libelles="'.nf_texte((string) json_encode($libelles, JSON_UNESCAPED_UNICODE)).'">'
+										.'<p class="nf-push-etat" aria-live="polite">'.$this->lang('Le push n’est pas activé sur cet appareil.').'</p>'
+										.'<div class="d-flex flex-wrap gap-2">'
+											.'<button type="button" class="btn btn-primary nf-push-activer" hidden>'.icon('fas fa-bell').' '.$this->lang('Activer sur cet appareil').'</button>'
+											.'<button type="button" class="btn btn-outline-secondary nf-push-desactiver" hidden>'.icon('fas fa-bell-slash').' '.$this->lang('Désactiver sur cet appareil').'</button>'
+											.'<button type="button" class="btn btn-outline-info nf-push-essai" hidden>'.icon('fas fa-paper-plane').' '.$this->lang('M’envoyer un essai').'</button>'
+										.'</div>'
+										.'<p class="text-muted small mt-3 mb-0"><span class="nf-push-appareils">'.$this->lang('Appareils où le push est activé : %d', $nombre).'</span>. '
+										.$this->lang('Ton navigateur passe par son service de push (Google, Mozilla, Apple ou Microsoft) ; le message lui est chiffré, il ne peut pas le lire.').'</p>'
+										.'</div>');
+			}
+
+			$panneau = $formulaire	->success(function($data) use ($types, $user_id, $notifications, $push){
 										$site  = (array) ($data['site'] ?? []);
 										$email = (array) ($data['email'] ?? []);
+										$appareils = (array) ($data['push'] ?? []);
 
 										foreach ($types as $type)
 										{
@@ -179,7 +228,10 @@ class Index extends Controller_Module
 											// Un type que le site n'écrit pas par e-mail garde le choix déjà fait (le forum peut l'avoir coupé).
 											$par_email = !empty($type['email']) ? in_array($type['type'], $email, TRUE) : $notifications->veut($user_id, (string) $type['type'], 'email');
 
-											if ($par_site && $par_email)
+											// Le push fermé sur le site : le choix déjà fait reste.
+											$par_push  = $push ? in_array($type['type'], $appareils, TRUE) : $notifications->veut($user_id, (string) $type['type'], 'push');
+
+											if ($par_site && $par_email && $par_push)
 											{
 												$this->db	->where('user_id', $user_id)
 															->where('type', (string) $type['type'])
@@ -192,6 +244,7 @@ class Index extends Controller_Module
 													'type'    => (string) $type['type'],
 													'site'    => (int) $par_site,
 													'email'   => (int) $par_email,
+													'push'    => (int) $par_push,
 												]);
 											}
 										}
@@ -204,7 +257,12 @@ class Index extends Controller_Module
 									->title($this->lang('Ce que je reçois'), 'fas fa-sliders');
 		}
 
-		return $this->_layout(function($row) use ($panneau){
+		return $this->_layout(function($row) use ($panneau, $appareil){
+			if ($appareil !== '')
+			{
+				$row->append($this->col($appareil)->size('col-12'));
+			}
+
 			$row->append($this->col($panneau)->size('col-12'));
 		}, 'user/notifications/preferences');
 	}

@@ -65,6 +65,15 @@ class Index extends Controller_Widget
 		$this->js('navigation');
 		$this->css('navigation');
 
+		// Un menu géré se relit à CHAQUE affichage, dans la langue de la page (m32, 2026-10-15) : ses liens sont
+		// traduits, et un lien ajouté ou renommé arrive sans réenregistrer le widget. Cf. Checker::_resolve().
+		// couplage(menu): facultatif — sans le module, la table manque, aucun menu n'est trouvé : les liens gardés servent.
+		if (!empty($settings['menu']) && ($checker = @NeoFrag()->widget('navigation')->controller('checker'))
+			&& ($liens = $checker->liens_du_menu((string) $settings['menu'])) !== NULL)
+		{
+			$settings['links'] = $liens;
+		}
+
 		$nav = $this->html('ul')
 					->attr('class', 'nav')
 					->append_attr_if($type == 'vertical', 'class', 'flex-column');

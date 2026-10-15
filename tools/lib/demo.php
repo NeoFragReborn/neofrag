@@ -38,6 +38,11 @@ const NF_DEMO_REGLAGES_EXCLUS = [
     'nf_translate_api'          => "la clé du service de traduction de NeoFrag d'origine",
     'nf_seo_indexnow_cle'       => "la clé IndexNow, propre à chaque site : un moteur la lit à la racine de celui qui envoie",
     'nf_seo_indexnow_api'       => "le service IndexNow remplacé pour une épreuve : jamais d'un site à l'autre",
+    'nf_push_vapid_privee'      => "la clé privée des notifications push : elle signe au nom du site, une seule par site",
+    'nf_push_vapid_publique'    => "sa clé publique, dont les abonnements des navigateurs dépendent : jamais d'un site à l'autre",
+    'nf_donations_kofi_token'   => 'le jeton qui authentifie les notifications de Ko-fi, chiffré',
+    'nf_donations_helloasso_secret' => "le secret du client de l'API HelloAsso, chiffré",
+    'nf_donations_tipeeestream_key' => "la clé d'API de TipeeeStream, chiffrée",
 ];
 
 /**

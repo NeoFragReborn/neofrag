@@ -190,7 +190,7 @@ class Admin extends Controller_Module
 		}
 
 		return $this->panel()
-					->heading('Nouvelle carte', 'far fa-map')
+					->heading($this->lang('Nouvelle carte'), 'far fa-map')
 					->body($this->form()->display());
 	}
 
@@ -218,7 +218,7 @@ class Admin extends Controller_Module
 		}
 
 		return $this->panel()
-					->heading('Éditer la carte', 'far fa-map')
+					->heading($this->lang('Éditer la carte'), 'far fa-map')
 					->body($this->form()->display());
 	}
 
@@ -255,7 +255,7 @@ class Admin extends Controller_Module
 		}
 
 		return $this->panel()
-					->heading('Nouveau mode', 'fas fa-cog')
+					->heading($this->lang('Nouveau mode'), 'fas fa-cog')
 					->body($this->form()->display());
 	}
 
@@ -278,7 +278,7 @@ class Admin extends Controller_Module
 		}
 
 		return $this->panel()
-					->heading('Éditer le mode', 'fas fa-cog')
+					->heading($this->lang('Éditer le mode'), 'fas fa-cog')
 					->body($this->form()->display());
 	}
 

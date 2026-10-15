@@ -78,4 +78,5 @@ return [
 	'8d0eda24' => 'Vergleich: %s',
 	'd298327d' => 'Wiki-Seiten verwalten',
 	'032adbed' => 'Seite lesen',
+	'91913cac' => 'Für %s geschrieben. Wechsle die Sprache der Verwaltung, um diese Seite zu übersetzen; die anderen Sprachen behalten ihren Text und ihren Verlauf.',
 ];

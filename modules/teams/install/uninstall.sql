@@ -10,4 +10,6 @@ DROP TABLE IF EXISTS `nf_teams_roles`;
 DROP TABLE IF EXISTS `nf_teams_lang`;
 DROP TABLE IF EXISTS `nf_teams`;
 
+DROP TABLE IF EXISTS `nf_teams_roles_lang`;
+
 SET FOREIGN_KEY_CHECKS = 1;

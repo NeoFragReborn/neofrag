@@ -331,6 +331,33 @@ class Db extends Core
 		return $this->_exec('affected_rows');
 	}
 
+	/*
+	 * Écrit la traduction d'un contenu dans UNE langue : la ligne est créée si elle n'existe pas encore, et sinon
+	 * seules les colonnes données changent — les autres (les étiquettes d'une actualité, par exemple) restent.
+	 *
+	 *   $this->db->ecrire_lang('nf_news_lang', ['news_id' => $id, 'lang' => $langue], ['title' => …, 'content' => …]);
+	 *
+	 * L'écriture habituelle — `->where('lang', $langue)->update('nf_news_lang', …)` — n'écrivait RIEN la première
+	 * fois qu'on traduisait un contenu dans une langue : sa ligne n'existait pas, l'`update` touchait zéro ligne, et
+	 * le texte saisi était perdu sans un mot. Quatorze endroits du produit écrivaient ainsi (relevé du 2026-10-14).
+	 *
+	 * Et pourquoi pas `replace()` ? REPLACE efface la ligne puis la réinsère : toute colonne que l'appelant ne donne
+	 * pas y revient à son défaut. Ici, une colonne qu'on ne nomme pas ne bouge pas.
+	 *
+	 * UNE RÈGLE À TENIR : donner TOUTES les colonnes obligatoires de la table (NOT NULL sans défaut), même quand la
+	 * ligne existe déjà. MySQL valide la partie INSERT avant de découvrir le doublon : une colonne obligatoire
+	 * absente fait échouer l'écriture, qu'il y ait une ligne à mettre à jour ou non (vérifié par
+	 * `TraductionsDbTest`). Les douze appels du produit donnent bien toutes les colonnes de texte de leur table.
+	 */
+	public function ecrire_lang(string $table, array $cle, array $colonnes)
+	{
+		$this->_request['insert']       = $table;
+		$this->_request['values']       = array_merge($cle, $colonnes);
+		$this->_request['on_duplicate'] = array_keys($colonnes);
+
+		return $this->_exec('affected_rows');
+	}
+
 	public function delete($table, $multi_tables = '')
 	{
 		$this->_request['delete'] = $table;

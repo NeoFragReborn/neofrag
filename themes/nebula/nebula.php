@@ -203,4 +203,15 @@ class Nebula extends Theme
 
 		return parent::install($dispositions);
 	}
+
+	/** Ses couleurs partent avec lui (d10). */
+	public function uninstall($remove = TRUE)
+	{
+		foreach (['nebula_theme_color', 'nebula_background_color', 'nebula_text_color'] as $cle)
+		{
+			$this->config->unset($cle);
+		}
+
+		return parent::uninstall($remove);
+	}
 }

@@ -346,4 +346,5 @@ return [
 	'6abee40f' => 'Se recusares, nada muda para ti: a tua denúncia continua anónima e a moderação trata dela como de costume.',
 	'2b7e2332' => 'Aceito a mediação',
 	'9886e305' => 'Recuso',
+	'6b56cd18' => 'Aplicada no Discord, comunicada pelo bot',
 ];

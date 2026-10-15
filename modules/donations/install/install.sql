@@ -8,8 +8,6 @@ SET NAMES utf8mb4;
 CREATE TABLE IF NOT EXISTS `nf_donations_campaigns` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `description` text NOT NULL,
   `goal_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
   `currency` varchar(3) NOT NULL DEFAULT 'EUR',
   `paypal_email` varchar(150) DEFAULT NULL,
@@ -33,15 +31,27 @@ CREATE TABLE IF NOT EXISTS `nf_donations` (
   `message` text DEFAULT NULL,
   `is_anonymous` tinyint(1) NOT NULL DEFAULT 0,
   `is_public` tinyint(1) NOT NULL DEFAULT 1,
-  `source` enum('manual','paypal') NOT NULL DEFAULT 'manual',
+  `source` enum('manual','paypal','helloasso','kofi','tipeeestream') NOT NULL DEFAULT 'manual',
   `paypal_txn_id` varchar(50) DEFAULT NULL,
+  `external_id` varchar(100) DEFAULT NULL,
   `status` enum('pending','completed','refunded') NOT NULL DEFAULT 'completed',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_paypal_txn` (`paypal_txn_id`),
+  UNIQUE KEY `uk_externe` (`source`,`external_id`),
   KEY `idx_campaign` (`campaign_id`,`status`),
   KEY `idx_user` (`user_id`),
   CONSTRAINT `fk_don_campaign` FOREIGN KEY (`campaign_id`) REFERENCES `nf_donations_campaigns` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `nf_donations_campaigns_lang` (
+  `campaign_id` int(11) unsigned NOT NULL,
+  `lang` varchar(5) NOT NULL,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `description` text DEFAULT NULL,
+  PRIMARY KEY (`campaign_id`,`lang`),
+  KEY `lang` (`lang`),
+  CONSTRAINT `nf_donations_campaigns_lang_ibfk_1` FOREIGN KEY (`campaign_id`) REFERENCES `nf_donations_campaigns` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;

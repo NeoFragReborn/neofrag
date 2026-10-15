@@ -143,4 +143,6 @@ return [
 	'92641492' => 'Delete the ticked files',
 	'970a684e' => 'file extension refused',
 	'4c523dac' => 'This message has been reported: it cannot be deleted until the moderators have reviewed it.',
+	'db202fcf' => 'Written for %s. Switch the admin language to translate this room; the other languages keep their text.',
+	'eb78cff1' => 'Description',
 ];

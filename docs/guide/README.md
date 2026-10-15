@@ -14,9 +14,11 @@ aux associations : crée le site de ton équipe, de ta guilde, de ton club ou de
 | Guide | Tu y apprends |
 |---|---|
 | [Installation](installation.md) | Mettre NeoFrag Reborn en ligne : prérequis, l'assistant en cinq étapes et ses profils, la ligne de commande, les premiers réglages |
+| [Premiers pas](premiers-pas.md) | Les dix étapes qui font d'une installation neuve un site prêt à ouvrir : nom, thème, accueil, menu, forum, membres, sauvegardes |
 | [Concepts](concepts.md) | Comment le CMS est organisé : modules, widgets, thèmes, zones et régions, dispositions, addons |
 | [Le panel d'administration](admin.md) | Piloter ton site : contenu, membres, permissions, réglages, monitoring |
 | [Le marketplace](marketplace.md) | Trouver et installer des addons, mettre à jour les addons et le cœur |
+| [Un site en plusieurs langues](multilingue.md) | Ce qui se traduit tout seul, ce que tu traduis, ce que voit un visiteur quand une traduction manque |
 | [Le bot Discord](bot-discord.md) | Relier ton site à ton serveur Discord : rôles et pseudos, forum ↔ salon Forum, le tout réglé depuis l'administration — et écrire une fonctionnalité du bot |
 
 ## Pour les développeurs
@@ -38,3 +40,13 @@ ton **thème** avec l'éditeur en direct, et tu télécharges des compléments d
 
 Tout est **surchargeable sans forker** (système d'overrides à trois niveaux), et toute extension est un
 simple dossier de fichiers PHP que tu peux versionner et partager.
+
+Lire dans une autre langue : [English](en/README.md)
+
+Lire dans une autre langue : [English](en/README.md) · [Deutsch](de/README.md)
+
+Lire dans une autre langue : [English](en/README.md) · [Deutsch](de/README.md) · [Español](es/README.md)
+
+Lire dans une autre langue : [English](en/README.md) · [Deutsch](de/README.md) · [Español](es/README.md) · [Italiano](it/README.md)
+
+Lire dans une autre langue : [English](en/README.md) · [Deutsch](de/README.md) · [Español](es/README.md) · [Italiano](it/README.md) · [Português](pt/README.md)

@@ -80,9 +80,11 @@ class Awards extends Module
 
 	public function comments($award_id)
 	{
-		$award = $this->db	->select('name')
-							->from('nf_awards')
-							->where('award_id', $award_id)
+		// Le nom vit dans `nf_awards_lang` depuis m31 : la meilleure traduction, comme partout ailleurs.
+		$award = $this->db	->select('al.name')
+							->from('nf_awards a')
+							->join_lang('nf_awards_lang al', 'award_id', 'a.award_id', NULL, 'LEFT')
+							->where('a.award_id', $award_id)
 							->row();
 
 		if ($award)

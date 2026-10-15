@@ -58,10 +58,13 @@ if ($nf_figer || ($nf_sonde !== '' && is_file($nf_sonde)))
              * chargement. N'écrire que la clé générique laissait le script du thème écraser
              * l'attribut : toutes les comparaisons clair/sombre faites ainsi comparaient le thème à
              * lui-même (2026-09-16). On écrit donc la clé de chaque thème présent sur le disque.
+             *
+             * Le disque du site SERVI (`-t`), et non celui de l'outil : un site jetable porte des thèmes que le
+             * dépôt n'a pas — un thème installé par son archive —, et sa clé manquait (2026-10-15).
              */
             $cles = ['nf-theme', 'nf-admin-theme'];
 
-            foreach (glob(dirname(__DIR__, 2).'/themes/*', GLOB_ONLYDIR) ?: [] as $dossier)
+            foreach (glob(rtrim((string) ($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__, 2)), '/').'/themes/*', GLOB_ONLYDIR) ?: [] as $dossier)
             {
                 $cles[] = 'nf-'.basename($dossier).'-theme';
             }

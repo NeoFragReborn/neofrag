@@ -60,4 +60,6 @@ return [
 	'ae4f5e0e' => 'category|categories',
 	'b2656c03' => 'Edit category: %s',
 	'fe1ca089' => 'Categorised frequently asked questions shown as a Bootstrap accordion.',
+	'262fe079' => 'Written for %s. Switch the admin language to translate this question; the other languages keep their text.',
+	'40698b8f' => 'Written for %s. Switch the admin language to translate this category; the other languages keep their text.',
 ];

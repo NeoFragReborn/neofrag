@@ -36,4 +36,5 @@ return [
 	'8fd9c7ef' => 'Save',
 	'4a818505' => 'item|items',
 	'4678bb10' => 'New item',
+	'bff00c60' => 'Written for %s. Switch the admin language to translate this link; the other languages keep their text.',
 ];

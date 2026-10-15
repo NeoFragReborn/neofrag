@@ -77,4 +77,5 @@ return [
 	'8d0eda24' => 'Comparison: %s',
 	'd298327d' => 'Manage wiki pages',
 	'032adbed' => 'Read the page',
+	'91913cac' => 'Written for %s. Switch the admin language to translate this page; the other languages keep their text, and their history.',
 ];

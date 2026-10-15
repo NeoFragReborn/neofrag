@@ -1403,6 +1403,8 @@ final class Installer
 					throw new RuntimeException(self::lang('Impossible d\'écrire %s', $entry));
 				}
 
+				self::opcache_oublier($root.'/'.$entry);
+
 				$n++;
 
 				if ($progress !== NULL)
@@ -2040,6 +2042,8 @@ final class Installer
 		{
 			throw new RuntimeException(self::lang('Addon absent après extraction.'));
 		}
+
+		self::opcache_oublier($root.'/'.$type.'s/'.$name);
 	}
 
 	/**
@@ -2096,9 +2100,42 @@ final class Installer
 		 * Trouvé par check-assistant, qui réinstalle cinq fois de suite (2026-10-04) ; Monitoring faisait
 		 * déjà de même pour `config/url.php`.
 		 */
-		if (str_ends_with($path, '.php') && function_exists('opcache_invalidate'))
+		self::opcache_oublier($path);
+	}
+
+	/**
+	 * Fait relire par PHP ce qu'on vient d'écrire : un fichier, ou tous les fichiers PHP d'un dossier.
+	 *
+	 * Le cache d'opcodes garde le code compilé d'un fichier tant qu'il ne le revérifie pas : deux secondes par
+	 * défaut (`opcache.revalidate_freq`), ou jusqu'au redémarrage de PHP quand l'hébergeur a coupé la vérification
+	 * (`opcache.validate_timestamps=0`). Seule l'écriture de la configuration l'en avertissait. Une mise à jour du
+	 * cœur réécrit des centaines de fichiers, un addon des dizaines : le site servait l'ancien code, ou un mélange
+	 * de l'ancien et du neuf — une page d'un module mis à jour par « Ajouter » répondait « introuvable » pendant
+	 * deux secondes, le temps que ses nouvelles routes soient relues (2026-10-15, épreuve des tutoriels).
+	 */
+	public static function opcache_oublier(string $chemin): void
+	{
+		if (!function_exists('opcache_invalidate'))
 		{
-			@opcache_invalidate($path, TRUE);
+			return;
+		}
+
+		if (!is_dir($chemin))
+		{
+			if (str_ends_with($chemin, '.php'))
+			{
+				@opcache_invalidate($chemin, TRUE);
+			}
+
+			return;
+		}
+
+		foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($chemin, \FilesystemIterator::SKIP_DOTS)) as $fichier)
+		{
+			if ($fichier->isFile() && str_ends_with($fichier->getFilename(), '.php'))
+			{
+				@opcache_invalidate($fichier->getPathname(), TRUE);
+			}
 		}
 	}
 

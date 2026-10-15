@@ -20,7 +20,7 @@ return [
 	'dce75260' => 'Mova uma ligação para aqui para eliminar',
 	'f8719a1e' => 'Horizontal',
 	'0667c6ef' => 'Navegação',
-	'8d9ef7a4' => 'Excluir',
+	'8d9ef7a4' => 'Eliminar',
 	'3eb668b0' => 'Título',
 	'648572c3' => 'Adicionar',
 	'd041ebad' => 'Cancelar',

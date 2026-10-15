@@ -564,6 +564,15 @@ class Output extends Core
 				$this->_theme = $theme;
 			}
 
+			// L'aperçu d'un thème depuis sa page de couleurs (d10, cf. nf_apercu_couleurs()) : un vrai administrateur
+			// seulement, hors administration ; il voit la page dans le thème qu'il configure, pas dans celui du site.
+			if (!$show_admin_theme && $is_real_admin && is_string($apercu = $_GET['apercu_theme'] ?? NULL)
+				&& ($apercu = (string) preg_replace('/[^a-z0-9_]/', '', $apercu)) !== '' && $apercu !== $this->_admin_theme
+				&& ($theme = @parent::theme($apercu)))
+			{
+				$this->_theme = $theme;
+			}
+
 			$demande = $show_admin_theme ? $this->_admin_theme : $this->config->nf_default_theme;
 
 			if (!$this->_theme)
@@ -642,7 +651,8 @@ class Output extends Core
 			 * Jamais en administration : rien n'y gagne à être gardé, et c'est l'endroit d'où l'on
 			 * éteint l'interrupteur — il doit rester joignable quoi qu'il arrive.
 			 */
-			if ($this->config->nf_pwa && !$this->url->admin && !$this->url->ajax)
+			// Le push (d11) a besoin du même worker : il est inscrit dès que l'un ou l'autre est ouvert.
+			if (($this->config->nf_pwa || $this->config->nf_push) && !$this->url->admin && !$this->url->ajax)
 			{
 				NeoFrag()->js_load("if ('serviceWorker' in navigator) { navigator.serviceWorker.register(".json_encode($this->url->base.'service-worker.js').").catch(function(){}); }");
 			}
@@ -660,7 +670,7 @@ class Output extends Core
 
 				if ($this->live_editor())
 				{
-					$body = '<div id="live_editor" data-module-title="'.utf8_htmlentities($this->url->segments[0] == 'index' ? $this->label('Accueil', 'fas fa-map-marker-alt') : $this->data->get('module', 'title')) /* codage: du HTML posé dans un attribut — le décoder réveillerait les balises qu’il cite */.'"></div>';
+					$body = '<div id="live_editor" data-module-title="'.utf8_htmlentities($this->url->segments[0] == 'index' ? $this->label($this->lang('Accueil'), 'fas fa-map-marker-alt') : $this->data->get('module', 'title')) /* codage: du HTML posé dans un attribut — le décoder réveillerait les balises qu’il cite */.'"></div>';
 
 					parent	::css('fonts/open-sans')
 							->css('live-editor')
@@ -949,6 +959,9 @@ class Output extends Core
 			$brut    = (string)file_get_contents($file_path);
 			$minifie = (bool)preg_match('/\.min\.(?:css|js)$/i', $file_path);
 
+			// La feuille d'un thème aux couleurs d'un aperçu (d10) : jamais gardée en cache, elle ne vaut que pour lui.
+			$apercu  = $ext === 'css' && nf_apercu_couleurs_feuille((string) $file_path);
+
 			if (in_array($ext, ['css', 'js']) && !$minifie && preg_match('/<\?(?:php\b|=)/', $brut))
 			{
 				ob_start();
@@ -981,6 +994,11 @@ class Output extends Core
 			header('Last-Modified: '.date('r', $date));
 			header('Etag: '.($etag = md5($content)));
 			header('Content-Type: '.get_mime_by_extension($ext));
+
+			if ($apercu)
+			{
+				header('Cache-Control: no-store');
+			}
 
 			if ($ext == 'zip')
 			{

@@ -158,10 +158,17 @@ class Events extends Module
 					return array_map(fn($ligne) => [
 						'type_id' => $ligne['type_id'],
 						'title'   => (string) $this->lang('Type %s', $ligne['title'])
-					], NeoFrag()->db->select('type_id', 'title')->from('nf_events_types')->get());
+					], NeoFrag()->db	->select('t.type_id', 'tl.title')
+										->from('nf_events_types t')
+										->join_lang('nf_events_types_lang tl', 'type_id', 't.type_id', NULL, 'LEFT')
+										->get());
 				},
 				'check'   => function($type_id){
-					if (($type = NeoFrag()->db->select('title')->from('nf_events_types')->where('type_id', $type_id)->row()) !== [])
+					if (($type = NeoFrag()->db	->select('tl.title')
+												->from('nf_events_types t')
+												->join_lang('nf_events_types_lang tl', 'type_id', 't.type_id', NULL, 'LEFT')
+												->where('t.type_id', $type_id)
+												->row()) !== [])
 					{
 						return (string) $this->lang('Type %s', $type);
 					}
@@ -200,9 +207,10 @@ class Events extends Module
 
 	public function comments($event_id)
 	{
-		$event = $this->db	->select('title')
-							->from('nf_events')
-							->where('event_id', $event_id)
+		$event = $this->db	->select('el.title')
+							->from('nf_events e')
+							->join_lang('nf_events_lang el', 'event_id', 'e.event_id', NULL, 'LEFT')
+							->where('e.event_id', $event_id)
 							->row();
 
 		if ($event)

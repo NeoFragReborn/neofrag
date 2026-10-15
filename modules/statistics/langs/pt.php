@@ -25,7 +25,7 @@ return [
 	'c18f1b3c' => 'Comentários',
 	'777842ac' => 'Novos tópicos',
 	'61573422' => 'Novas respostas',
-	'6cd1f3e4' => 'Registros',
+	'6cd1f3e4' => 'Inscrições',
 	'652ccf72' => 'Estatísticas de visita e tráfego do site.',
 	'c1fc5864' => '7 dias',
 	'f7573263' => '30 dias',

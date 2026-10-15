@@ -62,17 +62,25 @@ class Admin_Checker extends Module_Checker
 
 		if ($event = $this->model()->check_event($event_id, $title))
 		{
+			/*
+			 * L'écran d'édition montre le texte de la langue OÙ L'ON TRAVAILLE, et non le repli (m31,
+			 * 2026-10-15) : proposer la version française dans l'écran allemand reviendrait à l'y recopier
+			 * au premier enregistrement. Les champs s'ouvrent vides tant que ce rendez-vous n'a pas
+			 * d'allemand.
+			 */
+			$texte = $this->model()->texte_dans((int) $event['event_id'], (string) $this->config->lang->info()->name);
+
 			// Array indexé explicite mappé sur la signature de _edit (publish_date en dernier),
 			// les colonnes de rencontre (mode_id/webtv/website/mode_title) n'y figurent pas.
 			return [
 				$event['event_id'],
-				$event['title'],
+				$texte['title'] ?? '',
 				$event['type_id'],
 				$event['date'],
 				$event['date_end'],
-				$event['description'],
-				$event['private_description'],
-				$event['location'],
+				$texte['description'] ?? '',
+				$texte['private_description'] ?? '',
+				$texte['location'] ?? '',
 				$event['image_id'],
 				$event['published'],
 				$event['type'],

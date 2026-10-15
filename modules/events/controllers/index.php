@@ -18,6 +18,9 @@ class Index extends Controller_Module
 		// première du site (et celle de ses filtres, qui passent tous par ici).
 		nf_seo_sans_langue();
 
+		// Le compte à rebours des événements à venir (`.nf-countdown`, dans la vue `event`).
+		$this->js('compte-a-rebours');
+
 		$panels = $this->_filters();
 
 		$types = $this->model('types')->get_types();
@@ -124,6 +127,8 @@ class Index extends Controller_Module
 		// Un événement n'a pas de langue à lui : sa canonique est dans la langue première du site.
 		nf_seo_sans_langue();
 
+		$this->js('compte-a-rebours');
+
 		$this	->title($title)
 				->breadcrumb($title)
 				->table()
@@ -167,9 +172,10 @@ class Index extends Controller_Module
 
 		// Les manches d'un match, et leurs cartes : seulement quand il y a un match (m17 — sans le module Jeux, la table
 		// des cartes est absente).
-		$rounds = $match ? $this->db	->select('r.round_id', 'm.image_id', 'm.title', 'r.score1', 'r.score2')
+		$rounds = $match ? $this->db	->select('r.round_id', 'm.image_id', 'ml.title', 'r.score1', 'r.score2')
 										->from('nf_events_matches_rounds r')
 										->join('nf_games_maps m', 'm.map_id = r.map_id')
+										->join_lang('nf_games_maps_lang ml', 'map_id', 'm.map_id', NULL, 'LEFT')
 										->where('r.event_id', $event_id)
 										->order_by('r.round_id')
 										->get() : [];
@@ -213,7 +219,7 @@ class Index extends Controller_Module
 				refresh();
 			}
 
-			$modal = $this	->modal('Inviter des membres', 'fas fa-user-plus')
+			$modal = $this	->modal($this->lang('Inviter des membres'), 'fas fa-user-plus')
 							->body($this->view('participants', [
 								'users'   => $users,
 								'form_id' => $this->form()->token()

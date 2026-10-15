@@ -20,16 +20,17 @@ declare(strict_types=1);
  *   php tools/seed-demo.php --sans-config-demo   garnir SANS la configuration du site public de
  *                                                démonstration (thème nebula imposé, vitrine retirée) :
  *                                                pour un site d'essai, qui doit garder tous ses thèmes
- *   php tools/seed-demo.php --anglais            poser SEULEMENT la version anglaise du contenu
- *                                                existant (actualités, articles, pages, catégories,
- *                                                galeries), sans rien purger ni régénérer
+ *   php tools/seed-demo.php --traductions        poser SEULEMENT les traductions du contenu existant
+ *                                                (actualités, articles, pages, catégories, galeries,
+ *                                                équipes, partenaires, jeux, forum), sans rien purger
+ *                                                ni régénérer. `--anglais` en est l'ancien nom
  */
 
 require __DIR__.'/lib/outil.php';
 require __DIR__.'/lib/site.php';
 require __DIR__.'/lib/demo.php';
 
-[$o] = nf_options(['sans-config-demo' => FALSE, 'anglais' => FALSE]);
+[$o] = nf_options(['sans-config-demo' => FALSE, 'traductions' => FALSE, 'anglais' => FALSE]);
 
 function sans_config_demo(): bool
 {
@@ -40,10 +41,10 @@ function sans_config_demo(): bool
 
 const RACINE = __DIR__.'/..';
 
-if ($o['anglais'])
+if ($o['traductions'] || $o['anglais'])
 {
     $db = nf_connexion();
-    printf("✓ Version anglaise posée : %d ligne(s).\n", seed_anglais($db));
+    printf("✓ Traductions posées : %d ligne(s).\n", seed_traductions($db));
     exit(0);
 }
 
@@ -90,7 +91,7 @@ function main(): void
     seed_moderation($db, $users);
     seed_gamification($db, $users);
     seed_activite($db, $users);
-    seed_anglais($db);
+    seed_traductions($db);
 
     configure_demo($db);
 
@@ -116,12 +117,22 @@ function purge(mysqli $db): void
         'nf_forum', 'nf_forum_categories', 'nf_forum_topics', 'nf_forum_messages', 'nf_forum_url',
         'nf_gallery', 'nf_gallery_lang', 'nf_gallery_categories', 'nf_gallery_categories_lang', 'nf_gallery_images',
         'nf_games', 'nf_games_lang', 'nf_teams', 'nf_teams_lang', 'nf_teams_users',
-        'nf_events', 'nf_events_types', 'nf_awards',
+        'nf_events', 'nf_events_lang', 'nf_events_types', 'nf_awards', 'nf_awards_lang',
         'nf_comment', 'nf_reactions',
         'nf_faq_categories', 'nf_faq_questions',
-        'nf_downloads', 'nf_downloads_categories', 'nf_links', 'nf_links_categories',
+        'nf_downloads_lang', 'nf_downloads_categories_lang', 'nf_downloads', 'nf_downloads_categories',
+        'nf_links_lang', 'nf_links_categories_lang', 'nf_links', 'nf_links_categories',
+        'nf_faq_questions_lang', 'nf_faq_categories_lang',
+        'nf_surveys_options_lang', 'nf_surveys_lang',
+        'nf_events_types_lang', 'nf_teams_roles_lang', 'nf_classifieds_categories_lang',
+        // Les émissions et les champs de profil, eux, ne sont PAS semés ici (la démonstration les reçoit de
+        // install/demo.sql) : vider leurs traductions sans vider leurs lignes laissait des contenus sans
+        // aucun texte (2026-10-15). On ne vide que ce qu'on sème.
+        'nf_games_maps_lang', 'nf_games_modes_lang',
+        'nf_recruits_lang', 'nf_recruits_fields_lang', 'nf_donations_campaigns_lang', 'nf_ads_lang', 'nf_shop_items_lang',
+        'nf_menus_items_lang', 'nf_talks_lang',
         'nf_partners', 'nf_partners_lang', 'nf_guestbook',
-        'nf_surveys', 'nf_surveys_options', 'nf_surveys_votes', 'nf_classifieds',
+        'nf_surveys', 'nf_surveys_options', 'nf_surveys_votes', 'nf_classifieds', 'nf_classifieds_categories',
         'nf_recruits', 'nf_recruits_fields', 'nf_recruits_candidacies', 'nf_calendar_events',
         'nf_bug_tickets', 'nf_bug_comments', 'nf_donations', 'nf_donations_campaigns',
         'nf_ads', 'nf_newsletter_subscribers',
@@ -133,7 +144,7 @@ function purge(mysqli $db): void
         'nf_events_participants', 'nf_events_matches', 'nf_events_matches_opponents',
         'nf_events_matches_rounds',
         'nf_pages', 'nf_pages_lang', 'nf_menus', 'nf_menus_items',
-        'nf_slider_slides', 'nf_custom_emojis',
+        'nf_slider_slides', 'nf_slider_slides_lang', 'nf_custom_emojis',
         'nf_talks', 'nf_talks_messages', 'nf_talks_participants',
         'nf_newsletter_campaigns', 'nf_newsletter_templates',
         'nf_notifications', 'nf_points_log', 'nf_shop_items', 'nf_vip',
@@ -596,12 +607,17 @@ function seed_gaming(mysqli $db, array $users): array
     $map_ids = $mode_ids = [];
     foreach ($game_ids as $jeu => $gid) {
         foreach ($cartes[$jeu] ?? [] as $carte) {
-            ins($db, 'nf_games_maps', ['game_id' => $gid, 'image_id' => null, 'title' => $carte]);
-            $map_ids[$jeu][] = (int) $db->insert_id;
+            ins($db, 'nf_games_maps', ['game_id' => $gid, 'image_id' => null]);
+            $map_ids[$jeu][] = $mid = (int) $db->insert_id;
+            // Un nom de carte est un nom propre : la même ligne dans les six langues.
+            foreach (['fr', 'en', 'de', 'es', 'it', 'pt'] as $l) {
+                ins($db, 'nf_games_maps_lang', ['map_id' => $mid, 'lang' => $l, 'title' => $carte]);
+            }
         }
         foreach ($modes[$jeu] ?? [] as $mode) {
-            ins($db, 'nf_games_modes', ['game_id' => $gid, 'title' => $mode]);
-            $mode_ids[$jeu][] = (int) $db->insert_id;
+            ins($db, 'nf_games_modes', ['game_id' => $gid]);
+            $mode_ids[$jeu][] = $moid = (int) $db->insert_id;
+            ins($db, 'nf_games_modes_lang', ['mode_id' => $moid, 'lang' => 'fr', 'title' => $mode]);
         }
     }
 
@@ -609,8 +625,9 @@ function seed_gaming(mysqli $db, array $users): array
     // monde, donc la fiche d'équipe affichait cinq joueurs sans rien pour les distinguer.
     $role_ids = [];
     foreach (['Capitaine', 'Titulaire', 'Remplaçant', 'Coach'] as $ordre => $titre) {
-        ins($db, 'nf_teams_roles', ['title' => $titre, 'order' => $ordre]);
-        $role_ids[] = (int) $db->insert_id;
+        ins($db, 'nf_teams_roles', ['order' => $ordre]);
+        $role_ids[] = $rid = (int) $db->insert_id;
+        ins($db, 'nf_teams_roles_lang', ['role_id' => $rid, 'lang' => 'fr', 'title' => $titre]);
     }
 
     // Équipes
@@ -637,10 +654,12 @@ function seed_gaming(mysqli $db, array $users): array
     }
 
     // Types d'événement
-    ins($db, 'nf_events_types', ['type' => 1, 'title' => 'Tournoi', 'color' => '#e74c3c', 'icon' => 'fas fa-trophy']);
+    ins($db, 'nf_events_types', ['type' => 1, 'color' => '#e74c3c', 'icon' => 'fas fa-trophy']);
     $type_tournoi = (int) $db->insert_id;
-    ins($db, 'nf_events_types', ['type' => 1, 'title' => 'Entraînement', 'color' => '#3498db', 'icon' => 'fas fa-dumbbell']);
+    ins($db, 'nf_events_types_lang', ['type_id' => $type_tournoi, 'lang' => 'fr', 'title' => 'Tournoi']);
+    ins($db, 'nf_events_types', ['type' => 1, 'color' => '#3498db', 'icon' => 'fas fa-dumbbell']);
     $type_entrain = (int) $db->insert_id;
+    ins($db, 'nf_events_types_lang', ['type_id' => $type_entrain, 'lang' => 'fr', 'title' => 'Entraînement']);
 
     $events = [
         [$type_tournoi, 'Tournoi régional CS2', 'En ligne', 'Qualifications ouvertes à tous les niveaux.', 5],
@@ -650,12 +669,16 @@ function seed_gaming(mysqli $db, array $users): array
     $event_ids = [];
     foreach ($events as [$type, $title, $loc, $desc, $offset_days]) {
         $d = date('Y-m-d H:i:s', time() + 86400 * $offset_days);
-        ins($db, 'nf_events', [
-            'type_id' => $type, 'user_id' => $users[0], 'image_id' => null, 'title' => $title,
-            'description' => $desc, 'private_description' => '', 'location' => $loc,
+        // Le titre, le texte et le lieu vivent dans nf_events_lang depuis la 1.2.50 (m31) : une ligne par langue.
+        $id = ins($db, 'nf_events', [
+            'type_id' => $type, 'user_id' => $users[0], 'image_id' => null,
             'date' => $d, 'date_end' => null, 'published' => '1', 'publish_date' => date('Y-m-d H:i:s', time() - 86400 * 5),
         ]);
-        $event_ids[$title] = (int) $db->insert_id;
+        ins($db, 'nf_events_lang', [
+            'event_id' => $id, 'lang' => 'fr', 'title' => $title,
+            'description' => $desc, 'private_description' => '', 'location' => $loc,
+        ]);
+        $event_ids[$title] = $id;
     }
 
     // Palmarès
@@ -665,11 +688,13 @@ function seed_gaming(mysqli $db, array $users): array
         ['Équipe LoL', 'League of Legends', 'Ligue communautaire', 'En ligne', 'PC', 3, 12],
     ];
     foreach ($awards as [$team, $game, $name, $loc, $platform, $rank, $part]) {
-        ins($db, 'nf_awards', [
+        // Le nom, le lieu et le recit vivent dans nf_awards_lang depuis la 1.2.50 (m31) : une ligne par langue.
+        $id = ins($db, 'nf_awards', [
             'team_id' => $team_ids[$team] ?? null, 'game_id' => $game_ids[$game], 'image_id' => null,
-            'name' => $name, 'location' => $loc, 'date' => date('Y-m-d', time() - 86400 * 40),
-            'description' => '', 'platform' => $platform, 'ranking' => $rank, 'participants' => $part,
+            'date' => date('Y-m-d', time() - 86400 * 40),
+            'platform' => $platform, 'ranking' => $rank, 'participants' => $part,
         ]);
+        ins($db, 'nf_awards_lang', ['award_id' => $id, 'lang' => 'fr', 'name' => $name, 'location' => $loc, 'description' => '']);
     }
     echo "  gaming OK (" . count($games) . " jeux, " . count($teams) . " équipes, " . count($events) . " events, " . count($awards) . " trophées)\n";
 
@@ -825,18 +850,20 @@ function seed_wiki(mysqli $db, array $users): void
     foreach ($pages as [$slug, $title, $parent, $content, $views]) {
         $ordre[$parent ?? ''] = ($ordre[$parent ?? ''] ?? 0) + 1;
         ins($db, 'nf_wiki_pages', [
-            'slug' => $slug, 'title' => $title, 'content' => $content, 'parent_id' => $parent === null ? null : $ids[$parent],
+            'slug' => $slug, 'parent_id' => $parent === null ? null : $ids[$parent],
             'sort_order' => $ordre[$parent ?? ''], 'published' => 1, 'user_id' => $users[0], 'views' => $views,
         ]);
         $ids[$slug] = (int) $db->insert_id;
+        ins($db, 'nf_wiki_pages_lang', ['page_id' => $ids[$slug], 'lang' => 'fr', 'title' => $title, 'content' => $content]);
     }
     echo "  wiki OK (" . count($pages) . " pages)\n";
 }
 
 function seed_faq(mysqli $db): void
 {
-    ins($db, 'nf_faq_categories', ['title' => 'Général', 'sort_order' => 0]);
+    ins($db, 'nf_faq_categories', ['sort_order' => 0]);
     $cid = (int) $db->insert_id;
+    ins($db, 'nf_faq_categories_lang', ['category_id' => $cid, 'lang' => 'fr', 'title' => 'Général']);
     $qa = [
         ['Comment rejoindre la communauté ?', "Inscrivez-vous gratuitement, puis présentez-vous sur le forum."],
         ['Le site est-il gratuit ?', "Oui, NeoFrag Reborn est 100% gratuit et open source."],
@@ -844,7 +871,8 @@ function seed_faq(mysqli $db): void
     ];
     $i = 0;
     foreach ($qa as [$q, $a]) {
-        ins($db, 'nf_faq_questions', ['category_id' => $cid, 'question' => $q, 'answer' => $a, 'sort_order' => $i, 'published' => 1]);
+        ins($db, 'nf_faq_questions', ['category_id' => $cid, 'sort_order' => $i, 'published' => 1]);
+        ins($db, 'nf_faq_questions_lang', ['question_id' => (int) $db->insert_id, 'lang' => 'fr', 'question' => $q, 'answer' => $a]);
         $i++;
     }
     echo "  faq OK (" . count($qa) . ")\n";
@@ -852,8 +880,9 @@ function seed_faq(mysqli $db): void
 
 function seed_downloads(mysqli $db): void
 {
-    ins($db, 'nf_downloads_categories', ['title' => 'Ressources', 'description' => 'Configs, fonds d\'écran et outils.', 'sort_order' => 0]);
+    ins($db, 'nf_downloads_categories', ['sort_order' => 0]);
     $cid = (int) $db->insert_id;
+    ins($db, 'nf_downloads_categories_lang', ['category_id' => $cid, 'lang' => 'fr', 'title' => 'Ressources', 'description' => 'Configs, fonds d\'écran et outils.']);
     $dls = [
         ['Pack de fonds d\'écran', 'Une sélection de wallpapers aux couleurs de la team.', 'https://example.com/wallpapers.zip', 15728640, 'zip', '1.0'],
         ['Config CS2 recommandée', 'Notre fichier de configuration partagé.', 'https://example.com/cs2-config.cfg', 8192, 'cfg', '2.3'],
@@ -861,9 +890,10 @@ function seed_downloads(mysqli $db): void
     $i = 0;
     foreach ($dls as [$title, $desc, $url, $size, $type, $ver]) {
         ins($db, 'nf_downloads', [
-            'category_id' => $cid, 'title' => $title, 'description' => $desc, 'file_url' => $url,
+            'category_id' => $cid, 'file_url' => $url,
             'file_size_bytes' => $size, 'file_type' => $type, 'version' => $ver, 'downloads_count' => 20 + $i * 31, 'published' => 1,
         ]);
+        ins($db, 'nf_downloads_lang', ['download_id' => (int) $db->insert_id, 'lang' => 'fr', 'title' => $title, 'description' => $desc]);
         $i++;
     }
     echo "  downloads OK (" . count($dls) . ")\n";
@@ -871,8 +901,9 @@ function seed_downloads(mysqli $db): void
 
 function seed_links(mysqli $db): void
 {
-    ins($db, 'nf_links_categories', ['title' => 'Liens utiles', 'sort_order' => 0]);
+    ins($db, 'nf_links_categories', ['sort_order' => 0]);
     $cid = (int) $db->insert_id;
+    ins($db, 'nf_links_categories_lang', ['category_id' => $cid, 'lang' => 'fr', 'title' => 'Liens utiles']);
     $links = [
         ['Notre Discord', 'https://discord.gg/example', 'Rejoignez le serveur vocal de la communauté.'],
         ['Chaîne Twitch', 'https://twitch.tv/example', 'Suivez nos lives et tournois.'],
@@ -880,7 +911,8 @@ function seed_links(mysqli $db): void
     ];
     $i = 0;
     foreach ($links as [$title, $url, $desc]) {
-        ins($db, 'nf_links', ['category_id' => $cid, 'title' => $title, 'url' => $url, 'description' => $desc, 'clicks' => $i * 13, 'published' => 1, 'sort_order' => $i]);
+        ins($db, 'nf_links', ['category_id' => $cid, 'url' => $url, 'clicks' => $i * 13, 'published' => 1, 'sort_order' => $i]);
+        ins($db, 'nf_links_lang', ['link_id' => (int) $db->insert_id, 'lang' => 'fr', 'title' => $title, 'description' => $desc]);
         $i++;
     }
     echo "  links OK (" . count($links) . ")\n";
@@ -927,15 +959,20 @@ function seed_guestbook(mysqli $db, array $users): void
 function seed_surveys(mysqli $db, array $users): void
 {
     ins($db, 'nf_surveys', [
-        'title' => 'Quel jeu pour le prochain tournoi ?', 'description' => 'Votez pour le jeu de notre prochain événement.',
         'user_id' => $users[0], 'multiple_choice' => 0, 'show_results' => 'always', 'closed_at' => null, 'published' => 1,
     ]);
     $sid = (int) $db->insert_id;
+    ins($db, 'nf_surveys_lang', ['survey_id' => $sid, 'lang' => 'fr',
+        'title' => 'Quel jeu pour le prochain tournoi ?', 'description' => 'Votez pour le jeu de notre prochain événement.']);
     $options = ['Counter-Strike 2', 'Valorant', 'League of Legends', 'Rocket League'];
     $opt_ids = [];
     foreach ($options as $k => $label) {
-        ins($db, 'nf_surveys_options', ['survey_id' => $sid, 'label' => $label, 'sort_order' => $k]);
-        $opt_ids[] = (int) $db->insert_id;
+        ins($db, 'nf_surveys_options', ['survey_id' => $sid, 'sort_order' => $k]);
+        $opt_ids[] = $oid = (int) $db->insert_id;
+        // Les noms de jeux ne se traduisent pas : la même ligne dans les six langues.
+        foreach (['fr', 'en', 'de', 'es', 'it', 'pt'] as $l) {
+            ins($db, 'nf_surveys_options_lang', ['option_id' => $oid, 'lang' => $l, 'label' => $label]);
+        }
     }
     foreach ($users as $k => $uid) {
         ins($db, 'nf_surveys_votes', [
@@ -951,8 +988,9 @@ function seed_classifieds(mysqli $db, array $users): void
     $r = $db->query("SELECT id FROM nf_classifieds_categories ORDER BY id LIMIT 1");
     $cat = (int) ($r->fetch_row()[0] ?? 0);
     if (!$cat) {
-        ins($db, 'nf_classifieds_categories', ['title' => 'Matériel', 'sort_order' => 0]);
+        ins($db, 'nf_classifieds_categories', ['sort_order' => 0]);
         $cat = (int) $db->insert_id;
+        ins($db, 'nf_classifieds_categories_lang', ['category_id' => $cat, 'lang' => 'fr', 'title' => 'Matériel']);
     }
     $ads = [
         ['offer', 'Vends clavier mécanique', 'Switch rouges, très bon état, peu servi.', '60.00', 'discord: alex#0001'],
@@ -1004,19 +1042,23 @@ function seed_recruits(mysqli $db, array $users): void
     $recruit_ids = [];
     foreach ($posts as [$title, $intro, $desc, $req, $role, $icon]) {
         ins($db, 'nf_recruits', [
-            'title' => $title, 'introduction' => $intro, 'description' => $desc, 'requierments' => $req,
             'date' => date('Y-m-d H:i:s', time() - 86400 * ($i + 3)), 'user_id' => $users[0],
             'size' => 1, 'role' => $role, 'icon' => $icon, 'date_end' => date('Y-m-d', time() + 86400 * 20),
             'closed' => '0', 'team_id' => null, 'image_id' => null,
         ]);
         $rid = (int) $db->insert_id;
         $recruit_ids[] = $rid;
+        ins($db, 'nf_recruits_lang', [
+            'recruit_id' => $rid, 'lang' => 'fr',
+            'title' => $title, 'introduction' => $intro, 'description' => $desc, 'requierments' => $req,
+        ]);
 
         foreach ($questions as $n => [$libelle, $type, $requis]) {
             ins($db, 'nf_recruits_fields', [
-                'recruit_id' => $rid, 'label' => $libelle, 'type' => $type,
+                'recruit_id' => $rid, 'type' => $type,
                 'required' => $requis, 'sort_order' => $n,
             ]);
+            ins($db, 'nf_recruits_fields_lang', ['field_id' => (int) $db->insert_id, 'lang' => 'fr', 'label' => $libelle]);
         }
         $i++;
     }
@@ -1089,12 +1131,15 @@ function seed_bugtracker(mysqli $db, array $users): void
 function seed_donations(mysqli $db, array $users): void
 {
     ins($db, 'nf_donations_campaigns', [
-        'name' => 'serveur-2025', 'title' => 'Financement du serveur 2025',
-        'description' => 'Aidez-nous à financer l\'hébergement de nos serveurs de jeu.',
+        'name' => 'serveur-2025',
         'goal_amount' => '500.00', 'currency' => 'EUR', 'paypal_email' => '', 'paypal_button_id' => '',
         'deadline' => date('Y-m-d', time() + 86400 * 60), 'status' => 'active',
     ]);
     $camp = (int) $db->insert_id;
+    ins($db, 'nf_donations_campaigns_lang', [
+        'campaign_id' => $camp, 'lang' => 'fr', 'title' => 'Financement du serveur 2025',
+        'description' => 'Aidez-nous à financer l\'hébergement de nos serveurs de jeu.',
+    ]);
     $dons = [['Alex', '20.00', 'Bon courage à toute la team !'], ['Anonyme', '10.00', ''], ['Sam', '50.00', 'Continuez comme ça.']];
     $i = 0;
     foreach ($dons as [$name, $amount, $msg]) {
@@ -1112,11 +1157,12 @@ function seed_donations(mysqli $db, array $users): void
 function seed_ads(mysqli $db): void
 {
     ins($db, 'nf_ads', [
-        'title' => 'Bannière partenaire', 'placement' => 'sidebar', 'format' => 'html',
+        'placement' => 'sidebar', 'format' => 'html',
         'image_url' => '', 'url' => 'https://example.com', 'html' => '<div style="padding:1rem;text-align:center">Espace partenaire</div>',
         'active' => 1, 'starts_at' => null, 'ends_at' => null, 'position' => 0,
         'impressions' => 120, 'clicks' => 8,
     ]);
+    ins($db, 'nf_ads_lang', ['ad_id' => (int) $db->insert_id, 'lang' => 'fr', 'title' => 'Bannière partenaire']);
     echo "  pub OK (1)\n";
 }
 
@@ -1208,9 +1254,10 @@ function seed_menus(mysqli $db): void
     ];
     foreach ($items as $k => [$titre, $url, $icone, $cible]) {
         ins($db, 'nf_menus_items', [
-            'menu_id' => $mid, 'parent_id' => null, 'title' => $titre,
+            'menu_id' => $mid, 'parent_id' => null,
             'url' => $url, 'icon' => $icone, 'target' => $cible, 'position' => $k,
         ]);
+        ins($db, 'nf_menus_items_lang', ['item_id' => (int) $db->insert_id, 'lang' => 'fr', 'title' => $titre]);
     }
     echo "  menus OK (1 menu, " . count($items) . " entrées)\n";
 }
@@ -1229,12 +1276,14 @@ function seed_slider(mysqli $db): void
         // Forge 2.0 ; le défaut valait pour tous les thèmes).
         $fid = fabrique_image($db, 'upload/demo', 'demo-slide-' . $k . '.jpg', '', 1600, 500, $couleur);
         $chemin = $db->query("SELECT path FROM nf_file WHERE id = {$fid}")->fetch_row()[0];
-        ins($db, 'nf_slider_slides', [
-            'image_url' => $chemin, 'title' => $titre, 'caption' => $legende, 'link' => $lien,
+        // Le titre et la legende vivent dans nf_slider_slides_lang depuis la 1.2.50 (m22) : une ligne par langue.
+        $id = ins($db, 'nf_slider_slides', [
+            'image_url' => $chemin, 'link' => $lien,
             'sort_order' => $k, 'active' => 1,
             'created_at' => date('Y-m-d H:i:s', time() - 86400 * 7),
             'updated_at' => date('Y-m-d H:i:s', time() - 86400 * 7),
         ]);
+        ins($db, 'nf_slider_slides_lang', ['slide_id' => $id, 'lang' => 'fr', 'title' => $titre, 'caption' => $legende]);
     }
     echo "  carrousel OK (" . count($slides) . " diapositives)\n";
 }
@@ -1289,6 +1338,11 @@ function seed_talks(mysqli $db, array $users): void
             'updated_at' => date('Y-m-d H:i:s', time() - 3600 * ($s + 1)),
         ]);
         $tid = (int) $db->insert_id;
+
+        // Un salon PUBLIC a son texte par langue (m32) ; une conversation de membres, non.
+        if ($type === 'public') {
+            ins($db, 'nf_talks_lang', ['talk_id' => $tid, 'lang' => 'fr', 'name' => $nom, 'description' => $desc]);
+        }
 
         $membres = array_slice($users, 0, $type === 'group' ? 6 : count($users));
         foreach ($membres as $k => $uid) {
@@ -1375,11 +1429,12 @@ function seed_gamification(mysqli $db, array $users): void
     ];
     foreach ($articles as $k => [$titre, $desc, $icone, $prix, $type, $charge]) {
         ins($db, 'nf_shop_items', [
-            'title' => $titre, 'description' => $desc, 'icon' => $icone, 'price' => $prix,
+            'icon' => $icone, 'price' => $prix,
             'type' => $type, 'payload' => $charge, 'stock' => -1, 'unique_per_user' => 1,
             'active' => 1, 'position' => $k,
             'created_at' => date('Y-m-d H:i:s', time() - 86400 * 30),
         ]);
+        ins($db, 'nf_shop_items_lang', ['item_id' => (int) $db->insert_id, 'lang' => 'fr', 'title' => $titre, 'description' => $desc]);
     }
 
     $motifs = [
@@ -1450,11 +1505,11 @@ function seed_activite(mysqli $db, array $users): void
         'created_at' => date('Y-m-d H:i:s', time() - 86400 * 2),
     ]);
 
-    $wiki = $db->query("SELECT id, title, content FROM nf_wiki_pages WHERE slug IN ('bienvenue', 'reglement') ORDER BY id");
+    $wiki = $db->query("SELECT p.id, l.title, l.content FROM nf_wiki_pages p JOIN nf_wiki_pages_lang l ON l.page_id = p.id AND l.lang = 'fr' WHERE p.slug IN ('bienvenue', 'reglement') ORDER BY p.id");
     $rev_wiki = 0;
     while ($page = $wiki ? $wiki->fetch_assoc() : null) {
         ins($db, 'nf_wiki_revisions', [
-            'page_id' => (int) $page['id'], 'content' => $page['content'], 'title' => $page['title'],
+            'page_id' => (int) $page['id'], 'lang' => 'fr', 'content' => $page['content'], 'title' => $page['title'],
             'user_id' => $users[0], 'comment' => 'Première rédaction',
             'created_at' => date('Y-m-d H:i:s', time() - 86400 * 5),
         ]);
@@ -1531,105 +1586,155 @@ function configure_demo(mysqli $db): void
 }
 
 /**
- * La version ANGLAISE du contenu à versions linguistiques : actualités, articles, pages, catégories
- * et galeries.
+ * Les TRADUCTIONS du contenu à versions linguistiques : actualités, articles, pages, catégories,
+ * galeries, équipes, partenaires, jeux et forum.
  *
  * L'interface de la démo parle six langues ; son contenu n'en parlait qu'une. Un visiteur anglais
  * voyait chaque actualité en français, sous un bandeau qui le lui signale. Les modules à versions
- * linguistiques savent pourtant porter une traduction par contenu : la démo le montre désormais
- * (2026-09-23). Les messages du forum, écrits par des membres, restent dans leur langue.
+ * linguistiques savent pourtant porter une traduction par contenu : la démo l'a montré en anglais
+ * (2026-09-23), puis dans les six langues (m23, 2026-10-14). Les messages du forum, écrits par des
+ * membres, restent dans leur langue — seuls les titres des forums et de leurs catégories sont
+ * traduits.
  *
- * Chaque traduction se rattache au contenu par son titre FRANÇAIS, pas par un numéro : un
- * contenu renommé ou disparu est simplement ignoré. Idempotent (REPLACE) : rejouable sans doublon.
+ * Les textes sont dans `install/demo-traductions.json`, et non ici : l'instantané `install/demo.sql`
+ * les porte aussi, et deux copies d'un même texte finissent par diverger. Chaque traduction se
+ * rattache à son contenu par son titre FRANÇAIS, pas par un numéro : un contenu renommé ou disparu
+ * est simplement ignoré. Idempotent (REPLACE) : rejouable sans doublon.
  *
- * @return int le nombre de lignes anglaises posées
+ * Le forum fait exception : ses titres français vivent dans `nf_forum` et `nf_forum_categories`,
+ * pas dans une ligne `lang = 'fr'`. La ligne française y est donc posée avec les autres.
+ *
+ * @return int le nombre de lignes posées
  */
-function seed_anglais(mysqli $db): int
+function seed_traductions(mysqli $db): int
 {
-    $traductions = [
-        // table de traduction, clé, titre français => colonnes anglaises
-        ['nf_news_lang', 'news_id', 'news', [
-            'Bienvenue sur NeoFrag Reborn' => ['title' => 'Welcome to NeoFrag Reborn', 'introduction' => 'The community\'s new website is live!',
-                'content' => '<p>We are delighted to welcome you to our new platform, powered by <strong>NeoFrag Reborn</strong>. Forum, news, galleries, tournaments: it\'s all here. Sign up and join the adventure!</p>'],
-            'Victoire en finale du tournoi régional' => ['title' => 'Victory in the regional tournament final', 'introduction' => 'Our main team wins the grand final 3-1.',
-                'content' => '<p>After a flawless run, our players lifted the regional tournament trophy. Congratulations to the whole team on this performance!</p><p>Next goal: the national qualifiers.</p>'],
-            'Soirée communautaire ce vendredi' => ['title' => 'Community night this Friday', 'introduction' => 'Join us for a relaxed evening on the server.',
-                'content' => '<p>This Friday at 9 pm, we all meet up for fun, friendly games. Beginners welcome!</p>'],
-            'Nouveau partenariat matériel' => ['title' => 'New hardware partnership', 'introduction' => 'Exclusive discounts for our members.',
-                'content' => '<p>Thanks to our new partner, enjoy discounts on gaming gear. Details in the members\' area.</p>'],
-            'Calendrier des matchs du mois' => ['title' => 'This month\'s match schedule', 'introduction' => 'All the competitive dates not to miss.',
-                'content' => '<p>The schedule of upcoming matches is out. Come and cheer on your teams!</p>'],
-            'Concours de montage vidéo' => ['title' => 'Video editing contest', 'introduction' => 'Show off your best highlights and earn points.',
-                'content' => '<p>Enter our editing contest: the best videos will be rewarded with shop points.</p>'],
-        ]],
-        ['nf_articles_lang', 'article_id', 'articles', [
-            'Bien débuter en compétitif' => ['title' => 'Getting started in competitive play', 'excerpt' => 'Our tips to improve quickly.',
-                'content' => '<h2>The basics</h2><p>Master your aim and positioning first. Consistency beats flashy plays.</p><h2>Team spirit</h2><p>Communication is the key to victory.</p>'],
-            'Optimiser sa configuration' => ['title' => 'Optimising your setup', 'excerpt' => 'Settings and gear for a top-notch setup.',
-                'content' => '<p>A good setup isn\'t everything, but it helps. Here are our recommended settings and peripherals.</p>'],
-            'Notre avis sur le dernier patch' => ['title' => 'Our take on the latest patch', 'excerpt' => 'What changes for the competitive meta.',
-                'content' => '<p>The latest patch reshuffles the deck. An analysis of the nerfs, buffs and their impact on the meta.</p>'],
-            'Casque gaming : le comparatif' => ['title' => 'Gaming headsets: the comparison', 'excerpt' => 'We tested the current models for you.',
-                'content' => '<p>Comfort, sound, microphone: our full comparison to help you pick the right headset.</p>'],
-        ]],
-        ['nf_pages_lang', 'page_id', 'pages', [
-            'À propos de la communauté' => ['title' => 'About the community', 'subtitle' => 'Who we are',
-                'content' => '<p>Founded in 2019 around Counter-Strike, our community now brings together a hundred or so players across four games. People come for the level and stay for the atmosphere.</p><p>Three competitive teams, weekly practice sessions, an annual LAN — and a Discord server open to everyone.</p>'],
-            'Règlement intérieur' => ['title' => 'House rules', 'subtitle' => 'What we expect from everyone',
-                'content' => '<p>Respect above all: no insults, no discriminatory remarks, no cheating. A breach is first met with a warning, then with an exclusion.</p><ul><li>Microphone recommended in practice, mandatory in official matches.</li><li>Let us know if you will be absent, at least 24 hours in advance.</li><li>Staff settle disputes; their decisions are public.</li></ul>'],
-            'Nous rejoindre' => ['title' => 'Join us', 'subtitle' => 'How to apply',
-                'content' => '<p>Open recruitments are listed in the dedicated section. You can also introduce yourself on the forum: we look at every unsolicited application.</p>'],
-            'Nos partenaires' => ['title' => 'Our partners', 'subtitle' => 'They support us',
-                'content' => '<p>Three partners support us with hosting, hardware and video branding. Their backing funds our trips to LAN events.</p>'],
-        ]],
-        ['nf_news_categories_lang', 'category_id', 'news_categories', [
-            'Annonces' => ['title' => 'Announcements'], 'Compétition' => ['title' => 'Competition'], 'Communauté' => ['title' => 'Community'],
-        ]],
-        ['nf_articles_categories_lang', 'category_id', 'articles_categories', [
-            'Guides' => ['title' => 'Guides'], 'Tests' => ['title' => 'Reviews'],
-        ]],
-        ['nf_gallery_lang', 'gallery_id', 'gallery', [
-            'LAN d\'été 2025' => ['title' => 'Summer LAN 2025', 'description' => 'The best moments of our annual LAN.'],
-            'Finale régionale' => ['title' => 'Regional final', 'description' => 'Our victory in pictures.'],
-            'Best of du mois' => ['title' => 'Best of the month', 'description' => 'A compilation of the finest plays.'],
-        ]],
-        ['nf_gallery_categories_lang', 'category_id', 'gallery_categories', [
-            'Événements' => ['title' => 'Events'], 'Highlights' => ['title' => 'Highlights'],
-        ]],
+    $fichier = RACINE.'/install/demo-traductions.json';
+
+    if (!is_file($fichier))
+    {
+        nf_refus("les traductions de la démonstration manquent : $fichier");
+    }
+
+    $tout = json_decode((string) file_get_contents($fichier), TRUE);
+
+    if (!is_array($tout))
+    {
+        nf_refus("install/demo-traductions.json illisible : ".json_last_error_msg());
+    }
+
+    // table de traduction => [colonne clé, table de base et sa colonne titre quand le français n'est
+    // pas une ligne de traduction, et le nom de la colonne du TITRE si ce n'est pas `title`]
+    $tables = [
+        'nf_news_lang'                => ['news_id', NULL],
+        'nf_articles_lang'            => ['article_id', NULL],
+        'nf_pages_lang'               => ['page_id', NULL],
+        'nf_news_categories_lang'     => ['category_id', NULL],
+        'nf_articles_categories_lang' => ['category_id', NULL],
+        'nf_gallery_lang'             => ['gallery_id', NULL],
+        'nf_gallery_categories_lang'  => ['category_id', NULL],
+        'nf_teams_lang'               => ['team_id', NULL],
+        'nf_partners_lang'            => ['partner_id', NULL],
+        'nf_games_lang'               => ['game_id', NULL],
+        'nf_slider_slides_lang'       => ['slide_id', NULL],
+        'nf_awards_lang'              => ['award_id', NULL, 'name'],
+        'nf_events_lang'              => ['event_id', NULL],
+        'nf_downloads_lang'           => ['download_id', NULL],
+        'nf_downloads_categories_lang' => ['category_id', NULL],
+        'nf_links_lang'               => ['link_id', NULL],
+        'nf_links_categories_lang'    => ['category_id', NULL],
+        'nf_faq_questions_lang'       => ['question_id', NULL, 'question'],
+        'nf_faq_categories_lang'      => ['category_id', NULL],
+        'nf_surveys_lang'             => ['survey_id', NULL],
+        'nf_events_types_lang'        => ['type_id', NULL],
+        'nf_teams_roles_lang'         => ['role_id', NULL],
+        'nf_classifieds_categories_lang' => ['category_id', NULL],
+        'nf_games_modes_lang'         => ['mode_id', NULL],
+        'nf_webradio_shows_lang'      => ['show_id', NULL],
+        'nf_recruits_lang'            => ['recruit_id', NULL],
+        'nf_recruits_fields_lang'     => ['field_id', NULL, 'label'],
+        'nf_donations_campaigns_lang' => ['campaign_id', NULL],
+        'nf_ads_lang'                 => ['ad_id', NULL],
+        'nf_shop_items_lang'          => ['item_id', NULL],
+        'nf_menus_items_lang'         => ['item_id', NULL],
+        'nf_talks_lang'               => ['talk_id', NULL, 'name'],
+        'nf_wiki_pages_lang'          => ['page_id', NULL],
+        'nf_forum_lang'               => ['forum_id', ['nf_forum', 'title', 'description']],
+        'nf_forum_categories_lang'    => ['category_id', ['nf_forum_categories', 'title']],
     ];
 
     $posees = 0;
 
-    foreach ($traductions as [$table, $cle, , $contenus])
+    foreach ($tables as $table => $reglage)
     {
-        if (!nf_table_existe($db, $table))
+        [$cle, $base] = $reglage;
+        $colonne_titre = $reglage[2] ?? 'title';
+
+        if (!isset($tout[$table]) || !nf_table_existe($db, $table))
         {
             continue;
         }
 
-        foreach ($contenus as $titre_fr => $colonnes)
+        foreach ($tout[$table] as $titre_fr => $langues)
         {
-            $id = nf_scalar($db, "SELECT `$cle` FROM `$table` WHERE lang = 'fr' AND title = '".$db->real_escape_string($titre_fr)."' LIMIT 1");
+            $echappe = $db->real_escape_string((string) $titre_fr);
 
-            if ($id === NULL)
+            // TOUS les contenus qui portent ce texte en français : les deux offres de recrutement posent les mêmes
+            // questions, et seule la première recevait sa traduction (m32, 2026-10-15).
+            if ($base === NULL)
             {
-                continue;
+                $ids = array_column($db->query("SELECT `$cle` FROM `$table` WHERE lang = 'fr' AND `$colonne_titre` = '$echappe'")->fetch_all(MYSQLI_NUM), 0);
+            }
+            else
+            {
+                $ids = [nf_scalar($db, "SELECT `$cle` FROM `{$base[0]}` WHERE `{$base[1]}` = '$echappe' LIMIT 1")];
             }
 
-            // Les colonnes que la ligne française porte et que la traduction ne donne pas (tags…)
-            // sont reprises telles quelles : la ligne anglaise est complète.
-            $francaise = $db->query("SELECT * FROM `$table` WHERE `$cle` = ".(int) $id." AND lang = 'fr'")->fetch_assoc();
-            $ligne     = array_merge($francaise, $colonnes, ['lang' => 'en']);
-
-            $noms    = implode(', ', array_map(static fn ($c) => "`$c`", array_keys($ligne)));
-            $valeurs = implode(', ', array_map(static fn ($v) => $v === NULL ? 'NULL' : "'".$db->real_escape_string((string) $v)."'", $ligne));
-
-            if (!$db->query("REPLACE INTO `$table` ($noms) VALUES ($valeurs)"))
+            foreach ($ids as $id)
             {
-                nf_refus("version anglaise impossible dans $table : ".$db->error);
-            }
+                $langues_du_contenu = NULL;
 
-            $posees++;
+                if ($id === NULL)
+                {
+                    continue;
+                }
+
+                // Les colonnes que la ligne française porte et que la traduction ne donne pas (tags…)
+                // sont reprises telles quelles : la ligne traduite est complète.
+                $francaise = $db->query("SELECT * FROM `$table` WHERE `$cle` = ".(int) $id." AND lang = 'fr'")?->fetch_assoc();
+
+                if ($francaise === NULL && $base !== NULL)
+                {
+                    // Le forum : sa ligne française n'existe pas encore, on la pose depuis la table de base.
+                    $depuis = $db->query("SELECT * FROM `{$base[0]}` WHERE `$cle` = ".(int) $id)->fetch_assoc();
+                    $francaise = [$cle => (int) $id, 'lang' => 'fr'];
+
+                    foreach (array_slice($base, 1) as $colonne)
+                    {
+                        $francaise[$colonne] = (string) ($depuis[$colonne] ?? '');
+                    }
+
+                    $langues_du_contenu = ['fr' => []] + $langues;
+                }
+
+                if ($francaise === NULL)
+                {
+                    continue;
+                }
+
+                foreach ($langues_du_contenu ?? $langues as $langue => $colonnes)
+                {
+                    $ligne   = array_merge($francaise, (array) $colonnes, ['lang' => (string) $langue]);
+                    $noms    = implode(', ', array_map(static fn ($c) => "`$c`", array_keys($ligne)));
+                    $valeurs = implode(', ', array_map(static fn ($v) => $v === NULL ? 'NULL' : "'".$db->real_escape_string((string) $v)."'", $ligne));
+
+                    if (!$db->query("REPLACE INTO `$table` ($noms) VALUES ($valeurs)"))
+                    {
+                        nf_refus("traduction impossible dans $table : ".$db->error);
+                    }
+
+                    $posees++;
+                }
+            }
         }
     }
 
@@ -1708,7 +1813,8 @@ function permalien(string $texte): string
     return trim(strtolower((string) $texte), '-');
 }
 
-function ins(mysqli $db, string $table, array $cols): void
+/** Rend l'identifiant engendre par l'insertion (0 si la table n'en a pas). */
+function ins(mysqli $db, string $table, array $cols): int
 {
     if (isset($cols['name']) && is_string($cols['name']) && in_array($table, tables_a_permalien(), TRUE)) {
         $cols['name'] = permalien($cols['name']);
@@ -1730,4 +1836,6 @@ function ins(mysqli $db, string $table, array $cols): void
     if (!$db->query($sql)) {
         nf_refus("erreur sur $table : " . $db->error . "\n  $sql");
     }
+
+    return (int) $db->insert_id;
 }

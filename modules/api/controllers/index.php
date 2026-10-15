@@ -8,6 +8,8 @@ declare(strict_types=1);
  * « module_unavailable » sans le module Discord.
  * couplage(bugtracker): les adresses `bugtracker/*` passent par `_modele_bugtracker()`, qui répond 404
  * « module_unavailable » sans le Bugtracker.
+ * couplage(collectives): `discord/collectives` ne lit `nf_collectives` qu'après `table_exists()` ; sans le
+ * module, la liste est vide et un compte rendu répond 404.
  */
 
 namespace NF\Modules\Api\Controllers;
@@ -107,6 +109,11 @@ class Index extends Controller_Module
 			['GET',    ['discord', 'timed-roles'],           'discord:bot', fn () => $this->_discord_roles_temporaires()],
 			['POST',   ['discord', 'timed-roles'],           'discord:bot', fn () => $this->_discord_donner_role_temporaire()],
 			['DELETE', ['discord', 'timed-roles', '#'],      'discord:bot', fn (array $p) => $this->_discord_retirer_role_temporaire((int) $p[0])],
+			['GET',    ['discord', 'sanctions'],             'discord:bot', fn () => $this->_discord_sanctions()],
+			['POST',   ['discord', 'sanctions'],             'discord:bot', fn () => $this->_discord_rapporter_sanction()],
+			['POST',   ['discord', 'sanctions', '#', 'revoke'], 'discord:bot', fn (array $p) => $this->_discord_lever_sanction((int) $p[0])],
+			['GET',    ['discord', 'collectives'],           'discord:bot', fn () => $this->_discord_collectifs()],
+			['POST',   ['discord', 'collectives', '#'],      'discord:bot', fn (array $p) => $this->_discord_collectif_en_place((int) $p[0])],
 		];
 
 		$autorisees = [];
@@ -867,6 +874,200 @@ class Index extends Controller_Module
 		$this->_modele_discord()->retirer_role_temporaire($id);
 
 		return ['deleted' => TRUE, 'timed_id' => $id];
+	}
+
+	/*
+	 * Les sanctions reliées à Discord (m03b, 2026-10-16).
+	 *
+	 * `GET discord/sanctions` : celles qui valent EN CE MOMENT sur Discord — muet et bannissements de tout le site,
+	 * effectifs, d'un membre relié. Le bot s'en sert à son démarrage pour remettre Discord d'accord (une échéance passée
+	 * pendant qu'il dormait, une sanction levée entre-temps).
+	 */
+	private function _discord_sanctions(): array
+	{
+		$moderation = $this->moderation;
+		$sanctions  = [];
+
+		foreach ($this->db	->select('id', 'user_id', 'type', 'expires_at', 'origine')
+							->from('nf_sanctions')
+							->where('scope', 'global')
+							->where('type', \NF\NeoFrag\Libraries\Moderation::SANCTIONS_DISCORD)
+							->where('revoked_at', NULL)
+							->where('expires_at', NULL, 'OR', 'expires_at >', date('Y-m-d H:i:s'))
+							->where('requires_approval', 0, 'OR', 'approved_at !=', NULL)
+							->get(FALSE) as $s)
+		{
+			if (($discord = $moderation->discord_de((int) $s['user_id'])) !== NULL)
+			{
+				$sanctions[] = [
+					'sanction_id' => (int) $s['id'],
+					'user_id'     => (int) $s['user_id'],
+					'discord_id'  => $discord,
+					'type'        => (string) $s['type'],
+					'expires_at'  => $s['expires_at'] === NULL ? NULL : strtotime((string) $s['expires_at']),
+					'origine'     => (string) $s['origine'],
+				];
+			}
+		}
+
+		return ['sanctions' => $sanctions];
+	}
+
+	/**
+	 * `POST discord/sanctions` : un modérateur a sanctionné sur DISCORD, le bot le rapporte. Ne passe au site que ce qui
+	 * est sûr : un modérateur dont le compte Discord est relié à un compte du site qui a ce droit-là (le rang du
+	 * prononcé), sur un membre relié. Le site rejuge ensuite comme s'il l'avait prononcée chez lui — hiérarchie,
+	 * validation —, au nom du modérateur.
+	 */
+	private function _discord_rapporter_sanction(): array
+	{
+		$corps   = $this->_corps();
+		$type    = (string) ($corps['type'] ?? '');
+		$duree   = isset($corps['duration_seconds']) ? max(0, (int) $corps['duration_seconds']) : 0;
+		$raison  = trim($this->_texte_du_site($this->_texte_brut($corps['reason'] ?? '')));
+		$moderation = $this->moderation;
+
+		if (!in_array($type, \NF\NeoFrag\Libraries\Moderation::SANCTIONS_DISCORD, TRUE))
+		{
+			$this->_erreur(422, 'invalid_type', $this->lang('Seuls le muet et les bannissements passent de Discord au site.'));
+		}
+
+		$auteur = $moderation->membre_discord((string) ($corps['executor_discord_id'] ?? ''));
+		$cible  = $moderation->membre_discord((string) ($corps['target_discord_id'] ?? ''));
+
+		if (!$auteur)
+		{
+			$this->_erreur(403, 'executor_unlinked', $this->lang('Ce modérateur n’a pas relié son compte Discord au site : sa sanction reste sur Discord.'));
+		}
+
+		if (!$cible)
+		{
+			$this->_erreur(404, 'target_unlinked', $this->lang('Ce membre n’a pas relié son compte Discord au site : rien à sanctionner sur le site.'));
+		}
+
+		if ($moderation->rang($auteur) < \NF\NeoFrag\Libraries\Moderation::rang_requis($type))
+		{
+			$this->_erreur(403, 'forbidden', $this->lang('Ce modérateur n’a pas, sur le site, le droit de prononcer cette sanction.'));
+		}
+
+		$id = $moderation->sanction($cible, $type, [
+			'scope'            => 'global',
+			'reason'           => $this->lang('Sur Discord : %s', $raison !== '' ? $raison : $this->lang('sans raison donnée')),
+			'duration_seconds' => $type === 'ban_perm' ? NULL : ($duree ?: NULL),
+			'issued_by'        => $auteur,
+			'origine'          => 'discord',
+		]);
+
+		if (!$id)
+		{
+			$this->_erreur(403, 'refused', $this->lang('Le site refuse cette sanction (un membre de rang égal ou supérieur, ou soi-même).'));
+		}
+
+		$this->_code = 201;
+
+		return ['sanction_id' => $id, 'requires_approval' => (bool) $this->db->select('requires_approval')->from('nf_sanctions')->where('id', $id)->row()];
+	}
+
+	/**
+	 * `POST discord/sanctions/{id}/revoke` : un modérateur a levé sur Discord une sanction VENUE de Discord. Celle du
+	 * site se lève sur le site : Discord n'en a que l'application. Les règles de la levée du site valent (rang).
+	 */
+	private function _discord_lever_sanction(int $sanction_id): array
+	{
+		$corps      = $this->_corps();
+		$moderation = $this->moderation;
+		$origine    = $this->db->select('origine')->from('nf_sanctions')->where('id', $sanction_id)->row();
+
+		if (!is_string($origine))
+		{
+			$this->_erreur(404, 'not_found', $this->lang('Sanction inconnue.'));
+		}
+
+		if ($origine !== 'discord')
+		{
+			$this->_erreur(409, 'site_sanction', $this->lang('Cette sanction a été prononcée sur le site : elle se lève sur le site.'));
+		}
+
+		$auteur = $moderation->membre_discord((string) ($corps['executor_discord_id'] ?? ''));
+
+		if (!$auteur || ($refus = $moderation->refus_de_levee($sanction_id, $auteur)) !== NULL)
+		{
+			$this->_erreur(403, 'forbidden', $refus ?? $this->lang('Ce modérateur n’a pas relié son compte Discord au site.'));
+		}
+
+		$moderation->revoke($sanction_id, $auteur, (string) $this->lang('Levée sur Discord'));
+
+		return ['sanction_id' => $sanction_id, 'revoked' => TRUE];
+	}
+
+	/*
+	 * Les collectifs (m15, bot v3, 2026-10-16).
+	 *
+	 * `GET discord/collectives` : ceux qui veulent leur espace sur Discord — leur nom, la clé de leur groupe, le rôle
+	 * qui lui correspond et leur salon, s'ils existent déjà. Le bot crée ce qui manque, puis le rapporte.
+	 */
+	private function _discord_collectifs(): array
+	{
+		$roles      = array_column($this->_modele_discord()->roles(), 'role_id', 'group_key');
+		$collectifs = [];
+
+		if (!$this->db->table_exists('nf_collectives'))
+		{
+			return ['collectives' => []];
+		}
+
+		foreach ((array) $this->db->select('collective_id', 'name', 'discord_channel_id')->from('nf_collectives')->where('discord', 1)->order_by('collective_id')->get() as $c)
+		{
+			$cle = url_title('collectives_'.(int) $c['collective_id']);
+
+			$collectifs[] = [
+				'collective_id' => (int) $c['collective_id'],
+				'name'          => $this->_texte_brut($c['name']),
+				'group_key'     => $cle,
+				'role_id'       => isset($roles[$cle]) ? (string) $roles[$cle] : NULL,
+				'channel_id'    => $c['discord_channel_id'] ? (string) $c['discord_channel_id'] : NULL,
+			];
+		}
+
+		return ['collectives' => $collectifs];
+	}
+
+	/**
+	 * `POST discord/collectives/{id}` : le bot a créé (ou recréé) le rôle ou le salon d'un collectif — `role_id`,
+	 * `channel_id`. Le rôle devient la correspondance du groupe du collectif : la fonctionnalité des rôles le donne
+	 * ensuite à ses membres reliés.
+	 */
+	private function _discord_collectif_en_place(int $id): array
+	{
+		$modele = $this->_modele_discord();
+		$corps  = $this->_corps();
+		$role   = (string) ($corps['role_id'] ?? '');
+		$salon  = (string) ($corps['channel_id'] ?? '');
+
+		if (!$this->db->table_exists('nf_collectives') || !$this->db->select('collective_id')->from('nf_collectives')->where('collective_id', $id)->where('discord', 1)->row())
+		{
+			$this->_erreur(404, 'not_found', $this->lang('Collectif inconnu, ou sans espace sur Discord.'));
+		}
+
+		if (($role !== '' && !ctype_digit($role)) || ($salon !== '' && !ctype_digit($salon)) || strlen($role) > 32 || strlen($salon) > 32)
+		{
+			$this->_erreur(422, 'invalid_id', $this->lang('Un identifiant Discord est fait de chiffres.'));
+		}
+
+		if ($role !== '')
+		{
+			$cle = url_title('collectives_'.$id);
+
+			$this->db->where('group_key', $cle)->delete('nf_discord_roles');
+			$modele->ajouter_role($cle, $role);
+		}
+
+		if ($salon !== '')
+		{
+			$this->db->where('collective_id', $id)->update('nf_collectives', ['discord_channel_id' => $salon]);
+		}
+
+		return ['collective_id' => $id, 'role_id' => $role !== '' ? $role : NULL, 'channel_id' => $salon !== '' ? $salon : NULL];
 	}
 
 	/** Le module Discord, typé — `_modele_discord()` a déjà vérifié qu'il est installé. */

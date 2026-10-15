@@ -115,7 +115,9 @@ class Ajax extends Controller_Module
 	 */
 	public function service_worker()
 	{
-		if (!$this->config->nf_pwa)
+		// Le push (d11) passe par le même worker : il ne se retire que si l'application installable ET le push sont
+		// éteints. Le push seul ne garde rien en cache.
+		if (!$this->config->nf_pwa && !$this->config->nf_push)
 		{
 			return <<<'JS'
 /* NeoFrag Reborn — service worker DÉSACTIVÉ. Ce fichier ne sert rien : il se retire.
@@ -175,6 +177,7 @@ self.addEventListener('activate', function (e) {
     })());
 });
 
+/*__CACHE_DEBUT__*/
 self.addEventListener('fetch', function (e) {
     const requete = e.request;
 
@@ -218,9 +221,57 @@ self.addEventListener('fetch', function (e) {
         return reponse;
     })());
 });
+/*__CACHE_FIN__*/
 JS;
 
-		return str_replace('__VERSION__', preg_replace('/[^A-Za-z0-9._-]/', '', $version), $js);
+		// Le push seul : pas de cache. Les fichiers restent au réseau, comme sans worker.
+		if (!$this->config->nf_pwa)
+		{
+			$js = (string) preg_replace('#/\*__CACHE_DEBUT__\*/.*?/\*__CACHE_FIN__\*/#s', '', $js);
+		}
+
+		if ($this->config->nf_push)
+		{
+			$js .= <<<'JS'
+
+/* Les notifications push (d11) : un message chiffré pour ce seul navigateur, que son service de push vient de
+   remettre. Il s'affiche même site fermé ; un clic ouvre la page dont il parle. */
+self.addEventListener('push', function (e) {
+    let donnees = {};
+
+    try {
+        donnees = e.data ? e.data.json() : {};
+    } catch (erreur) {
+        donnees = { body: e.data ? e.data.text() : '' };
+    }
+
+    e.waitUntil(self.registration.showNotification(donnees.title || '', {
+        body: donnees.body || '',
+        icon: donnees.icon || undefined,
+        tag: donnees.tag || undefined,
+        data: { url: donnees.url || '/' }
+    }));
+});
+
+self.addEventListener('notificationclick', function (e) {
+    e.notification.close();
+
+    const adresse = (e.notification.data && e.notification.data.url) || '/';
+
+    e.waitUntil((async function () {
+        for (const client of await self.clients.matchAll({ type: 'window', includeUncontrolled: true })) {
+            if (client.url === adresse && 'focus' in client) {
+                return client.focus();
+            }
+        }
+
+        return self.clients.openWindow(adresse);
+    })());
+});
+JS;
+		}
+
+		return str_replace(['__VERSION__', '/*__CACHE_DEBUT__*/', '/*__CACHE_FIN__*/'], [preg_replace('/[^A-Za-z0-9._-]/', '', $version), '', ''], $js);
 	}
 
 	public function manifest()
@@ -391,7 +442,7 @@ JS;
 		else
 		{
 			return $this->js('languages')
-						->modal('Choisir ma langue', 'fas fa-globe')
+						->modal($this->lang('Choisir ma langue'), 'fas fa-globe')
 						->body($this->view('languages'))
 						->cancel();
 		}

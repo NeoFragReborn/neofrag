@@ -760,7 +760,9 @@ class Moderation extends Library
 			'issued_by'         => (int)($opts['issued_by'] ?? 0),
 			'requires_approval' => $requires_approval,
 			'related_report_id' => isset($opts['related_report_id']) ? (int)$opts['related_report_id'] : NULL,
-			'notify_user'       => isset($opts['notify_user']) ? (int)$opts['notify_user'] : 1
+			'notify_user'       => isset($opts['notify_user']) ? (int)$opts['notify_user'] : 1,
+			// D'où vient la sanction (m03b) : le site, ou Discord, rapportée par le bot.
+			'origine'           => ($opts['origine'] ?? 'site') === 'discord' ? 'discord' : 'site'
 		]);
 
 		// Invalide le cache pour ce user
@@ -806,7 +808,88 @@ class Moderation extends Library
 			catch (\Throwable $e) {}
 		}
 
+		// Effective tout de suite : le bot l'applique sur Discord (m03b). En attente de validation : à la validation.
+		if (!$requires_approval)
+		{
+			$this->_vers_discord('discord.sanction.created', (int) $id);
+		}
+
 		return (int)$id;
+	}
+
+	/* ------------------------------------------------------------------ Discord (m03b, 2026-10-16) */
+
+	/** Les sanctions qui passent sur Discord : se taire, être banni — de tout le site. */
+	const SANCTIONS_DISCORD = ['mute', 'ban_temp', 'ban_perm'];
+
+	/** Le rang de modération d'un membre (cf. _user_tier()) : ce qu'il peut prononcer. */
+	public function rang(int $user_id): int
+	{
+		return $this->_user_tier($user_id);
+	}
+
+	/** Le rang qu'il faut pour prononcer une sanction : modérateur pour le muet, senior pour un ban, admin pour le définitif. */
+	public static function rang_requis(string $type): int
+	{
+		return ['mute' => 2, 'ban_temp' => 3, 'ban_perm' => 4][$type] ?? 5;
+	}
+
+	/** Le compte Discord relié à un membre (son identifiant), ou NULL. */
+	public function discord_de(int $user_id): ?string
+	{
+		$id = $this->db	->select('a.key')
+						->from('nf_user_auth a')
+						->join('nf_addon d', 'd.id = a.authenticator_id', 'INNER')
+						->join('nf_addon_type t', 't.id = d.type_id AND t.name = "authenticator"', 'INNER')
+						->where('d.name', 'discord')
+						->where('a.user_id', $user_id)
+						->row();
+
+		return is_string($id) && $id !== '' ? $id : NULL;
+	}
+
+	/** Le membre qu'un compte Discord désigne, ou NULL. */
+	public function membre_discord(string $discord_id): ?int
+	{
+		$id = $this->db	->select('a.user_id')
+						->from('nf_user_auth a')
+						->join('nf_addon d', 'd.id = a.authenticator_id', 'INNER')
+						->join('nf_addon_type t', 't.id = d.type_id AND t.name = "authenticator"', 'INNER')
+						->join('nf_user u', 'u.id = a.user_id AND u.deleted = "0"', 'INNER')
+						->where('d.name', 'discord')
+						->where('a.key', $discord_id)
+						->row();
+
+		return $id ? (int) $id : NULL;
+	}
+
+	/**
+	 * Inscrit une sanction au fil d'événements que lit le bot Discord — si elle a de quoi passer sur Discord : un muet
+	 * ou un bannissement de TOUT le site, d'un membre dont le compte Discord est relié. Un avertissement, une restriction,
+	 * un shadow ban (qui doit rester invisible) ne passent jamais.
+	 */
+	private function _vers_discord(string $evenement, int $sanction_id): void
+	{
+		try
+		{
+			$s = $this->db->select('id', 'user_id', 'type', 'scope', 'expires_at', 'origine')->from('nf_sanctions')->where('id', $sanction_id)->row(FALSE);
+
+			if (!is_array($s) || !$s || $s['scope'] !== 'global' || !in_array($s['type'], self::SANCTIONS_DISCORD, TRUE)
+				|| !($api = @NeoFrag()->module('api')) || !method_exists($api, 'consigner') || ($discord = $this->discord_de((int) $s['user_id'])) === NULL)
+			{
+				return;
+			}
+
+			$api->consigner($evenement, [
+				'sanction_id' => (int) $s['id'],
+				'user_id'     => (int) $s['user_id'],
+				'discord_id'  => $discord,
+				'type'        => (string) $s['type'],
+				'expires_at'  => $s['expires_at'] === NULL ? NULL : strtotime((string) $s['expires_at']),
+				'origine'     => (string) ($s['origine'] ?? 'site')
+			]);
+		}
+		catch (\Throwable $e) {}
 	}
 
 	/**
@@ -875,6 +958,8 @@ class Moderation extends Library
 			]);
 		}
 		catch (\Throwable $e) {}
+
+		$this->_vers_discord('discord.sanction.approved', $sanction_id);
 
 		// Le membre est prévenu à la validation, pas à la création (modules/moderation/moderation.php).
 		if (!empty($this->events))
@@ -951,6 +1036,8 @@ class Moderation extends Library
 					]);
 		unset(self::$_cache_active_sanctions[(int)$s['user_id']]);
 		self::$_sous_shadow_ban = NULL;
+
+		$this->_vers_discord('discord.sanction.revoked', $sanction_id);
 
 		try
 		{

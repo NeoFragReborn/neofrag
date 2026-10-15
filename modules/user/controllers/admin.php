@@ -289,7 +289,8 @@ class Admin extends Controller_Module
 					? '<i class="fas fa-eye text-success" title="'.nf_texte($this->lang('Visible sur la fiche publique')).'"></i>'
 					: '<i class="fas fa-eye-slash text-muted" title="'.nf_texte($this->lang('Privé')).'"></i>').'</td>'
 				.'<td class="text-end">'
-				.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/user/fields/edit/'.$champ['field_id'].'/'.url_title($champ['label'])).'"><i class="fas fa-pen"></i></a> '
+				// Le nom technique quand le libellé manque dans toutes les langues : un segment vide menait à un 404.
+				.'<a class="btn btn-sm btn-outline-secondary" href="'.url('admin/user/fields/edit/'.$champ['field_id'].'/'.url_title($champ['label'] ?: $champ['name'])).'"><i class="fas fa-pen"></i></a> '
 				.'<a class="btn btn-sm btn-outline-danger" href="'.url('admin/user/fields/delete/'.$champ['field_id'].'/'.url_title($champ['label'])).'"><i class="far fa-trash-alt"></i></a>'
 				.'</td></tr>';
 		}
@@ -342,12 +343,16 @@ class Admin extends Controller_Module
 
 	public function _fields_edit($field_id, $name, $label, $description, $type, $options, $required, $public)
 	{
+		// L'écran d'édition montre le texte de la langue OÙ L'ON TRAVAILLE, et non le repli (m32,
+		// 2026-10-15) ; le sous-titre, lui, garde le libellé lu.
+		$ecrit = $this->model('fields')->texte_dans((int) $field_id, (string) $this->config->lang->info()->name);
+
 		$this	->title($this->lang('Champs de profil'))
 				->subtitle($label)
 				->form()
 				->add_rules('field', [
-					'label'       => $label,
-					'description' => $description,
+					'label'       => (string) ($ecrit['label'] ?? ''),
+					'description' => (string) ($ecrit['description'] ?? ''),
 					'type'        => $type,
 					'options'     => $options,
 					'required'    => $required,

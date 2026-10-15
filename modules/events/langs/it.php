@@ -165,4 +165,6 @@ return [
 	'e981b5d1' => 'Standard',
 	'bb9aea01' => 'Partita',
 	'cbf0a999' => 'Numero di eventi per pagina',
+	'f30ac578' => 'Scritto per %s. Cambia la lingua dell\'amministrazione per tradurre questo appuntamento; le altre lingue mantengono il loro testo.',
+	'4e5e9cce' => 'Scritto per %s. Cambia la lingua dell\'amministrazione per tradurre questo tipo; le altre lingue mantengono il loro testo.',
 ];

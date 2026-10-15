@@ -28,14 +28,13 @@ class Checker extends Controller
 		// d'un theme, ajout en Live Editor, disposition ancienne). Cf. tools/check-widget-reglages.php.
 		$settings = (array) $settings + ['menu' => ''];
 
-		if (!empty($settings['menu']))
+		if (!empty($settings['menu']) && ($liens = $this->liens_du_menu((string) $settings['menu'])) !== NULL)
 		{
-			$menu = NeoFrag()->db->select('menu_id')->from('nf_menus')->where('name', $settings['menu'])->row(FALSE);
-
-			if (is_array($menu) && !empty($menu['menu_id']))
-			{
-				return ['links' => $this->_menu_links((int)$menu['menu_id'])];
-			}
+			// Le NOM du menu est gardé dans les réglages (2026-10-15). Il en était retiré : le widget n'en gardait
+			// qu'une COPIE des liens, prise à l'enregistrement — un lien ajouté, renommé ou traduit ensuite n'arrivait
+			// jamais dans la navigation, et l'écran de réglage ne savait plus quel menu était choisi. L'affichage le
+			// relit désormais (Index::_display) ; la copie ne sert que si le menu disparaît.
+			return ['menu' => (string) $settings['menu'], 'links' => $liens];
 		}
 
 		$links = [];
@@ -54,15 +53,25 @@ class Checker extends Controller
 		return ['links' => $links];
 	}
 
+	/** Les liens d'un menu géré, dans la langue de la page ; NULL si ce menu n'existe pas (ou plus). */
+	public function liens_du_menu(string $nom): ?array
+	{
+		$menu = NeoFrag()->db->select('menu_id')->from('nf_menus')->where('name', $nom)->row(FALSE);
+
+		return is_array($menu) && !empty($menu['menu_id']) ? $this->_menu_links((int) $menu['menu_id']) : NULL;
+	}
+
 	protected function _menu_links($menu_id)
 	{
 		$roots    = [];
 		$children = [];
 
-		foreach (NeoFrag()->db	->select('item_id', 'parent_id', 'title', 'url', 'icon')
-								->from('nf_menus_items')
-								->where('menu_id', $menu_id)
-								->order_by('position ASC, item_id ASC')
+		// Le titre d'un lien vit dans `nf_menus_items_lang` depuis m32 (2026-10-15) : la meilleure langue.
+		foreach (NeoFrag()->db	->select('i.item_id', 'i.parent_id', 'il.title', 'i.url', 'i.icon')
+								->from('nf_menus_items i')
+								->join_lang('nf_menus_items_lang il', 'item_id', 'i.item_id', NULL, 'LEFT')
+								->where('i.menu_id', $menu_id)
+								->order_by('i.position ASC, i.item_id ASC')
 								->get() as $it)
 		{
 			if ($it['parent_id']) $children[$it['parent_id']][] = $it;

@@ -649,7 +649,7 @@ class Moderation extends Module
 		}
 
 		// L'adresse de la conversation porte son titre : la messagerie le vérifie.
-		$adresse = $talk_id ? 'talks/'.$talk_id.'/'.url_title((string) $this->db->select('name')->from('nf_talks')->where('talk_id', $talk_id)->row()) : '';
+		$adresse = $talk_id ? 'talks/'.$talk_id.'/'.url_title((string) $this->db->select('COALESCE(tl.name, t.name) AS name')->from('nf_talks t')->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')->where('t.talk_id', $talk_id)->row()) : '';
 
 		if ($moderateur_id && ($notifications = \NF\NeoFrag\Addons\Module::__load(\NeoFrag(), ['notifications'])))
 		{

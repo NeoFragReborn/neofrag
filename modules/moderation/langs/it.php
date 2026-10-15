@@ -346,4 +346,5 @@ return [
 	'6abee40f' => 'Se rifiuti, per te non cambia nulla: la tua segnalazione resta anonima e la moderazione la gestisce come al solito.',
 	'2b7e2332' => 'Accetto la mediazione',
 	'9886e305' => 'Rifiuto',
+	'6b56cd18' => 'Inflitta su Discord, riportata dal bot',
 ];

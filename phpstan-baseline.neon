@@ -517,9 +517,15 @@ parameters:
 			path: modules/awards/controllers/admin_checker.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:texte_dans\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/awards/controllers/admin_checker.php
+
+		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 3
+			count: 4
 			path: modules/awards/controllers/admin_checker.php
 
 		-
@@ -811,6 +817,102 @@ parameters:
 			path: modules/classifieds/views/profil-membre.tpl.php
 
 		-
+			message: '#^Call to an undefined method NF\\Modules\\Collectives\\Collectives\:\:db\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/collectives/collectives.php
+
+		-
+			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: modules/collectives/collectives.php
+
+		-
+			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: modules/collectives/controllers/admin.php
+
+		-
+			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
+			identifier: arguments.count
+			count: 2
+			path: modules/collectives/controllers/admin_checker.php
+
+		-
+			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: modules/collectives/controllers/checker.php
+
+		-
+			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: modules/collectives/controllers/index.php
+
+		-
+			message: '#^Variable \$collectif might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/collectives/views/collective.tpl.php
+
+		-
+			message: '#^Variable \$csrf might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: modules/collectives/views/collective.tpl.php
+
+		-
+			message: '#^Variable \$donnables might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: modules/collectives/views/collective.tpl.php
+
+		-
+			message: '#^Variable \$forum might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/collectives/views/collective.tpl.php
+
+		-
+			message: '#^Variable \$gere might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/collectives/views/collective.tpl.php
+
+		-
+			message: '#^Variable \$membres might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: modules/collectives/views/collective.tpl.php
+
+		-
+			message: '#^Variable \$rang might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/collectives/views/collective.tpl.php
+
+		-
+			message: '#^Variable \$rangs might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: modules/collectives/views/collective.tpl.php
+
+		-
+			message: '#^Variable \$salon might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/collectives/views/collective.tpl.php
+
+		-
+			message: '#^Variable \$slug might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: modules/collectives/views/collective.tpl.php
+
+		-
 			message: '#^Access to an undefined property NF\\NeoFrag\\Loadables\\Model2\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -955,9 +1057,15 @@ parameters:
 			path: modules/donations/controllers/admin.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:texte_dans\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/donations/controllers/admin.php
+
+		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 15
+			count: 16
 			path: modules/donations/controllers/admin.php
 
 		-
@@ -987,7 +1095,7 @@ parameters:
 		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 4
+			count: 5
 			path: modules/donations/controllers/index.php
 
 		-
@@ -1279,6 +1387,12 @@ parameters:
 			path: modules/events/controllers/admin.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:titre_dans\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/events/controllers/admin.php
+
+		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
 			count: 9
@@ -1311,7 +1425,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:check_event\(\)\.$#'
 			identifier: method.notFound
-			count: 5
+			count: 4
 			path: modules/events/controllers/admin_checker.php
 
 		-
@@ -1330,6 +1444,12 @@ parameters:
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_events\(\)\.$#'
 			identifier: method.notFound
 			count: 4
+			path: modules/events/controllers/admin_checker.php
+
+		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:texte_dans\(\)\.$#'
+			identifier: method.notFound
+			count: 1
 			path: modules/events/controllers/admin_checker.php
 
 		-
@@ -3163,9 +3283,21 @@ parameters:
 			path: modules/live_editor/controllers/admin_ajax.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:copier_widget\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/live_editor/controllers/admin_ajax.php
+
+		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:delete_widgets\(\)\.$#'
 			identifier: method.notFound
 			count: 4
+			path: modules/live_editor/controllers/admin_ajax.php
+
+		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:ecrire_titre\(\)\.$#'
+			identifier: method.notFound
+			count: 2
 			path: modules/live_editor/controllers/admin_ajax.php
 
 		-
@@ -3183,7 +3315,7 @@ parameters:
 		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 17
+			count: 20
 			path: modules/live_editor/controllers/admin_ajax.php
 
 		-
@@ -3373,6 +3505,12 @@ parameters:
 			path: modules/menu/controllers/admin.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:ecrire_titre\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/menu/controllers/admin.php
+
+		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_items\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -3385,10 +3523,28 @@ parameters:
 			path: modules/menu/controllers/admin.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:titre_dans\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/menu/controllers/admin.php
+
+		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 4
+			count: 6
 			path: modules/menu/controllers/admin.php
+
+		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_item\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: modules/menu/controllers/admin_checker.php
+
+		-
+			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
+			identifier: arguments.count
+			count: 2
+			path: modules/menu/controllers/admin_checker.php
 
 		-
 			message: '#^Call to an undefined method NF\\Modules\\Moderation\\Controllers\\Admin\:\:form_text\(\)\.$#'
@@ -4293,7 +4449,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method NF\\Modules\\Notifications\\Controllers\\Ajax_Checker\:\:ajax\(\)\.$#'
 			identifier: method.notFound
-			count: 3
+			count: 4
 			path: modules/notifications/controllers/ajax_checker.php
 
 		-
@@ -4579,6 +4735,12 @@ parameters:
 			path: modules/payments/payments.php
 
 		-
+			message: '#^Call to an undefined method NF\\Modules\\Payments\\Payments\:\:db\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/payments/payments.php
+
+		-
 			message: '#^Variable \$enabled might not be defined\.$#'
 			identifier: variable.undefined
 			count: 1
@@ -4699,6 +4861,12 @@ parameters:
 			path: modules/recruits/controllers/admin.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:champ_dans\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/recruits/controllers/admin.php
+
+		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:check_candidacy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -4736,6 +4904,12 @@ parameters:
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:delete_recruit\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/recruits/controllers/admin.php
+
+		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:edit_field\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: modules/recruits/controllers/admin.php
@@ -4789,6 +4963,12 @@ parameters:
 			path: modules/recruits/controllers/admin.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:texte_dans\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/recruits/controllers/admin.php
+
+		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:update_candidacy\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -4803,7 +4983,7 @@ parameters:
 		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 24
+			count: 27
 			path: modules/recruits/controllers/admin.php
 
 		-
@@ -4821,13 +5001,13 @@ parameters:
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:check_recruit\(\)\.$#'
 			identifier: method.notFound
-			count: 4
+			count: 5
 			path: modules/recruits/controllers/admin_checker.php
 
 		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_field\(\)\.$#'
 			identifier: method.notFound
-			count: 1
+			count: 2
 			path: modules/recruits/controllers/admin_checker.php
 
 		-
@@ -4839,7 +5019,7 @@ parameters:
 		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 8
+			count: 10
 			path: modules/recruits/controllers/admin_checker.php
 
 		-
@@ -5063,36 +5243,6 @@ parameters:
 			identifier: variable.undefined
 			count: 2
 			path: modules/recruits/views/candidacy-status.tpl.php
-
-		-
-			message: '#^Variable \$status might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: modules/recruits/views/candidacy-votes.tpl.php
-
-		-
-			message: '#^Variable \$total_down might not be defined\.$#'
-			identifier: variable.undefined
-			count: 3
-			path: modules/recruits/views/candidacy-votes.tpl.php
-
-		-
-			message: '#^Variable \$total_up might not be defined\.$#'
-			identifier: variable.undefined
-			count: 3
-			path: modules/recruits/views/candidacy-votes.tpl.php
-
-		-
-			message: '#^Variable \$total_votes might not be defined\.$#'
-			identifier: variable.undefined
-			count: 4
-			path: modules/recruits/views/candidacy-votes.tpl.php
-
-		-
-			message: '#^Variable \$vote_form might not be defined\.$#'
-			identifier: variable.undefined
-			count: 1
-			path: modules/recruits/views/candidacy-votes.tpl.php
 
 		-
 			message: '#^Variable \$date might not be defined\.$#'
@@ -5389,6 +5539,12 @@ parameters:
 			path: modules/slider/controllers/admin.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_slide_lang\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/slider/controllers/admin.php
+
+		-
 			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:get_slides\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -5415,7 +5571,7 @@ parameters:
 		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 9
+			count: 10
 			path: modules/slider/controllers/admin.php
 
 		-
@@ -5497,9 +5653,15 @@ parameters:
 			path: modules/talks/controllers/admin.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:texte_dans\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/talks/controllers/admin.php
+
+		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
-			count: 3
+			count: 4
 			path: modules/talks/controllers/admin.php
 
 		-
@@ -5839,6 +6001,12 @@ parameters:
 			path: modules/teams/controllers/admin.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:titre_dans\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/teams/controllers/admin.php
+
+		-
 			message: '#^Method NF\\NeoFrag\\NeoFrag\:\:model\(\) invoked with 0 parameters, at least 1 required\.$#'
 			identifier: arguments.count
 			count: 6
@@ -6151,6 +6319,12 @@ parameters:
 			path: modules/user/controllers/admin.php
 
 		-
+			message: '#^Call to an undefined method NF\\NeoFrag\\Loadables\\Model\:\:texte_dans\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: modules/user/controllers/admin.php
+
+		-
 			message: '#^Call to an undefined method NF\\Modules\\User\\Controllers\\Admin_Ajax\:\:groups\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -6285,7 +6459,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method NF\\Modules\\User\\Controllers\\Index\:\:form_checkbox\(\)\.$#'
 			identifier: method.notFound
-			count: 3
+			count: 4
 			path: modules/user/controllers/index.php
 
 		-
@@ -6741,7 +6915,7 @@ parameters:
 		-
 			message: '#^Call to an undefined static method NF\\NeoFrag\\Core\:\:theme\(\)\.$#'
 			identifier: staticMethod.notFound
-			count: 5
+			count: 6
 			path: neofrag/core/output.php
 
 		-
@@ -6893,18 +7067,6 @@ parameters:
 			identifier: function.notFound
 			count: 1
 			path: neofrag/helpers/assets.php
-
-		-
-			message: '#^Constant NEOFRAG_MEMORY not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/helpers/debug.php
-
-		-
-			message: '#^Constant NEOFRAG_TIME not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: neofrag/helpers/debug.php
 
 		-
 			message: '#^Function check_file not found\.$#'

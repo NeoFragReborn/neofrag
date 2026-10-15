@@ -304,9 +304,15 @@ abstract class Addon extends NeoFrag implements \NF\NeoFrag\Loadable
 		return $this;
 	}
 
+	/**
+	 * `execute()`, et non `query()` : `query()` ne fait que POSER une requête, que le prochain get(), row() ou
+	 * results() envoie. La création partait ainsi À LA PLACE de la lecture des migrations faites, qui revenait
+	 * vide : chaque mise à jour d'un addon rejouait TOUTES ses migrations, et celle qui écrit des données les
+	 * écrivait une seconde fois (2026-10-15, trouvé en mettant à jour le module du tutoriel « Astuces »).
+	 */
 	private function _ensure_addon_migrations_table()
 	{
-		$this->db->query(
+		$this->db->execute(
 			'CREATE TABLE IF NOT EXISTS `nf_addon_migrations` (
 				`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 				`type` varchar(32) NOT NULL,

@@ -50,20 +50,26 @@ class Talks extends Model
 		// Seuls les salons publics sont visibles/éditables depuis le panel admin.
 		// Les conversations privées sont auto-configurées (permissions implicites = participants only)
 		// et n'apparaissent ici qu'en cas de signalement, via un futur module signalement unifié.
-		return $this->db->select('talk_id', 'name')
-						->from('nf_talks')
-						->where('deleted_at', NULL)
-						->where('type', 'public')
+		//
+		// Le nom d'un salon PUBLIC se traduit (m32, 2026-10-15) : `nf_talks_lang` porte ses traductions, et
+		// `nf_talks.name` reste le texte des conversations des membres (et du salon, en secours). Toute lecture prend
+		// donc COALESCE(traduction, base).
+		return $this->db->select('t.talk_id', 'COALESCE(tl.name, t.name) AS name')
+						->from('nf_talks t')
+						->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
+						->where('t.deleted_at', NULL)
+						->where('t.type', 'public')
 						->order_by('name')
 						->get();
 	}
 
 	public function check_talk($talk_id, $title)
 	{
-		$talk = $this->db	->select('talk_id', 'name', 'type', 'creator_id', 'description')
-							->from('nf_talks')
-							->where('talk_id', (int)$talk_id)
-							->where('deleted_at', NULL)
+		$talk = $this->db	->select('t.talk_id', 'COALESCE(tl.name, t.name) AS name', 't.type', 't.creator_id', 'COALESCE(tl.description, t.description) AS description')
+							->from('nf_talks t')
+							->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
+							->where('t.talk_id', (int)$talk_id)
+							->where('t.deleted_at', NULL)
 							->row();
 
 		if ($talk && $title == \url_title($talk['name']))
@@ -73,22 +79,63 @@ class Talks extends Model
 		return FALSE;
 	}
 
-	public function add_talk($title)
+	public function add_talk($title, $description = '')
 	{
 		$talk_id = $this->db->insert('nf_talks', [
-			'name' => $title,
-			'type' => 'public'
+			'name'        => $title,
+			'type'        => 'public',
+			'description' => (string) $description
 		]);
+		$this->ecrire_texte((int) $talk_id, (string) $title, (string) $description);
 		$this->access->init('talks', 'talks', $talk_id);
 		return $talk_id;
 	}
 
-	public function edit_talk($talk_id, $title)
+	public function edit_talk($talk_id, $title, $description = NULL)
 	{
+		$base = ['name' => $title];
+
+		if ($description !== NULL)
+		{
+			$base['description'] = (string) $description;
+		}
+
 		$this->db	->where('talk_id', (int)$talk_id)
-					->update('nf_talks', [
-						'name' => $title
-					]);
+					->update('nf_talks', $base);
+
+		// Seul un salon PUBLIC a des traductions : une conversation de membres garde un seul nom, pour tous.
+		if ($this->db->select('type')->from('nf_talks')->where('talk_id', (int)$talk_id)->row() === 'public')
+		{
+			$this->ecrire_texte((int) $talk_id, (string) $title, $description === NULL ? NULL : (string) $description);
+		}
+	}
+
+	/** Le nom et la description d'un salon public TELS QU'ILS SONT ÉCRITS dans une langue, vides sinon. */
+	public function texte_dans(int $talk_id, string $langue): array
+	{
+		$ecrit = $this->db	->select('name', 'description')
+							->from('nf_talks_lang')
+							->where('talk_id', $talk_id)
+							->where('lang', $langue)
+							->row();
+
+		return [
+			'name'        => is_array($ecrit) ? (string) ($ecrit['name'] ?? '') : '',
+			'description' => is_array($ecrit) ? (string) ($ecrit['description'] ?? '') : ''
+		];
+	}
+
+	/** `ecrire_lang` CRÉE la ligne quand elle manque (leçon de m30) ; une description NULL n'est pas touchée. */
+	private function ecrire_texte(int $talk_id, string $nom, ?string $description): void
+	{
+		$langue = (string) $this->config->lang->info()->name;
+
+		if ($description === NULL)
+		{
+			$description = $this->texte_dans($talk_id, $langue)['description'];
+		}
+
+		$this->db->ecrire_lang('nf_talks_lang', ['talk_id' => $talk_id, 'lang' => $langue], ['name' => $nom, 'description' => $description]);
 	}
 
 	public function delete_talk($talk_id)
@@ -137,7 +184,7 @@ class Talks extends Model
 
 		// Retourne les talks (group, direct, public) où je suis participant ni archivé ni supprimé.
 		return $this->db->select(
-								't.talk_id', 't.name', 't.type', 't.description', 't.creator_id',
+								't.talk_id', 'COALESCE(tl.name, t.name) AS name', 't.type', 'COALESCE(tl.description, t.description) AS description', 't.creator_id',
 								't.created_at', 't.updated_at',
 								'p.role', 'p.last_read_at', 'p.notify_email',
 								'(SELECT COUNT(*) FROM nf_talks_messages m WHERE m.talk_id = t.talk_id AND m.deleted_at IS NULL'.$masques.' AND (p.last_read_at IS NULL OR m.date > p.last_read_at)) as unread_count',
@@ -145,6 +192,7 @@ class Talks extends Model
 								'(SELECT MAX(date) FROM nf_talks_messages m WHERE m.talk_id = t.talk_id AND m.deleted_at IS NULL) as last_message_date'
 							)
 						->from('nf_talks t')
+						->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
 						->join('nf_talks_participants p', 'p.talk_id = t.talk_id')
 						->where('p.user_id', (int)$user_id)
 						->where('p.archived_at', NULL)
@@ -159,12 +207,13 @@ class Talks extends Model
 		// Conversations archivées par l'user (volontairement masquées de la liste principale).
 		// Exclut les supprimées (deleted_at NOT NULL) qui ont leur propre cycle (rétention 14j).
 		return $this->db->select(
-								't.talk_id', 't.name', 't.type', 't.description', 'p.archived_at',
+								't.talk_id', 'COALESCE(tl.name, t.name) AS name', 't.type', 'COALESCE(tl.description, t.description) AS description', 'p.archived_at',
 								'(SELECT COUNT(*) FROM nf_talks_messages m WHERE m.talk_id = t.talk_id AND m.deleted_at IS NULL) as messages_count',
 								'(SELECT COUNT(*) FROM nf_talks_participants p2 WHERE p2.talk_id = t.talk_id AND p2.archived_at IS NULL AND p2.deleted_at IS NULL) as participants_count',
 								'(SELECT MAX(date) FROM nf_talks_messages m WHERE m.talk_id = t.talk_id AND m.deleted_at IS NULL) as last_message_date'
 							)
 						->from('nf_talks t')
+						->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
 						->join('nf_talks_participants p', 'p.talk_id = t.talk_id')
 						->where('p.user_id', (int)$user_id)
 						->where('p.archived_at !=', NULL)
@@ -179,7 +228,7 @@ class Talks extends Model
 		// Tous les talks publics ouverts à l'audience 'all' + ceux 'staff' si user est admin.
 		// IMPORTANT : tout doit être en un seul select() — un 2ème appel écrase le 1er dans le builder NeoFrag.
 		$selects = [
-			't.talk_id', 't.name', 't.description', 't.creator_id', 't.created_at', 't.audience',
+			't.talk_id', 'COALESCE(tl.name, t.name) AS name', 'COALESCE(tl.description, t.description) AS description', 't.creator_id', 't.created_at', 't.audience',
 			'(SELECT COUNT(*) FROM nf_talks_participants p2 WHERE p2.talk_id = t.talk_id AND p2.archived_at IS NULL AND p2.deleted_at IS NULL) as participants_count',
 			'(SELECT COUNT(*) FROM nf_talks_messages m WHERE m.talk_id = t.talk_id AND m.deleted_at IS NULL) as messages_count'
 		];
@@ -190,6 +239,7 @@ class Talks extends Model
 
 		$this->db->select(...$selects)
 				->from('nf_talks t')
+				->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
 				->where('t.type', 'public')
 				->where('t.deleted_at', NULL);
 
@@ -198,15 +248,16 @@ class Talks extends Model
 			$this->db->where('t.audience', 'all');
 		}
 
-		return $this->db->order_by('t.name')->get();
+		return $this->db->order_by('name')->get();
 	}
 
 	public function get_conversation($talk_id)
 	{
-		return $this->db->select('talk_id', 'name', 'type', 'audience', 'creator_id', 'description', 'created_at', 'updated_at')
-						->from('nf_talks')
-						->where('talk_id', (int)$talk_id)
-						->where('deleted_at', NULL)
+		return $this->db->select('t.talk_id', 'COALESCE(tl.name, t.name) AS name', 't.type', 't.audience', 't.creator_id', 'COALESCE(tl.description, t.description) AS description', 't.created_at', 't.updated_at')
+						->from('nf_talks t')
+						->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
+						->where('t.talk_id', (int)$talk_id)
+						->where('t.deleted_at', NULL)
 						->row();
 	}
 
@@ -300,6 +351,12 @@ class Talks extends Model
 				]);
 			}
 
+			// Un salon PUBLIC a son texte dans la langue de son créateur (m32) ; une conversation de membres, non.
+			if ($type === 'public')
+			{
+				$this->ecrire_texte((int) $talk_id, trim((string)$name), trim((string)$description));
+			}
+
 			// Init ACL legacy (read/write/delete) pour rétrocompat ACL
 			$this->access->init('talks', 'talks', $talk_id);
 
@@ -383,11 +440,12 @@ class Talks extends Model
 		$cutoff = date('Y-m-d H:i:s', strtotime('-'.(int)$retention_days.' days'));
 
 		return $this->db->select(
-								't.talk_id', 't.name', 't.type', 't.description', 'p.deleted_at',
+								't.talk_id', 'COALESCE(tl.name, t.name) AS name', 't.type', 'COALESCE(tl.description, t.description) AS description', 'p.deleted_at',
 								'(SELECT COUNT(*) FROM nf_talks_messages m WHERE m.talk_id = t.talk_id AND m.deleted_at IS NULL) as messages_count',
 								'TIMESTAMPDIFF(DAY, p.deleted_at, NOW()) as days_since_delete'
 							)
 						->from('nf_talks t')
+						->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
 						->join('nf_talks_participants p', 'p.talk_id = t.talk_id')
 						->where('p.user_id', (int)$user_id)
 						->where('p.deleted_at !=', NULL)
@@ -497,12 +555,13 @@ class Talks extends Model
 
 		$this->db->select(	'm.message_id', 'm.talk_id', 'm.user_id',
 							'm.message', 'UNIX_TIMESTAMP(m.date) as date',
-							't.name as talk_name', 't.type',
+							'COALESCE(tl.name, t.name) AS talk_name', 't.type',
 							'u.username',
 							'MATCH(m.message) AGAINST ('.$this->_quote($boolean).' IN BOOLEAN MODE) as relevance'
 						)
 				 ->from('nf_talks_messages m')
 				 ->join('nf_talks t', 't.talk_id = m.talk_id')
+				 ->join_lang('nf_talks_lang tl', 'talk_id', 't.talk_id', NULL, 'LEFT')
 				 ->join('nf_user u',  'u.id = m.user_id', 'LEFT')
 				 ->where('m.talk_id IN ('.$accessible_csv.')')
 				 ->where('m.deleted_at', NULL)

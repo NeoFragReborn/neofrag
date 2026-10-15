@@ -100,6 +100,13 @@ class Form extends Library
 			{
 				$options['rules'] = explode('|', $options['rules']);
 			}
+			// « Aucune règle » écrit comme une chaîne vide (`'rules' => $requis ? 'required' : ''`) restait une
+			// chaîne, et l'affichage du champ la passait à in_array() : TypeError, page 500. Ainsi tombait le
+			// formulaire de candidature de toute offre qui posait une question facultative (relevé le 2026-10-15).
+			else
+			{
+				unset($options['rules']);
+			}
 
 			$this->_rules[$var] = $options;
 		}
@@ -524,16 +531,27 @@ class Form extends Library
 							<a class="btn btn-danger delete-confirm" href="'.url($this->url->request).'" data-form-id="'.$this->token().'">'.NeoFrag()->lang('Supprimer').'</a>
 						</div>';
 			}
-			else
-			{
-				//TODO
-				/*return 	'<p>'.$message.'</p><p>
-							<button type="button" class="btn btn-secondary" onclick="$(this).parents(\'.alert\').alert(\'close\');">Annuler</button>
-							<a class="btn btn-danger delete-confirm" href="'.url($this->url->request).'" data-form-id="'.$this->token().'" onclick="return confirm_deletion(this);">Supprimer</a>
-						</p>';*/
-			}
+			/*
+			 * HORS FENÊTRE : la confirmation de suppression ne vivait QUE dans une modale. Ouverte en pleine
+			 * page — un lien suivi dans un nouvel onglet, un signet, un navigateur sans JavaScript —, elle ne
+			 * rendait RIEN : une page d'administration vide, sans message, sans bouton et sans retour (vu le
+			 * 2026-10-14 par `check-admin-back`, qui a pu la juger pour la première fois). Elle rend désormais
+			 * une vraie page, et l'écriture passe par le même jeton de formulaire que la modale.
+			 *
+			 * Le retour est le module lui-même, lu dans l'adresse (`admin/<module>/…` → `admin/<module>`) : la
+			 * bibliothèque ne connaît pas le module qui l'appelle, et c'est le seul chemin sûr vers une page
+			 * qui existe. `settings-section-back` est la classe que l'administration donne à ses retours.
+			 */
+			$retour = preg_replace('#^(admin/[a-z0-9_-]+).*$#', '$1', (string) $this->url->request);
 
-			return;
+			return '<div class="alert alert-warning">'.$message.'</div>
+					<form action="'.url($this->url->request).'" method="post">
+						<input type="hidden" name="'.$this->token().'[]" value="delete" />
+						<div class="d-flex flex-wrap gap-2">
+							<button type="submit" class="btn btn-danger">'.icon('far fa-trash-alt').' '.NeoFrag()->lang('Supprimer').'</button>
+							<a class="btn btn-secondary settings-section-back" href="'.url($retour).'">'.NeoFrag()->lang('Annuler').'</a>
+						</div>
+					</form>';
 		}
 
 		$output = '';

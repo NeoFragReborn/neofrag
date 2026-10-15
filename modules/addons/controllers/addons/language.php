@@ -82,7 +82,7 @@ class Language extends Controller
 			return $this->output->json(['success' => 'refresh']);
 		}
 
-		return $this->modal('Préférence des langues', 'far fa-flag')
+		return $this->modal($this->lang('Préférence des langues'), 'far fa-flag')
 					->body($this->table2($langs)
 								->compact(function($a){
 									return $this->button_sort($a->__addon->id, 'admin/addons/order/'.$a->__addon->url());

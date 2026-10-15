@@ -48,7 +48,7 @@ return [
 	'63dc6393' => 'Wiedereröffnung',
 	'6a41f36b' => 'Zentriert',
 	'6b0653a3' => 'Nachrichtentitel',
-	'2d5db53a' => 'Ersetzt die Schriftart aller Themes. Die Schriftarten werden von Google Fonts geliefert; „%s“ ruft keinen externen Dienst auf.',
+	'1657202e' => 'Ersetzt die Schriftart aller Themes. Alle werden von der Website selbst ausgeliefert: Kein Besucher wird zu einem externen Dienst geschickt.',
 	'6bc79f62' => 'Nachrichtenautor',
 	'72d181ea' => 'Allgemeine Einstellungen erfolgreich gespeichert',
 	'74adcc7d' => 'Die Website ist während einer Aktualisierung vorübergehend nicht erreichbar. Bitte schauen Sie in Kürze wieder vorbei.',
@@ -269,4 +269,8 @@ return [
 	'68b7ca29' => 'Gib eine Anzahl von Jahren zwischen 0 und 20 an.',
 	'bfeaf8bc' => 'Umzuleitende Adressen: die Liste der %s, im Monitoring.',
 	'9339febd' => 'nicht gefundenen Seiten',
+	'920189e5' => 'Push-Benachrichtigungen',
+	'f5ca4bbd' => 'Mitgliedern anbieten, ihre Benachrichtigungen im Browser zu erhalten, auch wenn die Seite geschlossen ist',
+	'3db3c569' => 'Jedes Mitglied aktiviert es auf seinen Geräten in den Benachrichtigungseinstellungen und wählt, was es erhält. Die Seite muss über https ausgeliefert werden.',
+	'a3e9a037' => 'Push-Benachrichtigungen bleiben aus: Dieser Server kann sie nicht verschlüsseln (OpenSSL mit der Kurve P-256 und cURL sind erforderlich).',
 ];

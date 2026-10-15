@@ -351,8 +351,11 @@ final class EditeurImagesTest extends TestCase
 
 	public function test_l_editeur_parle_la_langue_de_la_page(): void
 	{
-		self::assertSame('language: "fr_FR", ', Editeur_Images::langue_tinymce('fr'));
-		self::assertSame('language: "pt_PT", ', Editeur_Images::langue_tinymce('pt'));
+		// TinyMCE 8 nomme ses paquets avec un TIRET (`fr-FR`), la 7 employait un tiret bas : le nom
+		// donné ici est AUSSI celui du fichier chargé, donc se tromper laisse l'éditeur en anglais
+		// sans un mot — d'où la vérification de présence ci-dessous (2026-10-15).
+		self::assertSame('language: "fr-FR", ', Editeur_Images::langue_tinymce('fr'));
+		self::assertSame('language: "pt-PT", ', Editeur_Images::langue_tinymce('pt'));
 		self::assertSame('', Editeur_Images::langue_tinymce('en'), 'l’anglais est la langue de TinyMCE');
 
 		foreach (Editeur_Images::LANGUES_TINYMCE as $fichier)

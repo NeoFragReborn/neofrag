@@ -184,4 +184,9 @@ return [
 	'cf821f2c' => 'Il n\'y a pas encore de vote...',
 	'602bea83' => 'Mon avis sur cette candidature',
 	'8fd9c7ef' => 'Enregistrer',
+	'bcb37883' => 'Écrit pour %s. Change la langue de l\'administration pour traduire les questions ; les autres langues gardent leur texte.',
+	'174101d1' => 'Modifier ou traduire ce champ',
+	'f3754670' => 'Champ modifié.',
+	'2173f759' => 'Modifier le champ',
+	'a3a36296' => 'Écrit pour %s. Change la langue de l\'administration pour traduire cette offre ; les autres langues gardent leur texte.',
 ];

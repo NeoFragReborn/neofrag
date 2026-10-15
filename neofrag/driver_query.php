@@ -56,6 +56,18 @@ class Driver_Query
 			$this->sql .= ' ('.implode(', ', array_map([$this->driver, 'escape_keywords'], array_keys($this->values))).') VALUES ('.implode(', ', array_map(function($a){
 				return $this->driver->bind($this, $a);
 			}, $this->values)).')';
+
+			// `ecrire_lang()` : la ligne est créée si elle manque, et sinon seules les colonnes données changent.
+			// `VALUES(col)` reprend la valeur déjà liée plus haut : aucun paramètre de plus, aucun risque de les
+			// désaligner.
+			if (!empty($this->on_duplicate))
+			{
+				$this->sql .= ' ON DUPLICATE KEY UPDATE '.implode(', ', array_map(function($colonne){
+					$colonne = $this->driver->escape_keywords($colonne);
+
+					return $colonne.' = VALUES('.$colonne.')';
+				}, $this->on_duplicate));
+			}
 		}
 		else
 		{

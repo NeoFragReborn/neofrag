@@ -2,11 +2,17 @@
 declare(strict_types=1);
 namespace NF\Modules\Wiki\Controllers;
 use NF\NeoFrag\Loadables\Controllers\Module as Controller_Module;
+use NF\Modules\Wiki\Lib\Wiki_Ancres;
 
 class Index extends Controller_Module
 {
 	public function index($pages)
 	{
+		// Comme ses pages : l'accueil du wiki se déclare dans la langue première du site. Sa table des matières est la
+		// même dans chaque langue tant que les pages n'y sont pas traduites — six canoniques d'un même texte, que
+		// check-seo a relevées après m32 (2026-10-16).
+		nf_seo_sans_langue();
+
 		$this->title('Wiki')->icon('fas fa-book')->breadcrumb();
 
 		// Regroupe par parent : les pages de 1er niveau sont les catégories.
@@ -66,7 +72,7 @@ class Index extends Controller_Module
 		$this->title($page['title'])->icon('fas fa-book')->breadcrumb();
 
 		// Navigation latérale : arbre des pages (page active surlignée).
-		$all = NeoFrag()->db->select('id', 'slug', 'title', 'parent_id')->from('nf_wiki_pages')->where('published', '1')->order_by('parent_id ASC, sort_order ASC, id ASC')->get();
+		$all = NeoFrag()->db->select('p.id', 'p.slug', 'wl.title', 'p.parent_id')->from('nf_wiki_pages p')->join_lang('nf_wiki_pages_lang wl', 'page_id', 'p.id', NULL, 'LEFT')->where('p.published', '1')->order_by('p.parent_id ASC, p.sort_order ASC, p.id ASC')->get();
 		$kids = [];
 		foreach ($all as $p) { $kids[$p['parent_id'] ?? 0][] = $p; }
 
@@ -98,7 +104,7 @@ class Index extends Controller_Module
 		$meta .= ' &middot; <i class="far fa-clock"></i> '.nf_date_heure($page['updated_ts']);
 		$meta .= '</small><a class="btn btn-sm btn-outline-secondary" href="'.url('wiki/history/'.$page['slug']).'"><i class="fas fa-history"></i> '.$this->lang('Historique').'</a></div>';
 
-		$main = $meta.'<div class="wiki-content">'.self::ancres(render_content($page['content'])).'</div>';
+		$main = $meta.'<div class="wiki-content">'.Wiki_Ancres::poser(render_content($page['content'])).'</div>';
 
 		$body = '<div class="wiki-layout">'.$nav.'<div class="wiki-main">'.$main.'</div></div>';
 
@@ -164,7 +170,7 @@ class Index extends Controller_Module
 			.'<a class="btn btn-primary btn-sm" href="'.url('wiki/'.$rev['page_slug']).'"><i class="fas fa-eye"></i> '.$this->lang('Voir la version actuelle').'</a>'
 			.'</div>';
 
-		return $this->panel()->title('Révision archivée', 'fas fa-history')->body($body);
+		return $this->panel()->title($this->lang('Révision archivée'), 'fas fa-history')->body($body);
 	}
 
 	public function _diff($from, $to, $page)
@@ -226,7 +232,7 @@ class Index extends Controller_Module
 	 */
 	private function _apercu_de_page(array $page): string
 	{
-		$contenu = (string) NeoFrag()->db->select('content')->from('nf_wiki_pages')->where('id', (int) $page['id'])->row();
+		$contenu = (string) NeoFrag()->db->select('wl.content')->from('nf_wiki_pages p')->join_lang('nf_wiki_pages_lang wl', 'page_id', 'p.id', NULL, 'LEFT')->where('p.id', (int) $page['id'])->row();
 		$titres  = preg_match_all('#<h2\b[^>]*>(.*?)</h2>#is', $contenu, $m) ? array_slice(array_filter(array_map(static fn (string $t): string => trim(html_entity_decode(strip_tags($t), ENT_QUOTES | ENT_HTML5, 'UTF-8')), $m[1])), 0, 5) : [];
 		$lien    = url('wiki/'.$page['slug']);
 
@@ -236,7 +242,7 @@ class Index extends Controller_Module
 
 			foreach ($titres as $t)
 			{
-				$html .= '<li><a href="'.$lien.'#'.self::ancre($t).'"><i class="fas fa-hashtag"></i><span>'.nf_texte($t).'</span><i class="fas fa-chevron-right wiki-go"></i></a></li>';
+				$html .= '<li><a href="'.$lien.'#'.Wiki_Ancres::ancre($t).'"><i class="fas fa-hashtag"></i><span>'.nf_texte($t).'</span><i class="fas fa-chevron-right wiki-go"></i></a></li>';
 			}
 
 			return $html.'</ul>';
@@ -246,27 +252,6 @@ class Index extends Controller_Module
 		$debut = mb_strlen($texte) > 200 ? rtrim(mb_substr($texte, 0, (int) (mb_strrpos(mb_substr($texte, 0, 200), ' ') ?: 200))).'…' : $texte;
 
 		return '<div class="wiki-cat-resume"><p>'.nf_texte($debut).'</p><a href="'.$lien.'">'.$this->lang('Lire la page').' <i class="fas fa-chevron-right"></i></a></div>';
-	}
-
-	/**
-	 * L'ancre d'un titre : son texte en minuscules, des tirets à la place du reste. Une version du
-	 * journal (« [1.2.14] — 2026-10-02 ») a l'ancre de son seul numéro, « 1-2-14 » : la fenêtre de mise
-	 * à jour y mène sans connaître la date de publication.
-	 */
-	private static function ancre(string $titre): string
-	{
-		if (preg_match('/^\[(\d+(?:\.\d+)+)\]/', $titre, $version))
-		{
-			return str_replace('.', '-', $version[1]);
-		}
-
-		return trim((string) preg_replace('/[^\p{L}\p{N}]+/u', '-', mb_strtolower($titre)), '-') ?: 'section';
-	}
-
-	/** Une ancre sur chaque titre de niveau 2 qui n'en a pas : les cartes de l'accueil y mènent. */
-	private static function ancres(string $html): string
-	{
-		return (string) preg_replace_callback('#<h2>(.*?)</h2>#is', static fn (array $m): string => '<h2 id="'.nf_texte(self::ancre(trim(html_entity_decode(strip_tags($m[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8')))).'">'.$m[1].'</h2>', $html);
 	}
 
 	/** Contenu HTML -> lignes de texte lisibles (frontières de blocs = sauts de ligne). */

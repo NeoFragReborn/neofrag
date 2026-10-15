@@ -78,4 +78,5 @@ return [
 	'4306ff8f' => 'Andere Platzierung',
 	'ff8ae8a6' => 'Keine Platzierung',
 	'8fd9c7ef' => 'Speichern',
+	'6873a0dd' => 'Für %s geschrieben. Wechsle die Sprache der Verwaltung, um diesen Titel zu übersetzen; die anderen Sprachen behalten ihren Text.',
 ];

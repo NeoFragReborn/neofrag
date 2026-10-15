@@ -188,4 +188,9 @@ return [
 	'602bea83' => 'My opinion on this application',
 	'350c98af' => 'Offer %s',
 	'8fd9c7ef' => 'Save',
+	'bcb37883' => 'Written for %s. Switch the admin language to translate the questions; the other languages keep their text.',
+	'174101d1' => 'Edit or translate this field',
+	'f3754670' => 'Field updated.',
+	'2173f759' => 'Edit field',
+	'a3a36296' => 'Written for %s. Switch the admin language to translate this offer; the other languages keep their text.',
 ];

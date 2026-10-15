@@ -29,7 +29,7 @@ return [
 	'e3bfec89' => 'Lista de conversas',
 	'e7381120' => 'Tem a certeza de que deseja eliminar a conversa <b>%s</b>?',
 	'f91b6100' => 'Editar conversa',
-	'08d312a5' => 'Talkbox / bate-papo rápido entre membros conectados.',
+	'08d312a5' => 'Talkbox / conversa rápida entre membros ligados.',
 	// i18n 2026-06-11
 	'0001c75a' => '%s enviou-te uma mensagem',
 	// i18n 2026-06-11 (code strings)
@@ -141,4 +141,6 @@ return [
 	'92641492' => 'Apagar os ficheiros assinalados',
 	'970a684e' => 'extensão recusada',
 	'4c523dac' => 'Esta mensagem foi denunciada: não pode ser eliminada enquanto a moderação não a tiver analisado.',
+	'db202fcf' => 'Escrito para %s. Muda a língua da administração para traduzir esta sala; as outras línguas mantêm o seu texto.',
+	'eb78cff1' => 'Descrição',
 ];

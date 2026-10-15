@@ -55,6 +55,11 @@ declare(strict_types=1);
  *   php tools/check-important.php --feuille=… --stabilite     n'éprouve que la répétabilité
  *   php tools/check-important.php --feuille=… --garder        ne pas restaurer la feuille (débogage)
  *   php tools/check-important.php --feuille=… --connecte      rendre les pages EN ÉTANT connecté
+ *   php tools/check-important.php --feuille=… --retirer       et ÉCRIRE la feuille sans les retirables
+ *
+ * `--retirer` (2026-10-16) : la feuille est réécrite sans les `!important` servis et sans effet, et seulement eux —
+ * l'outil connaît leur POSITION, quand un relevé par numéro de ligne ne distinguerait pas deux `!important` d'une même
+ * ligne dont un seul compte. Les indispensables, les non exercés et ceux hors de portée restent.
  *
  * `--connecte` n'est pas un détail : dans un thème public, une bonne part des `!important` vise la
  * barre du membre (`.navbar-user…`) ou son encart (`.widget-user…`), que le visiteur anonyme ne
@@ -68,7 +73,7 @@ require __DIR__.'/lib/site.php';
 require __DIR__.'/lib/serveur.php';
 require __DIR__.'/lib/navigateur.php';
 
-[$o] = nf_options(['feuille' => '', 'theme' => '', 'pages' => '', 'port' => 0, 'liste' => FALSE, 'garder' => FALSE, 'stabilite' => FALSE, 'connecte' => FALSE]);
+[$o] = nf_options(['feuille' => '', 'theme' => '', 'pages' => '', 'port' => 0, 'liste' => FALSE, 'garder' => FALSE, 'stabilite' => FALSE, 'connecte' => FALSE, 'retirer' => FALSE]);
 
 // ── Les feuilles concernées ─────────────────────────────────────────────────
 if ($o['liste'] || $o['feuille'] === '')
@@ -177,9 +182,11 @@ if (!$mesurables)
 
 printf("\n%d `!important` mesurables.\n", count($mesurables));
 
-// La feuille est restaurée quoi qu'il arrive — sauf --garder, pour déboguer.
-register_shutdown_function(static function () use ($feuille, $original, $o): void {
-    if (!$o['garder'] && @file_get_contents($feuille) !== $original)
+// La feuille est restaurée quoi qu'il arrive — sauf --garder, pour déboguer, et sauf la feuille corrigée que
+// --retirer vient d'écrire.
+$ecrite = FALSE;
+register_shutdown_function(static function () use ($feuille, $original, $o, &$ecrite): void {
+    if (!$o['garder'] && !$ecrite && @file_get_contents($feuille) !== $original)
     {
         file_put_contents($feuille, $original);
         echo "\n(feuille restaurée)\n";
@@ -315,7 +322,8 @@ function sans_important(string $source, array $positions, array $retirer): strin
             continue;
         }
 
-        $sortie .= substr($source, $avant, $p - $avant);
+        // L'espace qui le précédait part avec lui : « 76px !important; » devient « 76px; », pas « 76px ; ».
+        $sortie .= rtrim(substr($source, $avant, $p - $avant), " \t");
         $avant   = $p + 10;
     }
 
@@ -600,6 +608,13 @@ if ($rien_ne_bouge)
         printf("  %s:%-5d %s\n", $relatif, $ligne($positions[$i]), mb_strimwidth($selecteurs[$i], 0, 60, '…'));
     }
 
+    if ($o['retirer'])
+    {
+        $ecrite = TRUE;
+        file_put_contents($feuille, sans_important($original, $positions, $retirables));
+        nf_ok(sprintf('%d `!important` retirés de %s (servis et sans effet sur les %d page(s) mesurée(s))', count($retirables), $relatif, count($pages)));
+    }
+
     nf_echec(sprintf('%d `!important` de %s sont servis et ne changent rien sur les %d page(s) mesurée(s) : retirables',
         count($retirables), $relatif, count($pages)));
 }
@@ -676,6 +691,20 @@ if ($comptent)
 
 $appoint = ($non_exerces ? ', '.count($non_exerces).' non exercé(s)' : '')
     .($ecartes ? ', '.count($ecartes).' hors de portée' : '');
+
+// Inertes un à un ne veut pas dire inertes ENSEMBLE : deux `!important` qui se doublent ne comptent chacun pour rien,
+// et pour quelque chose tous les deux. On ne réécrit que si l'ensemble entier se retire sans rien changer.
+if ($retirables && $o['retirer'] && !$inerte($retirables))
+{
+    nf_echec(sprintf('%d `!important` sont inertes un à un mais pas ENSEMBLE : rien n\'est retiré de %s, à trier à la main', count($retirables), $relatif));
+}
+
+if ($retirables && $o['retirer'])
+{
+    $ecrite = TRUE;
+    file_put_contents($feuille, sans_important($original, $positions, $retirables));
+    nf_ok(sprintf('%d `!important` retirés de %s ; restent %d indispensables%s', count($retirables), $relatif, count($comptent), $appoint));
+}
 
 if ($retirables)
 {

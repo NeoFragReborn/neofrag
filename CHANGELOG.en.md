@@ -13,6 +13,223 @@ Michaël BILCOT and Jérémy VALENTIN — an open source project under the LGPLv
 
 ---
 
+## [1.2.50] — 2026-10-15
+
+### Added
+
+- **A theme shows the language picker in one line**: `nf_selecteur_langue()`, next to `nf_selecteur_theme()`
+  and `nf_liens_legaux()`. The bundled themes each copied its form.
+- **The documentation and the release notes, in all six languages.** The wiki guides — installation, first steps,
+  administration, marketplace, multilingual site, Discord bot, framework, creating a theme, a module or a widget —
+  only existed in French and English: they are now also written in German, Spanish, Italian and Portuguese, with the
+  exact labels the screen shows in each language, and the wiki serves them in the visitor's language. The release
+  notes follow: the wiki's “Release notes” page and the Blog posts can be read in all six languages. French remains
+  the reference; a test refuses a translation that would skip a version or date it differently.
+- **The module and widget thumbnails, redrawn.** In *Themes & addons* and on the marketplace, an extension's preview
+  was a photo of it at work — unreadable when it had no data to show: a frame, a title, a few lines. Every module and
+  widget now gets a drawn card in the project's visual language: its icon, its name and what it does, readable at any
+  size. Themes keep the photo of their home page: a theme shows itself.
+- **The bundled libraries brought up to date, with a guard to keep them there.** The rich-text editor moves to
+  TinyMCE 8 (the 7 line lost support on 14 November, and 8.9.3 fixed a vulnerability in its “media” plugin) and
+  the icons to Font Awesome 7 — the site's 363 icons were checked against the new collection before switching,
+  and none is missing. The duplicate font files (.ttf) are gone: version 7 only serves the modern format, 715 KB
+  less in the package. Above all, a new check keeps watch: it does not cry at every upstream release, but refuses
+  when the shipped versions have not been compared with the registry for more than three months. A dependency
+  does not become dangerous all at once — it drifts, and the drift is now visible.
+- **Push notifications.** A member can receive their notifications in the browser, even with the site closed: a
+  forum message, a reaction, an event reminder. The administrator offers it (Settings → General preferences → Push
+  notifications); each member then turns it on device by device, in their notification preferences, chooses type
+  by type what they receive this way, and can send themselves a test. No library added: the message is encrypted for
+  that one browser (RFC 8291) and signed on the site's behalf (VAPID, RFC 8292) — the browser's push service carries
+  it without being able to read it. The server only writes to known push services (Google, Mozilla, Apple,
+  Microsoft), never to an address a member could have made up.
+- **Nebula and the showcase theme get a colour page, and all eight themes a live preview.** Accent, background,
+  text: Nebula's and the showcase's palettes were written in their stylesheets; they can now be set like those of the
+  six other themes, with the same refusal of an unreadable colour. And under each theme's pickers, a real page of the
+  site — home, news or forum — takes the colours as you pick them, without saving anything, with the contrasts
+  measured live: you see the result before clicking “Save”.
+- **Menu links, public rooms, a widget's custom title and wiki pages are translated.** With them, no text written
+  by the site owner is left without a language. A wiki page keeps a history PER LANGUAGE: translating into Italian
+  archives nothing of the French version, and the Italian history shows only its own revisions. A conversation
+  between members keeps one name for all its participants — only public rooms are translated. The wiki's “Release
+  notes” page now also exists in English.
+- **The shop, donations, ads, payment packs and recruitment are translated.** A shop item's name and description,
+  a donation campaign's title and description, an ad's title, a pack's label, and a whole recruitment offer — its
+  title, introduction, description, requirements and the questions of its application form — are now written
+  language by language. The questions had no screen to edit them (they could only be added or deleted): a pencil
+  now opens them, and that is where they are translated. What is not text stays shared: the price, the stock, a
+  campaign's address, an ad network's code, the role given in the team — and the candidates' answers, which keep
+  the question as they read it.
+- **Game modes, maps, webradio shows and profile fields are translated.** “Compétitif 5v5” becomes “Competitive
+  5v5” for an English visitor, “Le réveil du serveur” becomes “The server wake-up”, and a profile field's label
+  is written in each language. A map name stays a proper noun, but it too is written per language, for whoever
+  wants to translate “Faille de l'invocateur”. One choice is made, and the screen says so: the LIST OF OPTIONS of a
+  profile field stays shared — an option is stored as-is in the member's answer, and translating it would make the
+  answers already given impossible to find.
+- **Event types, team roles and classified-ad categories are translated.** “Tournament”, “Captain”, “Hardware”:
+  three short names the site owner writes, which a site in six languages showed in one. They are now written
+  language by language, and visitors see them in their own everywhere they appear — the event list and pages, the
+  calendar, a team's line-up, the classified-ads directory, and the admin screens.
+- **A poll can be edited without losing its votes — and it can be translated.** Until now, saving a poll deleted
+  all its answers to recreate them, and every VOTE with them: fixing a comma in the question cost the whole poll
+  (the screen said so, which did not make it any cheaper). An answer now keeps its votes as long as it stays in
+  the list — corrected, moved or translated; only a REMOVED answer loses them, and the screen says so with a
+  count. That is what finally makes a poll translatable: the question, its description and each answer's label
+  are written language by language, and writing the Italian version no longer touches the French one.
+- **Downloads, useful links and the FAQ are translated.** The title and description of a file or a link, a question and its answer,
+  and the titles of their categories, had no language: a site in six languages showed them in one — visible on the English demo,
+  which announced “Pack de fonds d'écran” and “Chaîne Twitch”. They are now written language by language, like
+  news or events: the edit screen opens the language you are working in and says which one, and visitors see them
+  in their own language — in the library, in the link directory, in the widgets and in the blocks. What has no
+  language (address, size, type, version, counters) stays shared, and anything written in a single language stays
+  visible in the other five.
+- **A theme colour that would make the site unreadable is refused.** The six themes that let you choose their
+  accent, text and background colours accepted anything: an accent almost identical to the background, and links and
+  buttons vanished; text too pale, and the page could no longer be read. Nothing warned you, and you had to find the
+  previous colour yourself. Each colour is now measured against the other two — the saved ones, since the two forms
+  save separately — and refused, with its figure, when it does not stand out enough: 4.5 to 1 for text, 3 to 1 for
+  an accent, as the accessibility standard requires. All nine themes' original colours pass.
+- **The bundled libraries brought up to date.** The rich-text editor (TinyMCE 7.6.1 → 7.9.3, which bundles a newer
+  HTML sanitiser), the statistics charts (Chart.js 4.4.7 → 4.5.1) and the dropdowns (Tom Select 2.6.1 → 2.6.2). The
+  other three — Bootstrap, flatpickr, Sortable — were already at the latest published version. The editor's
+  hand-corrected translations are kept.
+- **Thirty-one screen titles spoke French in all six languages.** “Updates”, “New map”, “My opinion on the
+  application”, “Manage my account”, “Partners”, “Job openings”…: panel, dialog and button titles did not go
+  through the translations and showed in French whatever the site's language. Their translations already existed in
+  all six languages — only the call was missing. The check that watches for hardcoded text let them through because
+  it assumed those titles were translated by the product, which only FORM labels actually are; it now tells the two
+  apart.
+- **Three screens get their theme's design back.** A widget's stylesheet is served after the theme's: where both
+  said the same thing with the same weight, the widget won and the theme drew into the void — a presentable screen,
+  an intended design never served, and nothing to say so. *Extend*'s right-hand panel (who's online, the chat room)
+  and its large figures take back its typeface and colours; *Forge*'s profile tabs are square, underlined and
+  uppercase again, like its sibling themes'; and the *Monitoring* health indicator finally fits inside its circle
+  instead of spilling out of it. A check now refuses any theme declaration that could never apply.
+- **Events are translated.** An event's title, its description, its private description and its venue had no
+  language: a site in six languages showed them in one. They are now written language by language — the edit screen
+  opens the language you are working in, and says which one. Visitors see an event in their own language everywhere it
+  appears: the list, the event page, the calendar, the email reminders, the sitemap and the widget. What has no
+  language (the dates, the type, the image, the author, the attendees) stays shared; an event written in a single
+  language stays visible in the other five.
+- **The honours list is translated.** A title's name, its venue and its write-up had no language: a site in six
+  languages showed them in one. They are now written language by language, like the rest — the edit screen opens the
+  language you are working in, and says which one. What has no language (the date, the ranking, the number of
+  entrants, the platform, the team, the game) stays shared.
+- **The slideshow is translated.** A slide's title and caption had no language: a site in six languages showed them in
+  one. They are now written language by language, like a page or a category — the admin writes in the language it is
+  working in, and says so above the field. Visitors see the slide in their own language; a slide translated into a
+  single language stays visible in the other five (the requested language, else French, else the first one written),
+  and a slide with no text at all keeps its image. Nothing is lost on update: today's text is copied into every
+  installed language, since that is what every visitor sees today.
+- **Site sanctions follow the member onto Discord.** With bot 0.3.0 and its *Linked sanctions* feature (off by
+  default), site-wide mutes and bans apply to the member's linked Discord account — a timeout for a mute, a ban for a
+  ban — and are lifted on Discord when they are lifted on the site. A warning, a restriction or a shadow ban never
+  carries over. The other way round, and only if you turn it on: a moderator whose Discord account is linked to a
+  site account with the right to do so can ban or time out on Discord, and the site receives the sanction and judges
+  it again as if it had been issued there. The sanctions list now says where each one came from.
+- **Collectives.** A new module brings members together around a project, away from everyone else: an editorial
+  team, a moderation team, a group of creators. Created in the admin (*Community → Collectives*), a collective gets
+  a private forum section that only its members can read, and — with bot 0.3.0 and its *Collectives* feature — a
+  role and a private channel on Discord. Its leader adds members and gives them a rank (administrator, moderator,
+  member) from the collective's page, without being a site administrator; moderators moderate its section. When a
+  collective is deleted, its section and channel stay, for administrators only: nothing written there is lost.
+- **Membership fees.** An association collects its membership fees on the site: a member pays online (Stripe) — or the
+  admin records a fee paid in cash or by cheque — and becomes a **paying member** for the chosen period. They get the
+  “Member” role, which you can open to whatever you like (a reserved forum section, pages), and the badge of the
+  “Paying members” group. Seven days before it expires they are reminded; when it expires, the role is removed.
+  Membership fees do not need the Gamification module, which payments required until now.
+- **Donations made elsewhere record themselves.** Ko-fi, HelloAsso, TipeeeStream and the campaigns' PayPal button:
+  each donation lands in the chosen campaign, only once, and the progress bar moves without manual entry. Nothing is
+  recorded without proof — Ko-fi's token, the order re-read from HelloAsso, PayPal's confirmation. A membership paid on
+  HelloAsso makes the site member with the same email address a paying member. The names of HelloAsso and PayPal
+  donors are not shown publicly.
+
+### Security
+
+- **The Discord bot reports that it is a server administrator.** It does not need to be — the invite link does not ask
+  for it — but a role granted by hand could give it that right, and an administrator bot whose token leaks opens the
+  whole server. Every time it joins the server, the bot's log, shown in the admin, says so and names the permissions
+  its role is missing.
+- **The “/forum account link” link did not always link the right account.** Anyone who received that link from
+  someone else linked *that person's* Discord account to their own site account — and since a linked account can be
+  used to sign in, whoever sent the link could then get into their victim's account. Linking is now confirmed with
+  Discord: the site compares the ID Discord returns with the one the link names, and links nothing if they differ. A
+  warning stood in for that check; it was not enough.
+
+### Fixed
+
+- **The “Site font” setting said fonts were served by Google Fonts.** The site has served them itself since no visitor
+  is sent to Google any more: the description now says so.
+- **An addon update replayed all its migrations.** Reading the migrations already done always came back empty: on
+  every update of a module, widget or theme — from the marketplace or by an archive —, all its migrations were run
+  again, and those that write data wrote it a second time. Only the new ones run now. `check-db-query` guards the
+  form that caused the defect: a query prepared without being sent.
+- **The countdown of upcoming events stayed empty.** Its script lived in a removed theme: the event list and an
+  event's page showed an hourglass next to nothing, in every theme. It now lives with the module, and writes the time
+  left in the page's language (“11d 7h 22m”, “11j 7h 22min”).
+- **Right after an update, the site could still serve the old code.** PHP's cache (OPcache) keeps a file's compiled
+  code until it checks the file again: two seconds usually, and until PHP restarts on hosts that turn this check off.
+  The core update, an addon update from the marketplace and an archive sent with “Add” did not tell it: a page of an
+  updated module answered “page not found” until its new addresses were read again, and a site could run on a mix of
+  old and new code. All three now notify the cache of every file they write.
+- **Updating an addon by sending its archive skipped its migrations — and wiped a theme's layout.** “Add”, in
+  *Themes & addons*, reinstalled the addon instead of updating it: its database changes were marked as done without
+  being done, and a theme lost all its layouts and their widgets, replaced by its original layout. A newer archive
+  now updates the addon as the marketplace does: its database follows, and the layout stays the administrator's.
+- **In Nebula's live editor, the style previews were Forge's**: orange on brown. They now take Nebula's colours,
+  the ones the administrator chose. Same fix for the showcase theme.
+- **A navigation widget showing a menu kept a frozen copy of it.** It copied the menu's links when it was saved,
+  and even forgot which menu was chosen: a link added or renamed later never reached the navigation. The menu is
+  now read again on every display, in the page's language.
+- **A link to a section of a wiki page led to the top of the page.** Only top-level headings carried an anchor: a
+  link to a sub-heading found nothing, and the documentation, which often points to a precise section (“see Search
+  engines”), dropped its reader at the start of the page, in every language. Sub-headings now have their anchor,
+  and every link in the documentation leads to the heading it names.
+- **A wiki page placed under one of its own sub-pages vanished from the table of contents**, with its whole
+  section: the screen offered the sub-pages as parent. It no longer does, and such a loop sent anyway is refused.
+- **The application form answered “Error 500” as soon as an offer asked an optional question.** A “none” rule
+  written as an empty string was not understood by the form library, and the whole page fell. Found while testing
+  the translation of the questions.
+- **The *Recruitment* widget hid offers without applications** — that is, every offer that has just opened. The
+  module had been fixed; the widget had not.
+- **A deletion confirmation opened as a full page showed nothing.** In the admin, following a “Delete” link in a new
+  tab — or without JavaScript — led to a blank page: no message, no button, no way back. It now shows what is about
+  to be deleted, the button that does it and a link back to the module.
+- **The Moderation and Monitoring pages did not look like the rest of the admin.** Their figure cards, headers and
+  the health indicator's beat came from a fallback stylesheet — meant for sites that show those screens outside the
+  admin — which, being served last, overrode the theme. The fallback now only applies where the theme says nothing.
+- **In Portuguese, an account could not be deleted.** The screen asked you to type “EXCLUIR” while the site expected
+  “ELIMINAR”: the confirmation failed every time. The other five languages were correct. A check now refuses an
+  instruction that quotes a word other than the one the site expects.
+- **The Portuguese mixed Brazil and Portugal.** Eighty expressions reviewed: *usuário* becomes *utilizador*, *senha*
+  becomes *palavra-passe*, *excluir* becomes *eliminar*, *registro* becomes *registo*, and *arquivo* becomes
+  *ficheiro* when it means a file — and stays *arquivo* when it means an archive.
+- **A few awkward English sentences**: “All posts will be also deleted” becomes “will also be deleted”, in the four
+  deletion messages where it remained.
+- **Translating a piece of content for the first time: the text was lost, without a word.** Write a news item in
+  French, switch the admin to English, translate it and save: nothing was kept. The row for that language did not
+  exist yet, and the save touched no row at all — silently. This applied to news, blog posts, pages, categories,
+  galleries, games, teams, groups and partners. A translation now creates its row.
+- **Untranslated content was unreachable in that language's admin.** The news, blog post and page lists only showed
+  what existed in the language being used: everything else was invisible, hence impossible to open and translate.
+  The lists now show everything, with the best available title, and the edit screen opens with empty fields, ready
+  for the translation.
+- **Renaming a group wiped out all its translations.** The save targeted no language in particular: it wrote the same
+  title onto every row of the group — and failed as soon as the site had more than one.
+- **A partner could only have one language.** The translation table of the *Partners* module was keyed by the partner
+  number alone: a second language was rejected or overwrote the first. It now holds one row per language, like the
+  other sixteen translation tables, and describing a partner in a new language creates its row instead of writing
+  nothing.
+- **Next appointment: the weekday stuck to the day number.** In the date box of the *Next appointment* widget, the
+  three lines — weekday, day number, month — touched each other, and overlapped as soon as a theme applied its
+  display font: the digits spilled out of a line height shorter than their ink. The three lines now keep their
+  spacing in all seven themes, in light and dark mode. Same fix for the large numbers of the *Site in figures*
+  widget.
+- **Pulse finally draws its widgets.** The theme defined its own look for the calendar date box, the *site in
+  figures* numbers, the week and the gallery thumbnails: none of them showed, because the widget stylesheet is
+  served after the theme's and won on equal specificity. Pulse's tile (rounded corners, large digits, slate) now
+  appears as the mockup showed it.
+
 ## [1.2.49] — 2026-10-10
 
 A big batch: an address with the wrong title leads to the right one, the list of pages not found, the text editor in
@@ -1430,8 +1647,8 @@ to those who want these files; 0.2.0 keeps working.
   "Settings saved") and no longer technical identifiers (`monitoring.debogage.allume`).
 - **The administration Comments page** displayed code instead of the date of each
   comment.
-- **An accented title** ("journ&amp;eacute;e") no longer shows as code in the header of
-  administration cards.
+- **An accented title** no longer shows its accents as HTML code in the header of administration
+  cards.
 - **In dark mode**, the administration's colored texts (alerts, badges, green success messages)
   stayed dark on a dark background, almost unreadable.
 - **Dates in moderation** (sanctions, reports, a member's history), **in the trash,
@@ -1488,8 +1705,8 @@ to those who want these files; 0.2.0 keeps working.
   the Bugtracker, archived conversations and the file manager wrote their times without conversion; the
   web radio's "live" show was read in server time.
 - **The calendar**: the start and end of an event are chosen in a date picker, and
-  no longer in a text field in "YYYY-MM-DD HH:MM:SS" format; an accented title no longer shows as
-  "journ&amp;eacute;e"; the formatted description no longer shows its markup; the calendar export
+  no longer in a text field in "YYYY-MM-DD HH:MM:SS" format; an accented title no longer shows its
+  accents as HTML code; the formatted description no longer shows its markup; the calendar export
   receives clean text.
 - **Lists with search** say "No results" in the site language, not "No results
   found".
@@ -1588,11 +1805,11 @@ settings.
 
 ### Fixed
 
-- **Accents in the Bugtracker** were displayed as "r&eacute;agit" on the page of a ticket opened through the
+- **Accents in the Bugtracker** were displayed as `r&eacute;agit` on the page of a ticket opened through the
   form, and the "Already reported?" search found no accented word. The texts the API
   returns — usernames, titles, descriptions, comments — are also in plain text: the Discord bot
-  copied them encoded. Link sharing previews (Discord included) no longer show
-  "&amp;eacute;".
+  copied them encoded. Link sharing previews (Discord included) no longer show their accents as
+  HTML code.
 - **Bugtracker**: choosing the "Duplicate" status without a valid ticket number kept the old
   status while announcing "Ticket updated"; the message now says what was not applied.
 - **Discord bot: deleting on Discord the copy of a site message no longer erases the original.** When the
