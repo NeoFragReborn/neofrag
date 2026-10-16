@@ -13,6 +13,30 @@ Michaël BILCOT and Jérémy VALENTIN — an open source project under the LGPLv
 
 ---
 
+## [1.2.53] — 2026-10-16
+
+### Security
+
+- **A site's private files could be read by adding a language in front of their address.** Any address with an
+  extension went through the site, which read the file of that name anywhere in its folder: `/en/logs/php.log`
+  returned the site's log, and likewise its backups (`backups/`, database included), its cache, the private
+  attachments of the forum and of private messages, or a hidden folder such as `.git/`. The web server rules refused
+  these folders, but not the same path behind a language. The site now only serves its stylesheets, scripts, images,
+  fonts and the public files uploaded by members. **Update without delay.**
+- **The configurations shipped for Apache, nginx and Caddy refuse hidden paths** (`.git/`, `.env`…): a site deployed
+  with `git clone` kept its whole repository readable. `/.well-known/` stays reachable, for certificates.
+
+### Fixed
+
+- **An update finally deletes the files the new version removes.** For several versions, the list of these files
+  came out empty from the package builder: they stayed on the site, and the Monitoring reported for example "The file
+  `fonts/fontawesome/fa-solid-900.ttf` should not be there". This update removes the 99 files the product shipped and
+  then dropped (old fonts, old editor languages, replaced views…). A module, widget or theme removed from the product
+  as a whole stays in place: it may still be in use.
+- **The navigation menu sometimes reported an error in the browser console** ("ResizeObserver loop completed with
+  undelivered notifications"), depending on when the fonts arrived: its measurement, which folds the menu behind its
+  button when it no longer fits on one line, now waits for the next frame.
+
 ## [1.2.52] — 2026-10-15
 
 ### Fixed

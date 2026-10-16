@@ -108,3 +108,72 @@ function nf_paquet_exclu(string $rel, string $variant): bool
 
     return in_array(strtolower(pathinfo($rel, PATHINFO_EXTENSION)), ['log', 'map', 'scssc'], TRUE);
 }
+
+/** La liste versionnée des fichiers qu'un paquet a livrés puis que le produit a retirés (`php tools/fichiers-retires.php`). */
+const NF_PAQUET_RETIRES = 'tools/lib/fichiers-retires.php';
+
+/**
+ * Les fichiers qu'un paquet a livrés, et que le produit a retirés depuis : ce qu'une mise à jour doit effacer d'un site.
+ *
+ * Ils se lisent dans l'historique git, ce que la fabrique ne peut pas faire : elle travaille sur une copie sans `.git`
+ * (`git archive`), et sans l'inventaire de la version précédente sous la main. La liste `remove` du manifeste sortait
+ * donc VIDE, de la 1.2.48 au moins à la 1.2.52 : aucun fichier retiré ne quittait les sites mis à jour, et le
+ * Monitoring de la vitrine signalait les anciennes polices de Font Awesome et deux langues renommées de TinyMCE
+ * (2026-10-16). La liste se calcule donc ici, sur le poste, et se versionne ; la fabrique la lit.
+ *
+ * Un chemin revenu dans l'arbre n'en fait plus partie, et seul compte ce qu'un paquet de mise à jour porte. Un
+ * addon que le produit a retiré EN ENTIER (le thème Dungeon, le widget lang_switcher…) n'en fait pas partie non
+ * plus : un site peut l'avoir encore installé, et actif — effacer ses fichiers le désinstallerait à moitié. Seuls
+ * partent les fichiers morts du cœur et des addons qui vivent toujours.
+ *
+ * @return list<string>|null NULL hors d'un dépôt git
+ */
+function nf_paquet_retires_git(string $racine): ?array
+{
+    if (!file_exists($racine.'/.git'))
+    {
+        return NULL;
+    }
+
+    exec('git -c core.quotePath=false -C '.escapeshellarg($racine).' log --no-renames --diff-filter=D --name-only --format= 2>&1', $lignes, $code);
+
+    if ($code !== 0)
+    {
+        return NULL;
+    }
+
+    $retires = [];
+
+    foreach ($lignes as $chemin)
+    {
+        $chemin = trim($chemin);
+
+        if ($chemin === '' || file_exists($racine.'/'.$chemin) || nf_paquet_exclu($chemin, 'update'))
+        {
+            continue;
+        }
+
+        if (preg_match('#^(?:modules|widgets|themes|addons)/[^/]+(?=/)#', $chemin, $addon) && !is_dir($racine.'/'.$addon[0]))
+        {
+            continue;
+        }
+
+        $retires[$chemin] = TRUE;
+    }
+
+    ksort($retires, SORT_STRING);
+
+    return array_keys($retires);
+}
+
+/**
+ * La liste versionnée (NF_PAQUET_RETIRES) ; vide si elle n'existe pas encore.
+ *
+ * @return list<string>
+ */
+function nf_paquet_retires(string $racine): array
+{
+    $liste = is_file($fichier = $racine.'/'.NF_PAQUET_RETIRES) ? require $fichier : [];
+
+    return is_array($liste) ? array_values(array_filter($liste, 'is_string')) : [];
+}

@@ -11,6 +11,30 @@ Michaël BILCOT et Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.53] — 2026-10-16
+
+### Sécurité
+
+- **Les fichiers privés d'un site se lisaient en ajoutant une langue devant leur adresse.** Toute adresse à extension
+  passait par le site, qui lisait le fichier de ce nom n'importe où dans son dossier : `/fr/logs/php.log` rendait le
+  journal du site, et de même ses sauvegardes (`backups/`, base comprise), son cache, les pièces jointes privées du
+  forum et de la messagerie, ou un dossier caché comme `.git/`. Les règles du serveur web refusaient ces dossiers,
+  mais pas le même chemin derrière une langue. Le site ne sert plus désormais que ses feuilles de style, ses scripts,
+  ses images, ses polices et les fichiers publics envoyés par les membres. **Mettez à jour sans attendre.**
+- **Les configurations livrées pour Apache, nginx et Caddy refusent les chemins cachés** (`.git/`, `.env`…) : un site
+  déployé par `git clone` gardait son dépôt entier lisible. `/.well-known/` reste joignable, pour les certificats.
+
+### Corrigé
+
+- **Une mise à jour efface enfin les fichiers que la nouvelle version retire.** Depuis plusieurs versions, la liste
+  de ces fichiers sortait vide de la fabrique des paquets : ils restaient sur le site, et le Monitoring signalait par
+  exemple « Le fichier `fonts/fontawesome/fa-solid-900.ttf` ne devrait pas se trouver là ». Cette mise à jour retire
+  les 99 fichiers que le produit a livrés puis abandonnés (anciennes polices, anciennes langues de l'éditeur, vues
+  remplacées…). Un module, un widget ou un thème retiré du produit en entier reste en place : il peut encore servir.
+- **Le menu de navigation signalait parfois une erreur dans la console du navigateur** (« ResizeObserver loop
+  completed with undelivered notifications »), selon le moment où les polices arrivaient : sa mesure, qui replie le
+  menu derrière son bouton quand il ne tient plus sur une ligne, attend désormais l'image suivante.
+
 ## [1.2.52] — 2026-10-15
 
 ### Corrigé

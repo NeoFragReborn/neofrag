@@ -40,6 +40,10 @@ DirectorySlash Off
 RewriteEngine On
 RewriteBase "/"
 
+# Les chemins cachés (.git/, .github/, .env…) ne se servent jamais : un site déployé par `git clone` porte
+# son dépôt entier dans .git/, qu'Apache servait tel quel. /.well-known/ reste joignable (certificats).
+RewriteRule "(^|/)\.(?!well-known/)" - [F]
+
 # Le seul script qu'Apache exécute est l'index.php de la racine du site. La règle n'était pas ancrée
 # jusqu'au 2026-10-04 : tout chemin CONTENANT « index.php » passait tel quel, et
 # /modules/news/controllers/index.php — comme plus de quatre-vingts autres — s'exécutait directement

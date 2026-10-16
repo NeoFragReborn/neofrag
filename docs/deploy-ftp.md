@@ -158,11 +158,15 @@ seraient servis en statique → **fuite de secrets**. Si tu n'as pas décoché l
 ajoute dans les *Directives nginx supplémentaires* :
 
 ```nginx
+location ~ /\.(?!well-known/) { deny all; }
 location ~ ^/(backups|cache|config|logs|install|tools|tests|docs)/ { deny all; }
 location ~ ^/(upload/forum|upload/talks)/ { deny all; }
 location ~* \.(sql|lock|scssc|map|dist|ini|sh|neon|md)$ { deny all; }
 location ~ ^/(package\.json|package-lock\.json|eslint\.config\.js|playwright\.config\.js|Caddyfile|nginx\.conf)$ { deny all; }
 ```
+
+La première refuse les chemins cachés (`.git/`, `.env`…) : un site déployé par `git clone` porte son
+dépôt entier dans `.git/`. `/.well-known/` reste joignable, pour les certificats.
 
 Ce sont les règles de l'exemple complet que livre le paquet, `nginx.conf` (à la racine), à adapter :
 domaine, dossier du site, PHP-FPM. `check-htaccess` vérifie que ces lignes refusent la même liste.

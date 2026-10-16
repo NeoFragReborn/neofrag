@@ -246,6 +246,23 @@ foreach (NF_PIECES_JOINTES as $dossier => $pourquoi)
     }
 }
 
+// ── Les chemins cachés (.git/, .github/, .env…), sauf /.well-known/ ────────────────────────────────
+// Un site déployé par `git clone` porte son dépôt entier dans .git/ ; aucune des trois configurations ne le
+// refusait avant le 2026-10-16, et Apache comme nginx servaient tel quel tout fichier qui existe.
+$caches = [
+    '.htaccess'          => '/^\s*RewriteRule\s+"?\(\^\|\/\)\\\\\.\(\?!well-known\/\)"?\s+-\s+\[F\]/m',
+    'Caddyfile'          => '/@(\w+)\s*\{\s*path_regexp\s+\/\\\\\.\s+not\s+path\s+\/\.well-known\/\*\s*\}\s*respond\s+@\1\s+403/',
+    'nginx.conf'         => '/location\s+~\s+"?\/\\\\\.\(\?!well-known\/\)"?\s*\{\s*deny\s+all;/',
+    'docs/deploy-ftp.md' => '/location\s+~\s+"?\/\\\\\.\(\?!well-known\/\)"?\s*\{\s*deny\s+all;/',
+];
+
+foreach ($caches as $fichier => $motif)
+{
+    preg_match($motif, (string) @file_get_contents($racine.'/'.$fichier))
+        ? $vu($fichier, 'chemins cachés refusés')
+        : $manques[] = [$fichier, 'ne refuse pas les chemins cachés (`/.git/`, `/.env`…)', 'un dépôt git déployé avec le site serait lisible'];
+}
+
 // ── Le verdict ──────────────────────────────────────────────────────────────
 printf("%d dossier(s), %d extension(s) et %d fichier(s) surveillés, dans 3 configurations et le guide de déploiement.\n\n",
     count(NF_DOSSIERS_INTERDITS), count(NF_EXTENSIONS_INTERDITES), count(NF_FICHIERS_INTERDITS));

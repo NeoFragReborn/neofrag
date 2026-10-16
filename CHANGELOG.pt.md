@@ -13,6 +13,32 @@ Michaël BILCOT e Jérémy VALENTIN — um projeto de código aberto com licenç
 
 ---
 
+## [1.2.53] — 2026-10-16
+
+### Segurança
+
+- **Os ficheiros privados de um site podiam ser lidos acrescentando um idioma à frente do seu endereço.** Qualquer
+  endereço com extensão passava pelo site, que lia o ficheiro com esse nome em qualquer parte da sua pasta:
+  `/pt/logs/php.log` devolvia o registo do site, e o mesmo acontecia com as cópias de segurança (`backups/`, base de
+  dados incluída), a cache, os anexos privados do fórum e das mensagens, ou uma pasta oculta como `.git/`. As regras
+  do servidor web recusavam essas pastas, mas não o mesmo caminho atrás de um idioma. O site passa a servir apenas as
+  suas folhas de estilo, scripts, imagens, tipos de letra e os ficheiros públicos enviados pelos membros. **Atualize
+  sem esperar.**
+- **As configurações fornecidas para Apache, nginx e Caddy recusam os caminhos ocultos** (`.git/`, `.env`…): um site
+  instalado com `git clone` deixava legível todo o seu repositório. `/.well-known/` continua acessível, para os
+  certificados.
+
+### Corrigido
+
+- **Uma atualização apaga finalmente os ficheiros que a nova versão retira.** Há várias versões que a lista desses
+  ficheiros saía vazia da fábrica de pacotes: ficavam no site, e o Monitoring assinalava por exemplo «O ficheiro
+  `fonts/fontawesome/fa-solid-900.ttf` não devia estar aqui». Esta atualização retira os 99 ficheiros que o produto
+  distribuiu e depois abandonou (tipos de letra antigos, idiomas antigos do editor, vistas substituídas…). Um módulo,
+  widget ou tema retirado do produto por inteiro fica no seu lugar: pode ainda estar em uso.
+- **O menu de navegação assinalava por vezes um erro na consola do navegador** («ResizeObserver loop completed
+  with undelivered notifications»), consoante o momento em que chegavam os tipos de letra: a sua medição, que dobra o
+  menu atrás do seu botão quando já não cabe numa linha, espera agora pela imagem seguinte.
+
 ## [1.2.52] — 2026-10-15
 
 ### Corrigido

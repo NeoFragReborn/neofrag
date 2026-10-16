@@ -1,8 +1,8 @@
 {
     "schema": 1,
     "project": "NeoFrag Reborn",
-    "base_version": "1.2.52",
-    "generated_at": "2026-10-15T20:41:08+00:00",
+    "base_version": "1.2.53",
+    "generated_at": "2026-10-16T14:50:07+00:00",
     "count": 68,
     "addons": [
         {
@@ -42,7 +42,7 @@
             "size": 72967,
             "sha256": "4ee3f075f2558337fef6b6af4d28c8b3d42173d31d363d820f53032ffca5ab8d",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -87,7 +87,7 @@
             "size": 104319,
             "sha256": "713d4fb8a6b2c78b98120d25683c23744d7b5b4da544cf1ecb8e615b52066f1a",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -130,7 +130,7 @@
             "size": 110210,
             "sha256": "e7c2ed203addc3963479787b17cefd4376a7376cc661fb4010ec128ef83fc730",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -175,7 +175,7 @@
             "size": 92795,
             "sha256": "a4415d5072b1b059613605e37e0836179664ca272c1e5140603d144f9efb23d6",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "teams",
                     "games"
@@ -223,7 +223,7 @@
             "size": 85059,
             "sha256": "9b6895dc88415b21d2948d806600e1188888b8b741f139606fa2a22e882cb428",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -266,7 +266,7 @@
             "size": 85655,
             "sha256": "fc7b2651735103cef9e8ba481d1f285a7a614008815c5225f5ce1e43f27da8ee",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -311,7 +311,7 @@
             "size": 88324,
             "sha256": "860f803abbaea5799586de2dccc701404b2daee61b1d61ecfe09172f079e4e7d",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -354,7 +354,7 @@
             "size": 89343,
             "sha256": "31ebd4d5dab2b17bf9c624b3922fee236b516693f3cb2de81c9ce68fbcd48910",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -397,7 +397,7 @@
             "size": 167652,
             "sha256": "eaa70162f42cdbde02af911ca6753d844c65d82eda996f742063fb5c60606eda",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "api"
                 ]
@@ -442,7 +442,7 @@
             "size": 98373,
             "sha256": "bbd89269a5f5dcbb515cced14ce1444af546ce7acb8a6592db5693cf5b0b2c7e",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -487,7 +487,7 @@
             "size": 81615,
             "sha256": "1e38c850dcfce31c784c107844b93b354843a3b317b9d7fbdfdfc98c017c0a81",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -532,7 +532,7 @@
             "size": 62699,
             "sha256": "282831006950c606e4b7f9f251bed99e3bb89e953255098395193b5f8ce85963",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -575,7 +575,7 @@
             "size": 232655,
             "sha256": "39a1bd5c9d18d1a3e8525672c29478de426c5694c4e2d97f6ca5b835c04801b9",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -620,7 +620,7 @@
             "size": 70425,
             "sha256": "c41c7151b37a5dca25be898930cc46303c73ed3a5cc1dda59cc54989b85a493c",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -663,7 +663,7 @@
             "size": 67651,
             "sha256": "389e4cb29d52ff8c4c610d27e8e366b4cd5db6b60fc8cbfba7a08f8ef24c40da",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "news",
                     "articles"
@@ -709,7 +709,7 @@
             "size": 186628,
             "sha256": "088680b387c9e630ed1433e90a30858ad5fabf532d88fa7832f96b891c07d2c4",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -754,7 +754,7 @@
             "size": 120065,
             "sha256": "c9d3fe444d5e075cfd3c1cf74b4a0f1d241d8bc22add03355047090bf94a0f2e",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -799,7 +799,7 @@
             "size": 86021,
             "sha256": "00412558b23833197c81f27820a33480912e161a1530cccca03d2f89a81dc1b4",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -842,7 +842,7 @@
             "size": 72768,
             "sha256": "b5561c8351f9a331d9c615409b5612b60dd7c409e1695ef12add78179c8bf257",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -885,7 +885,7 @@
             "size": 74303,
             "sha256": "6663959dd773a9b458693cf23d4e4c6f7ea16e2acbf68b48b22897959835be8f",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -928,7 +928,7 @@
             "size": 80781,
             "sha256": "12aa410ec6637083d303c210972852306b3d8908eeb3ae3ac31a15c2885c0a28",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -973,7 +973,7 @@
             "size": 79628,
             "sha256": "2da9cd311d2c15e80cdbac5823ba71a2ab097658a0cd39a6553281ef16cfb3bf",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -1018,7 +1018,7 @@
             "size": 105278,
             "sha256": "c011ff232087003231b704fd025c95cf6eefc15374f3bfa68c328de9e065d8e1",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -1063,7 +1063,7 @@
             "size": 89830,
             "sha256": "422886023ef38e22eb4c97ab87832dbb7ba05e37b859eb5d7225bf7561766f66",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -1108,7 +1108,7 @@
             "size": 84436,
             "sha256": "01cd4fec560ba00fc3e559698194b2d2899f70c7638971fbc9dcaae18aafb0f3",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -1153,7 +1153,7 @@
             "size": 95550,
             "sha256": "0aabc24141c869647f058343ef341a12bd5f519827985c147b44da1615b92d34",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1196,7 +1196,7 @@
             "size": 131183,
             "sha256": "94e07d6313793075be1f413e292f90f3da9717e655da345c93593b8623c259d8",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1239,7 +1239,7 @@
             "size": 69645,
             "sha256": "739f92635ed92f60eb095dc3783dedf247844f7ebafdab12b7944924860e8b58",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1282,7 +1282,7 @@
             "size": 74571,
             "sha256": "62135fdd51b098d679c169c3a4d03901fe8c6b60fa71ada0dba6d853b409b777",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1325,7 +1325,7 @@
             "size": 121235,
             "sha256": "1234d0f93e40aecb1d003162dc6a7c3a32f13f83832fa9d2cab76bf5aa7fbfd2",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "teams",
                     "games"
@@ -1373,7 +1373,7 @@
             "size": 69855,
             "sha256": "41c99a6963b87382e46bde4185e4a218576bc5aa8d0a357fda97ab17c9ed7167",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1416,7 +1416,7 @@
             "size": 75947,
             "sha256": "ee084c92a2694641fee1ee48051b3c8f78db12c22ea00dc5252dad2ccfe5ab60",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1459,7 +1459,7 @@
             "size": 81988,
             "sha256": "fd4f9bef044f70fb17b80d8d8432ddcc37058de601d584a40d8451043bd91067",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [
@@ -1504,7 +1504,7 @@
             "size": 93399,
             "sha256": "974b4c7b1bd0cf2e7ac1d551fd3e2d41971b54a3aca1180df419d8eb352993a2",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "games"
                 ]
@@ -1551,7 +1551,7 @@
             "size": 84544,
             "sha256": "26cfa44934b77004356492cd3ce80dbef7e4926d3c4b51d993dc91610b6c2f2e",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1594,7 +1594,7 @@
             "size": 80580,
             "sha256": "c6c2c96f94824811415068cb3b4572c8bfc39798e0b15eeba0e53ff344279904",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1632,7 +1632,7 @@
             "size": 167078,
             "sha256": "97254ef2c8e1868f8e1db1bbe72e3730474e87e78e2620c26c4d848e64eb46b1",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1670,7 +1670,7 @@
             "size": 79866,
             "sha256": "88055f8ec8207476d3bfaccaac3ae38b2a95b57bca1f0a9ae4e6ab398b885e51",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1708,7 +1708,7 @@
             "size": 102616,
             "sha256": "bfa349ee271bb38aa40e67e5329d4fce3b73d6c78c071e15fd52cc60975fff11",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1746,7 +1746,7 @@
             "size": 115060,
             "sha256": "113ba3931bd0ee493a44d78073efc523ee34bd46cd59dd27603d4b155e46afb6",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1784,7 +1784,7 @@
             "size": 122595,
             "sha256": "9582061edd19b3f3f114f088331aa6a71bd0008bc090900a541929dcfb3c6136",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1822,7 +1822,7 @@
             "size": 94136,
             "sha256": "08c159f98e62605bc8bef0d51ed3a3b88bb992e6bacd0143428a34fc57cf936e",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1865,7 +1865,7 @@
             "size": 72966,
             "sha256": "ce68131e7c366ea8d5a2aa6c8ed590971211cb035a26865b40f1438b92dbd7da",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -1908,7 +1908,7 @@
             "size": 62509,
             "sha256": "3648ba32c97c3585b74796c17af3331c746b403d12e7cf6d4004afa4f4332a8d",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "ads"
                 ]
@@ -1953,7 +1953,7 @@
             "size": 66659,
             "sha256": "5a71efac39bab338337e9117dc40521ad781d8ff79d676d58b992e0cc3b19168",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "articles"
                 ]
@@ -1998,7 +1998,7 @@
             "size": 69706,
             "sha256": "cf8602fc5abd11f6501da78ced4cc145781091eb804eae640a26bdef84644530",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "awards"
                 ]
@@ -2043,7 +2043,7 @@
             "size": 79877,
             "sha256": "fa5b4a9b6fc9c2b7afed63a7f17df7b6bd217184d1dafa2b35d776e148eff929",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "calendar"
                 ]
@@ -2088,7 +2088,7 @@
             "size": 79952,
             "sha256": "3b28a15e37128d19392ec259fc659891d42d74d3047311d7ba769fd103885685",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2131,7 +2131,7 @@
             "size": 77618,
             "sha256": "6e9220b8dc64ab4014ffc2c04244d583a2e975ae644a066f2429490995b5ce90",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "donations"
                 ]
@@ -2176,7 +2176,7 @@
             "size": 69956,
             "sha256": "4603d56f8f623214d7afbe062c099a4b0296999ef94b5196e03882352cb61f34",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "downloads"
                 ]
@@ -2221,7 +2221,7 @@
             "size": 80718,
             "sha256": "772827e5c4f7667230180d757ccc87f12b844a6448dae8b741a8ff49919923f6",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "events"
                 ]
@@ -2266,7 +2266,7 @@
             "size": 72479,
             "sha256": "608cb0f2aba1996eadf5ee5a32e4f459b0ab652202afd0cfcb45fceb6bcc5acb",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "forum"
                 ]
@@ -2311,7 +2311,7 @@
             "size": 81338,
             "sha256": "d178319f6f57be80189a63a7348b0c7d19ef8fe397273ca987977bbae3697dca",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2354,7 +2354,7 @@
             "size": 79634,
             "sha256": "b9f59bb1905aeaee66e3a01136f56a32abbd889c67a11edd5dbab6bc6023185d",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "gallery"
                 ]
@@ -2399,7 +2399,7 @@
             "size": 85768,
             "sha256": "f960d3019740b9e171ca82a755a9661169101bc051d92f75de3bc26bb6080f87",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2442,7 +2442,7 @@
             "size": 68332,
             "sha256": "6d8a7a2be62f19700bc298c5caff1ae59afecb72fd592921518f3b00ce5e7e95",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "guestbook"
                 ]
@@ -2487,7 +2487,7 @@
             "size": 65556,
             "sha256": "d10f1de3fef255356b5f62f97f863887431971575f279cbba7087991087dfd44",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "links"
                 ]
@@ -2532,7 +2532,7 @@
             "size": 68563,
             "sha256": "4192db79ffbe2f5e46b3282284bbe1970109b6d261b0a00c597954265fed0d8c",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "news"
                 ]
@@ -2577,7 +2577,7 @@
             "size": 69124,
             "sha256": "316ecdebf4544eefb92a7873d43acac23f0f52ee0bda9310531c96608a80057a",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "newsletter"
                 ]
@@ -2622,7 +2622,7 @@
             "size": 75617,
             "sha256": "e99ca9d238de3a78e6b6953d04809f1ce2a4cca3f25edc279d761714b664626c",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "partners"
                 ]
@@ -2667,7 +2667,7 @@
             "size": 75179,
             "sha256": "a19dc40d7946e821c26f12e08cb3accb36aad491dbaf5246742ecdee288bc5f7",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "recruits",
                     "teams"
@@ -2713,7 +2713,7 @@
             "size": 75324,
             "sha256": "51b629d682cb65841c921ea0b89c5b9afd41af088990408324347b983e69d163",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2756,7 +2756,7 @@
             "size": 71476,
             "sha256": "a9810525f78b2902a33a9a3e2002e16671e11b747dfeed7ceaad47fe91277167",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2799,7 +2799,7 @@
             "size": 69603,
             "sha256": "2943e5382008c97fd4733de1acea04d8d3f04e9c36f0c98ab803c534c0abb828",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2842,7 +2842,7 @@
             "size": 66782,
             "sha256": "b25d92c3fdc91379996b12e9c2ad7f0f0809882fad183033498ec6dfc23632f9",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "surveys"
                 ]
@@ -2887,7 +2887,7 @@
             "size": 68830,
             "sha256": "3727cdfcf0142fb6c76106e2acb811a1b3bf58eaa56da6dad7b72fbe2ae7f260",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": [
                     "teams"
                 ]
@@ -2932,7 +2932,7 @@
             "size": 80544,
             "sha256": "b25a3e0838c8d27a73cbe2c798691556c74e2d592d84fc24bef88faf36d9eb51",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],
@@ -2975,7 +2975,7 @@
             "size": 85882,
             "sha256": "5dbe84766d3d487284284b914ae3126eb1b26423fe87396a8ca3ef9af9db44fe",
             "requires": {
-                "base": ">=1.2.52",
+                "base": ">=1.2.53",
                 "addons": []
             },
             "provides_widgets": [],

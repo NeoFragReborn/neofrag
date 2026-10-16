@@ -13,6 +13,31 @@ Michaël BILCOT e Jérémy VALENTIN — un progetto open source con licenza LGPL
 
 ---
 
+## [1.2.53] — 2026-10-16
+
+### Sicurezza
+
+- **I file privati di un sito si potevano leggere aggiungendo una lingua davanti al loro indirizzo.** Ogni indirizzo
+  con estensione passava dal sito, che leggeva il file con quel nome ovunque nella sua cartella: `/it/logs/php.log`
+  restituiva il registro del sito, e lo stesso valeva per i suoi backup (`backups/`, database compreso), la sua cache,
+  gli allegati privati del forum e dei messaggi, o una cartella nascosta come `.git/`. Le regole del server web
+  rifiutavano queste cartelle, ma non lo stesso percorso dietro una lingua. Il sito ora serve soltanto i suoi fogli di
+  stile, script, immagini, caratteri e i file pubblici caricati dai membri. **Aggiornate senza aspettare.**
+- **Le configurazioni fornite per Apache, nginx e Caddy rifiutano i percorsi nascosti** (`.git/`, `.env`…): un sito
+  distribuito con `git clone` lasciava leggibile l'intero repository. `/.well-known/` resta raggiungibile, per i
+  certificati.
+
+### Corretto
+
+- **Un aggiornamento cancella finalmente i file che la nuova versione rimuove.** Da diverse versioni, l'elenco di
+  questi file usciva vuoto dalla fabbrica dei pacchetti: restavano sul sito, e il Monitoring segnalava per esempio «Il
+  file `fonts/fontawesome/fa-solid-900.ttf` non dovrebbe trovarsi qui». Questo aggiornamento rimuove i 99 file che il
+  prodotto ha distribuito e poi abbandonato (vecchi caratteri, vecchie lingue dell'editor, viste sostituite…). Un
+  modulo, un widget o un tema rimosso del tutto dal prodotto resta al suo posto: può essere ancora in uso.
+- **Il menu di navigazione segnalava a volte un errore nella console del browser** («ResizeObserver loop completed
+  with undelivered notifications»), a seconda del momento in cui arrivavano i caratteri: la sua misura, che ripiega il
+  menu dietro il suo pulsante quando non sta più su una riga, ora aspetta il fotogramma successivo.
+
 ## [1.2.52] — 2026-10-15
 
 ### Corretto

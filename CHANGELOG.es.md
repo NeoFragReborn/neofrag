@@ -13,6 +13,33 @@ Michaël BILCOT y Jérémy VALENTIN — un proyecto de código abierto con licen
 
 ---
 
+## [1.2.53] — 2026-10-16
+
+### Seguridad
+
+- **Los archivos privados de un sitio se podían leer añadiendo un idioma delante de su dirección.** Toda dirección
+  con extensión pasaba por el sitio, que leía el archivo de ese nombre en cualquier lugar de su carpeta:
+  `/es/logs/php.log` devolvía el registro del sitio, y lo mismo sus copias de seguridad (`backups/`, base de datos
+  incluida), su caché, los adjuntos privados del foro y de la mensajería, o una carpeta oculta como `.git/`. Las
+  reglas del servidor web rechazaban esas carpetas, pero no la misma ruta detrás de un idioma. El sitio ya solo sirve
+  sus hojas de estilo, scripts, imágenes, fuentes y los archivos públicos que envían los miembros. **Actualice sin
+  esperar.**
+- **Las configuraciones incluidas para Apache, nginx y Caddy rechazan las rutas ocultas** (`.git/`, `.env`…): un
+  sitio desplegado con `git clone` dejaba legible todo su repositorio. `/.well-known/` sigue accesible, para los
+  certificados.
+
+### Corregido
+
+- **Una actualización borra por fin los archivos que la nueva versión retira.** Desde hace varias versiones, la
+  lista de esos archivos salía vacía de la fábrica de paquetes: se quedaban en el sitio, y el Monitoring señalaba por
+  ejemplo «El archivo `fonts/fontawesome/fa-solid-900.ttf` no debería estar aquí». Esta actualización retira los 99
+  archivos que el producto entregó y luego abandonó (fuentes antiguas, idiomas antiguos del editor, vistas
+  sustituidas…). Un módulo, widget o tema retirado del producto por completo se queda en su sitio: puede seguir en
+  uso.
+- **El menú de navegación señalaba a veces un error en la consola del navegador** («ResizeObserver loop completed
+  with undelivered notifications»), según el momento en que llegaban las fuentes: su medición, que pliega el menú tras
+  su botón cuando ya no cabe en una línea, espera ahora a la imagen siguiente.
+
 ## [1.2.52] — 2026-10-15
 
 ### Corregido

@@ -327,7 +327,14 @@ if (!$echecs)
         }
     }
 
-    foreach ([['absent(s)', $absents], ['différent(s) du paquet', $differents]] as [$quoi, $liste])
+    // Ce que le départ livrait et que la cible ne porte plus : la mise à jour l'efface (la liste `remove` de son
+    // manifeste). Elle sortait vide de la fabrique, et rien ne le voyait : le 2026-10-16, le Monitoring de la vitrine
+    // signalait encore les polices et les langues de TinyMCE retirées à la 1.2.50, trois versions plus tard.
+    $de_cible_index = array_flip($de_cible);
+    $restes         = array_values(array_filter(array_keys($du_depart), static fn (string $chemin): bool =>
+        !isset($de_cible_index[$chemin]) && is_file($site.'/'.$chemin)));
+
+    foreach ([['absent(s)', $absents], ['différent(s) du paquet', $differents], ["que la {$cible} ne livre plus, toujours sur le site", $restes]] as [$quoi, $liste])
     {
         if ($liste)
         {

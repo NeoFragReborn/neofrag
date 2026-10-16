@@ -21,6 +21,14 @@ example.org {
 		@interdit path /backups/* /cache/* /config/* /logs/* /install/* /tools/* /tests/* /docs/* *.sql *.lock *.scssc *.map *.dist *.ini *.sh *.neon *.md /package.json /package-lock.json /eslint.config.js /playwright.config.js /Caddyfile /nginx.conf /upload/forum/* /upload/talks/*
 		respond @interdit 403
 
+		# Les chemins cachés (.git/, .github/, .env…) : un site déployé par `git clone` porte son dépôt
+		# entier dans .git/. /.well-known/ reste joignable (certificats).
+		@chemins_caches {
+			path_regexp /\.
+			not path /.well-known/*
+		}
+		respond @chemins_caches 403
+
 		rewrite /humans.txt /ajax/settings/humans.txt
 		rewrite /robots.txt /ajax/settings/robots.txt
 		rewrite /noscript.html /ajax/settings/noscript.html

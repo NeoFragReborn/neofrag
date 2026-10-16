@@ -935,7 +935,9 @@ class Output extends Core
 
 	function asset($file_path, $file_name = '')
 	{
-		if (check_file($file_path))
+		// Hors des ressources du produit et des envois publics, le fichier n'existe pas pour le visiteur : la page
+		// introuvable du site lui répond (nf_asset_servi()).
+		if (nf_asset_servi((string) $file_path) && check_file($file_path))
 		{
 			$date = filemtime($file_path);
 			$ext  = extension($file_path);

@@ -10,6 +10,39 @@ function is_asset($extension = NULL): bool
 	return !in_array($extension ?: extension($_SERVER['REQUEST_URI']), ['', 'php', 'json', 'txt', 'xml']);
 }
 
+/**
+ * Ce que Output::asset() a le droit de servir : les ressources du produit, et ce que les membres publient.
+ *
+ * Toute adresse à extension passe par Output::asset() (is_asset()), qui lit le fichier DEPUIS LA RACINE du site,
+ * préfixe de langue retiré. Sans cette garde, il servait n'importe lequel : `/fr/logs/php.log` rendait le journal de
+ * la démo (2026-10-16), et de même `/fr/backups/…`, les pièces jointes privées `/fr/upload/forum/…`, `/fr/cache/…`
+ * ou `/fr/.github/…`. Les configurations livrées refusent `/logs/…`, mais aucune ne voit le même chemin derrière une
+ * langue : il n'existe pas sur le disque, le serveur web le confie donc au site.
+ *
+ * D'où la liste de ce qui SE SERT, plutôt que de ce qui se cache : un dossier ajouté demain reste fermé.
+ */
+function nf_asset_servi(string $chemin): bool
+{
+	// Ni segment caché (.git, .github, .env), ni remontée (..), ni chemin absolu, ni barre inverse — ni segment fini
+	// par un point ou une espace, que Windows efface (`upload/forum./x` y désigne `upload/forum/x`).
+	if ($chemin === '' || preg_match('#(?:^|/)\.|^/|//|\\\\|\x00|[. ](?:/|$)#', $chemin))
+	{
+		return FALSE;
+	}
+
+	[$racine] = explode('/', $chemin, 2);
+
+	// Les envois des membres, sauf les pièces jointes : leur module les sert à qui a le droit de les voir.
+	if ($racine === 'upload')
+	{
+		return !preg_match('#^upload/(?:forum|talks)/#i', $chemin);
+	}
+
+	// Les ressources du produit, et seulement ce qu'un navigateur charge : feuilles, scripts, images, polices, médias.
+	return in_array($racine, ['css', 'js', 'images', 'fonts', 'themes', 'modules', 'widgets'], TRUE)
+		&& in_array(strtolower(extension($chemin)), ['css', 'js', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'webp', 'avif', 'eot', 'ttf', 'otf', 'woff', 'woff2', 'mp4', 'webm', 'mp3', 'ogg'], TRUE);
+}
+
 function icon($icon): string
 {
 	if (preg_match('/^(fa[bsrld] fa-.+)/', $icon, $match))

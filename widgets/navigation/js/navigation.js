@@ -109,10 +109,14 @@ NF.ready(function(){
 		if (window.ResizeObserver){
 			var largeur = bloc.clientWidth;
 
+			// La mesure change la largeur observée (le bouton « Menu » paraît ou s'efface) : faite DANS le rappel, elle
+			// relançait l'observateur pendant le même passage, et le navigateur signalait « ResizeObserver loop completed
+			// with undelivered notifications » — par intermittence, selon le moment où les polices arrivent (CI publique
+			// de la 1.2.52). Elle attend l'image suivante.
 			new ResizeObserver(function(){
 				if (bloc.clientWidth !== largeur){
 					largeur = bloc.clientWidth;
-					mesurer();
+					window.requestAnimationFrame(mesurer);
 				}
 			}).observe(bloc);
 		}

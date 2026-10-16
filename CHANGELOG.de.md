@@ -13,6 +13,33 @@ Michaël BILCOT und Jérémy VALENTIN — ein Open-Source-Projekt unter der Lize
 
 ---
 
+## [1.2.53] — 2026-10-16
+
+### Sicherheit
+
+- **Die privaten Dateien einer Website ließen sich lesen, indem man ihrer Adresse eine Sprache voranstellte.** Jede
+  Adresse mit Dateiendung lief über die Website, die die Datei dieses Namens irgendwo in ihrem Ordner las:
+  `/de/logs/php.log` lieferte das Protokoll der Website, ebenso ihre Sicherungen (`backups/`, Datenbank inklusive),
+  ihren Cache, die privaten Anhänge des Forums und der Nachrichten oder einen versteckten Ordner wie `.git/`. Die
+  Regeln des Webservers sperrten diese Ordner, aber nicht denselben Pfad hinter einer Sprache. Die Website liefert
+  jetzt nur noch ihre Stylesheets, Skripte, Bilder, Schriften und die öffentlichen Dateien, die Mitglieder hochladen.
+  **Bitte ohne Verzögerung aktualisieren.**
+- **Die mitgelieferten Konfigurationen für Apache, nginx und Caddy sperren versteckte Pfade** (`.git/`, `.env`…):
+  Eine mit `git clone` bereitgestellte Website ließ ihr ganzes Repository lesbar. `/.well-known/` bleibt erreichbar,
+  für Zertifikate.
+
+### Behoben
+
+- **Ein Update löscht endlich die Dateien, die die neue Version entfernt.** Seit mehreren Versionen kam die Liste
+  dieser Dateien leer aus der Paketerstellung: Sie blieben auf der Website, und das Monitoring meldete zum Beispiel
+  „Die Datei `fonts/fontawesome/fa-solid-900.ttf` sollte nicht hier sein“. Dieses Update entfernt die 99 Dateien, die
+  das Produkt ausgeliefert und dann aufgegeben hat (alte Schriften, alte Sprachen des Editors, ersetzte Ansichten…).
+  Ein Modul, Widget oder Theme, das als Ganzes aus dem Produkt entfernt wurde, bleibt bestehen: Es kann noch genutzt
+  werden.
+- **Das Navigationsmenü meldete manchmal einen Fehler in der Browserkonsole** („ResizeObserver loop completed with
+  undelivered notifications“), je nachdem, wann die Schriften ankamen: Seine Messung, die das Menü hinter seine
+  Schaltfläche einklappt, wenn es nicht mehr in eine Zeile passt, wartet jetzt auf das nächste Bild.
+
 ## [1.2.52] — 2026-10-15
 
 ### Behoben

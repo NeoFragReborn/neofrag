@@ -190,10 +190,11 @@ function build(string $root, string $dist, string $version, string $variant): ar
  * `install/db.txt` en dur ; les déclarer ici les rend lisibles, et permet d'en ajouter sans toucher au code
  * de l'installeur.
  *
- * `remove` : les fichiers que CETTE version retire. La liste se calcule en comparant l'inventaire
- * précédent — `dist/checksum.json` de la version publiée — à ce que le paquet livre aujourd'hui. Sans
- * inventaire précédent sous la main, elle reste vide : mieux vaut ne rien supprimer que supprimer au
- * jugé, et le site gardera quelques fichiers morts jusqu'à la version suivante.
+ * `remove` : les fichiers que le produit a retirés. D'abord la liste versionnée `tools/lib/fichiers-retires.php`
+ * (`php tools/fichiers-retires.php`, depuis l'historique git) : la fabrique travaille sur une copie sans `.git`, et
+ * sans l'inventaire précédent sous la main — elle ne trouvait rien, et de la 1.2.48 au moins à la 1.2.52 aucun
+ * fichier retiré n'a quitté les sites mis à jour (2026-10-16). Ensuite, s'il est là, l'écart avec l'inventaire
+ * précédent, `dist/checksum.json`. Un chemin que l'arbre porte encore n'en fait jamais partie.
  */
 function update_manifest(string $root, string $version): string
 {
@@ -206,24 +207,22 @@ function update_manifest(string $root, string $version): string
         'cache/',       // reconstruit seul, et jamais livré
     ];
 
-    $retires = [];
-    $ancien  = $root.'/dist/checksum.json';   // `dist/` vit DANS la racine du projet, pas a cote
+    $candidats = nf_paquet_retires($root);
+    $ancien    = $root.'/dist/checksum.json';   // `dist/` vit DANS la racine du projet, pas a cote
 
     if (is_file($ancien) && is_array($avant = json_decode((string) file_get_contents($ancien), TRUE))) {
-        $aujourdhui = [];
-
-        foreach (nf_parcourir($root, ['.git', 'node_modules', 'dist']) as $rel => $file) {
-            $aujourdhui[$rel] = TRUE;
-        }
-
-        foreach (array_keys($avant) as $rel) {
-            if (!isset($aujourdhui[$rel])) {
-                $retires[] = $rel;
-            }
-        }
-
-        sort($retires);
+        $candidats = array_merge($candidats, array_map('strval', array_keys($avant)));
     }
+
+    $retires = [];
+
+    foreach (array_unique($candidats) as $rel) {
+        if (!file_exists($root.'/'.$rel) && !nf_paquet_exclu($rel, 'update')) {
+            $retires[] = $rel;
+        }
+    }
+
+    sort($retires);
 
     return (string) json_encode([
         'format'       => 1,

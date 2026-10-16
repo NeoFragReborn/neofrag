@@ -183,6 +183,49 @@ foreach (array_keys(NF_PIECES_JOINTES) as $dossier)
     juger("/{$dossier}/ ne se sert pas directement", !str_contains($r['corps'], $texte), 'HTTP '.$r['code']);
 }
 
+// 2 bis. Les mêmes dossiers DERRIÈRE UNE LANGUE, sous une extension que le site sert lui-même, et les chemins cachés.
+// Les sondes `.txt` ci-dessus ne passaient jamais par le routeur des assets du site (is_asset() écarte `.txt`) :
+// c'est lui qui servait `/fr/logs/php.log` — le journal de la démo, le 2026-10-16 —, comme `/fr/backups/…` ou
+// `/fr/upload/forum/…`. Le chemin n'existe pas sur le disque : aucune règle du serveur web ne le voit.
+echo "\nDerrière une langue, et les chemins cachés :\n";
+$fuites = [];
+
+foreach (array_merge(array_keys(array_diff_key(NF_DOSSIERS_INTERDITS, ['upload' => TRUE])), array_keys(NF_PIECES_JOINTES)) as $dossier)
+{
+    $sonde = sonder($dossier.'/nf-sonde-'.$jeton.'.png', $texte);
+
+    foreach (['', '/fr'] as $prefixe)
+    {
+        $r = demander($prefixe.$sonde);
+
+        if (str_contains($r['corps'], $texte))
+        {
+            $fuites[] = $prefixe.$sonde.' (HTTP '.$r['code'].')';
+        }
+    }
+}
+
+juger('aucun dossier interdit ne se sert derrière une langue', !$fuites, $fuites ? 'servis : '.implode(', ', $fuites) : 'en .png, avec et sans /fr');
+
+$fuites = [];
+
+foreach (['.nf-sonde-'.$jeton.'/sonde.yml', '.nf-sonde-'.$jeton.'/sonde.png', '.nf-sonde-'.$jeton.'.css'] as $cache)
+{
+    $sonde = sonder($cache, $texte);
+
+    foreach (['', '/fr'] as $prefixe)
+    {
+        $r = demander($prefixe.$sonde);
+
+        if (str_contains($r['corps'], $texte))
+        {
+            $fuites[] = $prefixe.$sonde.' (HTTP '.$r['code'].')';
+        }
+    }
+}
+
+juger('aucun chemin caché ne se sert (.git/, .env…)', !$fuites, $fuites ? 'servis : '.implode(', ', $fuites) : '');
+
 // 3. Les extensions et les fichiers interdits
 echo "\nExtensions et fichiers interdits :\n";
 $fuites = [];
