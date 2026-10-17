@@ -45,7 +45,10 @@ $this->rule($this->form_text('subject')
 		if ($sent)
 		{
 			notify($this->lang('Message envoyé'));
-			$this->modal->dispose();
+
+			// Dans une fenêtre, elle se ferme ; sur la page Contact, on y revient, la notification avec. La réponse de
+			// fenêtre s'y affichait telle quelle : le visiteur lisait {"modal":"dispose",…} (recette, 2026-10-16).
+			$this->url->ajax() ? $this->modal->dispose() : refresh();
 		}
 		else
 		{

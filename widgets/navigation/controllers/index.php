@@ -68,11 +68,20 @@ class Index extends Controller_Widget
 		// Un menu géré se relit à CHAQUE affichage, dans la langue de la page (m32, 2026-10-15) : ses liens sont
 		// traduits, et un lien ajouté ou renommé arrive sans réenregistrer le widget. Cf. Checker::_resolve().
 		// couplage(menu): facultatif — sans le module, la table manque, aucun menu n'est trouvé : les liens gardés servent.
+		$gere = FALSE;
+
 		if (!empty($settings['menu']) && ($checker = @NeoFrag()->widget('navigation')->controller('checker'))
 			&& ($liens = $checker->liens_du_menu((string) $settings['menu'])) !== NULL)
 		{
 			$settings['links'] = $liens;
+			$gere              = TRUE;
 		}
+
+		// Le titre d'un lien de menu géré est un CONTENU, déjà dans la langue de la page ou son repli français : le
+		// catalogue de l'interface ne le retraduit pas — « À propos » sans anglais devenait « About », et « Über » en
+		// allemand (recette, 2026-10-16). Les liens gardés dans le widget sont les libellés posés à l'installation :
+		// le catalogue, lui, les traduit.
+		$titre = fn (array $link): string => $gere ? (string) $link['title'] : (string) $this->lang($link['title']);
 
 		$nav = $this->html('ul')
 					->attr('class', 'nav')
@@ -98,7 +107,7 @@ class Index extends Controller_Widget
 			return (($url = ltrim(preg_replace('_^'.preg_quote(url(), '_').'_', '', url($link)), '/')) == $this->url->request) || ($url && strpos($this->url->request, $url) === 0);
 		};
 
-		$nav_link = function($link, $active){
+		$nav_link = function($link, $active) use ($titre){
 			return $this->html('a')
 						->attr('class', 'nav-link')
 						->append_attr_if($active, 'class', 'active')
@@ -115,7 +124,7 @@ class Index extends Controller_Widget
 								$a->attr('href', !is_array($link['url']) ? url($link['url']) : '#');
 							}
 						})
-						->content(icon($link['icon']).' '.$this->lang($link['title']));
+						->content(icon($link['icon']).' '.$titre($link));
 		};
 
 		$show_link = function($link, &$active = FALSE) use (&$actives, &$nav_link){
@@ -170,7 +179,7 @@ class Index extends Controller_Widget
 												->attr('data-nf-sous-menu', '')
 												->attr('aria-expanded', 'false')
 												->attr('href',        '#')
-												->content(icon($link['icon']).' <span class="d-none d-sm-inline">'.$this->lang($link['title']).'</span><span class="fas fa-angle-down"></span>').'<ul class="nav flex-column">'.$submenu.'</ul>'
+												->content(icon($link['icon']).' <span class="d-none d-sm-inline">'.$titre($link).'</span><span class="fas fa-angle-down"></span>').'<ul class="nav flex-column">'.$submenu.'</ul>'
 										)
 					);
 				}

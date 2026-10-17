@@ -251,8 +251,8 @@ Dos trampas medidas en los temas incluidos:
   acento — blanco sobre turquesa, 1,86:1. `tools/check-contraste.php` mide el contraste WCAG de cada tema en los dos
   modos.
 - **Nada de `.row { margin: -15px }`**: es el margen de Bootstrap 4; Bootstrap 5 usa −12 px mediante `--bs-gutter-x`, y
-  los 3 px de diferencia hacen desbordar la página. `tools/check-responsive.php` mide el desbordamiento horizontal a 390,
-  768 y 1400 px; `tools/check-classes-bs4.php` rechaza las clases desaparecidas de Bootstrap **3 y 4** (`card-columns`,
+  los 3 px de diferencia hacen desbordar la página. `tools/check-mise-en-page.php` mide el desbordamiento horizontal
+  de cada página, de 360 a 2560 px, en cada tema y cada modo; `tools/check-classes-bs4.php` rechaza las clases desaparecidas de Bootstrap **3 y 4** (`card-columns`,
   `float-right`, `panel-body`, `badge-danger`…), tanto en las plantillas como en las hojas de estilo — redefinir
   `.badge-danger` en tu tema no la hace volver, la comprobación lo rechaza —, los atributos `data-*` sin el prefijo `bs`
   — un `data-target` ya no hace nada, sin decirlo — y las clases que el código **construye** por concatenación. Un tema
@@ -354,7 +354,7 @@ mientras que un tema se muestra a sí mismo.
 3. **Actívalo** en su tarjeta (define el tema por defecto). Si el tema se registró sin disposiciones, la activación
    ejecuta `install()` sola. El botón **Reinstalar predeterminado** vuelve a ejecutar `install()`.
 4. Antes de distribuirlo, pasa: `check-addon-declarations`, `check-addon-contracts` (la clave `regions`),
-   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, luego `check-responsive`,
+   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, luego `check-mise-en-page`,
    `check-contraste`, `check-bleu-bootstrap` (el azul por defecto de Bootstrap que queda en un componente que tu paleta
    no ha recogido) y `check-js-console` en una instalación donde el tema está activo. Mira la página mostrada: un banner
    vacío, un copyright duplicado o un comentario ilegible no se ven en el código.

@@ -241,7 +241,7 @@ return [
 	'921f1a22' => 'La imagen debe ser un cuadrado de %dpx',
 	'01929141' => 'La imagen debe ser de %dpx por %dpx',
 	'a8235fbb' => 'Dimensiones %dpx por %dpx <i>(%s máx.)</i>',
-	'0e51e512' => 'anti_flood',
+	'30c1826f' => 'Acabas de enviar este formulario: espera unos minutos antes de volver a intentarlo.',
 	'eb566683' => 'Editando %s',
 	'dffe90b9' => '¿Está seguro de querer eliminar <b>%s</b>?',
 	'ca3efd9c' => 'Por favor selecciona un icono',

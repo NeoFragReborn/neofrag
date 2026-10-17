@@ -65,7 +65,6 @@ const NF_PORTS = [
     'check-journal'         => 8098,
     'check-js'              => 8099,
     'check-js-console'      => 8100,
-    'check-responsive'      => 8101,
     'check-restauration'    => 8102,
     'check-widget-contract' => 8103,
     'init-dispositions'     => 8104,

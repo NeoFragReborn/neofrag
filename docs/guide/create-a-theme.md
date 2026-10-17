@@ -253,8 +253,8 @@ Deux pièges mesurés sur les thèmes livrés :
   celle de l'autre accent — du blanc sur du turquoise, 1,86:1. `tools/check-contraste.php` mesure le
   contraste WCAG de tous les thèmes dans les deux modes.
 - **Pas de `.row { margin: -15px }`** : c'est la gouttière de Bootstrap 4 ; Bootstrap 5 emploie −12 px
-  via `--bs-gutter-x`, et les 3 px d'écart font déborder la page. `tools/check-responsive.php` mesure
-  le débordement horizontal à 390, 768 et 1400 px ; `tools/check-classes-bs4.php` refuse les classes
+  via `--bs-gutter-x`, et les 3 px d'écart font déborder la page. `tools/check-mise-en-page.php` mesure
+  le débordement horizontal de chaque page, de 360 à 2560 px, dans chaque thème et chaque mode ; `tools/check-classes-bs4.php` refuse les classes
   disparues de Bootstrap **3 et 4** (`card-columns`, `float-right`, `panel-body`, `badge-danger`…),
   dans les gabarits comme dans les feuilles de style — redéfinir `.badge-danger` dans ton thème ne
   la fait pas revivre, le contrôle la refuse —, les attributs `data-*` restés sans le préfixe `bs` —
@@ -360,7 +360,7 @@ ne montrerait qu'un cadre vide, alors qu'un thème se montre.
 3. **Activer** sur sa fiche (définit le thème par défaut). Si le thème a été enregistré sans dispositions,
    l'activation lance `install()` d'elle-même. Le bouton **Réinstaller par défaut** ré-exécute `install()`.
 4. Avant de livrer, fais passer : `check-addon-declarations`, `check-addon-contracts` (la clé `regions`),
-   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, puis `check-responsive`,
+   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, puis `check-mise-en-page`,
    `check-contraste`, `check-bleu-bootstrap` (le bleu par défaut de Bootstrap resté dans un composant que
    ta palette n'a pas repris) et `check-js-console` sur une installation où le thème est actif. Regarde la page
    rendue : un bandeau vide, un copyright en double ou un commentaire illisible ne se voient pas dans le

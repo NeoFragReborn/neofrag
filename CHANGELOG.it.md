@@ -13,6 +13,42 @@ Michaël BILCOT e Jérémy VALENTIN — un progetto open source con licenza LGPL
 
 ---
 
+## [1.2.54] — 2026-10-17
+
+### Sicurezza
+
+- **Il ripristino della password rivelava, alla seconda richiesta, che un indirizzo ha un account.** La risposta è
+  la stessa che l'indirizzo sia registrato o no; ma una seconda richiesta subito dopo, solo per un indirizzo
+  registrato, rispondeva «attendi» invece della risposta comune. Ora risponde sempre allo stesso modo; i limiti per
+  indirizzo e per connessione, validi per tutti, frenano le richieste ripetute.
+- **Un captcha risolto dispensava anche il messaggio successivo.** La dispensa, pensata per reinviare un modulo
+  rifiutato per un altro motivo, sopravviveva a un invio riuscito: un robot che risolveva una sola sfida inviava due
+  messaggi. Ora cade appena il modulo è accettato.
+
+### Corretto
+
+- **La schermata di un gruppo, aperta in una lingua in cui non ha ancora un nome, proponeva quello di un'altra
+  lingua** — il francese, in mancanza d'altro: salvarla senza modificarla lo scriveva nella nuova lingua. Ora si apre
+  vuota, come gli altri contenuti che si traducono. E il nome di un gruppo creato dall'amministratore non passa più
+  per le traduzioni dell'interfaccia: un gruppo «Modérateur» scriveva un avviso nel registro a ogni pagina mostrata
+  in una lingua diversa dal francese.
+- **La schermata di una mappa o di una modalità di gioco, aperta in una lingua in cui non ha ancora un nome,
+  proponeva il nome francese** — salvarla senza modificarla lo scriveva come nome della nuova lingua. Ora si apre
+  vuota, come quella di un gruppo.
+- **Rinominare una stanza pubblica in una lingua diversa dal francese cambiava anche il suo nome di riserva**, quello
+  che mostra quando nessuna traduzione è adatta. Quel nome ora segue il francese.
+- **La navigazione faceva passare un link di menu per i testi dell'interfaccia** quando non aveva una traduzione nella
+  lingua della pagina: «À propos» diventava «About» in inglese e «Über» in tedesco, invece del titolo scritto
+  dall'amministratore. Ora mostra il titolo francese, come gli altri contenuti che si traducono.
+- **Il modulo di contatto, nella sua pagina, mostrava dopo l'invio una risposta tecnica**
+  (`{"modal":"dispose",…}`) invece di tornare alla pagina con «Messaggio inviato». Un secondo messaggio troppo
+  ravvicinato mostrava allo stesso modo la parola «anti_flood»; ora chiede di attendere qualche minuto, nelle sei
+  lingue.
+- **Il rifiuto del captcha si scriveva due volte** sotto il widget.
+- **In inglese, il pulsante di accesso dell'intestazione diceva «Login»** (il sostantivo) su Nebula, Chronique e il
+  piccolo widget dell'area membri, e «Log in» (il verbo) sugli altri temi. Ora dice «Log in» ovunque, come le altre
+  lingue usano un verbo.
+
 ## [1.2.53] — 2026-10-16
 
 ### Sicurezza

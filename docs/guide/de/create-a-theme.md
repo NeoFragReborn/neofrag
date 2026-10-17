@@ -250,8 +250,8 @@ Zwei an den mitgelieferten Themes gemessene Fallen:
   Modus, Variante) `--nf-accent`, definiere auch die Farbe darauf neu, sonst behält der Text der Knöpfe die des anderen
   Akzents — Weiß auf Türkis, 1,86:1. `tools/check-contraste.php` misst den WCAG-Kontrast aller Themes in beiden Modi.
 - **Kein `.row { margin: -15px }`**: Das ist die Rinne von Bootstrap 4; Bootstrap 5 nutzt −12 px über
-  `--bs-gutter-x`, und die 3 px Unterschied lassen die Seite überlaufen. `tools/check-responsive.php` misst den
-  horizontalen Überlauf bei 390, 768 und 1400 px; `tools/check-classes-bs4.php` lehnt aus Bootstrap **3 und 4**
+  `--bs-gutter-x`, und die 3 px Unterschied lassen die Seite überlaufen. `tools/check-mise-en-page.php` misst den
+  horizontalen Überlauf jeder Seite, von 360 bis 2560 px, in jedem Theme und Modus; `tools/check-classes-bs4.php` lehnt aus Bootstrap **3 und 4**
   verschwundene Klassen ab (`card-columns`, `float-right`, `panel-body`, `badge-danger`…), in Templates wie in
   Stylesheets — `.badge-danger` in deinem Theme neu zu definieren erweckt sie nicht wieder, die Prüfung lehnt es ab —,
   `data-*`-Attribute ohne das Präfix `bs` — ein `data-target` tut still nichts mehr — und Klassen, die der Code durch
@@ -355,7 +355,7 @@ leeren Rahmen, während sich ein Theme zeigt.
 3. **Aktiviere** es auf seiner Karte (setzt das Standard-Theme). Wurde das Theme ohne Layouts registriert, startet die
    Aktivierung `install()` von selbst. Der Knopf **Standard wiederherstellen** führt `install()` erneut aus.
 4. Vor der Auslieferung durchlaufen: `check-addon-declarations`, `check-addon-contracts` (der Schlüssel `regions`),
-   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, dann `check-responsive`,
+   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, dann `check-mise-en-page`,
    `check-contraste`, `check-bleu-bootstrap` (das Standardblau von Bootstrap, das in einer Komponente geblieben ist, die
    deine Palette nicht übernommen hat) und `check-js-console` auf einer Installation, auf der das Theme aktiv ist.
    Sieh dir die dargestellte Seite an: Ein leeres Banner, ein doppeltes Copyright oder ein unlesbarer Kommentar sind im

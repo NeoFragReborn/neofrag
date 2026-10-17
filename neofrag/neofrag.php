@@ -33,6 +33,7 @@ namespace NF\NeoFrag;
  * @property \NF\NeoFrag\Libraries\Rate_Limit $rate_limit
  * @property \NF\NeoFrag\Libraries\Captcha    $captcha
  * @property \NF\NeoFrag\Libraries\Anti_Flood $anti_flood
+ * @property \NF\NeoFrag\Libraries\Email      $email
  *
  * @method string                           lang(string $key, mixed ...$args)
  * @method void                             debug(mixed ...$args)

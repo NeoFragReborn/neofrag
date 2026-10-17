@@ -83,7 +83,6 @@ Ajoutés par `check-all --navigateur`. Ils servent le site, et la plupart ouvren
 | [`check-js-console`](check-js-console.php) | balaye les pages dans un vrai navigateur et refuse toute erreur JavaScript, violation CSP ou script introuvable. | `php tools/check-js-console.php` |
 | [`check-langues-contenu`](check-langues-contenu.php) | un contenu rédigé dans une seule langue doit rester consultable dans les autres. | `php tools/check-langues-contenu.php` |
 | [`check-liens`](check-liens.php) | parcourt le site et refuse tout lien interne qui ne mène nulle part. | `php tools/check-liens.php` |
-| [`check-responsive`](check-responsive.php) | mesure le débordement horizontal des pages, à plusieurs largeurs. | `php tools/check-responsive.php` |
 | [`check-seo`](check-seo.php) | ce que lit un moteur de recherche : robots.txt, plans du site, et l'en-tête des pages qu'ils annoncent. | `php tools/check-seo.php` |
 | [`check-service-worker`](check-service-worker.php) | le worker se retire quand on l'éteint, et ne met jamais le HTML en cache. | `php tools/check-service-worker.php` |
 | [`check-widget-contract`](check-widget-contract.php) | chaque couple widget/type répond à l'éditeur en direct, et se rend SANS réglages sans rien écrire au journal. | `php tools/check-widget-contract.php` |
@@ -133,6 +132,7 @@ Ils agissent — construire, publier, régénérer, installer — plutôt qu'ils
 | [`installer-addon`](installer-addon.php) | installe un addon déjà présent sur le disque, comme le fait l'installeur du site. | `php tools/installer-addon.php module api` |
 | [`maintenance`](maintenance.php) | tâches de maintenance périodiques, à lancer par un cron externe. | `php tools/maintenance.php [trash|accounts|all] [--pretend]` |
 | [`migrate`](migrate.php) | le runner des migrations SQL du cœur. | `php tools/migrate.php status` |
+| [`nf`](nf.php) | la porte d'entrée des outils : les liste par famille, lus dans leurs en-têtes, et lance celui qu'on nomme. | `php tools/nf.php` |
 | [`package-addons`](package-addons.php) | zippe chaque addon distribuable et génère le catalogue du marketplace. | `php tools/package-addons.php` |
 | [`polices-locales`](polices-locales.php) | les polices des thèmes et du réglage « Police du site », servies par le site lui-même. | `php tools/polices-locales.php` |
 | [`prepare-test-db`](prepare-test-db.php) | prépare la base de données des tests d'intégration. | `php tools/prepare-test-db.php` |

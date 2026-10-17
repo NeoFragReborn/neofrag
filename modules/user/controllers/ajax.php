@@ -433,10 +433,12 @@ class Ajax extends Controller_Module
 						// La réponse est la même, que l'adresse ait un compte ou non (audit du 2026-10-09) : « adresse
 						// introuvable » disait à n'importe qui si une adresse est inscrite ici. Un envoi raté se lit
 						// dans le journal d'audit.
+						// Sans anti_flood : appelé pour une adresse inscrite seulement, son refus (« patiente ») trahissait
+						// à la seconde demande qu'un compte existe. Les limites par IP et par adresse, posées plus haut,
+						// valent pour toutes (recette, 2026-10-16).
 						if ($user())
 						{
-							$sent = $this	->anti_flood()
-											->email
+							$sent = $this	->email
 											->template('user.lost_password', [
 												'username'  => $user->username,
 												'reset_url' => absolute_url('user/lost-password/'.$user->token('mot_de_passe'))

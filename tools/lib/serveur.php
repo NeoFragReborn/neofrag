@@ -358,8 +358,13 @@ function nf_encoder_adresse(string $url): string
  * Avec des `fichiers` (`['champ' => '/chemin/archive.zip']`), le POST part en `multipart/form-data`,
  * comme un formulaire d'envoi : c'est ainsi qu'on éprouve « Ajouter » un addon par son archive.
  *
- * @param array{post?: array<string, string|list<string>>|null, fichiers?: array<string, string>, ajax?: bool, suivre?: int, timeout?: int, agent?: string, entetes?: list<string>, bocal?: NfBocal|null} $options
- * @return array{code: int, corps: string, arrivee: string, raison: string, entetes: array<string, string>}
+ * Avec un `corps` (une chaîne), la requête part en POST avec ce corps tel quel, sous le `type` donné (JSON par défaut).
+ *
+ * @param array{post?: array<string, string|list<string>>|null, corps?: string, type?: string, fichiers?: array<string, string>, ajax?: bool, suivre?: int, timeout?: int, agent?: string, entetes?: list<string>, bocal?: NfBocal|null} $options
+ * `lignes` garde les en-têtes BRUTS de la dernière réponse : `entetes` n'en retient qu'un par nom, et une réponse qui pose
+ * plusieurs cookies a plusieurs `Set-Cookie`.
+ *
+ * @return array{code: int, corps: string, arrivee: string, raison: string, entetes: array<string, string>, lignes: list<string>}
  *         `code` vaut 0 quand la requête n'a pas abouti, et `raison` dit alors pourquoi.
  */
 function nf_http(string $url, array $options = []): array
@@ -370,6 +375,14 @@ function nf_http(string $url, array $options = []): array
     $arrivee = $url;
     $corps_post = $post !== NULL ? http_build_query($post) : '';
     $type_post  = 'application/x-www-form-urlencoded';
+
+    // Un corps BRUT — l'API REST attend du JSON — part tel quel, en POST, sous son type (JSON par défaut).
+    if (isset($options['corps']))
+    {
+        $corps_post = (string) $options['corps'];
+        $type_post  = (string) ($options['type'] ?? 'application/json');
+        $post     ??= [];
+    }
 
     if (!empty($options['fichiers']))
     {
@@ -388,10 +401,12 @@ function nf_http(string $url, array $options = []): array
             $parties .= "--{$limite}\r\nContent-Disposition: form-data; name=\"{$nom}\"\r\n\r\n{$valeur}\r\n";
         }
 
+        // Le type que le navigateur annoncerait : celui du fichier (une archive reste application/zip, une image le sien).
         foreach ($options['fichiers'] as $champ => $chemin)
         {
             $parties .= "--{$limite}\r\nContent-Disposition: form-data; name=\"{$champ}\"; filename=\"".basename($chemin)."\"\r\n"
-                ."Content-Type: application/zip\r\n\r\n".file_get_contents($chemin)."\r\n";
+                .'Content-Type: '.((function_exists('mime_content_type') ? @mime_content_type($chemin) : FALSE) ?: 'application/octet-stream')."\r\n\r\n"
+                .file_get_contents($chemin)."\r\n";
         }
 
         $corps_post = $parties."--{$limite}--\r\n";
@@ -461,7 +476,7 @@ function nf_http(string $url, array $options = []): array
                 ? trim((string) preg_replace('#^file_get_contents\([^)]*\):\s*#', '', $apres['message']))
                 : '';
 
-            return ['code' => $code, 'corps' => (string) $corps, 'arrivee' => $arrivee, 'raison' => $raison, 'entetes' => $recus];
+            return ['code' => $code, 'corps' => (string) $corps, 'arrivee' => $arrivee, 'raison' => $raison, 'entetes' => $recus, 'lignes' => $http_response_header ?? []];
         }
 
         // Une redirection ne rejoue jamais le POST : c'est ainsi que font les navigateurs.
@@ -478,7 +493,7 @@ function nf_http(string $url, array $options = []): array
      * check-install-profiles comptait une erreur serveur sur `/` et `/admin`, qui redirigent.
      */
     return ['code' => $code, 'corps' => (string) $corps, 'arrivee' => $arrivee,
-        'raison' => $suivre > 0 ? 'plus de '.$suivre.' redirections enchaînées' : 'redirection non suivie', 'entetes' => $recus];
+        'raison' => $suivre > 0 ? 'plus de '.$suivre.' redirections enchaînées' : 'redirection non suivie', 'entetes' => $recus, 'lignes' => $http_response_header ?? []];
 }
 
 /** Le statut HTTP d'une adresse, sans suivre les redirections : 0 si elle ne répond pas. */

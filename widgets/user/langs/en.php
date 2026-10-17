@@ -19,7 +19,7 @@ return [
 	'5bb5f5dc' => 'Messages',
 	'52b975c0' => 'Administration',
 	'f8c33614' => 'Create an account',
-	'119a7b3f' => 'Login',
+	'119a7b3f' => 'Log in',
 	'492b7a2b' => 'Member area',
 	'b35cea46' => 'Private messages',
 	'4cd691cc' => 'No messages',

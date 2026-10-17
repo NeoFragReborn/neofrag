@@ -10,7 +10,7 @@
  * gestes, et ce qui casse dans l'interface casse entre deux requêtes.
  *
  * AUCUN MOTEUR N'EST TÉLÉCHARGÉ. `channel: 'chrome'` emploie le Google Chrome déjà installé — celui
- * dont `check-js-console`, `check-contraste` et `check-responsive` se servent depuis des mois. Le
+ * dont `check-js-console`, `check-contraste` et `check-mise-en-page` se servent depuis des mois. Le
  * paquet npm ne pèse alors que sa propre taille, et l'installation reste reproductible.
  *
  * NE PAS L'APPELER DIRECTEMENT : `php tools/check-parcours.php --base=…` s'en charge, rend un verdict

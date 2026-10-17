@@ -249,8 +249,8 @@ Duas armadilhas medidas nos temas incluídos:
   destaque — branco sobre turquesa, 1,86:1. `tools/check-contraste.php` mede o contraste WCAG de cada tema nos dois
   modos.
 - **Nada de `.row { margin: -15px }`**: é a margem do Bootstrap 4; o Bootstrap 5 usa −12 px através de `--bs-gutter-x`,
-  e os 3 px de diferença fazem a página transbordar. `tools/check-responsive.php` mede o transbordo horizontal a 390,
-  768 e 1400 px; `tools/check-classes-bs4.php` recusa as classes desaparecidas do Bootstrap **3 e 4** (`card-columns`,
+  e os 3 px de diferença fazem a página transbordar. `tools/check-mise-en-page.php` mede o transbordo horizontal
+  de cada página, de 360 a 2560 px, em cada tema e cada modo; `tools/check-classes-bs4.php` recusa as classes desaparecidas do Bootstrap **3 e 4** (`card-columns`,
   `float-right`, `panel-body`, `badge-danger`…), nos modelos como nas folhas de estilo — redefinir `.badge-danger` no
   teu tema não a faz voltar, a verificação recusa-o —, os atributos `data-*` deixados sem o prefixo `bs` — um
   `data-target` já não faz nada, em silêncio — e as classes que o código **constrói** por concatenação. Um tema tem de
@@ -352,7 +352,7 @@ enquanto um tema se mostra a si próprio.
 3. **Ativa-o** no seu cartão (define o tema predefinido). Se o tema foi registado sem disposições, a ativação executa
    `install()` sozinha. O botão **Reinstalar predefinição** volta a executar `install()`.
 4. Antes de o distribuir, passa: `check-addon-declarations`, `check-addon-contracts` (a chave `regions`),
-   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, depois `check-responsive`,
+   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, depois `check-mise-en-page`,
    `check-contraste`, `check-bleu-bootstrap` (o azul predefinido do Bootstrap que ficou num componente que a tua paleta
    não retomou) e `check-js-console` numa instalação em que o tema está ativo. Olha para a página mostrada: uma faixa
    vazia, um copyright duplicado ou um comentário ilegível não se veem no código.

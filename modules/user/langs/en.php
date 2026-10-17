@@ -196,7 +196,7 @@ return [
 	'331e207e' => 'Step 1 — Scan this QR code',
 	'0d5c1e8c' => 'Or enter the code manually:',
 	'4df1b9d1' => 'Enable',
-	'119a7b3f' => 'Login',
+	'119a7b3f' => 'Log in',
 	'52c9bbab' => 'Edit',
 	'd5c7096c' => 'Login info',
 	'e17ab7a1' => 'Profile',

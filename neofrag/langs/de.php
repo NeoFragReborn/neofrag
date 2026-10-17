@@ -241,7 +241,7 @@ return [
 	'921f1a22' => 'Das Bild muss ein Quadrat mit %dpx sein',
 	'01929141' => 'Das Bild muss %dpx x %dpx sein',
 	'a8235fbb' => 'Maße %dpx x %dpx <i>(%s max.)</i>',
-	'0e51e512' => 'anti_flood',
+	'30c1826f' => 'Du hast dieses Formular gerade gesendet: Warte ein paar Minuten, bevor du es erneut versuchst.',
 	'eb566683' => 'Bearbeite %s',
 	'dffe90b9' => 'Möchtest du <b>%s</b> wirklich löschen?',
 	'ca3efd9c' => 'Bitte wähle ein Symbol',

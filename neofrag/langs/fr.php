@@ -239,7 +239,7 @@ return [
 	'921f1a22' => 'L\'image doit être un carré de %dpx de côté',
 	'01929141' => 'L\'image doit faire %dpx par %dpx',
 	'a8235fbb' => 'Dimensions %dpx par %dpx <i>(%s max.)</i>',
-	'0e51e512' => 'anti_flood',
+	'30c1826f' => 'Tu viens d’envoyer ce formulaire : patiente quelques minutes avant de recommencer.',
 	'eb566683' => 'Édition de %s',
 	'dffe90b9' => 'Êtes-vous sûr.e de vouloir supprimer <b>%s</b> ?',
 	'ca3efd9c' => 'Veuillez sélectionner une icône',

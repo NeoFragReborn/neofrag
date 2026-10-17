@@ -95,10 +95,21 @@ class Admin_Checker extends Module_Checker
 		// et l'édition d'un groupe rendait un 404 — constaté par tools/check-liens.php.
 		if ($group = NeoFrag('NF\NeoFrag\Core\Groups')->check_group(func_get_args()))
 		{
+			// Le nom TEL QU'IL EST ÉCRIT dans la langue de l'administration, vide si rien n'y est encore écrit — comme
+			// les contenus de m30 et m32. L'écran proposait le nom d'une autre langue (le français, à défaut), et
+			// l'enregistrer sans le retoucher l'écrivait sous celle-ci (trouvé par la recette, 2026-10-16).
+			$titre = $group['title'];
+
+			if (empty($group['auto']) && !empty($group['id']))
+			{
+				$ecrit = $this->db->select('title')->from('nf_groups_lang')->where('group_id', $group['id'])->where('lang', $this->config->lang->info()->name)->row();
+				$titre = is_string($ecrit) ? $ecrit : '';
+			}
+
 			return [
 				isset($group['id']) ? $group['id'] : 0,
 				$group['unique_id'],
-				$group['title'],
+				$titre,
 				$group['color'],
 				$group['icon'],
 				$group['hidden'],

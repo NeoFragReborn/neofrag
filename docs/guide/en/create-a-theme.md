@@ -249,8 +249,8 @@ Two traps measured on the shipped themes:
   replaces `--nf-accent`, also redefine the colour set on it, otherwise button text keeps the other accent's — white
   on turquoise, 1.86:1. `tools/check-contraste.php` measures the WCAG contrast of every theme in both modes.
 - **No `.row { margin: -15px }`**: that is Bootstrap 4's gutter; Bootstrap 5 uses −12 px through `--bs-gutter-x`,
-  and the 3 px difference makes the page overflow. `tools/check-responsive.php` measures horizontal overflow at
-  390, 768 and 1400 px; `tools/check-classes-bs4.php` refuses classes that disappeared from Bootstrap **3 and 4**
+  and the 3 px difference makes the page overflow. `tools/check-mise-en-page.php` measures the horizontal overflow
+  of every page, from 360 to 2560 px, in every theme and mode; `tools/check-classes-bs4.php` refuses classes that disappeared from Bootstrap **3 and 4**
   (`card-columns`, `float-right`, `panel-body`, `badge-danger`…), in templates as in style sheets — redefining
   `.badge-danger` in your theme does not bring it back, the check refuses it —, `data-*` attributes left without
   the `bs` prefix — a `data-target` silently does nothing any more — and classes the code **builds** by
@@ -353,7 +353,7 @@ whereas a theme shows itself.
 3. **Enable** it on its card (sets the default theme). If the theme was registered without layouts, enabling runs
    `install()` by itself. The **Reinstall defaults** button runs `install()` again.
 4. Before shipping, pass: `check-addon-declarations`, `check-addon-contracts` (the `regions` key),
-   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, then `check-responsive`,
+   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, then `check-mise-en-page`,
    `check-contraste`, `check-bleu-bootstrap` (Bootstrap's default blue left in a component your palette did not
    take over) and `check-js-console` on an installation where the theme is active. Look at the rendered page: an
    empty banner, a duplicate copyright or an unreadable comment do not show in the code.

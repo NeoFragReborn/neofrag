@@ -13,6 +13,41 @@ Michaël BILCOT und Jérémy VALENTIN — ein Open-Source-Projekt unter der Lize
 
 ---
 
+## [1.2.54] — 2026-10-17
+
+### Sicherheit
+
+- **Das Zurücksetzen des Passworts verriet bei der zweiten Anfrage, dass eine Adresse ein Konto hat.** Die Antwort
+  ist dieselbe, ob die Adresse registriert ist oder nicht; eine sofortige zweite Anfrage, nur für eine registrierte
+  Adresse, antwortete aber „warte“ statt der gemeinsamen Antwort. Sie antwortet jetzt immer gleich; die Grenzen pro
+  Adresse und pro Verbindung, die für alle gelten, bremsen wiederholte Anfragen.
+- **Ein gelöstes Captcha befreite auch die nächste Nachricht.** Die Befreiung, gedacht für das erneute Senden eines
+  aus anderem Grund abgelehnten Formulars, überlebte ein erfolgreiches Senden: Ein Bot, der eine einzige Aufgabe
+  löste, schickte zwei Nachrichten. Sie fällt jetzt, sobald das Formular angenommen ist.
+
+### Behoben
+
+- **Die Bearbeitungsseite einer Gruppe, in einer Sprache geöffnet, in der sie noch keinen Namen hat, bot den Namen
+  einer anderen Sprache an** — ersatzweise den französischen: Speichern ohne Änderung schrieb ihn unter die neue
+  Sprache. Sie öffnet sich jetzt leer, wie die anderen übersetzbaren Inhalte. Und der Name einer vom Administrator
+  angelegten Gruppe läuft nicht mehr durch die Übersetzungen der Oberfläche: Eine Gruppe „Modérateur“ schrieb auf jeder
+  nicht französischen Seite eine Warnung ins Protokoll.
+- **Die Bearbeitungsseite einer Karte oder eines Spielmodus, in einer Sprache geöffnet, in der sie noch keinen Namen
+  haben, bot den französischen Namen an** — Speichern ohne Änderung schrieb ihn als Namen der neuen Sprache. Sie öffnet
+  sich jetzt leer, wie die einer Gruppe.
+- **Einen öffentlichen Raum in einer anderen Sprache als Französisch umzubenennen, änderte auch seinen Ersatznamen**,
+  den er zeigt, wenn keine Übersetzung passt. Dieser Name folgt jetzt dem Französischen.
+- **Die Navigation schickte einen Menülink durch die Texte der Oberfläche**, wenn er in der Sprache der Seite keine
+  Übersetzung hatte: „À propos“ wurde auf Englisch zu „About“ und auf Deutsch zu „Über“, statt des vom Administrator
+  geschriebenen Titels. Sie zeigt jetzt den französischen Titel, wie die anderen übersetzbaren Inhalte.
+- **Das Kontaktformular zeigte auf seiner Seite nach dem Senden eine technische Antwort**
+  (`{"modal":"dispose",…}`), statt mit „Nachricht gesendet“ zur Seite zurückzukehren. Eine zu schnell folgende zweite
+  Nachricht zeigte ebenso das Wort „anti_flood“; sie sagt jetzt, ein paar Minuten zu warten, in allen sechs Sprachen.
+- **Die Ablehnung des Captchas stand zweimal** unter dem Widget.
+- **Auf Englisch sagte die Anmeldeschaltfläche der Kopfzeile „Login“** (das Substantiv) bei Nebula, Chronique und dem
+  kleinen Widget des Mitgliederbereichs, bei den anderen Themes „Log in“ (das Verb). Sie sagt jetzt überall „Log in“,
+  wie die anderen Sprachen ein Verb verwenden.
+
 ## [1.2.53] — 2026-10-16
 
 ### Sicherheit

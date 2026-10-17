@@ -166,6 +166,18 @@ class Form2 extends Library
 
 					$this->session->set('table2', 'filters', $this->__id(), $session);
 
+					// Les champs qui accordent une dispense pour un renvoi (le captcha) la reprennent AVANT les gestes du
+					// succès : la plupart finissent par une redirection ou une réponse de fenêtre, qui arrête la requête.
+					// Reprise après eux, la dispense survivait à tout envoi réussi — la recette a envoyé un second message
+					// de contact sans résoudre de défi (2026-10-16).
+					foreach ($this->_rules as $rule)
+					{
+						if ($rule && method_exists($rule, 'abouti'))
+						{
+							$rule->abouti();
+						}
+					}
+
 					if ($this->_success)
 					{
 						if (is_a($this->_values, 'NF\NeoFrag\Loadables\Model2'))
@@ -181,15 +193,6 @@ class Form2 extends Library
 						foreach ($this->_success as $callback)
 						{
 							call_user_func_array($callback, [$data, $this]);
-						}
-					}
-
-					// Les champs qui accordent une dispense pour un renvoi (le captcha) la reprennent.
-					foreach ($this->_rules as $rule)
-					{
-						if ($rule && method_exists($rule, 'abouti'))
-						{
-							$rule->abouti();
 						}
 					}
 				}

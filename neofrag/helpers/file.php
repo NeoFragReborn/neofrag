@@ -529,6 +529,7 @@ function nf_images_editeur_citees(): ?array
 	$db     = NeoFrag()->db;
 	$citees = [];
 	$panne  = NULL;
+	$lue    = '';
 
 	// Une requête en échec n'interrompt rien : le pilote le dit par un avertissement et rend une liste vide, qui ferait
 	// passer pour abandonnées toutes les images de la table. L'avertissement est donc relevé, et la recherche annulée.
@@ -547,6 +548,8 @@ function nf_images_editeur_citees(): ?array
 			{
 				continue;
 			}
+
+			$lue = (string) $table;
 
 			foreach ((array) $db->table_columns($table) as $colonne => $type)
 			{
@@ -576,7 +579,9 @@ function nf_images_editeur_citees(): ?array
 
 	if ($panne !== NULL)
 	{
-		nf_journaliser_erreur('editeur', 'recherche des images de l\'éditeur interrompue : '.$panne, nf_chemin_relatif(__FILE__).':'.__LINE__);
+		// La table nommée : c'est elle que l'administrateur doit réparer (une vue qui pointe une table disparue, par
+		// exemple) ; le message du pilote seul ne la dit pas (2026-10-16).
+		nf_journaliser_erreur('editeur', 'recherche des images de l\'éditeur interrompue'.($lue !== '' ? ', la table '.$lue.' ne se lit pas' : '').' : '.$panne, nf_chemin_relatif(__FILE__).':'.__LINE__);
 
 		return NULL;
 	}

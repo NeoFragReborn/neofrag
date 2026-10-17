@@ -58,18 +58,9 @@ class Captcha extends Labelable
 		$this->_template[] = function(&$input){
 			if (!$this->user() && !$this->_session)
 			{
+				// Son erreur s'écrit en clair sous lui, comme celle de tout champ (Labelable, depuis le 2026-10-09) :
+				// le bloc qu'il écrivait lui-même, d'avant, la doublait (recette, 2026-10-16).
 				$input = $this->captcha->element((string) $this->_color, $this->_compact ? 'compact' : '');
-
-				// Les champs disent leur erreur dans une bulle sur l'icône de leur libellé. Le captcha n'a
-				// pas de libellé : il ne restait qu'une icône seule, sans bulle sur un écran tactile. Son
-				// erreur s'écrit donc en clair sous lui (sauf en affichage compact, qui le fait déjà).
-				if ($this->_errors && !($this->_form && ($this->_form->display() & \NF\NeoFrag\Libraries\Form2::FORM_COMPACT)))
-				{
-					$input .= $this	->html('div')
-									->attr('class', 'nf-captcha-error text-danger mt-1')
-									->attr('role', 'alert')
-									->content($this->label(implode('<br />', $this->_errors), 'fas fa-exclamation-triangle'));
-				}
 			}
 
 			return FALSE;

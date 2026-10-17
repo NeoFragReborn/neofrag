@@ -250,8 +250,8 @@ Due trappole misurate sui temi inclusi:
   conserva quello dell'altro accento — bianco su turchese, 1,86:1. `tools/check-contraste.php` misura il contrasto WCAG
   di ogni tema nelle due modalità.
 - **Niente `.row { margin: -15px }`**: è la spaziatura di Bootstrap 4; Bootstrap 5 usa −12 px tramite `--bs-gutter-x`, e
-  i 3 px di differenza fanno debordare la pagina. `tools/check-responsive.php` misura il debordamento orizzontale a 390,
-  768 e 1400 px; `tools/check-classes-bs4.php` rifiuta le classi scomparse da Bootstrap **3 e 4** (`card-columns`,
+  i 3 px di differenza fanno debordare la pagina. `tools/check-mise-en-page.php` misura il debordamento orizzontale
+  di ogni pagina, da 360 a 2560 px, in ogni tema e modalità; `tools/check-classes-bs4.php` rifiuta le classi scomparse da Bootstrap **3 e 4** (`card-columns`,
   `float-right`, `panel-body`, `badge-danger`…), nei modelli come nei fogli di stile — ridefinire `.badge-danger` nel
   tuo tema non la fa tornare, il controllo lo rifiuta —, gli attributi `data-*` rimasti senza il prefisso `bs` — un
   `data-target` non fa più nulla, in silenzio — e le classi che il codice **costruisce** per concatenazione. Un tema deve
@@ -354,7 +354,7 @@ mostra se stesso.
 3. **Attivalo** sulla sua scheda (imposta il tema predefinito). Se il tema è stato registrato senza disposizioni,
    l'attivazione esegue `install()` da sola. Il pulsante **Reinstalla predefinito** riesegue `install()`.
 4. Prima di distribuirlo, passa: `check-addon-declarations`, `check-addon-contracts` (la chiave `regions`),
-   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, poi `check-responsive`,
+   `check-css-variables`, `check-colles`, `check-classes-bs4`, `check-js-sources`, poi `check-mise-en-page`,
    `check-contraste`, `check-bleu-bootstrap` (il blu predefinito di Bootstrap rimasto in un componente che la tua
    tavolozza non ha ripreso) e `check-js-console` su un'installazione in cui il tema è attivo. Guarda la pagina mostrata:
    un banner vuoto, un copyright doppio o un commento illeggibile non si vedono nel codice.

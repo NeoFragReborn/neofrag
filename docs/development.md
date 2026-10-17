@@ -96,6 +96,10 @@ d'adopter une liste qui contient quoi que ce soit de neuf.
 explicite) et **énonce à la fin ce qu'il n'a pas joué**. Le catalogue, les conventions et la
 bibliothèque commune des outils sont dans [tools/README.md](../tools/README.md).
 
+Pour ne pas retenir une centaine de noms : `php tools/nf.php` liste les outils par famille, avec ce que chacun fait,
+et lance celui qu'on nomme par un nom court — `php tools/nf.php check` (toute la batterie), `php tools/nf.php check
+seo`, `php tools/nf.php migrate status`.
+
 **Ce que chaque couche attrape** — aucune ne suffit seule :
 
 | Le défaut | La couche qui le voit |
@@ -113,7 +117,7 @@ bibliothèque commune des outils sont dans [tools/README.md](../tools/README.md)
 | Le paquet qui ne s'installerait pas chez un hébergeur mutualisé (pas de shell, `open_basedir`, 128 Mo) | `check-assistant` sur le paquet publié, sous un Apache bridé (`installation.yml`) |
 | Une erreur survenue APRÈS l'envoi des en-têtes | `check-journal`, le seul qui lise le journal PHP |
 | Un script qui plante au chargement, une violation CSP | `check-js-console`, dans un vrai navigateur |
-| Un lien mort, un débordement, un contraste insuffisant, un retour absent | `check-liens`, `check-responsive`, `check-contraste`, `check-admin-back` |
+| Un lien mort, un débordement, un contraste insuffisant, un retour absent | `check-liens`, `check-mise-en-page`, `check-contraste`, `check-admin-back` |
 | Un composant resté au bleu par défaut de Bootstrap (barre de progression, case cochée, page active, lueur de focus) dans un thème qui ne l'a pas choisi | `check-bleu-bootstrap`, dans un vrai navigateur, au repos et au focus |
 | Une page qui répond 200 mais écrit une alerte au journal pendant qu'elle se rend | `check-liens`, qui relit le journal après son parcours ; `check-journal --depuis=24h` sur une installation servie |
 | Une requête à une colonne dont on lit les valeurs comme des lignes | `check-db-colonne` |

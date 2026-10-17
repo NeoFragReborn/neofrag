@@ -252,6 +252,29 @@ function nf_texte(mixed $texte, int $max = 0): string
 }
 
 /**
+ * Un CONTENU — ce qu'un administrateur a écrit, le nom d'un groupe… — passé là où l'on attend un texte de l'interface,
+ * comme le titre d'un libellé, que sa bibliothèque traduit. Rendu tel quel : lang() laisse passer un objet.
+ *
+ * Le groupe « Modérateur » portait le même nom qu'un texte du module access : hors du français, chaque page qui le
+ * montrait le cherchait dans les traductions du cœur, et écrivait « Unfound lang » au journal (2026-10-16, trouvé par
+ * la recette).
+ */
+function nf_contenu(string $texte): Stringable
+{
+	return new class($texte) implements Stringable
+	{
+		public function __construct(private readonly string $texte)
+		{
+		}
+
+		public function __toString(): string
+		{
+			return $this->texte;
+		}
+	};
+}
+
+/**
  * Un texte saisi dans l'éditeur riche, prêt pour la page : son HTML assaini s'il en est, sinon l'ancien
  * texte mis en forme par bbcode(). Les valeurs qu'un formulaire form2 rangeait CODÉES (`&lt;p&gt;&lt;img…`,
  * jusqu'au 2026-10-05 : une image de signature s'affichait en code) sont d'abord décodées — elles

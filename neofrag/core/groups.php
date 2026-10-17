@@ -216,8 +216,12 @@ class Groups extends Core
 				$link = FALSE;
 			}
 
+			// Le nom d'un groupe que l'administrateur a créé est un contenu, pas un texte de l'interface : il ne se traduit
+			// pas par lang() (nf_contenu()). Les trois groupes du produit, eux, portent déjà leur texte traduit.
+			$titre = $this->_groups[$group_id]['title'];
+
 			return $this->label()
-						->title($this->_groups[$group_id]['title'])
+						->title(is_string($titre) ? nf_contenu($titre) : $titre)
 						->icon($this->_groups[$group_id]['icon'])
 						->url_if($link && ($members = $this->module('members')) && $members->is_enabled(), 'members/group/'.$this->_groups[$group_id]['url'])
 						->color($this->_groups[$group_id]['color']);

@@ -13,6 +13,40 @@ Michaël BILCOT and Jérémy VALENTIN — an open source project under the LGPLv
 
 ---
 
+## [1.2.54] — 2026-10-17
+
+### Security
+
+- **Password reset revealed, on a second request, that an address has an account.** The answer is the same whether
+  the address is registered or not; but a second request right away, for a registered address only, answered
+  "please wait" instead of the common answer. It now always answers the same; the per-address and per-connection
+  limits, which apply to every address, slow repeated requests down.
+- **A solved captcha also exempted the next message.** The exemption, meant to resend a form refused for another
+  reason, survived a successful submission: a bot that solved a single challenge sent two messages. It now ends as
+  soon as the form is accepted.
+
+### Fixed
+
+- **A group's screen, opened in a language where it has no name yet, offered the name from another language** —
+  French, by default: saving without touching it wrote it under the new language. It now opens empty, like the other
+  translatable content. And the name of a group created by the administrator no longer goes through the interface
+  translations: a group called "Modérateur" wrote a warning to the log on every page shown in a language other than
+  French.
+- **The screen of a game map or mode, opened in a language where it has no name yet, offered the French name** —
+  saving without touching it wrote it as the name in the new language. It now opens empty, like a group's.
+- **Renaming a public room in a language other than French also changed its fallback name**, the one it shows when no
+  translation fits. That name now follows French.
+- **The navigation ran a menu link through the interface texts** when it had no translation in the page's language:
+  "À propos" became "About" in English and "Über" in German, instead of the title written by the administrator. It now
+  shows the French title, like the other translatable content.
+- **The contact form, on its page, showed a technical response after sending** (`{"modal":"dispose",…}`) instead of
+  coming back to the page with "Message sent". A second message sent too soon likewise showed the word
+  "anti_flood"; it now says to wait a few minutes, in all six languages.
+- **The captcha refusal was written twice** under the widget.
+- **In English, the header's sign-in button said "Login"** (the noun) on Nebula, Chronique and the small member area
+  widget, and "Log in" (the verb) on the other themes. It now says "Log in" everywhere, as the other languages use a
+  verb.
+
 ## [1.2.53] — 2026-10-16
 
 ### Security

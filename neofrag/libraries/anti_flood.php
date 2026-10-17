@@ -18,8 +18,10 @@ class Anti_Flood extends Library
 			if (($attempts = $this->session('anti_flood', 'attempts') ?: 0) < 10)
 			{
 				$this->session->set('anti_flood', 'attempts', $attempts + 1);
-				notify($message ?: $this->lang('anti_flood'), 'danger');
-				$this->output->json();
+				// Le message par défaut n'avait jamais été écrit : les six langues affichaient la clé, « anti_flood ».
+				// Et la réponse de fenêtre (JSON) s'affichait telle quelle sur une page : on y revient (recette, 2026-10-16).
+				notify($message ?: $this->lang('Tu viens d’envoyer ce formulaire : patiente quelques minutes avant de recommencer.'), 'danger');
+				$this->url->ajax() ? $this->output->json() : refresh();
 			}
 			else
 			{
@@ -30,8 +32,9 @@ class Anti_Flood extends Library
 		}
 		else
 		{
+			// `attempts`, le compteur que lit la branche du dessus (`attempt` ne le remettait jamais à zéro).
 			$this->session	->set('anti_flood', 'actions', $this->__id(), $this->date())
-							->set('anti_flood', 'attempt', 0);
+							->set('anti_flood', 'attempts', 0);
 		}
 
 		return $this;

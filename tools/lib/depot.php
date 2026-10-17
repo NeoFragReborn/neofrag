@@ -25,6 +25,9 @@ require_once __DIR__.'/outil.php';
 const NF_EXCLUS = [
     '/vendor/', '/node_modules/', '/.git/', '/cache/', '/logs/', '/dist/', '/backups/',
     '/js/tinymce/', '/js/codemirror/', '/js/altcha/', '/.phpunit.cache/', '/graphify-out/',
+    // Les générateurs des contenus de la vitrine (pages légales, bienvenue, images de partage) : ils fabriquent ce
+    // qu'on joue sur sa base, le site ne les exécute jamais — les règles du code du produit ne les concernent pas.
+    '/themes/vitrine/sources/',
 ];
 
 /** Les dossiers où vit du code de produit. */

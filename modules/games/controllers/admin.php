@@ -196,12 +196,17 @@ class Admin extends Controller_Module
 
 	public function _maps_edit($map_id, $game_id, $image_id, $title, $game)
 	{
+		// L'écran d'édition montre le nom de la langue OÙ L'ON TRAVAILLE, et non le repli : ouvert en
+		// italien, il montrait le français, et l'enregistrer l'écrivait comme nom italien (recette, 2026-10-16).
+		$maps  = $this->model('maps');
+		$ecrit = $maps instanceof \NF\Modules\Games\Models\Maps ? $maps->titre_dans((int) $map_id, (string) $this->config->lang->info()->name) : NULL;
+
 		$this	->subtitle($title)
 				->form()
 				->add_rules('maps', [
 					'games'    => $this->model()->get_games_list(TRUE),
 					'game_id'  => $game_id,
-					'title'    => $title,
+					'title'    => (string) $ecrit,
 					'image_id' => $image_id
 				])
 				->add_submit($this->lang('Enregistrer'))
@@ -261,11 +266,15 @@ class Admin extends Controller_Module
 
 	public function _modes_edit($mode_id, $game_id, $title, $game)
 	{
+		// Comme une carte : le nom de la langue où l'on travaille, le sous-titre garde le nom lu.
+		$modes = $this->model('modes');
+		$ecrit = $modes instanceof \NF\Modules\Games\Models\Modes ? $modes->titre_dans((int) $mode_id, (string) $this->config->lang->info()->name) : NULL;
+
 		$this	->title($this->lang('Éditer le mode'))
 				->subtitle($title)
 				->form()
 				->add_rules('modes', [
-					'title' => $title
+					'title' => (string) $ecrit
 				])
 				->add_submit($this->lang('Enregistrer'))
 				->add_back($back = 'admin/games/'.$game_id.'/'.$game);

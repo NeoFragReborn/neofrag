@@ -69,3 +69,6 @@ graphify-out/
 /bot/dist
 /bot/.env
 /dist-bot
+
+# Ce que les générateurs de la vitrine produisent : se refait depuis themes/vitrine/sources/
+themes/vitrine/sources/**/*.sql

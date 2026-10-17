@@ -100,11 +100,18 @@ class Talks extends Model
 			$base['description'] = (string) $description;
 		}
 
-		$this->db	->where('talk_id', (int)$talk_id)
-					->update('nf_talks', $base);
-
 		// Seul un salon PUBLIC a des traductions : une conversation de membres garde un seul nom, pour tous.
-		if ($this->db->select('type')->from('nf_talks')->where('talk_id', (int)$talk_id)->row() === 'public')
+		$public = $this->db->select('type')->from('nf_talks')->where('talk_id', (int)$talk_id)->row() === 'public';
+
+		// Le nom commun d'un salon public est son secours : il suit le français. Écrit dans chaque langue, un salon
+		// renommé en italien prenait l'italien pour secours (recette, 2026-10-16).
+		if (!$public || (string) $this->config->lang->info()->name === 'fr')
+		{
+			$this->db	->where('talk_id', (int)$talk_id)
+						->update('nf_talks', $base);
+		}
+
+		if ($public)
 		{
 			$this->ecrire_texte((int) $talk_id, (string) $title, $description === NULL ? NULL : (string) $description);
 		}

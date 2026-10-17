@@ -7,7 +7,7 @@
 define('NEOFRAG_MEMORY',  memory_get_usage());
 define('NEOFRAG_TIME',    microtime(TRUE));
 define('NEOFRAG_CMS',     __DIR__);
-define('NEOFRAG_VERSION', '1.2.53');
+define('NEOFRAG_VERSION', '1.2.54');
 
 error_reporting(E_ALL);
 

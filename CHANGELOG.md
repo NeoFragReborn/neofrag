@@ -11,6 +11,41 @@ Michaël BILCOT et Jérémy VALENTIN — projet open source sous licence LGPLv3.
 
 ---
 
+## [1.2.54] — 2026-10-17
+
+### Sécurité
+
+- **La réinitialisation du mot de passe disait, à la seconde demande, qu'une adresse a un compte.** La réponse est la
+  même que l'adresse soit inscrite ou non ; mais une seconde demande aussitôt, pour une adresse inscrite seulement,
+  répondait « patiente » au lieu de la réponse commune. Elle répond désormais toujours pareil ; les limites par
+  adresse et par connexion, qui valent pour toutes, freinent les demandes répétées.
+- **Un captcha réussi dispensait aussi le message suivant.** La dispense, faite pour renvoyer un formulaire refusé pour
+  une autre raison, survivait à un envoi réussi : un robot qui résolvait un seul défi envoyait deux messages. Elle
+  tombe désormais dès que le formulaire est accepté.
+
+### Corrigé
+
+- **L'écran d'un groupe, ouvert dans une langue où il n'a pas encore de nom, proposait celui d'une autre langue** —
+  le français, à défaut : l'enregistrer sans le retoucher l'écrivait sous la nouvelle langue. Il s'ouvre désormais
+  vide, comme les autres contenus qui se traduisent. Et le nom d'un groupe créé par l'administrateur ne passe plus par
+  les traductions de l'interface : un groupe « Modérateur » écrivait une alerte au journal à chaque page affichée hors
+  du français.
+- **L'écran d'une carte ou d'un mode de jeu, ouvert dans une langue où il n'a pas encore de nom, proposait le nom
+  français** — l'enregistrer sans le retoucher l'écrivait comme nom de la nouvelle langue. Il s'ouvre désormais vide,
+  comme celui d'un groupe.
+- **Renommer un salon public dans une autre langue que le français changeait aussi son nom de secours**, celui qu'il
+  montre quand aucune traduction ne convient. Ce nom suit désormais le français.
+- **La navigation passait un lien de menu par les textes de l'interface** quand il n'avait pas de traduction dans la
+  langue de la page : « À propos » devenait « About » en anglais et « Über » en allemand, au lieu du titre écrit par
+  l'administrateur. Elle montre désormais le titre français, comme les autres contenus qui se traduisent.
+- **Le formulaire de contact, sur sa page, affichait après l'envoi une réponse technique**
+  (`{"modal":"dispose",…}`) au lieu de revenir à la page avec « Message envoyé ». Un second message trop rapproché
+  affichait de même le mot « anti_flood » ; il dit désormais d'attendre quelques minutes, dans les six langues.
+- **Le refus du captcha s'écrivait deux fois** sous le widget.
+- **En anglais, le bouton « Connexion » de l'en-tête disait « Login »** (le nom) sur Nebula, Chronique et le petit
+  widget de l'espace membre, et « Log in » (le verbe) sur les autres thèmes. Il dit « Log in » partout, comme les
+  autres langues disent un verbe.
+
 ## [1.2.53] — 2026-10-16
 
 ### Sécurité
